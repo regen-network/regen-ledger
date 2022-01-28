@@ -16,8 +16,8 @@ type SellOrderStore interface {
 	Update(ctx context.Context, sellOrder *SellOrder) error
 	Save(ctx context.Context, sellOrder *SellOrder) error
 	Delete(ctx context.Context, sellOrder *SellOrder) error
-	Has(ctx context.Context, order_id uint64) (found bool, err error)
-	Get(ctx context.Context, order_id uint64) (*SellOrder, error)
+	Has(ctx context.Context, id uint64) (found bool, err error)
+	Get(ctx context.Context, id uint64) (*SellOrder, error)
 	List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 
@@ -41,16 +41,16 @@ type SellOrderIndexKey interface {
 }
 
 // primary key starting index..
-type SellOrderOrderIdIndexKey struct {
+type SellOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOrderIdIndexKey) id() uint32            { return 1 }
-func (x SellOrderOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderOrderIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderIdIndexKey) id() uint32            { return 1 }
+func (x SellOrderIdIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderIdIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderOrderIdIndexKey) WithOrderId(order_id uint64) SellOrderOrderIdIndexKey {
-	this.vs = []interface{}{order_id}
+func (this SellOrderIdIndexKey) WithId(id uint64) SellOrderIdIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
@@ -67,16 +67,16 @@ func (this SellOrderBatchDenomIndexKey) WithBatchDenom(batch_denom string) SellO
 	return this
 }
 
-type SellOrderOwnerIndexKey struct {
+type SellOrderSellerIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOwnerIndexKey) id() uint32            { return 2 }
-func (x SellOrderOwnerIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderOwnerIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderSellerIndexKey) id() uint32            { return 2 }
+func (x SellOrderSellerIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderSellerIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderOwnerIndexKey) WithOwner(owner string) SellOrderOwnerIndexKey {
-	this.vs = []interface{}{owner}
+func (this SellOrderSellerIndexKey) WithSeller(seller []byte) SellOrderSellerIndexKey {
+	this.vs = []interface{}{seller}
 	return this
 }
 
@@ -113,13 +113,13 @@ func (this sellOrderStore) Delete(ctx context.Context, sellOrder *SellOrder) err
 	return this.table.Delete(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Has(ctx context.Context, order_id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, order_id)
+func (this sellOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this sellOrderStore) Get(ctx context.Context, order_id uint64) (*SellOrder, error) {
+func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, id)
 	if !found {
 		return nil, err
 	}
@@ -155,8 +155,8 @@ type BuyOrderStore interface {
 	Update(ctx context.Context, buyOrder *BuyOrder) error
 	Save(ctx context.Context, buyOrder *BuyOrder) error
 	Delete(ctx context.Context, buyOrder *BuyOrder) error
-	Has(ctx context.Context, buy_order_id uint64) (found bool, err error)
-	Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error)
+	Has(ctx context.Context, id uint64) (found bool, err error)
+	Get(ctx context.Context, id uint64) (*BuyOrder, error)
 	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 
@@ -180,16 +180,16 @@ type BuyOrderIndexKey interface {
 }
 
 // primary key starting index..
-type BuyOrderBuyOrderIdIndexKey struct {
+type BuyOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderBuyOrderIdIndexKey) id() uint32            { return 2 }
-func (x BuyOrderBuyOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderBuyOrderIdIndexKey) buyOrderIndexKey()     {}
+func (x BuyOrderIdIndexKey) id() uint32            { return 2 }
+func (x BuyOrderIdIndexKey) values() []interface{} { return x.vs }
+func (x BuyOrderIdIndexKey) buyOrderIndexKey()     {}
 
-func (this BuyOrderBuyOrderIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderBuyOrderIdIndexKey {
-	this.vs = []interface{}{buy_order_id}
+func (this BuyOrderIdIndexKey) WithId(id uint64) BuyOrderIdIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
@@ -201,7 +201,7 @@ func (x BuyOrderBuyerIndexKey) id() uint32            { return 1 }
 func (x BuyOrderBuyerIndexKey) values() []interface{} { return x.vs }
 func (x BuyOrderBuyerIndexKey) buyOrderIndexKey()     {}
 
-func (this BuyOrderBuyerIndexKey) WithBuyer(buyer string) BuyOrderBuyerIndexKey {
+func (this BuyOrderBuyerIndexKey) WithBuyer(buyer []byte) BuyOrderBuyerIndexKey {
 	this.vs = []interface{}{buyer}
 	return this
 }
@@ -239,13 +239,13 @@ func (this buyOrderStore) Delete(ctx context.Context, buyOrder *BuyOrder) error 
 	return this.table.Delete(ctx, buyOrder)
 }
 
-func (this buyOrderStore) Has(ctx context.Context, buy_order_id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, buy_order_id)
+func (this buyOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this buyOrderStore) Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error) {
+func (this buyOrderStore) Get(ctx context.Context, id uint64) (*BuyOrder, error) {
 	var buyOrder BuyOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, buy_order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, id)
 	if !found {
 		return nil, err
 	}

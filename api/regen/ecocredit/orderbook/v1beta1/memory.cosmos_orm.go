@@ -59,41 +59,41 @@ func (this BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey) WithBuyOrderIdSe
 	return this
 }
 
-type BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey struct {
+type BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) id() uint32 {
+func (x BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) id() uint32 {
 	return 1
 }
-func (x BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) values() []interface{} {
+func (x BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) values() []interface{} {
 	return x.vs
 }
-func (x BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) buyOrderSellOrderMatchIndexKey() {
+func (x BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) buyOrderSellOrderMatchIndexKey() {
 }
 
-func (this BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithBidDenomId(bid_denom_id uint32) BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
-	this.vs = []interface{}{bid_denom_id}
+func (this BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithMarketId(market_id uint64) BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
+	this.vs = []interface{}{market_id}
 	return this
 }
 
-func (this BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithBidDenomIdBidPriceComplement(bid_denom_id uint32, bid_price_complement uint64) BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
-	this.vs = []interface{}{bid_denom_id, bid_price_complement}
+func (this BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithMarketIdBidPriceComplement(market_id uint64, bid_price_complement uint64) BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
+	this.vs = []interface{}{market_id, bid_price_complement}
 	return this
 }
 
-func (this BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithBidDenomIdBidPriceComplementBuyOrderId(bid_denom_id uint32, bid_price_complement uint64, buy_order_id uint64) BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
-	this.vs = []interface{}{bid_denom_id, bid_price_complement, buy_order_id}
+func (this BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithMarketIdBidPriceComplementBuyOrderId(market_id uint64, bid_price_complement uint64, buy_order_id uint64) BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
+	this.vs = []interface{}{market_id, bid_price_complement, buy_order_id}
 	return this
 }
 
-func (this BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithBidDenomIdBidPriceComplementBuyOrderIdAskPrice(bid_denom_id uint32, bid_price_complement uint64, buy_order_id uint64, ask_price uint64) BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
-	this.vs = []interface{}{bid_denom_id, bid_price_complement, buy_order_id, ask_price}
+func (this BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithMarketIdBidPriceComplementBuyOrderIdAskPrice(market_id uint64, bid_price_complement uint64, buy_order_id uint64, ask_price uint64) BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
+	this.vs = []interface{}{market_id, bid_price_complement, buy_order_id, ask_price}
 	return this
 }
 
-func (this BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderId(bid_denom_id uint32, bid_price_complement uint64, buy_order_id uint64, ask_price uint64, sell_order_id uint64) BuyOrderSellOrderMatchBidDenomIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
-	this.vs = []interface{}{bid_denom_id, bid_price_complement, buy_order_id, ask_price, sell_order_id}
+func (this BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey) WithMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderId(market_id uint64, bid_price_complement uint64, buy_order_id uint64, ask_price uint64, sell_order_id uint64) BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey {
+	this.vs = []interface{}{market_id, bid_price_complement, buy_order_id, ask_price, sell_order_id}
 	return this
 }
 

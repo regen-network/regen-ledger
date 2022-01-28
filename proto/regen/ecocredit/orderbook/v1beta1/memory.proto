@@ -19,7 +19,7 @@ message BuyOrderSellOrderMatch {
     // this index is what does the magic - it basically sorts our orders for us and more or less does the matching.
     // Basically we iterate over all bid prices within a given denom from high to low. The highest bidding orders always get filled first, and if one bid is the same price as another, the earlier bid wins - since buy order IDs are assigned incrementally we get this for free.
     // Then within a given buy order, we iterate over all the matching sell orders from the lowest to highest ask price. So the highest bids and lowest asks get filled first. If the ask price is the same, then earlier sell orders get filled first (again we get this from the sell order ID which is assigned incrementally).
-    index: { id: 1; fields: "bid_denom_id,bid_price_complement,buy_order_id,ask_price,sell_order_id";
+    index: { id: 1; fields: "market_id,bid_price_complement,buy_order_id,ask_price,sell_order_id";
       //name: "order_book_match"
     }
 
@@ -27,8 +27,8 @@ message BuyOrderSellOrderMatch {
     index: { id: 2, fields: "sell_order_id" }
   };
 
-  // bid_denom_id defines the bid denom being used by the buy and sell orders. Matching always happens within a single bid denom.
-  uint32 bid_denom_id = 1;
+  // market_id defines the market within which this match exists.
+  uint64 market_id = 1;
 
   // buy_order_id is the buy order ID.
   uint64 buy_order_id = 2;

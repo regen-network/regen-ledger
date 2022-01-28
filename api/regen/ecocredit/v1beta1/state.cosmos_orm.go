@@ -603,11 +603,24 @@ func (this BatchInfoBatchDenomIndexKey) WithBatchDenom(batch_denom string) Batch
 	return this
 }
 
+type BatchInfoClassIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchInfoClassIdIndexKey) id() uint32            { return 2 }
+func (x BatchInfoClassIdIndexKey) values() []interface{} { return x.vs }
+func (x BatchInfoClassIdIndexKey) batchInfoIndexKey()    {}
+
+func (this BatchInfoClassIdIndexKey) WithClassId(class_id uint64) BatchInfoClassIdIndexKey {
+	this.vs = []interface{}{class_id}
+	return this
+}
+
 type BatchInfoProjectIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoProjectIdIndexKey) id() uint32            { return 2 }
+func (x BatchInfoProjectIdIndexKey) id() uint32            { return 3 }
 func (x BatchInfoProjectIdIndexKey) values() []interface{} { return x.vs }
 func (x BatchInfoProjectIdIndexKey) batchInfoIndexKey()    {}
 
@@ -620,7 +633,7 @@ type BatchInfoStartDateIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoStartDateIndexKey) id() uint32            { return 3 }
+func (x BatchInfoStartDateIndexKey) id() uint32            { return 4 }
 func (x BatchInfoStartDateIndexKey) values() []interface{} { return x.vs }
 func (x BatchInfoStartDateIndexKey) batchInfoIndexKey()    {}
 

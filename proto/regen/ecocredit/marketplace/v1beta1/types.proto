@@ -52,9 +52,11 @@ enum SelectorType {
   SELECTOR_TYPE_CLASS = 1;
 
   // SELECTOR_TYPE_CLASS is a selector type which matches an uint64 project ID.
+  // Note that the project location criteria is ignored with this selector.
   SELECTOR_TYPE_PROJECT = 2;
 
   // SELECTOR_TYPE_CLASS is a selector type which matches an uint64 credit batch ID.
+  // Note that project location and date criteria are ignored with this selector.
   SELECTOR_TYPE_BATCH = 3;
 }
 

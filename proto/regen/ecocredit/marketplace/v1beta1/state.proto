@@ -11,17 +11,17 @@ import "regen/ecocredit/marketplace/v1beta1/types.proto";
 message SellOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
-        primary_key: {fields: "order_id"}
+        primary_key: {fields: "id"}
         index: {id: 1 fields: "batch_denom"}
-        index: {id: 2 fields: "owner"}
+        index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
     };
 
-    // order_id is the unique ID of sell order.
-    uint64 order_id = 1;
+    // id is the unique ID of sell order.
+    uint64 id = 1;
 
-    // owner is the address of the owner of the credits being sold.
-    string owner = 2;
+    // seller is the address of the owner of the credits being sold.
+    bytes seller = 2;
 
     // batch_denom is the credit batch being sold.
     string batch_denom = 3;
@@ -29,30 +29,34 @@ message SellOrder {
     // quantity is the quantity of credits being sold.
     string quantity = 4;
 
-    // ask_price is the price the seller is asking for each unit of the
+    // market_id is the market in which this sell order exists and specifies
+    // the back denom ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // ask_price is the integer price the seller is asking for each unit of the
     // batch_denom. Each credit unit of the batch will be sold for at least the
     // ask_price or more.
-    cosmos.base.v1beta1.Coin ask_price = 5;
+    cosmos.base.v1beta1.Coin ask_price = 6;
 
     // disable_auto_retire disables auto-retirement of credits which allows a
     // buyer to disable auto-retirement in their buy order enabling them to
     // resell the credits to another buyer.
-    bool disable_auto_retire = 6;
+    bool disable_auto_retire = 7;
 
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
-    google.protobuf.Timestamp expiration = 7;
+    google.protobuf.Timestamp expiration = 9;
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching buy orders.
-    bool maker = 8;
+    bool maker = 10;
 }
 
 // BuyOrder represents the information for a buy order.
 message BuyOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "buy_order_id"}
+        primary_key: {fields: "id"}
         index: {id: 1 fields: "buyer"}
         index: {id: 2 fields: "expiration"}
     };
@@ -72,11 +76,11 @@ message BuyOrder {
         }
     }
 
-    // buy_order_id is the unique ID of buy order.
-    uint64 buy_order_id = 1;
+    // id is the unique ID of buy order.
+    uint64 id = 1;
 
     // buyer is the address that created the buy order
-    string buyer = 2;
+    bytes buyer = 2;
 
     // selection is the buy order selection.
     Selection selection = 3;
@@ -86,31 +90,35 @@ message BuyOrder {
     // unless disable_partial_fill is true.
     string quantity = 4;
 
-    // bid price is the bid price for this buy order. A credit unit will be
+    // market_id is the market in which this sell order exists and specifies
+    // the back denom ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // bid price is the integer bid price for this buy order. A credit unit will be
     // settled at a purchase price that is no more than the bid price. The
     // buy order will fail if the buyer does not have enough funds available
     // to complete the purchase.
-    cosmos.base.v1beta1.Coin bid_price = 5;
+    string bid_price = 6;
 
     // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
     // the credits will not auto-retire and can be resold assuming that the
     // corresponding sell order has auto-retirement disabled. If the sell order
     // hasn't disabled auto-retirement and the buy order tries to disable it,
     // that buy order will fail.
-    bool disable_auto_retire = 6;
+    bool disable_auto_retire = 7;
 
     // disable_partial_fill disables the default behavior of partially filling
     // buy orders if the requested quantity is not available.
-    bool disable_partial_fill = 7;
+    bool disable_partial_fill = 8;
 
     // expiration is the optional timestamp when the buy order expires. When the
     // expiration time is reached, the buy order is removed from state.
-    google.protobuf.Timestamp expiration = 8;
+    google.protobuf.Timestamp expiration = 9;
 
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching sell orders.
-    bool maker = 9;
+    bool maker = 10;
 }
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
