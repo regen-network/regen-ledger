@@ -74,8 +74,7 @@ message ProjectInfo {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
         primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1 fields: "class_id,project_id", unique: true}
-        index: {id: 2 fields: "issuer"}
+        index: {id: 1 fields: "class_id,name", unique: true}
     };
 
     // id is the unique ID of the project
@@ -101,9 +100,9 @@ message BatchInfo {
     option (cosmos.orm.v1alpha1.table) = {
         id: 5,
         primary_key: {fields: "id", auto_increment: true}
-        index: {fields: "batch_denom", unique: true}
-        index: {id: 1 fields: "project_id"}
-        index: {id: 2 fields: "start_date"}
+        index: {id: 1 fields: "batch_denom", unique: true}
+        index: {id: 2 fields: "project_id"}
+        index: {id: 3 fields: "start_date"}
     };
 
     // id is an auto-incrementing integer to succinctly identify the batch
@@ -133,7 +132,7 @@ message BatchInfo {
 message ClassSequence {
     option (cosmos.orm.v1alpha1.table) = {
         id: 6,
-        primary_key: {fields: "class_id"}
+        primary_key: {fields: "credit_type"}
     };
 
     // credit_type is the credit type abbreviation
@@ -198,7 +197,7 @@ message BatchBalance {
 message BatchSupply {
     option (cosmos.orm.v1alpha1.table) = {
         id: 10,
-        primary_key: {fields: "id"}
+        primary_key: {fields: "batch_id"}
     };
 
     // batch_id is the id of the batch
