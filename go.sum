@@ -214,6 +214,7 @@ github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfc
 github.com/cosmos/cosmos-proto v1.0.0-alpha6 h1:N2BvV2AyzGAXCJnvlw1pMzEQ+76tj5FDBrkYQYIDCdU=
 github.com/cosmos/cosmos-proto v1.0.0-alpha6/go.mod h1:msdDWOvfStHLG+Z2y2SJ0dcqimZ2vc8M1MPnZ4jOF7U=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3/go.mod h1:Ht15guGn9F8b0lv8NkjXE9/asAvVUOt2n4gvQ4q5MyU=
+github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 h1:bBglNlra8ZHb4dmbEE8V85ihLA+DkriSm7tcx6x/JWo=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2/go.mod h1:Gi7pzVRnvZ1N16JAXpLADzng0ePoE7YeEHaULSFB2Ts=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.4/go.mod h1:vNidk33WK2CGWoMl2C3QMyauN/1kxtoz99C6vj94Y1Q=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
