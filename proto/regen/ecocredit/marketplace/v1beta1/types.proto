@@ -14,62 +14,55 @@ message Filter {
 
   // Criteria is a simple filter criteria for matching a credit batch.
   message Criteria {
-    // or specifies the primary selector criteria. Every criteria
-    // must specify at least one selector and matching credit batches must
-    // match at least one selector.
-    repeated Selector or = 1;
-
-    // project_location can be specified in three levels of granularity:
-    // country, sub-national-code, or postal code. If just country is given,
-    // for instance "US" then any credits in the "US" will be matched even
-    // their project location is more specific, ex. "US-NY 12345". If
-    // a country, sub-national-code and postal code are all provided then
-    // only projects in that postal code will match.
-    string project_location = 2;
-
-    // start_date is the beginning of the period during which a credit batch
-    // was quantified and verified. If it is empty then there is no start date
-    // limit.
-    google.protobuf.Timestamp min_start_date = 3;
-
-    // max_end_date is the end of the period during which a credit batch was
-    // quantified and verified. If it is empty then there is no end date
-    // limit.
-    google.protobuf.Timestamp max_end_date = 4;
+    // Valid selector types are all
+    // attributes which are assigned to credit batches by some authority such
+    // as the credit issuer or a curator. Requiring some authority-based selector
+    // ensures that buy orders cannot just match some randomly issued credit
+    // based on location and dates.
+    oneof selector {
+      ClassSelector class_selector = 1;
+      ProjectSelector project_selector = 2;
+      BatchSelector batch_selector = 3;
+    }
   }
 }
 
-// SelectorType specifies a selector type. Valid selector types are all
-// attributes which are assigned to credit batches by some authority such
-// as the credit issuer or a curator. Requiring some authority-based selector
-// ensures that buy orders cannot just match some randomly issued credit
-// based on location and dates.
-enum SelectorType {
-  // SELECTOR_TYPE_UNSPECIFIED is the SelectorType zero value.
-  SELECTOR_TYPE_UNSPECIFIED = 0;
+message ClassSelector {
+  uint64 class_id = 1;
 
-  // SELECTOR_TYPE_CLASS is a selector type which matches an uint64 credit class ID.
-  SELECTOR_TYPE_CLASS = 1;
+  // project_location can be specified in three levels of granularity:
+  // country, sub-national-code, or postal code. If just country is given,
+  // for instance "US" then any credits in the "US" will be matched even
+  // their project location is more specific, ex. "US-NY 12345". If
+  // a country, sub-national-code and postal code are all provided then
+  // only projects in that postal code will match.
+  string project_location = 2;
 
-  // SELECTOR_TYPE_CLASS is a selector type which matches an uint64 project ID.
-  // Note that the project location criteria is ignored with this selector.
-  SELECTOR_TYPE_PROJECT = 2;
+  // start_date is the beginning of the period during which a credit batch
+  // was quantified and verified. If it is empty then there is no start date
+  // limit.
+  google.protobuf.Timestamp min_start_date = 3;
 
-  // SELECTOR_TYPE_CLASS is a selector type which matches an uint64 credit batch ID.
-  // Note that project location and date criteria are ignored with this selector.
-  SELECTOR_TYPE_BATCH = 3;
+  // max_end_date is the end of the period during which a credit batch was
+  // quantified and verified. If it is empty then there is no end date
+  // limit.
+  google.protobuf.Timestamp max_end_date = 4;
 }
 
-// Selector is the primary authority-based component of filter criteria.
-message Selector {
+message ProjectSelector {
+  uint64 project_id = 1;
 
-  // type is the selector type
-  SelectorType selector_type = 1;
+  // start_date is the beginning of the period during which a credit batch
+  // was quantified and verified. If it is empty then there is no start date
+  // limit.
+  google.protobuf.Timestamp min_start_date = 2;
 
-  // value is the oneof for selector values and varies depending on type.
-  oneof value {
-    // uint64_value is specified for selector types with an uint64 value.
-    uint64 uint64_value = 2;
-  }
+  // max_end_date is the end of the period during which a credit batch was
+  // quantified and verified. If it is empty then there is no end date
+  // limit.
+  google.protobuf.Timestamp max_end_date = 3;
 }
 
+message BatchSelector {
+  uint64 batch_id = 1;
+}

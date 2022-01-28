@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -108,53 +110,131 @@ type buyOrderMatcher struct {
 }
 
 func (o buyOrderMatcher) insertBuyOrderFiltered() error {
+	n := len(o.selection.Filter.Or)
+	if n > MaxNumberSelectors {
+		return ecocredit.ErrInvalidBuyOrder.Wrapf("too many selectors, got %d, the limit is %d", n, MaxNumberSelectors)
+	}
 	var numSelectors int
 	for _, criteria := range o.selection.Filter.Or {
-		for _, selector := range criteria.Or {
-			numSelectors++
-			if numSelectors > MaxNumberSelectors {
-				return ecocredit.ErrInvalidBuyOrder.Wrapf("too many selectors, the limit is %d", MaxNumberSelectors)
-			}
+		numSelectors++
+		if numSelectors > MaxNumberSelectors {
+		}
 
-			err := o.processSelector(criteria, selector)
-			if err != nil {
-				return err
-			}
+		err := o.processSelector(criteria)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func (o buyOrderMatcher) processSelector(
-	criteria *marketplacev1beta1.Filter_Criteria,
-	selector *marketplacev1beta1.Selector,
-) error {
-	selectorType := selector.SelectorType
-	switch selectorType {
-	case marketplacev1beta1.SelectorType_SELECTOR_TYPE_CLASS,
-		marketplacev1beta1.SelectorType_SELECTOR_TYPE_PROJECT,
-		marketplacev1beta1.SelectorType_SELECTOR_TYPE_BATCH:
-		value, ok := selector.Value.(*marketplacev1beta1.Selector_Uint64Value)
-		if !ok {
-			return ecocredit.ErrInvalidBuyOrder.Wrapf("expected uint64_value for %s", selectorType)
-		}
-		uint64Value := value.Uint64Value
-		err := o.memStore.UInt64SelectorBuyOrderStore().Insert(o.ctx, &orderbookv1beta1.UInt64SelectorBuyOrder{
+func (o buyOrderMatcher) processSelector(criteria *marketplacev1beta1.Filter_Criteria) error {
+	switch selector := criteria.Selector.(type) {
+	case *marketplacev1beta1.Filter_Criteria_ClassSelector:
+		return o.matchByClassIdSelector(selector.ClassSelector)
+	case *marketplacev1beta1.Filter_Criteria_ProjectSelector:
+		return o.matchByProjectIdSelector(selector.ProjectSelector)
+	case *marketplacev1beta1.Filter_Criteria_BatchSelector:
+		return o.matchByBatchIdSelector(selector.BatchSelector.BatchId)
+	default:
+		return ecocredit.ErrInvalidBuyOrder.Wrapf("unknown selector type %s", selector)
+	}
+}
+
+func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.ClassSelector) error {
+	err := o.memStore.BuyOrderClassSelectorStore().Insert(o.ctx,
+		&orderbookv1beta1.BuyOrderClassSelector{
 			BuyOrderId:      o.buyOrder.Id,
-			SelectorType:    selectorType,
-			Value:           uint64Value,
-			ProjectLocation: criteria.ProjectLocation,
-			MinStartDate:    criteria.MinStartDate,
-			MaxEndDate:      criteria.MaxEndDate,
-		})
+			ClassId:         selector.ClassId,
+			ProjectLocation: selector.ProjectLocation,
+			MinStartDate:    selector.MinStartDate,
+			MaxEndDate:      selector.MaxEndDate,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	it, err := o.ecocreditStore.BatchInfoStore().List(
+		o.ctx,
+		ecocreditv1beta1.BatchInfoClassIdIndexKey{}.WithClassId(selector.ClassId),
+	)
+	if err != nil {
+		return err
+	}
+
+	for it.Next() {
+		batch, err := it.Value()
 		if err != nil {
 			return err
 		}
 
-		return o.matchByUInt64Selector(criteria, selector, uint64Value)
-	default:
-		return ecocredit.ErrInvalidBuyOrder.Wrapf("unknown selector type %s", selectorType)
+		if !matchLocation(batch, selector.ProjectLocation) {
+			continue
+		}
+
+		if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
+			continue
+		}
+
+		err = o.onMatch(batch)
+		if err != nil {
+			return err
+		}
 	}
+	return nil
+}
+
+func (o buyOrderMatcher) matchByProjectIdSelector(selector *marketplacev1beta1.ProjectSelector) error {
+	err := o.memStore.BuyOrderProjectSelectorStore().Insert(o.ctx,
+		&orderbookv1beta1.BuyOrderProjectSelector{
+			BuyOrderId:   o.buyOrder.Id,
+			ProjectId:    selector.ProjectId,
+			MinStartDate: selector.MinStartDate,
+			MaxEndDate:   selector.MaxEndDate,
+		},
+	)
+	if err != nil {
+		return err
+	}
+
+	it, err := o.ecocreditStore.BatchInfoStore().List(
+		o.ctx,
+		ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(selector.ProjectId),
+	)
+	if err != nil {
+		return err
+	}
+
+	for it.Next() {
+		batch, err := it.Value()
+		if err != nil {
+			return err
+		}
+
+		if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
+			continue
+		}
+
+		err = o.onMatch(batch)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
+	batch, err := o.ecocreditStore.BatchInfoStore().Get(o.ctx, batchId)
+	if err != nil {
+		return err
+	}
+
+	if batch == nil {
+		return ecocredit.ErrInvalidBuyOrder.Wrapf("batch %d not found", batchId)
+	}
+
+	return o.onMatch(batch)
 }
 
 func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
@@ -203,105 +283,20 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 	return nil
 }
 
-func (o buyOrderMatcher) matchByUInt64Selector(criteria *marketplacev1beta1.Filter_Criteria, selector *marketplacev1beta1.Selector, value uint64) error {
-	switch selector.SelectorType {
-	case marketplacev1beta1.SelectorType_SELECTOR_TYPE_CLASS:
-		return o.matchByClassIdSelector(criteria, value)
-	case marketplacev1beta1.SelectorType_SELECTOR_TYPE_PROJECT:
-		return o.matchByProjectIdSelector(criteria, value)
-	default:
-		panic("TODO")
-	}
-}
-
-func (o buyOrderMatcher) matchByClassIdSelector(criteria *marketplacev1beta1.Filter_Criteria, classId uint64) error {
-	it, err := o.ecocreditStore.BatchInfoStore().List(
-		o.ctx,
-		ecocreditv1beta1.BatchInfoClassIdIndexKey{}.WithClassId(classId),
-	)
-	if err != nil {
-		return err
-	}
-
-	for it.Next() {
-		batch, err := it.Value()
-		if err != nil {
-			return err
-		}
-
-		if !matchLocation(batch, criteria) {
-			continue
-		}
-
-		if !matchDates(batch, criteria) {
-			continue
-		}
-
-		err = o.onMatch(batch)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (o buyOrderMatcher) matchByProjectIdSelector(criteria *marketplacev1beta1.Filter_Criteria, projectId uint64) error {
-	it, err := o.ecocreditStore.BatchInfoStore().List(
-		o.ctx,
-		ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(projectId),
-	)
-	if err != nil {
-		return err
-	}
-
-	for it.Next() {
-		batch, err := it.Value()
-		if err != nil {
-			return err
-		}
-
-		if criteria.ProjectLocation != batch.ProjectLocation {
-			return ecocredit.ErrInvalidBuyOrder.Wrapf("project ID %d selected but criteria location %s != %s",
-				projectId, criteria.ProjectLocation, batch.ProjectId,
-			)
-		}
-
-		if !matchDates(batch, criteria) {
-			continue
-		}
-
-		err = o.onMatch(batch)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
-	batch, err := o.ecocreditStore.BatchInfoStore().Get(o.ctx, batchId)
-	if err != nil {
-		return err
-	}
-
-	panic("TODO")
-}
-
-func matchDates(batch *ecocreditv1beta1.BatchInfo, criteria *marketplacev1beta1.Filter_Criteria) bool {
-	if criteria.MinStartDate != nil && batch.StartDate.AsTime().Before(criteria.MinStartDate.AsTime()) {
+func matchDates(batch *ecocreditv1beta1.BatchInfo, minStart, maxEnd *timestamppb.Timestamp) bool {
+	if minStart != nil && batch.StartDate.AsTime().Before(minStart.AsTime()) {
 		return false
 	}
 
-	if criteria.MaxEndDate != nil && batch.EndDate.AsTime().After(criteria.MaxEndDate.AsTime()) {
+	if maxEnd != nil && batch.EndDate.AsTime().After(maxEnd.AsTime()) {
 		return false
 	}
 
 	return true
 }
 
-func matchLocation(batch *ecocreditv1beta1.BatchInfo, criteria *marketplacev1beta1.Filter_Criteria) bool {
+func matchLocation(batch *ecocreditv1beta1.BatchInfo, filter string) bool {
 	target := batch.ProjectLocation
-	filter := criteria.ProjectLocation
 
 	n := len(filter)
 

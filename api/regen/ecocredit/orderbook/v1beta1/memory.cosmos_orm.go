@@ -8,7 +8,6 @@ import (
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	v1beta1 "github.com/regen-ledger/regen-network/api/regen/ecocredit/marketplace/v1beta1"
 )
 
 type BuyOrderSellOrderMatchStore interface {
@@ -167,154 +166,266 @@ func NewBuyOrderSellOrderMatchStore(db ormdb.ModuleDB) (BuyOrderSellOrderMatchSt
 	return buyOrderSellOrderMatchStore{table}, nil
 }
 
-type UInt64SelectorBuyOrderStore interface {
-	Insert(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
-	Update(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
-	Save(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
-	Delete(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
-	Has(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (found bool, err error)
-	Get(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (*UInt64SelectorBuyOrder, error)
-	List(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error)
-	ListRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error)
+type BuyOrderClassSelectorStore interface {
+	Insert(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
+	Update(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
+	Save(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
+	Delete(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
+	Has(ctx context.Context, buy_order_id uint64, class_id uint64) (found bool, err error)
+	Get(ctx context.Context, buy_order_id uint64, class_id uint64) (*BuyOrderClassSelector, error)
+	List(ctx context.Context, prefixKey BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error)
+	ListRange(ctx context.Context, from, to BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error)
 
 	doNotImplement()
 }
 
-type UInt64SelectorBuyOrderIterator struct {
+type BuyOrderClassSelectorIterator struct {
 	ormtable.Iterator
 }
 
-func (i UInt64SelectorBuyOrderIterator) Value() (*UInt64SelectorBuyOrder, error) {
-	var uInt64SelectorBuyOrder UInt64SelectorBuyOrder
-	err := i.UnmarshalMessage(&uInt64SelectorBuyOrder)
-	return &uInt64SelectorBuyOrder, err
+func (i BuyOrderClassSelectorIterator) Value() (*BuyOrderClassSelector, error) {
+	var buyOrderClassSelector BuyOrderClassSelector
+	err := i.UnmarshalMessage(&buyOrderClassSelector)
+	return &buyOrderClassSelector, err
 }
 
-type UInt64SelectorBuyOrderIndexKey interface {
+type BuyOrderClassSelectorIndexKey interface {
 	id() uint32
 	values() []interface{}
-	uInt64SelectorBuyOrderIndexKey()
+	buyOrderClassSelectorIndexKey()
 }
 
 // primary key starting index..
-type UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey struct {
+type BuyOrderClassSelectorBuyOrderIdClassIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) id() uint32 { return 2 }
-func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) values() []interface{} {
-	return x.vs
-}
-func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) uInt64SelectorBuyOrderIndexKey() {}
+func (x BuyOrderClassSelectorBuyOrderIdClassIdIndexKey) id() uint32                     { return 2 }
+func (x BuyOrderClassSelectorBuyOrderIdClassIdIndexKey) values() []interface{}          { return x.vs }
+func (x BuyOrderClassSelectorBuyOrderIdClassIdIndexKey) buyOrderClassSelectorIndexKey() {}
 
-func (this UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) WithBuyOrderId(buy_order_id uint64) UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey {
+func (this BuyOrderClassSelectorBuyOrderIdClassIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderClassSelectorBuyOrderIdClassIdIndexKey {
 	this.vs = []interface{}{buy_order_id}
 	return this
 }
 
-func (this UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) WithBuyOrderIdSelectorType(buy_order_id uint64, selector_type v1beta1.SelectorType) UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey {
-	this.vs = []interface{}{buy_order_id, selector_type}
+func (this BuyOrderClassSelectorBuyOrderIdClassIdIndexKey) WithBuyOrderIdClassId(buy_order_id uint64, class_id uint64) BuyOrderClassSelectorBuyOrderIdClassIdIndexKey {
+	this.vs = []interface{}{buy_order_id, class_id}
 	return this
 }
 
-func (this UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) WithBuyOrderIdSelectorTypeValue(buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey {
-	this.vs = []interface{}{buy_order_id, selector_type, value}
-	return this
-}
-
-type UInt64SelectorBuyOrderSelectorTypeValueIndexKey struct {
+type BuyOrderClassSelectorClassIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x UInt64SelectorBuyOrderSelectorTypeValueIndexKey) id() uint32                      { return 1 }
-func (x UInt64SelectorBuyOrderSelectorTypeValueIndexKey) values() []interface{}           { return x.vs }
-func (x UInt64SelectorBuyOrderSelectorTypeValueIndexKey) uInt64SelectorBuyOrderIndexKey() {}
+func (x BuyOrderClassSelectorClassIdIndexKey) id() uint32                     { return 1 }
+func (x BuyOrderClassSelectorClassIdIndexKey) values() []interface{}          { return x.vs }
+func (x BuyOrderClassSelectorClassIdIndexKey) buyOrderClassSelectorIndexKey() {}
 
-func (this UInt64SelectorBuyOrderSelectorTypeValueIndexKey) WithSelectorType(selector_type v1beta1.SelectorType) UInt64SelectorBuyOrderSelectorTypeValueIndexKey {
-	this.vs = []interface{}{selector_type}
+func (this BuyOrderClassSelectorClassIdIndexKey) WithClassId(class_id uint64) BuyOrderClassSelectorClassIdIndexKey {
+	this.vs = []interface{}{class_id}
 	return this
 }
 
-func (this UInt64SelectorBuyOrderSelectorTypeValueIndexKey) WithSelectorTypeValue(selector_type v1beta1.SelectorType, value uint64) UInt64SelectorBuyOrderSelectorTypeValueIndexKey {
-	this.vs = []interface{}{selector_type, value}
-	return this
-}
-
-type uInt64SelectorBuyOrderStore struct {
+type buyOrderClassSelectorStore struct {
 	table ormtable.Table
 }
 
-func (this uInt64SelectorBuyOrderStore) Insert(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error {
-	return this.table.Insert(ctx, uInt64SelectorBuyOrder)
+func (this buyOrderClassSelectorStore) Insert(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error {
+	return this.table.Insert(ctx, buyOrderClassSelector)
 }
 
-func (this uInt64SelectorBuyOrderStore) Update(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error {
-	return this.table.Update(ctx, uInt64SelectorBuyOrder)
+func (this buyOrderClassSelectorStore) Update(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error {
+	return this.table.Update(ctx, buyOrderClassSelector)
 }
 
-func (this uInt64SelectorBuyOrderStore) Save(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error {
-	return this.table.Save(ctx, uInt64SelectorBuyOrder)
+func (this buyOrderClassSelectorStore) Save(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error {
+	return this.table.Save(ctx, buyOrderClassSelector)
 }
 
-func (this uInt64SelectorBuyOrderStore) Delete(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error {
-	return this.table.Delete(ctx, uInt64SelectorBuyOrder)
+func (this buyOrderClassSelectorStore) Delete(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error {
+	return this.table.Delete(ctx, buyOrderClassSelector)
 }
 
-func (this uInt64SelectorBuyOrderStore) Has(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, buy_order_id, selector_type, value)
+func (this buyOrderClassSelectorStore) Has(ctx context.Context, buy_order_id uint64, class_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, buy_order_id, class_id)
 }
 
-func (this uInt64SelectorBuyOrderStore) Get(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (*UInt64SelectorBuyOrder, error) {
-	var uInt64SelectorBuyOrder UInt64SelectorBuyOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &uInt64SelectorBuyOrder, buy_order_id, selector_type, value)
+func (this buyOrderClassSelectorStore) Get(ctx context.Context, buy_order_id uint64, class_id uint64) (*BuyOrderClassSelector, error) {
+	var buyOrderClassSelector BuyOrderClassSelector
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderClassSelector, buy_order_id, class_id)
 	if !found {
 		return nil, err
 	}
-	return &uInt64SelectorBuyOrder, err
+	return &buyOrderClassSelector, err
 }
 
-func (this uInt64SelectorBuyOrderStore) List(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
+func (this buyOrderClassSelectorStore) List(ctx context.Context, prefixKey BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return UInt64SelectorBuyOrderIterator{it}, err
+	return BuyOrderClassSelectorIterator{it}, err
 }
 
-func (this uInt64SelectorBuyOrderStore) ListRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
+func (this buyOrderClassSelectorStore) ListRange(ctx context.Context, from, to BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error) {
 	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
-	return UInt64SelectorBuyOrderIterator{it}, err
+	return BuyOrderClassSelectorIterator{it}, err
 }
 
-func (this uInt64SelectorBuyOrderStore) doNotImplement() {}
+func (this buyOrderClassSelectorStore) doNotImplement() {}
 
-var _ UInt64SelectorBuyOrderStore = uInt64SelectorBuyOrderStore{}
+var _ BuyOrderClassSelectorStore = buyOrderClassSelectorStore{}
 
-func NewUInt64SelectorBuyOrderStore(db ormdb.ModuleDB) (UInt64SelectorBuyOrderStore, error) {
-	table := db.GetTable(&UInt64SelectorBuyOrder{})
+func NewBuyOrderClassSelectorStore(db ormdb.ModuleDB) (BuyOrderClassSelectorStore, error) {
+	table := db.GetTable(&BuyOrderClassSelector{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&UInt64SelectorBuyOrder{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrderClassSelector{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return uInt64SelectorBuyOrderStore{table}, nil
+	return buyOrderClassSelectorStore{table}, nil
+}
+
+type BuyOrderProjectSelectorStore interface {
+	Insert(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
+	Update(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
+	Save(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
+	Delete(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
+	Has(ctx context.Context, buy_order_id uint64, project_id uint64) (found bool, err error)
+	Get(ctx context.Context, buy_order_id uint64, project_id uint64) (*BuyOrderProjectSelector, error)
+	List(ctx context.Context, prefixKey BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error)
+	ListRange(ctx context.Context, from, to BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error)
+
+	doNotImplement()
+}
+
+type BuyOrderProjectSelectorIterator struct {
+	ormtable.Iterator
+}
+
+func (i BuyOrderProjectSelectorIterator) Value() (*BuyOrderProjectSelector, error) {
+	var buyOrderProjectSelector BuyOrderProjectSelector
+	err := i.UnmarshalMessage(&buyOrderProjectSelector)
+	return &buyOrderProjectSelector, err
+}
+
+type BuyOrderProjectSelectorIndexKey interface {
+	id() uint32
+	values() []interface{}
+	buyOrderProjectSelectorIndexKey()
+}
+
+// primary key starting index..
+type BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey) id() uint32                       { return 2 }
+func (x BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey) values() []interface{}            { return x.vs }
+func (x BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey) buyOrderProjectSelectorIndexKey() {}
+
+func (this BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey {
+	this.vs = []interface{}{buy_order_id}
+	return this
+}
+
+func (this BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey) WithBuyOrderIdProjectId(buy_order_id uint64, project_id uint64) BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey {
+	this.vs = []interface{}{buy_order_id, project_id}
+	return this
+}
+
+type BuyOrderProjectSelectorProjectIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BuyOrderProjectSelectorProjectIdIndexKey) id() uint32                       { return 1 }
+func (x BuyOrderProjectSelectorProjectIdIndexKey) values() []interface{}            { return x.vs }
+func (x BuyOrderProjectSelectorProjectIdIndexKey) buyOrderProjectSelectorIndexKey() {}
+
+func (this BuyOrderProjectSelectorProjectIdIndexKey) WithProjectId(project_id uint64) BuyOrderProjectSelectorProjectIdIndexKey {
+	this.vs = []interface{}{project_id}
+	return this
+}
+
+type buyOrderProjectSelectorStore struct {
+	table ormtable.Table
+}
+
+func (this buyOrderProjectSelectorStore) Insert(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error {
+	return this.table.Insert(ctx, buyOrderProjectSelector)
+}
+
+func (this buyOrderProjectSelectorStore) Update(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error {
+	return this.table.Update(ctx, buyOrderProjectSelector)
+}
+
+func (this buyOrderProjectSelectorStore) Save(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error {
+	return this.table.Save(ctx, buyOrderProjectSelector)
+}
+
+func (this buyOrderProjectSelectorStore) Delete(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error {
+	return this.table.Delete(ctx, buyOrderProjectSelector)
+}
+
+func (this buyOrderProjectSelectorStore) Has(ctx context.Context, buy_order_id uint64, project_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, buy_order_id, project_id)
+}
+
+func (this buyOrderProjectSelectorStore) Get(ctx context.Context, buy_order_id uint64, project_id uint64) (*BuyOrderProjectSelector, error) {
+	var buyOrderProjectSelector BuyOrderProjectSelector
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderProjectSelector, buy_order_id, project_id)
+	if !found {
+		return nil, err
+	}
+	return &buyOrderProjectSelector, err
+}
+
+func (this buyOrderProjectSelectorStore) List(ctx context.Context, prefixKey BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error) {
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	return BuyOrderProjectSelectorIterator{it}, err
+}
+
+func (this buyOrderProjectSelectorStore) ListRange(ctx context.Context, from, to BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return BuyOrderProjectSelectorIterator{it}, err
+}
+
+func (this buyOrderProjectSelectorStore) doNotImplement() {}
+
+var _ BuyOrderProjectSelectorStore = buyOrderProjectSelectorStore{}
+
+func NewBuyOrderProjectSelectorStore(db ormdb.ModuleDB) (BuyOrderProjectSelectorStore, error) {
+	table := db.GetTable(&BuyOrderProjectSelector{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrderProjectSelector{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return buyOrderProjectSelectorStore{table}, nil
 }
 
 type MemoryStore interface {
 	BuyOrderSellOrderMatchStore() BuyOrderSellOrderMatchStore
-	UInt64SelectorBuyOrderStore() UInt64SelectorBuyOrderStore
+	BuyOrderClassSelectorStore() BuyOrderClassSelectorStore
+	BuyOrderProjectSelectorStore() BuyOrderProjectSelectorStore
 
 	doNotImplement()
 }
 
 type memoryStore struct {
-	buyOrderSellOrderMatch BuyOrderSellOrderMatchStore
-	uInt64SelectorBuyOrder UInt64SelectorBuyOrderStore
+	buyOrderSellOrderMatch  BuyOrderSellOrderMatchStore
+	buyOrderClassSelector   BuyOrderClassSelectorStore
+	buyOrderProjectSelector BuyOrderProjectSelectorStore
 }
 
 func (x memoryStore) BuyOrderSellOrderMatchStore() BuyOrderSellOrderMatchStore {
 	return x.buyOrderSellOrderMatch
 }
 
-func (x memoryStore) UInt64SelectorBuyOrderStore() UInt64SelectorBuyOrderStore {
-	return x.uInt64SelectorBuyOrder
+func (x memoryStore) BuyOrderClassSelectorStore() BuyOrderClassSelectorStore {
+	return x.buyOrderClassSelector
+}
+
+func (x memoryStore) BuyOrderProjectSelectorStore() BuyOrderProjectSelectorStore {
+	return x.buyOrderProjectSelector
 }
 
 func (memoryStore) doNotImplement() {}
@@ -327,13 +438,19 @@ func NewMemoryStore(db ormdb.ModuleDB) (MemoryStore, error) {
 		return nil, err
 	}
 
-	uInt64SelectorBuyOrderStore, err := NewUInt64SelectorBuyOrderStore(db)
+	buyOrderClassSelectorStore, err := NewBuyOrderClassSelectorStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	buyOrderProjectSelectorStore, err := NewBuyOrderProjectSelectorStore(db)
 	if err != nil {
 		return nil, err
 	}
 
 	return memoryStore{
 		buyOrderSellOrderMatchStore,
-		uInt64SelectorBuyOrderStore,
+		buyOrderClassSelectorStore,
+		buyOrderProjectSelectorStore,
 	}, nil
 }

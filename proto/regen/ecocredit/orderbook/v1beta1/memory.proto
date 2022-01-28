@@ -43,31 +43,43 @@ message BuyOrderSellOrderMatch {
   fixed64 ask_price = 5;
 }
 
-// UInt64SelectorBuyOrder indexes a buy order against uint64 selectors in its criteria.
-// For example, for a buy order with a selector for a credit class, should insert
-/// an entry with type class.
-message UInt64SelectorBuyOrder {
+message BuyOrderClassSelector {
   option (cosmos.orm.v1alpha1.table) = {
     id: 2
-    primary_key: { fields: "buy_order_id,selector_type,value" }
-    index: {id: 1, fields: "selector_type,value"}
+    primary_key: { fields: "buy_order_id,class_id" }
+    index: {id: 1, fields: "class_id"}
   };
 
   // buy_order_id is the buy order ID.
   uint64 buy_order_id = 1;
 
-  // type is the selector type.
-  regen.ecocredit.marketplace.v1beta1.SelectorType selector_type = 2;
-
-  // value is the uint64 selector value.
-  uint64 value = 3;
+  uint64 class_id = 2;
 
   // project_location is the project location in the selector's criteria.
-  string project_location = 4;
+  string project_location = 3;
 
   // min_start_date is the minimum start date in the selector's criteria.
-  google.protobuf.Timestamp min_start_date = 5;
+  google.protobuf.Timestamp min_start_date = 4;
 
   // max_end_date is the maximum end date in the selector's criteria.
-  google.protobuf.Timestamp max_end_date = 6;
+  google.protobuf.Timestamp max_end_date = 5;
+}
+
+message BuyOrderProjectSelector {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: { fields: "buy_order_id,project_id" }
+    index: {id: 1, fields: "project_id"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  uint64 project_id = 2;
+
+  // min_start_date is the minimum start date in the selector's criteria.
+  google.protobuf.Timestamp min_start_date = 3;
+
+  // max_end_date is the maximum end date in the selector's criteria.
+  google.protobuf.Timestamp max_end_date = 4;
 }
