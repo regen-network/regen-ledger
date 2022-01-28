@@ -59,7 +59,7 @@ func setCustomMaccPerms() map[string][]string {
 	}
 }
 
-func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec,
+func (app *RegenApp) setCustomKeepers(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec,
 	govRouter govtypes.Router, homePath string, appOpts servertypes.AppOptions,
 	wasmOpts []wasm.Option) {
 	wasmDir := filepath.Join(homePath, "wasm")

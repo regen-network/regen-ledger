@@ -74,7 +74,7 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string,
+func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string,
 	_ servertypes.AppOptions,
 	_ []wasm.Option) {
 }

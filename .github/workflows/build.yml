@@ -10,7 +10,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
       matrix:
         envs: ["stable-build", "experimental-build"]
     steps:
@@ -27,4 +26,4 @@ jobs:
         run: EXPERIMENTAL=true make build
       - name: stable build
         if: matrix.envs == 'stable-build'
-        run: EXPERIMENTAL=false make build
+        run: setCustomKeeprsmake build
