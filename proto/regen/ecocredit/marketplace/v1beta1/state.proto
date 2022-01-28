@@ -2,13 +2,13 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1beta1;
 
+import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
 import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
 // SellOrder represents the information for a sell order.
 message SellOrder {
-
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
         primary_key: {fields: "order_id"}
@@ -42,11 +42,14 @@ message SellOrder {
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp expiration = 7;
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching buy orders.
+    bool maker = 8;
 }
 
 // BuyOrder represents the information for a buy order.
 message BuyOrder {
-
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
         primary_key: {fields: "buy_order_id"}
@@ -64,11 +67,8 @@ message BuyOrder {
             // is placed directly against a specific sell order.
             uint64 sell_order_id = 1;
 
-            // TODO: once we have filters defined for baskets, we can enable filtered
-            // buy orders which will involve full double-sided batch order matching
-            //
-            // filter selects credits to buy based upon the specified filter criteria.
-            // Filter filter = 2;
+             // filter selects credits to buy based upon the specified filter criteria.
+             Filter filter = 2;
         }
     }
 
@@ -106,24 +106,87 @@ message BuyOrder {
     // expiration is the optional timestamp when the buy order expires. When the
     // expiration time is reached, the buy order is removed from state.
     google.protobuf.Timestamp expiration = 8;
+
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching sell orders.
+    bool maker = 9;
 }
 
-// AskDenom represents the information for an ask denom.
-message AskDenom {
-
+// AllowedDenom represents the information for an allowed ask/bid denom.
+message AllowedDenom {
     option (cosmos.orm.v1alpha1.table) = {
-        id: 3,
-        primary_key: {fields: "denom"}
-        index: {id: 1 fields: "display_denom"}
+        id: 3
+        primary_key: {fields: "bank_denom"}
+        index: {id: 1 fields: "display_denom", unique: true}
     };
 
-    // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-    string denom = 1;
+    // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+    string bank_denom = 1;
 
-    // display_denom is the denom to display to the user and is informational
+    // display_denom is the denom to display to the user and is informational.
+    // Because the denom is likely an IBC denom, this should be chosen by
+    // governance to represent the consensus trusted name of the denom.
     string display_denom = 2;
 
     // exponent is the exponent that relates the denom to the display_denom and is
     // informational
     uint32 exponent = 3;
+}
+
+// Market describes a distinctly processed market between a credit type and
+// allowed bank denom. Each market has its own precision in the order book
+// and is processed independently of other markets. Governance must enable
+// markets one by one. Every additional enabled market potentially adds more
+// processing overhead to the blockchain and potentially weakens liquidity in
+// competing markets. For instance, enabling side by side USD/Carbon and
+// EUR/Carbon markets may have the end result that each market individually has
+// less liquidity and longer settlement times. Such decisions should be taken
+// with care.
+message Market {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 4
+        primary_key: {fields: "id"}
+        index: {id: 1 fields: "credit_type,bank_denom", unique: true}
+    };
+
+    // id is the unique ID of the market.
+    uint64 id = 1;
+
+    // credit_type is the abbreviation of the credit type.
+    string credit_type = 2;
+
+    // bank_denom is an allowed bank denom.
+    string bank_denom = 3;
+
+    // precision_modifier is an optional modifier used to convert arbitrary
+    // precision integer bank amounts to uint64 values used for sorting in the
+    // order book. Given an arbitrary precision integer x, its uint64 conversion
+    // will be x / 10^precision_modifier using round half away from zero
+    // rounding.
+    //
+    // uint64 values range from 0 to 1,8446,744,073,709,551,615.
+    // This allows for a full 18 digits of precision. In most real world cases,
+    // a precision modifier of 0 (meaning no conversion) is probably sufficient.
+    //
+    // Consider a USD stable coin with 6 decimal digits of precision. A credit
+    // would need to be worth over 1 trillion USD for a non-zero precision_modifier
+    // to be needed.
+    //
+    // precision_modifier is provided to accomodate cases where the bank denom
+    // has either a huge precision (such as 18 decimal digits on its own) or
+    // extreme hyper-inflationary scenarios.
+    //
+    // In cases where there is a non-zero precision_modifier, bids and asks
+    // which are rounded to the same number will be ordered equivalently and
+    // differentiated only by time priority. The precision integer amount in the
+    // order will still be used in settlement.
+    //
+    // In cases where an arbitrary precision integer overflows its conversion to
+    // uint64, the order fill fail and the market will eventually become stuck
+    // if prices are in this region. Governance should intervene at this
+    // point to change the precision_modifier to a reasonable value to re-enable
+    // the market. When precision_modifier changes, all active orders in the order
+    // book will be updated to reflect this.
+    uint32 precision_modifier = 4;
 }
