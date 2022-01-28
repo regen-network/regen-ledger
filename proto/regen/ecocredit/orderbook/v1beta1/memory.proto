@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package regen.ecocredit.orderbook.v1beta1;
+
+import "google/protobuf/timestamp.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+import "regen/ecocredit/marketplace/v1beta1/types.proto";
+
+// BuyOrderSellOrderMatch defines the data the FIFO/price-time-priority matching
+// algorithm used to actually match buy and sell orders.
+message BuyOrderSellOrderMatch {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1
+
+    // the primary key of the table is simply the buy_order_id,sell_order_id pair as these pairs are unique
+    primary_key: { fields: "buy_order_id,sell_order_id" }
+
+    // Algorithm details:
+    // this index is what does the magic - it basically sorts our orders for us and more or less does the matching.
+    // Basically we iterate over all bid prices within a given denom from high to low. The highest bidding orders always get filled first, and if one bid is the same price as another, the earlier bid wins - since buy order IDs are assigned incrementally we get this for free.
+    // Then within a given buy order, we iterate over all the matching sell orders from the lowest to highest ask price. So the highest bids and lowest asks get filled first. If the ask price is the same, then earlier sell orders get filled first (again we get this from the sell order ID which is assigned incrementally).
+    index: { id: 1; fields: "bid_denom_id,bid_price_complement,buy_order_id,ask_price,sell_order_id";
+      //name: "order_book_match"
+    }
+
+    // this index is used to delete matches once sell orders are filled
+    index: { id: 2, fields: "sell_order_id" }
+  };
+
+  // bid_denom_id defines the bid denom being used by the buy and sell orders. Matching always happens within a single bid denom.
+  uint32 bid_denom_id = 1;
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 2;
+
+  // sell_order_id is the sell order ID.
+  uint64 sell_order_id = 3;
+
+  // bid_price_complement is the the complement (~ operator) of the bid price encoded as a uint64 (which should have sufficient precision) - effectively ~price * 10^exponent (usually 10^6). The complement is used so that bids can be sorted high to low.
+  fixed64 bid_price_complement = 4;
+
+  // ask_price is the ask price encoded to a uint64. Ask prices are sorted low to high.
+  fixed64 ask_price = 5;
+}
+
+// UInt64SelectorBuyOrder indexes a buy order against uint64 selectors in its criteria.
+// For example, for a buy order with a selector for a credit class, should insert
+/// an entry with type class.
+message UInt64SelectorBuyOrder {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: { fields: "buy_order_id,selector_type,value" }
+    index: {id: 1, fields: "selector_type,value"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  // type is the selector type.
+  regen.ecocredit.marketplace.v1beta1.SelectorType selector_type = 2;
+
+  // value is the uint64 selector value.
+  uint64 value = 3;
+
+  // project_location is the project location in the selector's criteria.
+  string project_location = 4;
+
+  // min_start_date is the minimum start date in the selector's criteria.
+  google.protobuf.Timestamp min_start_date = 5;
+
+  // max_end_date is the maximum end date in the selector's criteria.
+  google.protobuf.Timestamp max_end_date = 6;
+}
