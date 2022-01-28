@@ -74,9 +74,9 @@ func (o OrderBook) insertBuyOrderDirect(
 			buyOrder.MarketId, sellOrder.MarketId)
 	}
 
-	askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice.Amount)
+	askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 	if !ok {
-		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice.Amount)
+		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
 	}
 
 	if bidPrice.LT(askPrice) {
@@ -234,6 +234,15 @@ func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
 		return ecocredit.ErrInvalidBuyOrder.Wrapf("batch %d not found", batchId)
 	}
 
+	err = o.memStore.BuyOrderBatchSelectorStore().Insert(o.ctx,
+		&orderbookv1beta1.BuyOrderBatchSelector{
+			BuyOrderId: o.buyOrder.Id,
+			BatchId:    batchId,
+		})
+	if err != nil {
+		return err
+	}
+
 	return o.onMatch(batch)
 }
 
@@ -255,13 +264,13 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 				o.buyOrder.MarketId, sellOrder.MarketId)
 		}
 
-		askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice.Amount)
+		askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 		if !ok {
-			return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice.Amount)
+			return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
 		}
 
 		if o.bidPrice.LT(askPrice) {
-			return ecocredit.ErrInvalidBuyOrder.Wrapf("bid price %d is below ask price %d")
+			continue
 		}
 
 		askPriceU64, err := IntPriceToUInt64(askPrice, o.market.PrecisionModifier)

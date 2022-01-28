@@ -402,10 +402,129 @@ func NewBuyOrderProjectSelectorStore(db ormdb.ModuleDB) (BuyOrderProjectSelector
 	return buyOrderProjectSelectorStore{table}, nil
 }
 
+type BuyOrderBatchSelectorStore interface {
+	Insert(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
+	Update(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
+	Save(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
+	Delete(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
+	Has(ctx context.Context, buy_order_id uint64, batch_id uint64) (found bool, err error)
+	Get(ctx context.Context, buy_order_id uint64, batch_id uint64) (*BuyOrderBatchSelector, error)
+	List(ctx context.Context, prefixKey BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error)
+	ListRange(ctx context.Context, from, to BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error)
+
+	doNotImplement()
+}
+
+type BuyOrderBatchSelectorIterator struct {
+	ormtable.Iterator
+}
+
+func (i BuyOrderBatchSelectorIterator) Value() (*BuyOrderBatchSelector, error) {
+	var buyOrderBatchSelector BuyOrderBatchSelector
+	err := i.UnmarshalMessage(&buyOrderBatchSelector)
+	return &buyOrderBatchSelector, err
+}
+
+type BuyOrderBatchSelectorIndexKey interface {
+	id() uint32
+	values() []interface{}
+	buyOrderBatchSelectorIndexKey()
+}
+
+// primary key starting index..
+type BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey) id() uint32                     { return 2 }
+func (x BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey) values() []interface{}          { return x.vs }
+func (x BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey) buyOrderBatchSelectorIndexKey() {}
+
+func (this BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey {
+	this.vs = []interface{}{buy_order_id}
+	return this
+}
+
+func (this BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey) WithBuyOrderIdBatchId(buy_order_id uint64, batch_id uint64) BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey {
+	this.vs = []interface{}{buy_order_id, batch_id}
+	return this
+}
+
+type BuyOrderBatchSelectorBatchIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BuyOrderBatchSelectorBatchIdIndexKey) id() uint32                     { return 1 }
+func (x BuyOrderBatchSelectorBatchIdIndexKey) values() []interface{}          { return x.vs }
+func (x BuyOrderBatchSelectorBatchIdIndexKey) buyOrderBatchSelectorIndexKey() {}
+
+func (this BuyOrderBatchSelectorBatchIdIndexKey) WithBatchId(batch_id uint64) BuyOrderBatchSelectorBatchIdIndexKey {
+	this.vs = []interface{}{batch_id}
+	return this
+}
+
+type buyOrderBatchSelectorStore struct {
+	table ormtable.Table
+}
+
+func (this buyOrderBatchSelectorStore) Insert(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error {
+	return this.table.Insert(ctx, buyOrderBatchSelector)
+}
+
+func (this buyOrderBatchSelectorStore) Update(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error {
+	return this.table.Update(ctx, buyOrderBatchSelector)
+}
+
+func (this buyOrderBatchSelectorStore) Save(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error {
+	return this.table.Save(ctx, buyOrderBatchSelector)
+}
+
+func (this buyOrderBatchSelectorStore) Delete(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error {
+	return this.table.Delete(ctx, buyOrderBatchSelector)
+}
+
+func (this buyOrderBatchSelectorStore) Has(ctx context.Context, buy_order_id uint64, batch_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, buy_order_id, batch_id)
+}
+
+func (this buyOrderBatchSelectorStore) Get(ctx context.Context, buy_order_id uint64, batch_id uint64) (*BuyOrderBatchSelector, error) {
+	var buyOrderBatchSelector BuyOrderBatchSelector
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderBatchSelector, buy_order_id, batch_id)
+	if !found {
+		return nil, err
+	}
+	return &buyOrderBatchSelector, err
+}
+
+func (this buyOrderBatchSelectorStore) List(ctx context.Context, prefixKey BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error) {
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	return BuyOrderBatchSelectorIterator{it}, err
+}
+
+func (this buyOrderBatchSelectorStore) ListRange(ctx context.Context, from, to BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return BuyOrderBatchSelectorIterator{it}, err
+}
+
+func (this buyOrderBatchSelectorStore) doNotImplement() {}
+
+var _ BuyOrderBatchSelectorStore = buyOrderBatchSelectorStore{}
+
+func NewBuyOrderBatchSelectorStore(db ormdb.ModuleDB) (BuyOrderBatchSelectorStore, error) {
+	table := db.GetTable(&BuyOrderBatchSelector{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrderBatchSelector{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return buyOrderBatchSelectorStore{table}, nil
+}
+
 type MemoryStore interface {
 	BuyOrderSellOrderMatchStore() BuyOrderSellOrderMatchStore
 	BuyOrderClassSelectorStore() BuyOrderClassSelectorStore
 	BuyOrderProjectSelectorStore() BuyOrderProjectSelectorStore
+	BuyOrderBatchSelectorStore() BuyOrderBatchSelectorStore
 
 	doNotImplement()
 }
@@ -414,6 +533,7 @@ type memoryStore struct {
 	buyOrderSellOrderMatch  BuyOrderSellOrderMatchStore
 	buyOrderClassSelector   BuyOrderClassSelectorStore
 	buyOrderProjectSelector BuyOrderProjectSelectorStore
+	buyOrderBatchSelector   BuyOrderBatchSelectorStore
 }
 
 func (x memoryStore) BuyOrderSellOrderMatchStore() BuyOrderSellOrderMatchStore {
@@ -426,6 +546,10 @@ func (x memoryStore) BuyOrderClassSelectorStore() BuyOrderClassSelectorStore {
 
 func (x memoryStore) BuyOrderProjectSelectorStore() BuyOrderProjectSelectorStore {
 	return x.buyOrderProjectSelector
+}
+
+func (x memoryStore) BuyOrderBatchSelectorStore() BuyOrderBatchSelectorStore {
+	return x.buyOrderBatchSelector
 }
 
 func (memoryStore) doNotImplement() {}
@@ -448,9 +572,15 @@ func NewMemoryStore(db ormdb.ModuleDB) (MemoryStore, error) {
 		return nil, err
 	}
 
+	buyOrderBatchSelectorStore, err := NewBuyOrderBatchSelectorStore(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return memoryStore{
 		buyOrderSellOrderMatchStore,
 		buyOrderClassSelectorStore,
 		buyOrderProjectSelectorStore,
+		buyOrderBatchSelectorStore,
 	}, nil
 }

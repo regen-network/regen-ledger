@@ -83,3 +83,16 @@ message BuyOrderProjectSelector {
   // max_end_date is the maximum end date in the selector's criteria.
   google.protobuf.Timestamp max_end_date = 4;
 }
+
+message BuyOrderBatchSelector {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: {fields: "buy_order_id,batch_id"}
+    index: {id: 1, fields: "batch_id"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  uint64 batch_id = 2;
+}
