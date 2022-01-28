@@ -106,26 +106,22 @@ message BatchInfo {
 message CreditType {
     option (cosmos.orm.v1alpha1.table) = {
         id: 5,
-        primary_key: {fields:"id", auto_increment: true}
-        index: {id: 1, fields: "abbreviation", unique: true}
-        index: {id: 2, fields: "name", unique: true}
+        primary_key: {fields: "abbreviation"}
+        index: {id: 1, fields: "name"}
     };
 
-    // id is the auto-generated credit type ID
-    uint64 id = 1;
-
-    // the type of credit (e.g. carbon, biodiversity, etc). It must be unique.
-    string name = 2;
+    // the type of credit (e.g. carbon, biodiversity, etc)
+    string name = 1;
 
     // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
     // name, used in batch denominations within the CreditType. It must be unique.
-    string abbreviation = 4;
+    string abbreviation = 2;
 
     // the measurement unit (e.g. kg, ton, etc)
-    string unit = 5;
+    string unit = 3;
 
     // the decimal precision
-    uint32 precision = 6;
+    uint32 precision = 4;
 }
 
 // ProjectSequence stores and increments the sequence number for projects
