@@ -24,7 +24,7 @@ message BuyOrderSellOrderMatch {
   option (cosmos.orm.v1alpha1.table) = {
     id: 2
 
-    // the primary key of the table is simple the buy_order_id,sell_order_id pair as these pairs are unique
+    // the primary key of the table is simply the buy_order_id,sell_order_id pair as these pairs are unique
     primary_key: { fields: "buy_order_id,sell_order_id" }
 
     // Algorithm details:
