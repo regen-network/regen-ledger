@@ -20,7 +20,7 @@ func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %d", buyOrder.BidPrice)
 	}
 
-	market, err := o.marketStore.MarketStore().Get(ctx, buyOrder.MarketId)
+	market, err := o.marketplaceStore.MarketStore().Get(ctx, buyOrder.MarketId)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (o OrderBook) insertBuyOrderDirect(
 	bidPrice sdk.Int,
 	bidPriceU64 uint64,
 ) error {
-	sellOrder, err := o.marketStore.SellOrderStore().Get(ctx, selection.SellOrderId)
+	sellOrder, err := o.marketplaceStore.SellOrderStore().Get(ctx, selection.SellOrderId)
 	if err != nil {
 		return err
 	}
@@ -247,7 +247,7 @@ func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
 }
 
 func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
-	it, err := o.marketStore.SellOrderStore().List(o.ctx,
+	it, err := o.marketplaceStore.SellOrderStore().List(o.ctx,
 		marketplacev1beta1.SellOrderBatchDenomIndexKey{}.WithBatchDenom(batch.BatchDenom))
 	if err != nil {
 		return err

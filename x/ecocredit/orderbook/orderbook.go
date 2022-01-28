@@ -7,7 +7,7 @@ import (
 )
 
 type OrderBook struct {
-	memStore       orderbookv1beta1.MemoryStore
-	marketStore    marketplacev1beta1.StateStore
-	ecocreditStore ecocreditv1beta1.StateStore
+	memStore         orderbookv1beta1.MemoryStore
+	marketplaceStore marketplacev1beta1.StateStore
+	ecocreditStore   ecocreditv1beta1.StateStore
 }

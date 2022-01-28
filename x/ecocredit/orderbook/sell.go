@@ -19,7 +19,7 @@ func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplace
 		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
 	}
 
-	market, err := o.marketStore.MarketStore().Get(ctx, sellOrder.MarketId)
+	market, err := o.marketplaceStore.MarketStore().Get(ctx, sellOrder.MarketId)
 	if err != nil {
 		return err
 	}
@@ -151,7 +151,7 @@ func (m sellOrderMatcher) matchBatch() error {
 }
 
 func (m sellOrderMatcher) onMatch(buyOrderId uint64) error {
-	buyOrder, err := m.marketStore.BuyOrderStore().Get(m.ctx, buyOrderId)
+	buyOrder, err := m.marketplaceStore.BuyOrderStore().Get(m.ctx, buyOrderId)
 	if err != nil {
 		return err
 	}
