@@ -125,14 +125,14 @@ message CreditType {
 }
 
 // ProjectSequence stores and increments the sequence number for projects
-// within a given class.
+// within a given credit class.
 message ProjectSequence {
     option (cosmos.orm.v1alpha1.table) = {
         id: 7,
         primary_key: {fields: "class_id"}
     };
 
-    // class_id is the id of the project
+    // class_id is the id of the credit class
     string class_id = 1;
 
     // next_id is the sequence number for the project
