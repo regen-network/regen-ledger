@@ -42,6 +42,10 @@ message SellOrder {
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp expiration = 7;
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching buy orders.
+    bool maker = 8;
 }
 
 // BuyOrder represents the information for a buy order.
@@ -103,6 +107,11 @@ message BuyOrder {
     // expiration is the optional timestamp when the buy order expires. When the
     // expiration time is reached, the buy order is removed from state.
     google.protobuf.Timestamp expiration = 8;
+
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching sell orders.
+    bool maker = 9;
 }
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
