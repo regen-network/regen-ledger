@@ -57,7 +57,7 @@ message UInt64SelectorBuyOrder {
   uint64 buy_order_id = 1;
 
   // type is the selector type.
-  regen.ecocredit.marketplace.v1beta1.SelectorType type = 2;
+  regen.ecocredit.marketplace.v1beta1.SelectorType selector_type = 2;
 
   // value is the uint64 selector value.
   uint64 value = 3;
