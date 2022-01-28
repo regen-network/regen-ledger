@@ -41,6 +41,7 @@ message ResolverURL {
   option (cosmos.orm.v1alpha1.table) = {
     id: 4
     primary_key: {fields: "id", auto_increment: true}
+    index: {id: 1, fields: "url", unique: true}
   };
 
   uint64 id = 1;

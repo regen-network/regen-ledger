@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 
+	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
+
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
@@ -125,7 +127,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 }
 
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	resolverUrl, err := s.stateStore.ResolverURL().GetByUrl(ctx, msg.ResolverUrl)
+	resolverUrl, err := s.stateStore.ResolverURLStore().GetByUrl(ctx, msg.ResolverUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +137,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 	}
 
 	resolverUrl.Url = msg.ResolverUrl
-	err = s.stateStore.ResolverURL().Insert(ctx, resolverUrl)
+	err = s.stateStore.ResolverURLStore().Insert(ctx, resolverUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +145,31 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 	return &data.MsgDefineResolverResponse{ResolverId: resolverUrl.Id}, nil
 }
 
-func (s serverImpl) RegisterResolver(ctx context.Context, resolver *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	found, err := s.stateStore.ResolverURLStore().Has(ctx, msg.ResolverId)
+	if err != nil {
+		return nil, err
+	}
+
+	if !found {
+		return nil, data.ErrResolverUndefined.Wrapf("id %d", msg.ResolverId)
+	}
+
+	for _, _ = range msg.Data {
+		// TODO:
+		//contentHashV1 := *data.ContentHash{Sum: }
+		//s.anchorAndGetIRI(sdk.UnwrapSDKContext(ctx), msg.Data)
+
+		err = s.stateStore.DataResolverStore().Save(
+			ctx,
+			&datav1alpha2.DataResolver{
+				ResolverId: msg.ResolverId,
+				// TODO: DataId:
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &data.MsgRegisterResolverResponse{}, nil
 }

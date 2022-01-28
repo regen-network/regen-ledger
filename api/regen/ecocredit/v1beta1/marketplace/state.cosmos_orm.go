@@ -4,16 +4,12 @@ package marketplace
 
 import (
 	context "context"
+	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
-
-type StateStore interface {
-	SellOrder() SellOrderStore
-	BuyOrder() BuyOrderStore
-	AskDenom() AskDenomStore
-}
 
 type SellOrderStore interface {
 	Insert(ctx context.Context, sellOrder *SellOrder) error
@@ -24,6 +20,8 @@ type SellOrderStore interface {
 	Get(ctx context.Context, order_id uint64) (*SellOrder, error)
 	List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
+
+	doNotImplement()
 }
 
 type SellOrderIterator struct {
@@ -42,117 +40,115 @@ type SellOrderIndexKey interface {
 	sellOrderIndexKey()
 }
 
+// primary key starting index..
 type SellOrderOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOrderIdIndexKey) id() uint32            { return 1 /* primary key */ }
+func (x SellOrderOrderIdIndexKey) id() uint32            { return 1 }
 func (x SellOrderOrderIdIndexKey) values() []interface{} { return x.vs }
 func (x SellOrderOrderIdIndexKey) sellOrderIndexKey()    {}
 
-var _ SellOrderIndexKey = SellOrderOrderIdIndexKey{}
-
-func (x SellOrderOrderIdIndexKey) WithOrderId(order_id uint64) SellOrderOrderIdIndexKey {
-	x.vs = []interface{}{order_id}
-	return x
+func (this SellOrderOrderIdIndexKey) WithOrderId(order_id uint64) SellOrderOrderIdIndexKey {
+	this.vs = []interface{}{order_id}
+	return this
 }
 
-type SellOrderBatchDenomOrderIdIndexKey struct {
+type SellOrderBatchDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderBatchDenomOrderIdIndexKey) id() uint32            { return 1 /* primary key */ }
-func (x SellOrderBatchDenomOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderBatchDenomOrderIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderBatchDenomIndexKey) id() uint32            { return 1 }
+func (x SellOrderBatchDenomIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderBatchDenomIndexKey) sellOrderIndexKey()    {}
 
-var _ SellOrderIndexKey = SellOrderBatchDenomOrderIdIndexKey{}
-
-func (x SellOrderBatchDenomOrderIdIndexKey) WithBatchDenom(batch_denom string) SellOrderBatchDenomOrderIdIndexKey {
-	x.vs = []interface{}{batch_denom}
-	return x
-}
-func (x SellOrderBatchDenomOrderIdIndexKey) WithBatchDenomOrderId(batch_denom string, order_id uint64) SellOrderBatchDenomOrderIdIndexKey {
-	x.vs = []interface{}{batch_denom, order_id}
-	return x
+func (this SellOrderBatchDenomIndexKey) WithBatchDenom(batch_denom string) SellOrderBatchDenomIndexKey {
+	this.vs = []interface{}{batch_denom}
+	return this
 }
 
-type SellOrderOwnerOrderIdIndexKey struct {
+type SellOrderOwnerIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOwnerOrderIdIndexKey) id() uint32            { return 1 /* primary key */ }
-func (x SellOrderOwnerOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderOwnerOrderIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderOwnerIndexKey) id() uint32            { return 2 }
+func (x SellOrderOwnerIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderOwnerIndexKey) sellOrderIndexKey()    {}
 
-var _ SellOrderIndexKey = SellOrderOwnerOrderIdIndexKey{}
-
-func (x SellOrderOwnerOrderIdIndexKey) WithOwner(owner string) SellOrderOwnerOrderIdIndexKey {
-	x.vs = []interface{}{owner}
-	return x
-}
-func (x SellOrderOwnerOrderIdIndexKey) WithOwnerOrderId(owner string, order_id uint64) SellOrderOwnerOrderIdIndexKey {
-	x.vs = []interface{}{owner, order_id}
-	return x
+func (this SellOrderOwnerIndexKey) WithOwner(owner string) SellOrderOwnerIndexKey {
+	this.vs = []interface{}{owner}
+	return this
 }
 
-type SellOrderExpirationOrderIdIndexKey struct {
+type SellOrderExpirationIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderExpirationOrderIdIndexKey) id() uint32            { return 1 /* primary key */ }
-func (x SellOrderExpirationOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderExpirationOrderIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderExpirationIndexKey) id() uint32            { return 3 }
+func (x SellOrderExpirationIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderExpirationIndexKey) sellOrderIndexKey()    {}
 
-var _ SellOrderIndexKey = SellOrderExpirationOrderIdIndexKey{}
-
-func (x SellOrderExpirationOrderIdIndexKey) WithExpiration(expiration *timestamppb.Timestamp) SellOrderExpirationOrderIdIndexKey {
-	x.vs = []interface{}{expiration}
-	return x
-}
-func (x SellOrderExpirationOrderIdIndexKey) WithExpirationOrderId(expiration *timestamppb.Timestamp, order_id uint64) SellOrderExpirationOrderIdIndexKey {
-	x.vs = []interface{}{expiration, order_id}
-	return x
+func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Timestamp) SellOrderExpirationIndexKey {
+	this.vs = []interface{}{expiration}
+	return this
 }
 
 type sellOrderStore struct {
 	table ormtable.Table
 }
 
-func (x sellOrderStore) Insert(ctx context.Context, sellOrder *SellOrder) error {
-	return x.table.Insert(ctx, sellOrder)
+func (this sellOrderStore) Insert(ctx context.Context, sellOrder *SellOrder) error {
+	return this.table.Insert(ctx, sellOrder)
 }
-func (x sellOrderStore) Update(ctx context.Context, sellOrder *SellOrder) error {
-	return x.table.Update(ctx, sellOrder)
+
+func (this sellOrderStore) Update(ctx context.Context, sellOrder *SellOrder) error {
+	return this.table.Update(ctx, sellOrder)
 }
-func (x sellOrderStore) Save(ctx context.Context, sellOrder *SellOrder) error {
-	return x.table.Save(ctx, sellOrder)
+
+func (this sellOrderStore) Save(ctx context.Context, sellOrder *SellOrder) error {
+	return this.table.Save(ctx, sellOrder)
 }
-func (x sellOrderStore) Delete(ctx context.Context, sellOrder *SellOrder) error {
-	return x.table.Delete(ctx, sellOrder)
+
+func (this sellOrderStore) Delete(ctx context.Context, sellOrder *SellOrder) error {
+	return this.table.Delete(ctx, sellOrder)
 }
-func (x sellOrderStore) Has(ctx context.Context, order_id uint64) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, order_id)
+
+func (this sellOrderStore) Has(ctx context.Context, order_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, order_id)
 }
-func (x sellOrderStore) Get(ctx context.Context, order_id uint64) (*SellOrder, error) {
+
+func (this sellOrderStore) Get(ctx context.Context, order_id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
-	found, err := x.table.PrimaryKey().Get(ctx, &sellOrder, order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, order_id)
 	if !found {
 		return nil, err
 	}
 	return &sellOrder, err
 }
-func (x sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
+
+func (this sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return SellOrderIterator{it}, err
-}
-func (x sellOrderStore) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return SellOrderIterator{it}, err
 }
 
+func (this sellOrderStore) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return SellOrderIterator{it}, err
+}
+
+func (this sellOrderStore) doNotImplement() {}
+
 var _ SellOrderStore = sellOrderStore{}
+
+func NewSellOrderStore(db ormdb.ModuleDB) (SellOrderStore, error) {
+	table := db.GetTable(&SellOrder{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&SellOrder{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return sellOrderStore{table}, nil
+}
 
 type BuyOrderStore interface {
 	Insert(ctx context.Context, buyOrder *BuyOrder) error
@@ -163,6 +159,8 @@ type BuyOrderStore interface {
 	Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error)
 	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
+
+	doNotImplement()
 }
 
 type BuyOrderIterator struct {
@@ -181,98 +179,102 @@ type BuyOrderIndexKey interface {
 	buyOrderIndexKey()
 }
 
+// primary key starting index..
 type BuyOrderBuyOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderBuyOrderIdIndexKey) id() uint32            { return 2 /* primary key */ }
+func (x BuyOrderBuyOrderIdIndexKey) id() uint32            { return 2 }
 func (x BuyOrderBuyOrderIdIndexKey) values() []interface{} { return x.vs }
 func (x BuyOrderBuyOrderIdIndexKey) buyOrderIndexKey()     {}
 
-var _ BuyOrderIndexKey = BuyOrderBuyOrderIdIndexKey{}
-
-func (x BuyOrderBuyOrderIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderBuyOrderIdIndexKey {
-	x.vs = []interface{}{buy_order_id}
-	return x
+func (this BuyOrderBuyOrderIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderBuyOrderIdIndexKey {
+	this.vs = []interface{}{buy_order_id}
+	return this
 }
 
-type BuyOrderBuyerBuyOrderIdIndexKey struct {
+type BuyOrderBuyerIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderBuyerBuyOrderIdIndexKey) id() uint32            { return 2 /* primary key */ }
-func (x BuyOrderBuyerBuyOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderBuyerBuyOrderIdIndexKey) buyOrderIndexKey()     {}
+func (x BuyOrderBuyerIndexKey) id() uint32            { return 1 }
+func (x BuyOrderBuyerIndexKey) values() []interface{} { return x.vs }
+func (x BuyOrderBuyerIndexKey) buyOrderIndexKey()     {}
 
-var _ BuyOrderIndexKey = BuyOrderBuyerBuyOrderIdIndexKey{}
-
-func (x BuyOrderBuyerBuyOrderIdIndexKey) WithBuyer(buyer string) BuyOrderBuyerBuyOrderIdIndexKey {
-	x.vs = []interface{}{buyer}
-	return x
-}
-func (x BuyOrderBuyerBuyOrderIdIndexKey) WithBuyerBuyOrderId(buyer string, buy_order_id uint64) BuyOrderBuyerBuyOrderIdIndexKey {
-	x.vs = []interface{}{buyer, buy_order_id}
-	return x
+func (this BuyOrderBuyerIndexKey) WithBuyer(buyer string) BuyOrderBuyerIndexKey {
+	this.vs = []interface{}{buyer}
+	return this
 }
 
-type BuyOrderExpirationBuyOrderIdIndexKey struct {
+type BuyOrderExpirationIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderExpirationBuyOrderIdIndexKey) id() uint32            { return 2 /* primary key */ }
-func (x BuyOrderExpirationBuyOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderExpirationBuyOrderIdIndexKey) buyOrderIndexKey()     {}
+func (x BuyOrderExpirationIndexKey) id() uint32            { return 2 }
+func (x BuyOrderExpirationIndexKey) values() []interface{} { return x.vs }
+func (x BuyOrderExpirationIndexKey) buyOrderIndexKey()     {}
 
-var _ BuyOrderIndexKey = BuyOrderExpirationBuyOrderIdIndexKey{}
-
-func (x BuyOrderExpirationBuyOrderIdIndexKey) WithExpiration(expiration *timestamppb.Timestamp) BuyOrderExpirationBuyOrderIdIndexKey {
-	x.vs = []interface{}{expiration}
-	return x
-}
-func (x BuyOrderExpirationBuyOrderIdIndexKey) WithExpirationBuyOrderId(expiration *timestamppb.Timestamp, buy_order_id uint64) BuyOrderExpirationBuyOrderIdIndexKey {
-	x.vs = []interface{}{expiration, buy_order_id}
-	return x
+func (this BuyOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Timestamp) BuyOrderExpirationIndexKey {
+	this.vs = []interface{}{expiration}
+	return this
 }
 
 type buyOrderStore struct {
 	table ormtable.Table
 }
 
-func (x buyOrderStore) Insert(ctx context.Context, buyOrder *BuyOrder) error {
-	return x.table.Insert(ctx, buyOrder)
+func (this buyOrderStore) Insert(ctx context.Context, buyOrder *BuyOrder) error {
+	return this.table.Insert(ctx, buyOrder)
 }
-func (x buyOrderStore) Update(ctx context.Context, buyOrder *BuyOrder) error {
-	return x.table.Update(ctx, buyOrder)
+
+func (this buyOrderStore) Update(ctx context.Context, buyOrder *BuyOrder) error {
+	return this.table.Update(ctx, buyOrder)
 }
-func (x buyOrderStore) Save(ctx context.Context, buyOrder *BuyOrder) error {
-	return x.table.Save(ctx, buyOrder)
+
+func (this buyOrderStore) Save(ctx context.Context, buyOrder *BuyOrder) error {
+	return this.table.Save(ctx, buyOrder)
 }
-func (x buyOrderStore) Delete(ctx context.Context, buyOrder *BuyOrder) error {
-	return x.table.Delete(ctx, buyOrder)
+
+func (this buyOrderStore) Delete(ctx context.Context, buyOrder *BuyOrder) error {
+	return this.table.Delete(ctx, buyOrder)
 }
-func (x buyOrderStore) Has(ctx context.Context, buy_order_id uint64) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, buy_order_id)
+
+func (this buyOrderStore) Has(ctx context.Context, buy_order_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, buy_order_id)
 }
-func (x buyOrderStore) Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error) {
+
+func (this buyOrderStore) Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error) {
 	var buyOrder BuyOrder
-	found, err := x.table.PrimaryKey().Get(ctx, &buyOrder, buy_order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, buy_order_id)
 	if !found {
 		return nil, err
 	}
 	return &buyOrder, err
 }
-func (x buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
+
+func (this buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return BuyOrderIterator{it}, err
-}
-func (x buyOrderStore) ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BuyOrderIterator{it}, err
 }
 
+func (this buyOrderStore) ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return BuyOrderIterator{it}, err
+}
+
+func (this buyOrderStore) doNotImplement() {}
+
 var _ BuyOrderStore = buyOrderStore{}
+
+func NewBuyOrderStore(db ormdb.ModuleDB) (BuyOrderStore, error) {
+	table := db.GetTable(&BuyOrder{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrder{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return buyOrderStore{table}, nil
+}
 
 type AskDenomStore interface {
 	Insert(ctx context.Context, askDenom *AskDenom) error
@@ -283,6 +285,8 @@ type AskDenomStore interface {
 	Get(ctx context.Context, denom string) (*AskDenom, error)
 	List(ctx context.Context, prefixKey AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error)
 	ListRange(ctx context.Context, from, to AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error)
+
+	doNotImplement()
 }
 
 type AskDenomIterator struct {
@@ -301,94 +305,139 @@ type AskDenomIndexKey interface {
 	askDenomIndexKey()
 }
 
+// primary key starting index..
 type AskDenomDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x AskDenomDenomIndexKey) id() uint32            { return 3 /* primary key */ }
+func (x AskDenomDenomIndexKey) id() uint32            { return 3 }
 func (x AskDenomDenomIndexKey) values() []interface{} { return x.vs }
 func (x AskDenomDenomIndexKey) askDenomIndexKey()     {}
 
-var _ AskDenomIndexKey = AskDenomDenomIndexKey{}
-
-func (x AskDenomDenomIndexKey) WithDenom(denom string) AskDenomDenomIndexKey {
-	x.vs = []interface{}{denom}
-	return x
+func (this AskDenomDenomIndexKey) WithDenom(denom string) AskDenomDenomIndexKey {
+	this.vs = []interface{}{denom}
+	return this
 }
 
-type AskDenomDisplayDenomDenomIndexKey struct {
+type AskDenomDisplayDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x AskDenomDisplayDenomDenomIndexKey) id() uint32            { return 3 /* primary key */ }
-func (x AskDenomDisplayDenomDenomIndexKey) values() []interface{} { return x.vs }
-func (x AskDenomDisplayDenomDenomIndexKey) askDenomIndexKey()     {}
+func (x AskDenomDisplayDenomIndexKey) id() uint32            { return 1 }
+func (x AskDenomDisplayDenomIndexKey) values() []interface{} { return x.vs }
+func (x AskDenomDisplayDenomIndexKey) askDenomIndexKey()     {}
 
-var _ AskDenomIndexKey = AskDenomDisplayDenomDenomIndexKey{}
-
-func (x AskDenomDisplayDenomDenomIndexKey) WithDisplayDenom(display_denom string) AskDenomDisplayDenomDenomIndexKey {
-	x.vs = []interface{}{display_denom}
-	return x
-}
-func (x AskDenomDisplayDenomDenomIndexKey) WithDisplayDenomDenom(display_denom string, denom string) AskDenomDisplayDenomDenomIndexKey {
-	x.vs = []interface{}{display_denom, denom}
-	return x
+func (this AskDenomDisplayDenomIndexKey) WithDisplayDenom(display_denom string) AskDenomDisplayDenomIndexKey {
+	this.vs = []interface{}{display_denom}
+	return this
 }
 
 type askDenomStore struct {
 	table ormtable.Table
 }
 
-func (x askDenomStore) Insert(ctx context.Context, askDenom *AskDenom) error {
-	return x.table.Insert(ctx, askDenom)
+func (this askDenomStore) Insert(ctx context.Context, askDenom *AskDenom) error {
+	return this.table.Insert(ctx, askDenom)
 }
-func (x askDenomStore) Update(ctx context.Context, askDenom *AskDenom) error {
-	return x.table.Update(ctx, askDenom)
+
+func (this askDenomStore) Update(ctx context.Context, askDenom *AskDenom) error {
+	return this.table.Update(ctx, askDenom)
 }
-func (x askDenomStore) Save(ctx context.Context, askDenom *AskDenom) error {
-	return x.table.Save(ctx, askDenom)
+
+func (this askDenomStore) Save(ctx context.Context, askDenom *AskDenom) error {
+	return this.table.Save(ctx, askDenom)
 }
-func (x askDenomStore) Delete(ctx context.Context, askDenom *AskDenom) error {
-	return x.table.Delete(ctx, askDenom)
+
+func (this askDenomStore) Delete(ctx context.Context, askDenom *AskDenom) error {
+	return this.table.Delete(ctx, askDenom)
 }
-func (x askDenomStore) Has(ctx context.Context, denom string) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, denom)
+
+func (this askDenomStore) Has(ctx context.Context, denom string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, denom)
 }
-func (x askDenomStore) Get(ctx context.Context, denom string) (*AskDenom, error) {
+
+func (this askDenomStore) Get(ctx context.Context, denom string) (*AskDenom, error) {
 	var askDenom AskDenom
-	found, err := x.table.PrimaryKey().Get(ctx, &askDenom, denom)
+	found, err := this.table.PrimaryKey().Get(ctx, &askDenom, denom)
 	if !found {
 		return nil, err
 	}
 	return &askDenom, err
 }
-func (x askDenomStore) List(ctx context.Context, prefixKey AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error) {
+
+func (this askDenomStore) List(ctx context.Context, prefixKey AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return AskDenomIterator{it}, err
 }
-func (x askDenomStore) ListRange(ctx context.Context, from, to AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error) {
+
+func (this askDenomStore) ListRange(ctx context.Context, from, to AskDenomIndexKey, opts ...ormlist.Option) (AskDenomIterator, error) {
 	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return AskDenomIterator{it}, err
 }
+
+func (this askDenomStore) doNotImplement() {}
 
 var _ AskDenomStore = askDenomStore{}
 
-type stateStore struct {
-	sellOrder *sellOrderStore
-	buyOrder  *buyOrderStore
-	askDenom  *askDenomStore
+func NewAskDenomStore(db ormdb.ModuleDB) (AskDenomStore, error) {
+	table := db.GetTable(&AskDenom{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&AskDenom{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return askDenomStore{table}, nil
 }
 
-func (x stateStore) SellOrder() SellOrderStore {
+type StateStore interface {
+	SellOrderStore() SellOrderStore
+	BuyOrderStore() BuyOrderStore
+	AskDenomStore() AskDenomStore
+
+	doNotImplement()
+}
+
+type stateStore struct {
+	sellOrder SellOrderStore
+	buyOrder  BuyOrderStore
+	askDenom  AskDenomStore
+}
+
+func (x stateStore) SellOrderStore() SellOrderStore {
 	return x.sellOrder
 }
-func (x stateStore) BuyOrder() BuyOrderStore {
+
+func (x stateStore) BuyOrderStore() BuyOrderStore {
 	return x.buyOrder
 }
-func (x stateStore) AskDenom() AskDenomStore {
+
+func (x stateStore) AskDenomStore() AskDenomStore {
 	return x.askDenom
 }
 
+func (stateStore) doNotImplement() {}
+
 var _ StateStore = stateStore{}
+
+func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+	sellOrderStore, err := NewSellOrderStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	buyOrderStore, err := NewBuyOrderStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	askDenomStore, err := NewAskDenomStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return stateStore{
+		sellOrderStore,
+		buyOrderStore,
+		askDenomStore,
+	}, nil
+}

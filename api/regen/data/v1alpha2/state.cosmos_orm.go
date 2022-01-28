@@ -4,17 +4,11 @@ package datav1alpha2
 
 import (
 	context "context"
+	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 )
-
-type StateStore interface {
-	DataID() DataIDStore
-	DataAnchor() DataAnchorStore
-	DataSigner() DataSignerStore
-	ResolverURL() ResolverURLStore
-	DataResolver() DataResolverStore
-}
 
 type DataIDStore interface {
 	Insert(ctx context.Context, dataID *DataID) error
@@ -23,8 +17,12 @@ type DataIDStore interface {
 	Delete(ctx context.Context, dataID *DataID) error
 	Has(ctx context.Context, id []byte) (found bool, err error)
 	Get(ctx context.Context, id []byte) (*DataID, error)
+	HasByIri(ctx context.Context, iri string) (found bool, err error)
+	GetByIri(ctx context.Context, iri string) (*DataID, error)
 	List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error)
 	ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error)
+
+	doNotImplement()
 }
 
 type DataIDIterator struct {
@@ -43,75 +41,106 @@ type DataIDIndexKey interface {
 	dataIDIndexKey()
 }
 
+// primary key starting index..
 type DataIDIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataIDIdIndexKey) id() uint32            { return 1 /* primary key */ }
+func (x DataIDIdIndexKey) id() uint32            { return 1 }
 func (x DataIDIdIndexKey) values() []interface{} { return x.vs }
 func (x DataIDIdIndexKey) dataIDIndexKey()       {}
 
-var _ DataIDIndexKey = DataIDIdIndexKey{}
-
-func (x DataIDIdIndexKey) WithId(id []byte) DataIDIdIndexKey {
-	x.vs = []interface{}{id}
-	return x
+func (this DataIDIdIndexKey) WithId(id []byte) DataIDIdIndexKey {
+	this.vs = []interface{}{id}
+	return this
 }
 
 type DataIDIriIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataIDIriIndexKey) id() uint32            { return 1 /* primary key */ }
+func (x DataIDIriIndexKey) id() uint32            { return 1 }
 func (x DataIDIriIndexKey) values() []interface{} { return x.vs }
 func (x DataIDIriIndexKey) dataIDIndexKey()       {}
 
-var _ DataIDIndexKey = DataIDIriIndexKey{}
-
-func (x DataIDIriIndexKey) WithIri(iri string) DataIDIriIndexKey {
-	x.vs = []interface{}{iri}
-	return x
+func (this DataIDIriIndexKey) WithIri(iri string) DataIDIriIndexKey {
+	this.vs = []interface{}{iri}
+	return this
 }
 
 type dataIDStore struct {
 	table ormtable.Table
 }
 
-func (x dataIDStore) Insert(ctx context.Context, dataID *DataID) error {
-	return x.table.Insert(ctx, dataID)
+func (this dataIDStore) Insert(ctx context.Context, dataID *DataID) error {
+	return this.table.Insert(ctx, dataID)
 }
-func (x dataIDStore) Update(ctx context.Context, dataID *DataID) error {
-	return x.table.Update(ctx, dataID)
+
+func (this dataIDStore) Update(ctx context.Context, dataID *DataID) error {
+	return this.table.Update(ctx, dataID)
 }
-func (x dataIDStore) Save(ctx context.Context, dataID *DataID) error {
-	return x.table.Save(ctx, dataID)
+
+func (this dataIDStore) Save(ctx context.Context, dataID *DataID) error {
+	return this.table.Save(ctx, dataID)
 }
-func (x dataIDStore) Delete(ctx context.Context, dataID *DataID) error {
-	return x.table.Delete(ctx, dataID)
+
+func (this dataIDStore) Delete(ctx context.Context, dataID *DataID) error {
+	return this.table.Delete(ctx, dataID)
 }
-func (x dataIDStore) Has(ctx context.Context, id []byte) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, id)
+
+func (this dataIDStore) Has(ctx context.Context, id []byte) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
-func (x dataIDStore) Get(ctx context.Context, id []byte) (*DataID, error) {
+
+func (this dataIDStore) Get(ctx context.Context, id []byte) (*DataID, error) {
 	var dataID DataID
-	found, err := x.table.PrimaryKey().Get(ctx, &dataID, id)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataID, id)
 	if !found {
 		return nil, err
 	}
 	return &dataID, err
 }
-func (x dataIDStore) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return DataIDIterator{it}, err
+
+func (this dataIDStore) HasByIri(ctx context.Context, iri string) (found bool, err error) {
+	return this.table.Has(ctx, &DataID{
+		Iri: iri,
+	})
 }
-func (x dataIDStore) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+
+func (this dataIDStore) GetByIri(ctx context.Context, iri string) (*DataID, error) {
+	dataID := &DataID{
+		Iri: iri,
+	}
+	found, err := this.table.Get(ctx, dataID)
+	if !found {
+		return nil, err
+	}
+	return dataID, nil
+}
+
+func (this dataIDStore) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataIDIterator{it}, err
 }
 
+func (this dataIDStore) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return DataIDIterator{it}, err
+}
+
+func (this dataIDStore) doNotImplement() {}
+
 var _ DataIDStore = dataIDStore{}
+
+func NewDataIDStore(db ormdb.ModuleDB) (DataIDStore, error) {
+	table := db.GetTable(&DataID{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&DataID{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return dataIDStore{table}, nil
+}
 
 type DataAnchorStore interface {
 	Insert(ctx context.Context, dataAnchor *DataAnchor) error
@@ -122,6 +151,8 @@ type DataAnchorStore interface {
 	Get(ctx context.Context, id []byte) (*DataAnchor, error)
 	List(ctx context.Context, prefixKey DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error)
 	ListRange(ctx context.Context, from, to DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error)
+
+	doNotImplement()
 }
 
 type DataAnchorIterator struct {
@@ -140,60 +171,76 @@ type DataAnchorIndexKey interface {
 	dataAnchorIndexKey()
 }
 
+// primary key starting index..
 type DataAnchorIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataAnchorIdIndexKey) id() uint32            { return 2 /* primary key */ }
+func (x DataAnchorIdIndexKey) id() uint32            { return 2 }
 func (x DataAnchorIdIndexKey) values() []interface{} { return x.vs }
 func (x DataAnchorIdIndexKey) dataAnchorIndexKey()   {}
 
-var _ DataAnchorIndexKey = DataAnchorIdIndexKey{}
-
-func (x DataAnchorIdIndexKey) WithId(id []byte) DataAnchorIdIndexKey {
-	x.vs = []interface{}{id}
-	return x
+func (this DataAnchorIdIndexKey) WithId(id []byte) DataAnchorIdIndexKey {
+	this.vs = []interface{}{id}
+	return this
 }
 
 type dataAnchorStore struct {
 	table ormtable.Table
 }
 
-func (x dataAnchorStore) Insert(ctx context.Context, dataAnchor *DataAnchor) error {
-	return x.table.Insert(ctx, dataAnchor)
+func (this dataAnchorStore) Insert(ctx context.Context, dataAnchor *DataAnchor) error {
+	return this.table.Insert(ctx, dataAnchor)
 }
-func (x dataAnchorStore) Update(ctx context.Context, dataAnchor *DataAnchor) error {
-	return x.table.Update(ctx, dataAnchor)
+
+func (this dataAnchorStore) Update(ctx context.Context, dataAnchor *DataAnchor) error {
+	return this.table.Update(ctx, dataAnchor)
 }
-func (x dataAnchorStore) Save(ctx context.Context, dataAnchor *DataAnchor) error {
-	return x.table.Save(ctx, dataAnchor)
+
+func (this dataAnchorStore) Save(ctx context.Context, dataAnchor *DataAnchor) error {
+	return this.table.Save(ctx, dataAnchor)
 }
-func (x dataAnchorStore) Delete(ctx context.Context, dataAnchor *DataAnchor) error {
-	return x.table.Delete(ctx, dataAnchor)
+
+func (this dataAnchorStore) Delete(ctx context.Context, dataAnchor *DataAnchor) error {
+	return this.table.Delete(ctx, dataAnchor)
 }
-func (x dataAnchorStore) Has(ctx context.Context, id []byte) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, id)
+
+func (this dataAnchorStore) Has(ctx context.Context, id []byte) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
-func (x dataAnchorStore) Get(ctx context.Context, id []byte) (*DataAnchor, error) {
+
+func (this dataAnchorStore) Get(ctx context.Context, id []byte) (*DataAnchor, error) {
 	var dataAnchor DataAnchor
-	found, err := x.table.PrimaryKey().Get(ctx, &dataAnchor, id)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataAnchor, id)
 	if !found {
 		return nil, err
 	}
 	return &dataAnchor, err
 }
-func (x dataAnchorStore) List(ctx context.Context, prefixKey DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
+
+func (this dataAnchorStore) List(ctx context.Context, prefixKey DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return DataAnchorIterator{it}, err
-}
-func (x dataAnchorStore) ListRange(ctx context.Context, from, to DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataAnchorIterator{it}, err
 }
 
+func (this dataAnchorStore) ListRange(ctx context.Context, from, to DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return DataAnchorIterator{it}, err
+}
+
+func (this dataAnchorStore) doNotImplement() {}
+
 var _ DataAnchorStore = dataAnchorStore{}
+
+func NewDataAnchorStore(db ormdb.ModuleDB) (DataAnchorStore, error) {
+	table := db.GetTable(&DataAnchor{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&DataAnchor{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return dataAnchorStore{table}, nil
+}
 
 type DataSignerStore interface {
 	Insert(ctx context.Context, dataSigner *DataSigner) error
@@ -204,6 +251,8 @@ type DataSignerStore interface {
 	Get(ctx context.Context, id []byte) (*DataSigner, error)
 	List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
 	ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
+
+	doNotImplement()
 }
 
 type DataSignerIterator struct {
@@ -222,60 +271,76 @@ type DataSignerIndexKey interface {
 	dataSignerIndexKey()
 }
 
+// primary key starting index..
 type DataSignerIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataSignerIdIndexKey) id() uint32            { return 3 /* primary key */ }
+func (x DataSignerIdIndexKey) id() uint32            { return 3 }
 func (x DataSignerIdIndexKey) values() []interface{} { return x.vs }
 func (x DataSignerIdIndexKey) dataSignerIndexKey()   {}
 
-var _ DataSignerIndexKey = DataSignerIdIndexKey{}
-
-func (x DataSignerIdIndexKey) WithId(id []byte) DataSignerIdIndexKey {
-	x.vs = []interface{}{id}
-	return x
+func (this DataSignerIdIndexKey) WithId(id []byte) DataSignerIdIndexKey {
+	this.vs = []interface{}{id}
+	return this
 }
 
 type dataSignerStore struct {
 	table ormtable.Table
 }
 
-func (x dataSignerStore) Insert(ctx context.Context, dataSigner *DataSigner) error {
-	return x.table.Insert(ctx, dataSigner)
+func (this dataSignerStore) Insert(ctx context.Context, dataSigner *DataSigner) error {
+	return this.table.Insert(ctx, dataSigner)
 }
-func (x dataSignerStore) Update(ctx context.Context, dataSigner *DataSigner) error {
-	return x.table.Update(ctx, dataSigner)
+
+func (this dataSignerStore) Update(ctx context.Context, dataSigner *DataSigner) error {
+	return this.table.Update(ctx, dataSigner)
 }
-func (x dataSignerStore) Save(ctx context.Context, dataSigner *DataSigner) error {
-	return x.table.Save(ctx, dataSigner)
+
+func (this dataSignerStore) Save(ctx context.Context, dataSigner *DataSigner) error {
+	return this.table.Save(ctx, dataSigner)
 }
-func (x dataSignerStore) Delete(ctx context.Context, dataSigner *DataSigner) error {
-	return x.table.Delete(ctx, dataSigner)
+
+func (this dataSignerStore) Delete(ctx context.Context, dataSigner *DataSigner) error {
+	return this.table.Delete(ctx, dataSigner)
 }
-func (x dataSignerStore) Has(ctx context.Context, id []byte) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, id)
+
+func (this dataSignerStore) Has(ctx context.Context, id []byte) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
-func (x dataSignerStore) Get(ctx context.Context, id []byte) (*DataSigner, error) {
+
+func (this dataSignerStore) Get(ctx context.Context, id []byte) (*DataSigner, error) {
 	var dataSigner DataSigner
-	found, err := x.table.PrimaryKey().Get(ctx, &dataSigner, id)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataSigner, id)
 	if !found {
 		return nil, err
 	}
 	return &dataSigner, err
 }
-func (x dataSignerStore) List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
+
+func (this dataSignerStore) List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return DataSignerIterator{it}, err
-}
-func (x dataSignerStore) ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataSignerIterator{it}, err
 }
 
+func (this dataSignerStore) ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return DataSignerIterator{it}, err
+}
+
+func (this dataSignerStore) doNotImplement() {}
+
 var _ DataSignerStore = dataSignerStore{}
+
+func NewDataSignerStore(db ormdb.ModuleDB) (DataSignerStore, error) {
+	table := db.GetTable(&DataSigner{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&DataSigner{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return dataSignerStore{table}, nil
+}
 
 type ResolverURLStore interface {
 	Insert(ctx context.Context, resolverURL *ResolverURL) error
@@ -284,8 +349,12 @@ type ResolverURLStore interface {
 	Delete(ctx context.Context, resolverURL *ResolverURL) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	Get(ctx context.Context, id uint64) (*ResolverURL, error)
+	HasByUrl(ctx context.Context, url string) (found bool, err error)
+	GetByUrl(ctx context.Context, url string) (*ResolverURL, error)
 	List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error)
 	ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error)
+
+	doNotImplement()
 }
 
 type ResolverURLIterator struct {
@@ -304,60 +373,106 @@ type ResolverURLIndexKey interface {
 	resolverURLIndexKey()
 }
 
+// primary key starting index..
 type ResolverURLIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverURLIdIndexKey) id() uint32            { return 4 /* primary key */ }
+func (x ResolverURLIdIndexKey) id() uint32            { return 4 }
 func (x ResolverURLIdIndexKey) values() []interface{} { return x.vs }
 func (x ResolverURLIdIndexKey) resolverURLIndexKey()  {}
 
-var _ ResolverURLIndexKey = ResolverURLIdIndexKey{}
+func (this ResolverURLIdIndexKey) WithId(id uint64) ResolverURLIdIndexKey {
+	this.vs = []interface{}{id}
+	return this
+}
 
-func (x ResolverURLIdIndexKey) WithId(id uint64) ResolverURLIdIndexKey {
-	x.vs = []interface{}{id}
-	return x
+type ResolverURLUrlIndexKey struct {
+	vs []interface{}
+}
+
+func (x ResolverURLUrlIndexKey) id() uint32            { return 1 }
+func (x ResolverURLUrlIndexKey) values() []interface{} { return x.vs }
+func (x ResolverURLUrlIndexKey) resolverURLIndexKey()  {}
+
+func (this ResolverURLUrlIndexKey) WithUrl(url string) ResolverURLUrlIndexKey {
+	this.vs = []interface{}{url}
+	return this
 }
 
 type resolverURLStore struct {
 	table ormtable.Table
 }
 
-func (x resolverURLStore) Insert(ctx context.Context, resolverURL *ResolverURL) error {
-	return x.table.Insert(ctx, resolverURL)
+func (this resolverURLStore) Insert(ctx context.Context, resolverURL *ResolverURL) error {
+	return this.table.Insert(ctx, resolverURL)
 }
-func (x resolverURLStore) Update(ctx context.Context, resolverURL *ResolverURL) error {
-	return x.table.Update(ctx, resolverURL)
+
+func (this resolverURLStore) Update(ctx context.Context, resolverURL *ResolverURL) error {
+	return this.table.Update(ctx, resolverURL)
 }
-func (x resolverURLStore) Save(ctx context.Context, resolverURL *ResolverURL) error {
-	return x.table.Save(ctx, resolverURL)
+
+func (this resolverURLStore) Save(ctx context.Context, resolverURL *ResolverURL) error {
+	return this.table.Save(ctx, resolverURL)
 }
-func (x resolverURLStore) Delete(ctx context.Context, resolverURL *ResolverURL) error {
-	return x.table.Delete(ctx, resolverURL)
+
+func (this resolverURLStore) Delete(ctx context.Context, resolverURL *ResolverURL) error {
+	return this.table.Delete(ctx, resolverURL)
 }
-func (x resolverURLStore) Has(ctx context.Context, id uint64) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, id)
+
+func (this resolverURLStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
 }
-func (x resolverURLStore) Get(ctx context.Context, id uint64) (*ResolverURL, error) {
+
+func (this resolverURLStore) Get(ctx context.Context, id uint64) (*ResolverURL, error) {
 	var resolverURL ResolverURL
-	found, err := x.table.PrimaryKey().Get(ctx, &resolverURL, id)
+	found, err := this.table.PrimaryKey().Get(ctx, &resolverURL, id)
 	if !found {
 		return nil, err
 	}
 	return &resolverURL, err
 }
-func (x resolverURLStore) List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return ResolverURLIterator{it}, err
+
+func (this resolverURLStore) HasByUrl(ctx context.Context, url string) (found bool, err error) {
+	return this.table.Has(ctx, &ResolverURL{
+		Url: url,
+	})
 }
-func (x resolverURLStore) ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+
+func (this resolverURLStore) GetByUrl(ctx context.Context, url string) (*ResolverURL, error) {
+	resolverURL := &ResolverURL{
+		Url: url,
+	}
+	found, err := this.table.Get(ctx, resolverURL)
+	if !found {
+		return nil, err
+	}
+	return resolverURL, nil
+}
+
+func (this resolverURLStore) List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ResolverURLIterator{it}, err
 }
 
+func (this resolverURLStore) ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	return ResolverURLIterator{it}, err
+}
+
+func (this resolverURLStore) doNotImplement() {}
+
 var _ ResolverURLStore = resolverURLStore{}
+
+func NewResolverURLStore(db ormdb.ModuleDB) (ResolverURLStore, error) {
+	table := db.GetTable(&ResolverURL{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&ResolverURL{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return resolverURLStore{table}, nil
+}
 
 type DataResolverStore interface {
 	Insert(ctx context.Context, dataResolver *DataResolver) error
@@ -368,6 +483,8 @@ type DataResolverStore interface {
 	Get(ctx context.Context, data_id uint64, resolver_id uint64) (*DataResolver, error)
 	List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error)
 	ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error)
+
+	doNotImplement()
 }
 
 type DataResolverIterator struct {
@@ -386,87 +503,155 @@ type DataResolverIndexKey interface {
 	dataResolverIndexKey()
 }
 
+// primary key starting index..
 type DataResolverDataIdResolverIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 5 /* primary key */ }
+func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 5 }
 func (x DataResolverDataIdResolverIdIndexKey) values() []interface{} { return x.vs }
 func (x DataResolverDataIdResolverIdIndexKey) dataResolverIndexKey() {}
 
-var _ DataResolverIndexKey = DataResolverDataIdResolverIdIndexKey{}
-
-func (x DataResolverDataIdResolverIdIndexKey) WithDataId(data_id uint64) DataResolverDataIdResolverIdIndexKey {
-	x.vs = []interface{}{data_id}
-	return x
+func (this DataResolverDataIdResolverIdIndexKey) WithDataId(data_id uint64) DataResolverDataIdResolverIdIndexKey {
+	this.vs = []interface{}{data_id}
+	return this
 }
-func (x DataResolverDataIdResolverIdIndexKey) WithDataIdResolverId(data_id uint64, resolver_id uint64) DataResolverDataIdResolverIdIndexKey {
-	x.vs = []interface{}{data_id, resolver_id}
-	return x
+
+func (this DataResolverDataIdResolverIdIndexKey) WithDataIdResolverId(data_id uint64, resolver_id uint64) DataResolverDataIdResolverIdIndexKey {
+	this.vs = []interface{}{data_id, resolver_id}
+	return this
 }
 
 type dataResolverStore struct {
 	table ormtable.Table
 }
 
-func (x dataResolverStore) Insert(ctx context.Context, dataResolver *DataResolver) error {
-	return x.table.Insert(ctx, dataResolver)
+func (this dataResolverStore) Insert(ctx context.Context, dataResolver *DataResolver) error {
+	return this.table.Insert(ctx, dataResolver)
 }
-func (x dataResolverStore) Update(ctx context.Context, dataResolver *DataResolver) error {
-	return x.table.Update(ctx, dataResolver)
+
+func (this dataResolverStore) Update(ctx context.Context, dataResolver *DataResolver) error {
+	return this.table.Update(ctx, dataResolver)
 }
-func (x dataResolverStore) Save(ctx context.Context, dataResolver *DataResolver) error {
-	return x.table.Save(ctx, dataResolver)
+
+func (this dataResolverStore) Save(ctx context.Context, dataResolver *DataResolver) error {
+	return this.table.Save(ctx, dataResolver)
 }
-func (x dataResolverStore) Delete(ctx context.Context, dataResolver *DataResolver) error {
-	return x.table.Delete(ctx, dataResolver)
+
+func (this dataResolverStore) Delete(ctx context.Context, dataResolver *DataResolver) error {
+	return this.table.Delete(ctx, dataResolver)
 }
-func (x dataResolverStore) Has(ctx context.Context, data_id uint64, resolver_id uint64) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, data_id, resolver_id)
+
+func (this dataResolverStore) Has(ctx context.Context, data_id uint64, resolver_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, data_id, resolver_id)
 }
-func (x dataResolverStore) Get(ctx context.Context, data_id uint64, resolver_id uint64) (*DataResolver, error) {
+
+func (this dataResolverStore) Get(ctx context.Context, data_id uint64, resolver_id uint64) (*DataResolver, error) {
 	var dataResolver DataResolver
-	found, err := x.table.PrimaryKey().Get(ctx, &dataResolver, data_id, resolver_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataResolver, data_id, resolver_id)
 	if !found {
 		return nil, err
 	}
 	return &dataResolver, err
 }
-func (x dataResolverStore) List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
+
+func (this dataResolverStore) List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }
-func (x dataResolverStore) ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
+
+func (this dataResolverStore) ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
 	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }
+
+func (this dataResolverStore) doNotImplement() {}
 
 var _ DataResolverStore = dataResolverStore{}
 
-type stateStore struct {
-	dataID       *dataIDStore
-	dataAnchor   *dataAnchorStore
-	dataSigner   *dataSignerStore
-	resolverURL  *resolverURLStore
-	dataResolver *dataResolverStore
+func NewDataResolverStore(db ormdb.ModuleDB) (DataResolverStore, error) {
+	table := db.GetTable(&DataResolver{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&DataResolver{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return dataResolverStore{table}, nil
 }
 
-func (x stateStore) DataID() DataIDStore {
+type StateStore interface {
+	DataIDStore() DataIDStore
+	DataAnchorStore() DataAnchorStore
+	DataSignerStore() DataSignerStore
+	ResolverURLStore() ResolverURLStore
+	DataResolverStore() DataResolverStore
+
+	doNotImplement()
+}
+
+type stateStore struct {
+	dataID       DataIDStore
+	dataAnchor   DataAnchorStore
+	dataSigner   DataSignerStore
+	resolverURL  ResolverURLStore
+	dataResolver DataResolverStore
+}
+
+func (x stateStore) DataIDStore() DataIDStore {
 	return x.dataID
 }
-func (x stateStore) DataAnchor() DataAnchorStore {
+
+func (x stateStore) DataAnchorStore() DataAnchorStore {
 	return x.dataAnchor
 }
-func (x stateStore) DataSigner() DataSignerStore {
+
+func (x stateStore) DataSignerStore() DataSignerStore {
 	return x.dataSigner
 }
-func (x stateStore) ResolverURL() ResolverURLStore {
+
+func (x stateStore) ResolverURLStore() ResolverURLStore {
 	return x.resolverURL
 }
-func (x stateStore) DataResolver() DataResolverStore {
+
+func (x stateStore) DataResolverStore() DataResolverStore {
 	return x.dataResolver
 }
 
+func (stateStore) doNotImplement() {}
+
 var _ StateStore = stateStore{}
+
+func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+	dataIDStore, err := NewDataIDStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	dataAnchorStore, err := NewDataAnchorStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	dataSignerStore, err := NewDataSignerStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	resolverURLStore, err := NewResolverURLStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	dataResolverStore, err := NewDataResolverStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return stateStore{
+		dataIDStore,
+		dataAnchorStore,
+		dataSignerStore,
+		resolverURLStore,
+		dataResolverStore,
+	}, nil
+}

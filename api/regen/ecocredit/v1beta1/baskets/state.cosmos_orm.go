@@ -4,13 +4,11 @@ package baskets
 
 import (
 	context "context"
+	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 )
-
-type StateStore interface {
-	BasketBalance() BasketBalanceStore
-}
 
 type BasketBalanceStore interface {
 	Insert(ctx context.Context, basketBalance *BasketBalance) error
@@ -21,6 +19,8 @@ type BasketBalanceStore interface {
 	Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error)
 	List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
 	ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
+
+	doNotImplement()
 }
 
 type BasketBalanceIterator struct {
@@ -39,71 +39,107 @@ type BasketBalanceIndexKey interface {
 	basketBalanceIndexKey()
 }
 
+// primary key starting index..
 type BasketBalanceBasketDenomBatchIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketBalanceBasketDenomBatchIdIndexKey) id() uint32             { return 1 /* primary key */ }
+func (x BasketBalanceBasketDenomBatchIdIndexKey) id() uint32             { return 1 }
 func (x BasketBalanceBasketDenomBatchIdIndexKey) values() []interface{}  { return x.vs }
 func (x BasketBalanceBasketDenomBatchIdIndexKey) basketBalanceIndexKey() {}
 
-var _ BasketBalanceIndexKey = BasketBalanceBasketDenomBatchIdIndexKey{}
-
-func (x BasketBalanceBasketDenomBatchIdIndexKey) WithBasketDenom(basket_denom string) BasketBalanceBasketDenomBatchIdIndexKey {
-	x.vs = []interface{}{basket_denom}
-	return x
+func (this BasketBalanceBasketDenomBatchIdIndexKey) WithBasketDenom(basket_denom string) BasketBalanceBasketDenomBatchIdIndexKey {
+	this.vs = []interface{}{basket_denom}
+	return this
 }
-func (x BasketBalanceBasketDenomBatchIdIndexKey) WithBasketDenomBatchId(basket_denom string, batch_id uint64) BasketBalanceBasketDenomBatchIdIndexKey {
-	x.vs = []interface{}{basket_denom, batch_id}
-	return x
+
+func (this BasketBalanceBasketDenomBatchIdIndexKey) WithBasketDenomBatchId(basket_denom string, batch_id uint64) BasketBalanceBasketDenomBatchIdIndexKey {
+	this.vs = []interface{}{basket_denom, batch_id}
+	return this
 }
 
 type basketBalanceStore struct {
 	table ormtable.Table
 }
 
-func (x basketBalanceStore) Insert(ctx context.Context, basketBalance *BasketBalance) error {
-	return x.table.Insert(ctx, basketBalance)
+func (this basketBalanceStore) Insert(ctx context.Context, basketBalance *BasketBalance) error {
+	return this.table.Insert(ctx, basketBalance)
 }
-func (x basketBalanceStore) Update(ctx context.Context, basketBalance *BasketBalance) error {
-	return x.table.Update(ctx, basketBalance)
+
+func (this basketBalanceStore) Update(ctx context.Context, basketBalance *BasketBalance) error {
+	return this.table.Update(ctx, basketBalance)
 }
-func (x basketBalanceStore) Save(ctx context.Context, basketBalance *BasketBalance) error {
-	return x.table.Save(ctx, basketBalance)
+
+func (this basketBalanceStore) Save(ctx context.Context, basketBalance *BasketBalance) error {
+	return this.table.Save(ctx, basketBalance)
 }
-func (x basketBalanceStore) Delete(ctx context.Context, basketBalance *BasketBalance) error {
-	return x.table.Delete(ctx, basketBalance)
+
+func (this basketBalanceStore) Delete(ctx context.Context, basketBalance *BasketBalance) error {
+	return this.table.Delete(ctx, basketBalance)
 }
-func (x basketBalanceStore) Has(ctx context.Context, basket_denom string, batch_id uint64) (found bool, err error) {
-	return x.table.PrimaryKey().Has(ctx, basket_denom, batch_id)
+
+func (this basketBalanceStore) Has(ctx context.Context, basket_denom string, batch_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, basket_denom, batch_id)
 }
-func (x basketBalanceStore) Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error) {
+
+func (this basketBalanceStore) Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error) {
 	var basketBalance BasketBalance
-	found, err := x.table.PrimaryKey().Get(ctx, &basketBalance, basket_denom, batch_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_denom, batch_id)
 	if !found {
 		return nil, err
 	}
 	return &basketBalance, err
 }
-func (x basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
+
+func (this basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
 	opts = append(opts, ormlist.Prefix(prefixKey.values()))
-	it, err := x.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BasketBalanceIterator{it}, err
 }
-func (x basketBalanceStore) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
+
+func (this basketBalanceStore) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
 	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
-	it, err := x.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BasketBalanceIterator{it}, err
 }
+
+func (this basketBalanceStore) doNotImplement() {}
 
 var _ BasketBalanceStore = basketBalanceStore{}
 
-type stateStore struct {
-	basketBalance *basketBalanceStore
+func NewBasketBalanceStore(db ormdb.ModuleDB) (BasketBalanceStore, error) {
+	table := db.GetTable(&BasketBalance{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BasketBalance{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return basketBalanceStore{table}, nil
 }
 
-func (x stateStore) BasketBalance() BasketBalanceStore {
+type StateStore interface {
+	BasketBalanceStore() BasketBalanceStore
+
+	doNotImplement()
+}
+
+type stateStore struct {
+	basketBalance BasketBalanceStore
+}
+
+func (x stateStore) BasketBalanceStore() BasketBalanceStore {
 	return x.basketBalance
 }
 
+func (stateStore) doNotImplement() {}
+
 var _ StateStore = stateStore{}
+
+func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+	basketBalanceStore, err := NewBasketBalanceStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return stateStore{
+		basketBalanceStore,
+	}, nil
+}
