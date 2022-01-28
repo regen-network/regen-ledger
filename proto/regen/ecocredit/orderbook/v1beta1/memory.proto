@@ -48,7 +48,7 @@ message BuyOrderSellOrderMatch {
   // bid_price_complement is the the complement (~ operator) of the bid price encoded as a uint64 (which should have sufficient precision) - effectively ~price * 10^exponent (usually 10^6). The complement is used so that bids can be sorted high to low.
   uint64 bid_price_complement = 4;
 
-  // ask_price is of the ask price encoded to a uint64. Ask prices are sorted low to high.
+  // ask_price is the ask price encoded to a uint64. Ask prices are sorted low to high.
   uint64 ask_price = 5;
 }
 
