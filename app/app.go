@@ -453,8 +453,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			crisistypes.ModuleName,
 			govtypes.ModuleName,
 			stakingtypes.ModuleName,
-			ibchost.ModuleName,
-			ibctransfertypes.ModuleName,
 			capabilitytypes.ModuleName,
 			authtypes.ModuleName,
 			banktypes.ModuleName,
