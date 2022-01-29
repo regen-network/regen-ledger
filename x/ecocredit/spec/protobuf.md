@@ -1436,7 +1436,7 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 | Classes | [QueryClassesRequest](#regen.ecocredit.v1alpha2.QueryClassesRequest) | [QueryClassesResponse](#regen.ecocredit.v1alpha2.QueryClassesResponse) | Classes queries for all credit classes with pagination. |
 | ClassInfo | [QueryClassInfoRequest](#regen.ecocredit.v1alpha2.QueryClassInfoRequest) | [QueryClassInfoResponse](#regen.ecocredit.v1alpha2.QueryClassInfoResponse) | ClassInfo queries for information on a credit class. |
 | Projects | [QueryProjectsRequest](#regen.ecocredit.v1alpha2.QueryProjectsRequest) | [QueryProjectsResponse](#regen.ecocredit.v1alpha2.QueryProjectsResponse) | Projects queries for all projects within a class with pagination. |
-| ProjectInfo | [QueryProjectInfoRequest](#regen.ecocredit.v1alpha2.QueryProjectInfoRequest) | [QueryProjectInfoResponse](#regen.ecocredit.v1alpha2.QueryProjectInfoResponse) | ClassInfo queries for information on a project. |
+| ProjectInfo | [QueryProjectInfoRequest](#regen.ecocredit.v1alpha2.QueryProjectInfoRequest) | [QueryProjectInfoResponse](#regen.ecocredit.v1alpha2.QueryProjectInfoResponse) | ProjectInfo queries for information on a project. |
 | Batches | [QueryBatchesRequest](#regen.ecocredit.v1alpha2.QueryBatchesRequest) | [QueryBatchesResponse](#regen.ecocredit.v1alpha2.QueryBatchesResponse) | Batches queries for all batches in the given project with pagination. |
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha2.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha2.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha2.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
@@ -1761,7 +1761,7 @@ MsgCreateClassResponse is the Msg/CreateClass response type.
 <a name="regen.ecocredit.v1alpha2.MsgCreateProject"></a>
 
 ### MsgCreateProject
-MsgCreateProjectResponse is the Msg/CreateProject request type.
+MsgCreateProject is the Msg/CreateProject request type.
 
 
 | Field | Type | Label | Description |
@@ -1769,7 +1769,7 @@ MsgCreateProjectResponse is the Msg/CreateProject request type.
 | issuer | [string](#string) |  | issuer is the address of an approved issuer for the credit class through which batches will be issued. It is not required, however, that this same issuer issue all batches for a project. |
 | class_id | [string](#string) |  | class_id is the unique ID of the class within which the project is created. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata attached to the project. |
-| project_location | [string](#string) |  | project_location is the location of the project backing the credits in this batch. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. country-code is required, while sub-national-code and postal-code can be added for increasing precision. |
+| project_location | [string](#string) |  | project_location is the location of the project. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. country-code is required, while sub-national-code and postal-code can be added for increasing precision. |
 | project_id | [string](#string) |  | project_id is an optional user-specified project ID which can be used instead of an auto-generated ID. If project_id is provided, it must be unique within the credit class and match the regex [A-Za-z0-9]{2,16} or else the operation will fail. If project_id is omitted an ID will automatically be generated. |
 
 

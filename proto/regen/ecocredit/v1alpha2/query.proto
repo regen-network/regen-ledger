@@ -29,7 +29,7 @@ service Query {
         "/regen/ecocredit/v1alpha2/classes/{class_id}/projects";
   }
 
-  // ClassInfo queries for information on a project.
+  // ProjectInfo queries for information on a project.
   rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha2/projects/{project_id}";

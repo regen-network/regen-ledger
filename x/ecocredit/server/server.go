@@ -18,26 +18,25 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+	BatchesByProjectIndex    byte = 0x7
 
-	ProjectInfoTablePrefix    byte = 0x12
-	ProjectInfoTableSeqPrefix byte = 0x13
-	ProjectsByClassIDIndex    byte = 0x14
-	BatchesByProjectIndex     byte = 0x15
+	// project table
+	ProjectInfoTablePrefix    byte = 0x10
+	ProjectInfoTableSeqPrefix byte = 0x11
+	ProjectsByClassIDIndex    byte = 0x12
 
 	// sell order table
-	SellOrderTablePrefix             byte = 0x10
-	SellOrderTableSeqPrefix          byte = 0x11
-	SellOrderByAddressIndexPrefix    byte = 0x12
-	SellOrderByBatchDenomIndexPrefix byte = 0x13
-	SellOrderByExpirationIndexPrefix byte = 0x14
+	SellOrderTablePrefix             byte = 0x20
+	SellOrderTableSeqPrefix          byte = 0x21
+	SellOrderByAddressIndexPrefix    byte = 0x22
+	SellOrderByBatchDenomIndexPrefix byte = 0x23
 
 	// buy order table
-	BuyOrderTablePrefix             byte = 0x20
-	BuyOrderTableSeqPrefix          byte = 0x21
-	BuyOrderByAddressIndexPrefix    byte = 0x22
-	BuyOrderByExpirationIndexPrefix byte = 0x23
+	BuyOrderTablePrefix          byte = 0x30
+	BuyOrderTableSeqPrefix       byte = 0x31
+	BuyOrderByAddressIndexPrefix byte = 0x32
 
-	AskDenomTablePrefix byte = 0x30
+	AskDenomTablePrefix byte = 0x40
 )
 
 type serverImpl struct {

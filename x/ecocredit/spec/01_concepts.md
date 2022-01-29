@@ -11,6 +11,17 @@ A credit class is the primary abstraction for ecosystem service credits and is d
 
 Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
 
+## Project
+
+A project describes the high-level on-chain information for an issuer associated with a credit class. A project is defined by:
+- **project ID**: The unique ID of the project
+- **class ID**: The unique ID of the credit class for this project
+- **issuer***: The issuer of the credit batches for this project
+- **project location**: The location of the project backing the credits issued from this project
+- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the project.
+
+Each credit batch is associated with a project, backing each issuance with information about the issuer of the credits. A credit class can have multiple projects that issue credits from the credit class. It is not required that the same issuer issue all batches for a project.
+
 ## Credit Type
 
 A credit type is the primary indicator used by the methodology to measure the change or impact resulting from an ecosystem service. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
@@ -39,7 +50,7 @@ Credits are issued in batches by credit issuers granted the authority to issue c
 
 Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the reduction of carbon emissions was measured between `20190101` and `20200101`.
 
-A credit batch also includes information about the issuer of the credit batch and the project location, and any additional information can be attached to the metadata field. The credit batch tracks the total number of active credits and the total number of cancelled credits.
+A credit batch is associated with a project, which includes information about the issuer, and any additional information can be attached to the metadata field. When credits are issued, they can be issued in a tradable or retired state. The credit batch also tracks the total number of active credits (tradable and retired credits) and the total number of cancelled credits.
 
 ## Credits
 

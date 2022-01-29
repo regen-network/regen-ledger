@@ -152,7 +152,7 @@ func (m *MsgCreateClassResponse) GetClassId() string {
 	return ""
 }
 
-// MsgCreateProjectResponse is the Msg/CreateProject request type.
+// MsgCreateProject is the Msg/CreateProject request type.
 type MsgCreateProject struct {
 	// issuer is the address of an approved issuer for the credit class through
 	// which batches will be issued. It is not required, however, that this same
@@ -162,8 +162,7 @@ type MsgCreateProject struct {
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// project_location is the location of the project backing the credits in this
-	// batch. It is a string of the form
+	// project_location is the location of the project. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
 	// fields conforming to ISO 3166-2, and postal-code being up to 64
 	// alphanumeric characters. country-code is required, while sub-national-code
