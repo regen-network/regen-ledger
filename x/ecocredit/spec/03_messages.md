@@ -40,7 +40,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgSend
 
-Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
+`Send` sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
 
 +++ https://github.com/regen-network/regen-ledger/blob/50eaceda5eabc5970effe491f0d58194852718c9/proto/regen/ecocredit/v1alpha1/tx.proto#L122-L160
 
@@ -56,7 +56,7 @@ Send sends tradable credits from one account to another account. Sent credits ca
 
 ## MsgRetire
 
-Retire retires a specified number of credits in the holder's account.
+`Retire` retires a specified number of credits in the holder's account.
 
 +++ https://github.com/regen-network/regen-ledger/blob/50eaceda5eabc5970effe491f0d58194852718c9/proto/regen/ecocredit/v1alpha1/tx.proto#L165-L192
 
@@ -70,7 +70,7 @@ Retire retires a specified number of credits in the holder's account.
 
 ## MsgCancel
 
-Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger.
+`Cancel` removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger.
 
 +++ https://github.com/regen-network/regen-ledger/blob/50eaceda5eabc5970effe491f0d58194852718c9/proto/regen/ecocredit/v1alpha1/tx.proto#L198-L217
 
@@ -80,3 +80,51 @@ Cancel removes a number of credits from the holder's account and also deducts th
 - `credits` must not be empty
 - `batch_denom` must be a valid batch denomination
 - `amount` must be positive
+
+## MsgSell
+
+`Sell` creates one or more sell orders (i.e. sell orders are created in batches).
+
++++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L292-L324
+
+### Validation:
+
+- `owner` must ba a valid address, and their signature must be present in the transaction
+- `batch_denom` must be a valid credit batch denom
+- `quantity` must be a positive decimal
+- `ask_price` must be a positive integer
+
+## MsgUpdateSellOrders
+
+`UpdateSellOrders` updates one or more sell orders (i.e. sell orders are updated in batches).
+
++++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L333-L358
+
+### Validation:
+
+- `owner` must ba a valid address, and their signature must be present in the transaction
+- `new_quantity` must be a positive decimal
+- `new_ask_price` must be a positive integer
+
+## MsgBuy
+
+`MsgBuy` creates one or more buy orders (i.e. buy orders are created in batches).
+
++++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L363-L391
+
+### Validation:
+
+- `buyer` must ba a valid address, and their signature must be present in the transaction
+- `quantity` must be a positive decimal
+- `bid_price` must be a positive integer
+
+## MsgAllowAskDenom
+
+`AllowAskDenom` is a governance operation which authorizes a new ask denom to be used in sell orders.
+
++++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L430-L444
+
+### Validation:
+
+- `root_address` must be the address of the governance module
+- `denom` must be a valid denom

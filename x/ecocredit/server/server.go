@@ -5,7 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -30,11 +29,13 @@ const (
 	SellOrderTableSeqPrefix          byte = 0x11
 	SellOrderByAddressIndexPrefix    byte = 0x12
 	SellOrderByBatchDenomIndexPrefix byte = 0x13
+	SellOrderByExpirationIndexPrefix byte = 0x14
 
 	// buy order table
-	BuyOrderTablePrefix          byte = 0x20
-	BuyOrderTableSeqPrefix       byte = 0x21
-	BuyOrderByAddressIndexPrefix byte = 0x22
+	BuyOrderTablePrefix             byte = 0x20
+	BuyOrderTableSeqPrefix          byte = 0x21
+	BuyOrderByAddressIndexPrefix    byte = 0x22
+	BuyOrderByExpirationIndexPrefix byte = 0x23
 
 	AskDenomTablePrefix byte = 0x30
 )
@@ -56,10 +57,12 @@ type serverImpl struct {
 	sellOrderTable             orm.AutoUInt64Table
 	sellOrderByAddressIndex    orm.Index
 	sellOrderByBatchDenomIndex orm.Index
+	sellOrderByExpirationIndex orm.Index
 
 	// buy order table
-	buyOrderTable          orm.AutoUInt64Table
-	buyOrderByAddressIndex orm.Index
+	buyOrderTable             orm.AutoUInt64Table
+	buyOrderByAddressIndex    orm.Index
+	buyOrderByExpirationIndex orm.Index
 
 	askDenomTable orm.PrimaryKeyTable
 
@@ -137,6 +140,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
+	s.sellOrderByExpirationIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByExpirationIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		if order.Expiration == nil {
+			return nil, nil
+		}
+		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
+	}, uint64(0))
+	if err != nil {
+		panic(err.Error())
+	}
 	s.sellOrderTable = sellOrderTableBuilder.Build()
 
 	buyOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(BuyOrderTablePrefix, BuyOrderTableSeqPrefix, storeKey, &ecocredit.BuyOrder{}, cdc)
@@ -154,6 +170,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		}
 		return []interface{}{addr.Bytes()}, nil
 	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.buyOrderByExpirationIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByExpirationIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.BuyOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
+		}
+		if order.Expiration == nil {
+			return nil, nil
+		}
+		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
+	}, uint64(0))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -188,11 +217,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 }
 
 func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper) {
+	bankKeeper ecocredit.BankKeeper) ecocredit.Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+	return impl
 }
