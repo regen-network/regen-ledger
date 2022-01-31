@@ -155,16 +155,16 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, data.ErrResolverUndefined.Wrapf("id %d", msg.ResolverId)
 	}
 
-	for _, _ = range msg.Data {
-		// TODO:
-		//contentHashV1 := *data.ContentHash{Sum: }
-		//s.anchorAndGetIRI(sdk.UnwrapSDKContext(ctx), msg.Data)
-
+	for _, datum := range msg.Data {
+		_, id, _, err := s.anchorAndGetIRI(sdk.UnwrapSDKContext(ctx), datum)
+		if err != nil {
+			return nil, err
+		}
 		err = s.stateStore.DataResolverStore().Save(
 			ctx,
 			&datav1alpha2.DataResolver{
 				ResolverId: msg.ResolverId,
-				// TODO: DataId:
+				DataId:     id,
 			},
 		)
 		if err != nil {

@@ -2112,8 +2112,8 @@ func (x *fastReflection_DataResolver) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_DataResolver) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.DataId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.DataId)
+	if len(x.DataId) != 0 {
+		value := protoreflect.ValueOfBytes(x.DataId)
 		if !f(fd_DataResolver_data_id, value) {
 			return
 		}
@@ -2140,7 +2140,7 @@ func (x *fastReflection_DataResolver) Range(f func(protoreflect.FieldDescriptor,
 func (x *fastReflection_DataResolver) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.DataResolver.data_id":
-		return x.DataId != uint64(0)
+		return len(x.DataId) != 0
 	case "regen.data.v1alpha2.DataResolver.resolver_id":
 		return x.ResolverId != uint64(0)
 	default:
@@ -2160,7 +2160,7 @@ func (x *fastReflection_DataResolver) Has(fd protoreflect.FieldDescriptor) bool 
 func (x *fastReflection_DataResolver) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.DataResolver.data_id":
-		x.DataId = uint64(0)
+		x.DataId = nil
 	case "regen.data.v1alpha2.DataResolver.resolver_id":
 		x.ResolverId = uint64(0)
 	default:
@@ -2181,7 +2181,7 @@ func (x *fastReflection_DataResolver) Get(descriptor protoreflect.FieldDescripto
 	switch descriptor.FullName() {
 	case "regen.data.v1alpha2.DataResolver.data_id":
 		value := x.DataId
-		return protoreflect.ValueOfUint64(value)
+		return protoreflect.ValueOfBytes(value)
 	case "regen.data.v1alpha2.DataResolver.resolver_id":
 		value := x.ResolverId
 		return protoreflect.ValueOfUint64(value)
@@ -2206,7 +2206,7 @@ func (x *fastReflection_DataResolver) Get(descriptor protoreflect.FieldDescripto
 func (x *fastReflection_DataResolver) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.DataResolver.data_id":
-		x.DataId = value.Uint()
+		x.DataId = value.Bytes()
 	case "regen.data.v1alpha2.DataResolver.resolver_id":
 		x.ResolverId = value.Uint()
 	default:
@@ -2247,7 +2247,7 @@ func (x *fastReflection_DataResolver) Mutable(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_DataResolver) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.DataResolver.data_id":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfBytes(nil)
 	case "regen.data.v1alpha2.DataResolver.resolver_id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
@@ -2319,8 +2319,9 @@ func (x *fastReflection_DataResolver) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.DataId != 0 {
-			n += 1 + runtime.Sov(uint64(x.DataId))
+		l = len(x.DataId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.ResolverId != 0 {
 			n += 1 + runtime.Sov(uint64(x.ResolverId))
@@ -2359,10 +2360,12 @@ func (x *fastReflection_DataResolver) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x10
 		}
-		if x.DataId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.DataId))
+		if len(x.DataId) > 0 {
+			i -= len(x.DataId)
+			copy(dAtA[i:], x.DataId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DataId)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -2414,10 +2417,10 @@ func (x *fastReflection_DataResolver) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 0 {
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DataId", wireType)
 				}
-				x.DataId = 0
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -2427,11 +2430,26 @@ func (x *fastReflection_DataResolver) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.DataId |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+				if byteLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + byteLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DataId = append(x.DataId[:0], dAtA[iNdEx:postIndex]...)
+				if x.DataId == nil {
+					x.DataId = []byte{}
+				}
+				iNdEx = postIndex
 			case 2:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ResolverId", wireType)
@@ -2684,7 +2702,7 @@ type DataResolver struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DataId     uint64 `protobuf:"varint,1,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
+	DataId     []byte `protobuf:"bytes,1,opt,name=data_id,json=dataId,proto3" json:"data_id,omitempty"`
 	ResolverId uint64 `protobuf:"varint,2,opt,name=resolver_id,json=resolverId,proto3" json:"resolver_id,omitempty"`
 }
 
@@ -2708,11 +2726,11 @@ func (*DataResolver) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1alpha2_state_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *DataResolver) GetDataId() uint64 {
+func (x *DataResolver) GetDataId() []byte {
 	if x != nil {
 		return x.DataId
 	}
-	return 0
+	return nil
 }
 
 func (x *DataResolver) GetResolverId() uint64 {
@@ -2758,7 +2776,7 @@ var file_regen_data_v1alpha2_state_proto_rawDesc = []byte{
 	0x9e, 0xd3, 0x8e, 0x03, 0x15, 0x0a, 0x06, 0x0a, 0x02, 0x69, 0x64, 0x10, 0x01, 0x12, 0x09, 0x0a,
 	0x03, 0x75, 0x72, 0x6c, 0x10, 0x01, 0x18, 0x01, 0x18, 0x04, 0x22, 0x69, 0x0a, 0x0c, 0x44, 0x61,
 	0x74, 0x61, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x17, 0x0a, 0x07, 0x64, 0x61,
-	0x74, 0x61, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x74,
+	0x74, 0x61, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x64, 0x61, 0x74,
 	0x61, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f,
 	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76,
 	0x65, 0x72, 0x49, 0x64, 0x3a, 0x1f, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x19, 0x0a, 0x15, 0x0a, 0x13,

@@ -94,7 +94,7 @@ message MsgDefineResolverResponse {
 message MsgRegisterResolver {
   string signer = 1;
   uint64 resolver_id = 2;
-  repeated ContentHash.Graph data = 3;
+  repeated ContentHash data = 3;
 }
 
 message MsgRegisterResolverResponse {}

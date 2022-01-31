@@ -54,6 +54,6 @@ message DataResolver {
     primary_key: {fields: "data_id,resolver_id"}
   };
 
-  uint64 data_id = 1;
+  bytes data_id = 1;
   uint64 resolver_id = 2;
 }
