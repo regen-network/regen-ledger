@@ -30,11 +30,13 @@ const (
 	SellOrderTableSeqPrefix          byte = 0x21
 	SellOrderByAddressIndexPrefix    byte = 0x22
 	SellOrderByBatchDenomIndexPrefix byte = 0x23
+	SellOrderByExpirationIndexPrefix byte = 0x24
 
 	// buy order table
-	BuyOrderTablePrefix          byte = 0x30
-	BuyOrderTableSeqPrefix       byte = 0x31
-	BuyOrderByAddressIndexPrefix byte = 0x32
+	BuyOrderTablePrefix             byte = 0x30
+	BuyOrderTableSeqPrefix          byte = 0x31
+	BuyOrderByAddressIndexPrefix    byte = 0x32
+	BuyOrderByExpirationIndexPrefix byte = 0x33
 
 	AskDenomTablePrefix byte = 0x40
 )
