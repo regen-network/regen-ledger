@@ -162,6 +162,7 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		batch, err := it.Value()
@@ -205,6 +206,7 @@ func (o buyOrderMatcher) matchByProjectIdSelector(selector *marketplacev1beta1.P
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		batch, err := it.Value()
@@ -252,6 +254,7 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		sellOrder, err := it.Value()

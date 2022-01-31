@@ -76,6 +76,7 @@ func (m sellOrderMatcher) matchCreditClass() error {
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		selector, err := it.Value()
@@ -107,6 +108,7 @@ func (m sellOrderMatcher) matchProject() error {
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		selector, err := it.Value()
@@ -134,6 +136,7 @@ func (m sellOrderMatcher) matchBatch() error {
 	if err != nil {
 		return err
 	}
+	defer it.Close()
 
 	for it.Next() {
 		selector, err := it.Value()
