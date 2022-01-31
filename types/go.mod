@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.44.2
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/regen-network/regen-ledger/api v0.1.0-alpha.1
