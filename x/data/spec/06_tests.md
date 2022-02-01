@@ -71,3 +71,9 @@ If a user tries to sign data and the content hash is empty, then the transaction
 - GIVEN - the content hash is empty
 - WHEN - user tries to sign data
 - THEN - transaction fails, data is not signed
+
+If a user tries to sign data and the content hash does not exist, then the transaction fails and the data is not signed.
+
+- GIVEN - the content hash does not exist
+- WHEN - user tries to sign data
+- THEN - transaction fails, data is not signed
