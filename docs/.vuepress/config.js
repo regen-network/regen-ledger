@@ -132,10 +132,10 @@ module.exports = {
                   path: '/modules/data/'
                 },
                 '/modules/data/01_concepts',
-                // '/modules/data/02_state',
-                // '/modules/data/03_messages',
-                // '/modules/data/04_events',
-                // '/modules/data/05_client',
+                '/modules/data/02_state',
+                '/modules/data/03_messages',
+                '/modules/data/04_events',
+                '/modules/data/05_client',
                 {
                   title: 'Protobuf Documentation',
                   path: '/modules/data/protobuf'

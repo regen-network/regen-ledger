@@ -1,7 +1,7 @@
 # Data Module
 
 ::: tip COMING SOON
-The data module is under active development. Check back soon for more information.
+The data module is under active development, and is currently only available in experimental builds of Regen Ledger.
 :::
 
 ## Abstract
@@ -13,11 +13,10 @@ The data module is intended to be a versatile module for anchoring, signing, and
 ## Contents
 
 1. **[Concepts](01_concepts.md)**
-
-<!-- 2. **[State](02_state.md)**
+2. **[State](02_state.md)**
 3. **[Msg Service](03_messages.md)**
 4. **[Events](04_events.md)**
-5. **[Client](05_client.md)** -->
+5. **[Client](05_client.md)**
 
 ## Protobuf
 
