@@ -53,6 +53,22 @@ Tradable credits are credits that can be transferred by the owner to another acc
 
 Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
 
+## Simple Order Book
+
+The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution. In the current implementation of the order book, there is no automatic matching and users have to manually take the orders.
+
+### Sell Order
+
+A sell order is an order to sell ecosystem service credits. Each sell order has a unique ID that is auto-generated using a sequence table. A sell order stores the address of the owner of the credits being sold, the credit batch ID (denomination) of the credits being sold, the quantity of credits being sold, the asking price for each unit of the credit batch, and an option to enable/disable auto-retirement. Each credit unit of the credit batch will be sold for at least the asking price.
+
+### Buy Order
+
+A buy order is an order to buy ecosystem service credits. Like the sell order, each buy order has a unique ID that is auto-generated using a sequence table. A buy order can either be a direct buy order (an order against a specific sell order) or an indirect buy order (an order that can be filled by multiple sell orders that match a filter criteria). A buy order stores the selection (either the sell order id or the filter criteria), the quantity of credits to buy, the bid price for each unit of the credit batch(es), an option to enable/disable auto-retirement, and an option to enable/disable partial fills. A buy order can only successfully disable auto-retirement if the sell-order has disabled auto-retirement.
+
+## Ask Denom
+
+An "ask denom" is a denom that has been approved through a governance process as an accepted denom for listing ecosystem service credits. The "ask denom" includes the denom to allow (the base denom), the denom to display to the user, and an exponent that relates the denom to the display denom.
+
 ---
 
 ![Ecocredit Types](./assets/types.png)

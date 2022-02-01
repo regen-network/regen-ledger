@@ -40,9 +40,9 @@ If a user tries to create a credit class and the user provides metadata that is 
 - WHEN - user tries to create a credit class
 - THEN - transaction is successful, credit class is created
 
-If a user tries to create a credit class and the user provides metadata that is NOT base54 encoded, then the transaction fails and the credit class is NOT created.
+If a user tries to create a credit class and the user provides metadata that is NOT base64 encoded, then the transaction fails and the credit class is NOT created.
 
-- GIVEN - user provides metadata that is NOT base54 encoded
+- GIVEN - user provides metadata that is NOT base64 encoded
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
@@ -73,18 +73,6 @@ If a user tries to create a credit class and the user provides a valid issuer ad
 If a user tries to create a credit class and the user provides an invalid issuer address, then the transaction fails and the credit class is NOT created.
 
 - GIVEN - user provides an invalid issuer address
-- WHEN - user tries to create a credit class
-- THEN - transaction fails, credit class is NOT created
-
-If a user tries to create a credit class and the user provides a valid credit type (credit type is included in the list of approved credit types), then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides a valid credit type
-- WHEN - user tries to create a credit class
-- THEN - transaction is successful, credit class is created
-
-If a user tries to create a credit class and the user provide an invalid credit type (credit type is NOT included in the list of approved credit types), then the transaction fails and the credit class is NOT created.
-
-- GIVEN - user provides an invalid credit type
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
@@ -281,3 +269,185 @@ If a user tries to cancel credits and the user provides an invalid batch denomin
 - GIVEN - user provides an invalid batch denomination
 - WHEN - user tries to cancel credits
 - THEN - transaction fails, credits are NOT cancelled
+
+### Create Sell Order
+
+If a user tries to create a sell order and the user provides a valid batch denomination, then the transaction is successful and the sell order is created.
+
+- GIVEN - user provides a valid batch denomination
+- WHEN - user tries to create a sell order
+- THEN - transaction is successful, sell order is created
+
+If a user tries to create a sell order and the user provides an invalid batch denomination, then the transaction fails and the sell order is NOT created.
+
+- GIVEN - user provides an invalid batch denomination
+- WHEN - user tries to create a sell order
+- THEN - transaction fails, sell order is NOT created
+
+If a user tries to create a sell order and the user provides a batch denomination that they hold credits for, then the transaction is successful and the sell order is created.
+
+- GIVEN - user provides a batch denomination that they hold credits for
+- WHEN - user tries to create a sell order
+- THEN - transaction is successful, sell order is created
+
+If a user tries to create a sell order and the user provides a batch denomination that they do NOT hold credits for, then the transaction fails and the sell order is NOT created.
+
+- GIVEN - user provides a batch denomination that they do NOT hold credits for
+- WHEN - user tries to create a sell order
+- THEN - transaction fails, sell order is NOT created
+
+If a user tries to create a sell order and the user provides a quantity that is less than or equal to their credit balance, then the transaction is successful and the sell order is created.
+
+- GIVEN - user provides a quantity that is less than or equal to their credit balance
+- WHEN - user tries to create a sell order
+- THEN - transaction is successful, sell order is created
+
+If a user tries to create a sell order and the user provides a quantity that is more than their credit balance, then the transaction fails and the sell order is NOT created.
+
+- GIVEN - user provides a quantity that is more than their credit balance
+- WHEN - user tries to create a sell order
+- THEN - transaction fails, sell order is NOT created
+
+If a user tries to create a sell order and the user provides an ask price using an ask denom that is allowed, then the transaction is successful and the sell order is created.
+
+- GIVEN - user provides an ask price using an ask denom that is allowed
+- WHEN - user tries to create a sell order
+- THEN - transaction is successful, sell order is created
+
+If a user tries to create a sell order and the user provides an ask price using an ask denom that is NOT allowed, then the transaction fails and the sell order is NOT created.
+
+- GIVEN - user provides an ask price using an ask denom that is NOT allowed
+- WHEN - user tries to create a sell order
+- THEN - transaction fails, sell order is NOT created
+
+## Update Sell Order
+
+If a user tries to update a sell order and the user provides a sell order id that does exist, then the transaction is successful and the sell order is updated.
+
+- GIVEN - user provides a sell order id that does exist
+- WHEN - user tries to update a sell order
+- THEN - transaction is successful, sell order is updated
+
+If a user tries to update a sell order and the user provides a sell order id that does NOT exist, then the transaction fails and the sell order is NOT updated.
+
+- GIVEN - user provides a sell order id that does NOT exist
+- WHEN - user tries to update a sell order
+- THEN - transaction fails, sell order is NOT updated
+
+If a user tries to update a sell order and the user provides a sell order id that they are the owner of, then the transaction is successful and the sell order is updated.
+
+- GIVEN - user provides a sell order id that they are the owner of
+- WHEN - user tries to update a sell order
+- THEN - transaction is successful, sell order is updated
+
+If a user tries to update a sell order and the user provides a sell order id that they are not the owner of, then the transaction fails and the sell order is NOT updated.
+
+- GIVEN - user provides a sell order id that they are not the owner of
+- WHEN - user tries to update a sell order
+- THEN - transaction fails, sell order is NOT updated
+
+If a user tries to update a sell order and the user provides a new quantity that is less than or equal to their credit balance, then the transaction is successful and the sell order is updated.
+
+- GIVEN - user provides a new quantity that is less than or equal to their credit balance
+- WHEN - user tries to update a sell order
+- THEN - transaction is successful, sell order is updated
+
+If a user tries to update a sell order and the user provides a new quantity that is more than their credit balance, then the transaction fails and the sell order is NOT updated.
+
+- GIVEN - user provides a new quantity that is more than their credit balance
+- WHEN - user tries to update a sell order
+- THEN - transaction fails, sell order is NOT updated
+
+If a user tries to update a sell order and the user provides a new ask price using an ask denom that is allowed, then the transaction is successful and the sell order is updated.
+
+- GIVEN - user provides a new ask price using an ask denom that is allowed
+- WHEN - user tries to update a sell order
+- THEN - transaction is successful, sell order is updated
+
+If a user tries to update a sell order and the user provides a new ask price using an ask denom that is NOT allowed, then the transaction fails and the sell order is NOT updated.
+
+- GIVEN - user provides a new ask price using an ask denom that is NOT allowed
+- WHEN - user tries to update a sell order
+- THEN - transaction fails, sell order is NOT updated
+
+## Process Buy Order
+
+If a user tries to create a buy order and the user provides a sell order id that does exist, then the transaction is successful and the buy order is processed.
+
+- GIVEN - user provides a sell order id that does exist
+- WHEN - user tries to create a buy order
+- THEN - transaction is successful, buy order is processed
+
+If a user tries to create a buy order and the user provides a sell order id that does NOT exist, then the transaction fails and the buy order is NOT processed.
+
+- GIVEN - user provides a sell order id that does NOT exist
+- WHEN - user tries to create a buy order
+- THEN - transaction fails, buy order is NOT processed
+
+If a user tries to create a buy order and the user provides a bid price denomination that matches the sell order denomination, then the transaction is successful and the buy order is processed.
+
+- GIVEN - user provides a bid price denomination that matches the sell order denomination
+- WHEN - user tries to create a buy order
+- THEN - transaction is successful, buy order is processed
+
+If a user tries to create a buy order and the user provides a bid price denomination that is NOT a match of the sell order ask price denomination, then the transaction fails and the buy order is NOT processed.
+
+- GIVEN - user provides a bid price denomination that is NOT a match of the sell order ask price denomination
+- WHEN - user tries to create a buy order
+- THEN - transaction fails, buy order is NOT processed
+
+If a user tries to create a buy order and the user provides a quantity that amounts to a total cost that is less than or equal to their coin balance, then the transaction is successful and the buy order is processed.
+
+- GIVEN - user provides a quantity that amounts to a total cost that is less than or equal to their coin balance
+- WHEN - user tries to create a buy order
+- THEN - transaction is successful, buy order is processed
+
+If a user tries to create a buy order and the user provides a quantity that amounts to a total cost that is more than their coin balance, then the transaction fails and the buy order is NOT processed.
+
+- GIVEN - user provides a quantity that amounts to a total cost that is more than their coin balance
+- WHEN - user tries to create a buy order
+- THEN - transaction fails, buy order is NOT processed
+
+If a user tries to create a buy order and the user provides a bid price that amounts to a total cost that is less than or equal to their coin balance, then the transaction is successful and the buy order is processed.
+
+- GIVEN - user provides a bid price that amounts to a total cost that is less than or equal to their coin balance
+- WHEN - user tries to create a buy order
+- THEN - transaction is successful, buy order is processed
+
+If a user tries to create a buy order and the user provides a bid price that amounts to a total cost that is more than their coin balance, then the transaction fails and the buy order is NOT processed.
+
+- GIVEN - user provides a bid price that amounts to a total cost that is more than their coin balance
+- WHEN - user tries to create a buy order
+- THEN - transaction fails, buy order is NOT processed
+
+If a user tries to create a buy order and the user provides a bid price using an ask denom that is allowed, then the transaction is successful and the buy order is processed.
+
+- GIVEN - user provides a bid price using an ask denom that is allowed
+- WHEN - user tries to create a buy order
+- THEN - transaction is successful, buy order is processed
+
+If a user tries to create a buy order and the user provides a bid price using an ask denom that is NOT allowed, then the transaction fails and the buy order is NOT processed.
+
+- GIVEN - user provides a bid price using an ask denom that is NOT allowed
+- WHEN - user tries to create a buy order
+- THEN - transaction fails, buy order is NOT processed
+
+## Allow Ask Denom
+
+If a user tries to add an ask denom and the user submits a governance proposal to execute the AllowAskDenom message that is approved, then the transaction is successful and the ask denom is added.
+
+- GIVEN - user submits a governance proposal to execute the AllowAskDenom message that is approved
+- WHEN - user tries to add an ask denom
+- THEN - transaction is successful, ask denom is added
+
+If a user tries to add an ask denom and the user submits a governance proposal to execute the AllowAskDenom message that is NOT approved, then the transaction fails and the ask denom is NOT added.
+
+- GIVEN - user submits a governance proposal to execute the AllowAskDenom message that is NOT approved
+- WHEN - user tries to add an ask denom
+- THEN - transaction fails, ask denom is NOT added
+
+If a user tries to add an ask denom and the user submits a transaction with the AllowAskDenom message directly from their account, then the transaction fails and the ask denom is NOT added.
+
+- GIVEN - user tries to add an ask denom and the user submits a transaction with the AllowAskDenom message directly from their account
+- WHEN - user tries to add an ask denom
+- THEN - transaction fails, ask denom is NOT added
