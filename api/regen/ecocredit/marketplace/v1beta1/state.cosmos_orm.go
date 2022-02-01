@@ -41,11 +41,13 @@ type SellOrderIndexKey interface {
 }
 
 // primary key starting index..
+type SellOrderPrimaryKey = SellOrderIdIndexKey
+
 type SellOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderIdIndexKey) id() uint32            { return 1 }
+func (x SellOrderIdIndexKey) id() uint32            { return 0 }
 func (x SellOrderIdIndexKey) values() []interface{} { return x.vs }
 func (x SellOrderIdIndexKey) sellOrderIndexKey()    {}
 
@@ -93,6 +95,24 @@ func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.T
 	return this
 }
 
+type SellOrderMarketIdAskPriceU32IndexKey struct {
+	vs []interface{}
+}
+
+func (x SellOrderMarketIdAskPriceU32IndexKey) id() uint32            { return 4 }
+func (x SellOrderMarketIdAskPriceU32IndexKey) values() []interface{} { return x.vs }
+func (x SellOrderMarketIdAskPriceU32IndexKey) sellOrderIndexKey()    {}
+
+func (this SellOrderMarketIdAskPriceU32IndexKey) WithMarketId(market_id uint64) SellOrderMarketIdAskPriceU32IndexKey {
+	this.vs = []interface{}{market_id}
+	return this
+}
+
+func (this SellOrderMarketIdAskPriceU32IndexKey) WithMarketIdAskPriceU32(market_id uint64, ask_price_u32 uint32) SellOrderMarketIdAskPriceU32IndexKey {
+	this.vs = []interface{}{market_id, ask_price_u32}
+	return this
+}
+
 type sellOrderStore struct {
 	table ormtable.Table
 }
@@ -127,13 +147,13 @@ func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, erro
 }
 
 func (this sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return SellOrderIterator{it}, err
 }
 
 func (this sellOrderStore) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return SellOrderIterator{it}, err
 }
@@ -180,11 +200,13 @@ type BuyOrderIndexKey interface {
 }
 
 // primary key starting index..
+type BuyOrderPrimaryKey = BuyOrderIdIndexKey
+
 type BuyOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderIdIndexKey) id() uint32            { return 2 }
+func (x BuyOrderIdIndexKey) id() uint32            { return 0 }
 func (x BuyOrderIdIndexKey) values() []interface{} { return x.vs }
 func (x BuyOrderIdIndexKey) buyOrderIndexKey()     {}
 
@@ -216,6 +238,24 @@ func (x BuyOrderExpirationIndexKey) buyOrderIndexKey()     {}
 
 func (this BuyOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Timestamp) BuyOrderExpirationIndexKey {
 	this.vs = []interface{}{expiration}
+	return this
+}
+
+type BuyOrderMarketIdBidPriceU32IndexKey struct {
+	vs []interface{}
+}
+
+func (x BuyOrderMarketIdBidPriceU32IndexKey) id() uint32            { return 3 }
+func (x BuyOrderMarketIdBidPriceU32IndexKey) values() []interface{} { return x.vs }
+func (x BuyOrderMarketIdBidPriceU32IndexKey) buyOrderIndexKey()     {}
+
+func (this BuyOrderMarketIdBidPriceU32IndexKey) WithMarketId(market_id uint64) BuyOrderMarketIdBidPriceU32IndexKey {
+	this.vs = []interface{}{market_id}
+	return this
+}
+
+func (this BuyOrderMarketIdBidPriceU32IndexKey) WithMarketIdBidPriceU32(market_id uint64, bid_price_u32 uint32) BuyOrderMarketIdBidPriceU32IndexKey {
+	this.vs = []interface{}{market_id, bid_price_u32}
 	return this
 }
 
@@ -253,13 +293,13 @@ func (this buyOrderStore) Get(ctx context.Context, id uint64) (*BuyOrder, error)
 }
 
 func (this buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BuyOrderIterator{it}, err
 }
 
 func (this buyOrderStore) ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BuyOrderIterator{it}, err
 }
@@ -308,11 +348,13 @@ type AllowedDenomIndexKey interface {
 }
 
 // primary key starting index..
+type AllowedDenomPrimaryKey = AllowedDenomBankDenomIndexKey
+
 type AllowedDenomBankDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x AllowedDenomBankDenomIndexKey) id() uint32            { return 3 }
+func (x AllowedDenomBankDenomIndexKey) id() uint32            { return 0 }
 func (x AllowedDenomBankDenomIndexKey) values() []interface{} { return x.vs }
 func (x AllowedDenomBankDenomIndexKey) allowedDenomIndexKey() {}
 
@@ -368,30 +410,30 @@ func (this allowedDenomStore) Get(ctx context.Context, bank_denom string) (*Allo
 }
 
 func (this allowedDenomStore) HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error) {
-	return this.table.Has(ctx, &AllowedDenom{
-		DisplayDenom: display_denom,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		display_denom,
+	)
 }
 
 func (this allowedDenomStore) GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error) {
-	allowedDenom := &AllowedDenom{
-		DisplayDenom: display_denom,
-	}
-	found, err := this.table.Get(ctx, allowedDenom)
+	var allowedDenom AllowedDenom
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &allowedDenom,
+		display_denom,
+	)
 	if !found {
 		return nil, err
 	}
-	return allowedDenom, nil
+	return &allowedDenom, nil
 }
 
 func (this allowedDenomStore) List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return AllowedDenomIterator{it}, err
 }
 
 func (this allowedDenomStore) ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return AllowedDenomIterator{it}, err
 }
@@ -440,11 +482,13 @@ type MarketIndexKey interface {
 }
 
 // primary key starting index..
+type MarketPrimaryKey = MarketIdIndexKey
+
 type MarketIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x MarketIdIndexKey) id() uint32            { return 4 }
+func (x MarketIdIndexKey) id() uint32            { return 0 }
 func (x MarketIdIndexKey) values() []interface{} { return x.vs }
 func (x MarketIdIndexKey) marketIndexKey()       {}
 
@@ -505,32 +549,32 @@ func (this marketStore) Get(ctx context.Context, id uint64) (*Market, error) {
 }
 
 func (this marketStore) HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error) {
-	return this.table.Has(ctx, &Market{
-		CreditType: credit_type,
-		BankDenom:  bank_denom,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		credit_type,
+		bank_denom,
+	)
 }
 
 func (this marketStore) GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error) {
-	market := &Market{
-		CreditType: credit_type,
-		BankDenom:  bank_denom,
-	}
-	found, err := this.table.Get(ctx, market)
+	var market Market
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &market,
+		credit_type,
+		bank_denom,
+	)
 	if !found {
 		return nil, err
 	}
-	return market, nil
+	return &market, nil
 }
 
 func (this marketStore) List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return MarketIterator{it}, err
 }
 
 func (this marketStore) ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return MarketIterator{it}, err
 }

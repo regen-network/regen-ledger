@@ -2,12 +2,12 @@ package orderbook
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
-	orderbookv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1beta1"
 )
 
 func (o OrderBook) ProcessBatch(ctx context.Context) error {
@@ -34,68 +34,51 @@ func (o OrderBook) ProcessBatch(ctx context.Context) error {
 }
 
 func (o OrderBook) processMarket(ctx context.Context, market *marketplacev1beta1.Market) error {
-	it, err := o.memStore.BuyOrderSellOrderMatchStore().
-		List(ctx,
-			orderbookv1beta1.BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey{}.
-				WithMarketId(market.Id),
-		)
-
+	buyOrderIterator, err := o.marketplaceStore.BuyOrderStore().List(ctx,
+		marketplacev1beta1.BuyOrderMarketIdBidPriceU32IndexKey{}.WithMarketId(market.Id),
+		ormlist.Reverse(),
+	)
 	if err != nil {
 		return err
 	}
 
-	for it.Next() {
-		match, err := it.Value()
+	for buyOrderIterator.Next() {
+		buyOrder, err := buyOrderIterator.Value()
 		if err != nil {
 			return err
 		}
 
-		buyOrder, err := o.marketplaceStore.BuyOrderStore().Get(ctx, match.BuyOrderId)
-		if err != nil {
-			return err
-		}
-		if buyOrder == nil {
-			return fmt.Errorf("unexpected missing buy order")
-		}
-
-		sellOrder, err := o.marketplaceStore.BuyOrderStore().Get(ctx, match.SellOrderId)
-		if err != nil {
-			return err
-		}
-		if sellOrder == nil {
-			return fmt.Errorf("unexpected missing sell order")
+		switch selection := buyOrder.Selection.Sum.(type) {
+		case *marketplacev1beta1.BuyOrder_Selection_SellOrderId:
+			return o.processDirect(ctx, buyOrder, selection.SellOrderId)
+		case *marketplacev1beta1.BuyOrder_Selection_Filter:
+			panic("TODO")
 		}
 
-		buyQuant, err := math.NewPositiveDecFromString(buyOrder.Quantity)
-		if err != nil {
-			return err
-		}
-
-		sellQuant, err := math.NewPositiveDecFromString(sellOrder.Quantity)
-		if err != nil {
-			return err
-		}
-
-		cmp := buyQuant.Cmp(sellQuant)
-		if cmp < 0 {
-			// fill buy order 100%
-			// discard remaining sell order matches
-			// delete buy order from
-			// 	buy order table
-			//	buy order selector indexes
-		} else if cmp == 0 {
-
-		} else {
-
-		}
 	}
 
 	return nil
 }
 
+func (o OrderBook) processDirect(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder, sellOrderId uint64) error {
+	sellOrder, err := o.marketplaceStore.SellOrderStore().Get(ctx, sellOrderId)
+	if err != nil {
+		return err
+	}
+	if sellOrder == nil {
+		// TODO: delete buy order
+		return ecocredit.ErrInvalidBuyOrder.Wrapf("can't find sell order %d", sellOrderId)
+	}
+
+	// TODO compare bid/ask price
+	// settle
+
+	return nil
+}
+
 func (o OrderBook) deleteBuyOrder(ctx context.Context, buyOrderId uint64) {
-	it, err := o.memStore.BuyOrderSellOrderMatchStore().List(ctx,
-		orderbookv1beta1.BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey{}.WithBuyOrderId(buyOrderId),
-	)
-	var toDelete orderbookv1beta1.BuyOrderSellOrderMatch
+	//it, err := o.memStore.BuyOrderSellOrderMatchStore().List(ctx,
+	//	orderbookv1beta1.BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey{}.WithBuyOrderId(buyOrderId),
+	//)
+	//var toDelete orderbookv1beta1.BuyOrderSellOrderMatch
 }

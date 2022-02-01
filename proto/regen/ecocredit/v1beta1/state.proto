@@ -129,10 +129,6 @@ message BatchInfo {
     // end_date is the end of the period during which this credit batch was
     // quantified and verified.
     google.protobuf.Timestamp end_date = 7;
-
-    // project_location is the location of the project.
-    // Full documentation can be found in MsgCreateProject.project_location.
-    string project_location = 8;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for each

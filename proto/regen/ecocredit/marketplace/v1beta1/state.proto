@@ -15,6 +15,7 @@ message SellOrder {
         index: {id: 1 fields: "batch_denom"}
         index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
+        index: {id: 4 fields: "market_id,ask_price_u32"}
     };
 
     // id is the unique ID of sell order.
@@ -47,9 +48,13 @@ message SellOrder {
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp expiration = 9;
 
+    // ask_price_u32 is the ask price converted to a uint32 using the precision
+    // modifier for this order's market.
+    fixed32 ask_price_u32 = 10;
+
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching buy orders.
-    bool maker = 10;
+    bool maker = 11;
 }
 
 // BuyOrder represents the information for a buy order.
@@ -59,6 +64,7 @@ message BuyOrder {
         primary_key: {fields: "id"}
         index: {id: 1 fields: "buyer"}
         index: {id: 2 fields: "expiration"}
+        index: {id: 3 fields: "market_id,bid_price_u32"}
     };
 
     // Selection defines a buy order selection.
@@ -115,10 +121,13 @@ message BuyOrder {
     // expiration time is reached, the buy order is removed from state.
     google.protobuf.Timestamp expiration = 9;
 
+    // bid_price_u32 is the bid price converted to a uint32 using the precision
+    // modifier for this order's market.
+    fixed32 bid_price_u32 = 10;
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching sell orders.
-    bool maker = 10;
+    bool maker = 11;
 }
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
@@ -168,33 +177,29 @@ message Market {
     string bank_denom = 3;
 
     // precision_modifier is an optional modifier used to convert arbitrary
-    // precision integer bank amounts to uint64 values used for sorting in the
-    // order book. Given an arbitrary precision integer x, its uint64 conversion
+    // precision integer bank amounts to uint32 values used for sorting in the
+    // order book. Given an arbitrary precision integer x, its uint32 conversion
     // will be x / 10^precision_modifier using round half away from zero
     // rounding.
     //
-    // uint64 values range from 0 to 1,8446,744,073,709,551,615.
-    // This allows for a full 18 digits of precision. In most real world cases,
-    // a precision modifier of 0 (meaning no conversion) is probably sufficient.
+    // uint32 values range from 0 to 4,294,967,295.
+    // This allows for a full 9 digits of precision. In most real world markets
+    // this amount of precision is sufficient and most common downside -
+    // that some orders with very miniscule price differences may be ordered
+    // equivalently (because of rounding) - is acceptable.
+    // Note that this rounding will not affect settlement price which will
+    // always be done exactly.
     //
-    // Consider a USD stable coin with 6 decimal digits of precision. A credit
-    // would need to be worth over 1 trillion USD for a non-zero precision_modifier
-    // to be needed.
+    // Given a USD stable coin with 6 decimal digits, a precision_modifier
+    // of 0 is probably acceptable as long as credits are always less than
+    // $4,294/unit. With precision down to $0.001 (a precision_modifier of 3
+    // in this case), prices can rise up to $4,294,000/unit. Either scenario
+    // is probably quite acceptable given that carbon prices are unlikely to
+    // rise above $1000/ton any time in the near future.
     //
-    // precision_modifier is provided to accomodate cases where the bank denom
-    // has either a huge precision (such as 18 decimal digits on its own) or
-    // extreme hyper-inflationary scenarios.
-    //
-    // In cases where there is a non-zero precision_modifier, bids and asks
-    // which are rounded to the same number will be ordered equivalently and
-    // differentiated only by time priority. The precision integer amount in the
-    // order will still be used in settlement.
-    //
-    // In cases where an arbitrary precision integer overflows its conversion to
-    // uint64, the order fill fail and the market will eventually become stuck
-    // if prices are in this region. Governance should intervene at this
-    // point to change the precision_modifier to a reasonable value to re-enable
-    // the market. When precision_modifier changes, all active orders in the order
-    // book will be updated to reflect this.
+    // If credit prices, exceed the maximum range of uint32 with this
+    // precision_modifier, orders with high prices will fail and governance
+    // will need to adjust precision_modifier to allow for higher prices in
+    // exchange for less precision at the lower end.
     uint32 precision_modifier = 4;
 }
