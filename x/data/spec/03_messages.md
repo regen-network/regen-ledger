@@ -26,5 +26,5 @@ On-chain signatures have the following benefits:
 
 ### Validation:
 
-- `signers` must ba valid addresses, and their signatures must be present in the transaction
+- `signers` must be a valid addresses, and their signatures must be present in the transaction
 - `hash` must be a valid content hash, either raw data that does not specify a canonical encoding or graph data that conforms to the RDF data model
