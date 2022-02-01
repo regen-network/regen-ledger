@@ -3,6 +3,12 @@ package server
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/types/ormstore"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+
+	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -17,15 +23,13 @@ import (
 var _ data.QueryServer = serverImpl{}
 
 // ByIRI queries data based on its ContentHash.
-func (s serverImpl) ByIRI(goCtx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-
-	store := ctx.KVStore(s.storeKey)
-	id := s.iriIDTable.GetID(store, []byte(request.Iri))
-	if len(id) == 0 {
-		return nil, status.Errorf(codes.NotFound, "can't find %s", request.Iri)
+func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
+	id, err := s.getID(ctx, request.Iri)
+	if err != nil {
+		return nil, err
 	}
 
+	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
 	entry, err := s.getEntry(store, id)
 	if err != nil {
 		return nil, err
@@ -100,10 +104,9 @@ func (s serverImpl) Signers(goCtx context.Context, request *data.QuerySignersReq
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 
-	id := s.iriIDTable.GetID(store, []byte(request.Iri))
-	if len(id) == 0 {
-		return nil,
-			status.Errorf(codes.NotFound, "IRI %s not found", request.Iri)
+	id, err := s.getID(ctx, request.Iri)
+	if err != nil {
+		return nil, err
 	}
 
 	signerIDStore := prefix.NewStore(store, IDSignerIndexPrefix(id))
@@ -124,30 +127,50 @@ func (s serverImpl) Signers(goCtx context.Context, request *data.QuerySignersReq
 }
 
 func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversRequest) (*data.QueryResolversResponse, error) {
-	s.stateStore.DataResolver()
+	id, err := s.getID(ctx, request.Iri)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := s.stateStore.DataResolverStore().
+		List(ctx, datav1alpha2.DataResolverPrimaryKey{}.WithDataId(id),
+			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
+	if err != nil {
+		return nil, err
+	}
+
+	res := &data.QueryResolversResponse{}
+	for it.Next() {
+		item, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		resolverUrl, err := s.stateStore.ResolverURLStore().Get(ctx, item.ResolverId)
+		if err != nil {
+			return nil, err
+		}
+
+		res.ResolverUrls = append(res.ResolverUrls, resolverUrl.Url)
+	}
+	return res, nil
 }
 
 func (s serverImpl) ResolverID(ctx context.Context, request *data.QueryResolverIDRequest) (*data.QueryResolverIDResponse, error) {
-	//ormtable.Paginate(DataResolverPaginationOptions{
-	//	Prefix: nil,
-	//	Start:  nil,
-	//	End:    nil,
-	//	Filter: nil,
-	//	OnItem: nil,
-	//})
-	//TODO implement me
-	panic("implement me")
+	res, err := s.stateStore.ResolverURLStore().GetByUrl(ctx, request.Url)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryResolverIDResponse{Id: res.Id}, nil
 }
 
-//type DataResolverPaginationOptions struct {
-//	Prefix datav1alpha2.DataResolverIndexKey
-//	Start  datav1alpha2.DataResolverIndexKey
-//	End    datav1alpha2.DataResolverIndexKey
-//
-//	// Filter is an optional filter function that can be used to filter
-//	// the results in the underlying iterator and should return true to include
-//	// an item in the result.
-//	Filter func(message *datav1alpha2.DataResolver) bool
-//
-//	OnItem func(message *datav1alpha2.DataResolver)
-//}
+func (s serverImpl) getID(ctx context.Context, iri string) ([]byte, error) {
+	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
+	id := s.iriIDTable.GetID(store, []byte(iri))
+	if len(id) == 0 {
+		return nil, status.Errorf(codes.NotFound, "can't find %s", iri)
+	}
+
+	return id, nil
+}

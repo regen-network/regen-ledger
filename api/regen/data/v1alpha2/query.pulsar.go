@@ -4077,6 +4077,52 @@ func (x *fastReflection_QueryResolversRequest) ProtoMethods() *protoiface.Method
 	}
 }
 
+var _ protoreflect.List = (*_QueryResolversResponse_1_list)(nil)
+
+type _QueryResolversResponse_1_list struct {
+	list *[]string
+}
+
+func (x *_QueryResolversResponse_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_QueryResolversResponse_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_QueryResolversResponse_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_QueryResolversResponse_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_QueryResolversResponse_1_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message QueryResolversResponse at list field ResolverUrls as it is not of Message kind"))
+}
+
+func (x *_QueryResolversResponse_1_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_QueryResolversResponse_1_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_QueryResolversResponse_1_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_QueryResolversResponse               protoreflect.MessageDescriptor
 	fd_QueryResolversResponse_resolver_urls protoreflect.FieldDescriptor
@@ -4155,8 +4201,8 @@ func (x *fastReflection_QueryResolversResponse) Interface() protoreflect.ProtoMe
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryResolversResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ResolverUrls != "" {
-		value := protoreflect.ValueOfString(x.ResolverUrls)
+	if len(x.ResolverUrls) != 0 {
+		value := protoreflect.ValueOfList(&_QueryResolversResponse_1_list{list: &x.ResolverUrls})
 		if !f(fd_QueryResolversResponse_resolver_urls, value) {
 			return
 		}
@@ -4183,7 +4229,7 @@ func (x *fastReflection_QueryResolversResponse) Range(f func(protoreflect.FieldD
 func (x *fastReflection_QueryResolversResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		return x.ResolverUrls != ""
+		return len(x.ResolverUrls) != 0
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		return x.Pagination != nil
 	default:
@@ -4203,7 +4249,7 @@ func (x *fastReflection_QueryResolversResponse) Has(fd protoreflect.FieldDescrip
 func (x *fastReflection_QueryResolversResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		x.ResolverUrls = ""
+		x.ResolverUrls = nil
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		x.Pagination = nil
 	default:
@@ -4223,8 +4269,11 @@ func (x *fastReflection_QueryResolversResponse) Clear(fd protoreflect.FieldDescr
 func (x *fastReflection_QueryResolversResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		value := x.ResolverUrls
-		return protoreflect.ValueOfString(value)
+		if len(x.ResolverUrls) == 0 {
+			return protoreflect.ValueOfList(&_QueryResolversResponse_1_list{})
+		}
+		listValue := &_QueryResolversResponse_1_list{list: &x.ResolverUrls}
+		return protoreflect.ValueOfList(listValue)
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -4249,7 +4298,9 @@ func (x *fastReflection_QueryResolversResponse) Get(descriptor protoreflect.Fiel
 func (x *fastReflection_QueryResolversResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		x.ResolverUrls = value.Interface().(string)
+		lv := value.List()
+		clv := lv.(*_QueryResolversResponse_1_list)
+		x.ResolverUrls = *clv.list
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
@@ -4272,13 +4323,17 @@ func (x *fastReflection_QueryResolversResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolversResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
+		if x.ResolverUrls == nil {
+			x.ResolverUrls = []string{}
+		}
+		value := &_QueryResolversResponse_1_list{list: &x.ResolverUrls}
+		return protoreflect.ValueOfList(value)
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		panic(fmt.Errorf("field resolver_urls of message regen.data.v1alpha2.QueryResolversResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1alpha2.QueryResolversResponse"))
@@ -4293,7 +4348,8 @@ func (x *fastReflection_QueryResolversResponse) Mutable(fd protoreflect.FieldDes
 func (x *fastReflection_QueryResolversResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.data.v1alpha2.QueryResolversResponse.resolver_urls":
-		return protoreflect.ValueOfString("")
+		list := []string{}
+		return protoreflect.ValueOfList(&_QueryResolversResponse_1_list{list: &list})
 	case "regen.data.v1alpha2.QueryResolversResponse.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -4366,9 +4422,11 @@ func (x *fastReflection_QueryResolversResponse) ProtoMethods() *protoiface.Metho
 		var n int
 		var l int
 		_ = l
-		l = len(x.ResolverUrls)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if len(x.ResolverUrls) > 0 {
+			for _, s := range x.ResolverUrls {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
 		}
 		if x.Pagination != nil {
 			l = options.Size(x.Pagination)
@@ -4418,11 +4476,13 @@ func (x *fastReflection_QueryResolversResponse) ProtoMethods() *protoiface.Metho
 			dAtA[i] = 0x12
 		}
 		if len(x.ResolverUrls) > 0 {
-			i -= len(x.ResolverUrls)
-			copy(dAtA[i:], x.ResolverUrls)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ResolverUrls)))
-			i--
-			dAtA[i] = 0xa
+			for iNdEx := len(x.ResolverUrls) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.ResolverUrls[iNdEx])
+				copy(dAtA[i:], x.ResolverUrls[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ResolverUrls[iNdEx])))
+				i--
+				dAtA[i] = 0xa
+			}
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -4503,7 +4563,7 @@ func (x *fastReflection_QueryResolversResponse) ProtoMethods() *protoiface.Metho
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ResolverUrls = string(dAtA[iNdEx:postIndex])
+				x.ResolverUrls = append(x.ResolverUrls, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -5776,7 +5836,7 @@ type QueryResolversResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ResolverUrls string `protobuf:"bytes,1,opt,name=resolver_urls,json=resolverUrls,proto3" json:"resolver_urls,omitempty"`
+	ResolverUrls []string `protobuf:"bytes,1,rep,name=resolver_urls,json=resolverUrls,proto3" json:"resolver_urls,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -5801,11 +5861,11 @@ func (*QueryResolversResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1alpha2_query_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *QueryResolversResponse) GetResolverUrls() string {
+func (x *QueryResolversResponse) GetResolverUrls() []string {
 	if x != nil {
 		return x.ResolverUrls
 	}
-	return ""
+	return nil
 }
 
 func (x *QueryResolversResponse) GetPagination() *v1beta1.PageRequest {
@@ -5959,7 +6019,7 @@ var file_regen_data_v1alpha2_query_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x22, 0x85, 0x01, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f,
 	0x6c, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x23, 0x0a,
 	0x0d, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f, 0x75, 0x72, 0x6c, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x55, 0x72,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x55, 0x72,
 	0x6c, 0x73, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
 	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
@@ -6019,9 +6079,9 @@ var file_regen_data_v1alpha2_query_proto_rawDesc = []byte{
 	0x6c, 0x7d, 0x42, 0xdf, 0x01, 0x0a, 0x17, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
 	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x32, 0x42, 0x0a,
 	0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4a, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
+	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
+	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61,
 	0x74, 0x61, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x32, 0x3b, 0x64, 0x61, 0x74, 0x61,
 	0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x32, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02,
 	0x13, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0x61, 0x6c,

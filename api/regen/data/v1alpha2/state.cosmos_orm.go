@@ -42,13 +42,11 @@ type DataIDIndexKey interface {
 }
 
 // primary key starting index..
-type DataIDPrimaryKey = DataIDIdIndexKey
-
 type DataIDIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataIDIdIndexKey) id() uint32            { return 0 }
+func (x DataIDIdIndexKey) id() uint32            { return 1 }
 func (x DataIDIdIndexKey) values() []interface{} { return x.vs }
 func (x DataIDIdIndexKey) dataIDIndexKey()       {}
 
@@ -104,30 +102,30 @@ func (this dataIDStore) Get(ctx context.Context, id []byte) (*DataID, error) {
 }
 
 func (this dataIDStore) HasByIri(ctx context.Context, iri string) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		iri,
-	)
+	return this.table.Has(ctx, &DataID{
+		Iri: iri,
+	})
 }
 
 func (this dataIDStore) GetByIri(ctx context.Context, iri string) (*DataID, error) {
-	var dataID DataID
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &dataID,
-		iri,
-	)
+	dataID := &DataID{
+		Iri: iri,
+	}
+	found, err := this.table.Get(ctx, dataID)
 	if !found {
 		return nil, err
 	}
-	return &dataID, nil
+	return dataID, nil
 }
 
 func (this dataIDStore) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataIDIterator{it}, err
 }
 
 func (this dataIDStore) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataIDIterator{it}, err
 }
@@ -174,13 +172,11 @@ type DataAnchorIndexKey interface {
 }
 
 // primary key starting index..
-type DataAnchorPrimaryKey = DataAnchorIdIndexKey
-
 type DataAnchorIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataAnchorIdIndexKey) id() uint32            { return 0 }
+func (x DataAnchorIdIndexKey) id() uint32            { return 2 }
 func (x DataAnchorIdIndexKey) values() []interface{} { return x.vs }
 func (x DataAnchorIdIndexKey) dataAnchorIndexKey()   {}
 
@@ -223,13 +219,13 @@ func (this dataAnchorStore) Get(ctx context.Context, id []byte) (*DataAnchor, er
 }
 
 func (this dataAnchorStore) List(ctx context.Context, prefixKey DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataAnchorIterator{it}, err
 }
 
 func (this dataAnchorStore) ListRange(ctx context.Context, from, to DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataAnchorIterator{it}, err
 }
@@ -276,13 +272,11 @@ type DataSignerIndexKey interface {
 }
 
 // primary key starting index..
-type DataSignerPrimaryKey = DataSignerIdIndexKey
-
 type DataSignerIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataSignerIdIndexKey) id() uint32            { return 0 }
+func (x DataSignerIdIndexKey) id() uint32            { return 3 }
 func (x DataSignerIdIndexKey) values() []interface{} { return x.vs }
 func (x DataSignerIdIndexKey) dataSignerIndexKey()   {}
 
@@ -325,13 +319,13 @@ func (this dataSignerStore) Get(ctx context.Context, id []byte) (*DataSigner, er
 }
 
 func (this dataSignerStore) List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataSignerIterator{it}, err
 }
 
 func (this dataSignerStore) ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataSignerIterator{it}, err
 }
@@ -380,13 +374,11 @@ type ResolverURLIndexKey interface {
 }
 
 // primary key starting index..
-type ResolverURLPrimaryKey = ResolverURLIdIndexKey
-
 type ResolverURLIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverURLIdIndexKey) id() uint32            { return 0 }
+func (x ResolverURLIdIndexKey) id() uint32            { return 4 }
 func (x ResolverURLIdIndexKey) values() []interface{} { return x.vs }
 func (x ResolverURLIdIndexKey) resolverURLIndexKey()  {}
 
@@ -442,30 +434,30 @@ func (this resolverURLStore) Get(ctx context.Context, id uint64) (*ResolverURL, 
 }
 
 func (this resolverURLStore) HasByUrl(ctx context.Context, url string) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		url,
-	)
+	return this.table.Has(ctx, &ResolverURL{
+		Url: url,
+	})
 }
 
 func (this resolverURLStore) GetByUrl(ctx context.Context, url string) (*ResolverURL, error) {
-	var resolverURL ResolverURL
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &resolverURL,
-		url,
-	)
+	resolverURL := &ResolverURL{
+		Url: url,
+	}
+	found, err := this.table.Get(ctx, resolverURL)
 	if !found {
 		return nil, err
 	}
-	return &resolverURL, nil
+	return resolverURL, nil
 }
 
 func (this resolverURLStore) List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ResolverURLIterator{it}, err
 }
 
 func (this resolverURLStore) ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ResolverURLIterator{it}, err
 }
@@ -512,13 +504,11 @@ type DataResolverIndexKey interface {
 }
 
 // primary key starting index..
-type DataResolverPrimaryKey = DataResolverDataIdResolverIdIndexKey
-
 type DataResolverDataIdResolverIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 0 }
+func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 5 }
 func (x DataResolverDataIdResolverIdIndexKey) values() []interface{} { return x.vs }
 func (x DataResolverDataIdResolverIdIndexKey) dataResolverIndexKey() {}
 
@@ -566,13 +556,13 @@ func (this dataResolverStore) Get(ctx context.Context, data_id []byte, resolver_
 }
 
 func (this dataResolverStore) List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }
 
 func (this dataResolverStore) ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
+	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }

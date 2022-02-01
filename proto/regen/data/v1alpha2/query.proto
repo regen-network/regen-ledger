@@ -106,7 +106,7 @@ message QueryResolversRequest {
 }
 
 message QueryResolversResponse {
-  string resolver_urls = 1;
+  repeated string resolver_urls = 1;
 
   // pagination is the PageRequest to use for pagination.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
