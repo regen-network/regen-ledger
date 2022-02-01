@@ -61,3 +61,43 @@ The `batchInfoTable` stores `BatchInfo`:
 `0x6 | []byte(BatchId) -> ProtocolBuffer(BatchInfo)`
 
 +++ https://github.com/regen-network/regen-ledger/blob/50eaceda5eabc5970effe491f0d58194852718c9/proto/regen/ecocredit/v1alpha1/types.proto#L33-L72
+
+## Sell Order Table
+
+The `sellOrderTable` stores `SellOrder`:
+
+`0x7 | []byte(OrderId) -> ProtocolBuffer(SellOrder)`
+
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L122-L146
+
+#### Sell Order Sequence Table
+
+The `sellOrderTable` uses a persistent unique key generator called `Sequence`:
+
+`OrderId`: `0x8 | 0x1 -> BigEndian`
+
+The `0x1` is a fixed key to read/write data to the storage layer.
+
+## Buy Order Table
+
+The `buyOrderTable` stores `BuyOrder`:
+
+`0x9 | []byte(BuyOrderId) -> ProtocolBuffer(BuyOrder)`
+
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L148-L196
+
+#### Buy Order Sequence Table
+
+The `buyOrderTable` uses a persistent unique key generator called `Sequence`:
+
+`BuyOrderId`: `0x10 | 0x1 -> BigEndian`
+
+The `0x1` is a fixed key to read/write data to the storage layer.
+
+## Ask Denom Table
+
+The `askDenomTable` stores `AskDenom`:
+
+`0x11 | []byte(Denom) -> ProtocolBuffer(AskDenom)`
+
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L198-L210
