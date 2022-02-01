@@ -105,7 +105,7 @@ regen tx data --help
 
 #### anchor
 
-The `anchor` command allows users to anchor a data to the blockchain based on its content hash (i.e. IRI).
+The `anchor` command allows users to anchor data to the blockchain based on its content hash (i.e. IRI).
 
 ```bash
 regen tx data anchor [iri] [flags]
