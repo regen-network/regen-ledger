@@ -34,12 +34,6 @@ If a user tries to anchor data and the content hash is of graph type and the can
 - WHEN - user tries to anchor data
 - THEN - transaction fails, data is not anchored
 
-If a user tries to anchor data and the content hash is of graph type and the canonicalization algorithm is not supported, then the transaction fails and the data is not anchored.
-
-- GIVEN - the content hash is of graph type and the canonicalization algorithm is not supported
-- WHEN - user tries to anchor data
-- THEN - transaction fails, data is not anchored
-
 If a user tries to anchor data and the content hash is of graph type and the merkle tree is not supported, then the transaction fails and the data is not anchored.
 
 - GIVEN - the content hash is of graph type and the merkle tree is not supported
