@@ -95,24 +95,6 @@ func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.T
 	return this
 }
 
-type SellOrderMarketIdAskPriceU32IndexKey struct {
-	vs []interface{}
-}
-
-func (x SellOrderMarketIdAskPriceU32IndexKey) id() uint32            { return 4 }
-func (x SellOrderMarketIdAskPriceU32IndexKey) values() []interface{} { return x.vs }
-func (x SellOrderMarketIdAskPriceU32IndexKey) sellOrderIndexKey()    {}
-
-func (this SellOrderMarketIdAskPriceU32IndexKey) WithMarketId(market_id uint64) SellOrderMarketIdAskPriceU32IndexKey {
-	this.vs = []interface{}{market_id}
-	return this
-}
-
-func (this SellOrderMarketIdAskPriceU32IndexKey) WithMarketIdAskPriceU32(market_id uint64, ask_price_u32 uint32) SellOrderMarketIdAskPriceU32IndexKey {
-	this.vs = []interface{}{market_id, ask_price_u32}
-	return this
-}
-
 type sellOrderStore struct {
 	table ormtable.Table
 }
@@ -238,24 +220,6 @@ func (x BuyOrderExpirationIndexKey) buyOrderIndexKey()     {}
 
 func (this BuyOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Timestamp) BuyOrderExpirationIndexKey {
 	this.vs = []interface{}{expiration}
-	return this
-}
-
-type BuyOrderMarketIdBidPriceU32IndexKey struct {
-	vs []interface{}
-}
-
-func (x BuyOrderMarketIdBidPriceU32IndexKey) id() uint32            { return 3 }
-func (x BuyOrderMarketIdBidPriceU32IndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderMarketIdBidPriceU32IndexKey) buyOrderIndexKey()     {}
-
-func (this BuyOrderMarketIdBidPriceU32IndexKey) WithMarketId(market_id uint64) BuyOrderMarketIdBidPriceU32IndexKey {
-	this.vs = []interface{}{market_id}
-	return this
-}
-
-func (this BuyOrderMarketIdBidPriceU32IndexKey) WithMarketIdBidPriceU32(market_id uint64, bid_price_u32 uint32) BuyOrderMarketIdBidPriceU32IndexKey {
-	this.vs = []interface{}{market_id, bid_price_u32}
 	return this
 }
 

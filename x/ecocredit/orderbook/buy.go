@@ -28,14 +28,14 @@ func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 		return ecocredit.ErrInvalidBuyOrder.Wrapf("market %d not found", buyOrder.MarketId)
 	}
 
-	bidPriceU64, err := IntPriceToUInt64(bidPrice, market.PrecisionModifier)
+	bidPriceU32, err := IntPriceToUInt32(bidPrice, market.PrecisionModifier)
 	if err != nil {
 		return err
 	}
 
 	switch selection := buyOrder.Selection.Sum.(type) {
 	case *marketplacev1beta1.BuyOrder_Selection_SellOrderId:
-		return o.insertBuyOrderDirect(ctx, buyOrder, market, selection, bidPrice, bidPriceU64)
+		return o.insertBuyOrderDirect(ctx, buyOrder, market, selection, bidPrice, bidPriceU32)
 	case *marketplacev1beta1.BuyOrder_Selection_Filter:
 		matcher := &buyOrderMatcher{
 			OrderBook:   o,
@@ -44,7 +44,7 @@ func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 			market:      market,
 			selection:   selection,
 			bidPrice:    bidPrice,
-			bidPriceU64: bidPriceU64,
+			bidPriceU32: bidPriceU32,
 		}
 		return matcher.insertBuyOrderFiltered()
 	default:
@@ -58,7 +58,7 @@ func (o OrderBook) insertBuyOrderDirect(
 	market *marketplacev1beta1.Market,
 	selection *marketplacev1beta1.BuyOrder_Selection_SellOrderId,
 	bidPrice sdk.Int,
-	bidPriceU64 uint64,
+	bidPriceU32 uint32,
 ) error {
 	sellOrder, err := o.marketplaceStore.SellOrderStore().Get(ctx, selection.SellOrderId)
 	if err != nil {
@@ -83,7 +83,7 @@ func (o OrderBook) insertBuyOrderDirect(
 		return ecocredit.ErrInvalidBuyOrder.Wrapf("bid price %d is below ask price %d")
 	}
 
-	askPriceU64, err := IntPriceToUInt64(askPrice, market.PrecisionModifier)
+	askPriceU32, err := IntPriceToUInt32(askPrice, market.PrecisionModifier)
 	if err != nil {
 		return err
 	}
@@ -92,8 +92,8 @@ func (o OrderBook) insertBuyOrderDirect(
 		MarketId:           buyOrder.MarketId,
 		BuyOrderId:         buyOrder.Id,
 		SellOrderId:        sellOrder.Id,
-		BidPriceComplement: ^bidPriceU64,
-		AskPrice:           askPriceU64,
+		BidPriceComplement: ^bidPriceU32,
+		AskPrice:           askPriceU32,
 	})
 }
 
@@ -106,7 +106,7 @@ type buyOrderMatcher struct {
 	market      *marketplacev1beta1.Market
 	selection   *marketplacev1beta1.BuyOrder_Selection_Filter
 	bidPrice    sdk.Int
-	bidPriceU64 uint64
+	bidPriceU32 uint32
 }
 
 func (o buyOrderMatcher) insertBuyOrderFiltered() error {
@@ -155,34 +155,50 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 		return err
 	}
 
-	it, err := o.ecocreditStore.BatchInfoStore().List(
+	projectIt, err := o.ecocreditStore.ProjectInfoStore().List(
 		o.ctx,
-		ecocreditv1beta1.BatchInfoClassIdIndexKey{}.WithClassId(selector.ClassId),
-	)
+		ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(selector.ClassId))
 	if err != nil {
 		return err
 	}
-	defer it.Close()
+	defer projectIt.Close()
 
-	for it.Next() {
-		batch, err := it.Value()
+	for projectIt.Next() {
+		project, err := projectIt.Value()
 		if err != nil {
 			return err
 		}
 
-		if !matchLocation(batch, selector.ProjectLocation) {
+		if !matchLocation(project, selector.ProjectLocation) {
 			continue
 		}
 
-		if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
-			continue
-		}
-
-		err = o.onMatch(batch)
+		batchIt, err := o.ecocreditStore.BatchInfoStore().List(
+			o.ctx,
+			ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id),
+		)
 		if err != nil {
 			return err
+		}
+		defer batchIt.Close()
+
+		for batchIt.Next() {
+			batch, err := batchIt.Value()
+			if err != nil {
+				return err
+			}
+
+			if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
+				continue
+			}
+
+			err = o.onMatch(batch)
+			if err != nil {
+				return err
+			}
 		}
 	}
+
 	return nil
 }
 
@@ -276,7 +292,7 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 			continue
 		}
 
-		askPriceU64, err := IntPriceToUInt64(askPrice, o.market.PrecisionModifier)
+		askPriceU32, err := IntPriceToUInt32(askPrice, o.market.PrecisionModifier)
 		if err != nil {
 			return err
 		}
@@ -285,8 +301,8 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 			MarketId:           o.buyOrder.MarketId,
 			BuyOrderId:         o.buyOrder.Id,
 			SellOrderId:        sellOrder.Id,
-			BidPriceComplement: ^o.bidPriceU64,
-			AskPrice:           askPriceU64,
+			BidPriceComplement: ^o.bidPriceU32,
+			AskPrice:           askPriceU32,
 		})
 		if err != nil {
 			return err
@@ -305,27 +321,4 @@ func matchDates(batch *ecocreditv1beta1.BatchInfo, minStart, maxEnd *timestamppb
 	}
 
 	return true
-}
-
-func matchLocation(batch *ecocreditv1beta1.BatchInfo, filter string) bool {
-	target := batch.ProjectLocation
-
-	n := len(filter)
-
-	// if the target is shorter than the filter than we know we don't have a match
-	if len(target) < n {
-		return false
-	}
-
-	// if the filter length is less than 2 we should match anything (the only filters less than 2 should be totally empty)
-	if n < 2 {
-		return true
-	}
-
-	// check if country matches
-	if target[:2] != filter[:2] {
-		return false
-	}
-
-	panic("TODO")
 }

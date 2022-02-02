@@ -27,9 +27,17 @@ func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplace
 		return ecocredit.ErrInvalidSellOrder.Wrapf("market %d not found", sellOrder.MarketId)
 	}
 
-	askPriceU64, err := IntPriceToUInt64(askPrice, market.PrecisionModifier)
+	askPriceU64, err := IntPriceToUInt32(askPrice, market.PrecisionModifier)
 	if err != nil {
 		return err
+	}
+
+	projectInfo, err := o.ecocreditStore.ProjectInfoStore().Get(ctx, batchInfo.ProjectId)
+	if err != nil {
+		return err
+	}
+	if projectInfo == nil {
+		return ecocredit.ErrNotFound.Wrapf("project with ID %d", batchInfo.ProjectId)
 	}
 
 	matcher := &sellOrderMatcher{
@@ -38,8 +46,9 @@ func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplace
 		sellOrder:   sellOrder,
 		market:      market,
 		askPrice:    askPrice,
-		askPriceU64: askPriceU64,
+		askPriceU32: askPriceU64,
 		batchInfo:   batchInfo,
+		projectInfo: projectInfo,
 	}
 
 	return matcher.match()
@@ -51,8 +60,9 @@ type sellOrderMatcher struct {
 	sellOrder   *marketplacev1beta1.SellOrder
 	market      *marketplacev1beta1.Market
 	askPrice    sdk.Int
-	askPriceU64 uint64
+	askPriceU32 uint32
 	batchInfo   *ecocreditv1beta1.BatchInfo
+	projectInfo *ecocreditv1beta1.ProjectInfo
 }
 
 func (m sellOrderMatcher) match() error {
@@ -71,7 +81,7 @@ func (m sellOrderMatcher) match() error {
 
 func (m sellOrderMatcher) matchCreditClass() error {
 	it, err := m.memStore.BuyOrderClassSelectorStore().List(m.ctx,
-		orderbookv1beta1.BuyOrderClassSelectorClassIdIndexKey{}.WithClassId(m.batchInfo.ClassId),
+		orderbookv1beta1.BuyOrderClassSelectorClassIdIndexKey{}.WithClassId(m.projectInfo.ClassId),
 	)
 	if err != nil {
 		return err
@@ -84,7 +94,7 @@ func (m sellOrderMatcher) matchCreditClass() error {
 			return err
 		}
 
-		if !matchLocation(m.batchInfo, selector.ProjectLocation) {
+		if !matchLocation(m.projectInfo, selector.ProjectLocation) {
 			continue
 		}
 
@@ -174,7 +184,7 @@ func (m sellOrderMatcher) onMatch(buyOrderId uint64) error {
 		return nil
 	}
 
-	bidPriceU64, err := IntPriceToUInt64(bidPrice, m.market.PrecisionModifier)
+	bidPriceU32, err := IntPriceToUInt32(bidPrice, m.market.PrecisionModifier)
 	if err != nil {
 		return err
 	}
@@ -184,8 +194,8 @@ func (m sellOrderMatcher) onMatch(buyOrderId uint64) error {
 			MarketId:           marketId,
 			BuyOrderId:         buyOrderId,
 			SellOrderId:        m.sellOrder.Id,
-			BidPriceComplement: ^bidPriceU64,
-			AskPrice:           m.askPriceU64,
+			BidPriceComplement: ^bidPriceU32,
+			AskPrice:           m.askPriceU32,
 		},
 	)
 }
