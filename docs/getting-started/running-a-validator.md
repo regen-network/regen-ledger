@@ -111,7 +111,7 @@ Update the genesis file using a node endpoint.
 *For Regen Mainnet:*
 
 ```bash
-curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl http://regen.rpc.vitwit.com:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Redwood Testnet:*
@@ -135,7 +135,7 @@ Add a seed node for initial peer discovery.
 *For Regen Mainnet:*
 
 ```bash
-PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
+PERSISTENT_PEERS="aebb8431609cb126a977592446f5de252d8b7fa1@regen.rpc.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
