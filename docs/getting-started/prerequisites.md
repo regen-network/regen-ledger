@@ -34,6 +34,12 @@ The prerequisites listed above for developers are also required for node operato
 These commands are included in the [quickstart script](./running-a-validator.md#quickstart).
 :::
 
+Update packages:
+
+```bash
+sudo apt update
+```
+
 Install tools:
 
 ```bash
