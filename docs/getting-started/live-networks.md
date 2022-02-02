@@ -87,3 +87,19 @@ regen config
 ```
 
 For more information about using the CLI, see [Command-Line Interface](../regen-ledger/interfaces.md#command-line-interface).
+
+## Testnet Tokens
+
+In order to interact with the test networks, you'll need some tokens. You can redeem tokens for each test network by executing the following `curl` commands.
+
+*For Redwood Testnet:*
+
+```bash
+curl http://209.182.218.23:8000/faucet/<account_address>
+```
+
+*For Hambach Testnet:*
+
+```bash
+curl http://147.182.238.116:8000/faucet/<account_address>
+```
