@@ -16,7 +16,7 @@ import (
 func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
 	askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 	if !ok {
-		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
+		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %s", sellOrder.AskPrice)
 	}
 
 	market, err := o.marketplaceStore.MarketStore().Get(ctx, sellOrder.MarketId)
@@ -177,7 +177,7 @@ func (m sellOrderMatcher) onMatch(buyOrderId uint64) error {
 
 	bidPrice, ok := sdk.NewIntFromString(buyOrder.BidPrice)
 	if !ok {
-		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %d", buyOrder.BidPrice)
+		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %s", buyOrder.BidPrice)
 	}
 
 	if m.askPrice.GT(bidPrice) {

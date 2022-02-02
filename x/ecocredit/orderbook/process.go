@@ -93,9 +93,30 @@ func (o OrderBook) processMarket(ctx context.Context, market *marketplacev1beta1
 	return nil
 }
 
-func (o OrderBook) deleteBuyOrder(ctx context.Context, buyOrderId uint64) {
+func (o OrderBook) deleteBuyOrder(ctx context.Context, buyOrderId uint64) error {
 	it, err := o.memStore.BuyOrderSellOrderMatchStore().List(ctx,
 		orderbookv1beta1.BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey{}.WithBuyOrderId(buyOrderId),
 	)
-	var toDelete orderbookv1beta1.BuyOrderSellOrderMatch
+	if err != nil {
+		return err
+	}
+
+	var toDelete []*orderbookv1beta1.BuyOrderSellOrderMatch
+	for it.Next() {
+		match, err := it.Value()
+		if err != nil {
+			return err
+		}
+		toDelete = append(toDelete, match)
+	}
+	it.Close()
+
+	for _, match := range toDelete {
+		err := o.memStore.BuyOrderSellOrderMatchStore().Delete(ctx, match)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

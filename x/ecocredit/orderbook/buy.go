@@ -17,7 +17,7 @@ import (
 func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
 	bidPrice, ok := sdk.NewIntFromString(buyOrder.BidPrice)
 	if !ok {
-		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %d", buyOrder.BidPrice)
+		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %s", buyOrder.BidPrice)
 	}
 
 	market, err := o.marketplaceStore.MarketStore().Get(ctx, buyOrder.MarketId)
@@ -76,11 +76,12 @@ func (o OrderBook) insertBuyOrderDirect(
 
 	askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 	if !ok {
-		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
+		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %s", sellOrder.AskPrice)
 	}
 
 	if bidPrice.LT(askPrice) {
-		return ecocredit.ErrInvalidBuyOrder.Wrapf("bid price %d is below ask price %d")
+		return ecocredit.ErrInvalidBuyOrder.Wrapf("bid price %s is below ask price %s",
+			buyOrder.BidPrice, sellOrder.AskPrice)
 	}
 
 	askPriceU32, err := IntPriceToUInt32(askPrice, market.PrecisionModifier)
@@ -285,7 +286,7 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 
 		askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 		if !ok {
-			return ecocredit.ErrInvalidInteger.Wrapf("ask price: %d", sellOrder.AskPrice)
+			return ecocredit.ErrInvalidInteger.Wrapf("ask price: %s", sellOrder.AskPrice)
 		}
 
 		if o.bidPrice.LT(askPrice) {

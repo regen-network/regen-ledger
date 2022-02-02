@@ -67,7 +67,7 @@ message BuyOrderClassSelector {
 
 message BuyOrderProjectSelector {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 2
+    id: 3
     primary_key: { fields: "buy_order_id,project_id" }
     index: {id: 1, fields: "project_id"}
   };
@@ -86,7 +86,7 @@ message BuyOrderProjectSelector {
 
 message BuyOrderBatchSelector {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 2
+    id: 4
     primary_key: {fields: "buy_order_id,batch_id"}
     index: {id: 1, fields: "batch_id"}
   };
