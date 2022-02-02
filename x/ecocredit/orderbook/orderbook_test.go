@@ -1,7 +1,7 @@
 package orderbook
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -27,20 +27,22 @@ var testModuleSchema = ormdb.ModuleSchema{
 func Test1(t *testing.T) {
 	db, err := ormdb.NewModuleDB(testModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	//orderbook, err := NewOrderBook(db)
-	//assert.NilError(t, err)
+	orderbook, err := NewOrderBook(db)
+	assert.NilError(t, err)
 
 	ctx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 
-	bz, err := ioutil.ReadFile("testdata/scenario1.json")
+	bz, err := os.ReadFile("testdata/in/scenario1.json")
 	assert.NilError(t, err)
 	jsonSource, err := ormdb.NewRawJSONSource(bz)
 	assert.NilError(t, err)
 	assert.NilError(t, db.ImportJSON(ctx, jsonSource))
 
+	assert.NilError(t, orderbook.Reload(ctx))
+
 	jsonSink := &ormdb.RawJSONSink{}
 	assert.NilError(t, db.ExportJSON(ctx, jsonSink))
 	bz, err = jsonSink.JSON()
 	assert.NilError(t, err)
-	t.Logf("json: %s", bz)
+	assert.NilError(t, os.WriteFile("testdata/out/scenario1.after_reload.json", bz, 0644))
 }

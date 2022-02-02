@@ -44,7 +44,8 @@
   "regen.ecocredit.v1beta1.ProjectInfo": [
     1,
     {
-      "id": "1",
+      "id": 1,
+      "class_id": 1,
       "name": "C01-001",
       "project_location": "US-NY 10001"
     }
@@ -59,13 +60,31 @@
       "end_date": "2020-12-31T00:00:00Z"
     }
   ],
-  "regen.ecocredit.marketplace.v1beta1.SellOrder":[
-
+  "regen.ecocredit.marketplace.v1beta1.SellOrder": [
+    {
+      "market_id": 1,
+      "batch_id": 1,
+      "ask_price": "10250000"
+    }
   ],
-  "regen.ecocredit.marketplace.v1beta1.BuyOrder":[
-
+  "regen.ecocredit.marketplace.v1beta1.BuyOrder": [
+    {
+      "selection": {
+        "filter": {
+          "or": [
+            {
+              "class_selector": {
+                "class_id": 1
+              }
+            }
+          ]
+        }
+      },
+      "market_id": 1,
+      "bid_price": "10350000"
+    }
   ],
-  "regen.ecocredit.marketplace.v1beta1.Market":[
+  "regen.ecocredit.marketplace.v1beta1.Market": [
     2,
     {
       "id": 1,

@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger/x/ecocredit
 go 1.17
 
 require (
+	github.com/cockroachdb/apd/v3 v3.1.0
 	github.com/cosmos/cosmos-sdk v0.44.2
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.6

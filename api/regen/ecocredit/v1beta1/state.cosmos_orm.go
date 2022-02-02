@@ -425,6 +425,8 @@ type ProjectInfoStore interface {
 	Delete(ctx context.Context, projectInfo *ProjectInfo) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	Get(ctx context.Context, id uint64) (*ProjectInfo, error)
+	HasByName(ctx context.Context, name string) (found bool, err error)
+	GetByName(ctx context.Context, name string) (*ProjectInfo, error)
 	HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error)
 	GetByClassIdName(ctx context.Context, class_id uint64, name string) (*ProjectInfo, error)
 	List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error)
@@ -465,11 +467,24 @@ func (this ProjectInfoIdIndexKey) WithId(id uint64) ProjectInfoIdIndexKey {
 	return this
 }
 
+type ProjectInfoNameIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectInfoNameIndexKey) id() uint32            { return 1 }
+func (x ProjectInfoNameIndexKey) values() []interface{} { return x.vs }
+func (x ProjectInfoNameIndexKey) projectInfoIndexKey()  {}
+
+func (this ProjectInfoNameIndexKey) WithName(name string) ProjectInfoNameIndexKey {
+	this.vs = []interface{}{name}
+	return this
+}
+
 type ProjectInfoClassIdNameIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoClassIdNameIndexKey) id() uint32            { return 1 }
+func (x ProjectInfoClassIdNameIndexKey) id() uint32            { return 2 }
 func (x ProjectInfoClassIdNameIndexKey) values() []interface{} { return x.vs }
 func (x ProjectInfoClassIdNameIndexKey) projectInfoIndexKey()  {}
 
@@ -520,8 +535,25 @@ func (this projectInfoStore) Get(ctx context.Context, id uint64) (*ProjectInfo, 
 	return &projectInfo, err
 }
 
-func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error) {
+func (this projectInfoStore) HasByName(ctx context.Context, name string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		name,
+	)
+}
+
+func (this projectInfoStore) GetByName(ctx context.Context, name string) (*ProjectInfo, error) {
+	var projectInfo ProjectInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+		name,
+	)
+	if !found {
+		return nil, err
+	}
+	return &projectInfo, nil
+}
+
+func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error) {
+	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
 		class_id,
 		name,
 	)
@@ -529,7 +561,7 @@ func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint
 
 func (this projectInfoStore) GetByClassIdName(ctx context.Context, class_id uint64, name string) (*ProjectInfo, error) {
 	var projectInfo ProjectInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
 		class_id,
 		name,
 	)

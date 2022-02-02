@@ -119,6 +119,7 @@ func (o buyOrderMatcher) insertBuyOrderFiltered() error {
 	for _, criteria := range o.selection.Filter.Or {
 		numSelectors++
 		if numSelectors > MaxNumberSelectors {
+			return fmt.Errorf("too many selectors")
 		}
 
 		err := o.processSelector(criteria)
@@ -267,7 +268,7 @@ func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
 
 func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 	it, err := o.marketplaceStore.SellOrderStore().List(o.ctx,
-		marketplacev1beta1.SellOrderBatchDenomIndexKey{}.WithBatchDenom(batch.BatchDenom))
+		marketplacev1beta1.SellOrderBatchIdIndexKey{}.WithBatchId(batch.Id))
 	if err != nil {
 		return err
 	}

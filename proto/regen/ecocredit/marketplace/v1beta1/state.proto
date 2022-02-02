@@ -11,8 +11,8 @@ import "regen/ecocredit/marketplace/v1beta1/types.proto";
 message SellOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
-        primary_key: {fields: "id"}
-        index: {id: 1 fields: "batch_denom"}
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "batch_id"}
         index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
     };
@@ -23,8 +23,8 @@ message SellOrder {
     // seller is the address of the owner of the credits being sold.
     bytes seller = 2;
 
-    // batch_denom is the credit batch being sold.
-    string batch_denom = 3;
+    // batch_id is ID of the credit batch being sold.
+    uint64 batch_id = 3;
 
     // quantity is the quantity of credits being sold.
     string quantity = 4;
@@ -56,7 +56,7 @@ message SellOrder {
 message BuyOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "id"}
+        primary_key: {fields: "id", auto_increment: true}
         index: {id: 1 fields: "buyer"}
         index: {id: 2 fields: "expiration"}
     };
@@ -154,7 +154,7 @@ message AllowedDenom {
 message Market {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4
-        primary_key: {fields: "id"}
+        primary_key: {fields: "id", auto_increment: true}
         index: {id: 1 fields: "credit_type,bank_denom", unique: true}
     };
 
