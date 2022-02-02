@@ -15,7 +15,6 @@ message SellOrder {
         index: {id: 1 fields: "batch_denom"}
         index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
-        index: {id: 4 fields: "market_id,ask_price_u32"}
     };
 
     // id is the unique ID of sell order.
@@ -48,13 +47,9 @@ message SellOrder {
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp expiration = 9;
 
-    // ask_price_u32 is the ask price converted to a uint32 using the precision
-    // modifier for this order's market.
-    fixed32 ask_price_u32 = 10;
-
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching buy orders.
-    bool maker = 11;
+    bool maker = 10;
 }
 
 // BuyOrder represents the information for a buy order.
@@ -64,7 +59,6 @@ message BuyOrder {
         primary_key: {fields: "id"}
         index: {id: 1 fields: "buyer"}
         index: {id: 2 fields: "expiration"}
-        index: {id: 3 fields: "market_id,bid_price_u32"}
     };
 
     // Selection defines a buy order selection.
@@ -121,13 +115,10 @@ message BuyOrder {
     // expiration time is reached, the buy order is removed from state.
     google.protobuf.Timestamp expiration = 9;
 
-    // bid_price_u32 is the bid price converted to a uint32 using the precision
-    // modifier for this order's market.
-    fixed32 bid_price_u32 = 10;
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching sell orders.
-    bool maker = 11;
+    bool maker = 10;
 }
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
