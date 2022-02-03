@@ -8,7 +8,7 @@ import (
 	orderbookv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1beta1"
 )
 
-func (o OrderBook) ProcessBatch(ctx context.Context) error {
+func (o orderbook) ProcessBatch(ctx context.Context) error {
 	// for now do all processing synchronously, although in the future we can process
 	// different markets in parallel
 	marketIt, err := o.marketplaceStore.MarketStore().List(ctx, marketplacev1beta1.MarketIdIndexKey{})
@@ -31,7 +31,7 @@ func (o OrderBook) ProcessBatch(ctx context.Context) error {
 	return nil
 }
 
-func (o OrderBook) processMarket(ctx context.Context, market *marketplacev1beta1.Market) error {
+func (o orderbook) processMarket(ctx context.Context, market *marketplacev1beta1.Market) error {
 	it, err := o.memStore.BuyOrderSellOrderMatchStore().
 		List(ctx,
 			orderbookv1beta1.BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey{}.
@@ -96,45 +96,30 @@ func (o OrderBook) processMarket(ctx context.Context, market *marketplacev1beta1
 	return nil
 }
 
-func (o OrderBook) deleteBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
-	it, err := o.memStore.BuyOrderSellOrderMatchStore().List(ctx,
-		orderbookv1beta1.BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey{}.WithBuyOrderId(buyOrder.Id),
-	)
+func (o orderbook) deleteBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
+	err := o.memStore.BuyOrderSellOrderMatchStore().DeleteBy(ctx,
+		orderbookv1beta1.BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey{}.WithBuyOrderId(buyOrder.Id))
 	if err != nil {
 		return err
 	}
 
-	return o.deleteMatches(ctx, it)
-}
-
-func (o OrderBook) deleteSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder) error {
-	it, err := o.memStore.BuyOrderSellOrderMatchStore().List(ctx,
-		orderbookv1beta1.BuyOrderSellOrderMatchSellOrderIdIndexKey{}.WithSellOrderId(sellOrder.Id),
-	)
+	err = o.memStore.BuyOrderClassSelectorStore().DeleteBy(ctx,
+		orderbookv1beta1.BuyOrderClassSelectorBuyOrderIdClassIdIndexKey{}.WithBuyOrderId(buyOrder.Id))
 	if err != nil {
 		return err
 	}
 
-	return o.deleteMatches(ctx, it)
+	err = o.memStore.BuyOrderProjectSelectorStore().DeleteBy(ctx,
+		orderbookv1beta1.BuyOrderProjectSelectorBuyOrderIdProjectIdIndexKey{}.WithBuyOrderId(buyOrder.Id))
+	if err != nil {
+		return err
+	}
+
+	return o.memStore.BuyOrderBatchSelectorStore().DeleteBy(ctx,
+		orderbookv1beta1.BuyOrderBatchSelectorBuyOrderIdBatchIdIndexKey{}.WithBuyOrderId(buyOrder.Id))
 }
 
-func (o OrderBook) deleteMatches(ctx context.Context, it orderbookv1beta1.BuyOrderSellOrderMatchIterator) error {
-	var toDelete []*orderbookv1beta1.BuyOrderSellOrderMatch
-	for it.Next() {
-		match, err := it.Value()
-		if err != nil {
-			return err
-		}
-		toDelete = append(toDelete, match)
-	}
-	it.Close()
-
-	for _, match := range toDelete {
-		err := o.memStore.BuyOrderSellOrderMatchStore().Delete(ctx, match)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+func (o orderbook) deleteSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder) error {
+	return o.memStore.BuyOrderSellOrderMatchStore().DeleteBy(ctx,
+		orderbookv1beta1.BuyOrderSellOrderMatchSellOrderIdIndexKey{}.WithSellOrderId(sellOrder.Id))
 }

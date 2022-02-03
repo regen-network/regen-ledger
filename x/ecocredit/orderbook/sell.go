@@ -13,7 +13,7 @@ import (
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 )
 
-func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
+func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
 	askPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 	if !ok {
 		return ecocredit.ErrInvalidInteger.Wrapf("ask price: %s", sellOrder.AskPrice)
@@ -41,7 +41,7 @@ func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplace
 	}
 
 	matcher := &sellOrderMatcher{
-		OrderBook:   OrderBook{},
+		orderbook:   orderbook{},
 		ctx:         ctx,
 		sellOrder:   sellOrder,
 		market:      market,
@@ -55,7 +55,7 @@ func (o OrderBook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplace
 }
 
 type sellOrderMatcher struct {
-	OrderBook
+	orderbook
 	ctx         context.Context
 	sellOrder   *marketplacev1beta1.SellOrder
 	market      *marketplacev1beta1.Market

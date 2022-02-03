@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 
@@ -34,13 +36,13 @@ func Test1(t *testing.T) {
 
 	bz, err := os.ReadFile("testdata/in/scenario1.json")
 	assert.NilError(t, err)
-	jsonSource, err := ormdb.NewRawJSONSource(bz)
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
 	assert.NilError(t, err)
 	assert.NilError(t, db.ImportJSON(ctx, jsonSource))
 
 	assert.NilError(t, orderbook.Reload(ctx))
 
-	jsonSink := &ormdb.RawJSONSink{}
+	jsonSink := ormjson.NewRawMessageTarget()
 	assert.NilError(t, db.ExportJSON(ctx, jsonSink))
 	bz, err = jsonSink.JSON()
 	assert.NilError(t, err)

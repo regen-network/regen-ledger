@@ -17,6 +17,12 @@ type TestFillManager struct {
 	marketplaceStore marketplacev1beta1.StateStore
 	ecocreditStore   ecocreditv1beta1.StateStore
 	bankBalances     map[string]sdk.Int
+	transferManager  TransferManager
+}
+
+type TransferManager interface {
+	SendCoinsTo(denom string, amount sdk.Int, from, to sdk.AccAddress) error
+	SendCreditsTo(batchDenom string, amount math.Dec, from, to sdk.AccAddress, retire bool) error
 }
 
 func (t TestFillManager) Fill(

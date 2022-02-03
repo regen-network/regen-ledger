@@ -14,7 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
+func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
 	bidPrice, ok := sdk.NewIntFromString(buyOrder.BidPrice)
 	if !ok {
 		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %s", buyOrder.BidPrice)
@@ -38,7 +38,7 @@ func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 		return o.insertBuyOrderDirect(ctx, buyOrder, market, selection, bidPrice, bidPriceU32)
 	case *marketplacev1beta1.BuyOrder_Selection_Filter:
 		matcher := &buyOrderMatcher{
-			OrderBook:   o,
+			orderbook:   o,
 			ctx:         ctx,
 			buyOrder:    buyOrder,
 			market:      market,
@@ -52,7 +52,7 @@ func (o OrderBook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 	}
 }
 
-func (o OrderBook) insertBuyOrderDirect(
+func (o orderbook) insertBuyOrderDirect(
 	ctx context.Context,
 	buyOrder *marketplacev1beta1.BuyOrder,
 	market *marketplacev1beta1.Market,
@@ -101,7 +101,7 @@ func (o OrderBook) insertBuyOrderDirect(
 const MaxNumberSelectors = 4
 
 type buyOrderMatcher struct {
-	OrderBook
+	orderbook
 	ctx         context.Context
 	buyOrder    *marketplacev1beta1.BuyOrder
 	market      *marketplacev1beta1.Market
