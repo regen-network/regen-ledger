@@ -4,7 +4,6 @@ package regen.ecocredit.marketplace.v1beta1;
 
 import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
 // SellOrder represents the information for a sell order.

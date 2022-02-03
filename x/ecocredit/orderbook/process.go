@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook/fill"
+
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 	orderbookv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1beta1"
 )
@@ -32,17 +36,22 @@ func (o orderbook) ProcessBatch(ctx context.Context) error {
 }
 
 func (o orderbook) processMarket(ctx context.Context, market *marketplacev1beta1.Market) error {
-	it, err := o.memStore.BuyOrderSellOrderMatchStore().
-		List(ctx,
-			orderbookv1beta1.BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey{}.
-				WithMarketId(market.Id),
-		)
+	var cursor ormlist.CursorT
+	for {
+		it, err := o.memStore.BuyOrderSellOrderMatchStore().
+			List(ctx,
+				orderbookv1beta1.BuyOrderSellOrderMatchMarketIdBidPriceComplementBuyOrderIdAskPriceSellOrderIdIndexKey{}.
+					WithMarketId(market.Id),
+				ormlist.Cursor(cursor),
+			)
+		if err != nil {
+			return err
+		}
 
-	if err != nil {
-		return err
-	}
+		if !it.Next() {
+			return nil
+		}
 
-	for it.Next() {
 		match, err := it.Value()
 		if err != nil {
 			return err
@@ -68,18 +77,21 @@ func (o orderbook) processMarket(ctx context.Context, market *marketplacev1beta1
 		if err != nil {
 			return err
 		}
+
+		o.logger.Printf("filled buy order %d with sell order %d, status %s", buyOrder.Id, sellOrder.Id, status)
+
 		switch status {
-		case BuyFilled:
+		case fill.BuyFilled:
 			err = o.deleteBuyOrder(ctx, buyOrder)
 			if err != nil {
 				return err
 			}
-		case SellFilled:
+		case fill.SellFilled:
 			err = o.deleteSellOrder(ctx, sellOrder)
 			if err != nil {
 				return err
 			}
-		case BothFilled:
+		case fill.BothFilled:
 			err = o.deleteBuyOrder(ctx, buyOrder)
 			if err != nil {
 				return err
@@ -91,9 +103,15 @@ func (o orderbook) processMarket(ctx context.Context, market *marketplacev1beta1
 		default:
 			return fmt.Errorf("unexpected status %d", status)
 		}
-	}
 
-	return nil
+		cursor = it.Cursor()
+		it.Close()
+
+		err = o.memStore.BuyOrderSellOrderMatchStore().Delete(ctx, match)
+		if err != nil {
+			return err
+		}
+	}
 }
 
 func (o orderbook) deleteBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {

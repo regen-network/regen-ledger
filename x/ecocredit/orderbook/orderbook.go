@@ -3,6 +3,10 @@ package orderbook
 import (
 	"context"
 
+	"github.com/rs/zerolog"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook/fill"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 	orderbookv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/orderbook/v1beta1"
@@ -13,23 +17,11 @@ type orderbook struct {
 	memStore         orderbookv1beta1.MemoryStore
 	marketplaceStore marketplacev1beta1.StateStore
 	ecocreditStore   ecocreditv1beta1.StateStore
-	fillManager      FillManager
+	fillManager      fill.Manager
+	logger           zerolog.Logger
 }
 
-type FillManager interface {
-	Fill(ctx context.Context, market *marketplacev1beta1.Market, buyOrder *marketplacev1beta1.BuyOrder, sellOrder *marketplacev1beta1.SellOrder) (FillStatus, error)
-}
-
-type FillStatus int
-
-const (
-	NotFilled FillStatus = iota
-	BothFilled
-	BuyFilled
-	SellFilled
-)
-
-func NewOrderBook(db ormdb.ModuleDB, fillManager FillManager) (*orderbook, error) {
+func NewOrderBook(db ormdb.ModuleDB, fillManager fill.Manager, logger zerolog.Logger) (*orderbook, error) {
 	memStore, err := orderbookv1beta1.NewMemoryStore(db)
 	if err != nil {
 		return nil, err
@@ -50,6 +42,7 @@ func NewOrderBook(db ormdb.ModuleDB, fillManager FillManager) (*orderbook, error
 		marketplaceStore: marketplaceStore,
 		ecocreditStore:   ecocreditStore,
 		fillManager:      fillManager,
+		logger:           logger,
 	}, nil
 }
 

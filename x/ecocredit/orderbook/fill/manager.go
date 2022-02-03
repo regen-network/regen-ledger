@@ -1,36 +1,80 @@
-package testutil
+package fill
 
 import (
 	"context"
 	"fmt"
-	"log"
 
+	"github.com/rs/zerolog"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook"
 )
 
-type TestFillManager struct {
-	log              *log.Logger
+type Manager interface {
+	Fill(ctx context.Context, market *marketplacev1beta1.Market, buyOrder *marketplacev1beta1.BuyOrder, sellOrder *marketplacev1beta1.SellOrder) (Status, error)
+}
+
+type Status int
+
+const (
+	NotFilled Status = iota
+	BothFilled
+	BuyFilled
+	SellFilled
+)
+
+func (s Status) String() string {
+	switch s {
+	case BothFilled:
+		return "BothFilled"
+	case BuyFilled:
+		return "BuyFilled"
+	case SellFilled:
+		return "SellFilled"
+	default:
+		return "undefined"
+	}
+}
+
+type manager struct {
 	marketplaceStore marketplacev1beta1.StateStore
 	ecocreditStore   ecocreditv1beta1.StateStore
 	bankBalances     map[string]sdk.Int
 	transferManager  TransferManager
+	logger           zerolog.Logger
+}
+
+func NewManager(db ormdb.ModuleDB, transferManager TransferManager, logger zerolog.Logger) (Manager, error) {
+	mgr := &manager{transferManager: transferManager, logger: logger}
+
+	var err error
+	mgr.marketplaceStore, err = marketplacev1beta1.NewStateStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	mgr.ecocreditStore, err = ecocreditv1beta1.NewStateStore(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return mgr, nil
 }
 
 type TransferManager interface {
 	SendCoinsTo(denom string, amount sdk.Int, from, to sdk.AccAddress) error
-	SendCreditsTo(batchDenom string, amount math.Dec, from, to sdk.AccAddress, retire bool) error
+	SendCreditsTo(batchId uint64, amount math.Dec, from, to sdk.AccAddress, retire bool) error
 }
 
-func (t TestFillManager) Fill(
+func (t manager) Fill(
 	ctx context.Context,
 	market *marketplacev1beta1.Market,
 	buyOrder *marketplacev1beta1.BuyOrder,
 	sellOrder *marketplacev1beta1.SellOrder,
-) (orderbook.FillStatus, error) {
+) (Status, error) {
 	buyQuant, err := math.NewPositiveDecFromString(buyOrder.Quantity)
 	if err != nil {
 		return 0, err
@@ -49,10 +93,10 @@ func (t TestFillManager) Fill(
 	cmp := buyQuant.Cmp(sellQuant)
 
 	var actualQuant math.Dec
-	var status orderbook.FillStatus
+	var status Status
 	if cmp < 0 {
 		actualQuant = buyQuant
-		status = orderbook.BuyFilled
+		status = BuyFilled
 
 		newSellQuant, err := sellQuant.Sub(buyQuant)
 		if err != nil {
@@ -70,7 +114,7 @@ func (t TestFillManager) Fill(
 		}
 	} else if cmp == 0 {
 		actualQuant = buyQuant
-		status = orderbook.BothFilled
+		status = BothFilled
 
 		err = t.marketplaceStore.SellOrderStore().Delete(ctx, sellOrder)
 		if err != nil {
@@ -81,10 +125,10 @@ func (t TestFillManager) Fill(
 		if err != nil {
 			return 0, err
 		}
-		return orderbook.BothFilled, nil
+		return BothFilled, nil
 	} else {
 		actualQuant = sellQuant
-		status = orderbook.BothFilled
+		status = BothFilled
 
 		err = t.marketplaceStore.SellOrderStore().Delete(ctx, sellOrder)
 		if err != nil {
@@ -101,25 +145,17 @@ func (t TestFillManager) Fill(
 			return 0, err
 		}
 
-		return orderbook.SellFilled, nil
+		return SellFilled, nil
 	}
 
-	// fill buy order 100%
-	// discard remaining sell order matches
-	// delete buy order from
-	// 	buy order table
-	//	buy order selector indexes
-	var action string
+	retire := true
 	if buyOrder.DisableAutoRetire {
 		if !sellOrder.DisableAutoRetire {
 			return 0, fmt.Errorf("disable auto-retire failed")
 		}
-		action = "Transfer"
-	} else {
-		action = "Retire"
+		retire = false
 	}
-	t.log.Printf("%s %s credits from batch %d from %s -> %s",
-		action, actualQuant.String(), sellOrder.BatchId, sellOrder.Seller, buyOrder.Buyer)
+	err = t.transferManager.SendCreditsTo(sellOrder.BatchId, actualQuant, sellOrder.Seller, buyOrder.Buyer, retire)
 
 	// TODO correct decimal precision
 	payment, err := actualQuant.Mul(settlementPrice)
@@ -127,10 +163,17 @@ func (t TestFillManager) Fill(
 		return 0, err
 	}
 
-	t.log.Printf("Transfer %s %s from %s -> %s",
-		payment.String(), market.BankDenom, buyOrder.Buyer, sellOrder.Seller)
+	paymentInt, err := payment.Int64()
+	if err != nil {
+		return 0, err
+	}
+
+	err = t.transferManager.SendCoinsTo(market.BankDenom, sdk.NewInt(paymentInt), buyOrder.Buyer, sellOrder.Seller)
+	if err != nil {
+		return 0, err
+	}
 
 	return status, nil
 }
 
-var _ orderbook.FillManager = &TestFillManager{}
+var _ Manager = &manager{}

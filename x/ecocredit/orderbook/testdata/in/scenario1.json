@@ -86,19 +86,25 @@
       "id": 1,
       "market_id": 1,
       "batch_id": 1,
-      "ask_price": "10250000"
+      "ask_price": "10250000",
+      "quantity": "10",
+      "seller": "MTIzNDU="
     },
     {
       "id": 2,
       "market_id": 1,
       "batch_id": 2,
-      "ask_price": "10350000"
+      "ask_price": "10350000",
+      "quantity": "7",
+      "seller": "NTQzMjE="
     },
     {
       "id": 3,
       "market_id": 1,
       "batch_id": 3,
-      "ask_price": "10000000"
+      "ask_price": "10000000",
+      "quantity": "3",
+      "seller": "NTQzMjE="
     }
   ],
   "regen.ecocredit.marketplace.v1beta1.BuyOrder": [
@@ -107,13 +113,17 @@
       "id": 1,
       "selection": { "filter": { "or": [ { "class_selector": { "class_id": 1 } } ] } },
       "market_id": 1,
-      "bid_price": "10350000"
+      "bid_price": "10350000",
+      "quantity": "11",
+      "buyer": "Ym53ZW9mc2Rm"
     },
     {
       "id": 2,
       "selection": { "filter": { "or": [ { "class_selector": { "class_id": 1 } } ] } },
       "market_id": 1,
-      "bid_price": "10450000"
+      "bid_price": "10450000",
+      "quantity": "2",
+      "buyer": "bnd2b2l3Zg=="
     },
     {
       "id": 3,
@@ -122,7 +132,9 @@
         { "class_selector": { "class_id": 2 } }
        ] } },
       "market_id": 1,
-      "bid_price": "10270000"
+      "bid_price": "10270000",
+      "quantity": "5",
+      "buyer": "c2RmbGtud3Jnd2ll"
     }
   ],
   "regen.ecocredit.marketplace.v1beta1.Market": [

@@ -1,8 +1,17 @@
-package orderbook
+package orderbook_test
 
 import (
+	"context"
 	"os"
 	"testing"
+
+	"github.com/rs/zerolog"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook/fill"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/orderbook/testutil"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 
@@ -29,7 +38,11 @@ var testModuleSchema = ormdb.ModuleSchema{
 func Test1(t *testing.T) {
 	db, err := ormdb.NewModuleDB(testModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	orderbook, err := NewOrderBook(db)
+
+	logger := zerolog.New(zerolog.NewConsoleWriter())
+	fillMgr, err := fill.NewManager(db, testutil.NewTestTransferManager(logger), logger)
+	assert.NilError(t, err)
+	orderBook, err := orderbook.NewOrderBook(db, fillMgr, logger)
 	assert.NilError(t, err)
 
 	ctx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
@@ -40,11 +53,19 @@ func Test1(t *testing.T) {
 	assert.NilError(t, err)
 	assert.NilError(t, db.ImportJSON(ctx, jsonSource))
 
-	assert.NilError(t, orderbook.Reload(ctx))
+	assert.NilError(t, orderBook.Reload(ctx))
 
+	exportJson(t, db, ctx, "testdata/out/scenario1.after_reload.json")
+
+	assert.NilError(t, orderBook.ProcessBatch(ctx))
+
+	exportJson(t, db, ctx, "testdata/out/scenario1.after_process.json")
+}
+
+func exportJson(t assert.TestingT, db ormdb.ModuleDB, ctx context.Context, file string) {
 	jsonSink := ormjson.NewRawMessageTarget()
 	assert.NilError(t, db.ExportJSON(ctx, jsonSink))
-	bz, err = jsonSink.JSON()
+	bz, err := jsonSink.JSON()
 	assert.NilError(t, err)
-	assert.NilError(t, os.WriteFile("testdata/out/scenario1.after_reload.json", bz, 0644))
+	assert.NilError(t, os.WriteFile(file, bz, 0644))
 }
