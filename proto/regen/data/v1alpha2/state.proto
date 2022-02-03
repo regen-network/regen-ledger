@@ -37,15 +37,23 @@ message DataSigner {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-message ResolverURL {
+message ResolverInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id: 4
     primary_key: {fields: "id", auto_increment: true}
     index: {id: 1, fields: "url", unique: true}
+    index: {id: 2, fields: "manager"}
   };
 
+  // id is the ID of the resolver.
   uint64 id = 1;
+
+  // url is the unique URL of the resolver.
   string url = 2;
+
+  // manager is the bytes address of the resolver manager who is allowed
+  // to make calls to Msg/RegisterResolver for this resolver.
+  bytes manager = 3;
 }
 
 message DataResolver {
