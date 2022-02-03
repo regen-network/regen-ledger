@@ -280,6 +280,12 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 			return err
 		}
 
+		if o.buyOrder.DisableAutoRetire {
+			if !sellOrder.DisableAutoRetire {
+				continue
+			}
+		}
+
 		if sellOrder.MarketId != o.buyOrder.MarketId {
 			return ecocredit.ErrInvalidBuyOrder.Wrapf("buy order market id %d does not match matching sell order market id %d",
 				o.buyOrder.MarketId, sellOrder.MarketId)

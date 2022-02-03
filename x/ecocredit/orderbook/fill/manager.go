@@ -125,7 +125,6 @@ func (t manager) Fill(
 		if err != nil {
 			return 0, err
 		}
-		return BothFilled, nil
 	} else {
 		actualQuant = sellQuant
 		status = BothFilled
@@ -144,8 +143,6 @@ func (t manager) Fill(
 		if err != nil {
 			return 0, err
 		}
-
-		return SellFilled, nil
 	}
 
 	retire := true

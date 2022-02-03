@@ -88,7 +88,8 @@
       "batch_id": 1,
       "ask_price": "10250000",
       "quantity": "10",
-      "seller": "MTIzNDU="
+      "seller": "MTIzNDU=",
+      "disable_auto_retire": true
     },
     {
       "id": 2,
@@ -115,7 +116,8 @@
       "market_id": 1,
       "bid_price": "10350000",
       "quantity": "11",
-      "buyer": "Ym53ZW9mc2Rm"
+      "buyer": "Ym53ZW9mc2Rm",
+      "disable_auto_retire": true
     },
     {
       "id": 2,
