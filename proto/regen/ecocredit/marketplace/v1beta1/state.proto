@@ -19,22 +19,22 @@ message SellOrder {
     // id is the unique ID of sell order.
     uint64 id = 1;
 
-    // seller is the address of the owner of the credits being sold.
+    // seller is the bytes address of the owner of the credits being sold.
     bytes seller = 2;
 
     // batch_id is ID of the credit batch being sold.
     uint64 batch_id = 3;
 
-    // quantity is the quantity of credits being sold.
+    // quantity is the decimal quantity of credits being sold.
     string quantity = 4;
 
     // market_id is the market in which this sell order exists and specifies
     // the back denom ask_price corresponds to.
     uint64 market_id = 5;
 
-    // ask_price is the integer price the seller is asking for each unit of the
-    // batch_denom. Each credit unit of the batch will be sold for at least the
-    // ask_price or more.
+    // ask_price is the integer price (encoded as a string) the seller is asking
+    // for each unit of the batch_denom. Each credit unit of the batch will be
+    // sold for at least the ask_price or more.
     string ask_price = 6;
 
     // disable_auto_retire disables auto-retirement of credits which allows a
@@ -78,13 +78,13 @@ message BuyOrder {
     // id is the unique ID of buy order.
     uint64 id = 1;
 
-    // buyer is the address that created the buy order
+    // buyer is the bytes address of the account that created the buy order
     bytes buyer = 2;
 
     // selection is the buy order selection.
     Selection selection = 3;
 
-    // quantity is the quantity of credits to buy. If the quantity of credits
+    // quantity is the decimal quantity of credits to buy. If the quantity of credits
     // available is less than this amount the order will be partially filled
     // unless disable_partial_fill is true.
     string quantity = 4;
