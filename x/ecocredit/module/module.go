@@ -131,6 +131,7 @@ func (Module) WeightedOperations(simState module.SimulationState) []simtypes.Wei
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.
 func (a Module) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+	fmt.Println(">>>>>>>>>> ", a.keeper)
 	err := ecocredit.BeginBlocker(ctx, a.keeper)
 	if err != nil {
 		panic(err)
