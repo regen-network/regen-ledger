@@ -140,7 +140,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		if mod, ok := mod.(BeginBlockerModule); ok {
-			fmt.Println(">>>>>>>>>>>>>>>>>>>>\n>>>>>>>>>>>\n Registering Begin blocker for", name)
 			mm.beginBlockers = append(mm.beginBlockers, mod)
 		}
 		if mod, ok := mod.(EndBlockerModule); ok {
