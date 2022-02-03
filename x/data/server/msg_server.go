@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 
 	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
@@ -8,7 +9,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	types2 "github.com/cosmos/cosmos-sdk/types"
+	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/regen-network/regen-ledger/types"
@@ -100,7 +101,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 	}
 
 	for _, signer := range request.Signers {
-		addr, err := types2.AccAddressFromBech32(signer)
+		addr, err := cosmossdk.AccAddressFromBech32(signer)
 		if err != nil {
 			return nil, err
 		}
@@ -127,32 +128,49 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 }
 
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	resolverUrl, err := s.stateStore.ResolverURLStore().GetByUrl(ctx, msg.ResolverUrl)
+	resolverInfo, err := s.stateStore.ResolverInfoStore().GetByUrl(ctx, msg.ResolverUrl)
 	if err != nil {
 		return nil, err
 	}
 
-	if resolverUrl != nil {
-		return nil, data.ErrResolverURLExists
+	if resolverInfo != nil {
+		return nil, data.ErrResolverURLExists.Wrapf("url %s", msg.ResolverUrl)
 	}
 
-	resolverUrl.Url = msg.ResolverUrl
-	err = s.stateStore.ResolverURLStore().Insert(ctx, resolverUrl)
+	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgDefineResolverResponse{ResolverId: resolverUrl.Id}, nil
+	resolverInfo = &datav1alpha2.ResolverInfo{
+		Url:     msg.ResolverUrl,
+		Manager: manager.Bytes(),
+	}
+	err = s.stateStore.ResolverInfoStore().Insert(ctx, resolverInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.MsgDefineResolverResponse{ResolverId: resolverInfo.Id}, nil
 }
 
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
-	found, err := s.stateStore.ResolverURLStore().Has(ctx, msg.ResolverId)
+	resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, err
 	}
 
-	if !found {
+	if resolverInfo == nil {
 		return nil, data.ErrResolverUndefined.Wrapf("id %d", msg.ResolverId)
+	}
+
+	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
+	if err != nil {
+		return nil, err
+	}
+
+	if !bytes.Equal(resolverInfo.Manager, manager.Bytes()) {
+		return nil, data.ErrUnauthorizedResolverManager
 	}
 
 	for _, datum := range msg.Data {

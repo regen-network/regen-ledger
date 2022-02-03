@@ -156,15 +156,18 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 	return res, nil
 }
 
-func (s serverImpl) ResolverID(ctx context.Context, request *data.QueryResolverIDRequest) (*data.QueryResolverIDResponse, error) {
+func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolverInfoRequest) (*data.QueryResolverInfoResponse, error) {
 	res, err := s.stateStore.ResolverInfoStore().GetByUrl(ctx, request.Url)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO bech32 manager account address
+	acct := sdk.AccAddress(res.Manager)
 
-	return &data.QueryResolverIDResponse{Id: res.Id}, nil
+	return &data.QueryResolverInfoResponse{
+		Id:      res.Id,
+		Manager: acct.String(),
+	}, nil
 }
 
 func (s serverImpl) getID(ctx context.Context, iri string) ([]byte, error) {
