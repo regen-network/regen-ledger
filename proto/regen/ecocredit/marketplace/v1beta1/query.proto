@@ -3,10 +3,11 @@ syntax = "proto3";
 package regen.ecocredit.marketplace.v1beta1;
 
 import "google/api/annotations.proto";
-import "regen/ecocredit/v1beta1/marketplace/types.proto";
+import "regen/ecocredit/marketplace/v1beta1/state.proto";
+import "regen/ecocredit/marketplace/v1beta1/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+option go_package = "github.com/regen-network/regen-ledger/x/v1beta1/ecocredit";
 
 // Msg is the regen.ecocredit.marketplace.v1beta1 Query service.
 service Query {
@@ -46,8 +47,8 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders/address/{address}";
   }
 
-  // AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order
-  rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
+  // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a sell order
+  rpc AllowedDenoms(QueryAllowedDenomsRequest) returns (QueryAllowedDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
   }
 }
@@ -168,17 +169,17 @@ message QueryBuyOrdersByAddressResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
-message QueryAllowedAskDenomsRequest {
+// QueryAllowedDenomsRequest is the Query/AllowedDenoms request type.
+message QueryAllowedDenomsRequest {
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-// QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
-message QueryAllowedAskDenomsResponse {
+// QueryAllowedDenomsResponse is the Query/AllowedDenoms response type.
+message QueryAllowedDenomsResponse {
 
-  // ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
-  repeated AskDenom ask_denoms = 1;
+  // allowed_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+  repeated AllowedDenom allowed_denoms = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

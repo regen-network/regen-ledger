@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1beta1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+option go_package = "github.com/regen-network/regen-ledger/x/v1beta1/ecocredit";
 
 // Msg is the regen.ecocredit.v1beta1 Msg service.
 service Msg {
