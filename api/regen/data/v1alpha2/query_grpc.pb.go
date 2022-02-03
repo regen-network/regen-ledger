@@ -29,7 +29,7 @@ type QueryClient interface {
 	// Signers queries signers based on IRI.
 	Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error)
 	Resolvers(ctx context.Context, in *QueryResolversRequest, opts ...grpc.CallOption) (*QueryResolversResponse, error)
-	ResolverID(ctx context.Context, in *QueryResolverIDRequest, opts ...grpc.CallOption) (*QueryResolverIDResponse, error)
+	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
 type queryClient struct {
@@ -76,9 +76,9 @@ func (c *queryClient) Resolvers(ctx context.Context, in *QueryResolversRequest, 
 	return out, nil
 }
 
-func (c *queryClient) ResolverID(ctx context.Context, in *QueryResolverIDRequest, opts ...grpc.CallOption) (*QueryResolverIDResponse, error) {
-	out := new(QueryResolverIDResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ResolverID", in, out, opts...)
+func (c *queryClient) ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error) {
+	out := new(QueryResolverInfoResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ResolverInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ type QueryServer interface {
 	// Signers queries signers based on IRI.
 	Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error)
 	Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error)
-	ResolverID(context.Context, *QueryResolverIDRequest) (*QueryResolverIDResponse, error)
+	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -116,8 +116,8 @@ func (UnimplementedQueryServer) Signers(context.Context, *QuerySignersRequest) (
 func (UnimplementedQueryServer) Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Resolvers not implemented")
 }
-func (UnimplementedQueryServer) ResolverID(context.Context, *QueryResolverIDRequest) (*QueryResolverIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResolverID not implemented")
+func (UnimplementedQueryServer) ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolverInfo not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -204,20 +204,20 @@ func _Query_Resolvers_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ResolverID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryResolverIDRequest)
+func _Query_ResolverInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryResolverInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ResolverID(ctx, in)
+		return srv.(QueryServer).ResolverInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Query/ResolverID",
+		FullMethod: "/regen.data.v1alpha2.Query/ResolverInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ResolverID(ctx, req.(*QueryResolverIDRequest))
+		return srv.(QueryServer).ResolverInfo(ctx, req.(*QueryResolverInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -246,8 +246,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Resolvers_Handler,
 		},
 		{
-			MethodName: "ResolverID",
-			Handler:    _Query_ResolverID_Handler,
+			MethodName: "ResolverInfo",
+			Handler:    _Query_ResolverInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

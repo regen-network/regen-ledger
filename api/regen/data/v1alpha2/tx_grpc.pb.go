@@ -50,7 +50,10 @@ type MsgClient interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	// DefineResolver defines a resolver URL and assigns it a new integer ID
+	// that can be used in calls to RegisterResolver.
 	DefineResolver(ctx context.Context, in *MsgDefineResolver, opts ...grpc.CallOption) (*MsgDefineResolverResponse, error)
+	// RegisterResolver registers data content hashes
 	RegisterResolver(ctx context.Context, in *MsgRegisterResolver, opts ...grpc.CallOption) (*MsgRegisterResolverResponse, error)
 }
 
@@ -130,7 +133,10 @@ type MsgServer interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
+	// DefineResolver defines a resolver URL and assigns it a new integer ID
+	// that can be used in calls to RegisterResolver.
 	DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error)
+	// RegisterResolver registers data content hashes
 	RegisterResolver(context.Context, *MsgRegisterResolver) (*MsgRegisterResolverResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

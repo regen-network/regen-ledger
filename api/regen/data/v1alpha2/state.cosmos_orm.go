@@ -12,6 +12,7 @@ import (
 
 type DataIDStore interface {
 	Insert(ctx context.Context, dataID *DataID) error
+	InsertReturningID(ctx context.Context, dataID *DataID) (uint64, error)
 	Update(ctx context.Context, dataID *DataID) error
 	Save(ctx context.Context, dataID *DataID) error
 	Delete(ctx context.Context, dataID *DataID) error
@@ -42,11 +43,13 @@ type DataIDIndexKey interface {
 }
 
 // primary key starting index..
+type DataIDPrimaryKey = DataIDIdIndexKey
+
 type DataIDIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataIDIdIndexKey) id() uint32            { return 1 }
+func (x DataIDIdIndexKey) id() uint32            { return 0 }
 func (x DataIDIdIndexKey) values() []interface{} { return x.vs }
 func (x DataIDIdIndexKey) dataIDIndexKey()       {}
 
@@ -69,7 +72,7 @@ func (this DataIDIriIndexKey) WithIri(iri string) DataIDIriIndexKey {
 }
 
 type dataIDStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this dataIDStore) Insert(ctx context.Context, dataID *DataID) error {
@@ -88,6 +91,10 @@ func (this dataIDStore) Delete(ctx context.Context, dataID *DataID) error {
 	return this.table.Delete(ctx, dataID)
 }
 
+func (this dataIDStore) InsertReturningID(ctx context.Context, dataID *DataID) (uint64, error) {
+	return this.table.InsertReturningID(ctx, dataID)
+}
+
 func (this dataIDStore) Has(ctx context.Context, id []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -102,30 +109,30 @@ func (this dataIDStore) Get(ctx context.Context, id []byte) (*DataID, error) {
 }
 
 func (this dataIDStore) HasByIri(ctx context.Context, iri string) (found bool, err error) {
-	return this.table.Has(ctx, &DataID{
-		Iri: iri,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		iri,
+	)
 }
 
 func (this dataIDStore) GetByIri(ctx context.Context, iri string) (*DataID, error) {
-	dataID := &DataID{
-		Iri: iri,
-	}
-	found, err := this.table.Get(ctx, dataID)
+	var dataID DataID
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &dataID,
+		iri,
+	)
 	if !found {
 		return nil, err
 	}
-	return dataID, nil
+	return &dataID, nil
 }
 
 func (this dataIDStore) List(ctx context.Context, prefixKey DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataIDIterator{it}, err
 }
 
 func (this dataIDStore) ListRange(ctx context.Context, from, to DataIDIndexKey, opts ...ormlist.Option) (DataIDIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataIDIterator{it}, err
 }
@@ -139,11 +146,12 @@ func NewDataIDStore(db ormdb.ModuleDB) (DataIDStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&DataID{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataIDStore{table}, nil
+	return dataIDStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type DataAnchorStore interface {
 	Insert(ctx context.Context, dataAnchor *DataAnchor) error
+	InsertReturningID(ctx context.Context, dataAnchor *DataAnchor) (uint64, error)
 	Update(ctx context.Context, dataAnchor *DataAnchor) error
 	Save(ctx context.Context, dataAnchor *DataAnchor) error
 	Delete(ctx context.Context, dataAnchor *DataAnchor) error
@@ -172,11 +180,13 @@ type DataAnchorIndexKey interface {
 }
 
 // primary key starting index..
+type DataAnchorPrimaryKey = DataAnchorIdIndexKey
+
 type DataAnchorIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataAnchorIdIndexKey) id() uint32            { return 2 }
+func (x DataAnchorIdIndexKey) id() uint32            { return 0 }
 func (x DataAnchorIdIndexKey) values() []interface{} { return x.vs }
 func (x DataAnchorIdIndexKey) dataAnchorIndexKey()   {}
 
@@ -186,7 +196,7 @@ func (this DataAnchorIdIndexKey) WithId(id []byte) DataAnchorIdIndexKey {
 }
 
 type dataAnchorStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this dataAnchorStore) Insert(ctx context.Context, dataAnchor *DataAnchor) error {
@@ -205,6 +215,10 @@ func (this dataAnchorStore) Delete(ctx context.Context, dataAnchor *DataAnchor) 
 	return this.table.Delete(ctx, dataAnchor)
 }
 
+func (this dataAnchorStore) InsertReturningID(ctx context.Context, dataAnchor *DataAnchor) (uint64, error) {
+	return this.table.InsertReturningID(ctx, dataAnchor)
+}
+
 func (this dataAnchorStore) Has(ctx context.Context, id []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -219,13 +233,13 @@ func (this dataAnchorStore) Get(ctx context.Context, id []byte) (*DataAnchor, er
 }
 
 func (this dataAnchorStore) List(ctx context.Context, prefixKey DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataAnchorIterator{it}, err
 }
 
 func (this dataAnchorStore) ListRange(ctx context.Context, from, to DataAnchorIndexKey, opts ...ormlist.Option) (DataAnchorIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataAnchorIterator{it}, err
 }
@@ -239,11 +253,12 @@ func NewDataAnchorStore(db ormdb.ModuleDB) (DataAnchorStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&DataAnchor{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataAnchorStore{table}, nil
+	return dataAnchorStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type DataSignerStore interface {
 	Insert(ctx context.Context, dataSigner *DataSigner) error
+	InsertReturningID(ctx context.Context, dataSigner *DataSigner) (uint64, error)
 	Update(ctx context.Context, dataSigner *DataSigner) error
 	Save(ctx context.Context, dataSigner *DataSigner) error
 	Delete(ctx context.Context, dataSigner *DataSigner) error
@@ -272,11 +287,13 @@ type DataSignerIndexKey interface {
 }
 
 // primary key starting index..
+type DataSignerPrimaryKey = DataSignerIdIndexKey
+
 type DataSignerIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataSignerIdIndexKey) id() uint32            { return 3 }
+func (x DataSignerIdIndexKey) id() uint32            { return 0 }
 func (x DataSignerIdIndexKey) values() []interface{} { return x.vs }
 func (x DataSignerIdIndexKey) dataSignerIndexKey()   {}
 
@@ -286,7 +303,7 @@ func (this DataSignerIdIndexKey) WithId(id []byte) DataSignerIdIndexKey {
 }
 
 type dataSignerStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this dataSignerStore) Insert(ctx context.Context, dataSigner *DataSigner) error {
@@ -305,6 +322,10 @@ func (this dataSignerStore) Delete(ctx context.Context, dataSigner *DataSigner) 
 	return this.table.Delete(ctx, dataSigner)
 }
 
+func (this dataSignerStore) InsertReturningID(ctx context.Context, dataSigner *DataSigner) (uint64, error) {
+	return this.table.InsertReturningID(ctx, dataSigner)
+}
+
 func (this dataSignerStore) Has(ctx context.Context, id []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -319,13 +340,13 @@ func (this dataSignerStore) Get(ctx context.Context, id []byte) (*DataSigner, er
 }
 
 func (this dataSignerStore) List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataSignerIterator{it}, err
 }
 
 func (this dataSignerStore) ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataSignerIterator{it}, err
 }
@@ -339,139 +360,159 @@ func NewDataSignerStore(db ormdb.ModuleDB) (DataSignerStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&DataSigner{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataSignerStore{table}, nil
+	return dataSignerStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
-type ResolverURLStore interface {
-	Insert(ctx context.Context, resolverURL *ResolverURL) error
-	Update(ctx context.Context, resolverURL *ResolverURL) error
-	Save(ctx context.Context, resolverURL *ResolverURL) error
-	Delete(ctx context.Context, resolverURL *ResolverURL) error
+type ResolverInfoStore interface {
+	Insert(ctx context.Context, resolverInfo *ResolverInfo) error
+	InsertReturningID(ctx context.Context, resolverInfo *ResolverInfo) (uint64, error)
+	Update(ctx context.Context, resolverInfo *ResolverInfo) error
+	Save(ctx context.Context, resolverInfo *ResolverInfo) error
+	Delete(ctx context.Context, resolverInfo *ResolverInfo) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
-	Get(ctx context.Context, id uint64) (*ResolverURL, error)
+	Get(ctx context.Context, id uint64) (*ResolverInfo, error)
 	HasByUrl(ctx context.Context, url string) (found bool, err error)
-	GetByUrl(ctx context.Context, url string) (*ResolverURL, error)
-	List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error)
-	ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error)
+	GetByUrl(ctx context.Context, url string) (*ResolverInfo, error)
+	List(ctx context.Context, prefixKey ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
+	ListRange(ctx context.Context, from, to ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
 
 	doNotImplement()
 }
 
-type ResolverURLIterator struct {
+type ResolverInfoIterator struct {
 	ormtable.Iterator
 }
 
-func (i ResolverURLIterator) Value() (*ResolverURL, error) {
-	var resolverURL ResolverURL
-	err := i.UnmarshalMessage(&resolverURL)
-	return &resolverURL, err
+func (i ResolverInfoIterator) Value() (*ResolverInfo, error) {
+	var resolverInfo ResolverInfo
+	err := i.UnmarshalMessage(&resolverInfo)
+	return &resolverInfo, err
 }
 
-type ResolverURLIndexKey interface {
+type ResolverInfoIndexKey interface {
 	id() uint32
 	values() []interface{}
-	resolverURLIndexKey()
+	resolverInfoIndexKey()
 }
 
 // primary key starting index..
-type ResolverURLIdIndexKey struct {
+type ResolverInfoPrimaryKey = ResolverInfoIdIndexKey
+
+type ResolverInfoIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverURLIdIndexKey) id() uint32            { return 4 }
-func (x ResolverURLIdIndexKey) values() []interface{} { return x.vs }
-func (x ResolverURLIdIndexKey) resolverURLIndexKey()  {}
+func (x ResolverInfoIdIndexKey) id() uint32            { return 0 }
+func (x ResolverInfoIdIndexKey) values() []interface{} { return x.vs }
+func (x ResolverInfoIdIndexKey) resolverInfoIndexKey() {}
 
-func (this ResolverURLIdIndexKey) WithId(id uint64) ResolverURLIdIndexKey {
+func (this ResolverInfoIdIndexKey) WithId(id uint64) ResolverInfoIdIndexKey {
 	this.vs = []interface{}{id}
 	return this
 }
 
-type ResolverURLUrlIndexKey struct {
+type ResolverInfoUrlIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverURLUrlIndexKey) id() uint32            { return 1 }
-func (x ResolverURLUrlIndexKey) values() []interface{} { return x.vs }
-func (x ResolverURLUrlIndexKey) resolverURLIndexKey()  {}
+func (x ResolverInfoUrlIndexKey) id() uint32            { return 1 }
+func (x ResolverInfoUrlIndexKey) values() []interface{} { return x.vs }
+func (x ResolverInfoUrlIndexKey) resolverInfoIndexKey() {}
 
-func (this ResolverURLUrlIndexKey) WithUrl(url string) ResolverURLUrlIndexKey {
+func (this ResolverInfoUrlIndexKey) WithUrl(url string) ResolverInfoUrlIndexKey {
 	this.vs = []interface{}{url}
 	return this
 }
 
-type resolverURLStore struct {
-	table ormtable.Table
+type ResolverInfoManagerIndexKey struct {
+	vs []interface{}
 }
 
-func (this resolverURLStore) Insert(ctx context.Context, resolverURL *ResolverURL) error {
-	return this.table.Insert(ctx, resolverURL)
+func (x ResolverInfoManagerIndexKey) id() uint32            { return 2 }
+func (x ResolverInfoManagerIndexKey) values() []interface{} { return x.vs }
+func (x ResolverInfoManagerIndexKey) resolverInfoIndexKey() {}
+
+func (this ResolverInfoManagerIndexKey) WithManager(manager []byte) ResolverInfoManagerIndexKey {
+	this.vs = []interface{}{manager}
+	return this
 }
 
-func (this resolverURLStore) Update(ctx context.Context, resolverURL *ResolverURL) error {
-	return this.table.Update(ctx, resolverURL)
+type resolverInfoStore struct {
+	table ormtable.AutoIncrementTable
 }
 
-func (this resolverURLStore) Save(ctx context.Context, resolverURL *ResolverURL) error {
-	return this.table.Save(ctx, resolverURL)
+func (this resolverInfoStore) Insert(ctx context.Context, resolverInfo *ResolverInfo) error {
+	return this.table.Insert(ctx, resolverInfo)
 }
 
-func (this resolverURLStore) Delete(ctx context.Context, resolverURL *ResolverURL) error {
-	return this.table.Delete(ctx, resolverURL)
+func (this resolverInfoStore) Update(ctx context.Context, resolverInfo *ResolverInfo) error {
+	return this.table.Update(ctx, resolverInfo)
 }
 
-func (this resolverURLStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+func (this resolverInfoStore) Save(ctx context.Context, resolverInfo *ResolverInfo) error {
+	return this.table.Save(ctx, resolverInfo)
+}
+
+func (this resolverInfoStore) Delete(ctx context.Context, resolverInfo *ResolverInfo) error {
+	return this.table.Delete(ctx, resolverInfo)
+}
+
+func (this resolverInfoStore) InsertReturningID(ctx context.Context, resolverInfo *ResolverInfo) (uint64, error) {
+	return this.table.InsertReturningID(ctx, resolverInfo)
+}
+
+func (this resolverInfoStore) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this resolverURLStore) Get(ctx context.Context, id uint64) (*ResolverURL, error) {
-	var resolverURL ResolverURL
-	found, err := this.table.PrimaryKey().Get(ctx, &resolverURL, id)
+func (this resolverInfoStore) Get(ctx context.Context, id uint64) (*ResolverInfo, error) {
+	var resolverInfo ResolverInfo
+	found, err := this.table.PrimaryKey().Get(ctx, &resolverInfo, id)
 	if !found {
 		return nil, err
 	}
-	return &resolverURL, err
+	return &resolverInfo, err
 }
 
-func (this resolverURLStore) HasByUrl(ctx context.Context, url string) (found bool, err error) {
-	return this.table.Has(ctx, &ResolverURL{
-		Url: url,
-	})
+func (this resolverInfoStore) HasByUrl(ctx context.Context, url string) (found bool, err error) {
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		url,
+	)
 }
 
-func (this resolverURLStore) GetByUrl(ctx context.Context, url string) (*ResolverURL, error) {
-	resolverURL := &ResolverURL{
-		Url: url,
-	}
-	found, err := this.table.Get(ctx, resolverURL)
+func (this resolverInfoStore) GetByUrl(ctx context.Context, url string) (*ResolverInfo, error) {
+	var resolverInfo ResolverInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &resolverInfo,
+		url,
+	)
 	if !found {
 		return nil, err
 	}
-	return resolverURL, nil
+	return &resolverInfo, nil
 }
 
-func (this resolverURLStore) List(ctx context.Context, prefixKey ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+func (this resolverInfoStore) List(ctx context.Context, prefixKey ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error) {
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
-	return ResolverURLIterator{it}, err
+	return ResolverInfoIterator{it}, err
 }
 
-func (this resolverURLStore) ListRange(ctx context.Context, from, to ResolverURLIndexKey, opts ...ormlist.Option) (ResolverURLIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+func (this resolverInfoStore) ListRange(ctx context.Context, from, to ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error) {
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
-	return ResolverURLIterator{it}, err
+	return ResolverInfoIterator{it}, err
 }
 
-func (this resolverURLStore) doNotImplement() {}
+func (this resolverInfoStore) doNotImplement() {}
 
-var _ ResolverURLStore = resolverURLStore{}
+var _ ResolverInfoStore = resolverInfoStore{}
 
-func NewResolverURLStore(db ormdb.ModuleDB) (ResolverURLStore, error) {
-	table := db.GetTable(&ResolverURL{})
+func NewResolverInfoStore(db ormdb.ModuleDB) (ResolverInfoStore, error) {
+	table := db.GetTable(&ResolverInfo{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ResolverURL{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&ResolverInfo{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return resolverURLStore{table}, nil
+	return resolverInfoStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type DataResolverStore interface {
@@ -504,11 +545,13 @@ type DataResolverIndexKey interface {
 }
 
 // primary key starting index..
+type DataResolverPrimaryKey = DataResolverDataIdResolverIdIndexKey
+
 type DataResolverDataIdResolverIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 5 }
+func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 0 }
 func (x DataResolverDataIdResolverIdIndexKey) values() []interface{} { return x.vs }
 func (x DataResolverDataIdResolverIdIndexKey) dataResolverIndexKey() {}
 
@@ -556,13 +599,13 @@ func (this dataResolverStore) Get(ctx context.Context, data_id []byte, resolver_
 }
 
 func (this dataResolverStore) List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }
 
 func (this dataResolverStore) ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return DataResolverIterator{it}, err
 }
@@ -583,7 +626,7 @@ type StateStore interface {
 	DataIDStore() DataIDStore
 	DataAnchorStore() DataAnchorStore
 	DataSignerStore() DataSignerStore
-	ResolverURLStore() ResolverURLStore
+	ResolverInfoStore() ResolverInfoStore
 	DataResolverStore() DataResolverStore
 
 	doNotImplement()
@@ -593,7 +636,7 @@ type stateStore struct {
 	dataID       DataIDStore
 	dataAnchor   DataAnchorStore
 	dataSigner   DataSignerStore
-	resolverURL  ResolverURLStore
+	resolverInfo ResolverInfoStore
 	dataResolver DataResolverStore
 }
 
@@ -609,8 +652,8 @@ func (x stateStore) DataSignerStore() DataSignerStore {
 	return x.dataSigner
 }
 
-func (x stateStore) ResolverURLStore() ResolverURLStore {
-	return x.resolverURL
+func (x stateStore) ResolverInfoStore() ResolverInfoStore {
+	return x.resolverInfo
 }
 
 func (x stateStore) DataResolverStore() DataResolverStore {
@@ -637,7 +680,7 @@ func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
 		return nil, err
 	}
 
-	resolverURLStore, err := NewResolverURLStore(db)
+	resolverInfoStore, err := NewResolverInfoStore(db)
 	if err != nil {
 		return nil, err
 	}
@@ -651,7 +694,7 @@ func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
 		dataIDStore,
 		dataAnchorStore,
 		dataSignerStore,
-		resolverURLStore,
+		resolverInfoStore,
 		dataResolverStore,
 	}, nil
 }

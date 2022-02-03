@@ -30,8 +30,8 @@ service Query {
     option (google.api.http).get = "/regen/data/v1alpha2/resolvers/{iri}";
   }
 
-  rpc ResolverID(QueryResolverIDRequest) returns (QueryResolverIDResponse) {
-    option (google.api.http).get = "/regen/data/v1alpha2/resolver_id/{url}";
+  rpc ResolverInfo(QueryResolverInfoRequest) returns (QueryResolverInfoResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/resolver/{url}";
   }
 }
 
@@ -112,10 +112,13 @@ message QueryResolversResponse {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryResolverIDRequest {
+message QueryResolverInfoRequest {
   string url = 1;
 }
 
-message QueryResolverIDResponse {
+message QueryResolverInfoResponse {
   uint64 id = 1;
+
+  // manager is the bech32 account address of the resolver manager.
+  string manager = 2;
 }

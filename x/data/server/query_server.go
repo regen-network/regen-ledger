@@ -146,21 +146,23 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 			return nil, err
 		}
 
-		resolverUrl, err := s.stateStore.ResolverURLStore().Get(ctx, item.ResolverId)
+		resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, item.ResolverId)
 		if err != nil {
 			return nil, err
 		}
 
-		res.ResolverUrls = append(res.ResolverUrls, resolverUrl.Url)
+		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
 	}
 	return res, nil
 }
 
 func (s serverImpl) ResolverID(ctx context.Context, request *data.QueryResolverIDRequest) (*data.QueryResolverIDResponse, error) {
-	res, err := s.stateStore.ResolverURLStore().GetByUrl(ctx, request.Url)
+	res, err := s.stateStore.ResolverInfoStore().GetByUrl(ctx, request.Url)
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO bech32 manager account address
 
 	return &data.QueryResolverIDResponse{Id: res.Id}, nil
 }

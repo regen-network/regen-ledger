@@ -91,7 +91,8 @@ message MsgDefineResolver {
 
   // manager is the address of the resolver manager. The manager is able
   // to make future calls using the ID returned by this operation with
-  // Msg/RegisterResolver.
+  // Msg/RegisterResolver. To authorize other accounts to register resolvers,
+  // the manager should make use of cosmos.authz.
   string manager = 1;
 
   // resolver_url is a resolver URL which should refer to an HTTP service
