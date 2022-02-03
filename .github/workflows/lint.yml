@@ -26,3 +26,27 @@ jobs:
           args: --timeout 10m
           github-token: ${{ secrets.github_token }}
         if: env.GIT_DIFF
+
+
+  proto-lint:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v4
+        with:
+          PATTERNS: |
+            proto/**/*.proto
+      - uses: golangci/golangci-lint-action@master
+        with:
+          version: v1.28
+          args: --timeout 10m
+          github-token: ${{ secrets.github_token }}
+        if: env.GIT_DIFF
+      - id: install clang
+        run: apt-get install -yq --no-install-recommends clang
+      - id: check version
+        run: clang --version
+      - id: check clang-format
+        run: clang-format --version
