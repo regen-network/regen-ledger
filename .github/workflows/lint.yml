@@ -28,9 +28,9 @@ jobs:
         if: env.GIT_DIFF
 
   proto-lint:
-    name: golangci-lint
+    name: proto-linting
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v2
       # - uses: technote-space/get-diff-action@v4
