@@ -222,6 +222,7 @@ github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfc
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-proto v1.0.0-alpha6 h1:N2BvV2AyzGAXCJnvlw1pMzEQ+76tj5FDBrkYQYIDCdU=
 github.com/cosmos/cosmos-proto v1.0.0-alpha6/go.mod h1:msdDWOvfStHLG+Z2y2SJ0dcqimZ2vc8M1MPnZ4jOF7U=
+github.com/cosmos/cosmos-proto v1.0.0-alpha7/go.mod h1:dosO4pSAbJF8zWCzCoTWP7nNsjcvSUBQmniFxDg5daw=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3 h1:tqpedvX/1UgQyX3W2hlW6Xg801FyojYT/NOHbW0oG+s=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3/go.mod h1:Ht15guGn9F8b0lv8NkjXE9/asAvVUOt2n4gvQ4q5MyU=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 h1:bBglNlra8ZHb4dmbEE8V85ihLA+DkriSm7tcx6x/JWo=
@@ -230,6 +231,8 @@ github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1 h1:cSC8m9ttv+USCl92901VPuYh07d3J
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1/go.mod h1:5mhtuO1SxHkN7nQqC41YIIIOEURJ5NieEMqlbsG5IYs=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.2 h1:D4EJu53483y4wA3Xhz++0HlXVQel633UsyOVC2tMky0=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.2/go.mod h1:I+FsOa+FYLN9mOd3EJT+/0ACcegQbXq7QmKM7oK6wdA=
+github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.6 h1:ZfS4+Vf+zdX3ABGmThHSJt9KTOOIxCxGg8mbob7JbUw=
+github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.6/go.mod h1:pH7cqdUlm/zbtGUxlg9Lf/KL8poW4N9HkSN1AKAwRKk=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
@@ -458,6 +461,7 @@ github.com/google/go-cmp v0.5.3/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/go-cmp v0.5.4/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.5.5 h1:Khx7svrCpmxxtHBq5j2mp/xVjsi8hQMfNLvJFAlrGgU=
 github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
+github.com/google/go-cmp v0.5.6/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf/go.mod h1:HP5RmnzzSNb993RKQDq4+1A4ia9nllfqcQFTQJedwGI=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/gofuzz v1.1.1-0.20200604201612-c04b05f3adfa h1:Q75Upo5UN4JbPFURXZ8nLKYUvF85dyFRop/vQ0Rv+64=
