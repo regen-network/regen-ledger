@@ -15,7 +15,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb
-	google.golang.org/grpc v1.43.0
+	google.golang.org/grpc v1.44.0
 )
 
 require (
@@ -32,8 +32,9 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.6.10 // indirect
 	github.com/confio/ics23/go v0.6.6 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-alpha6 // indirect
-	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4 // indirect
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
@@ -127,5 +128,3 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/regen-network/regen-ledger/api => ../../api
-
-replace github.com/cosmos/cosmos-sdk/orm => ../../../cosmos-sdk/orm
