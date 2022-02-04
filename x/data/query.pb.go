@@ -351,7 +351,7 @@ func (m *QuerySignersRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QuerySignersResponse is the Query/QuerySigners response type.
+// QuerySignersResponse is the Query/Signers response type.
 type QuerySignersResponse struct {
 	// signers are the addresses of the signers.
 	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
@@ -406,6 +406,7 @@ func (m *QuerySignersResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// QueryResolversRequest is the Query/Resolvers request type.
 type QueryResolversRequest struct {
 	// iri is the content IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
@@ -460,7 +461,10 @@ func (m *QueryResolversRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryResolversResponse is the Query/Resolvers response type.
 type QueryResolversResponse struct {
+	// resolver_urls are the resolver URLs that have been registered for this
+	// data object.
 	ResolverUrls []string `protobuf:"bytes,1,rep,name=resolver_urls,json=resolverUrls,proto3" json:"resolver_urls,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -513,7 +517,9 @@ func (m *QueryResolversResponse) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryResolverInfoRequest is the Query/ResolverInfo request type.
 type QueryResolverInfoRequest struct {
+	// url is the URL of the resolver to query.
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 }
 
@@ -557,7 +563,9 @@ func (m *QueryResolverInfoRequest) GetUrl() string {
 	return ""
 }
 
+// QueryResolverInfoResponse is the Query/ResolverInfo response type.
 type QueryResolverInfoResponse struct {
+	// id is the id of the resolver which can be used in Msg/RegisterResolver.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// manager is the bech32 account address of the resolver manager.
 	Manager string `protobuf:"bytes,2,opt,name=manager,proto3" json:"manager,omitempty"`
@@ -695,7 +703,9 @@ type QueryClient interface {
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
 	// Signers queries signers based on IRI.
 	Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error)
+	// Resolvers returns the registered resolver URLs for the data IRI.
 	Resolvers(ctx context.Context, in *QueryResolversRequest, opts ...grpc.CallOption) (*QueryResolversResponse, error)
+	// ResolverInfo returns information about a resolver.
 	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
@@ -760,7 +770,9 @@ type QueryServer interface {
 	BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
 	// Signers queries signers based on IRI.
 	Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error)
+	// Resolvers returns the registered resolver URLs for the data IRI.
 	Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error)
+	// ResolverInfo returns information about a resolver.
 	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 }
 

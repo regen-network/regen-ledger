@@ -28,7 +28,9 @@ type QueryClient interface {
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
 	// Signers queries signers based on IRI.
 	Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error)
+	// Resolvers returns the registered resolver URLs for the data IRI.
 	Resolvers(ctx context.Context, in *QueryResolversRequest, opts ...grpc.CallOption) (*QueryResolversResponse, error)
+	// ResolverInfo returns information about a resolver.
 	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
@@ -95,7 +97,9 @@ type QueryServer interface {
 	BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
 	// Signers queries signers based on IRI.
 	Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error)
+	// Resolvers returns the registered resolver URLs for the data IRI.
 	Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error)
+	// ResolverInfo returns information about a resolver.
 	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

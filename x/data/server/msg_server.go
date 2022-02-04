@@ -128,40 +128,26 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 }
 
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	resolverInfo, err := s.stateStore.ResolverInfoStore().GetByUrl(ctx, msg.ResolverUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	if resolverInfo != nil {
-		return nil, data.ErrResolverURLExists.Wrapf("url %s", msg.ResolverUrl)
-	}
-
 	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
 	if err != nil {
 		return nil, err
 	}
 
-	resolverInfo = &datav1alpha2.ResolverInfo{
+	id, err := s.stateStore.ResolverInfoStore().InsertReturningID(ctx, &datav1alpha2.ResolverInfo{
 		Url:     msg.ResolverUrl,
 		Manager: manager.Bytes(),
-	}
-	err = s.stateStore.ResolverInfoStore().Insert(ctx, resolverInfo)
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgDefineResolverResponse{ResolverId: resolverInfo.Id}, nil
+	return &data.MsgDefineResolverResponse{ResolverId: id}, nil
 }
 
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
 	resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, err
-	}
-
-	if resolverInfo == nil {
-		return nil, data.ErrResolverUndefined.Wrapf("id %d", msg.ResolverId)
 	}
 
 	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)

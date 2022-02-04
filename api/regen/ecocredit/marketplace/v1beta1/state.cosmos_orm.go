@@ -4,7 +4,6 @@ package marketplacev1beta1
 
 import (
 	context "context"
-	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -17,9 +16,12 @@ type SellOrderStore interface {
 	Save(ctx context.Context, sellOrder *SellOrder) error
 	Delete(ctx context.Context, sellOrder *SellOrder) error
 	Has(ctx context.Context, order_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, order_id uint64) (*SellOrder, error)
 	List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
+	DeleteBy(ctx context.Context, prefixKey SellOrderIndexKey) error
+	DeleteRange(ctx context.Context, from, to SellOrderIndexKey) error
 
 	doNotImplement()
 }
@@ -122,29 +124,38 @@ func (this sellOrderStore) Has(ctx context.Context, order_id uint64) (found bool
 func (this sellOrderStore) Get(ctx context.Context, order_id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, order_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &sellOrder, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &sellOrder, nil
 }
 
 func (this sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return SellOrderIterator{it}, err
 }
 
 func (this sellOrderStore) ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return SellOrderIterator{it}, err
+}
+
+func (this sellOrderStore) DeleteBy(ctx context.Context, prefixKey SellOrderIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this sellOrderStore) DeleteRange(ctx context.Context, from, to SellOrderIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this sellOrderStore) doNotImplement() {}
 
 var _ SellOrderStore = sellOrderStore{}
 
-func NewSellOrderStore(db ormdb.ModuleDB) (SellOrderStore, error) {
+func NewSellOrderStore(db ormtable.Schema) (SellOrderStore, error) {
 	table := db.GetTable(&SellOrder{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&SellOrder{}).ProtoReflect().Descriptor().FullName()))
@@ -158,9 +169,12 @@ type BuyOrderStore interface {
 	Save(ctx context.Context, buyOrder *BuyOrder) error
 	Delete(ctx context.Context, buyOrder *BuyOrder) error
 	Has(ctx context.Context, buy_order_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error)
 	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BuyOrderIndexKey) error
+	DeleteRange(ctx context.Context, from, to BuyOrderIndexKey) error
 
 	doNotImplement()
 }
@@ -250,29 +264,38 @@ func (this buyOrderStore) Has(ctx context.Context, buy_order_id uint64) (found b
 func (this buyOrderStore) Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error) {
 	var buyOrder BuyOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, buy_order_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrder, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrder, nil
 }
 
 func (this buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BuyOrderIterator{it}, err
 }
 
 func (this buyOrderStore) ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BuyOrderIterator{it}, err
+}
+
+func (this buyOrderStore) DeleteBy(ctx context.Context, prefixKey BuyOrderIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this buyOrderStore) DeleteRange(ctx context.Context, from, to BuyOrderIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this buyOrderStore) doNotImplement() {}
 
 var _ BuyOrderStore = buyOrderStore{}
 
-func NewBuyOrderStore(db ormdb.ModuleDB) (BuyOrderStore, error) {
+func NewBuyOrderStore(db ormtable.Schema) (BuyOrderStore, error) {
 	table := db.GetTable(&BuyOrder{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrder{}).ProtoReflect().Descriptor().FullName()))
@@ -286,11 +309,15 @@ type AllowedDenomStore interface {
 	Save(ctx context.Context, allowedDenom *AllowedDenom) error
 	Delete(ctx context.Context, allowedDenom *AllowedDenom) error
 	Has(ctx context.Context, bank_denom string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, bank_denom string) (*AllowedDenom, error)
 	HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error)
+	// GetByDisplayDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error)
 	List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error)
 	ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error)
+	DeleteBy(ctx context.Context, prefixKey AllowedDenomIndexKey) error
+	DeleteRange(ctx context.Context, from, to AllowedDenomIndexKey) error
 
 	doNotImplement()
 }
@@ -367,10 +394,13 @@ func (this allowedDenomStore) Has(ctx context.Context, bank_denom string) (found
 func (this allowedDenomStore) Get(ctx context.Context, bank_denom string) (*AllowedDenom, error) {
 	var allowedDenom AllowedDenom
 	found, err := this.table.PrimaryKey().Get(ctx, &allowedDenom, bank_denom)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &allowedDenom, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &allowedDenom, nil
 }
 
 func (this allowedDenomStore) HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error) {
@@ -384,29 +414,38 @@ func (this allowedDenomStore) GetByDisplayDenom(ctx context.Context, display_den
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &allowedDenom,
 		display_denom,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &allowedDenom, nil
 }
 
 func (this allowedDenomStore) List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return AllowedDenomIterator{it}, err
 }
 
 func (this allowedDenomStore) ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return AllowedDenomIterator{it}, err
+}
+
+func (this allowedDenomStore) DeleteBy(ctx context.Context, prefixKey AllowedDenomIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this allowedDenomStore) DeleteRange(ctx context.Context, from, to AllowedDenomIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this allowedDenomStore) doNotImplement() {}
 
 var _ AllowedDenomStore = allowedDenomStore{}
 
-func NewAllowedDenomStore(db ormdb.ModuleDB) (AllowedDenomStore, error) {
+func NewAllowedDenomStore(db ormtable.Schema) (AllowedDenomStore, error) {
 	table := db.GetTable(&AllowedDenom{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&AllowedDenom{}).ProtoReflect().Descriptor().FullName()))
@@ -420,11 +459,15 @@ type MarketStore interface {
 	Save(ctx context.Context, market *Market) error
 	Delete(ctx context.Context, market *Market) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*Market, error)
 	HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error)
+	// GetByCreditTypeBankDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error)
 	List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
+	DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error
+	DeleteRange(ctx context.Context, from, to MarketIndexKey) error
 
 	doNotImplement()
 }
@@ -506,10 +549,13 @@ func (this marketStore) Has(ctx context.Context, id uint64) (found bool, err err
 func (this marketStore) Get(ctx context.Context, id uint64) (*Market, error) {
 	var market Market
 	found, err := this.table.PrimaryKey().Get(ctx, &market, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &market, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &market, nil
 }
 
 func (this marketStore) HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error) {
@@ -525,29 +571,38 @@ func (this marketStore) GetByCreditTypeBankDenom(ctx context.Context, credit_typ
 		credit_type,
 		bank_denom,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &market, nil
 }
 
 func (this marketStore) List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return MarketIterator{it}, err
 }
 
 func (this marketStore) ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return MarketIterator{it}, err
+}
+
+func (this marketStore) DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this marketStore) DeleteRange(ctx context.Context, from, to MarketIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this marketStore) doNotImplement() {}
 
 var _ MarketStore = marketStore{}
 
-func NewMarketStore(db ormdb.ModuleDB) (MarketStore, error) {
+func NewMarketStore(db ormtable.Schema) (MarketStore, error) {
 	table := db.GetTable(&Market{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Market{}).ProtoReflect().Descriptor().FullName()))
@@ -591,7 +646,7 @@ func (stateStore) doNotImplement() {}
 
 var _ StateStore = stateStore{}
 
-func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+func NewStateStore(db ormtable.Schema) (StateStore, error) {
 	sellOrderStore, err := NewSellOrderStore(db)
 	if err != nil {
 		return nil, err

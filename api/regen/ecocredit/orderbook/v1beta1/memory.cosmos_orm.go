@@ -4,7 +4,6 @@ package orderbookv1beta1
 
 import (
 	context "context"
-	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -17,9 +16,12 @@ type BuyOrderSellOrderMatchStore interface {
 	Save(ctx context.Context, buyOrderSellOrderMatch *BuyOrderSellOrderMatch) error
 	Delete(ctx context.Context, buyOrderSellOrderMatch *BuyOrderSellOrderMatch) error
 	Has(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (*BuyOrderSellOrderMatch, error)
 	List(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey) error
+	DeleteRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey) error
 
 	doNotImplement()
 }
@@ -139,29 +141,38 @@ func (this buyOrderSellOrderMatchStore) Has(ctx context.Context, buy_order_id ui
 func (this buyOrderSellOrderMatchStore) Get(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (*BuyOrderSellOrderMatch, error) {
 	var buyOrderSellOrderMatch BuyOrderSellOrderMatch
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderSellOrderMatch, buy_order_id, sell_order_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrderSellOrderMatch, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrderSellOrderMatch, nil
 }
 
 func (this buyOrderSellOrderMatchStore) List(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BuyOrderSellOrderMatchIterator{it}, err
 }
 
 func (this buyOrderSellOrderMatchStore) ListRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BuyOrderSellOrderMatchIterator{it}, err
+}
+
+func (this buyOrderSellOrderMatchStore) DeleteBy(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this buyOrderSellOrderMatchStore) DeleteRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this buyOrderSellOrderMatchStore) doNotImplement() {}
 
 var _ BuyOrderSellOrderMatchStore = buyOrderSellOrderMatchStore{}
 
-func NewBuyOrderSellOrderMatchStore(db ormdb.ModuleDB) (BuyOrderSellOrderMatchStore, error) {
+func NewBuyOrderSellOrderMatchStore(db ormtable.Schema) (BuyOrderSellOrderMatchStore, error) {
 	table := db.GetTable(&BuyOrderSellOrderMatch{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrderSellOrderMatch{}).ProtoReflect().Descriptor().FullName()))
@@ -175,9 +186,12 @@ type UInt64SelectorBuyOrderStore interface {
 	Save(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
 	Delete(ctx context.Context, uInt64SelectorBuyOrder *UInt64SelectorBuyOrder) error
 	Has(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (*UInt64SelectorBuyOrder, error)
 	List(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error)
+	DeleteBy(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey) error
+	DeleteRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey) error
 
 	doNotImplement()
 }
@@ -271,29 +285,38 @@ func (this uInt64SelectorBuyOrderStore) Has(ctx context.Context, buy_order_id ui
 func (this uInt64SelectorBuyOrderStore) Get(ctx context.Context, buy_order_id uint64, selector_type v1beta1.SelectorType, value uint64) (*UInt64SelectorBuyOrder, error) {
 	var uInt64SelectorBuyOrder UInt64SelectorBuyOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &uInt64SelectorBuyOrder, buy_order_id, selector_type, value)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &uInt64SelectorBuyOrder, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &uInt64SelectorBuyOrder, nil
 }
 
 func (this uInt64SelectorBuyOrderStore) List(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return UInt64SelectorBuyOrderIterator{it}, err
 }
 
 func (this uInt64SelectorBuyOrderStore) ListRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return UInt64SelectorBuyOrderIterator{it}, err
+}
+
+func (this uInt64SelectorBuyOrderStore) DeleteBy(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this uInt64SelectorBuyOrderStore) DeleteRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this uInt64SelectorBuyOrderStore) doNotImplement() {}
 
 var _ UInt64SelectorBuyOrderStore = uInt64SelectorBuyOrderStore{}
 
-func NewUInt64SelectorBuyOrderStore(db ormdb.ModuleDB) (UInt64SelectorBuyOrderStore, error) {
+func NewUInt64SelectorBuyOrderStore(db ormtable.Schema) (UInt64SelectorBuyOrderStore, error) {
 	table := db.GetTable(&UInt64SelectorBuyOrder{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&UInt64SelectorBuyOrder{}).ProtoReflect().Descriptor().FullName()))
@@ -325,7 +348,7 @@ func (memoryStore) doNotImplement() {}
 
 var _ MemoryStore = memoryStore{}
 
-func NewMemoryStore(db ormdb.ModuleDB) (MemoryStore, error) {
+func NewMemoryStore(db ormtable.Schema) (MemoryStore, error) {
 	buyOrderSellOrderMatchStore, err := NewBuyOrderSellOrderMatchStore(db)
 	if err != nil {
 		return nil, err

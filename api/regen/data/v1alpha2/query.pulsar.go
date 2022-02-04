@@ -5804,7 +5804,7 @@ func (x *QuerySignersRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QuerySignersResponse is the Query/QuerySigners response type.
+// QuerySignersResponse is the Query/Signers response type.
 type QuerySignersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5850,6 +5850,7 @@ func (x *QuerySignersResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
+// QueryResolversRequest is the Query/Resolvers request type.
 type QueryResolversRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -5895,11 +5896,14 @@ func (x *QueryResolversRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
+// QueryResolversResponse is the Query/Resolvers response type.
 type QueryResolversResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// resolver_urls are the resolver URLs that have been registered for this
+	// data object.
 	ResolverUrls []string `protobuf:"bytes,1,rep,name=resolver_urls,json=resolverUrls,proto3" json:"resolver_urls,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -5939,11 +5943,13 @@ func (x *QueryResolversResponse) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
+// QueryResolverInfoRequest is the Query/ResolverInfo request type.
 type QueryResolverInfoRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// url is the URL of the resolver to query.
 	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 }
 
@@ -5974,11 +5980,13 @@ func (x *QueryResolverInfoRequest) GetUrl() string {
 	return ""
 }
 
+// QueryResolverInfoResponse is the Query/ResolverInfo response type.
 type QueryResolverInfoResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// id is the id of the resolver which can be used in Msg/RegisterResolver.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// manager is the bech32 account address of the resolver manager.
 	Manager string `protobuf:"bytes,2,opt,name=manager,proto3" json:"manager,omitempty"`
