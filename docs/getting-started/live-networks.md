@@ -101,5 +101,5 @@ curl http://209.182.218.23:8000/faucet/<account_address>
 *For Hambach Testnet:*
 
 ```bash
-curl http://147.182.238.116:8000/faucet/<account_address>
+curl http://185.181.11.150:8000/faucet/<account_address>
 ```
