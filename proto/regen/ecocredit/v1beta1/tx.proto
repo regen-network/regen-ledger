@@ -4,7 +4,6 @@ package regen.ecocredit.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "regen/ecocredit/v1beta1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 

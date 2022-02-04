@@ -12,7 +12,6 @@ import (
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	v1beta1 "regen/ecocredit/v1beta1"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -38,7 +37,7 @@ type Params struct {
 	// creation
 	AllowlistEnabled bool `protobuf:"varint,3,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
 	// credit_types is a list of definitions for credit types
-	CreditTypes []*v1beta1.CreditType `protobuf:"bytes,4,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
+	CreditTypes []*CreditType `protobuf:"bytes,4,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -95,7 +94,7 @@ func (m *Params) GetAllowlistEnabled() bool {
 	return false
 }
 
-func (m *Params) GetCreditTypes() []*v1beta1.CreditType {
+func (m *Params) GetCreditTypes() []*CreditType {
 	if m != nil {
 		return m.CreditTypes
 	}
@@ -397,7 +396,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditTypes = append(m.CreditTypes, &v1beta1.CreditType{})
+			m.CreditTypes = append(m.CreditTypes, &CreditType{})
 			if err := m.CreditTypes[len(m.CreditTypes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

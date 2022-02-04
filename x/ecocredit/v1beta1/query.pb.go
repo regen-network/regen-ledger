@@ -16,7 +16,6 @@ import (
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	v1beta1 "regen/ecocredit/v1beta1"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -162,7 +161,7 @@ func (m *QueryClassesRequest) GetPagination() *query.PageRequest {
 // QueryClassesResponse is the Query/Classes response type.
 type QueryClassesResponse struct {
 	// classes are the fetched credit classes.
-	Classes []*v1beta1.ClassInfo `protobuf:"bytes,1,rep,name=classes,proto3" json:"classes,omitempty"`
+	Classes []*ClassInfo `protobuf:"bytes,1,rep,name=classes,proto3" json:"classes,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -200,7 +199,7 @@ func (m *QueryClassesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryClassesResponse proto.InternalMessageInfo
 
-func (m *QueryClassesResponse) GetClasses() []*v1beta1.ClassInfo {
+func (m *QueryClassesResponse) GetClasses() []*ClassInfo {
 	if m != nil {
 		return m.Classes
 	}
@@ -263,7 +262,7 @@ func (m *QueryClassInfoRequest) GetClassId() string {
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 type QueryClassInfoResponse struct {
 	// info is the ClassInfo for the credit class.
-	Info *v1beta1.ClassInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	Info *ClassInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
 }
 
 func (m *QueryClassInfoResponse) Reset()         { *m = QueryClassInfoResponse{} }
@@ -299,7 +298,7 @@ func (m *QueryClassInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryClassInfoResponse proto.InternalMessageInfo
 
-func (m *QueryClassInfoResponse) GetInfo() *v1beta1.ClassInfo {
+func (m *QueryClassInfoResponse) GetInfo() *ClassInfo {
 	if m != nil {
 		return m.Info
 	}
@@ -364,7 +363,7 @@ func (m *QueryProjectsRequest) GetPagination() *query.PageRequest {
 // QueryProjectsResponse is the Query/Projects response type.
 type QueryProjectsResponse struct {
 	// projects are the fetched projects.
-	Projects []*v1beta1.ProjectInfo `protobuf:"bytes,1,rep,name=projects,proto3" json:"projects,omitempty"`
+	Projects []*ProjectInfo `protobuf:"bytes,1,rep,name=projects,proto3" json:"projects,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -402,7 +401,7 @@ func (m *QueryProjectsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryProjectsResponse proto.InternalMessageInfo
 
-func (m *QueryProjectsResponse) GetProjects() []*v1beta1.ProjectInfo {
+func (m *QueryProjectsResponse) GetProjects() []*ProjectInfo {
 	if m != nil {
 		return m.Projects
 	}
@@ -465,7 +464,7 @@ func (m *QueryProjectInfoRequest) GetProjectId() string {
 // QueryProjectInfoResponse is the Query/Project response type.
 type QueryProjectInfoResponse struct {
 	// info is the ProjectInfo for the project.
-	Info *v1beta1.ProjectInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	Info *ProjectInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
 }
 
 func (m *QueryProjectInfoResponse) Reset()         { *m = QueryProjectInfoResponse{} }
@@ -501,7 +500,7 @@ func (m *QueryProjectInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryProjectInfoResponse proto.InternalMessageInfo
 
-func (m *QueryProjectInfoResponse) GetInfo() *v1beta1.ProjectInfo {
+func (m *QueryProjectInfoResponse) GetInfo() *ProjectInfo {
 	if m != nil {
 		return m.Info
 	}
@@ -566,7 +565,7 @@ func (m *QueryBatchesRequest) GetPagination() *query.PageRequest {
 // QueryBatchesResponse is the Query/Batches response type.
 type QueryBatchesResponse struct {
 	// batches are the fetched credit batches within the project.
-	Batches []*v1beta1.BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
+	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -604,7 +603,7 @@ func (m *QueryBatchesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBatchesResponse proto.InternalMessageInfo
 
-func (m *QueryBatchesResponse) GetBatches() []*v1beta1.BatchInfo {
+func (m *QueryBatchesResponse) GetBatches() []*BatchInfo {
 	if m != nil {
 		return m.Batches
 	}
@@ -667,7 +666,7 @@ func (m *QueryBatchInfoRequest) GetBatchDenom() string {
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 type QueryBatchInfoResponse struct {
 	// info is the BatchInfo for the credit batch.
-	Info *v1beta1.BatchInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	Info *BatchInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
 }
 
 func (m *QueryBatchInfoResponse) Reset()         { *m = QueryBatchInfoResponse{} }
@@ -703,7 +702,7 @@ func (m *QueryBatchInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBatchInfoResponse proto.InternalMessageInfo
 
-func (m *QueryBatchInfoResponse) GetInfo() *v1beta1.BatchInfo {
+func (m *QueryBatchInfoResponse) GetInfo() *BatchInfo {
 	if m != nil {
 		return m.Info
 	}
@@ -963,7 +962,7 @@ var xxx_messageInfo_QueryCreditTypesRequest proto.InternalMessageInfo
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 type QueryCreditTypesResponse struct {
 	// list of credit types
-	CreditTypes []*v1beta1.CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
+	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
 func (m *QueryCreditTypesResponse) Reset()         { *m = QueryCreditTypesResponse{} }
@@ -999,7 +998,7 @@ func (m *QueryCreditTypesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCreditTypesResponse proto.InternalMessageInfo
 
-func (m *QueryCreditTypesResponse) GetCreditTypes() []*v1beta1.CreditType {
+func (m *QueryCreditTypesResponse) GetCreditTypes() []*CreditType {
 	if m != nil {
 		return m.CreditTypes
 	}
@@ -2846,7 +2845,7 @@ func (m *QueryClassesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Classes = append(m.Classes, &v1beta1.ClassInfo{})
+			m.Classes = append(m.Classes, &ClassInfo{})
 			if err := m.Classes[len(m.Classes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3055,7 +3054,7 @@ func (m *QueryClassInfoResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Info == nil {
-				m.Info = &v1beta1.ClassInfo{}
+				m.Info = &ClassInfo{}
 			}
 			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -3264,7 +3263,7 @@ func (m *QueryProjectsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Projects = append(m.Projects, &v1beta1.ProjectInfo{})
+			m.Projects = append(m.Projects, &ProjectInfo{})
 			if err := m.Projects[len(m.Projects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3473,7 +3472,7 @@ func (m *QueryProjectInfoResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Info == nil {
-				m.Info = &v1beta1.ProjectInfo{}
+				m.Info = &ProjectInfo{}
 			}
 			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -3682,7 +3681,7 @@ func (m *QueryBatchesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Batches = append(m.Batches, &v1beta1.BatchInfo{})
+			m.Batches = append(m.Batches, &BatchInfo{})
 			if err := m.Batches[len(m.Batches)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3891,7 +3890,7 @@ func (m *QueryBatchInfoResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Info == nil {
-				m.Info = &v1beta1.BatchInfo{}
+				m.Info = &BatchInfo{}
 			}
 			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -4468,7 +4467,7 @@ func (m *QueryCreditTypesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditTypes = append(m.CreditTypes, &v1beta1.CreditType{})
+			m.CreditTypes = append(m.CreditTypes, &CreditType{})
 			if err := m.CreditTypes[len(m.CreditTypes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
