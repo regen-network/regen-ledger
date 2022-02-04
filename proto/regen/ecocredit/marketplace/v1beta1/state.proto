@@ -29,7 +29,7 @@ message SellOrder {
     string quantity = 4;
 
     // market_id is the market in which this sell order exists and specifies
-    // the back denom ask_price corresponds to.
+    // the bank_denom that ask_price corresponds to.
     uint64 market_id = 5;
 
     // ask_price is the integer price (encoded as a string) the seller is asking
