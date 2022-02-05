@@ -40,11 +40,13 @@ type BasketBalanceIndexKey interface {
 }
 
 // primary key starting index..
+type BasketBalancePrimaryKey = BasketBalanceBasketDenomBatchIdIndexKey
+
 type BasketBalanceBasketDenomBatchIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketBalanceBasketDenomBatchIdIndexKey) id() uint32             { return 1 }
+func (x BasketBalanceBasketDenomBatchIdIndexKey) id() uint32             { return 0 }
 func (x BasketBalanceBasketDenomBatchIdIndexKey) values() []interface{}  { return x.vs }
 func (x BasketBalanceBasketDenomBatchIdIndexKey) basketBalanceIndexKey() {}
 
@@ -92,13 +94,13 @@ func (this basketBalanceStore) Get(ctx context.Context, basket_denom string, bat
 }
 
 func (this basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BasketBalanceIterator{it}, err
 }
 
 func (this basketBalanceStore) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BasketBalanceIterator{it}, err
 }
