@@ -68,15 +68,13 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 }
 
 // BySigner queries data based on signers.
-func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-
+func (s serverImpl) BySigner(ctx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
 	addr, err := sdk.AccAddressFromBech32(request.Signer)
 	if err != nil {
 		return nil, err
 	}
 
+	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
 	signerIDStore := prefix.NewStore(store, SignerIDIndexPrefix(addr))
 
 	var entries []*data.ContentEntry
@@ -100,15 +98,13 @@ func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerR
 }
 
 // Signers queries the signers by IRI.
-func (s serverImpl) Signers(goCtx context.Context, request *data.QuerySignersRequest) (*data.QuerySignersResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-
+func (s serverImpl) Signers(ctx context.Context, request *data.QuerySignersRequest) (*data.QuerySignersResponse, error) {
 	id, err := s.getID(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
 
+	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
 	signerIDStore := prefix.NewStore(store, IDSignerIndexPrefix(id))
 
 	var signers []string
