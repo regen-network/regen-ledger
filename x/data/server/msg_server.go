@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"context"
 
-	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
-
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
 	sdk "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
