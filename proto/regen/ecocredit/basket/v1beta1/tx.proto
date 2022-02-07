@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1beta1;
+
+import "regen/ecocredit/basket/v1beta1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
+// Msg is the regen.ecocredit.basket.v1beta1 Msg service.
+service Msg {
+
+  // CreateBasket creates a bank denom which wraps credits.
+  rpc CreateBasket(MsgCreateBasket) returns (MsgCreateBasketResponse);
+
+  // AddToBasket adds credits to a basket in return for basket tokens.
+  rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
+
+  // TakeFromBasket takes credits from a basket without regard for which
+  // credits they are. The credits will be auto-retired if disable_auto_retire
+  // is false. Credits will be chosen randomly using the previous block hash
+  // as a consensus source of randomness.
+  // More concretely, the implementation is as follows:
+  // - take the previous block hash and convert it into an uint64,
+  // - given the total number of different credits within the basket `n`, the
+  //   first credits that will get picked correspond to: hash modulo n (in
+  //   terms of order),
+  // - then if we need to take more credits, we get some from the next one and
+  //   so on.
+  rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
+
+  // PickFromBasket picks specific credits from a basket. If allow_picking is
+  // set to false, then only an address which deposited credits in the basket
+  // can pick those credits. All other addresses will be blocked from picking
+  // those credits. The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable. This functionality allows the owner of a credit to have more
+  // control over the credits they are putting in baskets then ordinary users
+  // to deal with the scenario where basket tokens end up being worth
+  // significantly less than the credits on their own.
+  rpc PickFromBasket(MsgPickFromBasket) returns (MsgPickFromBasketResponse);
+}
+
+// MsgCreateBasket is the Msg/CreateBasket request type.
+message MsgCreateBasket {
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to create a bank denom for this basket token of the form
+  // ecocredit:{curator}:{name}.
+  string name = 2;
+
+  // display_name will be used to create a bank Metadata display name for this
+  // basket token of the form ecocredit:{curator}:{display_name}.
+  string display_name = 3;
+
+  // exponent is the exponent that will be used for denom metadata. An exponent
+  // of 6 will mean that 10^6 units of a basket token should be displayed
+  // as one unit in user interfaces.
+  uint32 exponent = 4;
+
+  // basket_criteria is the criteria by which credits can be added to the
+  // basket. Basket criteria will be applied in order and the first criteria
+  // which applies to a credit will determine its multiplier in the basket.
+  repeated BasketCriteria basket_criteria = 5;
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 6;
+
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not.
+  bool allow_picking = 7;
+}
+
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
+message MsgCreateBasketResponse {
+
+  // basket_denom is the unique denomination ID of the newly created basket.
+  string basket_denom = 1;
+}
+
+// MsgAddToBasket is the Msg/AddToBasket request type.
+message MsgAddToBasket {
+  // owner is the owner of credits being added to the basket.
+  string owner = 1;
+
+  // basket_denom is the basket denom to add credits to.
+  string basket_denom = 2;
+
+  // credits are credits to add to the basket. If they do not match the basket's
+  // admission criteria the operation will fail.
+  repeated BasketCredit credits = 3;
+}
+
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+message MsgAddToBasketResponse {
+
+  // amount_received is the amount of basket tokens received.
+  string amount_received = 1;
+}
+
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+message MsgTakeFromBasket {
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket denom to take credits from.
+  string basket_denom = 2;
+
+  // amount is the number of credits to take from the basket.
+  string amount = 3;
+
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if retire_on_take is true for this basket.
+  string retirement_location = 4;
+}
+
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+message MsgTakeFromBasketResponse {
+
+  // credits are the credits taken out of the basket.
+  repeated BasketCredit credits = 1;
+}
+
+// MsgPickFromBasket is the Msg/PickFromBasket request type.
+message MsgPickFromBasket {
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket denom to pick credits from.
+  string basket_denom = 2;
+
+  // credits are the units of credits being picked from the basket
+  repeated BasketCredit credits = 3;
+
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if retire_on_take is true for this basket.
+  string retirement_location = 4;
+}
+
+// MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
+message MsgPickFromBasketResponse {}
+

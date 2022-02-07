@@ -5,6 +5,8 @@ package regen.ecocredit.v1beta1;
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {

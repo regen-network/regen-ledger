@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1beta1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
+// EventCreateClass is an event emitted when a credit class is created.
+message EventCreateClass {
+
+  // class_id is the unique ID of credit class.
+  string class_id = 1;
+
+  // admin is the admin of the credit class.
+  string admin = 2;
+}
+
+// EventCreateProject is an event emitted when a project is created.
+message EventCreateProject {
+
+  // project_id is the unique ID of the project.
+  string project_id = 1;
+
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 2;
+
+  // issuer is the issuer of the credit batches for this project.
+  string issuer = 3;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 4;
+}
+
+// EventCreateBatch is an event emitted when a credit batch is created.
+message EventCreateBatch {
+
+  // class_id is the unique ID of credit class.
+  string class_id = 1;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2;
+
+  // issuer is the account address of the issuer of the credit batch.
+  string issuer = 3;
+
+  // total_amount is the total number of credits in the credit batch.
+  string total_amount = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  string start_date = 5;
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  string end_date = 6;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 7;
+
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 8;
+}
+
+// EventReceive is an event emitted when credits are received either upon
+// creation of a new batch or upon transfer. Each batch_denom created or
+// transferred will result in a separate EventReceive for easy indexing.
+message EventReceive {
+  // sender is the sender of the credits in the case that this event is the
+  // result of a transfer. It will not be set when credits are received at
+  // initial issuance.
+  string sender = 1;
+
+  // recipient is the recipient of the credits
+  string recipient = 2;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 3;
+
+  // tradable_amount is the decimal number of tradable credits received.
+  string tradable_amount = 4;
+
+  // retired_amount is the decimal number of retired credits received.
+  string retired_amount = 5;
+}
+
+// EventRetire is an event emitted when credits are retired. When credits are
+// retired from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
+message EventRetire {
+
+  // retirer is the account which has done the "retiring". This will be the
+  // account receiving credits in the case that credits were retired upon
+  // issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
+  string retirer = 1;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2;
+
+  // amount is the decimal number of credits that have been retired.
+  string amount = 3;
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 4;
+}
+
+// EventCancel is an event emitted when credits are cancelled. When credits are
+// cancelled from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
+message EventCancel {
+
+  // canceller is the account which has cancelled the credits, which should be
+  // the holder of the credits.
+  string canceller = 1;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2;
+
+  // amount is the decimal number of credits that have been cancelled.
+  string amount = 3;
+}
