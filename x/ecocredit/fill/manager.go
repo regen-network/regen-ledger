@@ -132,7 +132,7 @@ func (t manager) Fill(
 		}
 	} else {
 		actualQuant = sellQuant
-		status = BothFilled
+		status = SellFilled
 
 		err = t.marketplaceStore.SellOrderStore().Delete(ctx, sellOrder)
 		if err != nil {

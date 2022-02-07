@@ -31,7 +31,7 @@ type suite struct {
 	transferMgr      *mocks.MockTransferManager
 	db               ormdb.ModuleDB
 	market           *marketplacev1beta1.Market
-	marketplaceStore marketplacev1beta1.MarketStore
+	marketplaceStore marketplacev1beta1.StateStore
 	acct1            sdk.AccAddress
 	acct2            sdk.AccAddress
 	loggerBuf        *bytes.Buffer
@@ -56,14 +56,14 @@ func setup(t *testing.T) *suite {
 	assert.NilError(t, err)
 	s.ctx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 
-	s.marketplaceStore, err = marketplacev1beta1.NewMarketStore(s.db)
+	s.marketplaceStore, err = marketplacev1beta1.NewStateStore(s.db)
 
 	s.market = &marketplacev1beta1.Market{
 		CreditType:        "C",
 		BankDenom:         "foo",
 		PrecisionModifier: 3,
 	}
-	s.marketId, err = s.marketplaceStore.InsertReturningID(s.ctx, s.market)
+	s.marketId, err = s.marketplaceStore.MarketStore().InsertReturningID(s.ctx, s.market)
 	assert.NilError(t, err)
 
 	s.acct1 = sdk.AccAddress{0, 1, 2, 3, 4, 5}
@@ -102,4 +102,72 @@ func TestBothFilled(t *testing.T) {
 	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.BothFilled, state)
+}
+
+func TestBuyFilled(t *testing.T) {
+	s := setup(t)
+	buyOrder := &marketplacev1beta1.BuyOrder{
+		Buyer:              s.acct1,
+		Quantity:           "5",
+		MarketId:           s.marketId,
+		BidPrice:           "10",
+		DisableAutoRetire:  false,
+		DisablePartialFill: false,
+		Expiration:         nil,
+		Maker:              false,
+	}
+	assert.NilError(t, s.marketplaceStore.BuyOrderStore().Insert(s.ctx, buyOrder))
+
+	sellOrder := &marketplacev1beta1.SellOrder{
+		Seller:            s.acct2,
+		BatchId:           1,
+		Quantity:          "10",
+		MarketId:          s.marketId,
+		AskPrice:          "10",
+		DisableAutoRetire: false,
+		Expiration:        nil,
+		Maker:             false,
+	}
+	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
+
+	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true)
+	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
+
+	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	assert.NilError(t, err)
+	assert.Equal(t, fill.BuyFilled, state)
+}
+
+func TestSellFilled(t *testing.T) {
+	s := setup(t)
+	buyOrder := &marketplacev1beta1.BuyOrder{
+		Buyer:              s.acct1,
+		Quantity:           "10",
+		MarketId:           s.marketId,
+		BidPrice:           "10",
+		DisableAutoRetire:  false,
+		DisablePartialFill: false,
+		Expiration:         nil,
+		Maker:              false,
+	}
+	assert.NilError(t, s.marketplaceStore.BuyOrderStore().Insert(s.ctx, buyOrder))
+
+	sellOrder := &marketplacev1beta1.SellOrder{
+		Seller:            s.acct2,
+		BatchId:           1,
+		Quantity:          "5",
+		MarketId:          s.marketId,
+		AskPrice:          "10",
+		DisableAutoRetire: false,
+		Expiration:        nil,
+		Maker:             false,
+	}
+	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
+
+	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true)
+	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
+
+	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	assert.NilError(t, err)
+	assert.Equal(t, fill.SellFilled, state)
 }
