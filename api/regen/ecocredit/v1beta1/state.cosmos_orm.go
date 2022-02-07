@@ -4,7 +4,6 @@ package ecocreditv1beta1
 
 import (
 	context "context"
-	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -17,11 +16,15 @@ type CreditTypeStore interface {
 	Save(ctx context.Context, creditType *CreditType) error
 	Delete(ctx context.Context, creditType *CreditType) error
 	Has(ctx context.Context, abbreviation string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, abbreviation string) (*CreditType, error)
 	HasByName(ctx context.Context, name string) (found bool, err error)
+	// GetByName returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByName(ctx context.Context, name string) (*CreditType, error)
 	List(ctx context.Context, prefixKey CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error)
 	ListRange(ctx context.Context, from, to CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error)
+	DeleteBy(ctx context.Context, prefixKey CreditTypeIndexKey) error
+	DeleteRange(ctx context.Context, from, to CreditTypeIndexKey) error
 
 	doNotImplement()
 }
@@ -98,10 +101,13 @@ func (this creditTypeStore) Has(ctx context.Context, abbreviation string) (found
 func (this creditTypeStore) Get(ctx context.Context, abbreviation string) (*CreditType, error) {
 	var creditType CreditType
 	found, err := this.table.PrimaryKey().Get(ctx, &creditType, abbreviation)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &creditType, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &creditType, nil
 }
 
 func (this creditTypeStore) HasByName(ctx context.Context, name string) (found bool, err error) {
@@ -115,29 +121,38 @@ func (this creditTypeStore) GetByName(ctx context.Context, name string) (*Credit
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &creditType,
 		name,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &creditType, nil
 }
 
 func (this creditTypeStore) List(ctx context.Context, prefixKey CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return CreditTypeIterator{it}, err
 }
 
 func (this creditTypeStore) ListRange(ctx context.Context, from, to CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return CreditTypeIterator{it}, err
+}
+
+func (this creditTypeStore) DeleteBy(ctx context.Context, prefixKey CreditTypeIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this creditTypeStore) DeleteRange(ctx context.Context, from, to CreditTypeIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this creditTypeStore) doNotImplement() {}
 
 var _ CreditTypeStore = creditTypeStore{}
 
-func NewCreditTypeStore(db ormdb.ModuleDB) (CreditTypeStore, error) {
+func NewCreditTypeStore(db ormtable.Schema) (CreditTypeStore, error) {
 	table := db.GetTable(&CreditType{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&CreditType{}).ProtoReflect().Descriptor().FullName()))
@@ -152,11 +167,15 @@ type ClassInfoStore interface {
 	Save(ctx context.Context, classInfo *ClassInfo) error
 	Delete(ctx context.Context, classInfo *ClassInfo) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*ClassInfo, error)
 	HasByName(ctx context.Context, name string) (found bool, err error)
+	// GetByName returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByName(ctx context.Context, name string) (*ClassInfo, error)
 	List(ctx context.Context, prefixKey ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error)
 	ListRange(ctx context.Context, from, to ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ClassInfoIndexKey) error
+	DeleteRange(ctx context.Context, from, to ClassInfoIndexKey) error
 
 	doNotImplement()
 }
@@ -263,10 +282,13 @@ func (this classInfoStore) Has(ctx context.Context, id uint64) (found bool, err 
 func (this classInfoStore) Get(ctx context.Context, id uint64) (*ClassInfo, error) {
 	var classInfo ClassInfo
 	found, err := this.table.PrimaryKey().Get(ctx, &classInfo, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &classInfo, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &classInfo, nil
 }
 
 func (this classInfoStore) HasByName(ctx context.Context, name string) (found bool, err error) {
@@ -280,29 +302,38 @@ func (this classInfoStore) GetByName(ctx context.Context, name string) (*ClassIn
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &classInfo,
 		name,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &classInfo, nil
 }
 
 func (this classInfoStore) List(ctx context.Context, prefixKey ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return ClassInfoIterator{it}, err
 }
 
 func (this classInfoStore) ListRange(ctx context.Context, from, to ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return ClassInfoIterator{it}, err
+}
+
+func (this classInfoStore) DeleteBy(ctx context.Context, prefixKey ClassInfoIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this classInfoStore) DeleteRange(ctx context.Context, from, to ClassInfoIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this classInfoStore) doNotImplement() {}
 
 var _ ClassInfoStore = classInfoStore{}
 
-func NewClassInfoStore(db ormdb.ModuleDB) (ClassInfoStore, error) {
+func NewClassInfoStore(db ormtable.Schema) (ClassInfoStore, error) {
 	table := db.GetTable(&ClassInfo{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ClassInfo{}).ProtoReflect().Descriptor().FullName()))
@@ -316,9 +347,12 @@ type ClassIssuerStore interface {
 	Save(ctx context.Context, classIssuer *ClassIssuer) error
 	Delete(ctx context.Context, classIssuer *ClassIssuer) error
 	Has(ctx context.Context, class_id string, issuer string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, class_id string, issuer string) (*ClassIssuer, error)
 	List(ctx context.Context, prefixKey ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error)
 	ListRange(ctx context.Context, from, to ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ClassIssuerIndexKey) error
+	DeleteRange(ctx context.Context, from, to ClassIssuerIndexKey) error
 
 	doNotImplement()
 }
@@ -387,29 +421,38 @@ func (this classIssuerStore) Has(ctx context.Context, class_id string, issuer st
 func (this classIssuerStore) Get(ctx context.Context, class_id string, issuer string) (*ClassIssuer, error) {
 	var classIssuer ClassIssuer
 	found, err := this.table.PrimaryKey().Get(ctx, &classIssuer, class_id, issuer)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &classIssuer, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &classIssuer, nil
 }
 
 func (this classIssuerStore) List(ctx context.Context, prefixKey ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return ClassIssuerIterator{it}, err
 }
 
 func (this classIssuerStore) ListRange(ctx context.Context, from, to ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return ClassIssuerIterator{it}, err
+}
+
+func (this classIssuerStore) DeleteBy(ctx context.Context, prefixKey ClassIssuerIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this classIssuerStore) DeleteRange(ctx context.Context, from, to ClassIssuerIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this classIssuerStore) doNotImplement() {}
 
 var _ ClassIssuerStore = classIssuerStore{}
 
-func NewClassIssuerStore(db ormdb.ModuleDB) (ClassIssuerStore, error) {
+func NewClassIssuerStore(db ormtable.Schema) (ClassIssuerStore, error) {
 	table := db.GetTable(&ClassIssuer{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ClassIssuer{}).ProtoReflect().Descriptor().FullName()))
@@ -424,11 +467,18 @@ type ProjectInfoStore interface {
 	Save(ctx context.Context, projectInfo *ProjectInfo) error
 	Delete(ctx context.Context, projectInfo *ProjectInfo) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*ProjectInfo, error)
+	HasByName(ctx context.Context, name string) (found bool, err error)
+	// GetByName returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByName(ctx context.Context, name string) (*ProjectInfo, error)
 	HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error)
+	// GetByClassIdName returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByClassIdName(ctx context.Context, class_id uint64, name string) (*ProjectInfo, error)
 	List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error)
 	ListRange(ctx context.Context, from, to ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ProjectInfoIndexKey) error
+	DeleteRange(ctx context.Context, from, to ProjectInfoIndexKey) error
 
 	doNotImplement()
 }
@@ -465,11 +515,24 @@ func (this ProjectInfoIdIndexKey) WithId(id uint64) ProjectInfoIdIndexKey {
 	return this
 }
 
+type ProjectInfoNameIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectInfoNameIndexKey) id() uint32            { return 1 }
+func (x ProjectInfoNameIndexKey) values() []interface{} { return x.vs }
+func (x ProjectInfoNameIndexKey) projectInfoIndexKey()  {}
+
+func (this ProjectInfoNameIndexKey) WithName(name string) ProjectInfoNameIndexKey {
+	this.vs = []interface{}{name}
+	return this
+}
+
 type ProjectInfoClassIdNameIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoClassIdNameIndexKey) id() uint32            { return 1 }
+func (x ProjectInfoClassIdNameIndexKey) id() uint32            { return 2 }
 func (x ProjectInfoClassIdNameIndexKey) values() []interface{} { return x.vs }
 func (x ProjectInfoClassIdNameIndexKey) projectInfoIndexKey()  {}
 
@@ -514,14 +577,37 @@ func (this projectInfoStore) Has(ctx context.Context, id uint64) (found bool, er
 func (this projectInfoStore) Get(ctx context.Context, id uint64) (*ProjectInfo, error) {
 	var projectInfo ProjectInfo
 	found, err := this.table.PrimaryKey().Get(ctx, &projectInfo, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &projectInfo, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &projectInfo, nil
+}
+
+func (this projectInfoStore) HasByName(ctx context.Context, name string) (found bool, err error) {
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		name,
+	)
+}
+
+func (this projectInfoStore) GetByName(ctx context.Context, name string) (*ProjectInfo, error) {
+	var projectInfo ProjectInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+		name,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &projectInfo, nil
 }
 
 func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
 		class_id,
 		name,
 	)
@@ -529,33 +615,42 @@ func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint
 
 func (this projectInfoStore) GetByClassIdName(ctx context.Context, class_id uint64, name string) (*ProjectInfo, error) {
 	var projectInfo ProjectInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
 		class_id,
 		name,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &projectInfo, nil
 }
 
 func (this projectInfoStore) List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return ProjectInfoIterator{it}, err
 }
 
 func (this projectInfoStore) ListRange(ctx context.Context, from, to ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return ProjectInfoIterator{it}, err
+}
+
+func (this projectInfoStore) DeleteBy(ctx context.Context, prefixKey ProjectInfoIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this projectInfoStore) DeleteRange(ctx context.Context, from, to ProjectInfoIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this projectInfoStore) doNotImplement() {}
 
 var _ ProjectInfoStore = projectInfoStore{}
 
-func NewProjectInfoStore(db ormdb.ModuleDB) (ProjectInfoStore, error) {
+func NewProjectInfoStore(db ormtable.Schema) (ProjectInfoStore, error) {
 	table := db.GetTable(&ProjectInfo{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectInfo{}).ProtoReflect().Descriptor().FullName()))
@@ -570,11 +665,15 @@ type BatchInfoStore interface {
 	Save(ctx context.Context, batchInfo *BatchInfo) error
 	Delete(ctx context.Context, batchInfo *BatchInfo) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*BatchInfo, error)
 	HasByBatchDenom(ctx context.Context, batch_denom string) (found bool, err error)
+	// GetByBatchDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByBatchDenom(ctx context.Context, batch_denom string) (*BatchInfo, error)
 	List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
 	ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchInfoIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchInfoIndexKey) error
 
 	doNotImplement()
 }
@@ -681,10 +780,13 @@ func (this batchInfoStore) Has(ctx context.Context, id uint64) (found bool, err 
 func (this batchInfoStore) Get(ctx context.Context, id uint64) (*BatchInfo, error) {
 	var batchInfo BatchInfo
 	found, err := this.table.PrimaryKey().Get(ctx, &batchInfo, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &batchInfo, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchInfo, nil
 }
 
 func (this batchInfoStore) HasByBatchDenom(ctx context.Context, batch_denom string) (found bool, err error) {
@@ -698,29 +800,38 @@ func (this batchInfoStore) GetByBatchDenom(ctx context.Context, batch_denom stri
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchInfo,
 		batch_denom,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &batchInfo, nil
 }
 
 func (this batchInfoStore) List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BatchInfoIterator{it}, err
 }
 
 func (this batchInfoStore) ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BatchInfoIterator{it}, err
+}
+
+func (this batchInfoStore) DeleteBy(ctx context.Context, prefixKey BatchInfoIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this batchInfoStore) DeleteRange(ctx context.Context, from, to BatchInfoIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this batchInfoStore) doNotImplement() {}
 
 var _ BatchInfoStore = batchInfoStore{}
 
-func NewBatchInfoStore(db ormdb.ModuleDB) (BatchInfoStore, error) {
+func NewBatchInfoStore(db ormtable.Schema) (BatchInfoStore, error) {
 	table := db.GetTable(&BatchInfo{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BatchInfo{}).ProtoReflect().Descriptor().FullName()))
@@ -734,9 +845,12 @@ type ClassSequenceStore interface {
 	Save(ctx context.Context, classSequence *ClassSequence) error
 	Delete(ctx context.Context, classSequence *ClassSequence) error
 	Has(ctx context.Context, credit_type string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, credit_type string) (*ClassSequence, error)
 	List(ctx context.Context, prefixKey ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error)
 	ListRange(ctx context.Context, from, to ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ClassSequenceIndexKey) error
+	DeleteRange(ctx context.Context, from, to ClassSequenceIndexKey) error
 
 	doNotImplement()
 }
@@ -800,29 +914,38 @@ func (this classSequenceStore) Has(ctx context.Context, credit_type string) (fou
 func (this classSequenceStore) Get(ctx context.Context, credit_type string) (*ClassSequence, error) {
 	var classSequence ClassSequence
 	found, err := this.table.PrimaryKey().Get(ctx, &classSequence, credit_type)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &classSequence, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &classSequence, nil
 }
 
 func (this classSequenceStore) List(ctx context.Context, prefixKey ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return ClassSequenceIterator{it}, err
 }
 
 func (this classSequenceStore) ListRange(ctx context.Context, from, to ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return ClassSequenceIterator{it}, err
+}
+
+func (this classSequenceStore) DeleteBy(ctx context.Context, prefixKey ClassSequenceIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this classSequenceStore) DeleteRange(ctx context.Context, from, to ClassSequenceIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this classSequenceStore) doNotImplement() {}
 
 var _ ClassSequenceStore = classSequenceStore{}
 
-func NewClassSequenceStore(db ormdb.ModuleDB) (ClassSequenceStore, error) {
+func NewClassSequenceStore(db ormtable.Schema) (ClassSequenceStore, error) {
 	table := db.GetTable(&ClassSequence{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ClassSequence{}).ProtoReflect().Descriptor().FullName()))
@@ -836,9 +959,12 @@ type ProjectSequenceStore interface {
 	Save(ctx context.Context, projectSequence *ProjectSequence) error
 	Delete(ctx context.Context, projectSequence *ProjectSequence) error
 	Has(ctx context.Context, class_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, class_id uint64) (*ProjectSequence, error)
 	List(ctx context.Context, prefixKey ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error)
 	ListRange(ctx context.Context, from, to ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ProjectSequenceIndexKey) error
+	DeleteRange(ctx context.Context, from, to ProjectSequenceIndexKey) error
 
 	doNotImplement()
 }
@@ -902,29 +1028,38 @@ func (this projectSequenceStore) Has(ctx context.Context, class_id uint64) (foun
 func (this projectSequenceStore) Get(ctx context.Context, class_id uint64) (*ProjectSequence, error) {
 	var projectSequence ProjectSequence
 	found, err := this.table.PrimaryKey().Get(ctx, &projectSequence, class_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &projectSequence, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &projectSequence, nil
 }
 
 func (this projectSequenceStore) List(ctx context.Context, prefixKey ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return ProjectSequenceIterator{it}, err
 }
 
 func (this projectSequenceStore) ListRange(ctx context.Context, from, to ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return ProjectSequenceIterator{it}, err
+}
+
+func (this projectSequenceStore) DeleteBy(ctx context.Context, prefixKey ProjectSequenceIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this projectSequenceStore) DeleteRange(ctx context.Context, from, to ProjectSequenceIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this projectSequenceStore) doNotImplement() {}
 
 var _ ProjectSequenceStore = projectSequenceStore{}
 
-func NewProjectSequenceStore(db ormdb.ModuleDB) (ProjectSequenceStore, error) {
+func NewProjectSequenceStore(db ormtable.Schema) (ProjectSequenceStore, error) {
 	table := db.GetTable(&ProjectSequence{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectSequence{}).ProtoReflect().Descriptor().FullName()))
@@ -938,9 +1073,12 @@ type BatchSequenceStore interface {
 	Save(ctx context.Context, batchSequence *BatchSequence) error
 	Delete(ctx context.Context, batchSequence *BatchSequence) error
 	Has(ctx context.Context, project_id string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, project_id string) (*BatchSequence, error)
 	List(ctx context.Context, prefixKey BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error)
 	ListRange(ctx context.Context, from, to BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchSequenceIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchSequenceIndexKey) error
 
 	doNotImplement()
 }
@@ -1004,29 +1142,38 @@ func (this batchSequenceStore) Has(ctx context.Context, project_id string) (foun
 func (this batchSequenceStore) Get(ctx context.Context, project_id string) (*BatchSequence, error) {
 	var batchSequence BatchSequence
 	found, err := this.table.PrimaryKey().Get(ctx, &batchSequence, project_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &batchSequence, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchSequence, nil
 }
 
 func (this batchSequenceStore) List(ctx context.Context, prefixKey BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BatchSequenceIterator{it}, err
 }
 
 func (this batchSequenceStore) ListRange(ctx context.Context, from, to BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BatchSequenceIterator{it}, err
+}
+
+func (this batchSequenceStore) DeleteBy(ctx context.Context, prefixKey BatchSequenceIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this batchSequenceStore) DeleteRange(ctx context.Context, from, to BatchSequenceIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this batchSequenceStore) doNotImplement() {}
 
 var _ BatchSequenceStore = batchSequenceStore{}
 
-func NewBatchSequenceStore(db ormdb.ModuleDB) (BatchSequenceStore, error) {
+func NewBatchSequenceStore(db ormtable.Schema) (BatchSequenceStore, error) {
 	table := db.GetTable(&BatchSequence{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BatchSequence{}).ProtoReflect().Descriptor().FullName()))
@@ -1040,9 +1187,12 @@ type BatchBalanceStore interface {
 	Save(ctx context.Context, batchBalance *BatchBalance) error
 	Delete(ctx context.Context, batchBalance *BatchBalance) error
 	Has(ctx context.Context, address []byte, batch_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, address []byte, batch_id uint64) (*BatchBalance, error)
 	List(ctx context.Context, prefixKey BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error)
 	ListRange(ctx context.Context, from, to BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchBalanceIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchBalanceIndexKey) error
 
 	doNotImplement()
 }
@@ -1129,29 +1279,38 @@ func (this batchBalanceStore) Has(ctx context.Context, address []byte, batch_id 
 func (this batchBalanceStore) Get(ctx context.Context, address []byte, batch_id uint64) (*BatchBalance, error) {
 	var batchBalance BatchBalance
 	found, err := this.table.PrimaryKey().Get(ctx, &batchBalance, address, batch_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &batchBalance, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchBalance, nil
 }
 
 func (this batchBalanceStore) List(ctx context.Context, prefixKey BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BatchBalanceIterator{it}, err
 }
 
 func (this batchBalanceStore) ListRange(ctx context.Context, from, to BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BatchBalanceIterator{it}, err
+}
+
+func (this batchBalanceStore) DeleteBy(ctx context.Context, prefixKey BatchBalanceIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this batchBalanceStore) DeleteRange(ctx context.Context, from, to BatchBalanceIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this batchBalanceStore) doNotImplement() {}
 
 var _ BatchBalanceStore = batchBalanceStore{}
 
-func NewBatchBalanceStore(db ormdb.ModuleDB) (BatchBalanceStore, error) {
+func NewBatchBalanceStore(db ormtable.Schema) (BatchBalanceStore, error) {
 	table := db.GetTable(&BatchBalance{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BatchBalance{}).ProtoReflect().Descriptor().FullName()))
@@ -1165,9 +1324,12 @@ type BatchSupplyStore interface {
 	Save(ctx context.Context, batchSupply *BatchSupply) error
 	Delete(ctx context.Context, batchSupply *BatchSupply) error
 	Has(ctx context.Context, batch_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, batch_id uint64) (*BatchSupply, error)
 	List(ctx context.Context, prefixKey BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error)
 	ListRange(ctx context.Context, from, to BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchSupplyIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchSupplyIndexKey) error
 
 	doNotImplement()
 }
@@ -1231,29 +1393,38 @@ func (this batchSupplyStore) Has(ctx context.Context, batch_id uint64) (found bo
 func (this batchSupplyStore) Get(ctx context.Context, batch_id uint64) (*BatchSupply, error) {
 	var batchSupply BatchSupply
 	found, err := this.table.PrimaryKey().Get(ctx, &batchSupply, batch_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &batchSupply, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &batchSupply, nil
 }
 
 func (this batchSupplyStore) List(ctx context.Context, prefixKey BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BatchSupplyIterator{it}, err
 }
 
 func (this batchSupplyStore) ListRange(ctx context.Context, from, to BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BatchSupplyIterator{it}, err
+}
+
+func (this batchSupplyStore) DeleteBy(ctx context.Context, prefixKey BatchSupplyIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this batchSupplyStore) DeleteRange(ctx context.Context, from, to BatchSupplyIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this batchSupplyStore) doNotImplement() {}
 
 var _ BatchSupplyStore = batchSupplyStore{}
 
-func NewBatchSupplyStore(db ormdb.ModuleDB) (BatchSupplyStore, error) {
+func NewBatchSupplyStore(db ormtable.Schema) (BatchSupplyStore, error) {
 	table := db.GetTable(&BatchSupply{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BatchSupply{}).ProtoReflect().Descriptor().FullName()))
@@ -1333,7 +1504,7 @@ func (stateStore) doNotImplement() {}
 
 var _ StateStore = stateStore{}
 
-func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+func NewStateStore(db ormtable.Schema) (StateStore, error) {
 	creditTypeStore, err := NewCreditTypeStore(db)
 	if err != nil {
 		return nil, err
