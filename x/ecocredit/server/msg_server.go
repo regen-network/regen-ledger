@@ -52,7 +52,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	classID := ecocredit.FormatClassID(creditType, classSeqNo)
+	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeqNo)
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
