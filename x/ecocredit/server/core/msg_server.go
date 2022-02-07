@@ -59,7 +59,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	if err != nil {
 		return nil, fmt.Errorf("error getting class sequence")
 	}
-	classID := FormatClassID(creditType, classSeq)
+	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeq)
 
 	// TODO(Tyler): waiting for PR that should make this should return the row ID, should include in event and response.
 	_, err = s.classInfoStore.InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{

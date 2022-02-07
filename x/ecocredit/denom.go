@@ -13,8 +13,8 @@ import (
 //
 // The initial version has format:
 // <credit type abbreviation><class seq no>
-func FormatClassID(creditType CreditType, classSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo)
+func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
+	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
 // FormatDenom formats the denomination to use for a batch, based on the batch
