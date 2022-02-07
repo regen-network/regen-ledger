@@ -52,19 +52,3 @@ type OrderBook interface {
 	// Reload gets call on end blocker only when a node starts up.
 	Reload(ctx context.Context) error
 }
-
-func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
-	return nil
-}
-
-func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
-	return nil
-}
-
-func (o orderbook) ProcessBatch(ctx context.Context) error {
-	return nil
-}
-
-func (o orderbook) Reload(ctx context.Context) error {
-	return nil
-}
