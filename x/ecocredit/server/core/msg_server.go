@@ -45,11 +45,6 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
-	//creditType, err := s.creditTypeStore.GetByName(ctx, req.CreditTypeName)
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	creditType, err := s.getCreditType(sdkCtx, req.CreditTypeName)
 	if err != nil {
 		return nil, err
@@ -62,7 +57,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeq)
 
 	// TODO(Tyler): waiting for PR that should make this should return the row ID, should include in event and response.
-	_, err = s.classInfoStore.InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
+	_, err = s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       classID,
 		Admin:      req.Admin,
 		Metadata:   req.Metadata,
@@ -73,7 +68,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 
 	for _, issuer := range req.Issuers {
-		if err = s.classIssuerStore.Insert(ctx, &ecocreditv1beta1.ClassIssuer{
+		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: classID,
 			Issuer:  issuer,
 		}); err != nil {
@@ -96,7 +91,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreateProject) (*v1beta1.MsgCreateProjectResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classID := req.ClassId
-	classInfo, err := s.classInfoStore.GetByName(ctx, classID)
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, classID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +109,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 			if err != nil {
 				return nil, err
 			}
-			found, err = s.projectInfoStore.HasByClassIdName(ctx, classInfo.Id, projectID)
+			found, err = s.stateStore.ProjectInfoStore().HasByClassIdName(ctx, classInfo.Id, projectID)
 			if err != nil {
 				return nil, err
 			}
@@ -123,7 +118,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 	}
 
 	// TODO(Tyler): update this to handle the id it returns and put it in event and response.
-	_, err = s.projectInfoStore.InsertReturningID(ctx, &ecocreditv1beta1.ProjectInfo{
+	_, err = s.stateStore.ProjectInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ProjectInfo{
 		Name:            projectID,
 		ClassId:         classInfo.Id,
 		ProjectLocation: req.ProjectLocation,
@@ -154,12 +149,12 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	projectID := req.ProjectId
 
-	projectInfo, err := s.projectInfoStore.GetByName(ctx, projectID)
+	projectInfo, err := s.stateStore.ProjectInfoStore().GetByName(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
 
-	classInfo, err := s.classInfoStore.Get(ctx, projectInfo.ClassId)
+	classInfo, err := s.stateStore.ClassInfoStore().Get(ctx, projectInfo.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +182,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 	}
 
 	// TODO(Tyler): this should return the ID. we need to use it. wait for update.
-	id, err := s.batchInfoStore.InsertReturningID(ctx, &ecocreditv1beta1.BatchInfo{
+	id, err := s.stateStore.BatchInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.BatchInfo{
 		ProjectId:  projectInfo.Id,
 		BatchDenom: batchDenom,
 		Metadata:   req.Metadata,
@@ -229,7 +224,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 				return nil, err
 			}
 		}
-		if err = s.batchBalanceStore.Insert(ctx, &ecocreditv1beta1.BatchBalance{
+		if err = s.stateStore.BatchBalanceStore().Insert(ctx, &ecocreditv1beta1.BatchBalance{
 			Address:  recipient,
 			BatchId:  newBatchID,
 			Tradable: tradable.String(),
@@ -250,7 +245,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		regenCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
-	if err = s.batchSupplyStore.Insert(ctx, &ecocreditv1beta1.BatchSupply{
+	if err = s.stateStore.BatchSupplyStore().Insert(ctx, &ecocreditv1beta1.BatchSupply{
 		BatchId:         newBatchID,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
@@ -296,7 +291,7 @@ func (s serverImpl) Retire(ctx context.Context, req *v1beta1.MsgRetire) (*v1beta
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
 	for _, credit := range req.Credits {
-		batch, err := s.batchInfoStore.GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -304,7 +299,7 @@ func (s serverImpl) Retire(ctx context.Context, req *v1beta1.MsgRetire) (*v1beta
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := s.batchBalanceStore.Get(ctx, holder, batch.Id)
+		userBalance, err := s.stateStore.BatchBalanceStore().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -330,7 +325,7 @@ func (s serverImpl) Retire(ctx context.Context, req *v1beta1.MsgRetire) (*v1beta
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := s.batchSupplyStore.Get(ctx, batch.Id)
+		batchSupply, err := s.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -348,7 +343,7 @@ func (s serverImpl) Retire(ctx context.Context, req *v1beta1.MsgRetire) (*v1beta
 			return nil, err
 		}
 
-		if err = s.batchBalanceStore.Update(ctx, &ecocreditv1beta1.BatchBalance{
+		if err = s.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1beta1.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userTradableBalance.String(),
@@ -356,7 +351,7 @@ func (s serverImpl) Retire(ctx context.Context, req *v1beta1.MsgRetire) (*v1beta
 		}); err != nil {
 			return nil, err
 		}
-		err = s.batchSupplyStore.Update(ctx, &ecocreditv1beta1.BatchSupply{
+		err = s.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1beta1.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
@@ -381,7 +376,7 @@ func (s serverImpl) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
 	for _, credit := range req.Credits {
-		batch, err := s.batchInfoStore.GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 
@@ -392,11 +387,11 @@ func (s serverImpl) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta
 		}
 		precision := creditType.Precision
 
-		userBalance, err := s.batchBalanceStore.Get(ctx, holder, batch.Id)
+		userBalance, err := s.stateStore.BatchBalanceStore().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := s.batchSupplyStore.Get(ctx, batch.Id)
+		batchSupply, err := s.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -417,7 +412,7 @@ func (s serverImpl) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta
 		if err != nil {
 			return nil, err
 		}
-		if err = s.batchBalanceStore.Update(ctx, &ecocreditv1beta1.BatchBalance{
+		if err = s.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1beta1.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userBalTradable.String(),
@@ -425,7 +420,7 @@ func (s serverImpl) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta
 		}); err != nil {
 			return nil, err
 		}
-		if err = s.batchSupplyStore.Update(ctx, &ecocreditv1beta1.BatchSupply{
+		if err = s.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1beta1.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   batchSupply.RetiredAmount,
@@ -446,7 +441,7 @@ func (s serverImpl) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta
 }
 
 func (s serverImpl) UpdateClassAdmin(ctx context.Context, req *v1beta1.MsgUpdateClassAdmin) (*v1beta1.MsgUpdateClassAdminResponse, error) {
-	classInfo, err := s.classInfoStore.GetByName(ctx, req.ClassId)
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -454,14 +449,14 @@ func (s serverImpl) UpdateClassAdmin(ctx context.Context, req *v1beta1.MsgUpdate
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 	classInfo.Admin = req.NewAdmin
-	if err = s.classInfoStore.Update(ctx, classInfo); err != nil {
+	if err = s.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 	return &v1beta1.MsgUpdateClassAdminResponse{}, err
 }
 
 func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpdateClassIssuers) (*v1beta1.MsgUpdateClassIssuersResponse, error) {
-	class, err := s.classInfoStore.GetByName(ctx, req.ClassId)
+	class, err := s.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -470,13 +465,13 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 	}
 
 	// delete the old issuers
-	if err = s.classIssuerStore.DeleteBy(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(class.Name)); err != nil {
+	if err = s.stateStore.ClassIssuerStore().DeleteBy(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(class.Name)); err != nil {
 		return nil, err
 	}
 
 	// add the new issuers
 	for _, issuer := range req.Issuers {
-		if err = s.classIssuerStore.Insert(ctx, &ecocreditv1beta1.ClassIssuer{
+		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: req.ClassId,
 			Issuer:  issuer,
 		}); err != nil {
@@ -487,7 +482,7 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 }
 
 func (s serverImpl) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpdateClassMetadata) (*v1beta1.MsgUpdateClassMetadataResponse, error) {
-	classInfo, err := s.classInfoStore.GetByName(ctx, req.ClassId)
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +490,7 @@ func (s serverImpl) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpd
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 	classInfo.Metadata = req.Metadata
-	if err = s.classInfoStore.Update(ctx, classInfo); err != nil {
+	if err = s.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 	return &v1beta1.MsgUpdateClassMetadataResponse{}, err
@@ -925,7 +920,7 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 // AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
-	it, err := s.classIssuerStore.List(goCtx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classID))
+	it, err := s.stateStore.ClassIssuerStore().List(goCtx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classID))
 	if err != nil {
 		return err
 	}
@@ -945,7 +940,7 @@ func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer str
 
 func (s serverImpl) genProjectID(ctx context.Context, classRowID uint64, classID string) (string, error) {
 	var nextID uint64
-	projectSeqNo, err := s.projectSeqStore.Get(ctx, classRowID)
+	projectSeqNo, err := s.stateStore.ProjectSequenceStore().Get(ctx, classRowID)
 	switch err {
 	case ormerrors.NotFound:
 		nextID = 1
@@ -955,7 +950,7 @@ func (s serverImpl) genProjectID(ctx context.Context, classRowID uint64, classID
 		return "", err
 	}
 
-	if err = s.projectSeqStore.Save(ctx, &ecocreditv1beta1.ProjectSequence{
+	if err = s.stateStore.ProjectSequenceStore().Save(ctx, &ecocreditv1beta1.ProjectSequence{
 		ClassId:       classRowID,
 		NextProjectId: nextID + 1,
 	}); err != nil {
@@ -967,7 +962,7 @@ func (s serverImpl) genProjectID(ctx context.Context, classRowID uint64, classID
 
 func (s serverImpl) getBatchSeqNo(ctx context.Context, projectID string) (uint64, error) {
 	var seq uint64
-	batchSeq, err := s.batchSeqStore.Get(ctx, projectID)
+	batchSeq, err := s.stateStore.BatchSequenceStore().Get(ctx, projectID)
 
 	switch err {
 	case ormerrors.NotFound:
@@ -977,7 +972,7 @@ func (s serverImpl) getBatchSeqNo(ctx context.Context, projectID string) (uint64
 	default:
 		return 0, err
 	}
-	if err = s.batchSeqStore.Save(ctx, &ecocreditv1beta1.BatchSequence{
+	if err = s.stateStore.BatchSequenceStore().Save(ctx, &ecocreditv1beta1.BatchSequence{
 		ProjectId:   projectID,
 		NextBatchId: seq + 1,
 	}); err != nil {
@@ -988,7 +983,7 @@ func (s serverImpl) getBatchSeqNo(ctx context.Context, projectID string) (uint64
 }
 
 func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_SendCredits, to, from sdk.AccAddress) error {
-	batch, err := s.batchInfoStore.GetByBatchDenom(ctx, credit.BatchDenom)
+	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
 	}
@@ -998,11 +993,11 @@ func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_
 	}
 	precision := creditType.Precision
 
-	batchSupply, err := s.batchSupplyStore.Get(ctx, batch.Id)
+	batchSupply, err := s.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
 	if err != nil {
 		return err
 	}
-	fromBalance, err := s.batchBalanceStore.Get(ctx, from, batch.Id)
+	fromBalance, err := s.stateStore.BatchBalanceStore().Get(ctx, from, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			return ecocredit.ErrInsufficientFunds.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
@@ -1010,7 +1005,7 @@ func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_
 		return err
 	}
 
-	toBalance, err := s.batchBalanceStore.Get(ctx, to, batch.Id)
+	toBalance, err := s.stateStore.BatchBalanceStore().Get(ctx, to, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &ecocreditv1beta1.BatchBalance{
@@ -1064,7 +1059,7 @@ func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_
 		}
 	}
 	// update the "to" balance
-	if err := s.batchBalanceStore.Save(ctx, &ecocreditv1beta1.BatchBalance{
+	if err := s.stateStore.BatchBalanceStore().Save(ctx, &ecocreditv1beta1.BatchBalance{
 		Address:  to,
 		BatchId:  batch.Id,
 		Tradable: toTradableBalance.String(),
@@ -1074,7 +1069,7 @@ func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_
 	}
 
 	// update the "from" balance
-	if err := s.batchBalanceStore.Update(ctx, &ecocreditv1beta1.BatchBalance{
+	if err := s.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1beta1.BatchBalance{
 		Address:  from,
 		BatchId:  batch.Id,
 		Tradable: fromTradableBalance.String(),
@@ -1084,7 +1079,7 @@ func (s serverImpl) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_
 	}
 	// update the "retired" balance only if credits were retired
 	if didRetire {
-		if err := s.batchSupplyStore.Update(ctx, &ecocreditv1beta1.BatchSupply{
+		if err := s.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1beta1.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  batchSupplyTradable.String(),
 			RetiredAmount:   batchSupplyRetired.String(),
@@ -1118,7 +1113,7 @@ func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 
 func (s serverImpl) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (v1beta1.CreditType, error) {
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := s.classInfoStore.GetByName(ctx, classId)
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, classId)
 	if err != nil {
 		return v1beta1.CreditType{}, err
 	}
@@ -1127,7 +1122,7 @@ func (s serverImpl) getCreditTypeFromBatchDenom(ctx context.Context, denom strin
 
 func (s serverImpl) getClassSequenceNo(ctx context.Context, ctype string) (uint64, error) {
 	var seq uint64
-	classSeq, err := s.classSeqStore.Get(ctx, ctype)
+	classSeq, err := s.stateStore.ClassSequenceStore().Get(ctx, ctype)
 	switch err {
 	case nil:
 		seq = classSeq.NextClassId
@@ -1136,7 +1131,7 @@ func (s serverImpl) getClassSequenceNo(ctx context.Context, ctype string) (uint6
 	default:
 		return 0, err
 	}
-	err = s.classSeqStore.Save(ctx, &ecocreditv1beta1.ClassSequence{
+	err = s.stateStore.ClassSequenceStore().Save(ctx, &ecocreditv1beta1.ClassSequence{
 		CreditType:  ctype,
 		NextClassId: seq + 1,
 	})

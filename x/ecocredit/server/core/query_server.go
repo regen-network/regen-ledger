@@ -24,7 +24,7 @@ func (s serverImpl) Classes(ctx context.Context, request *v1beta1.QueryClassesRe
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	it, err := s.classInfoStore.List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := s.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -59,13 +59,13 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassIn
 	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
 		return nil, err
 	}
-	classInfo, err := s.classInfoStore.GetByName(ctx, request.ClassId)
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
 	issuers := make([]string, 0)
-	it, err := s.classIssuerStore.List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId))
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId))
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 		return nil, err
 	}
 
-	it, err := s.classIssuerStore.List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -137,11 +137,11 @@ func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjects
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	cInfo, err := s.classInfoStore.GetByName(ctx, request.ClassId)
+	cInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := s.projectInfoStore.List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := s.stateStore.ProjectInfoStore().List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -157,7 +157,7 @@ func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjects
 		if err != nil {
 			return nil, err
 		}
-		classInfo, err := s.classInfoStore.Get(ctx, info.ClassId)
+		classInfo, err := s.stateStore.ClassInfoStore().Get(ctx, info.ClassId)
 		if err != nil {
 			return nil, err
 		}
@@ -186,12 +186,12 @@ func (s serverImpl) ProjectInfo(ctx context.Context, request *v1beta1.QueryProje
 	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
 		return nil, err
 	}
-	pInfo, err := s.projectInfoStore.GetByName(ctx, request.ProjectId)
+	pInfo, err := s.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	cInfo, err := s.classInfoStore.Get(ctx, pInfo.ClassId)
+	cInfo, err := s.stateStore.ClassInfoStore().Get(ctx, pInfo.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -214,11 +214,11 @@ func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRe
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	project, err := s.projectInfoStore.GetByName(ctx, request.ProjectId)
+	project, err := s.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := s.batchInfoStore.List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := s.stateStore.BatchInfoStore().List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -230,7 +230,7 @@ func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRe
 	}
 
 	projectName := request.ProjectId
-	pinfo, err := s.projectInfoStore.GetByName(ctx, projectName)
+	pinfo, err := s.stateStore.ProjectInfoStore().GetByName(ctx, projectName)
 	if err != nil {
 		return nil, err
 	}
@@ -277,12 +277,12 @@ func (s serverImpl) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchIn
 		return nil, err
 	}
 
-	batch, err := s.batchInfoStore.GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	project, err := s.projectInfoStore.Get(ctx, batch.ProjectId)
+	project, err := s.stateStore.ProjectInfoStore().Get(ctx, batch.ProjectId)
 	if err != nil {
 		return nil, err
 	}
@@ -316,7 +316,7 @@ func (s serverImpl) Balance(ctx context.Context, req *v1beta1.QueryBalanceReques
 	if err := ecocredit.ValidateDenom(req.BatchDenom); err != nil {
 		return nil, err
 	}
-	batch, err := s.batchInfoStore.GetByBatchDenom(ctx, req.BatchDenom)
+	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +325,7 @@ func (s serverImpl) Balance(ctx context.Context, req *v1beta1.QueryBalanceReques
 	}
 	addr, _ := sdk.AccAddressFromBech32(req.Account)
 
-	balance, err := s.batchBalanceStore.Get(ctx, addr, batch.Id)
+	balance, err := s.stateStore.BatchBalanceStore().Get(ctx, addr, batch.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -351,12 +351,12 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 		return nil, err
 	}
 
-	batch, err := s.batchInfoStore.GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	supply, err := s.batchSupplyStore.Get(ctx, batch.Id)
+	supply, err := s.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
 	if err != nil {
 		return nil, err
 	}

@@ -22,24 +22,7 @@ type serverImpl struct {
 
 	db ormdb.ModuleDB
 
-	creditTypeStore ecocreditv1beta1.CreditTypeStore
-
-	batchInfoStore    ecocreditv1beta1.BatchInfoStore
-	batchSupplyStore  ecocreditv1beta1.BatchSupplyStore
-	batchBalanceStore ecocreditv1beta1.BatchBalanceStore
-	batchSeqStore     ecocreditv1beta1.BatchSequenceStore
-
-	projectInfoStore ecocreditv1beta1.ProjectInfoStore
-	projectSeqStore  ecocreditv1beta1.ProjectSequenceStore
-
-	classInfoStore   ecocreditv1beta1.ClassInfoStore
-	classIssuerStore ecocreditv1beta1.ClassIssuerStore
-	classSeqStore    ecocreditv1beta1.ClassSequenceStore
-}
-
-var ecocreditSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto},
-	Prefix:          nil,
+	stateStore ecocreditv1beta1.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -52,6 +35,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		accountKeeper: accountKeeper,
 	}
 
+	ecocreditSchema := ormdb.ModuleSchema{
+		FileDescriptors: map[uint32]protoreflect.FileDescriptor{1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto},
+		Prefix:          nil,
+	}
+
 	db, err := ormstore.NewStoreKeyDB(ecocreditSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
@@ -62,11 +50,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err)
 	}
-	s.creditTypeStore, s.classInfoStore, s.classSeqStore, s.projectInfoStore,
-		s.projectSeqStore, s.batchInfoStore, s.batchSeqStore, s.batchBalanceStore,
-		s.batchSupplyStore, s.classIssuerStore = stateStore.CreditTypeStore(), stateStore.ClassInfoStore(), stateStore.ClassSequenceStore(),
-		stateStore.ProjectInfoStore(), stateStore.ProjectSequenceStore(), stateStore.BatchInfoStore(),
-		stateStore.BatchSequenceStore(), stateStore.BatchBalanceStore(), stateStore.BatchSupplyStore(), stateStore.ClassIssuerStore()
+	s.stateStore = stateStore
 
 	return s
 }
