@@ -17,6 +17,7 @@ type SellOrderStore interface {
 	Save(ctx context.Context, sellOrder *SellOrder) error
 	Delete(ctx context.Context, sellOrder *SellOrder) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*SellOrder, error)
 	List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
@@ -128,10 +129,13 @@ func (this sellOrderStore) Has(ctx context.Context, id uint64) (found bool, err 
 func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &sellOrder, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &sellOrder, nil
 }
 
 func (this sellOrderStore) List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error) {
@@ -171,6 +175,7 @@ type BuyOrderStore interface {
 	Save(ctx context.Context, buyOrder *BuyOrder) error
 	Delete(ctx context.Context, buyOrder *BuyOrder) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*BuyOrder, error)
 	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
@@ -269,10 +274,13 @@ func (this buyOrderStore) Has(ctx context.Context, id uint64) (found bool, err e
 func (this buyOrderStore) Get(ctx context.Context, id uint64) (*BuyOrder, error) {
 	var buyOrder BuyOrder
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrder, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrder, nil
 }
 
 func (this buyOrderStore) List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error) {
@@ -311,8 +319,10 @@ type AllowedDenomStore interface {
 	Save(ctx context.Context, allowedDenom *AllowedDenom) error
 	Delete(ctx context.Context, allowedDenom *AllowedDenom) error
 	Has(ctx context.Context, bank_denom string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, bank_denom string) (*AllowedDenom, error)
 	HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error)
+	// GetByDisplayDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error)
 	List(ctx context.Context, prefixKey AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error)
 	ListRange(ctx context.Context, from, to AllowedDenomIndexKey, opts ...ormlist.Option) (AllowedDenomIterator, error)
@@ -394,10 +404,13 @@ func (this allowedDenomStore) Has(ctx context.Context, bank_denom string) (found
 func (this allowedDenomStore) Get(ctx context.Context, bank_denom string) (*AllowedDenom, error) {
 	var allowedDenom AllowedDenom
 	found, err := this.table.PrimaryKey().Get(ctx, &allowedDenom, bank_denom)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &allowedDenom, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &allowedDenom, nil
 }
 
 func (this allowedDenomStore) HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error) {
@@ -411,8 +424,11 @@ func (this allowedDenomStore) GetByDisplayDenom(ctx context.Context, display_den
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &allowedDenom,
 		display_denom,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &allowedDenom, nil
 }
@@ -454,8 +470,10 @@ type MarketStore interface {
 	Save(ctx context.Context, market *Market) error
 	Delete(ctx context.Context, market *Market) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*Market, error)
 	HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error)
+	// GetByCreditTypeBankDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error)
 	List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
@@ -546,10 +564,13 @@ func (this marketStore) Has(ctx context.Context, id uint64) (found bool, err err
 func (this marketStore) Get(ctx context.Context, id uint64) (*Market, error) {
 	var market Market
 	found, err := this.table.PrimaryKey().Get(ctx, &market, id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &market, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &market, nil
 }
 
 func (this marketStore) HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error) {
@@ -565,8 +586,11 @@ func (this marketStore) GetByCreditTypeBankDenom(ctx context.Context, credit_typ
 		credit_type,
 		bank_denom,
 	)
-	if !found {
+	if err != nil {
 		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
 	}
 	return &market, nil
 }

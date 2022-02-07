@@ -2834,11 +2834,13 @@ func (x *Filter) GetOr() []*Filter_Criteria {
 	return nil
 }
 
+// ClassSelector is a selector for a credit class.
 type ClassSelector struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// class_id is the credit class ID.
 	ClassId uint64 `protobuf:"varint,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// project_location can be specified in three levels of granularity:
 	// country, sub-national-code, or postal code. If just country is given,
@@ -2905,11 +2907,13 @@ func (x *ClassSelector) GetMaxEndDate() *timestamppb.Timestamp {
 	return nil
 }
 
+// ProjectSelector is a selector for a project.
 type ProjectSelector struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// project_id is the project ID.
 	ProjectId uint64 `protobuf:"varint,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// start_date is the beginning of the period during which a credit batch
 	// was quantified and verified. If it is empty then there is no start date
@@ -2962,11 +2966,13 @@ func (x *ProjectSelector) GetMaxEndDate() *timestamppb.Timestamp {
 	return nil
 }
 
+// BatchSelector is a selector for a credit batch.
 type BatchSelector struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// batch_id is the credit batch ID.
 	BatchId uint64 `protobuf:"varint,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
 }
 
@@ -3069,14 +3075,17 @@ type isFilter_Criteria_Selector interface {
 }
 
 type Filter_Criteria_ClassSelector struct {
+	// class_selector is a credit class selector.
 	ClassSelector *ClassSelector `protobuf:"bytes,1,opt,name=class_selector,json=classSelector,proto3,oneof"`
 }
 
 type Filter_Criteria_ProjectSelector struct {
+	// project_selector is a project selector.
 	ProjectSelector *ProjectSelector `protobuf:"bytes,2,opt,name=project_selector,json=projectSelector,proto3,oneof"`
 }
 
 type Filter_Criteria_BatchSelector struct {
+	// batch_selector is a credit batch selector.
 	BatchSelector *BatchSelector `protobuf:"bytes,3,opt,name=batch_selector,json=batchSelector,proto3,oneof"`
 }
 

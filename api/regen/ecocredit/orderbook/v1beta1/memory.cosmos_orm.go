@@ -15,6 +15,7 @@ type BuyOrderSellOrderMatchStore interface {
 	Save(ctx context.Context, buyOrderSellOrderMatch *BuyOrderSellOrderMatch) error
 	Delete(ctx context.Context, buyOrderSellOrderMatch *BuyOrderSellOrderMatch) error
 	Has(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (*BuyOrderSellOrderMatch, error)
 	List(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error)
@@ -139,10 +140,13 @@ func (this buyOrderSellOrderMatchStore) Has(ctx context.Context, buy_order_id ui
 func (this buyOrderSellOrderMatchStore) Get(ctx context.Context, buy_order_id uint64, sell_order_id uint64) (*BuyOrderSellOrderMatch, error) {
 	var buyOrderSellOrderMatch BuyOrderSellOrderMatch
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderSellOrderMatch, buy_order_id, sell_order_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrderSellOrderMatch, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrderSellOrderMatch, nil
 }
 
 func (this buyOrderSellOrderMatchStore) List(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error) {
@@ -181,6 +185,7 @@ type BuyOrderClassSelectorStore interface {
 	Save(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
 	Delete(ctx context.Context, buyOrderClassSelector *BuyOrderClassSelector) error
 	Has(ctx context.Context, buy_order_id uint64, class_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, class_id uint64) (*BuyOrderClassSelector, error)
 	List(ctx context.Context, prefixKey BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error)
@@ -267,10 +272,13 @@ func (this buyOrderClassSelectorStore) Has(ctx context.Context, buy_order_id uin
 func (this buyOrderClassSelectorStore) Get(ctx context.Context, buy_order_id uint64, class_id uint64) (*BuyOrderClassSelector, error) {
 	var buyOrderClassSelector BuyOrderClassSelector
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderClassSelector, buy_order_id, class_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrderClassSelector, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrderClassSelector, nil
 }
 
 func (this buyOrderClassSelectorStore) List(ctx context.Context, prefixKey BuyOrderClassSelectorIndexKey, opts ...ormlist.Option) (BuyOrderClassSelectorIterator, error) {
@@ -309,6 +317,7 @@ type BuyOrderProjectSelectorStore interface {
 	Save(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
 	Delete(ctx context.Context, buyOrderProjectSelector *BuyOrderProjectSelector) error
 	Has(ctx context.Context, buy_order_id uint64, project_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, project_id uint64) (*BuyOrderProjectSelector, error)
 	List(ctx context.Context, prefixKey BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error)
@@ -395,10 +404,13 @@ func (this buyOrderProjectSelectorStore) Has(ctx context.Context, buy_order_id u
 func (this buyOrderProjectSelectorStore) Get(ctx context.Context, buy_order_id uint64, project_id uint64) (*BuyOrderProjectSelector, error) {
 	var buyOrderProjectSelector BuyOrderProjectSelector
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderProjectSelector, buy_order_id, project_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrderProjectSelector, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrderProjectSelector, nil
 }
 
 func (this buyOrderProjectSelectorStore) List(ctx context.Context, prefixKey BuyOrderProjectSelectorIndexKey, opts ...ormlist.Option) (BuyOrderProjectSelectorIterator, error) {
@@ -437,6 +449,7 @@ type BuyOrderBatchSelectorStore interface {
 	Save(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
 	Delete(ctx context.Context, buyOrderBatchSelector *BuyOrderBatchSelector) error
 	Has(ctx context.Context, buy_order_id uint64, batch_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, buy_order_id uint64, batch_id uint64) (*BuyOrderBatchSelector, error)
 	List(ctx context.Context, prefixKey BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error)
@@ -523,10 +536,13 @@ func (this buyOrderBatchSelectorStore) Has(ctx context.Context, buy_order_id uin
 func (this buyOrderBatchSelectorStore) Get(ctx context.Context, buy_order_id uint64, batch_id uint64) (*BuyOrderBatchSelector, error) {
 	var buyOrderBatchSelector BuyOrderBatchSelector
 	found, err := this.table.PrimaryKey().Get(ctx, &buyOrderBatchSelector, buy_order_id, batch_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &buyOrderBatchSelector, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &buyOrderBatchSelector, nil
 }
 
 func (this buyOrderBatchSelectorStore) List(ctx context.Context, prefixKey BuyOrderBatchSelectorIndexKey, opts ...ormlist.Option) (BuyOrderBatchSelectorIterator, error) {

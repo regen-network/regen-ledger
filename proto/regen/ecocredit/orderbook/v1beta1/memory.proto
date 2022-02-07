@@ -4,7 +4,6 @@ package regen.ecocredit.orderbook.v1beta1;
 
 import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
-import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
 // BuyOrderSellOrderMatch defines the data the FIFO/price-time-priority matching
 // algorithm used to actually match buy and sell orders.
@@ -36,13 +35,14 @@ message BuyOrderSellOrderMatch {
   // sell_order_id is the sell order ID.
   uint64 sell_order_id = 3;
 
-  // bid_price_complement is the the complement (^ operator) of the bid price encoded as a uint3 (which should have sufficient precision) - effectively ~price * 10^exponent (usually 10^6). The complement is used so that bids can be sorted high to low.
+  // bid_price_complement is the the complement (^ operator) of the bid price encoded as a uint32 (which should have sufficient precision) - effectively ~price * 10^exponent (usually 10^6). The complement is used so that bids can be sorted high to low.
   fixed32 bid_price_complement = 4;
 
   // ask_price is the ask price encoded to a uint32. Ask prices are sorted low to high.
   fixed32 ask_price = 5;
 }
 
+// BuyOrderClassSelector indexes a buy order with class selector.
 message BuyOrderClassSelector {
   option (cosmos.orm.v1alpha1.table) = {
     id: 2
@@ -53,6 +53,7 @@ message BuyOrderClassSelector {
   // buy_order_id is the buy order ID.
   uint64 buy_order_id = 1;
 
+  // class_id is the class ID.
   uint64 class_id = 2;
 
   // project_location is the project location in the selector's criteria.
@@ -65,6 +66,7 @@ message BuyOrderClassSelector {
   google.protobuf.Timestamp max_end_date = 5;
 }
 
+// BuyOrderProjectSelector indexes a buy order with project selector.
 message BuyOrderProjectSelector {
   option (cosmos.orm.v1alpha1.table) = {
     id: 3
@@ -75,6 +77,7 @@ message BuyOrderProjectSelector {
   // buy_order_id is the buy order ID.
   uint64 buy_order_id = 1;
 
+  // project_id is the project ID.
   uint64 project_id = 2;
 
   // min_start_date is the minimum start date in the selector's criteria.
@@ -84,6 +87,7 @@ message BuyOrderProjectSelector {
   google.protobuf.Timestamp max_end_date = 4;
 }
 
+// BuyOrderBatchSelector indexes a buy order with batch selector.
 message BuyOrderBatchSelector {
   option (cosmos.orm.v1alpha1.table) = {
     id: 4
@@ -94,5 +98,6 @@ message BuyOrderBatchSelector {
   // buy_order_id is the buy order ID.
   uint64 buy_order_id = 1;
 
+  // batch_id is the batch ID.
   uint64 batch_id = 2;
 }

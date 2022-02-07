@@ -15,6 +15,7 @@ type BasketBalanceStore interface {
 	Save(ctx context.Context, basketBalance *BasketBalance) error
 	Delete(ctx context.Context, basketBalance *BasketBalance) error
 	Has(ctx context.Context, basket_denom string, batch_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error)
 	List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
 	ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
@@ -88,10 +89,13 @@ func (this basketBalanceStore) Has(ctx context.Context, basket_denom string, bat
 func (this basketBalanceStore) Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error) {
 	var basketBalance BasketBalance
 	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_denom, batch_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &basketBalance, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &basketBalance, nil
 }
 
 func (this basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {

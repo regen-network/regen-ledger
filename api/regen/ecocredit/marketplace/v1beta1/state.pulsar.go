@@ -4,7 +4,6 @@ package marketplacev1beta1
 import (
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	_ "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	_ "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
@@ -3533,18 +3532,18 @@ type SellOrder struct {
 
 	// id is the unique ID of sell order.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// seller is the address of the owner of the credits being sold.
+	// seller is the bytes address of the owner of the credits being sold.
 	Seller []byte `protobuf:"bytes,2,opt,name=seller,proto3" json:"seller,omitempty"`
 	// batch_id is ID of the credit batch being sold.
 	BatchId uint64 `protobuf:"varint,3,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	// quantity is the quantity of credits being sold.
+	// quantity is the decimal quantity of credits being sold.
 	Quantity string `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	// market_id is the market in which this sell order exists and specifies
-	// the back denom ask_price corresponds to.
+	// the bank_denom that ask_price corresponds to.
 	MarketId uint64 `protobuf:"varint,5,opt,name=market_id,json=marketId,proto3" json:"market_id,omitempty"`
-	// ask_price is the integer price the seller is asking for each unit of the
-	// batch_denom. Each credit unit of the batch will be sold for at least the
-	// ask_price or more.
+	// ask_price is the integer price (encoded as a string) the seller is asking
+	// for each unit of the batch_denom. Each credit unit of the batch will be
+	// sold for at least the ask_price or more.
 	AskPrice string `protobuf:"bytes,6,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
 	// disable_auto_retire disables auto-retirement of credits which allows a
 	// buyer to disable auto-retirement in their buy order enabling them to
@@ -3649,16 +3648,16 @@ type BuyOrder struct {
 
 	// id is the unique ID of buy order.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// buyer is the address that created the buy order
+	// buyer is the bytes address of the account that created the buy order
 	Buyer []byte `protobuf:"bytes,2,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	// selection is the buy order selection.
 	Selection *BuyOrder_Selection `protobuf:"bytes,3,opt,name=selection,proto3" json:"selection,omitempty"`
-	// quantity is the quantity of credits to buy. If the quantity of credits
+	// quantity is the decimal quantity of credits to buy. If the quantity of credits
 	// available is less than this amount the order will be partially filled
 	// unless disable_partial_fill is true.
 	Quantity string `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	// market_id is the market in which this sell order exists and specifies
-	// the back denom ask_price corresponds to.
+	// the bank_denom that ask_price corresponds to.
 	MarketId uint64 `protobuf:"varint,5,opt,name=market_id,json=marketId,proto3" json:"market_id,omitempty"`
 	// bid price is the integer bid price for this buy order. A credit unit will be
 	// settled at a purchase price that is no more than the bid price. The
@@ -4013,8 +4012,6 @@ var file_regen_ecocredit_marketplace_v1beta1_state_proto_rawDesc = []byte{
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
 	0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f,
 	0x6f, 0x72, 0x6d, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x6f, 0x72, 0x6d,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62,
-	0x61, 0x73, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
 	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
 	0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65,
