@@ -16,9 +16,9 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 
 func (s serverImpl) tradableSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		supplyStore := s.batchSupplyStore
-		batchStore := s.batchInfoStore
-		balanceStore := s.batchBalanceStore
+		supplyStore := s.stateStore.BatchSupplyStore()
+		batchStore := s.stateStore.BatchInfoStore()
+		balanceStore := s.stateStore.BatchBalanceStore()
 		return tradableSupplyInvariant(supplyStore, balanceStore, batchStore, ctx)
 	}
 }
@@ -78,9 +78,9 @@ func tradableSupplyInvariant(batchSupplyStore ecocreditv1beta1.BatchSupplyStore,
 
 func (s serverImpl) retiredSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		supplyStore := s.batchSupplyStore
-		balanceStore := s.batchBalanceStore
-		batchStore := s.batchInfoStore
+		supplyStore := s.stateStore.BatchSupplyStore()
+		balanceStore := s.stateStore.BatchBalanceStore()
+		batchStore := s.stateStore.BatchInfoStore()
 		return retiredSupplyInvariant(supplyStore, balanceStore, batchStore, ctx)
 	}
 }
