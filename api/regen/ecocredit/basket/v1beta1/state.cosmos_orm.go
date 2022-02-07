@@ -4,7 +4,6 @@ package basketv1beta1
 
 import (
 	context "context"
-	ormdb "github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -16,9 +15,12 @@ type BasketBalanceStore interface {
 	Save(ctx context.Context, basketBalance *BasketBalance) error
 	Delete(ctx context.Context, basketBalance *BasketBalance) error
 	Has(ctx context.Context, basket_denom string, batch_id uint64) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error)
 	List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
 	ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BasketBalanceIndexKey) error
+	DeleteRange(ctx context.Context, from, to BasketBalanceIndexKey) error
 
 	doNotImplement()
 }
@@ -87,29 +89,38 @@ func (this basketBalanceStore) Has(ctx context.Context, basket_denom string, bat
 func (this basketBalanceStore) Get(ctx context.Context, basket_denom string, batch_id uint64) (*BasketBalance, error) {
 	var basketBalance BasketBalance
 	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_denom, batch_id)
-	if !found {
+	if err != nil {
 		return nil, err
 	}
-	return &basketBalance, err
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &basketBalance, nil
 }
 
 func (this basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
-	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BasketBalanceIterator{it}, err
 }
 
 func (this basketBalanceStore) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
-	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BasketBalanceIterator{it}, err
+}
+
+func (this basketBalanceStore) DeleteBy(ctx context.Context, prefixKey BasketBalanceIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this basketBalanceStore) DeleteRange(ctx context.Context, from, to BasketBalanceIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
 func (this basketBalanceStore) doNotImplement() {}
 
 var _ BasketBalanceStore = basketBalanceStore{}
 
-func NewBasketBalanceStore(db ormdb.ModuleDB) (BasketBalanceStore, error) {
+func NewBasketBalanceStore(db ormtable.Schema) (BasketBalanceStore, error) {
 	table := db.GetTable(&BasketBalance{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BasketBalance{}).ProtoReflect().Descriptor().FullName()))
@@ -135,7 +146,7 @@ func (stateStore) doNotImplement() {}
 
 var _ StateStore = stateStore{}
 
-func NewStateStore(db ormdb.ModuleDB) (StateStore, error) {
+func NewStateStore(db ormtable.Schema) (StateStore, error) {
 	basketBalanceStore, err := NewBasketBalanceStore(db)
 	if err != nil {
 		return nil, err

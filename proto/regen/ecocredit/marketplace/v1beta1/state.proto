@@ -4,7 +4,6 @@ package regen.ecocredit.marketplace.v1beta1;
 
 import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
@@ -13,48 +12,52 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 message SellOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
-        primary_key: {fields: "order_id"}
-        index: {id: 1 fields: "batch_denom"}
-        index: {id: 2 fields: "owner"}
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "batch_id"}
+        index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
     };
 
-    // order_id is the unique ID of sell order.
-    uint64 order_id = 1;
+    // id is the unique ID of sell order.
+    uint64 id = 1;
 
-    // owner is the address of the owner of the credits being sold.
-    string owner = 2;
+    // seller is the bytes address of the owner of the credits being sold.
+    bytes seller = 2;
 
-    // batch_denom is the credit batch being sold.
-    string batch_denom = 3;
+    // batch_id is ID of the credit batch being sold.
+    uint64 batch_id = 3;
 
-    // quantity is the quantity of credits being sold.
+    // quantity is the decimal quantity of credits being sold.
     string quantity = 4;
 
-    // ask_price is the price the seller is asking for each unit of the
-    // batch_denom. Each credit unit of the batch will be sold for at least the
-    // ask_price or more.
-    cosmos.base.v1beta1.Coin ask_price = 5;
+    // market_id is the market in which this sell order exists and specifies
+    // the bank_denom that ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // ask_price is the integer price (encoded as a string) the seller is asking
+    // for each unit of the batch_denom. Each credit unit of the batch will be
+    // sold for at least the ask_price or more.
+    string ask_price = 6;
 
     // disable_auto_retire disables auto-retirement of credits which allows a
     // buyer to disable auto-retirement in their buy order enabling them to
     // resell the credits to another buyer.
-    bool disable_auto_retire = 6;
+    bool disable_auto_retire = 7;
 
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
-    google.protobuf.Timestamp expiration = 7;
+    google.protobuf.Timestamp expiration = 9;
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching buy orders.
-    bool maker = 8;
+    bool maker = 10;
 }
 
 // BuyOrder represents the information for a buy order.
 message BuyOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "buy_order_id"}
+        primary_key: {fields: "id", auto_increment: true}
         index: {id: 1 fields: "buyer"}
         index: {id: 2 fields: "expiration"}
     };
@@ -74,45 +77,49 @@ message BuyOrder {
         }
     }
 
-    // buy_order_id is the unique ID of buy order.
-    uint64 buy_order_id = 1;
+    // id is the unique ID of buy order.
+    uint64 id = 1;
 
-    // buyer is the address that created the buy order
-    string buyer = 2;
+    // buyer is the bytes address of the account that created the buy order
+    bytes buyer = 2;
 
     // selection is the buy order selection.
     Selection selection = 3;
 
-    // quantity is the quantity of credits to buy. If the quantity of credits
+    // quantity is the decimal quantity of credits to buy. If the quantity of credits
     // available is less than this amount the order will be partially filled
     // unless disable_partial_fill is true.
     string quantity = 4;
 
-    // bid price is the bid price for this buy order. A credit unit will be
+    // market_id is the market in which this sell order exists and specifies
+    // the bank_denom that ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // bid price is the integer bid price for this buy order. A credit unit will be
     // settled at a purchase price that is no more than the bid price. The
     // buy order will fail if the buyer does not have enough funds available
     // to complete the purchase.
-    cosmos.base.v1beta1.Coin bid_price = 5;
+    string bid_price = 6;
 
     // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
     // the credits will not auto-retire and can be resold assuming that the
     // corresponding sell order has auto-retirement disabled. If the sell order
     // hasn't disabled auto-retirement and the buy order tries to disable it,
     // that buy order will fail.
-    bool disable_auto_retire = 6;
+    bool disable_auto_retire = 7;
 
     // disable_partial_fill disables the default behavior of partially filling
     // buy orders if the requested quantity is not available.
-    bool disable_partial_fill = 7;
+    bool disable_partial_fill = 8;
 
     // expiration is the optional timestamp when the buy order expires. When the
     // expiration time is reached, the buy order is removed from state.
-    google.protobuf.Timestamp expiration = 8;
+    google.protobuf.Timestamp expiration = 9;
 
 
     // maker indicates that this is a maker order, meaning that when it hit
     // the order book, there were no matching sell orders.
-    bool maker = 9;
+    bool maker = 10;
 }
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
@@ -148,7 +155,7 @@ message AllowedDenom {
 message Market {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4
-        primary_key: {fields: "id"}
+        primary_key: {fields: "id", auto_increment: true}
         index: {id: 1 fields: "credit_type,bank_denom", unique: true}
     };
 
@@ -162,33 +169,29 @@ message Market {
     string bank_denom = 3;
 
     // precision_modifier is an optional modifier used to convert arbitrary
-    // precision integer bank amounts to uint64 values used for sorting in the
-    // order book. Given an arbitrary precision integer x, its uint64 conversion
+    // precision integer bank amounts to uint32 values used for sorting in the
+    // order book. Given an arbitrary precision integer x, its uint32 conversion
     // will be x / 10^precision_modifier using round half away from zero
     // rounding.
     //
-    // uint64 values range from 0 to 1,8446,744,073,709,551,615.
-    // This allows for a full 18 digits of precision. In most real world cases,
-    // a precision modifier of 0 (meaning no conversion) is probably sufficient.
+    // uint32 values range from 0 to 4,294,967,295.
+    // This allows for a full 9 digits of precision. In most real world markets
+    // this amount of precision is sufficient and most common downside -
+    // that some orders with very miniscule price differences may be ordered
+    // equivalently (because of rounding) - is acceptable.
+    // Note that this rounding will not affect settlement price which will
+    // always be done exactly.
     //
-    // Consider a USD stable coin with 6 decimal digits of precision. A credit
-    // would need to be worth over 1 trillion USD for a non-zero precision_modifier
-    // to be needed.
+    // Given a USD stable coin with 6 decimal digits, a precision_modifier
+    // of 0 is probably acceptable as long as credits are always less than
+    // $4,294/unit. With precision down to $0.001 (a precision_modifier of 3
+    // in this case), prices can rise up to $4,294,000/unit. Either scenario
+    // is probably quite acceptable given that carbon prices are unlikely to
+    // rise above $1000/ton any time in the near future.
     //
-    // precision_modifier is provided to accomodate cases where the bank denom
-    // has either a huge precision (such as 18 decimal digits on its own) or
-    // extreme hyper-inflationary scenarios.
-    //
-    // In cases where there is a non-zero precision_modifier, bids and asks
-    // which are rounded to the same number will be ordered equivalently and
-    // differentiated only by time priority. The precision integer amount in the
-    // order will still be used in settlement.
-    //
-    // In cases where an arbitrary precision integer overflows its conversion to
-    // uint64, the order fill fail and the market will eventually become stuck
-    // if prices are in this region. Governance should intervene at this
-    // point to change the precision_modifier to a reasonable value to re-enable
-    // the market. When precision_modifier changes, all active orders in the order
-    // book will be updated to reflect this.
+    // If credit prices, exceed the maximum range of uint32 with this
+    // precision_modifier, orders with high prices will fail and governance
+    // will need to adjust precision_modifier to allow for higher prices in
+    // exchange for less precision at the lower end.
     uint32 precision_modifier = 4;
 }
