@@ -170,4 +170,6 @@ func TestSellFilled(t *testing.T) {
 	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.SellFilled, state)
+
+	//ormtestutil.AssertGolden(t, s.db, s.ctx, "testdata/test-sell-filled.json")
 }
