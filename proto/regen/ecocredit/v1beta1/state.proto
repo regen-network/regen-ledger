@@ -5,6 +5,8 @@ package regen.ecocredit.v1beta1;
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {
@@ -74,7 +76,8 @@ message ProjectInfo {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
         primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1 fields: "class_id,name", unique: true}
+        index: {id: 1, fields: "name", unique: true}
+        index: {id: 2, fields: "class_id,name", unique: true}
     };
 
     // id is the unique ID of the project
