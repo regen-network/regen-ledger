@@ -35,7 +35,7 @@ func (s Status) String() string {
 	}
 }
 
-type Manager struct {
+type manager struct {
 	marketplaceStore marketplacev1beta1.StateStore
 	ecocreditStore   ecocreditv1beta1.StateStore
 	bankBalances     map[string]sdk.Int
@@ -43,8 +43,17 @@ type Manager struct {
 	logger           zerolog.Logger
 }
 
-func NewManager(db ormdb.ModuleDB, transferManager TransferManager, logger zerolog.Logger) (*Manager, error) {
-	mgr := &Manager{transferManager: transferManager, logger: logger}
+type Manager interface {
+	Fill(
+		ctx context.Context,
+		market *marketplacev1beta1.Market,
+		buyOrder *marketplacev1beta1.BuyOrder,
+		sellOrder *marketplacev1beta1.SellOrder,
+	) (Status, error)
+}
+
+func NewManager(db ormdb.ModuleDB, transferManager TransferManager, logger zerolog.Logger) (Manager, error) {
+	mgr := &manager{transferManager: transferManager, logger: logger}
 
 	var err error
 	mgr.marketplaceStore, err = marketplacev1beta1.NewStateStore(db)
@@ -65,7 +74,7 @@ type TransferManager interface {
 	SendCreditsTo(batchId uint64, amount math.Dec, from, to sdk.AccAddress, retire bool) error
 }
 
-func (t Manager) Fill(
+func (t manager) Fill(
 	ctx context.Context,
 	market *marketplacev1beta1.Market,
 	buyOrder *marketplacev1beta1.BuyOrder,
