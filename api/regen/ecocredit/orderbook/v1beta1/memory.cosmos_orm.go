@@ -8,7 +8,7 @@ import (
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	v1beta1 "github.com/regen-ledger/regen-network/api/regen/ecocredit/marketplace/v1beta1"
+	v1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 )
 
 type BuyOrderSellOrderMatchStore interface {
@@ -41,11 +41,13 @@ type BuyOrderSellOrderMatchIndexKey interface {
 }
 
 // primary key starting index..
+type BuyOrderSellOrderMatchPrimaryKey = BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey
+
 type BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey) id() uint32                      { return 1 }
+func (x BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey) id() uint32                      { return 0 }
 func (x BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey) values() []interface{}           { return x.vs }
 func (x BuyOrderSellOrderMatchBuyOrderIdSellOrderIdIndexKey) buyOrderSellOrderMatchIndexKey() {}
 
@@ -144,13 +146,13 @@ func (this buyOrderSellOrderMatchStore) Get(ctx context.Context, buy_order_id ui
 }
 
 func (this buyOrderSellOrderMatchStore) List(ctx context.Context, prefixKey BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BuyOrderSellOrderMatchIterator{it}, err
 }
 
 func (this buyOrderSellOrderMatchStore) ListRange(ctx context.Context, from, to BuyOrderSellOrderMatchIndexKey, opts ...ormlist.Option) (BuyOrderSellOrderMatchIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BuyOrderSellOrderMatchIterator{it}, err
 }
@@ -197,11 +199,13 @@ type UInt64SelectorBuyOrderIndexKey interface {
 }
 
 // primary key starting index..
+type UInt64SelectorBuyOrderPrimaryKey = UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey
+
 type UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey struct {
 	vs []interface{}
 }
 
-func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) id() uint32 { return 2 }
+func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) id() uint32 { return 0 }
 func (x UInt64SelectorBuyOrderBuyOrderIdSelectorTypeValueIndexKey) values() []interface{} {
 	return x.vs
 }
@@ -274,13 +278,13 @@ func (this uInt64SelectorBuyOrderStore) Get(ctx context.Context, buy_order_id ui
 }
 
 func (this uInt64SelectorBuyOrderStore) List(ctx context.Context, prefixKey UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return UInt64SelectorBuyOrderIterator{it}, err
 }
 
 func (this uInt64SelectorBuyOrderStore) ListRange(ctx context.Context, from, to UInt64SelectorBuyOrderIndexKey, opts ...ormlist.Option) (UInt64SelectorBuyOrderIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return UInt64SelectorBuyOrderIterator{it}, err
 }
