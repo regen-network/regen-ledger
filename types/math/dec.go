@@ -2,7 +2,6 @@ package math
 
 import (
 	"fmt"
-
 	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -33,6 +32,9 @@ var dec128Context = apd.Context{
 }
 
 func NewDecFromString(s string) (Dec, error) {
+	if s == "" {
+		s = "0"
+	}
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
