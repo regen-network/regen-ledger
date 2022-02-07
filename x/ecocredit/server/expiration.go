@@ -12,9 +12,11 @@ import (
 func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 	blockTime := uint64(ctx.BlockTime().Add(time.Nanosecond).UnixNano())
 	minTime := uint64(0)
+	logger := ctx.Logger()
 
 	sellOrdersIter, err := s.sellOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
+		logger.Error("problem with getting prefix scan iteratorr", "err", err)
 		return err
 	}
 	defer sellOrdersIter.Close()
@@ -26,16 +28,19 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 			if orm.ErrIteratorDone.Is(err) {
 				break
 			}
+			logger.Error("problem with sell order load next", "err", err)
 			return err
 		}
 		err = s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
 		if err != nil {
+			logger.Error("problem with sell order delete", "err", err)
 			return err
 		}
 	}
 
 	buyOrdersIter, err := s.buyOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
+		logger.Error("problem with buy order iteratorr", "err", err)
 		return err
 	}
 	defer buyOrdersIter.Close()
@@ -47,10 +52,12 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 			if orm.ErrIteratorDone.Is(err) {
 				break
 			}
+			logger.Error("problem with buy order load next", "err", err)
 			return err
 		}
 		err = s.buyOrderTable.Delete(ctx, buyOrder.BuyOrderId)
 		if err != nil {
+			logger.Error("problem with buy order delete", "err", err)
 			return err
 		}
 	}
