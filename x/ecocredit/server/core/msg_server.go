@@ -56,8 +56,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeq)
 
-	// TODO(Tyler): waiting for PR that should make this should return the row ID, should include in event and response.
-	_, err = s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
+	rowID, err := s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       classID,
 		Admin:      req.Admin,
 		Metadata:   req.Metadata,
@@ -77,6 +76,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 
 	err = regenCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateClass{
+		RowId:   rowID,
 		ClassId: classID,
 		Admin:   req.Admin,
 	})
@@ -84,7 +84,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
-	return &v1beta1.MsgCreateClassResponse{ClassId: classID}, nil
+	return &v1beta1.MsgCreateClassResponse{RowId: rowID, ClassId: classID}, nil
 }
 
 // CreateProject creates a new project.
@@ -117,8 +117,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 		}
 	}
 
-	// TODO(Tyler): update this to handle the id it returns and put it in event and response.
-	_, err = s.stateStore.ProjectInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ProjectInfo{
+	rowID, err := s.stateStore.ProjectInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ProjectInfo{
 		Name:            projectID,
 		ClassId:         classInfo.Id,
 		ProjectLocation: req.ProjectLocation,
@@ -129,6 +128,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateProject{
+		RowId:           rowID,
 		ClassId:         classID,
 		ProjectId:       projectID,
 		Issuer:          req.Issuer,
@@ -138,6 +138,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 	}
 
 	return &v1beta1.MsgCreateProjectResponse{
+		RowId:     rowID,
 		ProjectId: projectID,
 	}, nil
 }
@@ -181,8 +182,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		return nil, err
 	}
 
-	// TODO(Tyler): this should return the ID. we need to use it. wait for update.
-	id, err := s.stateStore.BatchInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.BatchInfo{
+	rowID, err := s.stateStore.BatchInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.BatchInfo{
 		ProjectId:  projectInfo.Id,
 		BatchDenom: batchDenom,
 		Metadata:   req.Metadata,
@@ -192,7 +192,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 	if err != nil {
 		return nil, err
 	}
-	newBatchID := id
+	newBatchID := rowID
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
@@ -254,8 +254,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		return nil, err
 	}
 
-	// TODO(Tyler): put id here
-	return &v1beta1.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
+	return &v1beta1.MsgCreateBatchResponse{RowId: rowID, BatchDenom: batchDenom}, nil
 }
 
 // Send sends credits to a recipient.
