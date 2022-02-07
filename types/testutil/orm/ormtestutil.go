@@ -1,6 +1,7 @@
 package ormtestutil
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 
@@ -27,5 +28,7 @@ func AssertGolden(t assert.TestingT, db ormdb.ModuleDB, ctx context.Context, gol
 	assert.NilError(t, err)
 	bz, err = canonicaljson.Marshal(rawJson)
 	assert.NilError(t, err)
-	golden.Assert(t, string(bz), goldenFile)
+	buf := &bytes.Buffer{}
+	assert.NilError(t, json.Indent(buf, bz, "", "  "))
+	golden.Assert(t, buf.String(), goldenFile)
 }

@@ -5,6 +5,8 @@ import (
 	"context"
 	"testing"
 
+	ormtestutil "github.com/regen-network/regen-ledger/types/testutil/orm"
+
 	mathtestutil "github.com/regen-network/regen-ledger/types/testutil/math"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -171,5 +173,5 @@ func TestSellFilled(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, fill.SellFilled, state)
 
-	//ormtestutil.AssertGolden(t, s.db, s.ctx, "testdata/test-sell-filled.json")
+	ormtestutil.AssertGolden(t, s.db, s.ctx, "test-sell-filled.json")
 }
