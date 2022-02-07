@@ -7,6 +7,8 @@ import "cosmos/orm/v1alpha1/orm.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
 // SellOrder represents the information for a sell order.
 message SellOrder {
     option (cosmos.orm.v1alpha1.table) = {
@@ -67,8 +69,8 @@ message BuyOrder {
             // is placed directly against a specific sell order.
             uint64 sell_order_id = 1;
 
-             // filter selects credits to buy based upon the specified filter criteria.
-             Filter filter = 2;
+            // filter selects credits to buy based upon the specified filter criteria.
+            Filter filter = 2;
         }
     }
 

@@ -43,11 +43,13 @@ type CreditTypeIndexKey interface {
 }
 
 // primary key starting index..
+type CreditTypePrimaryKey = CreditTypeAbbreviationIndexKey
+
 type CreditTypeAbbreviationIndexKey struct {
 	vs []interface{}
 }
 
-func (x CreditTypeAbbreviationIndexKey) id() uint32            { return 1 }
+func (x CreditTypeAbbreviationIndexKey) id() uint32            { return 0 }
 func (x CreditTypeAbbreviationIndexKey) values() []interface{} { return x.vs }
 func (x CreditTypeAbbreviationIndexKey) creditTypeIndexKey()   {}
 
@@ -103,30 +105,30 @@ func (this creditTypeStore) Get(ctx context.Context, abbreviation string) (*Cred
 }
 
 func (this creditTypeStore) HasByName(ctx context.Context, name string) (found bool, err error) {
-	return this.table.Has(ctx, &CreditType{
-		Name: name,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		name,
+	)
 }
 
 func (this creditTypeStore) GetByName(ctx context.Context, name string) (*CreditType, error) {
-	creditType := &CreditType{
-		Name: name,
-	}
-	found, err := this.table.Get(ctx, creditType)
+	var creditType CreditType
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &creditType,
+		name,
+	)
 	if !found {
 		return nil, err
 	}
-	return creditType, nil
+	return &creditType, nil
 }
 
 func (this creditTypeStore) List(ctx context.Context, prefixKey CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return CreditTypeIterator{it}, err
 }
 
 func (this creditTypeStore) ListRange(ctx context.Context, from, to CreditTypeIndexKey, opts ...ormlist.Option) (CreditTypeIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return CreditTypeIterator{it}, err
 }
@@ -145,6 +147,7 @@ func NewCreditTypeStore(db ormdb.ModuleDB) (CreditTypeStore, error) {
 
 type ClassInfoStore interface {
 	Insert(ctx context.Context, classInfo *ClassInfo) error
+	InsertReturningID(ctx context.Context, classInfo *ClassInfo) (uint64, error)
 	Update(ctx context.Context, classInfo *ClassInfo) error
 	Save(ctx context.Context, classInfo *ClassInfo) error
 	Delete(ctx context.Context, classInfo *ClassInfo) error
@@ -175,11 +178,13 @@ type ClassInfoIndexKey interface {
 }
 
 // primary key starting index..
+type ClassInfoPrimaryKey = ClassInfoIdIndexKey
+
 type ClassInfoIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoIdIndexKey) id() uint32            { return 2 }
+func (x ClassInfoIdIndexKey) id() uint32            { return 0 }
 func (x ClassInfoIdIndexKey) values() []interface{} { return x.vs }
 func (x ClassInfoIdIndexKey) classInfoIndexKey()    {}
 
@@ -228,7 +233,7 @@ func (this ClassInfoCreditTypeIndexKey) WithCreditType(credit_type string) Class
 }
 
 type classInfoStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this classInfoStore) Insert(ctx context.Context, classInfo *ClassInfo) error {
@@ -247,6 +252,10 @@ func (this classInfoStore) Delete(ctx context.Context, classInfo *ClassInfo) err
 	return this.table.Delete(ctx, classInfo)
 }
 
+func (this classInfoStore) InsertReturningID(ctx context.Context, classInfo *ClassInfo) (uint64, error) {
+	return this.table.InsertReturningID(ctx, classInfo)
+}
+
 func (this classInfoStore) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -261,30 +270,30 @@ func (this classInfoStore) Get(ctx context.Context, id uint64) (*ClassInfo, erro
 }
 
 func (this classInfoStore) HasByName(ctx context.Context, name string) (found bool, err error) {
-	return this.table.Has(ctx, &ClassInfo{
-		Name: name,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		name,
+	)
 }
 
 func (this classInfoStore) GetByName(ctx context.Context, name string) (*ClassInfo, error) {
-	classInfo := &ClassInfo{
-		Name: name,
-	}
-	found, err := this.table.Get(ctx, classInfo)
+	var classInfo ClassInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &classInfo,
+		name,
+	)
 	if !found {
 		return nil, err
 	}
-	return classInfo, nil
+	return &classInfo, nil
 }
 
 func (this classInfoStore) List(ctx context.Context, prefixKey ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ClassInfoIterator{it}, err
 }
 
 func (this classInfoStore) ListRange(ctx context.Context, from, to ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ClassInfoIterator{it}, err
 }
@@ -298,7 +307,7 @@ func NewClassInfoStore(db ormdb.ModuleDB) (ClassInfoStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ClassInfo{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return classInfoStore{table}, nil
+	return classInfoStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type ClassIssuerStore interface {
@@ -331,11 +340,13 @@ type ClassIssuerIndexKey interface {
 }
 
 // primary key starting index..
+type ClassIssuerPrimaryKey = ClassIssuerClassIdIssuerIndexKey
+
 type ClassIssuerClassIdIssuerIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassIssuerClassIdIssuerIndexKey) id() uint32            { return 3 }
+func (x ClassIssuerClassIdIssuerIndexKey) id() uint32            { return 0 }
 func (x ClassIssuerClassIdIssuerIndexKey) values() []interface{} { return x.vs }
 func (x ClassIssuerClassIdIssuerIndexKey) classIssuerIndexKey()  {}
 
@@ -383,13 +394,13 @@ func (this classIssuerStore) Get(ctx context.Context, class_id string, issuer st
 }
 
 func (this classIssuerStore) List(ctx context.Context, prefixKey ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ClassIssuerIterator{it}, err
 }
 
 func (this classIssuerStore) ListRange(ctx context.Context, from, to ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ClassIssuerIterator{it}, err
 }
@@ -408,6 +419,7 @@ func NewClassIssuerStore(db ormdb.ModuleDB) (ClassIssuerStore, error) {
 
 type ProjectInfoStore interface {
 	Insert(ctx context.Context, projectInfo *ProjectInfo) error
+	InsertReturningID(ctx context.Context, projectInfo *ProjectInfo) (uint64, error)
 	Update(ctx context.Context, projectInfo *ProjectInfo) error
 	Save(ctx context.Context, projectInfo *ProjectInfo) error
 	Delete(ctx context.Context, projectInfo *ProjectInfo) error
@@ -438,11 +450,13 @@ type ProjectInfoIndexKey interface {
 }
 
 // primary key starting index..
+type ProjectInfoPrimaryKey = ProjectInfoIdIndexKey
+
 type ProjectInfoIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoIdIndexKey) id() uint32            { return 4 }
+func (x ProjectInfoIdIndexKey) id() uint32            { return 0 }
 func (x ProjectInfoIdIndexKey) values() []interface{} { return x.vs }
 func (x ProjectInfoIdIndexKey) projectInfoIndexKey()  {}
 
@@ -470,7 +484,7 @@ func (this ProjectInfoClassIdNameIndexKey) WithClassIdName(class_id uint64, name
 }
 
 type projectInfoStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this projectInfoStore) Insert(ctx context.Context, projectInfo *ProjectInfo) error {
@@ -489,6 +503,10 @@ func (this projectInfoStore) Delete(ctx context.Context, projectInfo *ProjectInf
 	return this.table.Delete(ctx, projectInfo)
 }
 
+func (this projectInfoStore) InsertReturningID(ctx context.Context, projectInfo *ProjectInfo) (uint64, error) {
+	return this.table.InsertReturningID(ctx, projectInfo)
+}
+
 func (this projectInfoStore) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -503,32 +521,32 @@ func (this projectInfoStore) Get(ctx context.Context, id uint64) (*ProjectInfo, 
 }
 
 func (this projectInfoStore) HasByClassIdName(ctx context.Context, class_id uint64, name string) (found bool, err error) {
-	return this.table.Has(ctx, &ProjectInfo{
-		ClassId: class_id,
-		Name:    name,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		class_id,
+		name,
+	)
 }
 
 func (this projectInfoStore) GetByClassIdName(ctx context.Context, class_id uint64, name string) (*ProjectInfo, error) {
-	projectInfo := &ProjectInfo{
-		ClassId: class_id,
-		Name:    name,
-	}
-	found, err := this.table.Get(ctx, projectInfo)
+	var projectInfo ProjectInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+		class_id,
+		name,
+	)
 	if !found {
 		return nil, err
 	}
-	return projectInfo, nil
+	return &projectInfo, nil
 }
 
 func (this projectInfoStore) List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ProjectInfoIterator{it}, err
 }
 
 func (this projectInfoStore) ListRange(ctx context.Context, from, to ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ProjectInfoIterator{it}, err
 }
@@ -542,11 +560,12 @@ func NewProjectInfoStore(db ormdb.ModuleDB) (ProjectInfoStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectInfo{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return projectInfoStore{table}, nil
+	return projectInfoStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type BatchInfoStore interface {
 	Insert(ctx context.Context, batchInfo *BatchInfo) error
+	InsertReturningID(ctx context.Context, batchInfo *BatchInfo) (uint64, error)
 	Update(ctx context.Context, batchInfo *BatchInfo) error
 	Save(ctx context.Context, batchInfo *BatchInfo) error
 	Delete(ctx context.Context, batchInfo *BatchInfo) error
@@ -577,11 +596,13 @@ type BatchInfoIndexKey interface {
 }
 
 // primary key starting index..
+type BatchInfoPrimaryKey = BatchInfoIdIndexKey
+
 type BatchInfoIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoIdIndexKey) id() uint32            { return 5 }
+func (x BatchInfoIdIndexKey) id() uint32            { return 0 }
 func (x BatchInfoIdIndexKey) values() []interface{} { return x.vs }
 func (x BatchInfoIdIndexKey) batchInfoIndexKey()    {}
 
@@ -630,7 +651,7 @@ func (this BatchInfoStartDateIndexKey) WithStartDate(start_date *timestamppb.Tim
 }
 
 type batchInfoStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this batchInfoStore) Insert(ctx context.Context, batchInfo *BatchInfo) error {
@@ -649,6 +670,10 @@ func (this batchInfoStore) Delete(ctx context.Context, batchInfo *BatchInfo) err
 	return this.table.Delete(ctx, batchInfo)
 }
 
+func (this batchInfoStore) InsertReturningID(ctx context.Context, batchInfo *BatchInfo) (uint64, error) {
+	return this.table.InsertReturningID(ctx, batchInfo)
+}
+
 func (this batchInfoStore) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
@@ -663,30 +688,30 @@ func (this batchInfoStore) Get(ctx context.Context, id uint64) (*BatchInfo, erro
 }
 
 func (this batchInfoStore) HasByBatchDenom(ctx context.Context, batch_denom string) (found bool, err error) {
-	return this.table.Has(ctx, &BatchInfo{
-		BatchDenom: batch_denom,
-	})
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		batch_denom,
+	)
 }
 
 func (this batchInfoStore) GetByBatchDenom(ctx context.Context, batch_denom string) (*BatchInfo, error) {
-	batchInfo := &BatchInfo{
-		BatchDenom: batch_denom,
-	}
-	found, err := this.table.Get(ctx, batchInfo)
+	var batchInfo BatchInfo
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchInfo,
+		batch_denom,
+	)
 	if !found {
 		return nil, err
 	}
-	return batchInfo, nil
+	return &batchInfo, nil
 }
 
 func (this batchInfoStore) List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BatchInfoIterator{it}, err
 }
 
 func (this batchInfoStore) ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BatchInfoIterator{it}, err
 }
@@ -700,7 +725,7 @@ func NewBatchInfoStore(db ormdb.ModuleDB) (BatchInfoStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BatchInfo{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return batchInfoStore{table}, nil
+	return batchInfoStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type ClassSequenceStore interface {
@@ -733,11 +758,13 @@ type ClassSequenceIndexKey interface {
 }
 
 // primary key starting index..
+type ClassSequencePrimaryKey = ClassSequenceCreditTypeIndexKey
+
 type ClassSequenceCreditTypeIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassSequenceCreditTypeIndexKey) id() uint32             { return 6 }
+func (x ClassSequenceCreditTypeIndexKey) id() uint32             { return 0 }
 func (x ClassSequenceCreditTypeIndexKey) values() []interface{}  { return x.vs }
 func (x ClassSequenceCreditTypeIndexKey) classSequenceIndexKey() {}
 
@@ -780,13 +807,13 @@ func (this classSequenceStore) Get(ctx context.Context, credit_type string) (*Cl
 }
 
 func (this classSequenceStore) List(ctx context.Context, prefixKey ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ClassSequenceIterator{it}, err
 }
 
 func (this classSequenceStore) ListRange(ctx context.Context, from, to ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ClassSequenceIterator{it}, err
 }
@@ -833,11 +860,13 @@ type ProjectSequenceIndexKey interface {
 }
 
 // primary key starting index..
+type ProjectSequencePrimaryKey = ProjectSequenceClassIdIndexKey
+
 type ProjectSequenceClassIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectSequenceClassIdIndexKey) id() uint32               { return 7 }
+func (x ProjectSequenceClassIdIndexKey) id() uint32               { return 0 }
 func (x ProjectSequenceClassIdIndexKey) values() []interface{}    { return x.vs }
 func (x ProjectSequenceClassIdIndexKey) projectSequenceIndexKey() {}
 
@@ -880,13 +909,13 @@ func (this projectSequenceStore) Get(ctx context.Context, class_id uint64) (*Pro
 }
 
 func (this projectSequenceStore) List(ctx context.Context, prefixKey ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return ProjectSequenceIterator{it}, err
 }
 
 func (this projectSequenceStore) ListRange(ctx context.Context, from, to ProjectSequenceIndexKey, opts ...ormlist.Option) (ProjectSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return ProjectSequenceIterator{it}, err
 }
@@ -933,11 +962,13 @@ type BatchSequenceIndexKey interface {
 }
 
 // primary key starting index..
+type BatchSequencePrimaryKey = BatchSequenceProjectIdIndexKey
+
 type BatchSequenceProjectIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchSequenceProjectIdIndexKey) id() uint32             { return 8 }
+func (x BatchSequenceProjectIdIndexKey) id() uint32             { return 0 }
 func (x BatchSequenceProjectIdIndexKey) values() []interface{}  { return x.vs }
 func (x BatchSequenceProjectIdIndexKey) batchSequenceIndexKey() {}
 
@@ -980,13 +1011,13 @@ func (this batchSequenceStore) Get(ctx context.Context, project_id string) (*Bat
 }
 
 func (this batchSequenceStore) List(ctx context.Context, prefixKey BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BatchSequenceIterator{it}, err
 }
 
 func (this batchSequenceStore) ListRange(ctx context.Context, from, to BatchSequenceIndexKey, opts ...ormlist.Option) (BatchSequenceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BatchSequenceIterator{it}, err
 }
@@ -1033,11 +1064,13 @@ type BatchBalanceIndexKey interface {
 }
 
 // primary key starting index..
+type BatchBalancePrimaryKey = BatchBalanceAddressBatchIdIndexKey
+
 type BatchBalanceAddressBatchIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchBalanceAddressBatchIdIndexKey) id() uint32            { return 9 }
+func (x BatchBalanceAddressBatchIdIndexKey) id() uint32            { return 0 }
 func (x BatchBalanceAddressBatchIdIndexKey) values() []interface{} { return x.vs }
 func (x BatchBalanceAddressBatchIdIndexKey) batchBalanceIndexKey() {}
 
@@ -1103,13 +1136,13 @@ func (this batchBalanceStore) Get(ctx context.Context, address []byte, batch_id 
 }
 
 func (this batchBalanceStore) List(ctx context.Context, prefixKey BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BatchBalanceIterator{it}, err
 }
 
 func (this batchBalanceStore) ListRange(ctx context.Context, from, to BatchBalanceIndexKey, opts ...ormlist.Option) (BatchBalanceIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BatchBalanceIterator{it}, err
 }
@@ -1156,11 +1189,13 @@ type BatchSupplyIndexKey interface {
 }
 
 // primary key starting index..
+type BatchSupplyPrimaryKey = BatchSupplyBatchIdIndexKey
+
 type BatchSupplyBatchIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchSupplyBatchIdIndexKey) id() uint32            { return 10 }
+func (x BatchSupplyBatchIdIndexKey) id() uint32            { return 0 }
 func (x BatchSupplyBatchIdIndexKey) values() []interface{} { return x.vs }
 func (x BatchSupplyBatchIdIndexKey) batchSupplyIndexKey()  {}
 
@@ -1203,13 +1238,13 @@ func (this batchSupplyStore) Get(ctx context.Context, batch_id uint64) (*BatchSu
 }
 
 func (this batchSupplyStore) List(ctx context.Context, prefixKey BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error) {
-	opts = append(opts, ormlist.Prefix(prefixKey.values()))
+	opts = append(opts, ormlist.Prefix(prefixKey.values()...))
 	it, err := this.table.GetIndexByID(prefixKey.id()).Iterator(ctx, opts...)
 	return BatchSupplyIterator{it}, err
 }
 
 func (this batchSupplyStore) ListRange(ctx context.Context, from, to BatchSupplyIndexKey, opts ...ormlist.Option) (BatchSupplyIterator, error) {
-	opts = append(opts, ormlist.Start(from.values()), ormlist.End(to))
+	opts = append(opts, ormlist.Start(from.values()...), ormlist.End(to.values()...))
 	it, err := this.table.GetIndexByID(from.id()).Iterator(ctx, opts...)
 	return BatchSupplyIterator{it}, err
 }
