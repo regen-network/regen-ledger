@@ -20,18 +20,27 @@ message Basket {
 
     string credit_type_name = 3;
 
-    repeated string allowed_classes = 4;
-
     google.protobuf.Timestamp min_start_date = 5;
 
     string multiplier = 6;
 }
 
+// BasketClass describes a credit class that can be deposited in a basket.
+message BasketClass {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 2,
+        primary_key: {fields: "basket_denom,class_id"}
+    };
+
+    string basket_denom = 1;
+    string class_id = 2;
+}
+
 // BasketBalance stores the amount of credits from a batch in a basket
 message BasketBalance {
     option (cosmos.orm.v1alpha1.table) = {
-        id: 1,
-        primary_key: {fields: "basket_denom,batch_id"}
+        id: 3,
+        primary_key: {fields: "basket_denom,batch_denom"}
     };
 
     // basket_denom is the denom of the basket
