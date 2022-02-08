@@ -31,15 +31,11 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
-	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var params ecocredit.Params
-	s.paramSpace.GetParamSet(sdkCtx, &params)
-	if params.AllowlistEnabled && !s.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+	if err := s.checkAllowList(ctx, adminAddress); err != nil {
+		return nil, err
 	}
 
-	err = s.chargeCreditClassFee(sdkCtx, adminAddress)
-	if err != nil {
+	if err = s.chargeCreditClassFee(ctx, adminAddress, req.FeeDenom); err != nil {
 		return nil, err
 	}
 
@@ -731,28 +727,50 @@ func (s serverImpl) getCreditType(ctx context.Context, creditTypeName string) (*
 	return ct, err
 }
 
-// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-func (s serverImpl) getCreditClassFee(ctx sdk.Context) sdk.Coins {
-	var params ecocredit.Params
-	s.paramSpace.GetParamSet(ctx, &params)
-	return params.CreditClassFee
-}
-
-func (s serverImpl) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress) error {
-	creditClassFee := s.getCreditClassFee(ctx)
-
-	// Move the fee to the ecocredit module's account
-	err := s.bankKeeper.SendCoinsFromAccountToModule(ctx, creatorAddr, ecocredit.ModuleName, creditClassFee)
+func (s serverImpl) chargeCreditClassFee(ctx context.Context, creatorAddr sdk.AccAddress, denom string) error {
+	fee, err := s.stateStore.CreditClassFeeStore().Get(ctx, denom)
 	if err != nil {
+		if err == ormerrors.NotFound {
+			return sdkerrors.ErrInvalidRequest.Wrapf("cannot use %s to pay for credit class fees", denom)
+		} else {
+			return err
+		}
+	}
+
+	amount, ok := sdk.NewIntFromString(fee.Amount)
+	if !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid amount", fee.Amount)
+	}
+
+	coinFee := sdk.NewCoins(sdk.NewCoin(denom, amount))
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	// Move the fee to the ecocredit module's account
+	if err = s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, creatorAddr, ecocredit.ModuleName, coinFee); err != nil {
 		return err
 	}
 
 	// Burn the coins
 	// TODO: Update this implementation based on the discussion at
 	// https://github.com/regen-network/regen-ledger/issues/351
-	err = s.bankKeeper.BurnCoins(ctx, ecocredit.ModuleName, creditClassFee)
+	return s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, coinFee)
+}
+
+func (s serverImpl) checkAllowList(ctx context.Context, address sdk.AccAddress) error {
+	res, err := s.stateStore.AllowlistEnabledStore().Get(ctx)
 	if err != nil {
 		return err
+	}
+	if !res.Enabled {
+		return nil
+	}
+
+	found, err := s.stateStore.AllowedClassCreatorsStore().Has(ctx, address)
+	if err != nil {
+		return err
+	}
+	if !found {
+		return sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", address.String())
 	}
 
 	return nil
