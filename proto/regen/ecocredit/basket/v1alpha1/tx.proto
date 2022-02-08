@@ -112,24 +112,3 @@ message MsgTakeFromBasketResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
-
-// MsgPickFromBasket is the Msg/PickFromBasket request type.
-message MsgPickFromBasket {
-
-  // owner is the owner of the basket tokens.
-  string owner = 1;
-
-  // basket_denom is the basket denom to pick credits from.
-  string basket_denom = 2;
-
-  // credits are the units of credits being picked from the basket
-  repeated BasketCredit credits = 3;
-
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if retire_on_take is true for this basket.
-  string retirement_location = 4;
-}
-
-// MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
-message MsgPickFromBasketResponse {}
-
