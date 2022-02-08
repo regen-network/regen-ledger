@@ -18,8 +18,7 @@ message Basket {
     // basket_denom is the basket denom.
     string basket_denom = 1;
 
-    // disable_auto_retire indicates that credits can be taken out of
-    // the basket in
+    // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
     bool disable_auto_retire = 2;
 
     // credit_type_name is the name of the credit type.
