@@ -55,13 +55,12 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeq)
 
-	rowID, err := s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
+	if err = s.stateStore.ClassInfoStore().Insert(ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       classID,
 		Admin:      adminAddress,
 		Metadata:   req.Metadata,
 		CreditType: req.CreditTypeName,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
@@ -76,7 +75,6 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateClass{
-		RowId:   rowID,
 		ClassId: classID,
 		Admin:   req.Admin,
 	})
@@ -84,7 +82,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
-	return &v1beta1.MsgCreateClassResponse{RowId: rowID, ClassId: classID}, nil
+	return &v1beta1.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
 // CreateProject creates a new project.
@@ -117,18 +115,16 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 		}
 	}
 
-	rowID, err := s.stateStore.ProjectInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ProjectInfo{
+	if err = s.stateStore.ProjectInfoStore().Insert(ctx, &ecocreditv1beta1.ProjectInfo{
 		Name:            projectID,
 		ClassId:         classInfo.Id,
 		ProjectLocation: req.ProjectLocation,
 		Metadata:        req.Metadata,
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateProject{
-		RowId:           rowID,
 		ClassId:         classID,
 		ProjectId:       projectID,
 		Issuer:          req.Issuer,
@@ -138,7 +134,6 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 	}
 
 	return &v1beta1.MsgCreateProjectResponse{
-		RowId:     rowID,
 		ProjectId: projectID,
 	}, nil
 }
@@ -252,7 +247,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		return nil, err
 	}
 
-	return &v1beta1.MsgCreateBatchResponse{RowId: rowID, BatchDenom: batchDenom}, nil
+	return &v1beta1.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
 }
 
 // Send sends credits to a recipient.
