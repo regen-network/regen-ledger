@@ -35,6 +35,52 @@ func (s serverImpl) ToggleAllowList(ctx context.Context, request *v1beta1.MsgTog
 	return &v1beta1.MsgToggleAllowListResponse{}, err
 }
 
+func (s serverImpl) UpdateAllowedCreditClassCreators(ctx context.Context, request *v1beta1.MsgUpdateAllowedCreditClassCreatorsRequest) (*v1beta1.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
+	if err := s.calledByGovernance(request.RootAddress); err != nil {
+		return nil, err
+	}
+
+	for _, addrBz := range request.RemoveCreators {
+		if err := s.stateStore.AllowedClassCreatorsStore().Delete(ctx, &ecocreditv1beta1.AllowedClassCreators{Address: addrBz}); err != nil {
+			return nil, err
+		}
+	}
+
+	for _, addrBz := range request.AddCreators {
+		if err := s.stateStore.AllowedClassCreatorsStore().Insert(ctx, &ecocreditv1beta1.AllowedClassCreators{Address: addrBz}); err != nil {
+			return nil, err
+		}
+	}
+
+	return &v1beta1.MsgUpdateAllowedCreditClassCreatorsResponse{}, nil
+}
+
+func (s serverImpl) UpdateCreditClassFee(ctx context.Context, request *v1beta1.MsgUpdateCreditClassFeeRequest) (*v1beta1.MsgUpdateCreditClassFeeResponse, error) {
+	if err := s.calledByGovernance(request.RootAddress); err != nil {
+		return nil, err
+	}
+
+	for _, fee := range request.RemoveFees {
+		if err := s.stateStore.CreditClassFeeStore().Delete(ctx, &ecocreditv1beta1.CreditClassFee{
+			Denom:  fee.Denom,
+			Amount: fee.Amount,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	for _, fee := range request.AddFees {
+		if err := s.stateStore.CreditClassFeeStore().Insert(ctx, &ecocreditv1beta1.CreditClassFee{
+			Denom:  fee.Denom,
+			Amount: fee.Amount,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	return &v1beta1.MsgUpdateCreditClassFeeResponse{}, nil
+}
+
 func (s serverImpl) calledByGovernance(addr string) error {
 	rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
 
