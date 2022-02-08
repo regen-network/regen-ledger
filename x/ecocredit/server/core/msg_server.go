@@ -461,17 +461,20 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", class.Admin, req.Admin)
 	}
 
-	// delete the old issuers
-	if err = s.stateStore.ClassIssuerStore().DeleteBy(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(class.Id)); err != nil {
-		return nil, err
+	for _, issuer := range req.RemoveIssuers {
+		if err = s.stateStore.ClassIssuerStore().Delete(ctx, &ecocreditv1beta1.ClassIssuer{
+			ClassId: class.Id,
+			Issuer:  issuer,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	// add the new issuers
-	for _, issuer := range req.Issuers {
-		iAddr, _ := sdk.AccAddressFromBech32(issuer)
+	for _, issuer := range req.AddIssuers {
 		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: class.Id,
-			Issuer:  iAddr,
+			Issuer:  issuer,
 		}); err != nil {
 			return nil, err
 		}

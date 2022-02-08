@@ -280,8 +280,11 @@ message MsgUpdateClassIssuers {
   // class_id is the unique ID of the credit class.
   string class_id = 2;
 
-  // issuers are the updated account addresses of the approved issuers.
-  repeated string issuers = 3;
+  // add_issuers are the issuers to add to the class issuers list.
+  repeated bytes add_issuers = 3;
+
+  // remove_issuers are the issuers to remove from the class issuers list.
+  repeated bytes remove_issuers = 4;
 }
 
 // MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
