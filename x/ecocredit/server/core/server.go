@@ -1,7 +1,6 @@
 package core
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -26,7 +25,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) serverImpl {
 
 	s := serverImpl{
 		storeKey:      storeKey,
@@ -57,7 +56,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper) v1beta1.MsgServer {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper)
 	v1beta1.RegisterMsgServer(configurator.MsgServer(), impl)
 	v1beta1.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
