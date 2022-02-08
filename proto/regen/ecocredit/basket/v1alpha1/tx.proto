@@ -50,6 +50,7 @@ message MsgCreateBasket {
   // credit_type_name filters against credits from this credit type name.
   string credit_type_name = 6;
 
+   // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 7;
 
   // batch_date_window is a duration of time measured into the past which sets
