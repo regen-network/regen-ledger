@@ -50,10 +50,8 @@ func TestMatcher(t *testing.T) {
 		pair{2, 1},
 		pair{2, 2},
 		pair{1, 1},
-		pair{1, 2},
 		pair{3, 3},
 		pair{3, 1},
-		pair{3, 2},
 	)
 }
 
