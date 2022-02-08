@@ -8,7 +8,8 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 
 // CreditType defines the measurement unit/precision of a certain credit type
-// (e.g. carbon, biodiversity...)
+// (e.g. carbon, biodiversity...).
+// This list is controlled via governance.
 message CreditType {
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
@@ -219,4 +220,43 @@ message BatchSupply {
     // cancelled, effectively undoing the issuance. The sum of total_amount and
     // amount_cancelled will always equal the original credit issuance amount.
     string cancelled_amount = 4;
+}
+
+// AllowedClassCreators tracks the allowed credit class creators.
+// This list is controlled via governance.
+message AllowedClassCreators {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 11,
+        primary_key: {fields: "address"}
+    };
+
+    // address is the address of the user that is allowed to create credit classes
+    bytes address = 1;
+}
+
+// AllowlistEnabled is a governance controlled, singleton table that holds a boolean value.
+// When set to true, only the addresses in AllowedClassCreators can create credit classes.
+// When set to false, any address is free to create credit classes.
+message AllowlistEnabled {
+    option(cosmos.orm.v1alpha1.singleton) = {
+        id: 12
+    };
+
+    // enabled is whether or not the allow list is enabled.
+    bool enabled = 1;
+}
+
+// CreditClassFee stores the valid coins and amounts to be used in credit class fees.
+// This is controlled via governance.
+message CreditClassFee {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 13,
+        primary_key: {fields: "denom"}
+    };
+
+    // denom is the denom of the coin allowed to be used for credit class fees
+    string denom = 1;
+
+    // amount is the fee amount
+    string amount = 2;
 }

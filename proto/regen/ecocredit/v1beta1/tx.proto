@@ -4,6 +4,7 @@ package regen.ecocredit.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/v1beta1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 
@@ -42,6 +43,15 @@ service Msg {
 
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
+
+  // NewCreditType adds a new credit type - Governance only method
+  rpc NewCreditType(MsgNewCreditTypeRequest) returns (MsgNewCreditTypeResponse);
+
+  // ToggleAllowList toggles the allow list - Governance only method
+  rpc ToggleAllowList(MsgToggleAllowListRequest) returns (MsgToggleAllowListResponse);
+
+  // NewCreditClassCreator adds an address to the list of allowed credit class creators - Governance only method
+  rpc NewCreditClassCreator(MsgNewCreditClassCreatorRequest) returns (MsgNewCreditClassCreatorResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -311,3 +321,43 @@ message MsgUpdateClassMetadata {
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+// MsgNewCreditTypeRequest is the Msg/NewCreditTypeRequest request type.
+message MsgNewCreditTypeRequest {
+  // credit_types is a list of new credit types to add
+  repeated CreditType credit_types = 1;
+
+  // root_address is the address of the caller.
+  // this MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 2;
+}
+
+// MsgNewCreditTypeRequest is the Msg/NewCreditTypeResponse response type.
+message MsgNewCreditTypeResponse {}
+
+
+// MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
+message MsgToggleAllowListRequest {
+  // root_address is the address of the caller.
+  // this MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // toggle is what the allow list will be set to.
+  bool toggle = 2;
+}
+
+// MsgToggleAllowListResponse is the Msg/MsgToggleAllowListResponse response type.
+message MsgToggleAllowListResponse {}
+
+// MsgNewCreditClassCreatorRequest is the Msg/NewCreditClassCreatorRequest request type
+message MsgNewCreditClassCreatorRequest {
+  // root_address is the address of the caller.
+  // this MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // creator_addresses is a list of addresses to be added to the allow list for credit class creation.
+  repeated string creator_addresses = 2;
+}
+
+// MsgNewCreditClassCreatorResponse is the Msg/NewCreditClassCreatorResponse response type
+message MsgNewCreditClassCreatorResponse {};

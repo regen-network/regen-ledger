@@ -44,8 +44,6 @@ type QueryClient interface {
 	// CreditTypes returns the list of allowed types that credit classes can have.
 	// See Types/CreditType for more details.
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
-	// Params queries the ecocredit module parameters.
-	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
 type queryClient struct {
@@ -146,15 +144,6 @@ func (c *queryClient) CreditTypes(ctx context.Context, in *QueryCreditTypesReque
 	return out, nil
 }
 
-func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
-	out := new(QueryParamsResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1beta1.Query/Params", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -181,8 +170,6 @@ type QueryServer interface {
 	// CreditTypes returns the list of allowed types that credit classes can have.
 	// See Types/CreditType for more details.
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
-	// Params queries the ecocredit module parameters.
-	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -219,9 +206,6 @@ func (UnimplementedQueryServer) Supply(context.Context, *QuerySupplyRequest) (*Q
 }
 func (UnimplementedQueryServer) CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreditTypes not implemented")
-}
-func (UnimplementedQueryServer) Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -416,24 +400,6 @@ func _Query_CreditTypes_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryParamsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Params(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1beta1.Query/Params",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -480,10 +446,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreditTypes",
 			Handler:    _Query_CreditTypes_Handler,
-		},
-		{
-			MethodName: "Params",
-			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

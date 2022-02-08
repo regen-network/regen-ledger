@@ -4,7 +4,6 @@ package regen.ecocredit.v1beta1;
 
 import "google/api/annotations.proto";
 import "regen/ecocredit/v1beta1/state.proto";
-import "regen/ecocredit/v1beta1/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
@@ -75,20 +74,6 @@ service Query {
         "/regen/ecocredit/v1beta1/credit-types";
   }
 
-  // Params queries the ecocredit module parameters.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1beta1/params";
-  }
-}
-
-// QueryParamsRequest is the Query/Params request type.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is the Query/Params response type.
-message QueryParamsResponse {
-  // params defines the parameters of the ecocredit module.
-  Params params = 1;
 }
 
 // QueryClassesRequest is the Query/Classes request type.
