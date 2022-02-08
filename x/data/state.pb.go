@@ -5,6 +5,7 @@ package data
 
 import (
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
 	io "io"

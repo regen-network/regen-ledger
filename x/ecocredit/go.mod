@@ -4,11 +4,14 @@ go 1.17
 
 require (
 	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
+	github.com/regen-network/regen-ledger/api v0.1.0-alpha.1
 	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
@@ -36,6 +39,8 @@ require (
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.6.10 // indirect
 	github.com/confio/ics23/go v0.6.6 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
@@ -57,7 +62,6 @@ require (
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/golang/snappy v0.0.3-0.20201103224600-674baa8c7fc3 // indirect
 	github.com/google/btree v1.0.0 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -128,3 +132,5 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/regen-network/regen-ledger/orm => ../../orm
 
 replace github.com/regen-network/regen-ledger/types => ../../types
+
+replace github.com/regen-network/regen-ledger/api => ../../api

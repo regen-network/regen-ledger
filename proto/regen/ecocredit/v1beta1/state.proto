@@ -76,7 +76,8 @@ message ProjectInfo {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
         primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1 fields: "class_id,name", unique: true}
+        index: {id: 1, fields: "name", unique: true}
+        index: {id: 2, fields: "class_id,name", unique: true}
     };
 
     // id is the unique ID of the project

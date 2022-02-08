@@ -12,12 +12,13 @@ import (
 
 type SellOrderStore interface {
 	Insert(ctx context.Context, sellOrder *SellOrder) error
+	InsertReturningID(ctx context.Context, sellOrder *SellOrder) (uint64, error)
 	Update(ctx context.Context, sellOrder *SellOrder) error
 	Save(ctx context.Context, sellOrder *SellOrder) error
 	Delete(ctx context.Context, sellOrder *SellOrder) error
-	Has(ctx context.Context, order_id uint64) (found bool, err error)
+	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, order_id uint64) (*SellOrder, error)
+	Get(ctx context.Context, id uint64) (*SellOrder, error)
 	List(ctx context.Context, prefixKey SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	ListRange(ctx context.Context, from, to SellOrderIndexKey, opts ...ormlist.Option) (SellOrderIterator, error)
 	DeleteBy(ctx context.Context, prefixKey SellOrderIndexKey) error
@@ -43,44 +44,44 @@ type SellOrderIndexKey interface {
 }
 
 // primary key starting index..
-type SellOrderPrimaryKey = SellOrderOrderIdIndexKey
+type SellOrderPrimaryKey = SellOrderIdIndexKey
 
-type SellOrderOrderIdIndexKey struct {
+type SellOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOrderIdIndexKey) id() uint32            { return 0 }
-func (x SellOrderOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderOrderIdIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderIdIndexKey) id() uint32            { return 0 }
+func (x SellOrderIdIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderIdIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderOrderIdIndexKey) WithOrderId(order_id uint64) SellOrderOrderIdIndexKey {
-	this.vs = []interface{}{order_id}
+func (this SellOrderIdIndexKey) WithId(id uint64) SellOrderIdIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
-type SellOrderBatchDenomIndexKey struct {
+type SellOrderBatchIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderBatchDenomIndexKey) id() uint32            { return 1 }
-func (x SellOrderBatchDenomIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderBatchDenomIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderBatchIdIndexKey) id() uint32            { return 1 }
+func (x SellOrderBatchIdIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderBatchIdIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderBatchDenomIndexKey) WithBatchDenom(batch_denom string) SellOrderBatchDenomIndexKey {
-	this.vs = []interface{}{batch_denom}
+func (this SellOrderBatchIdIndexKey) WithBatchId(batch_id uint64) SellOrderBatchIdIndexKey {
+	this.vs = []interface{}{batch_id}
 	return this
 }
 
-type SellOrderOwnerIndexKey struct {
+type SellOrderSellerIndexKey struct {
 	vs []interface{}
 }
 
-func (x SellOrderOwnerIndexKey) id() uint32            { return 2 }
-func (x SellOrderOwnerIndexKey) values() []interface{} { return x.vs }
-func (x SellOrderOwnerIndexKey) sellOrderIndexKey()    {}
+func (x SellOrderSellerIndexKey) id() uint32            { return 2 }
+func (x SellOrderSellerIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderSellerIndexKey) sellOrderIndexKey()    {}
 
-func (this SellOrderOwnerIndexKey) WithOwner(owner string) SellOrderOwnerIndexKey {
-	this.vs = []interface{}{owner}
+func (this SellOrderSellerIndexKey) WithSeller(seller []byte) SellOrderSellerIndexKey {
+	this.vs = []interface{}{seller}
 	return this
 }
 
@@ -98,7 +99,7 @@ func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.T
 }
 
 type sellOrderStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this sellOrderStore) Insert(ctx context.Context, sellOrder *SellOrder) error {
@@ -117,13 +118,17 @@ func (this sellOrderStore) Delete(ctx context.Context, sellOrder *SellOrder) err
 	return this.table.Delete(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Has(ctx context.Context, order_id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, order_id)
+func (this sellOrderStore) InsertReturningID(ctx context.Context, sellOrder *SellOrder) (uint64, error) {
+	return this.table.InsertReturningID(ctx, sellOrder)
 }
 
-func (this sellOrderStore) Get(ctx context.Context, order_id uint64) (*SellOrder, error) {
+func (this sellOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
+}
+
+func (this sellOrderStore) Get(ctx context.Context, id uint64) (*SellOrder, error) {
 	var sellOrder SellOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &sellOrder, id)
 	if err != nil {
 		return nil, err
 	}
@@ -160,17 +165,18 @@ func NewSellOrderStore(db ormtable.Schema) (SellOrderStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&SellOrder{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return sellOrderStore{table}, nil
+	return sellOrderStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type BuyOrderStore interface {
 	Insert(ctx context.Context, buyOrder *BuyOrder) error
+	InsertReturningID(ctx context.Context, buyOrder *BuyOrder) (uint64, error)
 	Update(ctx context.Context, buyOrder *BuyOrder) error
 	Save(ctx context.Context, buyOrder *BuyOrder) error
 	Delete(ctx context.Context, buyOrder *BuyOrder) error
-	Has(ctx context.Context, buy_order_id uint64) (found bool, err error)
+	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error)
+	Get(ctx context.Context, id uint64) (*BuyOrder, error)
 	List(ctx context.Context, prefixKey BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	ListRange(ctx context.Context, from, to BuyOrderIndexKey, opts ...ormlist.Option) (BuyOrderIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BuyOrderIndexKey) error
@@ -196,18 +202,18 @@ type BuyOrderIndexKey interface {
 }
 
 // primary key starting index..
-type BuyOrderPrimaryKey = BuyOrderBuyOrderIdIndexKey
+type BuyOrderPrimaryKey = BuyOrderIdIndexKey
 
-type BuyOrderBuyOrderIdIndexKey struct {
+type BuyOrderIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BuyOrderBuyOrderIdIndexKey) id() uint32            { return 0 }
-func (x BuyOrderBuyOrderIdIndexKey) values() []interface{} { return x.vs }
-func (x BuyOrderBuyOrderIdIndexKey) buyOrderIndexKey()     {}
+func (x BuyOrderIdIndexKey) id() uint32            { return 0 }
+func (x BuyOrderIdIndexKey) values() []interface{} { return x.vs }
+func (x BuyOrderIdIndexKey) buyOrderIndexKey()     {}
 
-func (this BuyOrderBuyOrderIdIndexKey) WithBuyOrderId(buy_order_id uint64) BuyOrderBuyOrderIdIndexKey {
-	this.vs = []interface{}{buy_order_id}
+func (this BuyOrderIdIndexKey) WithId(id uint64) BuyOrderIdIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
@@ -219,7 +225,7 @@ func (x BuyOrderBuyerIndexKey) id() uint32            { return 1 }
 func (x BuyOrderBuyerIndexKey) values() []interface{} { return x.vs }
 func (x BuyOrderBuyerIndexKey) buyOrderIndexKey()     {}
 
-func (this BuyOrderBuyerIndexKey) WithBuyer(buyer string) BuyOrderBuyerIndexKey {
+func (this BuyOrderBuyerIndexKey) WithBuyer(buyer []byte) BuyOrderBuyerIndexKey {
 	this.vs = []interface{}{buyer}
 	return this
 }
@@ -238,7 +244,7 @@ func (this BuyOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.Ti
 }
 
 type buyOrderStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this buyOrderStore) Insert(ctx context.Context, buyOrder *BuyOrder) error {
@@ -257,13 +263,17 @@ func (this buyOrderStore) Delete(ctx context.Context, buyOrder *BuyOrder) error 
 	return this.table.Delete(ctx, buyOrder)
 }
 
-func (this buyOrderStore) Has(ctx context.Context, buy_order_id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, buy_order_id)
+func (this buyOrderStore) InsertReturningID(ctx context.Context, buyOrder *BuyOrder) (uint64, error) {
+	return this.table.InsertReturningID(ctx, buyOrder)
 }
 
-func (this buyOrderStore) Get(ctx context.Context, buy_order_id uint64) (*BuyOrder, error) {
+func (this buyOrderStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
+}
+
+func (this buyOrderStore) Get(ctx context.Context, id uint64) (*BuyOrder, error) {
 	var buyOrder BuyOrder
-	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, buy_order_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &buyOrder, id)
 	if err != nil {
 		return nil, err
 	}
@@ -300,7 +310,7 @@ func NewBuyOrderStore(db ormtable.Schema) (BuyOrderStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BuyOrder{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return buyOrderStore{table}, nil
+	return buyOrderStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type AllowedDenomStore interface {
@@ -455,6 +465,7 @@ func NewAllowedDenomStore(db ormtable.Schema) (AllowedDenomStore, error) {
 
 type MarketStore interface {
 	Insert(ctx context.Context, market *Market) error
+	InsertReturningID(ctx context.Context, market *Market) (uint64, error)
 	Update(ctx context.Context, market *Market) error
 	Save(ctx context.Context, market *Market) error
 	Delete(ctx context.Context, market *Market) error
@@ -523,7 +534,7 @@ func (this MarketCreditTypeBankDenomIndexKey) WithCreditTypeBankDenom(credit_typ
 }
 
 type marketStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this marketStore) Insert(ctx context.Context, market *Market) error {
@@ -540,6 +551,10 @@ func (this marketStore) Save(ctx context.Context, market *Market) error {
 
 func (this marketStore) Delete(ctx context.Context, market *Market) error {
 	return this.table.Delete(ctx, market)
+}
+
+func (this marketStore) InsertReturningID(ctx context.Context, market *Market) (uint64, error) {
+	return this.table.InsertReturningID(ctx, market)
 }
 
 func (this marketStore) Has(ctx context.Context, id uint64) (found bool, err error) {
@@ -607,7 +622,7 @@ func NewMarketStore(db ormtable.Schema) (MarketStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Market{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return marketStore{table}, nil
+	return marketStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type StateStore interface {
