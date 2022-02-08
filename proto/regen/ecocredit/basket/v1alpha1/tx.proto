@@ -27,8 +27,7 @@ message MsgCreateBasket {
   // basket settings.
   string curator = 1;
 
-  // name will be used to create a bank denom for this basket token of the form
-  // ecocredit:{curator}:{name}.
+  // name will be used to create a bank denom for this basket token
   string name = 2;
 
   // display_name will be used to create a bank Metadata display name for this
