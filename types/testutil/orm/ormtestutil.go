@@ -11,8 +11,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	"gotest.tools/golden"
 	"gotest.tools/v3/assert"
+	"gotest.tools/v3/golden"
 )
 
 // AssertGoldenDB does golden testing of a database's state using gotest.tools/v3/golden
