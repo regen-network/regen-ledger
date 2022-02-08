@@ -16,7 +16,8 @@ import (
 type Status int
 
 const (
-	BothFilled Status = iota
+	NotFilled Status = iota
+	BothFilled
 	BuyFilled
 	SellFilled
 )
@@ -82,24 +83,24 @@ func (t manager) Fill(
 	retire := true
 	if buyOrder.DisableAutoRetire {
 		if !sellOrder.DisableAutoRetire {
-			return 0, fmt.Errorf("unexpected: auto-retire setting doesn't match, these orders should have never been matched")
+			return NotFilled, fmt.Errorf("unexpected: auto-retire setting doesn't match, these orders should have never been matched")
 		}
 		retire = false
 	}
 
 	buyQuant, err := math.NewPositiveDecFromString(buyOrder.Quantity)
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	sellQuant, err := math.NewPositiveDecFromString(sellOrder.Quantity)
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	settlementPrice, err := math.NewPositiveDecFromString(buyOrder.BidPrice)
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	cmp := buyQuant.Cmp(sellQuant)
@@ -112,17 +113,17 @@ func (t manager) Fill(
 
 		newSellQuant, err := sellQuant.Sub(buyQuant)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 		sellOrder.Quantity = newSellQuant.String()
 		err = t.marketplaceStore.SellOrderStore().Update(ctx, sellOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 
 		err = t.marketplaceStore.BuyOrderStore().Delete(ctx, buyOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 	} else if cmp == 0 {
 		actualQuant = buyQuant
@@ -130,12 +131,12 @@ func (t manager) Fill(
 
 		err = t.marketplaceStore.SellOrderStore().Delete(ctx, sellOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 
 		err = t.marketplaceStore.BuyOrderStore().Delete(ctx, buyOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 	} else {
 		actualQuant = sellQuant
@@ -143,17 +144,17 @@ func (t manager) Fill(
 
 		err = t.marketplaceStore.SellOrderStore().Delete(ctx, sellOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 
 		newBuyQuant, err := buyQuant.Sub(sellQuant)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 		buyOrder.Quantity = newBuyQuant.String()
 		err = t.marketplaceStore.BuyOrderStore().Update(ctx, buyOrder)
 		if err != nil {
-			return 0, err
+			return NotFilled, err
 		}
 	}
 
@@ -162,17 +163,17 @@ func (t manager) Fill(
 	// TODO correct decimal precision
 	payment, err := actualQuant.Mul(settlementPrice)
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	paymentInt, err := payment.Int64()
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	err = t.transferManager.SendCoinsTo(market.BankDenom, sdk.NewInt(paymentInt), buyOrder.Buyer, sellOrder.Seller)
 	if err != nil {
-		return 0, err
+		return NotFilled, err
 	}
 
 	return status, nil
