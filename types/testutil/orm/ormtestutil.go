@@ -5,8 +5,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-
 	"github.com/gibson042/canonicaljson-go"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -26,12 +24,6 @@ func AssertGoldenDB(t assert.TestingT, db ormdb.ModuleDB, ctx context.Context, g
 	bz, err := target.JSON()
 	assert.NilError(t, err)
 	assertGoldenJson(t, bz, goldenFile)
-}
-
-func AssertGoldenTable(t assert.TestingT, db ormtable.Table, ctx context.Context, goldenFile string) {
-	buf := &bytes.Buffer{}
-	assert.NilError(t, db.ExportJSON(ctx, buf))
-	assertGoldenJson(t, buf.Bytes(), goldenFile)
 }
 
 func assertGoldenJson(t assert.TestingT, bz []byte, goldenFile string) {

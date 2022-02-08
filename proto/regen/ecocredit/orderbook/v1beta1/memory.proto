@@ -55,15 +55,6 @@ message BuyOrderClassSelector {
 
   // class_id is the class ID.
   uint64 class_id = 2;
-
-  // project_location is the project location in the selector's criteria.
-  string project_location = 3;
-
-  // min_start_date is the minimum start date in the selector's criteria.
-  google.protobuf.Timestamp min_start_date = 4;
-
-  // max_end_date is the maximum end date in the selector's criteria.
-  google.protobuf.Timestamp max_end_date = 5;
 }
 
 // BuyOrderProjectSelector indexes a buy order with project selector.
@@ -79,10 +70,4 @@ message BuyOrderProjectSelector {
 
   // project_id is the project ID.
   uint64 project_id = 2;
-
-  // min_start_date is the minimum start date in the selector's criteria.
-  google.protobuf.Timestamp min_start_date = 3;
-
-  // max_end_date is the maximum end date in the selector's criteria.
-  google.protobuf.Timestamp max_end_date = 4;
 }

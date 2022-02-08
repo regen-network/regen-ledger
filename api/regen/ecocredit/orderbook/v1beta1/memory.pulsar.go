@@ -9,7 +9,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	reflect "reflect"
 	sync "sync"
@@ -596,12 +596,9 @@ func (x *fastReflection_BuyOrderSellOrderMatch) ProtoMethods() *protoiface.Metho
 }
 
 var (
-	md_BuyOrderClassSelector                  protoreflect.MessageDescriptor
-	fd_BuyOrderClassSelector_buy_order_id     protoreflect.FieldDescriptor
-	fd_BuyOrderClassSelector_class_id         protoreflect.FieldDescriptor
-	fd_BuyOrderClassSelector_project_location protoreflect.FieldDescriptor
-	fd_BuyOrderClassSelector_min_start_date   protoreflect.FieldDescriptor
-	fd_BuyOrderClassSelector_max_end_date     protoreflect.FieldDescriptor
+	md_BuyOrderClassSelector              protoreflect.MessageDescriptor
+	fd_BuyOrderClassSelector_buy_order_id protoreflect.FieldDescriptor
+	fd_BuyOrderClassSelector_class_id     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -609,9 +606,6 @@ func init() {
 	md_BuyOrderClassSelector = File_regen_ecocredit_orderbook_v1beta1_memory_proto.Messages().ByName("BuyOrderClassSelector")
 	fd_BuyOrderClassSelector_buy_order_id = md_BuyOrderClassSelector.Fields().ByName("buy_order_id")
 	fd_BuyOrderClassSelector_class_id = md_BuyOrderClassSelector.Fields().ByName("class_id")
-	fd_BuyOrderClassSelector_project_location = md_BuyOrderClassSelector.Fields().ByName("project_location")
-	fd_BuyOrderClassSelector_min_start_date = md_BuyOrderClassSelector.Fields().ByName("min_start_date")
-	fd_BuyOrderClassSelector_max_end_date = md_BuyOrderClassSelector.Fields().ByName("max_end_date")
 }
 
 var _ protoreflect.Message = (*fastReflection_BuyOrderClassSelector)(nil)
@@ -691,24 +685,6 @@ func (x *fastReflection_BuyOrderClassSelector) Range(f func(protoreflect.FieldDe
 			return
 		}
 	}
-	if x.ProjectLocation != "" {
-		value := protoreflect.ValueOfString(x.ProjectLocation)
-		if !f(fd_BuyOrderClassSelector_project_location, value) {
-			return
-		}
-	}
-	if x.MinStartDate != nil {
-		value := protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
-		if !f(fd_BuyOrderClassSelector_min_start_date, value) {
-			return
-		}
-	}
-	if x.MaxEndDate != nil {
-		value := protoreflect.ValueOfMessage(x.MaxEndDate.ProtoReflect())
-		if !f(fd_BuyOrderClassSelector_max_end_date, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -728,12 +704,6 @@ func (x *fastReflection_BuyOrderClassSelector) Has(fd protoreflect.FieldDescript
 		return x.BuyOrderId != uint64(0)
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		return x.ClassId != uint64(0)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		return x.ProjectLocation != ""
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		return x.MinStartDate != nil
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		return x.MaxEndDate != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -754,12 +724,6 @@ func (x *fastReflection_BuyOrderClassSelector) Clear(fd protoreflect.FieldDescri
 		x.BuyOrderId = uint64(0)
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		x.ClassId = uint64(0)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		x.ProjectLocation = ""
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		x.MinStartDate = nil
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		x.MaxEndDate = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -782,15 +746,6 @@ func (x *fastReflection_BuyOrderClassSelector) Get(descriptor protoreflect.Field
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		value := x.ClassId
 		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		value := x.ProjectLocation
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		value := x.MinStartDate
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		value := x.MaxEndDate
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -815,12 +770,6 @@ func (x *fastReflection_BuyOrderClassSelector) Set(fd protoreflect.FieldDescript
 		x.BuyOrderId = value.Uint()
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		x.ClassId = value.Uint()
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		x.ProjectLocation = value.Interface().(string)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		x.MinStartDate = value.Message().Interface().(*timestamppb.Timestamp)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		x.MaxEndDate = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -841,22 +790,10 @@ func (x *fastReflection_BuyOrderClassSelector) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_BuyOrderClassSelector) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		if x.MinStartDate == nil {
-			x.MinStartDate = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		if x.MaxEndDate == nil {
-			x.MaxEndDate = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.MaxEndDate.ProtoReflect())
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.buy_order_id":
 		panic(fmt.Errorf("field buy_order_id of message regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector is not mutable"))
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		panic(fmt.Errorf("field class_id of message regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector is not mutable"))
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		panic(fmt.Errorf("field project_location of message regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -874,14 +811,6 @@ func (x *fastReflection_BuyOrderClassSelector) NewField(fd protoreflect.FieldDes
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.class_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.project_location":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector"))
@@ -957,18 +886,6 @@ func (x *fastReflection_BuyOrderClassSelector) ProtoMethods() *protoiface.Method
 		if x.ClassId != 0 {
 			n += 1 + runtime.Sov(uint64(x.ClassId))
 		}
-		l = len(x.ProjectLocation)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.MinStartDate != nil {
-			l = options.Size(x.MinStartDate)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.MaxEndDate != nil {
-			l = options.Size(x.MaxEndDate)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -997,41 +914,6 @@ func (x *fastReflection_BuyOrderClassSelector) ProtoMethods() *protoiface.Method
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.MaxEndDate != nil {
-			encoded, err := options.Marshal(x.MaxEndDate)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if x.MinStartDate != nil {
-			encoded, err := options.Marshal(x.MinStartDate)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if len(x.ProjectLocation) > 0 {
-			i -= len(x.ProjectLocation)
-			copy(dAtA[i:], x.ProjectLocation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ProjectLocation)))
-			i--
-			dAtA[i] = 0x1a
 		}
 		if x.ClassId != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ClassId))
@@ -1130,110 +1012,6 @@ func (x *fastReflection_BuyOrderClassSelector) ProtoMethods() *protoiface.Method
 						break
 					}
 				}
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.ProjectLocation = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinStartDate", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.MinStartDate == nil {
-					x.MinStartDate = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.MinStartDate); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxEndDate", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.MaxEndDate == nil {
-					x.MaxEndDate = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.MaxEndDate); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1270,11 +1048,9 @@ func (x *fastReflection_BuyOrderClassSelector) ProtoMethods() *protoiface.Method
 }
 
 var (
-	md_BuyOrderProjectSelector                protoreflect.MessageDescriptor
-	fd_BuyOrderProjectSelector_buy_order_id   protoreflect.FieldDescriptor
-	fd_BuyOrderProjectSelector_project_id     protoreflect.FieldDescriptor
-	fd_BuyOrderProjectSelector_min_start_date protoreflect.FieldDescriptor
-	fd_BuyOrderProjectSelector_max_end_date   protoreflect.FieldDescriptor
+	md_BuyOrderProjectSelector              protoreflect.MessageDescriptor
+	fd_BuyOrderProjectSelector_buy_order_id protoreflect.FieldDescriptor
+	fd_BuyOrderProjectSelector_project_id   protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -1282,8 +1058,6 @@ func init() {
 	md_BuyOrderProjectSelector = File_regen_ecocredit_orderbook_v1beta1_memory_proto.Messages().ByName("BuyOrderProjectSelector")
 	fd_BuyOrderProjectSelector_buy_order_id = md_BuyOrderProjectSelector.Fields().ByName("buy_order_id")
 	fd_BuyOrderProjectSelector_project_id = md_BuyOrderProjectSelector.Fields().ByName("project_id")
-	fd_BuyOrderProjectSelector_min_start_date = md_BuyOrderProjectSelector.Fields().ByName("min_start_date")
-	fd_BuyOrderProjectSelector_max_end_date = md_BuyOrderProjectSelector.Fields().ByName("max_end_date")
 }
 
 var _ protoreflect.Message = (*fastReflection_BuyOrderProjectSelector)(nil)
@@ -1363,18 +1137,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Range(f func(protoreflect.Field
 			return
 		}
 	}
-	if x.MinStartDate != nil {
-		value := protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
-		if !f(fd_BuyOrderProjectSelector_min_start_date, value) {
-			return
-		}
-	}
-	if x.MaxEndDate != nil {
-		value := protoreflect.ValueOfMessage(x.MaxEndDate.ProtoReflect())
-		if !f(fd_BuyOrderProjectSelector_max_end_date, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -1394,10 +1156,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Has(fd protoreflect.FieldDescri
 		return x.BuyOrderId != uint64(0)
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
 		return x.ProjectId != uint64(0)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		return x.MinStartDate != nil
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		return x.MaxEndDate != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector"))
@@ -1418,10 +1176,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Clear(fd protoreflect.FieldDesc
 		x.BuyOrderId = uint64(0)
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
 		x.ProjectId = uint64(0)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		x.MinStartDate = nil
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		x.MaxEndDate = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector"))
@@ -1444,12 +1198,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Get(descriptor protoreflect.Fie
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
 		value := x.ProjectId
 		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		value := x.MinStartDate
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		value := x.MaxEndDate
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector"))
@@ -1474,10 +1222,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Set(fd protoreflect.FieldDescri
 		x.BuyOrderId = value.Uint()
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
 		x.ProjectId = value.Uint()
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		x.MinStartDate = value.Message().Interface().(*timestamppb.Timestamp)
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		x.MaxEndDate = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector"))
@@ -1498,16 +1242,6 @@ func (x *fastReflection_BuyOrderProjectSelector) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_BuyOrderProjectSelector) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		if x.MinStartDate == nil {
-			x.MinStartDate = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		if x.MaxEndDate == nil {
-			x.MaxEndDate = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.MaxEndDate.ProtoReflect())
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.buy_order_id":
 		panic(fmt.Errorf("field buy_order_id of message regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector is not mutable"))
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
@@ -1529,12 +1263,6 @@ func (x *fastReflection_BuyOrderProjectSelector) NewField(fd protoreflect.FieldD
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.project_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector"))
@@ -1610,14 +1338,6 @@ func (x *fastReflection_BuyOrderProjectSelector) ProtoMethods() *protoiface.Meth
 		if x.ProjectId != 0 {
 			n += 1 + runtime.Sov(uint64(x.ProjectId))
 		}
-		if x.MinStartDate != nil {
-			l = options.Size(x.MinStartDate)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.MaxEndDate != nil {
-			l = options.Size(x.MaxEndDate)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1646,34 +1366,6 @@ func (x *fastReflection_BuyOrderProjectSelector) ProtoMethods() *protoiface.Meth
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.MaxEndDate != nil {
-			encoded, err := options.Marshal(x.MaxEndDate)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.MinStartDate != nil {
-			encoded, err := options.Marshal(x.MinStartDate)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x1a
 		}
 		if x.ProjectId != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ProjectId))
@@ -1772,78 +1464,6 @@ func (x *fastReflection_BuyOrderProjectSelector) ProtoMethods() *protoiface.Meth
 						break
 					}
 				}
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinStartDate", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.MinStartDate == nil {
-					x.MinStartDate = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.MinStartDate); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxEndDate", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.MaxEndDate == nil {
-					x.MaxEndDate = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.MaxEndDate); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1976,12 +1596,6 @@ type BuyOrderClassSelector struct {
 	BuyOrderId uint64 `protobuf:"varint,1,opt,name=buy_order_id,json=buyOrderId,proto3" json:"buy_order_id,omitempty"`
 	// class_id is the class ID.
 	ClassId uint64 `protobuf:"varint,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// project_location is the project location in the selector's criteria.
-	ProjectLocation string `protobuf:"bytes,3,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
-	// min_start_date is the minimum start date in the selector's criteria.
-	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
-	// max_end_date is the maximum end date in the selector's criteria.
-	MaxEndDate *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=max_end_date,json=maxEndDate,proto3" json:"max_end_date,omitempty"`
 }
 
 func (x *BuyOrderClassSelector) Reset() {
@@ -2018,27 +1632,6 @@ func (x *BuyOrderClassSelector) GetClassId() uint64 {
 	return 0
 }
 
-func (x *BuyOrderClassSelector) GetProjectLocation() string {
-	if x != nil {
-		return x.ProjectLocation
-	}
-	return ""
-}
-
-func (x *BuyOrderClassSelector) GetMinStartDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.MinStartDate
-	}
-	return nil
-}
-
-func (x *BuyOrderClassSelector) GetMaxEndDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.MaxEndDate
-	}
-	return nil
-}
-
 // BuyOrderProjectSelector indexes a buy order with project selector.
 type BuyOrderProjectSelector struct {
 	state         protoimpl.MessageState
@@ -2049,10 +1642,6 @@ type BuyOrderProjectSelector struct {
 	BuyOrderId uint64 `protobuf:"varint,1,opt,name=buy_order_id,json=buyOrderId,proto3" json:"buy_order_id,omitempty"`
 	// project_id is the project ID.
 	ProjectId uint64 `protobuf:"varint,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// min_start_date is the minimum start date in the selector's criteria.
-	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
-	// max_end_date is the maximum end date in the selector's criteria.
-	MaxEndDate *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=max_end_date,json=maxEndDate,proto3" json:"max_end_date,omitempty"`
 }
 
 func (x *BuyOrderProjectSelector) Reset() {
@@ -2089,20 +1678,6 @@ func (x *BuyOrderProjectSelector) GetProjectId() uint64 {
 	return 0
 }
 
-func (x *BuyOrderProjectSelector) GetMinStartDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.MinStartDate
-	}
-	return nil
-}
-
-func (x *BuyOrderProjectSelector) GetMaxEndDate() *timestamppb.Timestamp {
-	if x != nil {
-		return x.MaxEndDate
-	}
-	return nil
-}
-
 var File_regen_ecocredit_orderbook_v1beta1_memory_proto protoreflect.FileDescriptor
 
 var file_regen_ecocredit_orderbook_v1beta1_memory_proto_rawDesc = []byte{
@@ -2136,63 +1711,45 @@ var file_regen_ecocredit_orderbook_v1beta1_memory_proto_rawDesc = []byte{
 	0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x2c, 0x61, 0x73, 0x6b, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65,
 	0x2c, 0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x10, 0x01,
 	0x12, 0x11, 0x0a, 0x0d, 0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69,
-	0x64, 0x10, 0x02, 0x18, 0x01, 0x22, 0xb0, 0x02, 0x0a, 0x15, 0x42, 0x75, 0x79, 0x4f, 0x72, 0x64,
+	0x64, 0x10, 0x02, 0x18, 0x01, 0x22, 0x85, 0x01, 0x0a, 0x15, 0x42, 0x75, 0x79, 0x4f, 0x72, 0x64,
 	0x65, 0x72, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x12,
 	0x20, 0x0a, 0x0c, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49,
 	0x64, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x29, 0x0a, 0x10,
-	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x40, 0x0a, 0x0e, 0x6d, 0x69, 0x6e, 0x5f, 0x73,
-	0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x6d, 0x69, 0x6e,
-	0x53, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x3c, 0x0a, 0x0c, 0x6d, 0x61, 0x78,
-	0x5f, 0x65, 0x6e, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x6d, 0x61, 0x78,
-	0x45, 0x6e, 0x64, 0x44, 0x61, 0x74, 0x65, 0x3a, 0x2f, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x29, 0x0a,
-	0x17, 0x0a, 0x15, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x2c,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x12, 0x0c, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73,
-	0x73, 0x5f, 0x69, 0x64, 0x10, 0x01, 0x18, 0x02, 0x22, 0x8f, 0x02, 0x0a, 0x17, 0x42, 0x75, 0x79,
-	0x4f, 0x72, 0x64, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x53, 0x65, 0x6c, 0x65,
-	0x63, 0x74, 0x6f, 0x72, 0x12, 0x20, 0x0a, 0x0c, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65,
-	0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x62, 0x75, 0x79, 0x4f,
-	0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x40, 0x0a, 0x0e, 0x6d, 0x69, 0x6e, 0x5f, 0x73, 0x74, 0x61,
-	0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x6d, 0x69, 0x6e, 0x53, 0x74,
-	0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x3c, 0x0a, 0x0c, 0x6d, 0x61, 0x78, 0x5f, 0x65,
-	0x6e, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e,
-	0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a, 0x6d, 0x61, 0x78, 0x45, 0x6e,
-	0x64, 0x44, 0x61, 0x74, 0x65, 0x3a, 0x33, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x2d, 0x0a, 0x19, 0x0a,
-	0x17, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x2c, 0x70, 0x72,
-	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x12, 0x0e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x10, 0x01, 0x18, 0x03, 0x42, 0xb9, 0x02, 0x0a, 0x25, 0x63,
-	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x42, 0x0b, 0x4d, 0x65, 0x6d, 0x6f, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x5c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6f,
-	0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x3b, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
-	0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4f, 0xaa, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62,
-	0x6f, 0x6f, 0x6b, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xca, 0x02, 0x21, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4f, 0x72,
-	0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xe2,
-	0x02, 0x2d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x5c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x5c, 0x56, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
-	0x02, 0x24, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x3a, 0x3a, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x3a, 0x3a, 0x56,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x01, 0x28, 0x04, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x3a, 0x2f, 0xf2, 0x9e,
+	0xd3, 0x8e, 0x03, 0x29, 0x0a, 0x17, 0x0a, 0x15, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65,
+	0x72, 0x5f, 0x69, 0x64, 0x2c, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x12, 0x0c, 0x0a,
+	0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x10, 0x01, 0x18, 0x02, 0x22, 0x8f, 0x01,
+	0x0a, 0x17, 0x42, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x20, 0x0a, 0x0c, 0x62, 0x75, 0x79,
+	0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x0a, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x33, 0xf2, 0x9e, 0xd3, 0x8e,
+	0x03, 0x2d, 0x0a, 0x19, 0x0a, 0x17, 0x62, 0x75, 0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f,
+	0x69, 0x64, 0x2c, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x12, 0x0e, 0x0a,
+	0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x10, 0x01, 0x18, 0x03, 0x42,
+	0xb9, 0x02, 0x0a, 0x25, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f,
+	0x6b, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0b, 0x4d, 0x65, 0x6d, 0x6f, 0x72,
+	0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x5c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x2f, 0x76, 0x31,
+	0x62, 0x65, 0x74, 0x61, 0x31, 0x3b, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4f, 0xaa, 0x02, 0x21, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4f,
+	0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0xca, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x5c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b, 0x5c, 0x56, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0xe2, 0x02, 0x2d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f, 0x6f, 0x6b,
+	0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x24, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x62, 0x6f,
+	0x6f, 0x6b, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2212,18 +1769,13 @@ var file_regen_ecocredit_orderbook_v1beta1_memory_proto_goTypes = []interface{}{
 	(*BuyOrderSellOrderMatch)(nil),  // 0: regen.ecocredit.orderbook.v1beta1.BuyOrderSellOrderMatch
 	(*BuyOrderClassSelector)(nil),   // 1: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector
 	(*BuyOrderProjectSelector)(nil), // 2: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector
-	(*timestamppb.Timestamp)(nil),   // 3: google.protobuf.Timestamp
 }
 var file_regen_ecocredit_orderbook_v1beta1_memory_proto_depIdxs = []int32{
-	3, // 0: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.min_start_date:type_name -> google.protobuf.Timestamp
-	3, // 1: regen.ecocredit.orderbook.v1beta1.BuyOrderClassSelector.max_end_date:type_name -> google.protobuf.Timestamp
-	3, // 2: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.min_start_date:type_name -> google.protobuf.Timestamp
-	3, // 3: regen.ecocredit.orderbook.v1beta1.BuyOrderProjectSelector.max_end_date:type_name -> google.protobuf.Timestamp
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_orderbook_v1beta1_memory_proto_init() }

@@ -1,4 +1,4 @@
-package orderbook
+package ordermatch
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 )
 
-func (o orderbook) Reload(ctx context.Context) error {
+func (o matcher) Reload(ctx context.Context) error {
 	it, err := o.marketplaceStore.BuyOrderStore().List(ctx, marketplacev1beta1.BuyOrderPrimaryKey{})
 	if err != nil {
 		return err

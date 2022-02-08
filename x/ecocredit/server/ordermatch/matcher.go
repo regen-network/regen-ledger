@@ -1,4 +1,4 @@
-package orderbook
+package ordermatch
 
 import (
 	"context"
@@ -10,14 +10,14 @@ import (
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 )
 
-type orderbook struct {
+type matcher struct {
 	memStore         orderbookv1beta1.MemoryStore
 	marketplaceStore marketplacev1beta1.StateStore
 	ecocreditStore   ecocreditv1beta1.StateStore
 }
 
-// NewOrderBook creates a new OrderBook instance.
-func NewOrderBook(db ormdb.ModuleDB) (OrderBook, error) {
+// NewMatcher creates a new Matcher instance.
+func NewMatcher(db ormdb.ModuleDB) (Matcher, error) {
 	memStore, err := orderbookv1beta1.NewMemoryStore(db)
 	if err != nil {
 		return nil, err
@@ -33,31 +33,24 @@ func NewOrderBook(db ormdb.ModuleDB) (OrderBook, error) {
 		return nil, err
 	}
 
-	return &orderbook{
+	return &matcher{
 		memStore:         memStore,
 		marketplaceStore: marketplaceStore,
 		ecocreditStore:   ecocreditStore,
 	}, nil
 }
 
-type OrderBook interface {
+type Matcher interface {
 	// OnInsertBuyOrder gets called whenever a buy order is inserted into the marketplace state.
 	OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error
 
 	// OnInsertSellOrder gets called whenever a sell order is inserted into the marketplace state.
 	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error
 
-	// ProcessBatch called in end blocker, can happen every block or at some epoch.
-	ProcessBatch(ctx context.Context) error
-
 	// Reload gets call on end blocker only when a node starts up.
 	Reload(ctx context.Context) error
 }
 
-func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
-	return fmt.Errorf("TODO")
-}
-
-func (o orderbook) ProcessBatch(ctx context.Context) error {
+func (o matcher) OnInsertSellOrder(context.Context, *marketplacev1beta1.SellOrder, *ecocreditv1beta1.BatchInfo) error {
 	return fmt.Errorf("TODO")
 }

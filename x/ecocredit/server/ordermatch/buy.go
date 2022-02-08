@@ -1,10 +1,8 @@
-package orderbook
+package ordermatch
 
 import (
 	"context"
 	"fmt"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 
@@ -14,7 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
+func (o matcher) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
 	bidPrice, ok := sdk.NewIntFromString(buyOrder.BidPrice)
 	if !ok {
 		return ecocredit.ErrInvalidInteger.Wrapf("bid price: %s", buyOrder.BidPrice)
@@ -38,11 +36,11 @@ func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 		return o.insertBuyOrderDirect(ctx, buyOrder, market, selection, bidPrice, bidPriceU32)
 	case *marketplacev1beta1.BuyOrder_Selection_Filter:
 		matcher := &buyOrderMatcher{
-			orderbook:   o,
+			matcher:     o,
 			ctx:         ctx,
 			buyOrder:    buyOrder,
 			market:      market,
-			selection:   selection,
+			filter:      selection.Filter,
 			bidPrice:    bidPrice,
 			bidPriceU32: bidPriceU32,
 		}
@@ -52,7 +50,7 @@ func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 	}
 }
 
-func (o orderbook) insertBuyOrderDirect(
+func (o matcher) insertBuyOrderDirect(
 	ctx context.Context,
 	buyOrder *marketplacev1beta1.BuyOrder,
 	market *marketplacev1beta1.Market,
@@ -97,28 +95,28 @@ func (o orderbook) insertBuyOrderDirect(
 const MaxNumberSelectors = 4
 
 type buyOrderMatcher struct {
-	orderbook
+	matcher
 	ctx         context.Context
 	buyOrder    *marketplacev1beta1.BuyOrder
 	market      *marketplacev1beta1.Market
-	selection   *marketplacev1beta1.BuyOrder_Selection_Filter
+	filter      *marketplacev1beta1.Filter
 	bidPrice    sdk.Int
 	bidPriceU32 uint32
 }
 
 func (o buyOrderMatcher) insertBuyOrderFiltered() error {
-	n := len(o.selection.Filter.Or)
+	n := len(o.filter.Or)
 	if n > MaxNumberSelectors {
 		return ecocredit.ErrInvalidBuyOrder.Wrapf("too many selectors, got %d, the limit is %d", n, MaxNumberSelectors)
 	}
 	var numSelectors int
-	for _, criteria := range o.selection.Filter.Or {
+	for _, sel := range o.filter.Or {
 		numSelectors++
 		if numSelectors > MaxNumberSelectors {
 			return fmt.Errorf("too many selectors")
 		}
 
-		err := o.processSelector(criteria)
+		err := o.processSelector(sel)
 		if err != nil {
 			return err
 		}
@@ -126,14 +124,12 @@ func (o buyOrderMatcher) insertBuyOrderFiltered() error {
 	return nil
 }
 
-func (o buyOrderMatcher) processSelector(criteria *marketplacev1beta1.Filter_Criteria) error {
+func (o buyOrderMatcher) processSelector(criteria *marketplacev1beta1.Filter_Selector) error {
 	switch selector := criteria.Selector.(type) {
-	case *marketplacev1beta1.Filter_Criteria_ClassSelector:
+	case *marketplacev1beta1.Filter_Selector_ClassSelector:
 		return o.matchByClassIdSelector(selector.ClassSelector)
-	case *marketplacev1beta1.Filter_Criteria_ProjectSelector:
+	case *marketplacev1beta1.Filter_Selector_ProjectSelector:
 		return o.matchByProjectIdSelector(selector.ProjectSelector)
-	case *marketplacev1beta1.Filter_Criteria_BatchSelector:
-		return o.matchByBatchIdSelector(selector.BatchSelector.BatchId)
 	default:
 		return ecocredit.ErrInvalidBuyOrder.Wrapf("unknown selector type %s", selector)
 	}
@@ -142,11 +138,8 @@ func (o buyOrderMatcher) processSelector(criteria *marketplacev1beta1.Filter_Cri
 func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.ClassSelector) error {
 	err := o.memStore.BuyOrderClassSelectorStore().Insert(o.ctx,
 		&orderbookv1beta1.BuyOrderClassSelector{
-			BuyOrderId:      o.buyOrder.Id,
-			ClassId:         selector.ClassId,
-			ProjectLocation: selector.ProjectLocation,
-			MinStartDate:    selector.MinStartDate,
-			MaxEndDate:      selector.MaxEndDate,
+			BuyOrderId: o.buyOrder.Id,
+			ClassId:    selector.ClassId,
 		},
 	)
 	if err != nil {
@@ -167,7 +160,7 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 			return err
 		}
 
-		if !matchLocation(project, selector.ProjectLocation) {
+		if !matchLocations(project, o.filter.ProjectLocations) {
 			continue
 		}
 
@@ -203,10 +196,8 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 func (o buyOrderMatcher) matchByProjectIdSelector(selector *marketplacev1beta1.ProjectSelector) error {
 	err := o.memStore.BuyOrderProjectSelectorStore().Insert(o.ctx,
 		&orderbookv1beta1.BuyOrderProjectSelector{
-			BuyOrderId:   o.buyOrder.Id,
-			ProjectId:    selector.ProjectId,
-			MinStartDate: selector.MinStartDate,
-			MaxEndDate:   selector.MaxEndDate,
+			BuyOrderId: o.buyOrder.Id,
+			ProjectId:  selector.ProjectId,
 		},
 	)
 	if err != nil {
@@ -228,7 +219,7 @@ func (o buyOrderMatcher) matchByProjectIdSelector(selector *marketplacev1beta1.P
 			return err
 		}
 
-		if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
+		if !matchDates(batch, o.filter.MinStartDate, o.filter.MaxEndDate) {
 			continue
 		}
 
@@ -238,28 +229,6 @@ func (o buyOrderMatcher) matchByProjectIdSelector(selector *marketplacev1beta1.P
 		}
 	}
 	return nil
-}
-
-func (o buyOrderMatcher) matchByBatchIdSelector(batchId uint64) error {
-	batch, err := o.ecocreditStore.BatchInfoStore().Get(o.ctx, batchId)
-	if err != nil {
-		return err
-	}
-
-	if batch == nil {
-		return ecocredit.ErrInvalidBuyOrder.Wrapf("batch %d not found", batchId)
-	}
-
-	err = o.memStore.BuyOrderBatchSelectorStore().Insert(o.ctx,
-		&orderbookv1beta1.BuyOrderBatchSelector{
-			BuyOrderId: o.buyOrder.Id,
-			BatchId:    batchId,
-		})
-	if err != nil {
-		return err
-	}
-
-	return o.onMatch(batch)
 }
 
 func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
@@ -313,16 +282,4 @@ func (o buyOrderMatcher) onMatch(batch *ecocreditv1beta1.BatchInfo) error {
 		}
 	}
 	return nil
-}
-
-func matchDates(batch *ecocreditv1beta1.BatchInfo, minStart, maxEnd *timestamppb.Timestamp) bool {
-	if minStart != nil && batch.StartDate.AsTime().Before(minStart.AsTime()) {
-		return false
-	}
-
-	if maxEnd != nil && batch.EndDate.AsTime().After(maxEnd.AsTime()) {
-		return false
-	}
-
-	return true
 }
