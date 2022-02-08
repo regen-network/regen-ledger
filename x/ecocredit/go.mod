@@ -139,3 +139,5 @@ replace github.com/regen-network/regen-ledger/orm => ../../orm
 replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/regen-network/regen-ledger/api => ../../api
+
+replace github.com/cosmos/cosmos-sdk/orm => ../../../cosmos-sdk/orm

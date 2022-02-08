@@ -5,6 +5,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/orm/testing/ormmocks"
+
 	mathtestutil "github.com/regen-network/regen-ledger/types/testutil/math"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -39,6 +41,7 @@ type suite struct {
 	ctx              context.Context
 	fillMgr          fill.Manager
 	marketId         uint64
+	backend          ormtable.Backend
 }
 
 func setup(t *testing.T) *suite {
@@ -54,7 +57,9 @@ func setup(t *testing.T) *suite {
 
 	s.fillMgr, err = fill.NewManager(s.db, s.transferMgr, s.logger)
 	assert.NilError(t, err)
-	s.ctx = ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+
+	s.backend = ormtest.NewMemoryBackend()
+	s.ctx = ormtable.WrapContextDefault(s.backend)
 
 	s.marketplaceStore, err = marketplacev1beta1.NewStateStore(s.db)
 
@@ -84,6 +89,7 @@ func TestBothFilled(t *testing.T) {
 		Expiration:         nil,
 		Maker:              false,
 	}
+	assert.NilError(t, s.marketplaceStore.BuyOrderStore().Insert(s.ctx, buyOrder))
 
 	sellOrder := &marketplacev1beta1.SellOrder{
 		Seller:            s.acct2,
@@ -95,11 +101,17 @@ func TestBothFilled(t *testing.T) {
 		Expiration:        nil,
 		Maker:             false,
 	}
+	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
+
+	ormHooks := ormmocks.NewMockHooks(s.ctrl)
+	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
 
 	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(10), s.acct2, s.acct1, true)
 	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(110), s.acct1, s.acct2)
+	ormHooks.EXPECT().OnDelete(ormmocks.Eq(buyOrder))
+	ormHooks.EXPECT().OnDelete(ormmocks.Eq(sellOrder))
 
-	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.BothFilled, state)
 }
@@ -130,10 +142,15 @@ func TestBuyFilled(t *testing.T) {
 	}
 	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
 
+	ormHooks := ormmocks.NewMockHooks(s.ctrl)
+	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
+
 	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromString("5.5"), s.acct2, s.acct1, true)
 	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(594), s.acct1, s.acct2)
+	ormHooks.EXPECT().OnUpdate(gomock.Any(), ormmocks.Eq(sellOrder))
+	ormHooks.EXPECT().OnDelete(ormmocks.Eq(buyOrder))
 
-	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.BuyFilled, state)
 }
@@ -164,10 +181,15 @@ func TestSellFilled(t *testing.T) {
 	}
 	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
 
+	ormHooks := ormmocks.NewMockHooks(s.ctrl)
+	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
+
 	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true)
 	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
+	ormHooks.EXPECT().OnUpdate(gomock.Any(), ormmocks.Eq(buyOrder))
+	ormHooks.EXPECT().OnDelete(ormmocks.Eq(sellOrder))
 
-	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.SellFilled, state)
 }
