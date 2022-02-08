@@ -53,6 +53,9 @@ func TestMatcher(t *testing.T) {
 		pair{3, 3},
 		pair{3, 1},
 	)
+
+	// TODO test project locations
+	// TODO test dates
 }
 
 type pair struct {

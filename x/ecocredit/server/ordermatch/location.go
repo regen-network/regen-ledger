@@ -3,6 +3,7 @@ package ordermatch
 import ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 
 func matchLocations(project *ecocreditv1beta1.ProjectInfo, locations []string) bool {
+	// TODO
 	for _, filter := range locations {
 		target := project.ProjectLocation
 
