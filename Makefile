@@ -407,6 +407,7 @@ include sims.mk
 mockgen_cmd=go run github.com/golang/mock/mockgen
 
 mocks:
-	$(mockgen_cmd) -source=x/ecocredit/fill/manager.go -package mocks -destination x/ecocredit/fill/mocks/mocks.go
+	cd x/ecocredit
+	$(mockgen_cmd) -source=server/orderfill/manager.go -package mocks -destination server/orderfill/mocks/mocks.go
 
 .PHONY: mocks

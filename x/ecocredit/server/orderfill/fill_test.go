@@ -1,16 +1,18 @@
-package fill_test
+package orderfill_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/fill"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/fill/mocks"
+	mathtestutil "github.com/regen-network/regen-ledger/types/testutil/math"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/orderfill/mocks"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/orderfill"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testutil"
 
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormmocks"
-
-	mathtestutil "github.com/regen-network/regen-ledger/types/testutil/math"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
@@ -32,7 +34,7 @@ type suite struct {
 	acct1            sdk.AccAddress
 	acct2            sdk.AccAddress
 	ctx              context.Context
-	fillMgr          fill.Manager
+	fillMgr          orderfill.Manager
 	marketId         uint64
 	backend          ormtable.Backend
 }
@@ -45,7 +47,7 @@ func setup(t *testing.T) *suite {
 	s.db, err = ormdb.NewModuleDB(testutil.TestModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 
-	s.fillMgr, err = fill.NewManager(s.db, s.transferMgr)
+	s.fillMgr, err = orderfill.NewManager(s.db, s.transferMgr)
 	assert.NilError(t, err)
 
 	s.backend = ormtest.NewMemoryBackend()
@@ -78,6 +80,7 @@ func TestBothFilled(t *testing.T) {
 		DisablePartialFill: false,
 		Expiration:         nil,
 		Maker:              false,
+		RetirementLocation: "US-NY",
 	}
 	assert.NilError(t, s.marketplaceStore.BuyOrderStore().Insert(s.ctx, buyOrder))
 
@@ -96,14 +99,14 @@ func TestBothFilled(t *testing.T) {
 	ormHooks := ormmocks.NewMockHooks(s.ctrl)
 	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
 
-	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(10), s.acct2, s.acct1, true)
-	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(110), s.acct1, s.acct2)
+	s.transferMgr.EXPECT().SendCredits(uint64(1), mathtestutil.MatchDecFromInt64(10), s.acct2, s.acct1, true, buyOrder.RetirementLocation)
+	s.transferMgr.EXPECT().SendCoins("foo", mathtestutil.MatchInt(110), s.acct1, s.acct2)
 	ormHooks.EXPECT().OnDelete(ormmocks.Eq(buyOrder))
 	ormHooks.EXPECT().OnDelete(ormmocks.Eq(sellOrder))
 
 	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
-	assert.Equal(t, fill.BothFilled, state)
+	assert.Equal(t, orderfill.BothFilled, state)
 }
 
 func TestBuyFilled(t *testing.T) {
@@ -113,7 +116,7 @@ func TestBuyFilled(t *testing.T) {
 		Quantity:           "5.5",
 		MarketId:           s.marketId,
 		BidPrice:           "108",
-		DisableAutoRetire:  false,
+		DisableAutoRetire:  true,
 		DisablePartialFill: false,
 		Expiration:         nil,
 		Maker:              false,
@@ -126,7 +129,7 @@ func TestBuyFilled(t *testing.T) {
 		Quantity:          "10",
 		MarketId:          s.marketId,
 		AskPrice:          "105",
-		DisableAutoRetire: false,
+		DisableAutoRetire: true,
 		Expiration:        nil,
 		Maker:             false,
 	}
@@ -135,14 +138,14 @@ func TestBuyFilled(t *testing.T) {
 	ormHooks := ormmocks.NewMockHooks(s.ctrl)
 	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
 
-	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromString("5.5"), s.acct2, s.acct1, true)
-	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(594), s.acct1, s.acct2)
+	s.transferMgr.EXPECT().SendCredits(uint64(1), mathtestutil.MatchDecFromString("5.5"), s.acct2, s.acct1, false, "")
+	s.transferMgr.EXPECT().SendCoins("foo", mathtestutil.MatchInt(594), s.acct1, s.acct2)
 	ormHooks.EXPECT().OnUpdate(gomock.Any(), ormmocks.Eq(sellOrder))
 	ormHooks.EXPECT().OnDelete(ormmocks.Eq(buyOrder))
 
 	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
-	assert.Equal(t, fill.BuyFilled, state)
+	assert.Equal(t, orderfill.BuyFilled, state)
 }
 
 func TestSellFilled(t *testing.T) {
@@ -156,6 +159,7 @@ func TestSellFilled(t *testing.T) {
 		DisablePartialFill: false,
 		Expiration:         nil,
 		Maker:              false,
+		RetirementLocation: "UK",
 	}
 	assert.NilError(t, s.marketplaceStore.BuyOrderStore().Insert(s.ctx, buyOrder))
 
@@ -174,14 +178,14 @@ func TestSellFilled(t *testing.T) {
 	ormHooks := ormmocks.NewMockHooks(s.ctrl)
 	ctx := ormtable.WrapContextDefault(s.backend.WithHooks(ormHooks))
 
-	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true)
-	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
+	s.transferMgr.EXPECT().SendCredits(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true, "UK")
+	s.transferMgr.EXPECT().SendCoins("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
 	ormHooks.EXPECT().OnUpdate(gomock.Any(), ormmocks.Eq(buyOrder))
 	ormHooks.EXPECT().OnDelete(ormmocks.Eq(sellOrder))
 
 	state, err := s.fillMgr.Fill(ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
-	assert.Equal(t, fill.SellFilled, state)
+	assert.Equal(t, orderfill.SellFilled, state)
 }
 
 func TestBadAutoRetireMatch(t *testing.T) {
@@ -195,5 +199,17 @@ func TestBadAutoRetireMatch(t *testing.T) {
 	}
 
 	_, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	assert.ErrorContains(t, err, "unexpected")
+
+	buyOrder = &marketplacev1beta1.BuyOrder{
+		DisableAutoRetire:  false,
+		RetirementLocation: "",
+	}
+
+	sellOrder = &marketplacev1beta1.SellOrder{
+		DisableAutoRetire: false,
+	}
+
+	_, err = s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.ErrorContains(t, err, "unexpected")
 }

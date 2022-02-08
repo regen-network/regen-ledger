@@ -1,8 +1,9 @@
-package fill
+package orderfill
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -76,8 +77,13 @@ func NewManager(db ormdb.ModuleDB, transferManager TransferManager) (Manager, er
 // is expected to call the transfer manager to handle all transfers rather than
 // attempting to handle them itself.
 type TransferManager interface {
-	SendCoinsTo(denom string, amount sdk.Int, from, to sdk.AccAddress) error
-	SendCreditsTo(batchId uint64, amount math.Dec, from, to sdk.AccAddress, retire bool) error
+	// SendCoins sends the specified amount of denom.
+	SendCoins(denom string, amount sdk.Int, from, to sdk.AccAddress) error
+
+	// SendCredits sends the specified amount of credits. If retire is true, the
+	// credits will be retired with the provided retirement location, otherwise
+	// they will be transferred and remain tradable.
+	SendCredits(batchId uint64, amount math.Dec, from, to sdk.AccAddress, retire bool, retirementLocation string) error
 }
 
 func (t manager) Fill(
@@ -89,9 +95,13 @@ func (t manager) Fill(
 	retire := true
 	if buyOrder.DisableAutoRetire {
 		if !sellOrder.DisableAutoRetire {
-			return NotFilled, fmt.Errorf("unexpected: auto-retire setting doesn't match, these orders should have never been matched")
+			return NotFilled, ecocredit.ErrInvalidBuyOrder.Wrapf("unexpected: auto-retire setting doesn't match, these orders should have never been matched")
 		}
 		retire = false
+	} else {
+		if buyOrder.RetirementLocation == "" {
+			return NotFilled, ecocredit.ErrInvalidBuyOrder.Wrapf("unexpected: retirement location is empty, this order never should have never been created.")
+		}
 	}
 
 	buyQuant, err := math.NewPositiveDecFromString(buyOrder.Quantity)
@@ -164,7 +174,7 @@ func (t manager) Fill(
 		}
 	}
 
-	err = t.transferManager.SendCreditsTo(sellOrder.BatchId, actualQuant, sellOrder.Seller, buyOrder.Buyer, retire)
+	err = t.transferManager.SendCredits(sellOrder.BatchId, actualQuant, sellOrder.Seller, buyOrder.Buyer, retire, buyOrder.RetirementLocation)
 
 	// TODO correct decimal precision
 	payment, err := actualQuant.Mul(settlementPrice)
@@ -177,7 +187,7 @@ func (t manager) Fill(
 		return NotFilled, err
 	}
 
-	err = t.transferManager.SendCoinsTo(market.BankDenom, sdk.NewInt(paymentInt), buyOrder.Buyer, sellOrder.Seller)
+	err = t.transferManager.SendCoins(market.BankDenom, sdk.NewInt(paymentInt), buyOrder.Buyer, sellOrder.Seller)
 	if err != nil {
 		return NotFilled, err
 	}
