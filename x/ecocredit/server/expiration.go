@@ -40,7 +40,7 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 
 	buyOrdersIter, err := s.buyOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
-		logger.Error("problem with buy order iteratorr", "err", err)
+		logger.Error("problem with buy order iterator", "err", err)
 		return err
 	}
 	defer buyOrdersIter.Close()
