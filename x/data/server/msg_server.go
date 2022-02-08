@@ -167,7 +167,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 			ctx,
 			&datav1alpha2.DataResolver{
 				ResolverId: msg.ResolverId,
-				DataId:     id,
+				Id:         id,
 			},
 		)
 		if err != nil {

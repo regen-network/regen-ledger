@@ -129,7 +129,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 	}
 
 	it, err := s.stateStore.DataResolverStore().
-		List(ctx, datav1alpha2.DataResolverPrimaryKey{}.WithDataId(id),
+		List(ctx, datav1alpha2.DataResolverPrimaryKey{}.WithId(id),
 			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
 	if err != nil {
 		return nil, err

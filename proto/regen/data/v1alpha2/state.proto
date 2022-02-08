@@ -41,11 +41,11 @@ message DataAnchor {
 message DataSigner {
   option (cosmos.orm.v1alpha1.table) = {
     id: 3
-    primary_key: {fields: "data_id,signer"}
+    primary_key: {fields: "id,signer"}
   };
 
   // id is the compact data ID.
-  bytes data_id = 1;
+  bytes id = 1;
 
   // signer is the account address of the signer.
   string signer = 2;
@@ -79,11 +79,11 @@ message ResolverInfo {
 message DataResolver {
   option (cosmos.orm.v1alpha1.table) = {
     id: 5
-    primary_key: {fields: "data_id,resolver_id"}
+    primary_key: {fields: "id,resolver_id"}
   };
 
-  // data_id is the compact data ID.
-  bytes data_id = 1;
+  // id is the compact data ID.
+  bytes id = 1;
 
   // resolver_id is the ID of the resolver.
   uint64 resolver_id = 2;

@@ -283,9 +283,9 @@ type DataSignerStore interface {
 	Update(ctx context.Context, dataSigner *DataSigner) error
 	Save(ctx context.Context, dataSigner *DataSigner) error
 	Delete(ctx context.Context, dataSigner *DataSigner) error
-	Has(ctx context.Context, data_id []byte, signer string) (found bool, err error)
+	Has(ctx context.Context, id []byte, signer string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, data_id []byte, signer string) (*DataSigner, error)
+	Get(ctx context.Context, id []byte, signer string) (*DataSigner, error)
 	List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
 	ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
 	DeleteBy(ctx context.Context, prefixKey DataSignerIndexKey) error
@@ -311,23 +311,23 @@ type DataSignerIndexKey interface {
 }
 
 // primary key starting index..
-type DataSignerPrimaryKey = DataSignerDataIdSignerIndexKey
+type DataSignerPrimaryKey = DataSignerIdSignerIndexKey
 
-type DataSignerDataIdSignerIndexKey struct {
+type DataSignerIdSignerIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataSignerDataIdSignerIndexKey) id() uint32            { return 0 }
-func (x DataSignerDataIdSignerIndexKey) values() []interface{} { return x.vs }
-func (x DataSignerDataIdSignerIndexKey) dataSignerIndexKey()   {}
+func (x DataSignerIdSignerIndexKey) id() uint32            { return 0 }
+func (x DataSignerIdSignerIndexKey) values() []interface{} { return x.vs }
+func (x DataSignerIdSignerIndexKey) dataSignerIndexKey()   {}
 
-func (this DataSignerDataIdSignerIndexKey) WithDataId(data_id []byte) DataSignerDataIdSignerIndexKey {
-	this.vs = []interface{}{data_id}
+func (this DataSignerIdSignerIndexKey) WithId(id []byte) DataSignerIdSignerIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
-func (this DataSignerDataIdSignerIndexKey) WithDataIdSigner(data_id []byte, signer string) DataSignerDataIdSignerIndexKey {
-	this.vs = []interface{}{data_id, signer}
+func (this DataSignerIdSignerIndexKey) WithIdSigner(id []byte, signer string) DataSignerIdSignerIndexKey {
+	this.vs = []interface{}{id, signer}
 	return this
 }
 
@@ -351,13 +351,13 @@ func (this dataSignerStore) Delete(ctx context.Context, dataSigner *DataSigner) 
 	return this.table.Delete(ctx, dataSigner)
 }
 
-func (this dataSignerStore) Has(ctx context.Context, data_id []byte, signer string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, data_id, signer)
+func (this dataSignerStore) Has(ctx context.Context, id []byte, signer string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id, signer)
 }
 
-func (this dataSignerStore) Get(ctx context.Context, data_id []byte, signer string) (*DataSigner, error) {
+func (this dataSignerStore) Get(ctx context.Context, id []byte, signer string) (*DataSigner, error) {
 	var dataSigner DataSigner
-	found, err := this.table.PrimaryKey().Get(ctx, &dataSigner, data_id, signer)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataSigner, id, signer)
 	if err != nil {
 		return nil, err
 	}
@@ -570,9 +570,9 @@ type DataResolverStore interface {
 	Update(ctx context.Context, dataResolver *DataResolver) error
 	Save(ctx context.Context, dataResolver *DataResolver) error
 	Delete(ctx context.Context, dataResolver *DataResolver) error
-	Has(ctx context.Context, data_id []byte, resolver_id uint64) (found bool, err error)
+	Has(ctx context.Context, id []byte, resolver_id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, data_id []byte, resolver_id uint64) (*DataResolver, error)
+	Get(ctx context.Context, id []byte, resolver_id uint64) (*DataResolver, error)
 	List(ctx context.Context, prefixKey DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error)
 	ListRange(ctx context.Context, from, to DataResolverIndexKey, opts ...ormlist.Option) (DataResolverIterator, error)
 	DeleteBy(ctx context.Context, prefixKey DataResolverIndexKey) error
@@ -598,23 +598,23 @@ type DataResolverIndexKey interface {
 }
 
 // primary key starting index..
-type DataResolverPrimaryKey = DataResolverDataIdResolverIdIndexKey
+type DataResolverPrimaryKey = DataResolverIdResolverIdIndexKey
 
-type DataResolverDataIdResolverIdIndexKey struct {
+type DataResolverIdResolverIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataResolverDataIdResolverIdIndexKey) id() uint32            { return 0 }
-func (x DataResolverDataIdResolverIdIndexKey) values() []interface{} { return x.vs }
-func (x DataResolverDataIdResolverIdIndexKey) dataResolverIndexKey() {}
+func (x DataResolverIdResolverIdIndexKey) id() uint32            { return 0 }
+func (x DataResolverIdResolverIdIndexKey) values() []interface{} { return x.vs }
+func (x DataResolverIdResolverIdIndexKey) dataResolverIndexKey() {}
 
-func (this DataResolverDataIdResolverIdIndexKey) WithDataId(data_id []byte) DataResolverDataIdResolverIdIndexKey {
-	this.vs = []interface{}{data_id}
+func (this DataResolverIdResolverIdIndexKey) WithId(id []byte) DataResolverIdResolverIdIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
-func (this DataResolverDataIdResolverIdIndexKey) WithDataIdResolverId(data_id []byte, resolver_id uint64) DataResolverDataIdResolverIdIndexKey {
-	this.vs = []interface{}{data_id, resolver_id}
+func (this DataResolverIdResolverIdIndexKey) WithIdResolverId(id []byte, resolver_id uint64) DataResolverIdResolverIdIndexKey {
+	this.vs = []interface{}{id, resolver_id}
 	return this
 }
 
@@ -638,13 +638,13 @@ func (this dataResolverStore) Delete(ctx context.Context, dataResolver *DataReso
 	return this.table.Delete(ctx, dataResolver)
 }
 
-func (this dataResolverStore) Has(ctx context.Context, data_id []byte, resolver_id uint64) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, data_id, resolver_id)
+func (this dataResolverStore) Has(ctx context.Context, id []byte, resolver_id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id, resolver_id)
 }
 
-func (this dataResolverStore) Get(ctx context.Context, data_id []byte, resolver_id uint64) (*DataResolver, error) {
+func (this dataResolverStore) Get(ctx context.Context, id []byte, resolver_id uint64) (*DataResolver, error) {
 	var dataResolver DataResolver
-	found, err := this.table.PrimaryKey().Get(ctx, &dataResolver, data_id, resolver_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &dataResolver, id, resolver_id)
 	if err != nil {
 		return nil, err
 	}
