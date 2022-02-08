@@ -55,19 +55,20 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeq)
 
-	if err = s.stateStore.ClassInfoStore().Insert(ctx, &ecocreditv1beta1.ClassInfo{
+	rowId, err := s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       classID,
 		Admin:      adminAddress,
 		Metadata:   req.Metadata,
 		CreditType: req.CreditTypeName,
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
 
 	for _, issuer := range req.Issuers {
 		issuer, _ := sdk.AccAddressFromBech32(issuer)
 		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
-			ClassId: classID,
+			ClassId: rowId,
 			Issuer:  issuer,
 		}); err != nil {
 			return nil, err
@@ -94,7 +95,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 		return nil, err
 	}
 
-	err = s.assertClassIssuer(ctx, classID, req.Issuer)
+	err = s.assertClassIssuer(ctx, classInfo.Id, req.Issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +155,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		return nil, err
 	}
 
-	err = s.assertClassIssuer(ctx, classInfo.Name, req.Issuer)
+	err = s.assertClassIssuer(ctx, classInfo.Id, req.Issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -461,7 +462,7 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 	}
 
 	// delete the old issuers
-	if err = s.stateStore.ClassIssuerStore().DeleteBy(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(class.Name)); err != nil {
+	if err = s.stateStore.ClassIssuerStore().DeleteBy(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(class.Id)); err != nil {
 		return nil, err
 	}
 
@@ -469,7 +470,7 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 	for _, issuer := range req.Issuers {
 		iAddr, _ := sdk.AccAddressFromBech32(issuer)
 		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
-			ClassId: req.ClassId,
+			ClassId: class.Id,
 			Issuer:  iAddr,
 		}); err != nil {
 			return nil, err
@@ -918,7 +919,7 @@ func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, de
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
+func (s serverImpl) assertClassIssuer(goCtx context.Context, classID uint64, issuer string) error {
 	addr, _ := sdk.AccAddressFromBech32(issuer)
 	found, err := s.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
 	if err != nil {

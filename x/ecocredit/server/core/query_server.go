@@ -65,7 +65,7 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassIn
 	}
 
 	issuers := make([]sdk.AccAddress, 0)
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId))
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,12 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 		return nil, err
 	}
 
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId), ormlist.Paginate(&queryv1beta1.PageRequest{
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,

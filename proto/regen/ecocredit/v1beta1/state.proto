@@ -64,8 +64,8 @@ message ClassIssuer {
         primary_key: {fields: "class_id,issuer"}
     };
 
-    // class_id is the unique ID of credit class.
-    string class_id = 1;
+    // class_id is the row ID of a credit class.
+    uint64 class_id = 1;
 
     // issuer is the approved issuer of the credit class.
     bytes issuer = 2;

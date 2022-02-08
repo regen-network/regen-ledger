@@ -1352,8 +1352,8 @@ func (x *fastReflection_ClassIssuer) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_ClassIssuer) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ClassId != "" {
-		value := protoreflect.ValueOfString(x.ClassId)
+	if x.ClassId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ClassId)
 		if !f(fd_ClassIssuer_class_id, value) {
 			return
 		}
@@ -1380,7 +1380,7 @@ func (x *fastReflection_ClassIssuer) Range(f func(protoreflect.FieldDescriptor, 
 func (x *fastReflection_ClassIssuer) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
-		return x.ClassId != ""
+		return x.ClassId != uint64(0)
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		return len(x.Issuer) != 0
 	default:
@@ -1400,7 +1400,7 @@ func (x *fastReflection_ClassIssuer) Has(fd protoreflect.FieldDescriptor) bool {
 func (x *fastReflection_ClassIssuer) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
-		x.ClassId = ""
+		x.ClassId = uint64(0)
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		x.Issuer = nil
 	default:
@@ -1421,7 +1421,7 @@ func (x *fastReflection_ClassIssuer) Get(descriptor protoreflect.FieldDescriptor
 	switch descriptor.FullName() {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
 		value := x.ClassId
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		value := x.Issuer
 		return protoreflect.ValueOfBytes(value)
@@ -1446,7 +1446,7 @@ func (x *fastReflection_ClassIssuer) Get(descriptor protoreflect.FieldDescriptor
 func (x *fastReflection_ClassIssuer) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
-		x.ClassId = value.Interface().(string)
+		x.ClassId = value.Uint()
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		x.Issuer = value.Bytes()
 	default:
@@ -1487,7 +1487,7 @@ func (x *fastReflection_ClassIssuer) Mutable(fd protoreflect.FieldDescriptor) pr
 func (x *fastReflection_ClassIssuer) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		return protoreflect.ValueOfBytes(nil)
 	default:
@@ -1559,9 +1559,8 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.ClassId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.ClassId != 0 {
+			n += 1 + runtime.Sov(uint64(x.ClassId))
 		}
 		l = len(x.Issuer)
 		if l > 0 {
@@ -1603,12 +1602,10 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.ClassId) > 0 {
-			i -= len(x.ClassId)
-			copy(dAtA[i:], x.ClassId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
+		if x.ClassId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ClassId))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -1660,10 +1657,10 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 				}
-				var stringLen uint64
+				x.ClassId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1673,24 +1670,11 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.ClassId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.ClassId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
@@ -5887,8 +5871,8 @@ type ClassIssuer struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique ID of credit class.
-	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// class_id is the row ID of a credit class.
+	ClassId uint64 `protobuf:"varint,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// issuer is the approved issuer of the credit class.
 	Issuer []byte `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 }
@@ -5913,11 +5897,11 @@ func (*ClassIssuer) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1beta1_state_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *ClassIssuer) GetClassId() string {
+func (x *ClassIssuer) GetClassId() uint64 {
 	if x != nil {
 		return x.ClassId
 	}
-	return ""
+	return 0
 }
 
 func (x *ClassIssuer) GetIssuer() []byte {
@@ -6394,7 +6378,7 @@ var file_regen_ecocredit_v1beta1_state_proto_rawDesc = []byte{
 	0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x10, 0x02, 0x12, 0x0f, 0x0a, 0x0b, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x10, 0x03, 0x18, 0x02, 0x22, 0x5d, 0x0a, 0x0b,
 	0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x63,
-	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
+	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x63,
 	0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x3a, 0x1b,
 	0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x15, 0x0a, 0x11, 0x0a, 0x0f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f,
