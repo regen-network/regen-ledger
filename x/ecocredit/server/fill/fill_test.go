@@ -1,7 +1,6 @@
 package fill_test
 
 import (
-	"bytes"
 	"context"
 	"testing"
 
@@ -22,8 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 	"gotest.tools/v3/assert"
-
-	"github.com/rs/zerolog"
 )
 
 type suite struct {
@@ -34,8 +31,6 @@ type suite struct {
 	marketplaceStore marketplacev1beta1.StateStore
 	acct1            sdk.AccAddress
 	acct2            sdk.AccAddress
-	loggerBuf        *bytes.Buffer
-	logger           zerolog.Logger
 	ctx              context.Context
 	fillMgr          fill.Manager
 	marketId         uint64
@@ -50,10 +45,7 @@ func setup(t *testing.T) *suite {
 	s.db, err = ormdb.NewModuleDB(testutil.TestModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 
-	s.loggerBuf = &bytes.Buffer{}
-	s.logger = zerolog.New(s.loggerBuf)
-
-	s.fillMgr, err = fill.NewManager(s.db, s.transferMgr, s.logger)
+	s.fillMgr, err = fill.NewManager(s.db, s.transferMgr)
 	assert.NilError(t, err)
 
 	s.backend = ormtest.NewMemoryBackend()

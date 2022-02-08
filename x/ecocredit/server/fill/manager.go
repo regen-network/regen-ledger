@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rs/zerolog"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
@@ -13,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
+// Status represents the order fill status.
 type Status int
 
 const (
@@ -40,10 +39,13 @@ type manager struct {
 	ecocreditStore   ecocreditv1beta1.StateStore
 	bankBalances     map[string]sdk.Int
 	transferManager  TransferManager
-	logger           zerolog.Logger
 }
 
+// Manager handles order filling for orders already matched by the order book.
 type Manager interface {
+	// Fill fills the provided buy order with the provided sell order and updates
+	// or deletes the orders from the marketplace state. For now, it naively
+	// chooses the bid price as the settlement price.
 	Fill(
 		ctx context.Context,
 		market *marketplacev1beta1.Market,
@@ -52,8 +54,9 @@ type Manager interface {
 	) (Status, error)
 }
 
-func NewManager(db ormdb.ModuleDB, transferManager TransferManager, logger zerolog.Logger) (Manager, error) {
-	mgr := &manager{transferManager: transferManager, logger: logger}
+// NewManager returns a new Manager.
+func NewManager(db ormdb.ModuleDB, transferManager TransferManager) (Manager, error) {
+	mgr := &manager{transferManager: transferManager}
 
 	var err error
 	mgr.marketplaceStore, err = marketplacev1beta1.NewStateStore(db)
@@ -69,6 +72,9 @@ func NewManager(db ormdb.ModuleDB, transferManager TransferManager, logger zerol
 	return mgr, nil
 }
 
+// TransferManager abstracts over transfers of credits and coins. The fill manager
+// is expected to call the transfer manager to handle all transfers rather than
+// attempting to handle them itself.
 type TransferManager interface {
 	SendCoinsTo(denom string, amount sdk.Int, from, to sdk.AccAddress) error
 	SendCreditsTo(batchId uint64, amount math.Dec, from, to sdk.AccAddress, retire bool) error
