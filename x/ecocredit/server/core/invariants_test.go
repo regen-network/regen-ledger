@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -12,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
@@ -21,18 +21,12 @@ import (
 func setupStore(t *testing.T) ormdb.ModuleDB {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	ecocredit.RegisterTypes(interfaceRegistry)
-	db := dbm.NewMemDB()
-
 	var moduleSchema = ormdb.ModuleSchema{
 		FileDescriptors: map[uint32]protoreflect.FileDescriptor{
 			1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto,
 		},
 	}
-	backend := ormtable.NewBackend(ormtable.BackendOptions{
-		CommitmentStore: db,
-		IndexStore:      nil,
-		Hooks:           nil,
-	})
+	backend := ormtest.NewMemoryBackend()
 	modDB, err := ormdb.NewModuleDB(moduleSchema, ormdb.ModuleDBOptions{
 		TypeResolver:  nil,
 		FileResolver:  nil,
