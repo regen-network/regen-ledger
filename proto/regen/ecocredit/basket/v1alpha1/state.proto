@@ -67,5 +67,6 @@ message BasketBalance {
     // balance is the amount of ecocredits held in the basket
     string balance = 3;
 
+    // batch_start_date is the start date of the batch
     google.protobuf.Timestamp batch_start_date = 4;
 }
