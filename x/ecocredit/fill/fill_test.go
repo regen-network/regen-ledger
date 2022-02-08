@@ -5,8 +5,6 @@ import (
 	"context"
 	"testing"
 
-	ormtestutil "github.com/regen-network/regen-ledger/types/testutil/orm"
-
 	mathtestutil "github.com/regen-network/regen-ledger/types/testutil/math"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -80,7 +78,7 @@ func TestBothFilled(t *testing.T) {
 		Buyer:              s.acct1,
 		Quantity:           "10",
 		MarketId:           s.marketId,
-		BidPrice:           "10",
+		BidPrice:           "11",
 		DisableAutoRetire:  false,
 		DisablePartialFill: false,
 		Expiration:         nil,
@@ -99,7 +97,7 @@ func TestBothFilled(t *testing.T) {
 	}
 
 	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(10), s.acct2, s.acct1, true)
-	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(100), s.acct1, s.acct2)
+	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(110), s.acct1, s.acct2)
 
 	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
@@ -110,9 +108,9 @@ func TestBuyFilled(t *testing.T) {
 	s := setup(t)
 	buyOrder := &marketplacev1beta1.BuyOrder{
 		Buyer:              s.acct1,
-		Quantity:           "5",
+		Quantity:           "5.5",
 		MarketId:           s.marketId,
-		BidPrice:           "10",
+		BidPrice:           "108",
 		DisableAutoRetire:  false,
 		DisablePartialFill: false,
 		Expiration:         nil,
@@ -125,15 +123,15 @@ func TestBuyFilled(t *testing.T) {
 		BatchId:           1,
 		Quantity:          "10",
 		MarketId:          s.marketId,
-		AskPrice:          "10",
+		AskPrice:          "105",
 		DisableAutoRetire: false,
 		Expiration:        nil,
 		Maker:             false,
 	}
 	assert.NilError(t, s.marketplaceStore.SellOrderStore().Insert(s.ctx, sellOrder))
 
-	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromInt64(5), s.acct2, s.acct1, true)
-	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(50), s.acct1, s.acct2)
+	s.transferMgr.EXPECT().SendCreditsTo(uint64(1), mathtestutil.MatchDecFromString("5.5"), s.acct2, s.acct1, true)
+	s.transferMgr.EXPECT().SendCoinsTo("foo", mathtestutil.MatchInt(594), s.acct1, s.acct2)
 
 	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
@@ -172,6 +170,4 @@ func TestSellFilled(t *testing.T) {
 	state, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
 	assert.NilError(t, err)
 	assert.Equal(t, fill.SellFilled, state)
-
-	ormtestutil.AssertGolden(t, s.db, s.ctx, "test-sell-filled.json")
 }
