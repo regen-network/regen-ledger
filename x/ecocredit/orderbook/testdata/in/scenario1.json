@@ -1,0 +1,157 @@
+{
+  "regen.ecocredit.v1beta1.CreditType": [
+    {
+      "abbreviation": "C",
+      "name": "carbon",
+      "unit": "tons CO2e",
+      "precision": 6
+    },
+    {
+      "abbreviation": "B",
+      "name": "biodiversity",
+      "unit": "hectares",
+      "precision": 6
+    }
+  ],
+  "regen.ecocredit.v1beta1.ClassInfo": [
+    5,
+    {
+      "id": "1",
+      "name": "C01",
+      "credit_type": "C"
+    },
+    {
+      "id": "2",
+      "name": "C02",
+      "credit_type": "C"
+    },
+    {
+      "id": "3",
+      "name": "C03",
+      "credit_type": "C"
+    },
+    {
+      "id": "4",
+      "name": "B01",
+      "credit_type": "B"
+    },
+    {
+      "id": "5",
+      "name": "B02",
+      "credit_type": "B"
+    }
+  ],
+  "regen.ecocredit.v1beta1.ProjectInfo": [
+    2,
+    {
+      "id": 1,
+      "class_id": 1,
+      "name": "C01-001",
+      "project_location": "US-NY 10001"
+    },
+    {
+      "id": 2,
+      "class_id": 2,
+      "name": "C02-001",
+      "project_location": "US-CA 90210"
+    }
+  ],
+  "regen.ecocredit.v1beta1.BatchInfo": [
+    3,
+    {
+      "id": "1",
+      "batch_denom": "C01-001-20200101-20201231-01",
+      "project_id": "1",
+      "start_date": "2020-01-01T00:00:00Z",
+      "end_date": "2020-12-31T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "batch_denom":"C01-001-20210101-20211231-02",
+      "project_id": "1",
+      "start_date": "2021-01-01T00:00:00Z",
+      "end_date": "2021-12-31T00:00:00Z"
+    },
+    {
+      "id": "3",
+      "batch_denom":"C02-001-20190101-20191231-01",
+      "project_id": "2",
+      "start_date": "2019-01-01T00:00:00Z",
+      "end_date": "2019-12-31T00:00:00Z"
+    }
+  ],
+  "regen.ecocredit.marketplace.v1beta1.SellOrder": [
+    3,
+    {
+      "id": 1,
+      "market_id": 1,
+      "batch_id": 1,
+      "ask_price": "10250000",
+      "quantity": "10",
+      "seller": "MTIzNDU=",
+      "disable_auto_retire": true
+    },
+    {
+      "id": 2,
+      "market_id": 1,
+      "batch_id": 2,
+      "ask_price": "10350000",
+      "quantity": "7",
+      "seller": "NTQzMjE="
+    },
+    {
+      "id": 3,
+      "market_id": 1,
+      "batch_id": 3,
+      "ask_price": "10000000",
+      "quantity": "3",
+      "seller": "NTQzMjE="
+    }
+  ],
+  "regen.ecocredit.marketplace.v1beta1.BuyOrder": [
+    3,
+    {
+      "id": 1,
+      "selection": { "filter": { "or": [ { "class_selector": { "class_id": 1 } } ] } },
+      "market_id": 1,
+      "bid_price": "10350000",
+      "quantity": "11",
+      "buyer": "Ym53ZW9mc2Rm",
+      "disable_auto_retire": true
+    },
+    {
+      "id": 2,
+      "selection": { "filter": { "or": [ { "class_selector": { "class_id": 1 } } ] } },
+      "market_id": 1,
+      "bid_price": "10450000",
+      "quantity": "2",
+      "buyer": "bnd2b2l3Zg=="
+    },
+    {
+      "id": 3,
+      "selection": { "filter": { "or": [
+        { "class_selector": { "class_id": 1 } },
+        { "class_selector": { "class_id": 2 } }
+       ] } },
+      "market_id": 1,
+      "bid_price": "10270000",
+      "quantity": "5",
+      "buyer": "c2RmbGtud3Jnd2ll"
+    }
+  ],
+  "regen.ecocredit.marketplace.v1beta1.Market": [
+    2,
+    {
+      "id": 1,
+      "credit_type": "C",
+      "bank_denom": "UST",
+      "precision_modifier": 0
+    },
+    {
+      "id": 2,
+      "credit_type": "B",
+      "bank_denom": "EEUR",
+      "precision_modifier": 3
+    }
+  ]
+}

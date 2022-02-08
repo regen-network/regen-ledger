@@ -2,6 +2,7 @@ package orderbook
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
@@ -53,18 +54,10 @@ type OrderBook interface {
 	Reload(ctx context.Context) error
 }
 
-func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1beta1.BuyOrder) error {
-	return nil
-}
-
 func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1beta1.SellOrder, batchInfo *ecocreditv1beta1.BatchInfo) error {
-	return nil
+	return fmt.Errorf("TODO")
 }
 
 func (o orderbook) ProcessBatch(ctx context.Context) error {
-	return nil
-}
-
-func (o orderbook) Reload(ctx context.Context) error {
-	return nil
+	return fmt.Errorf("TODO")
 }
