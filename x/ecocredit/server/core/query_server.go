@@ -64,7 +64,7 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassIn
 		return nil, err
 	}
 
-	issuers := make([]string, 0)
+	issuers := make([]sdk.AccAddress, 0)
 	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId))
 	if err != nil {
 		return nil, err
@@ -115,7 +115,8 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 		if err != nil {
 			return nil, err
 		}
-		issuers = append(issuers, issuer.Issuer)
+
+		issuers = append(issuers, string(issuer.Issuer))
 	}
 	pr := it.PageResponse()
 
