@@ -27,6 +27,11 @@ message Basket {
     // min_start_date is the earliest start date of credits allowed in the basket
     google.protobuf.Duration batch_date_window = 8;
 
+    // multiplier is an integer number which is applied to credit units when
+    // converting to basket units. For example if the multiplier is 2000, then
+    // 1.1 credits will result in 2200 basket tokens. If there are any fractional
+    // amounts left over in this calculation when adding credits to a basket,
+    // those fractional amounts will not get added to the basket.
     string multiplier = 6;
 }
 
