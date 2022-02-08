@@ -36,7 +36,7 @@ func TestMatcher(t *testing.T) {
 
 	ctx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 
-	bz, err := os.ReadFile("testdata/in/scenario1.json")
+	bz, err := os.ReadFile("testdata/scenario1.json")
 	assert.NilError(t, err)
 	jsonSource, err := ormjson.NewRawMessageSource(bz)
 	assert.NilError(t, err)
@@ -44,18 +44,16 @@ func TestMatcher(t *testing.T) {
 
 	assert.NilError(t, matcher.Reload(ctx))
 
-	ormtestutil.AssertGoldenDB(t, db, ctx, "out/scenario1.after_reload.json")
+	ormtestutil.AssertGoldenDB(t, db, ctx, "scenario1.after_reload.json")
 
 	assertOrderBookOrder(t, db, ctx,
 		pair{2, 1},
 		pair{2, 2},
+		pair{4, 3},
 		pair{1, 1},
 		pair{3, 3},
 		pair{3, 1},
 	)
-
-	// TODO test project locations
-	// TODO test dates
 }
 
 type pair struct {

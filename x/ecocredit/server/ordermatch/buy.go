@@ -179,7 +179,7 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 				return err
 			}
 
-			if !matchDates(batch, selector.MinStartDate, selector.MaxEndDate) {
+			if !matchDates(batch, o.filter.MinStartDate, o.filter.MaxEndDate) {
 				continue
 			}
 

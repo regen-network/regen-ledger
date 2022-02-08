@@ -53,16 +53,6 @@ message Filter {
 message ClassSelector {
   // class_id is the credit class ID.
   uint64 class_id = 1;
-
-  // start_date is the beginning of the period during which a credit batch
-  // was quantified and verified. If it is empty then there is no start date
-  // limit.
-  google.protobuf.Timestamp min_start_date = 3;
-
-  // max_end_date is the end of the period during which a credit batch was
-  // quantified and verified. If it is empty then there is no end date
-  // limit.
-  google.protobuf.Timestamp max_end_date = 4;
 }
 
 // ProjectSelector is a selector for a project.
