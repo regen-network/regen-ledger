@@ -160,7 +160,7 @@ func (o buyOrderMatcher) matchByClassIdSelector(selector *marketplacev1beta1.Cla
 			return err
 		}
 
-		if !matchLocations(project, o.filter.ProjectLocations) {
+		if !matchLocation(project.ProjectLocation, o.filter.ProjectLocations) {
 			continue
 		}
 

@@ -1,30 +1,19 @@
 package ordermatch
 
-import ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+import "strings"
 
-func matchLocations(project *ecocreditv1beta1.ProjectInfo, locations []string) bool {
-	// TODO
-	for _, filter := range locations {
-		target := project.ProjectLocation
+func matchLocation(target string, filters []string) bool {
+	if len(filters) == 0 {
+		return true
+	}
 
-		n := len(filter)
-
-		// if the target is shorter than the filter than we know we don't have a match
-		if len(target) < n {
-			return false
-		}
-
-		// if the filter length is less than 2 we should match anything (the only filters less than 2 should be totally empty)
-		if n < 2 {
+	for _, filter := range filters {
+		// filters and project locations should have already been validated
+		// when they were inserted so we can do a simple prefix check
+		if strings.HasPrefix(target, filter) {
 			return true
 		}
-
-		// check if country matches
-		if target[:2] != filter[:2] {
-			return false
-		}
-
-		panic("TODO")
 	}
-	return true
+
+	return false
 }
