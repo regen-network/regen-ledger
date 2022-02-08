@@ -32,7 +32,7 @@ message MsgCreateBasket {
   string name = 2;
 
   // display_name will be used to create a bank Metadata display name for this
-  // basket token of the form ecocredit:{curator}:{display_name}.
+  // basket token
   string display_name = 3;
 
   // exponent is the exponent that will be used for denom metadata. An exponent
