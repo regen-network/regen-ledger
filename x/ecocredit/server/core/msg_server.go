@@ -916,7 +916,7 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 	return false
 }
 
-// AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
 	it, err := s.stateStore.ClassIssuerStore().List(goCtx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classID))
