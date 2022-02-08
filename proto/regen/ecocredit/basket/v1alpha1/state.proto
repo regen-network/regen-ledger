@@ -47,6 +47,7 @@ message BasketClass {
 
     // basket_denom is the denom of the basket
     string basket_denom = 1;
+    // class_id is the id of the credit class that is allowed to be deposited in the basket
     string class_id = 2;
 }
 
