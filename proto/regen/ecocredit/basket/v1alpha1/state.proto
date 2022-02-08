@@ -4,6 +4,7 @@ package regen.ecocredit.basket.v1alpha1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
 
@@ -46,6 +47,7 @@ message BasketBalance {
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
         primary_key: {fields: "basket_denom,batch_denom"}
+        index: {id: 1, fields: "batch_start_date"}
     };
 
     // basket_denom is the denom of the basket
@@ -56,4 +58,6 @@ message BasketBalance {
 
     // balance is the amount of ecocredits held in the basket
     string balance = 3;
+
+    google.protobuf.Timestamp batch_start_date = 4;
 }
