@@ -42,6 +42,7 @@ message BasketClass {
         primary_key: {fields: "basket_denom,class_id"}
     };
 
+    // basket_denom is the denom of the basket
     string basket_denom = 1;
     string class_id = 2;
 }
