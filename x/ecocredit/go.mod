@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cosmos/cosmos-sdk v0.44.2
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.8
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.9
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
@@ -138,5 +138,3 @@ replace github.com/regen-network/regen-ledger/orm => ../../orm
 replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/regen-network/regen-ledger/api => ../../api
-
-replace github.com/cosmos/cosmos-sdk/orm => ../../../cosmos-sdk/orm
