@@ -4,7 +4,7 @@ package regen.ecocredit.basket.v1alpha1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
 
-import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 import "regen/ecocredit/basket/v1alpha1/types.proto";
 
 // Msg is the regen.ecocredit.basket.v1beta1 Msg service.
@@ -52,7 +52,11 @@ message MsgCreateBasket {
 
   repeated string allowed_classes = 7;
 
-  google.protobuf.Timestamp min_start_date = 8;
+  // batch_date_window is a duration of time measured into the past which sets
+  // a cutoff for batch start dates when adding new credits to the basket.
+  // Based on the current block timestamp, credits whose start date is before
+  // block timestamp - batch_date_window will not be allowed into the basket.
+  google.protobuf.Duration batch_date_window = 8;
 
   // multiplier is an integer number which is applied to credit units when
   // converting to basket units. For example if the multiplier is 2000, then

@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1alpha1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
-import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
 
@@ -14,13 +14,18 @@ message Basket {
         primary_key: {fields: "basket_denom"}
     };
 
+    // basket_denom is the basket denom.
     string basket_denom = 1;
 
+    // disable_auto_retire indicates that credits can be taken out of
+    // the basket in
     bool disable_auto_retire = 2;
 
+    // credit_type_name is the name of the credit type.
     string credit_type_name = 3;
 
-    google.protobuf.Timestamp min_start_date = 5;
+    // min_start_date is the earliest start date of credits allowed in the basket
+    google.protobuf.Duration batch_date_window = 8;
 
     string multiplier = 6;
 }
