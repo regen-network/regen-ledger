@@ -6,7 +6,7 @@ import (
 )
 
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
-// TODO: sim refactor PR
+// TODO: sim refactor PR https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	//key := s.storeKey.(servermodule.RootModuleKey)
 	//queryClient := ecocredit.NewQueryClient(key)

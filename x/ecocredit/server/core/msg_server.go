@@ -501,7 +501,7 @@ func (s serverImpl) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpd
 }
 
 // Sell creates new sell orders for credits
-// TODO: update this function with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) Sell(ctx context.Context, sell *marketplacev1beta1.MsgSell) (*marketplacev1beta1.MsgSellResponse, error) {
 	panic("implement me")
 	//ctx := types.UnwrapSDKContext(goCtx)
@@ -553,7 +553,7 @@ func (s serverImpl) Sell(ctx context.Context, sell *marketplacev1beta1.MsgSell) 
 	//return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
-// TODO: implement this with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) createSellOrder(ctx types.Context, owner string, o *marketplacev1beta1.MsgSell_Order) (uint64, error) {
 	panic("impl me!")
 	//orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
@@ -570,7 +570,7 @@ func (s serverImpl) createSellOrder(ctx types.Context, owner string, o *marketpl
 }
 
 // UpdateSellOrders updates existing sell orders for credits
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *marketplacev1beta1.MsgUpdateSellOrders) (*marketplacev1beta1.MsgUpdateSellOrdersResponse, error) {
 	panic("implement me")
 	//ctx := types.UnwrapSDKContext(goCtx)
@@ -836,7 +836,7 @@ func (s serverImpl) Buy(ctx context.Context, buy *marketplacev1beta1.MsgBuy) (*m
 	//return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
 }
 
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) createBuyOrder(ctx types.Context, buyer string, o *marketplacev1beta1.MsgBuy_Order) (uint64, error) {
 	panic("impl me!")
 	//orderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
@@ -859,7 +859,7 @@ func (s serverImpl) createBuyOrder(ctx types.Context, buyer string, o *marketpla
 }
 
 // AllowAskDenom adds a new ask denom
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) AllowAskDenom(ctx context.Context, denom *marketplacev1beta1.MsgAllowAskDenom) (*marketplacev1beta1.MsgAllowAskDenomResponse, error) {
 	panic("implement me")
 	// ctx := types.UnwrapSDKContext(goCtx)

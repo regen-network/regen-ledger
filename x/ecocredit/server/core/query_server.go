@@ -370,7 +370,6 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 }
 
 // CreditTypes queries the list of allowed types that credit classes can have.
-// TODO: migrate to v1beta1
 func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequest) (*v1beta1.QueryCreditTypesResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	creditTypes := s.getAllCreditTypes(sdkCtx)
@@ -378,7 +377,6 @@ func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypes
 }
 
 // Params queries the ecocredit module parameters.
-// TODO: refactor to v1beta1
 func (s serverImpl) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params
@@ -402,7 +400,7 @@ func (s serverImpl) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (
 }
 
 // SellOrder queries for information about a sell order by its ID
-// TODO: impl with ORM, integrate sell order?
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) SellOrder(goCtx context.Context, request *ecocredit.QuerySellOrderRequest) (*ecocredit.QuerySellOrderResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -419,7 +417,7 @@ func (s serverImpl) SellOrder(goCtx context.Context, request *ecocredit.QuerySel
 }
 
 // SellOrders queries for all sell orders with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) SellOrders(goCtx context.Context, request *ecocredit.QuerySellOrdersRequest) (*ecocredit.QuerySellOrdersResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -445,7 +443,7 @@ func (s serverImpl) SellOrders(goCtx context.Context, request *ecocredit.QuerySe
 }
 
 // SellOrdersByAddress queries for all sell orders by address with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredit.QuerySellOrdersByAddressRequest) (*ecocredit.QuerySellOrdersByAddressResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -476,7 +474,7 @@ func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredi
 }
 
 // SellOrdersByBatchDenom queries for all sell orders by address with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocredit.QuerySellOrdersByBatchDenomRequest) (*ecocredit.QuerySellOrdersByBatchDenomResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -506,7 +504,7 @@ func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocr
 }
 
 // BuyOrder queries for information about a buy order by its ID
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) BuyOrder(goCtx context.Context, request *ecocredit.QueryBuyOrderRequest) (*ecocredit.QueryBuyOrderResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -523,7 +521,7 @@ func (s serverImpl) BuyOrder(goCtx context.Context, request *ecocredit.QueryBuyO
 }
 
 // BuyOrders queries for all buy orders with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) BuyOrders(goCtx context.Context, request *ecocredit.QueryBuyOrdersRequest) (*ecocredit.QueryBuyOrdersResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -549,7 +547,7 @@ func (s serverImpl) BuyOrders(goCtx context.Context, request *ecocredit.QueryBuy
 }
 
 // BuyOrdersByAddress queries for all buy orders by address with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) BuyOrdersByAddress(goCtx context.Context, request *ecocredit.QueryBuyOrdersByAddressRequest) (*ecocredit.QueryBuyOrdersByAddressResponse, error) {
 	panic("impl me!")
 	//if request == nil {
@@ -580,7 +578,7 @@ func (s serverImpl) BuyOrdersByAddress(goCtx context.Context, request *ecocredit
 }
 
 // AllowedAskDenoms queries for all allowed ask denoms with pagination.
-// TODO: impl with ORM
+// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
 func (s serverImpl) AllowedAskDenoms(goCtx context.Context, request *ecocredit.QueryAllowedAskDenomsRequest) (*ecocredit.QueryAllowedAskDenomsResponse, error) {
 	panic("impl me!")
 	//if request == nil {
