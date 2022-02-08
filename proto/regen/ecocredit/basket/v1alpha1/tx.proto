@@ -16,17 +16,8 @@ service Msg {
   // AddToBasket adds credits to a basket in return for basket tokens.
   rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
 
-  // TakeFromBasket takes credits from a basket without regard for which
-  // credits they are. The credits will be auto-retired if disable_auto_retire
-  // is false. Credits will be chosen randomly using the previous block hash
-  // as a consensus source of randomness.
-  // More concretely, the implementation is as follows:
-  // - take the previous block hash and convert it into an uint64,
-  // - given the total number of different credits within the basket `n`, the
-  //   first credits that will get picked correspond to: hash modulo n (in
-  //   terms of order),
-  // - then if we need to take more credits, we get some from the next one and
-  //   so on.
+  // TakeFromBasket takes credits from a basket starting from the oldest
+  // credits first.
   rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
 }
 
@@ -62,6 +53,13 @@ message MsgCreateBasket {
   repeated string allowed_classes = 7;
 
   google.protobuf.Timestamp min_start_date = 8;
+
+  // multiplier is an integer number which is applied to credit units when
+  // converting to basket units. For example if the multiplier is 2000, then
+  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
+  // amounts left over in this calculation when adding credits to a basket,
+  // those fractional amounts will not get added to the basket.
+  string multiplier = 9;
 }
 
 // MsgCreateBasketResponse is the Msg/CreateBasket response type.

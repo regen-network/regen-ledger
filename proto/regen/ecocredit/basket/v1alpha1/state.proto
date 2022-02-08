@@ -3,8 +3,29 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1alpha1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
+
+// Basket represents a basket in state.
+message Basket {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 1,
+        primary_key: {fields: "basket_denom"}
+    };
+
+    string basket_denom = 1;
+
+    bool disable_auto_retire = 2;
+
+    string credit_type_name = 3;
+
+    repeated string allowed_classes = 4;
+
+    google.protobuf.Timestamp min_start_date = 5;
+
+    string multiplier = 6;
+}
 
 // BasketBalance stores the amount of credits from a batch in a basket
 message BasketBalance {
@@ -17,7 +38,7 @@ message BasketBalance {
     string basket_denom = 1;
 
     // batch_id is the id of the credit batch
-    uint64 batch_id = 2;
+    string batch_denom = 2;
 
     // balance is the amount of ecocredits held in the basket
     string balance = 3;
