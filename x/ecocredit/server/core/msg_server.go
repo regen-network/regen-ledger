@@ -924,24 +924,15 @@ func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, de
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
-	it, err := s.stateStore.ClassIssuerStore().List(goCtx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classID))
+	addr, _ := sdk.AccAddressFromBech32(issuer)
+	found, err := s.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
 	if err != nil {
 		return err
 	}
-
-	iAddr, _ := sdk.AccAddressFromBech32(issuer)
-
-	defer it.Close()
-	for it.Next() {
-		v, err := it.Value()
-		if err != nil {
-			return err
-		}
-		if iAddr.Equals(sdk.AccAddress(v.Issuer)) {
-			return nil
-		}
+	if !found {
+		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for class %s", issuer, classID)
 	}
-	return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for class %s", issuer, classID)
+	return nil
 }
 
 func (s serverImpl) genProjectID(ctx context.Context, classRowID uint64, classID string) (string, error) {
