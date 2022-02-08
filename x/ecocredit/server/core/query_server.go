@@ -65,7 +65,7 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassIn
 	}
 
 	issuers := make([]sdk.AccAddress, 0)
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId))
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,12 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 		return nil, err
 	}
 
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(request.ClassId), ormlist.Paginate(&queryv1beta1.PageRequest{
+	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -371,12 +376,28 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 
 // CreditTypes queries the list of allowed types that credit classes can have.
 func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequest) (*v1beta1.QueryCreditTypesResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	creditTypes := s.getAllCreditTypes(sdkCtx)
+	creditTypes := make([]*v1beta1.CreditType, 0)
+	it, err := s.stateStore.CreditTypeStore().List(ctx, ecocreditv1beta1.CreditTypePrimaryKey{})
+	if err != nil {
+		return nil, err
+	}
+	for it.Next() {
+		ct, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+		creditTypes = append(creditTypes, &v1beta1.CreditType{
+			Abbreviation: ct.Abbreviation,
+			Name:         ct.Name,
+			Unit:         ct.Unit,
+			Precision:    ct.Precision,
+		})
+	}
 	return &v1beta1.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }
 
 // Params queries the ecocredit module parameters.
+// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 func (s serverImpl) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params

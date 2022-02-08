@@ -24,12 +24,10 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // EventCreateClass is an event emitted when a credit class is created.
 type EventCreateClass struct {
-	// row_id is the id of the database row entry
-	RowId uint64 `protobuf:"varint,1,opt,name=row_id,json=rowId,proto3" json:"row_id,omitempty"`
 	// class_id is the unique ID of credit class.
-	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// admin is the admin of the credit class.
-	Admin string `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *EventCreateClass) Reset()         { *m = EventCreateClass{} }
@@ -65,13 +63,6 @@ func (m *EventCreateClass) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventCreateClass proto.InternalMessageInfo
 
-func (m *EventCreateClass) GetRowId() uint64 {
-	if m != nil {
-		return m.RowId
-	}
-	return 0
-}
-
 func (m *EventCreateClass) GetClassId() string {
 	if m != nil {
 		return m.ClassId
@@ -88,17 +79,15 @@ func (m *EventCreateClass) GetAdmin() string {
 
 // EventCreateProject is an event emitted when a project is created.
 type EventCreateProject struct {
-	// row_id is the id of the database row entry
-	RowId uint64 `protobuf:"varint,1,opt,name=row_id,json=rowId,proto3" json:"row_id,omitempty"`
 	// project_id is the unique ID of the project.
-	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// class_id is the unique ID of credit class for this project.
-	ClassId string `protobuf:"bytes,3,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// issuer is the issuer of the credit batches for this project.
-	Issuer string `protobuf:"bytes,4,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// project_location is the location of the project.
 	// Full documentation can be found in MsgCreateProject.project_location.
-	ProjectLocation string `protobuf:"bytes,5,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
+	ProjectLocation string `protobuf:"bytes,4,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
 }
 
 func (m *EventCreateProject) Reset()         { *m = EventCreateProject{} }
@@ -134,13 +123,6 @@ func (m *EventCreateProject) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventCreateProject proto.InternalMessageInfo
 
-func (m *EventCreateProject) GetRowId() uint64 {
-	if m != nil {
-		return m.RowId
-	}
-	return 0
-}
-
 func (m *EventCreateProject) GetProjectId() string {
 	if m != nil {
 		return m.ProjectId
@@ -171,27 +153,25 @@ func (m *EventCreateProject) GetProjectLocation() string {
 
 // EventCreateBatch is an event emitted when a credit batch is created.
 type EventCreateBatch struct {
-	// row_id is the id of the database row entry
-	RowId uint64 `protobuf:"varint,1,opt,name=row_id,json=rowId,proto3" json:"row_id,omitempty"`
 	// class_id is the unique ID of credit class.
-	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// batch_denom is the unique ID of credit batch.
-	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// issuer is the account address of the issuer of the credit batch.
-	Issuer string `protobuf:"bytes,4,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// total_amount is the total number of credits in the credit batch.
-	TotalAmount string `protobuf:"bytes,5,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	TotalAmount string `protobuf:"bytes,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.
-	StartDate string `protobuf:"bytes,6,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	StartDate string `protobuf:"bytes,5,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
-	EndDate string `protobuf:"bytes,7,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	EndDate string `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
 	// project_location is the location of the project.
 	// Full documentation can be found in MsgCreateProject.project_location.
-	ProjectLocation string `protobuf:"bytes,8,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
+	ProjectLocation string `protobuf:"bytes,7,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
 	// project_id is the unique ID of the project this batch belongs to.
-	ProjectId string `protobuf:"bytes,9,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	ProjectId string `protobuf:"bytes,8,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
 func (m *EventCreateBatch) Reset()         { *m = EventCreateBatch{} }
@@ -226,13 +206,6 @@ func (m *EventCreateBatch) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_EventCreateBatch proto.InternalMessageInfo
-
-func (m *EventCreateBatch) GetRowId() uint64 {
-	if m != nil {
-		return m.RowId
-	}
-	return 0
-}
 
 func (m *EventCreateBatch) GetClassId() string {
 	if m != nil {
@@ -538,39 +511,38 @@ func init() {
 }
 
 var fileDescriptor_ead360ced581abaa = []byte{
-	// 508 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xbd, 0x6e, 0x13, 0x41,
-	0x14, 0x85, 0xb3, 0x4e, 0xfc, 0x77, 0x1d, 0x92, 0x68, 0xc5, 0xcf, 0x82, 0x60, 0x09, 0x2b, 0x10,
-	0xa1, 0xc0, 0x56, 0x44, 0x45, 0x49, 0x1c, 0x8a, 0x48, 0x14, 0xc8, 0x74, 0x69, 0xac, 0xf1, 0xcc,
-	0x95, 0x33, 0xb0, 0x9e, 0xb1, 0x66, 0xaf, 0x6d, 0x0a, 0x1e, 0x82, 0x87, 0xa0, 0xe0, 0x05, 0x78,
-	0x07, 0xca, 0x94, 0x94, 0xc8, 0x7e, 0x11, 0x34, 0x3f, 0xeb, 0x60, 0xe3, 0x08, 0x29, 0x9d, 0xcf,
-	0xb9, 0xc7, 0x73, 0xcf, 0x7e, 0x23, 0x0d, 0x3c, 0x35, 0x38, 0x44, 0xd5, 0x41, 0xae, 0xb9, 0x41,
-	0x21, 0xa9, 0x33, 0x3d, 0x1e, 0x20, 0xb1, 0xe3, 0x0e, 0x4e, 0x51, 0x51, 0xd1, 0x1e, 0x1b, 0x4d,
-	0x3a, 0xbe, 0xe7, 0x52, 0xed, 0x65, 0xaa, 0x1d, 0x52, 0xd9, 0x39, 0x1c, 0xbc, 0xb5, 0xc1, 0xae,
-	0x41, 0x46, 0xd8, 0xcd, 0x59, 0x51, 0xc4, 0x77, 0xa0, 0x66, 0xf4, 0xac, 0x2f, 0x45, 0x12, 0x1d,
-	0x46, 0x47, 0x3b, 0xbd, 0xaa, 0xd1, 0xb3, 0x33, 0x11, 0xdf, 0x87, 0x06, 0xb7, 0x73, 0x3b, 0xa8,
-	0x1c, 0x46, 0x47, 0xcd, 0x5e, 0xdd, 0xe9, 0x33, 0x11, 0xdf, 0x86, 0x2a, 0x13, 0x23, 0xa9, 0x92,
-	0x6d, 0xe7, 0x7b, 0x91, 0x7d, 0x8f, 0x20, 0xfe, 0xeb, 0xf0, 0xf7, 0x46, 0x7f, 0x44, 0x4e, 0xd7,
-	0x1d, 0xff, 0x08, 0x60, 0xec, 0x13, 0x57, 0x0b, 0x9a, 0xc1, 0x59, 0xdb, 0xbe, 0xbd, 0xba, 0xfd,
-	0x2e, 0xd4, 0x64, 0x51, 0x4c, 0xd0, 0x24, 0x3b, 0x6e, 0x10, 0x54, 0xfc, 0x02, 0x0e, 0xca, 0x13,
-	0x73, 0xcd, 0x19, 0x49, 0xad, 0x92, 0xaa, 0x4b, 0xec, 0x07, 0xff, 0x5d, 0xb0, 0xb3, 0x6f, 0x95,
-	0x15, 0x0e, 0x27, 0x8c, 0xf8, 0xc5, 0x0d, 0x38, 0x3c, 0x86, 0xd6, 0xc0, 0xfe, 0xb5, 0x2f, 0x50,
-	0xe9, 0x51, 0xe8, 0x09, 0xce, 0x3a, 0xb5, 0xce, 0xb5, 0x55, 0x9f, 0xc0, 0x2e, 0x69, 0x62, 0x79,
-	0x9f, 0x8d, 0xf4, 0x44, 0x51, 0xa8, 0xd9, 0x72, 0xde, 0x1b, 0x67, 0x59, 0x3e, 0x05, 0x31, 0x43,
-	0x7d, 0xc1, 0x08, 0x93, 0x9a, 0xe7, 0xe3, 0x9c, 0x53, 0x46, 0x68, 0x5b, 0xa1, 0x12, 0x7e, 0x58,
-	0xf7, 0xad, 0x50, 0x09, 0x37, 0xda, 0xc4, 0xa1, 0xb1, 0x91, 0xc3, 0xda, 0x25, 0x34, 0xd7, 0x2e,
-	0x21, 0xfb, 0x11, 0xc1, 0xae, 0xc3, 0xd4, 0x43, 0x8e, 0x72, 0x8a, 0xf6, 0x7b, 0x0a, 0x54, 0x02,
-	0x8d, 0x43, 0xd4, 0xec, 0x05, 0x15, 0x3f, 0x84, 0xa6, 0x41, 0x2e, 0xc7, 0x12, 0x15, 0x95, 0x77,
-	0xb9, 0x34, 0xfe, 0x8f, 0xe9, 0x39, 0xec, 0x93, 0x61, 0x82, 0x0d, 0x72, 0x2c, 0x89, 0x78, 0x5e,
-	0x7b, 0xa5, 0x1d, 0xa0, 0x3c, 0x83, 0x3d, 0x83, 0x24, 0x0d, 0x8a, 0x55, 0x72, 0xb7, 0x82, 0xeb,
-	0x63, 0xd9, 0x17, 0x68, 0x85, 0xda, 0xd6, 0x8d, 0x13, 0xa8, 0xfb, 0x79, 0x59, 0xbb, 0x94, 0xeb,
-	0xcd, 0x2a, 0x9b, 0x2e, 0x30, 0x2c, 0xf2, 0xad, 0x83, 0x8a, 0x1f, 0x40, 0x63, 0xc9, 0xd6, 0x57,
-	0x5d, 0xea, 0x4c, 0x84, 0xed, 0x5d, 0xa6, 0x38, 0xe6, 0x96, 0x0d, 0x77, 0xbf, 0xf2, 0xe5, 0xfe,
-	0x2b, 0xe3, 0xc6, 0x0d, 0x4e, 0x3e, 0xfc, 0x9c, 0xa7, 0xd1, 0xe5, 0x3c, 0x8d, 0x7e, 0xcf, 0xd3,
-	0xe8, 0xeb, 0x22, 0xdd, 0xba, 0x5c, 0xa4, 0x5b, 0xbf, 0x16, 0xe9, 0xd6, 0xf9, 0xeb, 0xa1, 0xa4,
-	0x8b, 0xc9, 0xa0, 0xcd, 0xf5, 0xa8, 0xe3, 0xde, 0x81, 0x97, 0x0a, 0x69, 0xa6, 0xcd, 0xa7, 0xa0,
-	0x72, 0x14, 0x43, 0x34, 0x9d, 0xcf, 0xff, 0x3e, 0x22, 0x83, 0x9a, 0x7b, 0x3e, 0x5e, 0xfd, 0x09,
-	0x00, 0x00, 0xff, 0xff, 0xe1, 0x8e, 0x71, 0x8c, 0x66, 0x04, 0x00, 0x00,
+	// 485 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xbf, 0x6e, 0x13, 0x41,
+	0x10, 0xc6, 0x7d, 0x0e, 0xf1, 0x9f, 0x71, 0x48, 0xa2, 0x13, 0x82, 0x03, 0xc1, 0x01, 0x27, 0x10,
+	0x50, 0xe0, 0x53, 0x44, 0x45, 0x49, 0x1c, 0x8a, 0x48, 0x14, 0x28, 0x74, 0x34, 0xd6, 0xde, 0xee,
+	0xc8, 0x59, 0x38, 0xef, 0x5a, 0x7b, 0x63, 0x43, 0xc1, 0x2b, 0x20, 0xc1, 0xc3, 0xf0, 0x0e, 0x94,
+	0x29, 0x29, 0x91, 0xfd, 0x22, 0x68, 0xff, 0x9c, 0x8d, 0x1d, 0x83, 0x10, 0xdd, 0xce, 0x6f, 0x3e,
+	0xed, 0x7c, 0xf3, 0xdd, 0x2d, 0x3c, 0x30, 0x38, 0x42, 0x95, 0x23, 0xd7, 0xdc, 0xa0, 0x90, 0x94,
+	0xcf, 0x8e, 0x0a, 0x24, 0x76, 0x94, 0xe3, 0x0c, 0x15, 0x55, 0xfd, 0x89, 0xd1, 0xa4, 0xe3, 0x1b,
+	0x4e, 0xd5, 0x5f, 0xaa, 0xfa, 0x41, 0x95, 0x0d, 0xe0, 0xf0, 0xa5, 0x15, 0x0e, 0x0c, 0x32, 0xc2,
+	0x41, 0xc9, 0xaa, 0x2a, 0xbe, 0x09, 0x1d, 0x6e, 0x0f, 0x43, 0x29, 0x92, 0xe8, 0x5e, 0xf4, 0xb8,
+	0x7b, 0xd6, 0x76, 0xf5, 0xa9, 0x88, 0xaf, 0xc1, 0x2e, 0x13, 0x63, 0xa9, 0x92, 0xa6, 0xe3, 0xbe,
+	0xc8, 0xbe, 0x46, 0x10, 0xff, 0x76, 0xcb, 0x6b, 0xa3, 0xdf, 0x21, 0xa7, 0xf8, 0x0e, 0xc0, 0xc4,
+	0x1f, 0x57, 0x37, 0x75, 0x03, 0x39, 0x15, 0x6b, 0x63, 0x9a, 0xeb, 0x63, 0xae, 0x43, 0x4b, 0x56,
+	0xd5, 0x14, 0x4d, 0xb2, 0xe3, 0x1a, 0xa1, 0x8a, 0x9f, 0xc0, 0x61, 0x7d, 0x63, 0xa9, 0x39, 0x23,
+	0xa9, 0x55, 0x72, 0xc5, 0x29, 0x0e, 0x02, 0x7f, 0x15, 0x70, 0xf6, 0xb9, 0xb9, 0xb6, 0xd9, 0x31,
+	0x23, 0x7e, 0xfe, 0xb7, 0xcd, 0xee, 0x42, 0xaf, 0xb0, 0x9a, 0xa1, 0x40, 0xa5, 0xc7, 0xc1, 0x10,
+	0x38, 0x74, 0x62, 0xc9, 0x1f, 0x3d, 0xdd, 0x87, 0x3d, 0xd2, 0xc4, 0xca, 0x21, 0x1b, 0xeb, 0xa9,
+	0xa2, 0xe0, 0xa7, 0xe7, 0xd8, 0x0b, 0x87, 0x6c, 0x10, 0x15, 0x31, 0x43, 0x43, 0xc1, 0x08, 0x93,
+	0x5d, 0x1f, 0x84, 0x23, 0x27, 0x8c, 0xd0, 0xba, 0x42, 0x25, 0x7c, 0xb3, 0xe5, 0x5d, 0xa1, 0x12,
+	0xae, 0xb5, 0x6d, 0xe1, 0xf6, 0xd6, 0x85, 0x37, 0xd2, 0xee, 0x6c, 0xa4, 0x9d, 0x7d, 0x8b, 0x60,
+	0xcf, 0xe5, 0x71, 0x86, 0x1c, 0xe5, 0x0c, 0xed, 0x3e, 0x15, 0x2a, 0x81, 0x26, 0x24, 0x11, 0xaa,
+	0xf8, 0x36, 0x74, 0x0d, 0x72, 0x39, 0x91, 0xa8, 0x28, 0xc4, 0xb0, 0x02, 0x9b, 0x31, 0xed, 0x5c,
+	0x8a, 0xe9, 0x11, 0x1c, 0x90, 0x61, 0x82, 0x15, 0x25, 0xae, 0x27, 0xb2, 0x5f, 0xe3, 0x10, 0xca,
+	0x43, 0xd8, 0x37, 0x48, 0xd2, 0xa0, 0xa8, 0x75, 0x3e, 0x98, 0xab, 0x81, 0x7a, 0x59, 0xf6, 0x09,
+	0x7a, 0xc1, 0xb6, 0xa5, 0x71, 0x02, 0x6d, 0xdf, 0xaf, 0x6d, 0xd7, 0xe5, 0x3f, 0x7d, 0xc0, 0x30,
+	0x28, 0x7c, 0x40, 0x5f, 0xc5, 0xb7, 0xa0, 0xb3, 0xf1, 0x33, 0x2d, 0xeb, 0x4c, 0x84, 0xe9, 0x03,
+	0xa6, 0x38, 0x96, 0x36, 0x1b, 0xee, 0x4e, 0xe5, 0x72, 0xfe, 0x0a, 0xfc, 0xb7, 0x83, 0xe3, 0x37,
+	0xdf, 0xe7, 0x69, 0x74, 0x31, 0x4f, 0xa3, 0x9f, 0xf3, 0x34, 0xfa, 0xb2, 0x48, 0x1b, 0x17, 0x8b,
+	0xb4, 0xf1, 0x63, 0x91, 0x36, 0xde, 0x3e, 0x1f, 0x49, 0x3a, 0x9f, 0x16, 0x7d, 0xae, 0xc7, 0xb9,
+	0x7b, 0xc2, 0x4f, 0x15, 0xd2, 0x07, 0x6d, 0xde, 0x87, 0xaa, 0x44, 0x31, 0x42, 0x93, 0x7f, 0xbc,
+	0xfc, 0xfe, 0x8b, 0x96, 0x7b, 0xf9, 0xcf, 0x7e, 0x05, 0x00, 0x00, 0xff, 0xff, 0xb6, 0xca, 0x79,
+	0x8f, 0x21, 0x04, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -598,19 +570,14 @@ func (m *EventCreateClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.Admin)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.ClassId) > 0 {
 		i -= len(m.ClassId)
 		copy(dAtA[i:], m.ClassId)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassId)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.RowId != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.RowId))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -640,33 +607,28 @@ func (m *EventCreateProject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.ProjectLocation)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProjectLocation)))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x22
 	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
 		copy(dAtA[i:], m.Issuer)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Issuer)))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x1a
 	}
 	if len(m.ClassId) > 0 {
 		i -= len(m.ClassId)
 		copy(dAtA[i:], m.ClassId)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassId)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.ProjectId) > 0 {
 		i -= len(m.ProjectId)
 		copy(dAtA[i:], m.ProjectId)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProjectId)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.RowId != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.RowId))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -696,61 +658,56 @@ func (m *EventCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.ProjectId)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProjectId)))
 		i--
-		dAtA[i] = 0x4a
+		dAtA[i] = 0x42
 	}
 	if len(m.ProjectLocation) > 0 {
 		i -= len(m.ProjectLocation)
 		copy(dAtA[i:], m.ProjectLocation)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProjectLocation)))
 		i--
-		dAtA[i] = 0x42
+		dAtA[i] = 0x3a
 	}
 	if len(m.EndDate) > 0 {
 		i -= len(m.EndDate)
 		copy(dAtA[i:], m.EndDate)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.EndDate)))
 		i--
-		dAtA[i] = 0x3a
+		dAtA[i] = 0x32
 	}
 	if len(m.StartDate) > 0 {
 		i -= len(m.StartDate)
 		copy(dAtA[i:], m.StartDate)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.StartDate)))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x2a
 	}
 	if len(m.TotalAmount) > 0 {
 		i -= len(m.TotalAmount)
 		copy(dAtA[i:], m.TotalAmount)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.TotalAmount)))
 		i--
-		dAtA[i] = 0x2a
+		dAtA[i] = 0x22
 	}
 	if len(m.Issuer) > 0 {
 		i -= len(m.Issuer)
 		copy(dAtA[i:], m.Issuer)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Issuer)))
 		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x1a
 	}
 	if len(m.BatchDenom) > 0 {
 		i -= len(m.BatchDenom)
 		copy(dAtA[i:], m.BatchDenom)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.BatchDenom)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.ClassId) > 0 {
 		i -= len(m.ClassId)
 		copy(dAtA[i:], m.ClassId)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassId)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.RowId != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.RowId))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -925,9 +882,6 @@ func (m *EventCreateClass) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.RowId != 0 {
-		n += 1 + sovEvents(uint64(m.RowId))
-	}
 	l = len(m.ClassId)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -945,9 +899,6 @@ func (m *EventCreateProject) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.RowId != 0 {
-		n += 1 + sovEvents(uint64(m.RowId))
-	}
 	l = len(m.ProjectId)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -973,9 +924,6 @@ func (m *EventCreateBatch) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.RowId != 0 {
-		n += 1 + sovEvents(uint64(m.RowId))
-	}
 	l = len(m.ClassId)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -1122,25 +1070,6 @@ func (m *EventCreateClass) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RowId", wireType)
-			}
-			m.RowId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.RowId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 			}
@@ -1172,7 +1101,7 @@ func (m *EventCreateClass) Unmarshal(dAtA []byte) error {
 			}
 			m.ClassId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
@@ -1258,25 +1187,6 @@ func (m *EventCreateProject) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RowId", wireType)
-			}
-			m.RowId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.RowId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
 			}
@@ -1308,7 +1218,7 @@ func (m *EventCreateProject) Unmarshal(dAtA []byte) error {
 			}
 			m.ProjectId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 			}
@@ -1340,7 +1250,7 @@ func (m *EventCreateProject) Unmarshal(dAtA []byte) error {
 			}
 			m.ClassId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
 			}
@@ -1372,7 +1282,7 @@ func (m *EventCreateProject) Unmarshal(dAtA []byte) error {
 			}
 			m.Issuer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
 			}
@@ -1458,25 +1368,6 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RowId", wireType)
-			}
-			m.RowId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.RowId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 			}
@@ -1508,7 +1399,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.ClassId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
 			}
@@ -1540,7 +1431,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.BatchDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
 			}
@@ -1572,7 +1463,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.Issuer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field TotalAmount", wireType)
 			}
@@ -1604,7 +1495,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.TotalAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 6:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
 			}
@@ -1636,7 +1527,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.StartDate = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 7:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
 			}
@@ -1668,7 +1559,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.EndDate = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 8:
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
 			}
@@ -1700,7 +1591,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.ProjectLocation = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 9:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
 			}

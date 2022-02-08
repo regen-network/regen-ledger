@@ -6,66 +6,57 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // class_id is the unique ID of credit class.
-  string class_id = 2;
+  string class_id = 1;
 
   // admin is the admin of the credit class.
-  string admin = 3;
+  string admin = 2;
 }
 
 // EventCreateProject is an event emitted when a project is created.
 message EventCreateProject {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // project_id is the unique ID of the project.
-  string project_id = 2;
+  string project_id = 1;
 
   // class_id is the unique ID of credit class for this project.
-  string class_id = 3;
+  string class_id = 2;
 
   // issuer is the issuer of the credit batches for this project.
-  string issuer = 4;
+  string issuer = 3;
 
   // project_location is the location of the project.
   // Full documentation can be found in MsgCreateProject.project_location.
-  string project_location = 5;
+  string project_location = 4;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // class_id is the unique ID of credit class.
-  string class_id = 2;
+  string class_id = 1;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 3;
+  string batch_denom = 2;
 
   // issuer is the account address of the issuer of the credit batch.
-  string issuer = 4;
+  string issuer = 3;
 
   // total_amount is the total number of credits in the credit batch.
-  string total_amount = 5;
+  string total_amount = 4;
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  string start_date = 6;
+  string start_date = 5;
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  string end_date = 7;
+  string end_date = 6;
 
   // project_location is the location of the project.
   // Full documentation can be found in MsgCreateProject.project_location.
-  string project_location = 8;
+  string project_location = 7;
 
   // project_id is the unique ID of the project this batch belongs to.
-  string project_id = 9;
+  string project_id = 8;
 }
 
 // EventReceive is an event emitted when credits are received either upon

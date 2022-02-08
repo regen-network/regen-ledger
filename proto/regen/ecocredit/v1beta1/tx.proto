@@ -74,11 +74,8 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // class_id is the unique ID of the newly created credit class.
-  string class_id = 2;
+  string class_id = 1;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
@@ -112,11 +109,8 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // project_id is the ID of the newly created project.
-  string project_id = 2;
+  string project_id = 1;
 }
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
@@ -170,11 +164,8 @@ message MsgCreateBatch {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
-  // row_id is the id of the database row entry
-  uint64  row_id = 1;
-
   // batch_denom is the unique denomination ID of the newly created batch.
-  string batch_denom = 2;
+  string batch_denom = 1;
 }
 
 // MsgSend is the Msg/Send request type.
@@ -302,8 +293,11 @@ message MsgUpdateClassIssuers {
   // class_id is the unique ID of the credit class.
   string class_id = 2;
 
-  // issuers are the updated account addresses of the approved issuers.
-  repeated string issuers = 3;
+  // add_issuers are the issuers to add to the class issuers list.
+  repeated bytes add_issuers = 3;
+
+  // remove_issuers are the issuers to remove from the class issuers list.
+  repeated bytes remove_issuers = 4;
 }
 
 // MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
