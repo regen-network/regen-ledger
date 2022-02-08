@@ -148,3 +148,5 @@ replace github.com/regen-network/regen-ledger/x/data => ./x/data
 replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
+
+replace github.com/regen-network/regen-ledger/api => ./api
