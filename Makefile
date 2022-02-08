@@ -146,21 +146,6 @@ build-regen-linux: go.sum $(BUILDDIR)/
 
 .PHONY: build build-linux build-regen-all build-regen-linux
 
-mockgen_cmd=go run github.com/golang/mock/mockgen
-
-mocks: $(MOCKS_DIR)
-	$(mockgen_cmd) -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tm_db_DB.go github.com/tendermint/tm-db DB
-	$(mockgen_cmd) -source=types/module/module.go -package mocks -destination tests/mocks/types_module_module.go
-	$(mockgen_cmd) -source=types/invariant.go -package mocks -destination tests/mocks/types_invariant.go
-	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
-.PHONY: mocks
-
-$(MOCKS_DIR):
-	mkdir -p $(MOCKS_DIR)
-
 distclean: clean tools-clean
 clean:
 	rm -rf \
@@ -416,3 +401,13 @@ localnet-stop:
 
 
 include sims.mk
+
+
+
+mockgen_cmd=go run github.com/golang/mock/mockgen
+
+mocks:
+	cd x/ecocredit
+	$(mockgen_cmd) -source=server/orderfill/manager.go -package mocks -destination server/orderfill/mocks/mocks.go
+
+.PHONY: mocks
