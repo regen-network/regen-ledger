@@ -26,7 +26,6 @@ const gasCostPerIteration = uint64(10)
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
 func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass) (*v1beta1.MsgCreateClassResponse, error) {
-	regenCtx := types.UnwrapSDKContext(ctx)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	// Charge the admin a fee to create the credit class
 	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
@@ -35,12 +34,12 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 
 	var params ecocredit.Params
-	s.paramSpace.GetParamSet(regenCtx.Context, &params)
-	if params.AllowlistEnabled && !s.isCreatorAllowListed(regenCtx, params.AllowedClassCreators, adminAddress) {
+	s.paramSpace.GetParamSet(sdkCtx, &params)
+	if params.AllowlistEnabled && !s.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
-	err = s.chargeCreditClassFee(regenCtx.Context, adminAddress)
+	err = s.chargeCreditClassFee(sdkCtx, adminAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +57,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 
 	rowID, err := s.stateStore.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       classID,
-		Admin:      req.Admin,
+		Admin:      adminAddress,
 		Metadata:   req.Metadata,
 		CreditType: req.CreditTypeName,
 	})
@@ -67,6 +66,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 	}
 
 	for _, issuer := range req.Issuers {
+		issuer, _ := sdk.AccAddressFromBech32(issuer)
 		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: classID,
 			Issuer:  issuer,
@@ -75,7 +75,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		}
 	}
 
-	err = regenCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateClass{
+	err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateClass{
 		RowId:   rowID,
 		ClassId: classID,
 		Admin:   req.Admin,
@@ -146,7 +146,6 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 // CreateBatch creates a new batch of credits.
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch) (*v1beta1.MsgCreateBatchResponse, error) {
-	regenCtx := types.UnwrapSDKContext(ctx)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	projectID := req.ProjectId
 
@@ -192,7 +191,6 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 	if err != nil {
 		return nil, err
 	}
-	newBatchID := rowID
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
@@ -215,7 +213,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 			if err != nil {
 				return nil, err
 			}
-			if err = regenCtx.EventManager().EmitTypedEvent(&v1beta1.EventRetire{
+			if err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventRetire{
 				Retirer:    recipient.String(),
 				BatchDenom: batchDenom,
 				Amount:     retired.String(),
@@ -226,14 +224,14 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		}
 		if err = s.stateStore.BatchBalanceStore().Insert(ctx, &ecocreditv1beta1.BatchBalance{
 			Address:  recipient,
-			BatchId:  newBatchID,
+			BatchId:  rowID,
 			Tradable: tradable.String(),
 			Retired:  retired.String(),
 		}); err != nil {
 			return nil, err
 		}
 
-		if err = regenCtx.EventManager().EmitTypedEvent(&v1beta1.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventReceive{
 			Recipient:      recipient.String(),
 			BatchDenom:     batchDenom,
 			RetiredAmount:  tradable.String(),
@@ -242,11 +240,11 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 			return nil, err
 		}
 
-		regenCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
+		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
 	if err = s.stateStore.BatchSupplyStore().Insert(ctx, &ecocreditv1beta1.BatchSupply{
-		BatchId:         newBatchID,
+		BatchId:         rowID,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
 		CancelledAmount: math.NewDecFromInt64(0).String(),
@@ -444,10 +442,12 @@ func (s serverImpl) UpdateClassAdmin(ctx context.Context, req *v1beta1.MsgUpdate
 	if err != nil {
 		return nil, err
 	}
-	if classInfo.Admin != req.Admin {
+	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
+	classAdmin := sdk.AccAddress(classInfo.Admin)
+	if !classAdmin.Equals(reqAddr) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
-	classInfo.Admin = req.NewAdmin
+	classInfo.Admin = reqAddr
 	if err = s.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
@@ -459,7 +459,9 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 	if err != nil {
 		return nil, err
 	}
-	if class.Admin != req.Admin {
+	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
+	admin := sdk.AccAddress(class.Admin)
+	if !reqAddr.Equals(admin) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", class.Admin, req.Admin)
 	}
 
@@ -470,9 +472,10 @@ func (s serverImpl) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpda
 
 	// add the new issuers
 	for _, issuer := range req.Issuers {
+		iAddr, _ := sdk.AccAddressFromBech32(issuer)
 		if err = s.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: req.ClassId,
-			Issuer:  issuer,
+			Issuer:  iAddr,
 		}); err != nil {
 			return nil, err
 		}
@@ -485,7 +488,9 @@ func (s serverImpl) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpd
 	if err != nil {
 		return nil, err
 	}
-	if classInfo.Admin != req.Admin {
+	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
+	admin := sdk.AccAddress(classInfo.Admin)
+	if !reqAddr.Equals(admin) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 	classInfo.Metadata = req.Metadata
@@ -905,7 +910,7 @@ func (s serverImpl) PickFromBasket(ctx context.Context, basket *basketv1beta1.Ms
 // ------- UTILITIES ------
 
 // Checks if the given address is in the allowlist of credit class creators
-func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
+func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
@@ -916,7 +921,7 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 	return false
 }
 
-// AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
 	it, err := s.stateStore.ClassIssuerStore().List(goCtx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classID))
@@ -924,13 +929,15 @@ func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer str
 		return err
 	}
 
+	iAddr, _ := sdk.AccAddressFromBech32(issuer)
+
 	defer it.Close()
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
 			return err
 		}
-		if v.Issuer == issuer {
+		if iAddr.Equals(sdk.AccAddress(v.Issuer)) {
 			return nil
 		}
 	}

@@ -48,7 +48,7 @@ message ClassInfo {
     string name = 2;
 
     // admin is the admin of the credit class.
-    string admin = 3;
+    bytes admin = 3;
 
     // metadata is any arbitrary metadata to attached to the credit class.
     bytes metadata = 4;
@@ -68,7 +68,7 @@ message ClassIssuer {
     string class_id = 1;
 
     // issuer is the approved issuer of the credit class.
-    string issuer = 2;
+    bytes issuer = 2;
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.

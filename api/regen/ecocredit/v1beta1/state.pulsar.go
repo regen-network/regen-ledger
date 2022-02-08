@@ -706,8 +706,8 @@ func (x *fastReflection_ClassInfo) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.Admin != "" {
-		value := protoreflect.ValueOfString(x.Admin)
+	if len(x.Admin) != 0 {
+		value := protoreflect.ValueOfBytes(x.Admin)
 		if !f(fd_ClassInfo_admin, value) {
 			return
 		}
@@ -744,7 +744,7 @@ func (x *fastReflection_ClassInfo) Has(fd protoreflect.FieldDescriptor) bool {
 	case "regen.ecocredit.v1beta1.ClassInfo.name":
 		return x.Name != ""
 	case "regen.ecocredit.v1beta1.ClassInfo.admin":
-		return x.Admin != ""
+		return len(x.Admin) != 0
 	case "regen.ecocredit.v1beta1.ClassInfo.metadata":
 		return len(x.Metadata) != 0
 	case "regen.ecocredit.v1beta1.ClassInfo.credit_type":
@@ -770,7 +770,7 @@ func (x *fastReflection_ClassInfo) Clear(fd protoreflect.FieldDescriptor) {
 	case "regen.ecocredit.v1beta1.ClassInfo.name":
 		x.Name = ""
 	case "regen.ecocredit.v1beta1.ClassInfo.admin":
-		x.Admin = ""
+		x.Admin = nil
 	case "regen.ecocredit.v1beta1.ClassInfo.metadata":
 		x.Metadata = nil
 	case "regen.ecocredit.v1beta1.ClassInfo.credit_type":
@@ -799,7 +799,7 @@ func (x *fastReflection_ClassInfo) Get(descriptor protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1beta1.ClassInfo.admin":
 		value := x.Admin
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfBytes(value)
 	case "regen.ecocredit.v1beta1.ClassInfo.metadata":
 		value := x.Metadata
 		return protoreflect.ValueOfBytes(value)
@@ -831,7 +831,7 @@ func (x *fastReflection_ClassInfo) Set(fd protoreflect.FieldDescriptor, value pr
 	case "regen.ecocredit.v1beta1.ClassInfo.name":
 		x.Name = value.Interface().(string)
 	case "regen.ecocredit.v1beta1.ClassInfo.admin":
-		x.Admin = value.Interface().(string)
+		x.Admin = value.Bytes()
 	case "regen.ecocredit.v1beta1.ClassInfo.metadata":
 		x.Metadata = value.Bytes()
 	case "regen.ecocredit.v1beta1.ClassInfo.credit_type":
@@ -884,7 +884,7 @@ func (x *fastReflection_ClassInfo) NewField(fd protoreflect.FieldDescriptor) pro
 	case "regen.ecocredit.v1beta1.ClassInfo.name":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1beta1.ClassInfo.admin":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfBytes(nil)
 	case "regen.ecocredit.v1beta1.ClassInfo.metadata":
 		return protoreflect.ValueOfBytes(nil)
 	case "regen.ecocredit.v1beta1.ClassInfo.credit_type":
@@ -1143,7 +1143,7 @@ func (x *fastReflection_ClassInfo) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 				}
-				var stringLen uint64
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1153,23 +1153,25 @@ func (x *fastReflection_ClassInfo) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if byteLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + byteLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Admin = string(dAtA[iNdEx:postIndex])
+				x.Admin = append(x.Admin[:0], dAtA[iNdEx:postIndex]...)
+				if x.Admin == nil {
+					x.Admin = []byte{}
+				}
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -1356,8 +1358,8 @@ func (x *fastReflection_ClassIssuer) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
-	if x.Issuer != "" {
-		value := protoreflect.ValueOfString(x.Issuer)
+	if len(x.Issuer) != 0 {
+		value := protoreflect.ValueOfBytes(x.Issuer)
 		if !f(fd_ClassIssuer_issuer, value) {
 			return
 		}
@@ -1380,7 +1382,7 @@ func (x *fastReflection_ClassIssuer) Has(fd protoreflect.FieldDescriptor) bool {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
 		return x.ClassId != ""
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
-		return x.Issuer != ""
+		return len(x.Issuer) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.ClassIssuer"))
@@ -1400,7 +1402,7 @@ func (x *fastReflection_ClassIssuer) Clear(fd protoreflect.FieldDescriptor) {
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
 		x.ClassId = ""
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
-		x.Issuer = ""
+		x.Issuer = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.ClassIssuer"))
@@ -1422,7 +1424,7 @@ func (x *fastReflection_ClassIssuer) Get(descriptor protoreflect.FieldDescriptor
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
 		value := x.Issuer
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfBytes(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.ClassIssuer"))
@@ -1446,7 +1448,7 @@ func (x *fastReflection_ClassIssuer) Set(fd protoreflect.FieldDescriptor, value 
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
 		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
-		x.Issuer = value.Interface().(string)
+		x.Issuer = value.Bytes()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.ClassIssuer"))
@@ -1487,7 +1489,7 @@ func (x *fastReflection_ClassIssuer) NewField(fd protoreflect.FieldDescriptor) p
 	case "regen.ecocredit.v1beta1.ClassIssuer.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1beta1.ClassIssuer.issuer":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfBytes(nil)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.ClassIssuer"))
@@ -1693,7 +1695,7 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
 				}
-				var stringLen uint64
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1703,23 +1705,25 @@ func (x *fastReflection_ClassIssuer) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if byteLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + byteLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Issuer = string(dAtA[iNdEx:postIndex])
+				x.Issuer = append(x.Issuer[:0], dAtA[iNdEx:postIndex]...)
+				if x.Issuer == nil {
+					x.Issuer = []byte{}
+				}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -5815,7 +5819,7 @@ type ClassInfo struct {
 	// and an auto-generated integer.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// admin is the admin of the credit class.
-	Admin string `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
+	Admin []byte `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// credit_type is the abbreviation of the credit type.
@@ -5856,11 +5860,11 @@ func (x *ClassInfo) GetName() string {
 	return ""
 }
 
-func (x *ClassInfo) GetAdmin() string {
+func (x *ClassInfo) GetAdmin() []byte {
 	if x != nil {
 		return x.Admin
 	}
-	return ""
+	return nil
 }
 
 func (x *ClassInfo) GetMetadata() []byte {
@@ -5886,7 +5890,7 @@ type ClassIssuer struct {
 	// class_id is the unique ID of credit class.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// issuer is the approved issuer of the credit class.
-	Issuer string `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	Issuer []byte `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 }
 
 func (x *ClassIssuer) Reset() {
@@ -5916,11 +5920,11 @@ func (x *ClassIssuer) GetClassId() string {
 	return ""
 }
 
-func (x *ClassIssuer) GetIssuer() string {
+func (x *ClassIssuer) GetIssuer() []byte {
 	if x != nil {
 		return x.Issuer
 	}
-	return ""
+	return nil
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.
@@ -6380,7 +6384,7 @@ var file_regen_ecocredit_v1beta1_state_proto_rawDesc = []byte{
 	0x0a, 0x09, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69,
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e,
 	0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12,
-	0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05,
 	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
 	0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
 	0x61, 0x12, 0x1f, 0x0a, 0x0b, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65,
@@ -6392,7 +6396,7 @@ var file_regen_ecocredit_v1beta1_state_proto_rawDesc = []byte{
 	0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x63,
 	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
 	0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x3a, 0x1b,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x3a, 0x1b,
 	0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x15, 0x0a, 0x11, 0x0a, 0x0f, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f,
 	0x69, 0x64, 0x2c, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x03, 0x22, 0xc6, 0x01, 0x0a, 0x0b,
 	0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69,
