@@ -84,3 +84,12 @@ var genInvalidBatchDenom = rapid.OneOf(
 	genInvalidClassID,
 	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
 )
+
+func TestGetClassIdFromBatchDenom(t *testing.T) {
+	denom := "BIO01-00000000-00000000-001"
+	expected := "BIO01"
+
+	got := GetClassIdFromBatchDenom(denom)
+
+	require.Equal(t, expected, got)
+}
