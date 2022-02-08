@@ -16,8 +16,7 @@ import (
 type Status int
 
 const (
-	NotFilled Status = iota
-	BothFilled
+	BothFilled Status = iota
 	BuyFilled
 	SellFilled
 )
@@ -80,6 +79,14 @@ func (t manager) Fill(
 	buyOrder *marketplacev1beta1.BuyOrder,
 	sellOrder *marketplacev1beta1.SellOrder,
 ) (Status, error) {
+	retire := true
+	if buyOrder.DisableAutoRetire {
+		if !sellOrder.DisableAutoRetire {
+			return 0, fmt.Errorf("unexpected: auto-retire setting doesn't match, these orders should have never been matched")
+		}
+		retire = false
+	}
+
 	buyQuant, err := math.NewPositiveDecFromString(buyOrder.Quantity)
 	if err != nil {
 		return 0, err
@@ -150,13 +157,6 @@ func (t manager) Fill(
 		}
 	}
 
-	retire := true
-	if buyOrder.DisableAutoRetire {
-		if !sellOrder.DisableAutoRetire {
-			return 0, fmt.Errorf("disable auto-retire failed")
-		}
-		retire = false
-	}
 	err = t.transferManager.SendCreditsTo(sellOrder.BatchId, actualQuant, sellOrder.Seller, buyOrder.Buyer, retire)
 
 	// TODO correct decimal precision

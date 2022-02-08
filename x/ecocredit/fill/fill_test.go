@@ -193,3 +193,17 @@ func TestSellFilled(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, fill.SellFilled, state)
 }
+
+func TestBadAutoRetireMatch(t *testing.T) {
+	s := setup(t)
+	buyOrder := &marketplacev1beta1.BuyOrder{
+		DisableAutoRetire: true,
+	}
+
+	sellOrder := &marketplacev1beta1.SellOrder{
+		DisableAutoRetire: false,
+	}
+
+	_, err := s.fillMgr.Fill(s.ctx, s.market, buyOrder, sellOrder)
+	assert.ErrorContains(t, err, "unexpected")
+}
