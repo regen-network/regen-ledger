@@ -376,8 +376,23 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 
 // CreditTypes queries the list of allowed types that credit classes can have.
 func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequest) (*v1beta1.QueryCreditTypesResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	creditTypes := s.getAllCreditTypes(sdkCtx)
+	creditTypes := make([]*v1beta1.CreditType, 0)
+	it, err := s.stateStore.CreditTypeStore().List(ctx, ecocreditv1beta1.CreditTypePrimaryKey{})
+	if err != nil {
+		return nil, err
+	}
+	for it.Next() {
+		ct, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+		creditTypes = append(creditTypes, &v1beta1.CreditType{
+			Abbreviation: ct.Abbreviation,
+			Name:         ct.Name,
+			Unit:         ct.Unit,
+			Precision:    ct.Precision,
+		})
+	}
 	return &v1beta1.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }
 

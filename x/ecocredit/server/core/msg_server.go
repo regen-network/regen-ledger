@@ -6,8 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	basketv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1beta1"
-	marketplacev1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1beta1"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -44,7 +42,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
-	creditType, err := s.getCreditType(sdkCtx, req.CreditTypeName)
+	creditType, err := s.getCreditType(ctx, req.CreditTypeName)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +158,7 @@ func (s serverImpl) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch
 		return nil, err
 	}
 
-	creditType, err := s.getCreditType(sdkCtx, classInfo.CreditType)
+	creditType, err := s.getCreditType(ctx, classInfo.CreditType)
 	if err != nil {
 		return nil, err
 	}
@@ -499,413 +497,6 @@ func (s serverImpl) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpd
 	return &v1beta1.MsgUpdateClassMetadataResponse{}, err
 }
 
-// Sell creates new sell orders for credits
-// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
-func (s serverImpl) Sell(ctx context.Context, sell *marketplacev1beta1.MsgSell) (*marketplacev1beta1.MsgSellResponse, error) {
-	panic("implement me")
-	//ctx := types.UnwrapSDKContext(goCtx)
-	//owner := req.Owner
-	//store := ctx.KVStore(s.storeKey)
-	//
-	//ownerAddr, err := sdk.AccAddressFromBech32(owner)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//sellOrderIds := make([]uint64, len(req.Orders))
-	//
-	//for i, order := range req.Orders {
-	//
-	//	// verify expiration is in the future
-	//	if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
-	//		return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
-	//	}
-	//
-	//	err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
-	//
-	//	orderID, err := s.createSellOrder(ctx, owner, order)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	sellOrderIds[i] = orderID
-	//	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
-	//		OrderId:           orderID,
-	//		BatchDenom:        order.BatchDenom,
-	//		Quantity:          order.Quantity,
-	//		AskPrice:          order.AskPrice,
-	//		DisableAutoRetire: order.DisableAutoRetire,
-	//		Expiration:        order.Expiration,
-	//	})
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
-	//}
-	//
-	//return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
-}
-
-// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
-func (s serverImpl) createSellOrder(ctx types.Context, owner string, o *marketplacev1beta1.MsgSell_Order) (uint64, error) {
-	panic("impl me!")
-	//orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
-	//_, err := s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
-	//	Owner:             owner,
-	//	OrderId:           orderID,
-	//	BatchDenom:        o.BatchDenom,
-	//	Quantity:          o.Quantity,
-	//	AskPrice:          o.AskPrice,
-	//	DisableAutoRetire: o.DisableAutoRetire,
-	//	Expiration:        o.Expiration,
-	//})
-	//return orderID, err
-}
-
-// UpdateSellOrders updates existing sell orders for credits
-// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
-func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *marketplacev1beta1.MsgUpdateSellOrders) (*marketplacev1beta1.MsgUpdateSellOrdersResponse, error) {
-	panic("implement me")
-	//ctx := types.UnwrapSDKContext(goCtx)
-	//owner := req.Owner
-	//store := ctx.KVStore(s.storeKey)
-	//
-	//ownerAddr, err := sdk.AccAddressFromBech32(owner)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//for _, update := range req.Updates {
-	//
-	//	// verify expiration is in the future
-	//	if update.NewExpiration != nil && update.NewExpiration.Before(ctx.BlockTime()) {
-	//		return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
-	//	}
-	//
-	//	sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
-	//	if err != nil {
-	//		return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order id %d not found", update.SellOrderId)
-	//	}
-	//
-	//	if req.Owner != sellOrder.Owner {
-	//		return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d", update.SellOrderId)
-	//	}
-	//
-	//	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
-	//
-	//	err = verifyCreditBalance(store, ownerAddr, sellOrder.BatchDenom, update.NewQuantity)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	sellOrder.Quantity = update.NewQuantity
-	//	sellOrder.AskPrice = update.NewAskPrice
-	//	sellOrder.DisableAutoRetire = update.DisableAutoRetire
-	//	sellOrder.Expiration = update.NewExpiration
-	//
-	//	err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventUpdateSellOrder{
-	//		Owner:             owner,
-	//		SellOrderId:       sellOrder.OrderId,
-	//		BatchDenom:        sellOrder.BatchDenom,
-	//		NewQuantity:       sellOrder.Quantity,
-	//		NewAskPrice:       sellOrder.AskPrice,
-	//		DisableAutoRetire: sellOrder.DisableAutoRetire,
-	//		NewExpiration:     sellOrder.Expiration,
-	//	})
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	ctx.GasMeter().ConsumeGas(gasCostPerIteration, "update sell order")
-	//}
-	//
-	//return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
-}
-
-// Buy creates new buy orders for credits
-func (s serverImpl) Buy(ctx context.Context, buy *marketplacev1beta1.MsgBuy) (*marketplacev1beta1.MsgBuyResponse, error) {
-	panic("implement me")
-	//ctx := types.UnwrapSDKContext(goCtx)
-	//sdkCtx := sdk.UnwrapSDKContext(goCtx)
-	//store := ctx.KVStore(s.storeKey)
-	//buyer := req.Buyer
-	//
-	//buyerAddr, err := sdk.AccAddressFromBech32(buyer)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//buyOrderIds := make([]uint64, len(req.Orders))
-	//
-	//for i, order := range req.Orders {
-	//
-	//	// verify expiration is in the future
-	//	if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
-	//		return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
-	//	}
-	//
-	//	balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
-	//	bidPrice := order.BidPrice
-	//	balanceAmount := balances.AmountOf(bidPrice.Denom)
-	//
-	//	// TODO: Verify that bidPrice.Denom is in AllowAskDenom #624
-	//
-	//	// get decimal amount of credits desired for purchase
-	//	creditsDesired, err := math.NewPositiveDecFromString(order.Quantity)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	// calculate the amount of coin to send for purchase
-	//	coinToSend, err := getCoinNeeded(creditsDesired, bidPrice)
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//
-	//	// verify buyer has sufficient balance in coin
-	//	if balanceAmount.LT(coinToSend.Amount) {
-	//		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
-	//	}
-	//
-	//	switch order.Selection.Sum.(type) {
-	//	case *ecocredit.MsgBuy_Order_Selection_SellOrderId:
-	//
-	//		sellOrderId := order.Selection.GetSellOrderId()
-	//		sellOrder, err := s.getSellOrder(ctx, sellOrderId)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		// verify bid price and ask price denoms match
-	//		if bidPrice.Denom != sellOrder.AskPrice.Denom {
-	//			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: got %s, expected: %s", bidPrice.Denom, sellOrder.AskPrice.Denom)
-	//		}
-	//
-	//		// verify bid price is greater than or equal to ask price
-	//		if bidPrice.Amount.LT(sellOrder.AskPrice.Amount) {
-	//			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
-	//		}
-	//
-	//		// verify seller has sufficient balance in credits
-	//		err = verifyCreditBalance(store, sellerAddr, sellOrder.BatchDenom, sellOrder.Quantity)
-	//		if err != nil {
-	//			return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-	//		}
-	//
-	//		// get decimal amount of credits available for purchase
-	//		creditsAvailable, err := math.NewDecFromString(sellOrder.Quantity)
-	//		if err != nil {
-	//			return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-	//		}
-	//
-	//		creditsToReceive := creditsDesired
-	//
-	//		// check if credits desired is more than credits available
-	//		if creditsDesired.Cmp(creditsAvailable) == 1 {
-	//
-	//			// error if partial fill disabled
-	//			if order.DisablePartialFill {
-	//				return nil, ecocredit.ErrInsufficientFunds.Wrap("sell order does not have sufficient credits to fill the buy order")
-	//			}
-	//
-	//			creditsToReceive = creditsAvailable
-	//
-	//			// recalculate coinToSend if creditsToReceive is not creditsDesired
-	//			coinToSend, err = getCoinNeeded(creditsToReceive, bidPrice)
-	//			if err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		// send coin to the seller account
-	//		err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, sdk.Coins{coinToSend})
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		// error if auto-retire is required for given sell order
-	//		if !sellOrder.DisableAutoRetire && order.DisableAutoRetire {
-	//			return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire is required for sell order %d", sellOrder.OrderId)
-	//		}
-	//
-	//		// error if auto-retire is required and missing location
-	//		if !sellOrder.DisableAutoRetire && order.RetirementLocation == "" {
-	//			return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("retirement location is required for sell order %d", sellOrder.OrderId)
-	//		}
-	//
-	//		// declare credit for send message
-	//		credit := &ecocredit.MsgSend_SendCredits{
-	//			BatchDenom: sellOrder.BatchDenom,
-	//		}
-	//
-	//		// set tradable or retired amount depending on auto-retire
-	//		if sellOrder.DisableAutoRetire && order.DisableAutoRetire {
-	//			credit.RetiredAmount = "0"
-	//			credit.TradableAmount = creditsToReceive.String()
-	//		} else {
-	//			credit.RetiredAmount = creditsToReceive.String()
-	//			credit.RetirementLocation = order.RetirementLocation
-	//			credit.TradableAmount = "0"
-	//		}
-	//
-	//		// send credits to the buyer account
-	//		err = s.sendEcocredits(ctx, credit, store, sellerAddr, buyerAddr)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		// get remaining credits in sell order
-	//		creditsRemaining, err := creditsAvailable.Sub(creditsToReceive)
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		if creditsRemaining.IsZero() {
-	//
-	//			// delete sell order if no remaining credits
-	//			if err := s.sellOrderTable.Delete(ctx, sellOrder.OrderId); err != nil {
-	//				return nil, err
-	//			}
-	//
-	//		} else {
-	//			sellOrder.Quantity = creditsRemaining.String()
-	//
-	//			// update sell order quantity with remaining credits
-	//			err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
-	//			if err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//
-	//		// TODO: do we want to store a direct buy order? #623
-	//		buyOrderID := s.buyOrderTable.Sequence().NextVal(ctx)
-	//		buyOrderIds[i] = buyOrderID
-	//
-	//		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
-	//			BuyOrderId:         buyOrderID,
-	//			SellOrderId:        sellOrderId,
-	//			Quantity:           order.Quantity,
-	//			BidPrice:           order.BidPrice,
-	//			DisableAutoRetire:  order.DisableAutoRetire,
-	//			DisablePartialFill: order.DisablePartialFill,
-	//			RetirementLocation: order.RetirementLocation,
-	//			Expiration:         order.Expiration,
-	//		})
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderFilled{
-	//			BuyOrderId:  buyOrderID,
-	//			SellOrderId: sellOrderId,
-	//			BatchDenom:  sellOrder.BatchDenom,
-	//			Quantity:    creditsToReceive.String(),
-	//			TotalPrice:  &coinToSend,
-	//		})
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//
-	//	// TODO: implement processing for filter option #623
-	//	//case *ecocredit.MsgBuy_Order_Selection_Filter:
-	//
-	//	default:
-	//		return nil, sdkerrors.ErrInvalidRequest
-	//	}
-	//
-	//	ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create buy order")
-	//}
-	//
-	//return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
-}
-
-// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
-func (s serverImpl) createBuyOrder(ctx types.Context, buyer string, o *marketplacev1beta1.MsgBuy_Order) (uint64, error) {
-	panic("impl me!")
-	//orderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
-	//selection := ecocredit.BuyOrder_Selection{
-	//	Sum: &ecocredit.BuyOrder_Selection_SellOrderId{
-	//		SellOrderId: o.Selection.GetSellOrderId(),
-	//	},
-	//}
-	//_, err := s.buyOrderTable.Create(ctx, &ecocredit.BuyOrder{
-	//	Buyer:              buyer,
-	//	BuyOrderId:         orderID,
-	//	Selection:          &selection,
-	//	Quantity:           o.Quantity,
-	//	BidPrice:           o.BidPrice,
-	//	DisableAutoRetire:  o.DisableAutoRetire,
-	//	DisablePartialFill: o.DisablePartialFill,
-	//	Expiration:         o.Expiration,
-	//})
-	//return orderID, err
-}
-
-// AllowAskDenom adds a new ask denom
-// TODO: impl with ORM https://github.com/regen-network/regen-ledger/issues/728
-func (s serverImpl) AllowAskDenom(ctx context.Context, denom *marketplacev1beta1.MsgAllowAskDenom) (*marketplacev1beta1.MsgAllowAskDenomResponse, error) {
-	panic("implement me")
-	// ctx := types.UnwrapSDKContext(goCtx)
-	//
-	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
-	//
-	//if req.RootAddress != rootAddress {
-	//	return nil, sdkerrors.ErrUnauthorized.Wrapf("root address must be governance module address, got: %s, expected: %s", req.RootAddress, rootAddress)
-	//}
-	//
-	//err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
-	//	Denom:        req.Denom,
-	//	DisplayDenom: req.DisplayDenom,
-	//	Exponent:     req.Exponent,
-	//})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventAllowAskDenom{
-	//	Denom:        req.Denom,
-	//	DisplayDenom: req.DisplayDenom,
-	//	Exponent:     req.Exponent,
-	//})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//return &ecocredit.MsgAllowAskDenomResponse{}, nil
-}
-
-func (s serverImpl) CreateBasket(ctx context.Context, basket *basketv1beta1.MsgCreateBasket) (*basketv1beta1.MsgCreateBasketResponse, error) {
-	panic("implement me")
-}
-
-func (s serverImpl) AddToBasket(ctx context.Context, basket *basketv1beta1.MsgAddToBasket) (*basketv1beta1.MsgAddToBasketResponse, error) {
-	panic("implement me")
-}
-
-func (s serverImpl) TakeFromBasket(ctx context.Context, basket *basketv1beta1.MsgTakeFromBasket) (*basketv1beta1.MsgTakeFromBasketResponse, error) {
-	panic("implement me")
-}
-
-func (s serverImpl) PickFromBasket(ctx context.Context, basket *basketv1beta1.MsgPickFromBasket) (*basketv1beta1.MsgPickFromBasketResponse, error) {
-	panic("implement me")
-}
-
 // ------- UTILITIES ------
 
 // Checks if the given address is in the allowlist of credit class creators
@@ -1107,13 +698,13 @@ func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 	return decs, nil
 }
 
-func (s serverImpl) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (v1beta1.CreditType, error) {
+func (s serverImpl) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (*ecocreditv1beta1.CreditType, error) {
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, classId)
 	if err != nil {
-		return v1beta1.CreditType{}, err
+		return nil, err
 	}
-	return s.getCreditType(sdk.UnwrapSDKContext(ctx), classInfo.CreditType)
+	return s.getCreditType(ctx, classInfo.CreditType)
 }
 
 func (s serverImpl) getClassSequenceNo(ctx context.Context, ctype string) (uint64, error) {
@@ -1134,33 +725,9 @@ func (s serverImpl) getClassSequenceNo(ctx context.Context, ctype string) (uint6
 	return seq, err
 }
 
-func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (v1beta1.CreditType, error) {
-	creditTypes := s.getAllCreditTypes(ctx)
-	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
-	for _, creditType := range creditTypes {
-		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
-		// be normalized here.
-		if creditType.Name == creditTypeName {
-			return *creditType, nil
-		}
-	}
-	return v1beta1.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
-}
-
-func (s serverImpl) getAllCreditTypes(ctx sdk.Context) []*v1beta1.CreditType {
-	var params ecocredit.Params
-	s.paramSpace.GetParamSet(ctx, &params)
-	creditTypes := params.CreditTypes
-	v1beta1types := make([]*v1beta1.CreditType, len(creditTypes))
-	for i, typ := range creditTypes {
-		v1beta1types[i] = &v1beta1.CreditType{
-			Abbreviation: typ.Abbreviation,
-			Name:         typ.Name,
-			Unit:         typ.Unit,
-			Precision:    typ.Precision,
-		}
-	}
-	return v1beta1types
+func (s serverImpl) getCreditType(ctx context.Context, creditTypeName string) (*ecocreditv1beta1.CreditType, error) {
+	ct, err := s.stateStore.CreditTypeStore().GetByName(ctx, creditTypeName)
+	return ct, err
 }
 
 func (s serverImpl) getCreditClassFee(ctx sdk.Context) sdk.Coins {
