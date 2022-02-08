@@ -397,6 +397,7 @@ func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypes
 }
 
 // Params queries the ecocredit module parameters.
+// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 func (s serverImpl) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params

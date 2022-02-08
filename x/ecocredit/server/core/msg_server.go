@@ -31,6 +31,7 @@ func (s serverImpl) CreateClass(ctx context.Context, req *v1beta1.MsgCreateClass
 		return nil, err
 	}
 
+	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(sdkCtx, &params)
 	if params.AllowlistEnabled && !s.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
@@ -730,6 +731,7 @@ func (s serverImpl) getCreditType(ctx context.Context, creditTypeName string) (*
 	return ct, err
 }
 
+// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 func (s serverImpl) getCreditClassFee(ctx sdk.Context) sdk.Coins {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
