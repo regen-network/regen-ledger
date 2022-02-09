@@ -21,6 +21,7 @@ func TestDefaultParams(t *testing.T) {
 				Precision:    PRECISION,
 			},
 		},
+		BasketCreationFee: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	}
 	df := DefaultParams()
 
