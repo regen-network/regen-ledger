@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1alpha1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
-import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
@@ -12,41 +11,40 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1
 message Basket {
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
-        primary_key: {fields: "basket_denom"}
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1, fields: "basket_denom", unique: true}
     };
 
+    // id is the uint64 ID of the basket, it is used internally for reducing
+    // storage space.
+    uint64 id = 1;
+
     // basket_denom is the basket denom.
-    string basket_denom = 1;
+    string basket_denom = 2;
 
     // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
-    bool disable_auto_retire = 2;
+    bool disable_auto_retire = 3;
 
     // credit_type_name is the name of the credit type this basket is able to hold.
-    string credit_type_name = 3;
+    string credit_type_name = 4;
 
-  // batch_date_window is a duration of time measured into the past which sets
-  // a cutoff for batch start dates when adding new credits to the basket.
-  // Based on the current block timestamp, credits whose start date is before
-  // block timestamp - batch_date_window will not be allowed into the basket.
-    google.protobuf.Duration batch_date_window = 8;
+    // min_start_date is the earliest start date for batches of credits allowed
+    // into the basket.
+    google.protobuf.Timestamp min_start_date = 5;
 
-    // multiplier is an integer number which is applied to credit units when
-    // converting to basket units. For example if the multiplier is 2000, then
-    // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-    // amounts left over in this calculation when adding credits to a basket,
-    // those fractional amounts will not get added to the basket.
-    string multiplier = 6;
+    // exponent is the exponent for converting credits to/from basket tokens.
+    uint32 exponent = 6;
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.
 message BasketClass {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "basket_denom,class_id"}
+        primary_key: {fields: "basket_id,class_id"}
     };
 
-    // basket_denom is the denom of the basket
-    string basket_denom = 1;
+    // basket_id is the ID of the basket
+    uint64 basket_id = 1;
     // class_id is the id of the credit class that is allowed to be deposited in the basket
     string class_id = 2;
 }
@@ -55,12 +53,12 @@ message BasketClass {
 message BasketBalance {
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
-        primary_key: {fields: "basket_denom,batch_denom"}
+        primary_key: {fields: "basket_id,batch_denom"}
         index: {id: 1, fields: "batch_start_date"}
     };
 
-    // basket_denom is the denom of the basket
-    string basket_denom = 1;
+    // basket_id is the ID of the basket
+    uint64 basket_id = 1;
 
     // batch_id is the id of the credit batch
     string batch_denom = 2;
