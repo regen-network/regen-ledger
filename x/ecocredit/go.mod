@@ -4,11 +4,14 @@ go 1.17
 
 require (
 	github.com/cosmos/cosmos-sdk v0.45.0
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
+	github.com/regen-network/regen-ledger/api v0.1.0-alpha.1
 	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
@@ -37,6 +40,8 @@ require (
 	github.com/coinbase/rosetta-sdk-go v0.7.0 // indirect
 	github.com/confio/ics23/go v0.6.6 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
@@ -131,3 +136,5 @@ replace github.com/regen-network/regen-ledger/orm => ../../orm
 replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
+
+replace github.com/regen-network/regen-ledger/api => ../../api

@@ -134,6 +134,8 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
+replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0
+
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 
 replace github.com/regen-network/regen-ledger/types => ./types
