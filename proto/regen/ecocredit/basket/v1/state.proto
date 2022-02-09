@@ -29,7 +29,7 @@ message Basket {
     // credit_type_name is the name of the credit type this basket is able to hold.
     string credit_type_name = 4;
 
-    // date_criteria is the date criteria for batched admitted to the basket.
+    // date_criteria is the date criteria for batches admitted to the basket.
     DateCriteria date_criteria = 5;
 
     // exponent is the exponent for converting credits to/from basket tokens.
