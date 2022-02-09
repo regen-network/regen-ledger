@@ -1,6 +1,6 @@
 package ecocredit
 
-import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+import sdkerrors "github.com/cosmos/cosmos-sdk/errors"
 
 var (
 	ErrParseFailure      = sdkerrors.Register(ModuleName, 2, "parse error")
@@ -8,4 +8,5 @@ var (
 	ErrMaxLimit          = sdkerrors.Register(ModuleName, 4, "limit exceeded")
 	ErrInvalidSellOrder  = sdkerrors.Register(ModuleName, 5, "invalid sell order")
 	ErrInvalidBuyOrder   = sdkerrors.Register(ModuleName, 6, "invalid buy order")
+	ErrInvalidInteger    = sdkerrors.Register(ModuleName, 7, "invalid integer")
 )
