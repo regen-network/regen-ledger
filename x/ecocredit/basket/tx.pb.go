@@ -45,9 +45,9 @@ type MsgCreate struct {
 	// tokens and for bank denom metadata. An exponent of 6 will mean that 10^6
 	// units of a basket token will be issued for 1.0 credits and that
 	// this should be displayed as one unit in user interfaces. The exponent
-	// must be >= the precision of the credit type to minimize the need for rounding
-	// (rounding may still be needed if the precision changes to be great than
-	// the exponent).
+	// must be >= the precision of the credit type to minimize the need for
+	// rounding (rounding may still be needed if the precision changes to be great
+	// than the exponent).
 	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"`
 	// disable_auto_retire allows auto-retirement to be disabled.
 	// The credits will be auto-retired if disable_auto_retire is
