@@ -27,18 +27,18 @@ message MsgCreate {
   // basket settings.
   string curator = 1;
 
-  // name will be used to create a bank denom for this basket token
+  // name will be used to create a bank denom for this basket token.
   string name = 2;
 
   // display_name will be used to create a bank Metadata display name for this
-  // basket token
+  // basket token.
   string display_name = 3;
 
   // exponent is the exponent that will be used for converting credits to basket
-  // tokens and for for denom metadata. An exponent of 6 will mean that 10^6
+  // tokens and for bank denom metadata. An exponent of 6 will mean that 10^6
   // units of a basket token will be issued for 1.0 credits and that
   // this should be displayed as one unit in user interfaces. The exponent
-  // must be >= the precision for the credit type to minimize the need for rounding
+  // must be >= the precision of the credit type to minimize the need for rounding
   // (rounding may still be needed if the precision changes to be great than
   // the exponent).
   uint32 exponent = 4;
