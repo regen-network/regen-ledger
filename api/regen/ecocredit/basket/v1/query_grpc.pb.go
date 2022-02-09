@@ -26,9 +26,9 @@ type QueryClient interface {
 	Basket(ctx context.Context, in *QueryBasketRequest, opts ...grpc.CallOption) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
-	// BasketBalanceById lists the balance of each credit batch held by the basket.
-	BasketBalanceById(ctx context.Context, in *QueryBasketBalanceByIdRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
+	// BasketBalances lists the balance of each credit batch in the basket.
+	BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error)
+	// BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
 	BasketBalanceByDenom(ctx context.Context, in *QueryBasketBalanceByDenomRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByDenomResponse, error)
 }
 
@@ -58,9 +58,9 @@ func (c *queryClient) Baskets(ctx context.Context, in *QueryBasketsRequest, opts
 	return out, nil
 }
 
-func (c *queryClient) BasketBalanceById(ctx context.Context, in *QueryBasketBalanceByIdRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByIdResponse, error) {
-	out := new(QueryBasketBalanceByIdResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketBalanceById", in, out, opts...)
+func (c *queryClient) BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error) {
+	out := new(QueryBasketBalancesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketBalances", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +84,9 @@ type QueryServer interface {
 	Basket(context.Context, *QueryBasketRequest) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
-	// BasketBalanceById lists the balance of each credit batch held by the basket.
-	BasketBalanceById(context.Context, *QueryBasketBalanceByIdRequest) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
+	// BasketBalances lists the balance of each credit batch in the basket.
+	BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error)
+	// BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
 	BasketBalanceByDenom(context.Context, *QueryBasketBalanceByDenomRequest) (*QueryBasketBalanceByDenomResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
@@ -101,8 +101,8 @@ func (UnimplementedQueryServer) Basket(context.Context, *QueryBasketRequest) (*Q
 func (UnimplementedQueryServer) Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Baskets not implemented")
 }
-func (UnimplementedQueryServer) BasketBalanceById(context.Context, *QueryBasketBalanceByIdRequest) (*QueryBasketBalanceByIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BasketBalanceById not implemented")
+func (UnimplementedQueryServer) BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BasketBalances not implemented")
 }
 func (UnimplementedQueryServer) BasketBalanceByDenom(context.Context, *QueryBasketBalanceByDenomRequest) (*QueryBasketBalanceByDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BasketBalanceByDenom not implemented")
@@ -156,20 +156,20 @@ func _Query_Baskets_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_BasketBalanceById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBasketBalanceByIdRequest)
+func _Query_BasketBalances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketBalancesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).BasketBalanceById(ctx, in)
+		return srv.(QueryServer).BasketBalances(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketBalanceById",
+		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketBalances",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BasketBalanceById(ctx, req.(*QueryBasketBalanceByIdRequest))
+		return srv.(QueryServer).BasketBalances(ctx, req.(*QueryBasketBalancesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -208,8 +208,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Baskets_Handler,
 		},
 		{
-			MethodName: "BasketBalanceById",
-			Handler:    _Query_BasketBalanceById_Handler,
+			MethodName: "BasketBalances",
+			Handler:    _Query_BasketBalances_Handler,
 		},
 		{
 			MethodName: "BasketBalanceByDenom",

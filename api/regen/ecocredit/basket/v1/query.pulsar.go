@@ -1878,25 +1878,27 @@ func (x *fastReflection_QueryBasketsResponse) ProtoMethods() *protoiface.Methods
 }
 
 var (
-	md_QueryBasketBalanceByIdRequest           protoreflect.MessageDescriptor
-	fd_QueryBasketBalanceByIdRequest_basket_id protoreflect.FieldDescriptor
+	md_QueryBasketBalancesRequest              protoreflect.MessageDescriptor
+	fd_QueryBasketBalancesRequest_basket_denom protoreflect.FieldDescriptor
+	fd_QueryBasketBalancesRequest_pagination   protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_query_proto_init()
-	md_QueryBasketBalanceByIdRequest = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalanceByIdRequest")
-	fd_QueryBasketBalanceByIdRequest_basket_id = md_QueryBasketBalanceByIdRequest.Fields().ByName("basket_id")
+	md_QueryBasketBalancesRequest = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalancesRequest")
+	fd_QueryBasketBalancesRequest_basket_denom = md_QueryBasketBalancesRequest.Fields().ByName("basket_denom")
+	fd_QueryBasketBalancesRequest_pagination = md_QueryBasketBalancesRequest.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryBasketBalanceByIdRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryBasketBalancesRequest)(nil)
 
-type fastReflection_QueryBasketBalanceByIdRequest QueryBasketBalanceByIdRequest
+type fastReflection_QueryBasketBalancesRequest QueryBasketBalancesRequest
 
-func (x *QueryBasketBalanceByIdRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryBasketBalanceByIdRequest)(x)
+func (x *QueryBasketBalancesRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryBasketBalancesRequest)(x)
 }
 
-func (x *QueryBasketBalanceByIdRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryBasketBalancesRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_basket_v1_query_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1908,43 +1910,43 @@ func (x *QueryBasketBalanceByIdRequest) slowProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryBasketBalanceByIdRequest_messageType fastReflection_QueryBasketBalanceByIdRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryBasketBalanceByIdRequest_messageType{}
+var _fastReflection_QueryBasketBalancesRequest_messageType fastReflection_QueryBasketBalancesRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryBasketBalancesRequest_messageType{}
 
-type fastReflection_QueryBasketBalanceByIdRequest_messageType struct{}
+type fastReflection_QueryBasketBalancesRequest_messageType struct{}
 
-func (x fastReflection_QueryBasketBalanceByIdRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryBasketBalanceByIdRequest)(nil)
+func (x fastReflection_QueryBasketBalancesRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryBasketBalancesRequest)(nil)
 }
-func (x fastReflection_QueryBasketBalanceByIdRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryBasketBalanceByIdRequest)
+func (x fastReflection_QueryBasketBalancesRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryBasketBalancesRequest)
 }
-func (x fastReflection_QueryBasketBalanceByIdRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBasketBalanceByIdRequest
+func (x fastReflection_QueryBasketBalancesRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBasketBalancesRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBasketBalanceByIdRequest
+func (x *fastReflection_QueryBasketBalancesRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBasketBalancesRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryBasketBalanceByIdRequest_messageType
+func (x *fastReflection_QueryBasketBalancesRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryBasketBalancesRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryBasketBalanceByIdRequest)
+func (x *fastReflection_QueryBasketBalancesRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryBasketBalancesRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryBasketBalanceByIdRequest)(x)
+func (x *fastReflection_QueryBasketBalancesRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryBasketBalancesRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1952,10 +1954,16 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Interface() protoreflect.
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.BasketId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.BasketId)
-		if !f(fd_QueryBasketBalanceByIdRequest_basket_id, value) {
+func (x *fastReflection_QueryBasketBalancesRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.BasketDenom != "" {
+		value := protoreflect.ValueOfString(x.BasketDenom)
+		if !f(fd_QueryBasketBalancesRequest_basket_denom, value) {
+			return
+		}
+	}
+	if x.Pagination != nil {
+		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		if !f(fd_QueryBasketBalancesRequest_pagination, value) {
 			return
 		}
 	}
@@ -1972,15 +1980,17 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Range(f func(protoreflect
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryBasketBalancesRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		return x.BasketId != uint64(0)
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		return x.BasketDenom != ""
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1990,15 +2000,17 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Has(fd protoreflect.Field
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryBasketBalancesRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		x.BasketId = uint64(0)
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		x.BasketDenom = ""
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2008,16 +2020,19 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Clear(fd protoreflect.Fie
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		value := x.BasketId
-		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		value := x.BasketDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		value := x.Pagination
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2031,15 +2046,17 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Get(descriptor protorefle
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryBasketBalancesRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		x.BasketId = value.Uint()
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		x.BasketDenom = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2053,40 +2070,48 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) Set(fd protoreflect.Field
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		panic(fmt.Errorf("field basket_id of message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest is not mutable"))
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		if x.Pagination == nil {
+			x.Pagination = new(v1beta1.PageRequest)
+		}
+		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		panic(fmt.Errorf("field basket_denom of message regen.ecocredit.basket.v1.QueryBasketBalancesRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest.basket_id":
-		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.basket_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination":
+		m := new(v1beta1.PageRequest)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesRequest"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryBasketBalancesRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.QueryBasketBalancesRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2094,7 +2119,7 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) WhichOneof(d protoreflect
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryBasketBalancesRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2105,7 +2130,7 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) GetUnknown() protoreflect
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryBasketBalancesRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2117,7 +2142,7 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) SetUnknown(fields protore
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) IsValid() bool {
+func (x *fastReflection_QueryBasketBalancesRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -2127,9 +2152,9 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryBasketBalancesRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdRequest)
+		x := input.Message.Interface().(*QueryBasketBalancesRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2141,8 +2166,13 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 		var n int
 		var l int
 		_ = l
-		if x.BasketId != 0 {
-			n += 1 + runtime.Sov(uint64(x.BasketId))
+		l = len(x.BasketDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Pagination != nil {
+			l = options.Size(x.Pagination)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -2154,7 +2184,7 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdRequest)
+		x := input.Message.Interface().(*QueryBasketBalancesRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2173,10 +2203,26 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.BasketId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.BasketId))
+		if x.Pagination != nil {
+			encoded, err := options.Marshal(x.Pagination)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0x12
+		}
+		if len(x.BasketDenom) > 0 {
+			i -= len(x.BasketDenom)
+			copy(dAtA[i:], x.BasketDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BasketDenom)))
+			i--
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -2189,7 +2235,7 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdRequest)
+		x := input.Message.Interface().(*QueryBasketBalancesRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2221,17 +2267,17 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalanceByIdRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalancesRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalanceByIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalancesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BasketId", wireType)
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
 				}
-				x.BasketId = 0
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -2241,11 +2287,60 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.BasketId |= uint64(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.BasketDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Pagination == nil {
+					x.Pagination = &v1beta1.PageRequest{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2281,79 +2376,79 @@ func (x *fastReflection_QueryBasketBalanceByIdRequest) ProtoMethods() *protoifac
 	}
 }
 
-var _ protoreflect.List = (*_QueryBasketBalanceByIdResponse_1_list)(nil)
+var _ protoreflect.List = (*_QueryBasketBalancesResponse_1_list)(nil)
 
-type _QueryBasketBalanceByIdResponse_1_list struct {
+type _QueryBasketBalancesResponse_1_list struct {
 	list *[]*BasketBalance
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) Len() int {
+func (x *_QueryBasketBalancesResponse_1_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) Get(i int) protoreflect.Value {
+func (x *_QueryBasketBalancesResponse_1_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) Set(i int, value protoreflect.Value) {
+func (x *_QueryBasketBalancesResponse_1_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*BasketBalance)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) Append(value protoreflect.Value) {
+func (x *_QueryBasketBalancesResponse_1_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*BasketBalance)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) AppendMutable() protoreflect.Value {
+func (x *_QueryBasketBalancesResponse_1_list) AppendMutable() protoreflect.Value {
 	v := new(BasketBalance)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) Truncate(n int) {
+func (x *_QueryBasketBalancesResponse_1_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) NewElement() protoreflect.Value {
+func (x *_QueryBasketBalancesResponse_1_list) NewElement() protoreflect.Value {
 	v := new(BasketBalance)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryBasketBalanceByIdResponse_1_list) IsValid() bool {
+func (x *_QueryBasketBalancesResponse_1_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_QueryBasketBalanceByIdResponse            protoreflect.MessageDescriptor
-	fd_QueryBasketBalanceByIdResponse_balances   protoreflect.FieldDescriptor
-	fd_QueryBasketBalanceByIdResponse_pagination protoreflect.FieldDescriptor
+	md_QueryBasketBalancesResponse            protoreflect.MessageDescriptor
+	fd_QueryBasketBalancesResponse_balances   protoreflect.FieldDescriptor
+	fd_QueryBasketBalancesResponse_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_query_proto_init()
-	md_QueryBasketBalanceByIdResponse = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalanceByIdResponse")
-	fd_QueryBasketBalanceByIdResponse_balances = md_QueryBasketBalanceByIdResponse.Fields().ByName("balances")
-	fd_QueryBasketBalanceByIdResponse_pagination = md_QueryBasketBalanceByIdResponse.Fields().ByName("pagination")
+	md_QueryBasketBalancesResponse = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalancesResponse")
+	fd_QueryBasketBalancesResponse_balances = md_QueryBasketBalancesResponse.Fields().ByName("balances")
+	fd_QueryBasketBalancesResponse_pagination = md_QueryBasketBalancesResponse.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryBasketBalanceByIdResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryBasketBalancesResponse)(nil)
 
-type fastReflection_QueryBasketBalanceByIdResponse QueryBasketBalanceByIdResponse
+type fastReflection_QueryBasketBalancesResponse QueryBasketBalancesResponse
 
-func (x *QueryBasketBalanceByIdResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryBasketBalanceByIdResponse)(x)
+func (x *QueryBasketBalancesResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryBasketBalancesResponse)(x)
 }
 
-func (x *QueryBasketBalanceByIdResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryBasketBalancesResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_basket_v1_query_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2365,43 +2460,43 @@ func (x *QueryBasketBalanceByIdResponse) slowProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryBasketBalanceByIdResponse_messageType fastReflection_QueryBasketBalanceByIdResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryBasketBalanceByIdResponse_messageType{}
+var _fastReflection_QueryBasketBalancesResponse_messageType fastReflection_QueryBasketBalancesResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryBasketBalancesResponse_messageType{}
 
-type fastReflection_QueryBasketBalanceByIdResponse_messageType struct{}
+type fastReflection_QueryBasketBalancesResponse_messageType struct{}
 
-func (x fastReflection_QueryBasketBalanceByIdResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryBasketBalanceByIdResponse)(nil)
+func (x fastReflection_QueryBasketBalancesResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryBasketBalancesResponse)(nil)
 }
-func (x fastReflection_QueryBasketBalanceByIdResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryBasketBalanceByIdResponse)
+func (x fastReflection_QueryBasketBalancesResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryBasketBalancesResponse)
 }
-func (x fastReflection_QueryBasketBalanceByIdResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBasketBalanceByIdResponse
+func (x fastReflection_QueryBasketBalancesResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBasketBalancesResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBasketBalanceByIdResponse
+func (x *fastReflection_QueryBasketBalancesResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryBasketBalancesResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryBasketBalanceByIdResponse_messageType
+func (x *fastReflection_QueryBasketBalancesResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryBasketBalancesResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryBasketBalanceByIdResponse)
+func (x *fastReflection_QueryBasketBalancesResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryBasketBalancesResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryBasketBalanceByIdResponse)(x)
+func (x *fastReflection_QueryBasketBalancesResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryBasketBalancesResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2409,16 +2504,16 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Interface() protoreflect
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryBasketBalancesResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if len(x.Balances) != 0 {
-		value := protoreflect.ValueOfList(&_QueryBasketBalanceByIdResponse_1_list{list: &x.Balances})
-		if !f(fd_QueryBasketBalanceByIdResponse_balances, value) {
+		value := protoreflect.ValueOfList(&_QueryBasketBalancesResponse_1_list{list: &x.Balances})
+		if !f(fd_QueryBasketBalancesResponse_balances, value) {
 			return
 		}
 	}
 	if x.Pagination != nil {
 		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QueryBasketBalanceByIdResponse_pagination, value) {
+		if !f(fd_QueryBasketBalancesResponse_pagination, value) {
 			return
 		}
 	}
@@ -2435,17 +2530,17 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Range(f func(protoreflec
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryBasketBalancesResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		return len(x.Balances) != 0
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2455,17 +2550,17 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Has(fd protoreflect.Fiel
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryBasketBalancesResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		x.Balances = nil
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2475,22 +2570,22 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Clear(fd protoreflect.Fi
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		if len(x.Balances) == 0 {
-			return protoreflect.ValueOfList(&_QueryBasketBalanceByIdResponse_1_list{})
+			return protoreflect.ValueOfList(&_QueryBasketBalancesResponse_1_list{})
 		}
-		listValue := &_QueryBasketBalanceByIdResponse_1_list{list: &x.Balances}
+		listValue := &_QueryBasketBalancesResponse_1_list{list: &x.Balances}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2504,19 +2599,19 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Get(descriptor protorefl
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryBasketBalancesResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		lv := value.List()
-		clv := lv.(*_QueryBasketBalanceByIdResponse_1_list)
+		clv := lv.(*_QueryBasketBalancesResponse_1_list)
 		x.Balances = *clv.list
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2530,53 +2625,53 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) Set(fd protoreflect.Fiel
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		if x.Balances == nil {
 			x.Balances = []*BasketBalance{}
 		}
-		value := &_QueryBasketBalanceByIdResponse_1_list{list: &x.Balances}
+		value := &_QueryBasketBalancesResponse_1_list{list: &x.Balances}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryBasketBalancesResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances":
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances":
 		list := []*BasketBalance{}
-		return protoreflect.ValueOfList(&_QueryBasketBalanceByIdResponse_1_list{list: &list})
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination":
+		return protoreflect.ValueOfList(&_QueryBasketBalancesResponse_1_list{list: &list})
+	case "regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalancesResponse"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.basket.v1.QueryBasketBalancesResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryBasketBalancesResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.QueryBasketBalancesResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2584,7 +2679,7 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) WhichOneof(d protoreflec
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryBasketBalancesResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2595,7 +2690,7 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) GetUnknown() protoreflec
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryBasketBalancesResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2607,7 +2702,7 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) SetUnknown(fields protor
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) IsValid() bool {
+func (x *fastReflection_QueryBasketBalancesResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -2617,9 +2712,9 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryBasketBalanceByIdResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryBasketBalancesResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdResponse)
+		x := input.Message.Interface().(*QueryBasketBalancesResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2651,7 +2746,7 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) ProtoMethods() *protoifa
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdResponse)
+		x := input.Message.Interface().(*QueryBasketBalancesResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2711,7 +2806,7 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) ProtoMethods() *protoifa
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBasketBalanceByIdResponse)
+		x := input.Message.Interface().(*QueryBasketBalancesResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2743,10 +2838,10 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) ProtoMethods() *protoifa
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalanceByIdResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalancesResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalanceByIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBasketBalancesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2857,12 +2952,14 @@ func (x *fastReflection_QueryBasketBalanceByIdResponse) ProtoMethods() *protoifa
 var (
 	md_QueryBasketBalanceByDenomRequest              protoreflect.MessageDescriptor
 	fd_QueryBasketBalanceByDenomRequest_basket_denom protoreflect.FieldDescriptor
+	fd_QueryBasketBalanceByDenomRequest_batch_denom  protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_query_proto_init()
 	md_QueryBasketBalanceByDenomRequest = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalanceByDenomRequest")
 	fd_QueryBasketBalanceByDenomRequest_basket_denom = md_QueryBasketBalanceByDenomRequest.Fields().ByName("basket_denom")
+	fd_QueryBasketBalanceByDenomRequest_batch_denom = md_QueryBasketBalanceByDenomRequest.Fields().ByName("batch_denom")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryBasketBalanceByDenomRequest)(nil)
@@ -2936,6 +3033,12 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Range(f func(protorefl
 			return
 		}
 	}
+	if x.BatchDenom != "" {
+		value := protoreflect.ValueOfString(x.BatchDenom)
+		if !f(fd_QueryBasketBalanceByDenomRequest_batch_denom, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -2953,6 +3056,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Has(fd protoreflect.Fi
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
 		return x.BasketDenom != ""
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
+		return x.BatchDenom != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest"))
@@ -2971,6 +3076,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Clear(fd protoreflect.
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
 		x.BasketDenom = ""
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
+		x.BatchDenom = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest"))
@@ -2989,6 +3096,9 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Get(descriptor protore
 	switch descriptor.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
 		value := x.BasketDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
+		value := x.BatchDenom
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -3012,6 +3122,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Set(fd protoreflect.Fi
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
 		x.BasketDenom = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
+		x.BatchDenom = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest"))
@@ -3034,6 +3146,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Mutable(fd protoreflec
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
 		panic(fmt.Errorf("field basket_denom of message regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest is not mutable"))
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
+		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest"))
@@ -3048,6 +3162,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) Mutable(fd protoreflec
 func (x *fastReflection_QueryBasketBalanceByDenomRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.basket_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest.batch_denom":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -3122,6 +3238,10 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) ProtoMethods() *protoi
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.BatchDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -3150,6 +3270,13 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) ProtoMethods() *protoi
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.BatchDenom) > 0 {
+			i -= len(x.BatchDenom)
+			copy(dAtA[i:], x.BatchDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BatchDenom)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if len(x.BasketDenom) > 0 {
 			i -= len(x.BasketDenom)
@@ -3239,6 +3366,38 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) ProtoMethods() *protoi
 				}
 				x.BasketDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.BatchDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -3274,68 +3433,15 @@ func (x *fastReflection_QueryBasketBalanceByDenomRequest) ProtoMethods() *protoi
 	}
 }
 
-var _ protoreflect.List = (*_QueryBasketBalanceByDenomResponse_1_list)(nil)
-
-type _QueryBasketBalanceByDenomResponse_1_list struct {
-	list *[]*BasketBalance
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*BasketBalance)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*BasketBalance)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) AppendMutable() protoreflect.Value {
-	v := new(BasketBalance)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) NewElement() protoreflect.Value {
-	v := new(BasketBalance)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_QueryBasketBalanceByDenomResponse_1_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_QueryBasketBalanceByDenomResponse            protoreflect.MessageDescriptor
-	fd_QueryBasketBalanceByDenomResponse_balances   protoreflect.FieldDescriptor
-	fd_QueryBasketBalanceByDenomResponse_pagination protoreflect.FieldDescriptor
+	md_QueryBasketBalanceByDenomResponse         protoreflect.MessageDescriptor
+	fd_QueryBasketBalanceByDenomResponse_balance protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_basket_v1_query_proto_init()
 	md_QueryBasketBalanceByDenomResponse = File_regen_ecocredit_basket_v1_query_proto.Messages().ByName("QueryBasketBalanceByDenomResponse")
-	fd_QueryBasketBalanceByDenomResponse_balances = md_QueryBasketBalanceByDenomResponse.Fields().ByName("balances")
-	fd_QueryBasketBalanceByDenomResponse_pagination = md_QueryBasketBalanceByDenomResponse.Fields().ByName("pagination")
+	fd_QueryBasketBalanceByDenomResponse_balance = md_QueryBasketBalanceByDenomResponse.Fields().ByName("balance")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryBasketBalanceByDenomResponse)(nil)
@@ -3403,15 +3509,9 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Interface() protorefl
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Balances) != 0 {
-		value := protoreflect.ValueOfList(&_QueryBasketBalanceByDenomResponse_1_list{list: &x.Balances})
-		if !f(fd_QueryBasketBalanceByDenomResponse_balances, value) {
-			return
-		}
-	}
-	if x.Pagination != nil {
-		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QueryBasketBalanceByDenomResponse_pagination, value) {
+	if x.Balance != nil {
+		value := protoreflect.ValueOfMessage(x.Balance.ProtoReflect())
+		if !f(fd_QueryBasketBalanceByDenomResponse_balance, value) {
 			return
 		}
 	}
@@ -3430,10 +3530,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		return len(x.Balances) != 0
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		return x.Pagination != nil
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		return x.Balance != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse"))
@@ -3450,10 +3548,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		x.Balances = nil
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		x.Pagination = nil
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		x.Balance = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse"))
@@ -3470,14 +3566,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		if len(x.Balances) == 0 {
-			return protoreflect.ValueOfList(&_QueryBasketBalanceByDenomResponse_1_list{})
-		}
-		listValue := &_QueryBasketBalanceByDenomResponse_1_list{list: &x.Balances}
-		return protoreflect.ValueOfList(listValue)
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		value := x.Pagination
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		value := x.Balance
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
@@ -3499,12 +3589,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		lv := value.List()
-		clv := lv.(*_QueryBasketBalanceByDenomResponse_1_list)
-		x.Balances = *clv.list
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		x.Balance = value.Message().Interface().(*BasketBalance)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse"))
@@ -3525,17 +3611,11 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		if x.Balances == nil {
-			x.Balances = []*BasketBalance{}
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		if x.Balance == nil {
+			x.Balance = new(BasketBalance)
 		}
-		value := &_QueryBasketBalanceByDenomResponse_1_list{list: &x.Balances}
-		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		if x.Pagination == nil {
-			x.Pagination = new(v1beta1.PageResponse)
-		}
-		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
+		return protoreflect.ValueOfMessage(x.Balance.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse"))
@@ -3549,11 +3629,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryBasketBalanceByDenomResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances":
-		list := []*BasketBalance{}
-		return protoreflect.ValueOfList(&_QueryBasketBalanceByDenomResponse_1_list{list: &list})
-	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination":
-		m := new(v1beta1.PageResponse)
+	case "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance":
+		m := new(BasketBalance)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
@@ -3624,14 +3701,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) ProtoMethods() *proto
 		var n int
 		var l int
 		_ = l
-		if len(x.Balances) > 0 {
-			for _, e := range x.Balances {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
-		}
-		if x.Pagination != nil {
-			l = options.Size(x.Pagination)
+		if x.Balance != nil {
+			l = options.Size(x.Balance)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -3663,8 +3734,8 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) ProtoMethods() *proto
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Pagination != nil {
-			encoded, err := options.Marshal(x.Pagination)
+		if x.Balance != nil {
+			encoded, err := options.Marshal(x.Balance)
 			if err != nil {
 				return protoiface.MarshalOutput{
 					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3675,23 +3746,7 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) ProtoMethods() *proto
 			copy(dAtA[i:], encoded)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.Balances) > 0 {
-			for iNdEx := len(x.Balances) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Balances[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0xa
-			}
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -3744,7 +3799,7 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) ProtoMethods() *proto
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Balances", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Balance", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -3771,44 +3826,10 @@ func (x *fastReflection_QueryBasketBalanceByDenomResponse) ProtoMethods() *proto
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Balances = append(x.Balances, &BasketBalance{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Balances[len(x.Balances)-1]); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				if x.Balance == nil {
+					x.Balance = &BasketBalance{}
 				}
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Pagination == nil {
-					x.Pagination = &v1beta1.PageResponse{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Pagination); err != nil {
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Balance); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -4017,18 +4038,20 @@ func (x *QueryBasketsResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryBasketBalanceByIdRequest is the Query/BasketBalanceById request type.
-type QueryBasketBalanceByIdRequest struct {
+// QueryBasketBalancesRequest is the Query/BasketBalances request type.
+type QueryBasketBalancesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// basket_id is the id of the basket.
-	BasketId uint64 `protobuf:"varint,1,opt,name=basket_id,json=basketId,proto3" json:"basket_id,omitempty"`
+	// basket_denom is the denom of the basket.
+	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QueryBasketBalanceByIdRequest) Reset() {
-	*x = QueryBasketBalanceByIdRequest{}
+func (x *QueryBasketBalancesRequest) Reset() {
+	*x = QueryBasketBalancesRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_basket_v1_query_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4036,38 +4059,45 @@ func (x *QueryBasketBalanceByIdRequest) Reset() {
 	}
 }
 
-func (x *QueryBasketBalanceByIdRequest) String() string {
+func (x *QueryBasketBalancesRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryBasketBalanceByIdRequest) ProtoMessage() {}
+func (*QueryBasketBalancesRequest) ProtoMessage() {}
 
-// Deprecated: Use QueryBasketBalanceByIdRequest.ProtoReflect.Descriptor instead.
-func (*QueryBasketBalanceByIdRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryBasketBalancesRequest.ProtoReflect.Descriptor instead.
+func (*QueryBasketBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_query_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *QueryBasketBalanceByIdRequest) GetBasketId() uint64 {
+func (x *QueryBasketBalancesRequest) GetBasketDenom() string {
 	if x != nil {
-		return x.BasketId
+		return x.BasketDenom
 	}
-	return 0
+	return ""
 }
 
-// QueryBasketBalanceByIdResponse is the Query/BasketBalanceById response type.
-type QueryBasketBalanceByIdResponse struct {
+func (x *QueryBasketBalancesRequest) GetPagination() *v1beta1.PageRequest {
+	if x != nil {
+		return x.Pagination
+	}
+	return nil
+}
+
+// QueryBasketBalancesResponse is the Query/BasketBalances response type.
+type QueryBasketBalancesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// balances is a list of credit balances held by the basket.
+	// balances is a list of credit balances in the basket.
 	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QueryBasketBalanceByIdResponse) Reset() {
-	*x = QueryBasketBalanceByIdResponse{}
+func (x *QueryBasketBalancesResponse) Reset() {
+	*x = QueryBasketBalancesResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_basket_v1_query_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -4075,25 +4105,25 @@ func (x *QueryBasketBalanceByIdResponse) Reset() {
 	}
 }
 
-func (x *QueryBasketBalanceByIdResponse) String() string {
+func (x *QueryBasketBalancesResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryBasketBalanceByIdResponse) ProtoMessage() {}
+func (*QueryBasketBalancesResponse) ProtoMessage() {}
 
-// Deprecated: Use QueryBasketBalanceByIdResponse.ProtoReflect.Descriptor instead.
-func (*QueryBasketBalanceByIdResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryBasketBalancesResponse.ProtoReflect.Descriptor instead.
+func (*QueryBasketBalancesResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QueryBasketBalanceByIdResponse) GetBalances() []*BasketBalance {
+func (x *QueryBasketBalancesResponse) GetBalances() []*BasketBalance {
 	if x != nil {
 		return x.Balances
 	}
 	return nil
 }
 
-func (x *QueryBasketBalanceByIdResponse) GetPagination() *v1beta1.PageResponse {
+func (x *QueryBasketBalancesResponse) GetPagination() *v1beta1.PageResponse {
 	if x != nil {
 		return x.Pagination
 	}
@@ -4108,6 +4138,8 @@ type QueryBasketBalanceByDenomRequest struct {
 
 	// basket_denom is the denom of the basket.
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// batch_denom is the denom of the credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
 func (x *QueryBasketBalanceByDenomRequest) Reset() {
@@ -4137,16 +4169,21 @@ func (x *QueryBasketBalanceByDenomRequest) GetBasketDenom() string {
 	return ""
 }
 
+func (x *QueryBasketBalanceByDenomRequest) GetBatchDenom() string {
+	if x != nil {
+		return x.BatchDenom
+	}
+	return ""
+}
+
 // QueryBasketBalanceByDenomResponse is the Query/BasketBalanceByDenom response type.
 type QueryBasketBalanceByDenomResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// balances is a list of credit balances held by the basket.
-	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
-	// pagination defines the pagination in the response.
-	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// balance is the balance of a specific credit batch in the basket.
+	Balance *BasketBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
 func (x *QueryBasketBalanceByDenomResponse) Reset() {
@@ -4169,16 +4206,9 @@ func (*QueryBasketBalanceByDenomResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_query_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *QueryBasketBalanceByDenomResponse) GetBalances() []*BasketBalance {
+func (x *QueryBasketBalanceByDenomResponse) GetBalance() *BasketBalance {
 	if x != nil {
-		return x.Balances
-	}
-	return nil
-}
-
-func (x *QueryBasketBalanceByDenomResponse) GetPagination() *v1beta1.PageResponse {
-	if x != nil {
-		return x.Pagination
+		return x.Balance
 	}
 	return nil
 }
@@ -4221,101 +4251,104 @@ var file_regen_ecocredit_basket_v1_query_proto_rawDesc = []byte{
 	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
 	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
 	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3c, 0x0a, 0x1d,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e,
-	0x63, 0x65, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1b, 0x0a,
-	0x09, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x08, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x49, 0x64, 0x22, 0xaf, 0x01, 0x0a, 0x1e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63,
-	0x65, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a,
-	0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x73, 0x6b,
-	0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e,
-	0x63, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
-	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x45, 0x0a, 0x20,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e,
-	0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65,
-	0x6e, 0x6f, 0x6d, 0x22, 0xb2, 0x01, 0x0a, 0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f,
-	0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x08, 0x62, 0x61, 0x6c,
-	0x61, 0x6e, 0x63, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x72, 0x65,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87, 0x01, 0x0a,
+	0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61,
+	0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x62,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x46,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xac, 0x01, 0x0a, 0x1b, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63,
+	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e,
+	0x63, 0x65, 0x52, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x66, 0x0a, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61,
+	0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1f, 0x0a, 0x0b,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x67, 0x0a,
+	0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61,
+	0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x42, 0x0a, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x07, 0x62,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x32, 0xed, 0x05, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x12, 0xa1, 0x01, 0x0a, 0x06, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x12, 0x2d, 0x2e, 0x72, 0x65,
 	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61,
-	0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61,
-	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x08, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12,
-	0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
-	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
-	0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61,
-	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0xe3, 0x05, 0x0a, 0x05, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x12, 0xa1, 0x01, 0x0a, 0x06, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x12, 0x2d, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42,
-	0x61, 0x73, 0x6b, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x72,
+	0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b,
+	0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x38, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x32, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x62, 0x61,
+	0x73, 0x6b, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65,
+	0x6e, 0x6f, 0x6d, 0x7d, 0x12, 0x95, 0x01, 0x0a, 0x07, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73,
+	0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x29, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x23, 0x12, 0x21, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x31, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x12, 0xc2, 0x01, 0x0a,
+	0x0e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x12,
+	0x35, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x36, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e,
+	0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61,
+	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x41,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x3b, 0x12, 0x39, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61,
+	0x31, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65,
+	0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
+	0x73, 0x12, 0xe2, 0x01, 0x0a, 0x14, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61,
+	0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x3b, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b,
+	0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x3c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x4f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x49, 0x12, 0x47, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f,
+	0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73,
+	0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f,
+	0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f,
+	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x42, 0x80, 0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62,
-	0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61,
-	0x73, 0x6b, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x38, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x32, 0x12, 0x30, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f,
-	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x12, 0x95, 0x01, 0x0a, 0x07, 0x42, 0x61, 0x73, 0x6b, 0x65,
-	0x74, 0x73, 0x12, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x29, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x23, 0x12, 0x21, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31,
-	0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x12, 0xc7,
-	0x01, 0x0a, 0x11, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
-	0x42, 0x79, 0x49, 0x64, 0x12, 0x38, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61,
-	0x6e, 0x63, 0x65, 0x42, 0x79, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x39,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x49,
-	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x3d, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x37, 0x12, 0x35, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x62, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x69, 0x64, 0x7d,
-	0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0xd3, 0x01, 0x0a, 0x14, 0x42, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f,
-	0x6d, 0x12, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
-	0x42, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x3c,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x79, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x40, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x3a, 0x12, 0x38, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f,
-	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x7d, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x42, 0x80,
-	0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31,
-	0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52,
-	0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x25, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56,
-	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b,
+	0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c,
+	0x56, 0x31, 0xe2, 0x02, 0x25, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47,
+	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -4336,8 +4369,8 @@ var file_regen_ecocredit_basket_v1_query_proto_goTypes = []interface{}{
 	(*QueryBasketResponse)(nil),               // 1: regen.ecocredit.basket.v1.QueryBasketResponse
 	(*QueryBasketsRequest)(nil),               // 2: regen.ecocredit.basket.v1.QueryBasketsRequest
 	(*QueryBasketsResponse)(nil),              // 3: regen.ecocredit.basket.v1.QueryBasketsResponse
-	(*QueryBasketBalanceByIdRequest)(nil),     // 4: regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest
-	(*QueryBasketBalanceByIdResponse)(nil),    // 5: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse
+	(*QueryBasketBalancesRequest)(nil),        // 4: regen.ecocredit.basket.v1.QueryBasketBalancesRequest
+	(*QueryBasketBalancesResponse)(nil),       // 5: regen.ecocredit.basket.v1.QueryBasketBalancesResponse
 	(*QueryBasketBalanceByDenomRequest)(nil),  // 6: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest
 	(*QueryBasketBalanceByDenomResponse)(nil), // 7: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse
 	(*Basket)(nil),                            // 8: regen.ecocredit.basket.v1.Basket
@@ -4350,17 +4383,17 @@ var file_regen_ecocredit_basket_v1_query_proto_depIdxs = []int32{
 	9,  // 1: regen.ecocredit.basket.v1.QueryBasketsRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
 	8,  // 2: regen.ecocredit.basket.v1.QueryBasketsResponse.baskets:type_name -> regen.ecocredit.basket.v1.Basket
 	10, // 3: regen.ecocredit.basket.v1.QueryBasketsResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	11, // 4: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.balances:type_name -> regen.ecocredit.basket.v1.BasketBalance
-	10, // 5: regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	11, // 6: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balances:type_name -> regen.ecocredit.basket.v1.BasketBalance
-	10, // 7: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	9,  // 4: regen.ecocredit.basket.v1.QueryBasketBalancesRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	11, // 5: regen.ecocredit.basket.v1.QueryBasketBalancesResponse.balances:type_name -> regen.ecocredit.basket.v1.BasketBalance
+	10, // 6: regen.ecocredit.basket.v1.QueryBasketBalancesResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	11, // 7: regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse.balance:type_name -> regen.ecocredit.basket.v1.BasketBalance
 	0,  // 8: regen.ecocredit.basket.v1.Query.Basket:input_type -> regen.ecocredit.basket.v1.QueryBasketRequest
 	2,  // 9: regen.ecocredit.basket.v1.Query.Baskets:input_type -> regen.ecocredit.basket.v1.QueryBasketsRequest
-	4,  // 10: regen.ecocredit.basket.v1.Query.BasketBalanceById:input_type -> regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest
+	4,  // 10: regen.ecocredit.basket.v1.Query.BasketBalances:input_type -> regen.ecocredit.basket.v1.QueryBasketBalancesRequest
 	6,  // 11: regen.ecocredit.basket.v1.Query.BasketBalanceByDenom:input_type -> regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest
 	1,  // 12: regen.ecocredit.basket.v1.Query.Basket:output_type -> regen.ecocredit.basket.v1.QueryBasketResponse
 	3,  // 13: regen.ecocredit.basket.v1.Query.Baskets:output_type -> regen.ecocredit.basket.v1.QueryBasketsResponse
-	5,  // 14: regen.ecocredit.basket.v1.Query.BasketBalanceById:output_type -> regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse
+	5,  // 14: regen.ecocredit.basket.v1.Query.BasketBalances:output_type -> regen.ecocredit.basket.v1.QueryBasketBalancesResponse
 	7,  // 15: regen.ecocredit.basket.v1.Query.BasketBalanceByDenom:output_type -> regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse
 	12, // [12:16] is the sub-list for method output_type
 	8,  // [8:12] is the sub-list for method input_type
@@ -4425,7 +4458,7 @@ func file_regen_ecocredit_basket_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_basket_v1_query_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryBasketBalanceByIdRequest); i {
+			switch v := v.(*QueryBasketBalancesRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4437,7 +4470,7 @@ func file_regen_ecocredit_basket_v1_query_proto_init() {
 			}
 		}
 		file_regen_ecocredit_basket_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryBasketBalanceByIdResponse); i {
+			switch v := v.(*QueryBasketBalancesResponse); i {
 			case 0:
 				return &v.state
 			case 1:

@@ -222,24 +222,26 @@ func (m *QueryBasketsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryBasketBalanceByIdRequest is the Query/BasketBalanceById request type.
-type QueryBasketBalanceByIdRequest struct {
-	// basket_id is the id of the basket.
-	BasketId uint64 `protobuf:"varint,1,opt,name=basket_id,json=basketId,proto3" json:"basket_id,omitempty"`
+// QueryBasketBalancesRequest is the Query/BasketBalances request type.
+type QueryBasketBalancesRequest struct {
+	// basket_denom is the denom of the basket.
+	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryBasketBalanceByIdRequest) Reset()         { *m = QueryBasketBalanceByIdRequest{} }
-func (m *QueryBasketBalanceByIdRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryBasketBalanceByIdRequest) ProtoMessage()    {}
-func (*QueryBasketBalanceByIdRequest) Descriptor() ([]byte, []int) {
+func (m *QueryBasketBalancesRequest) Reset()         { *m = QueryBasketBalancesRequest{} }
+func (m *QueryBasketBalancesRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketBalancesRequest) ProtoMessage()    {}
+func (*QueryBasketBalancesRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a83a50529e6be723, []int{4}
 }
-func (m *QueryBasketBalanceByIdRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryBasketBalancesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryBasketBalanceByIdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryBasketBalancesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryBasketBalanceByIdRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryBasketBalancesRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -249,45 +251,52 @@ func (m *QueryBasketBalanceByIdRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryBasketBalanceByIdRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryBasketBalanceByIdRequest.Merge(m, src)
+func (m *QueryBasketBalancesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketBalancesRequest.Merge(m, src)
 }
-func (m *QueryBasketBalanceByIdRequest) XXX_Size() int {
+func (m *QueryBasketBalancesRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryBasketBalanceByIdRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryBasketBalanceByIdRequest.DiscardUnknown(m)
+func (m *QueryBasketBalancesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketBalancesRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryBasketBalanceByIdRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryBasketBalancesRequest proto.InternalMessageInfo
 
-func (m *QueryBasketBalanceByIdRequest) GetBasketId() uint64 {
+func (m *QueryBasketBalancesRequest) GetBasketDenom() string {
 	if m != nil {
-		return m.BasketId
+		return m.BasketDenom
 	}
-	return 0
+	return ""
 }
 
-// QueryBasketBalanceByIdResponse is the Query/BasketBalanceById response type.
-type QueryBasketBalanceByIdResponse struct {
-	// balances is a list of credit balances held by the basket.
+func (m *QueryBasketBalancesRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBasketBalancesResponse is the Query/BasketBalances response type.
+type QueryBasketBalancesResponse struct {
+	// balances is a list of credit balances in the basket.
 	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryBasketBalanceByIdResponse) Reset()         { *m = QueryBasketBalanceByIdResponse{} }
-func (m *QueryBasketBalanceByIdResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryBasketBalanceByIdResponse) ProtoMessage()    {}
-func (*QueryBasketBalanceByIdResponse) Descriptor() ([]byte, []int) {
+func (m *QueryBasketBalancesResponse) Reset()         { *m = QueryBasketBalancesResponse{} }
+func (m *QueryBasketBalancesResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketBalancesResponse) ProtoMessage()    {}
+func (*QueryBasketBalancesResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_a83a50529e6be723, []int{5}
 }
-func (m *QueryBasketBalanceByIdResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryBasketBalancesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryBasketBalanceByIdResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryBasketBalancesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryBasketBalanceByIdResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryBasketBalancesResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -297,26 +306,26 @@ func (m *QueryBasketBalanceByIdResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *QueryBasketBalanceByIdResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryBasketBalanceByIdResponse.Merge(m, src)
+func (m *QueryBasketBalancesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketBalancesResponse.Merge(m, src)
 }
-func (m *QueryBasketBalanceByIdResponse) XXX_Size() int {
+func (m *QueryBasketBalancesResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryBasketBalanceByIdResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryBasketBalanceByIdResponse.DiscardUnknown(m)
+func (m *QueryBasketBalancesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketBalancesResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryBasketBalanceByIdResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryBasketBalancesResponse proto.InternalMessageInfo
 
-func (m *QueryBasketBalanceByIdResponse) GetBalances() []*BasketBalance {
+func (m *QueryBasketBalancesResponse) GetBalances() []*BasketBalance {
 	if m != nil {
 		return m.Balances
 	}
 	return nil
 }
 
-func (m *QueryBasketBalanceByIdResponse) GetPagination() *query.PageResponse {
+func (m *QueryBasketBalancesResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -327,6 +336,8 @@ func (m *QueryBasketBalanceByIdResponse) GetPagination() *query.PageResponse {
 type QueryBasketBalanceByDenomRequest struct {
 	// basket_denom is the denom of the basket.
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// batch_denom is the denom of the credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
 func (m *QueryBasketBalanceByDenomRequest) Reset()         { *m = QueryBasketBalanceByDenomRequest{} }
@@ -369,12 +380,17 @@ func (m *QueryBasketBalanceByDenomRequest) GetBasketDenom() string {
 	return ""
 }
 
+func (m *QueryBasketBalanceByDenomRequest) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
 // QueryBasketBalanceByDenomResponse is the Query/BasketBalanceByDenom response type.
 type QueryBasketBalanceByDenomResponse struct {
-	// balances is a list of credit balances held by the basket.
-	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
-	// pagination defines the pagination in the response.
-	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// balance is the balance of a specific credit batch in the basket.
+	Balance *BasketBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
 func (m *QueryBasketBalanceByDenomResponse) Reset()         { *m = QueryBasketBalanceByDenomResponse{} }
@@ -410,16 +426,9 @@ func (m *QueryBasketBalanceByDenomResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBasketBalanceByDenomResponse proto.InternalMessageInfo
 
-func (m *QueryBasketBalanceByDenomResponse) GetBalances() []*BasketBalance {
+func (m *QueryBasketBalanceByDenomResponse) GetBalance() *BasketBalance {
 	if m != nil {
-		return m.Balances
-	}
-	return nil
-}
-
-func (m *QueryBasketBalanceByDenomResponse) GetPagination() *query.PageResponse {
-	if m != nil {
-		return m.Pagination
+		return m.Balance
 	}
 	return nil
 }
@@ -429,8 +438,8 @@ func init() {
 	proto.RegisterType((*QueryBasketResponse)(nil), "regen.ecocredit.basket.v1.QueryBasketResponse")
 	proto.RegisterType((*QueryBasketsRequest)(nil), "regen.ecocredit.basket.v1.QueryBasketsRequest")
 	proto.RegisterType((*QueryBasketsResponse)(nil), "regen.ecocredit.basket.v1.QueryBasketsResponse")
-	proto.RegisterType((*QueryBasketBalanceByIdRequest)(nil), "regen.ecocredit.basket.v1.QueryBasketBalanceByIdRequest")
-	proto.RegisterType((*QueryBasketBalanceByIdResponse)(nil), "regen.ecocredit.basket.v1.QueryBasketBalanceByIdResponse")
+	proto.RegisterType((*QueryBasketBalancesRequest)(nil), "regen.ecocredit.basket.v1.QueryBasketBalancesRequest")
+	proto.RegisterType((*QueryBasketBalancesResponse)(nil), "regen.ecocredit.basket.v1.QueryBasketBalancesResponse")
 	proto.RegisterType((*QueryBasketBalanceByDenomRequest)(nil), "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomRequest")
 	proto.RegisterType((*QueryBasketBalanceByDenomResponse)(nil), "regen.ecocredit.basket.v1.QueryBasketBalanceByDenomResponse")
 }
@@ -440,44 +449,45 @@ func init() {
 }
 
 var fileDescriptor_a83a50529e6be723 = []byte{
-	// 588 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x95, 0xc1, 0x6e, 0xd3, 0x30,
-	0x18, 0xc7, 0xe7, 0xc1, 0xba, 0xcd, 0xe3, 0x82, 0xd9, 0x61, 0x04, 0x88, 0xda, 0x20, 0x60, 0x20,
-	0xcd, 0x26, 0x45, 0x68, 0x1d, 0x1d, 0x12, 0xaa, 0x06, 0x68, 0xb7, 0x51, 0x89, 0x0b, 0x12, 0x42,
-	0x6e, 0x62, 0x65, 0xd1, 0xda, 0x38, 0x8b, 0xdd, 0xc2, 0x84, 0x76, 0xe1, 0x09, 0x90, 0x10, 0x37,
-	0x2e, 0x3c, 0x01, 0x12, 0x2f, 0x01, 0xc7, 0x49, 0xbb, 0x70, 0x44, 0x2d, 0x0f, 0x82, 0x6a, 0x3b,
-	0xa3, 0xa1, 0x5d, 0x9b, 0x4e, 0x1c, 0x38, 0xd6, 0xfd, 0xfe, 0xff, 0xef, 0xf7, 0x77, 0xbe, 0x2f,
-	0x81, 0x37, 0x12, 0x16, 0xb0, 0x88, 0x30, 0x8f, 0x7b, 0x09, 0xf3, 0x43, 0x49, 0x1a, 0x54, 0xec,
-	0x31, 0x49, 0x3a, 0x2e, 0xd9, 0x6f, 0xb3, 0xe4, 0x00, 0xc7, 0x09, 0x97, 0x1c, 0x5d, 0x56, 0x65,
-	0xf8, 0xa4, 0x0c, 0xeb, 0x32, 0xdc, 0x71, 0xad, 0xab, 0x01, 0xe7, 0x41, 0x93, 0x11, 0x1a, 0x87,
-	0x84, 0x46, 0x11, 0x97, 0x54, 0x86, 0x3c, 0x12, 0x5a, 0x68, 0x8d, 0xf1, 0x17, 0x92, 0x4a, 0x66,
-	0xca, 0xee, 0x78, 0x5c, 0xb4, 0xb8, 0xe8, 0xff, 0xcb, 0x74, 0x63, 0xd2, 0x71, 0x1b, 0x4c, 0x52,
-	0x97, 0xc4, 0x34, 0x08, 0x23, 0xe5, 0xa9, 0x6b, 0x9d, 0x75, 0x88, 0x9e, 0xf5, 0x2b, 0x6a, 0xca,
-	0xa9, 0xce, 0xf6, 0xdb, 0x4c, 0x48, 0x54, 0x82, 0x17, 0xb4, 0xf5, 0x2b, 0x9f, 0x45, 0xbc, 0xb5,
-	0x02, 0x8a, 0x60, 0x75, 0xb1, 0xbe, 0xa4, 0xcf, 0xb6, 0xfa, 0x47, 0xce, 0x0e, 0xbc, 0x94, 0x11,
-	0x8a, 0x98, 0x47, 0x82, 0xa1, 0x0d, 0x58, 0xd0, 0x55, 0x4a, 0xb3, 0x54, 0x2e, 0xe1, 0x53, 0xc3,
-	0x62, 0x23, 0x35, 0x02, 0xe7, 0x65, 0xc6, 0x51, 0xa4, 0x2c, 0x4f, 0x20, 0xfc, 0x43, 0x6d, 0x5c,
-	0x6f, 0x62, 0x1d, 0xb1, 0x6f, 0xc6, 0xb0, 0xbe, 0x5b, 0x13, 0x11, 0xef, 0xd0, 0x80, 0x19, 0x6d,
-	0x7d, 0x40, 0xe9, 0x7c, 0x02, 0x70, 0x39, 0xeb, 0x6f, 0x90, 0xab, 0x70, 0x5e, 0x13, 0x88, 0x15,
-	0x50, 0x3c, 0x97, 0x8f, 0x39, 0x55, 0xa0, 0xa7, 0x19, 0xba, 0x59, 0x45, 0x77, 0x6b, 0x22, 0x9d,
-	0xee, 0x9c, 0xc1, 0xdb, 0x84, 0xd7, 0x06, 0xe8, 0x6a, 0xb4, 0x49, 0x23, 0x8f, 0xd5, 0x0e, 0xb6,
-	0xfd, 0xf4, 0x1e, 0xae, 0xc0, 0x45, 0xf3, 0x4c, 0x42, 0x5f, 0x5d, 0xc3, 0xf9, 0xfa, 0x82, 0x3e,
-	0xd8, 0xf6, 0x9d, 0x2f, 0x00, 0xda, 0xa7, 0xc9, 0x4d, 0xcc, 0x2d, 0xb8, 0xd0, 0xd0, 0xc7, 0x69,
-	0xce, 0xd5, 0x89, 0x39, 0x8d, 0x4f, 0xfd, 0x44, 0xf9, 0xef, 0xf2, 0x3e, 0x86, 0xc5, 0x51, 0xc0,
-	0x6a, 0xb8, 0xa6, 0x18, 0xc3, 0xaf, 0x00, 0x96, 0xc6, 0xf8, 0xfc, 0x97, 0xd9, 0xcb, 0xbd, 0x39,
-	0x38, 0xa7, 0xa0, 0xd1, 0x67, 0x00, 0x0b, 0xba, 0x1d, 0x5a, 0x1b, 0x43, 0x34, 0xbc, 0xa2, 0x16,
-	0xce, 0x5b, 0xae, 0xfb, 0x3b, 0x95, 0x77, 0xc7, 0xbf, 0x3e, 0xcc, 0x96, 0xd1, 0x5d, 0xf2, 0xf7,
-	0x4b, 0xa4, 0xe3, 0xd2, 0x66, 0xbc, 0x4b, 0x5d, 0xf3, 0x36, 0x11, 0xe4, 0xed, 0xe0, 0xa5, 0x1f,
-	0xa2, 0x8f, 0x00, 0xce, 0x9b, 0x9d, 0x41, 0x39, 0xbb, 0xa6, 0xcb, 0x6b, 0x91, 0xdc, 0xf5, 0x06,
-	0xf3, 0xb6, 0xc2, 0xbc, 0x8e, 0x4a, 0x13, 0x31, 0xd1, 0x37, 0x00, 0x2f, 0x0e, 0x8d, 0x3b, 0xaa,
-	0xe4, 0xeb, 0x38, 0xbc, 0x60, 0xd6, 0xc6, 0x19, 0x94, 0x86, 0xfa, 0xa1, 0xa2, 0x5e, 0x47, 0xf7,
-	0xf3, 0x5f, 0x6e, 0xe8, 0x1f, 0x12, 0x33, 0x59, 0xe8, 0x18, 0xc0, 0xe5, 0x51, 0xf3, 0x8b, 0xaa,
-	0x53, 0x22, 0x0d, 0x6e, 0x8f, 0xb5, 0x79, 0x36, 0xb1, 0x89, 0xf4, 0x48, 0x45, 0x7a, 0x80, 0x2a,
-	0xd3, 0xce, 0x4b, 0x9a, 0xaa, 0xf6, 0xfc, 0x7b, 0xd7, 0x06, 0x47, 0x5d, 0x1b, 0xfc, 0xec, 0xda,
-	0xe0, 0x7d, 0xcf, 0x9e, 0x39, 0xea, 0xd9, 0x33, 0x3f, 0x7a, 0xf6, 0xcc, 0x8b, 0x6a, 0x10, 0xca,
-	0xdd, 0x76, 0x03, 0x7b, 0xbc, 0xa5, 0xdd, 0xd7, 0x22, 0x26, 0x5f, 0xf3, 0x64, 0xcf, 0xfc, 0x6a,
-	0x32, 0x3f, 0x60, 0x09, 0x79, 0x33, 0xea, 0x4b, 0xd7, 0x28, 0xa8, 0x0f, 0xd7, 0xbd, 0xdf, 0x01,
-	0x00, 0x00, 0xff, 0xff, 0x3b, 0xac, 0x3d, 0x4b, 0x6d, 0x07, 0x00, 0x00,
+	// 600 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xbf, 0x8f, 0x12, 0x41,
+	0x14, 0x66, 0x30, 0xc7, 0xe9, 0xc3, 0x58, 0x8c, 0x57, 0x9c, 0xab, 0x59, 0x01, 0xa3, 0x9e, 0x26,
+	0xb7, 0xe3, 0x62, 0xfc, 0x71, 0xc1, 0x46, 0x72, 0xf1, 0x62, 0xe5, 0x49, 0x62, 0x63, 0x62, 0xcc,
+	0xec, 0x32, 0x2e, 0xe4, 0x60, 0x87, 0xdb, 0x19, 0xd0, 0x8b, 0xb9, 0xc6, 0xc6, 0xd6, 0xc4, 0xd8,
+	0xd9, 0xd8, 0xfb, 0x57, 0x58, 0x59, 0x5e, 0x62, 0x63, 0x69, 0xc0, 0xd6, 0xff, 0xc1, 0xec, 0xcc,
+	0x80, 0x2c, 0x87, 0xb0, 0x90, 0x2b, 0x79, 0xfb, 0x7d, 0xdf, 0xfb, 0xde, 0xc7, 0x7b, 0xbb, 0x70,
+	0x35, 0x62, 0x01, 0x0b, 0x09, 0xf3, 0xb9, 0x1f, 0xb1, 0x7a, 0x53, 0x12, 0x8f, 0x8a, 0x3d, 0x26,
+	0x49, 0xcf, 0x25, 0xfb, 0x5d, 0x16, 0x1d, 0x38, 0x9d, 0x88, 0x4b, 0x8e, 0x2f, 0x28, 0x98, 0x33,
+	0x82, 0x39, 0x1a, 0xe6, 0xf4, 0x5c, 0xeb, 0x52, 0xc0, 0x79, 0xd0, 0x62, 0x84, 0x76, 0x9a, 0x84,
+	0x86, 0x21, 0x97, 0x54, 0x36, 0x79, 0x28, 0x34, 0xd1, 0x9a, 0xa1, 0x2f, 0x24, 0x95, 0xcc, 0xc0,
+	0x6e, 0xfa, 0x5c, 0xb4, 0xb9, 0x88, 0x9f, 0x32, 0xdd, 0x98, 0xf4, 0x5c, 0x8f, 0x49, 0xea, 0x92,
+	0x0e, 0x0d, 0x9a, 0xa1, 0xd2, 0xd4, 0xd8, 0xd2, 0x3d, 0xc0, 0x4f, 0x63, 0x44, 0x55, 0x29, 0xd5,
+	0xd8, 0x7e, 0x97, 0x09, 0x89, 0x8b, 0x70, 0x56, 0x4b, 0xbf, 0xac, 0xb3, 0x90, 0xb7, 0xd7, 0x51,
+	0x01, 0x6d, 0x9c, 0xa9, 0xe5, 0x75, 0x6d, 0x3b, 0x2e, 0x95, 0x76, 0xe1, 0x7c, 0x82, 0x28, 0x3a,
+	0x3c, 0x14, 0x0c, 0x6f, 0x41, 0x4e, 0xa3, 0x14, 0x27, 0x5f, 0x2e, 0x3a, 0xff, 0x1d, 0xd6, 0x31,
+	0x54, 0x43, 0x28, 0xbd, 0x48, 0x28, 0x8a, 0xa1, 0x97, 0x47, 0x00, 0xff, 0x5c, 0x1b, 0xd5, 0x6b,
+	0x8e, 0x1e, 0x31, 0x16, 0x63, 0x8e, 0xce, 0xd6, 0x8c, 0xe8, 0xec, 0xd2, 0x80, 0x19, 0x6e, 0x6d,
+	0x8c, 0x59, 0xfa, 0x8c, 0x60, 0x2d, 0xa9, 0x6f, 0x2c, 0x57, 0x60, 0x55, 0x3b, 0x10, 0xeb, 0xa8,
+	0x70, 0x2a, 0x9d, 0xe7, 0x21, 0x03, 0xef, 0x24, 0xdc, 0x65, 0x95, 0xbb, 0xeb, 0x73, 0xdd, 0xe9,
+	0xce, 0x09, 0x7b, 0xef, 0x11, 0x58, 0x63, 0xf6, 0xaa, 0xb4, 0x45, 0x43, 0x9f, 0x89, 0xf4, 0xff,
+	0xc8, 0x44, 0x50, 0xd9, 0xa5, 0x83, 0xfa, 0x8a, 0xe0, 0xe2, 0x54, 0x27, 0x26, 0xaf, 0x6d, 0x38,
+	0xed, 0x99, 0x9a, 0x09, 0x6c, 0x63, 0x6e, 0x60, 0x46, 0xa4, 0x36, 0x62, 0x9e, 0x5c, 0x70, 0xaf,
+	0xa0, 0x70, 0xdc, 0x6d, 0xf5, 0x40, 0x65, 0xb2, 0x40, 0x7a, 0x97, 0x21, 0xef, 0x51, 0xe9, 0x37,
+	0x0c, 0x22, 0xab, 0x10, 0xa0, 0x4a, 0x7a, 0xe1, 0x03, 0x28, 0xce, 0xe8, 0x63, 0xb2, 0xa9, 0xc6,
+	0xbb, 0xa4, 0x9e, 0x98, 0x4d, 0x4d, 0x1f, 0xcd, 0x90, 0x58, 0xfe, 0xb3, 0x02, 0x2b, 0xaa, 0x13,
+	0xfe, 0x82, 0x20, 0xa7, 0x41, 0x78, 0x73, 0x86, 0xce, 0xf1, 0x03, 0xb6, 0x9c, 0xb4, 0x70, 0xed,
+	0xbb, 0x74, 0xff, 0xdd, 0x8f, 0xdf, 0x1f, 0xb3, 0x65, 0x7c, 0x8b, 0x4c, 0xbe, 0x62, 0x7a, 0x2e,
+	0x6d, 0x75, 0x1a, 0xd4, 0x35, 0xef, 0x1a, 0x41, 0xde, 0x8e, 0x27, 0x79, 0x88, 0x3f, 0x21, 0x58,
+	0x35, 0x17, 0x85, 0x53, 0x76, 0x1d, 0x2e, 0xb5, 0x45, 0x52, 0xe3, 0x8d, 0xcd, 0x1b, 0xca, 0xe6,
+	0x15, 0x5c, 0x9c, 0x6b, 0x13, 0x7f, 0x43, 0x70, 0x2e, 0xb9, 0xc0, 0xf8, 0x4e, 0xba, 0x76, 0x13,
+	0xa7, 0x67, 0xdd, 0x5d, 0x94, 0x66, 0xcc, 0x3e, 0x54, 0x66, 0x2b, 0x78, 0x6b, 0xd1, 0x4c, 0xc9,
+	0xe8, 0x48, 0xfa, 0x08, 0xd6, 0xa6, 0xed, 0x1b, 0xae, 0x2c, 0xe4, 0x29, 0x79, 0x0d, 0xd6, 0x83,
+	0xe5, 0xc8, 0x66, 0xac, 0x27, 0x6a, 0xac, 0xc7, 0x78, 0x67, 0xe9, 0xb1, 0xe2, 0xfa, 0xe8, 0xd2,
+	0x0e, 0xab, 0xcf, 0xbe, 0xf7, 0x6d, 0x74, 0xd4, 0xb7, 0xd1, 0xaf, 0xbe, 0x8d, 0x3e, 0x0c, 0xec,
+	0xcc, 0xd1, 0xc0, 0xce, 0xfc, 0x1c, 0xd8, 0x99, 0xe7, 0x95, 0xa0, 0x29, 0x1b, 0x5d, 0xcf, 0xf1,
+	0x79, 0x5b, 0x37, 0xdb, 0x0c, 0x99, 0x7c, 0xcd, 0xa3, 0x3d, 0xf3, 0xab, 0xc5, 0xea, 0x01, 0x8b,
+	0xc8, 0x9b, 0x69, 0x5f, 0x44, 0x2f, 0xa7, 0x3e, 0x70, 0xb7, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff,
+	0x15, 0x3a, 0x3f, 0x8d, 0x95, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -496,9 +506,9 @@ type QueryClient interface {
 	Basket(ctx context.Context, in *QueryBasketRequest, opts ...grpc.CallOption) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
-	// BasketBalanceById lists the balance of each credit batch held by the basket.
-	BasketBalanceById(ctx context.Context, in *QueryBasketBalanceByIdRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
+	// BasketBalances lists the balance of each credit batch in the basket.
+	BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error)
+	// BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
 	BasketBalanceByDenom(ctx context.Context, in *QueryBasketBalanceByDenomRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByDenomResponse, error)
 }
 
@@ -528,9 +538,9 @@ func (c *queryClient) Baskets(ctx context.Context, in *QueryBasketsRequest, opts
 	return out, nil
 }
 
-func (c *queryClient) BasketBalanceById(ctx context.Context, in *QueryBasketBalanceByIdRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByIdResponse, error) {
-	out := new(QueryBasketBalanceByIdResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketBalanceById", in, out, opts...)
+func (c *queryClient) BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error) {
+	out := new(QueryBasketBalancesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Query/BasketBalances", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -552,9 +562,9 @@ type QueryServer interface {
 	Basket(context.Context, *QueryBasketRequest) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
-	// BasketBalanceById lists the balance of each credit batch held by the basket.
-	BasketBalanceById(context.Context, *QueryBasketBalanceByIdRequest) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
+	// BasketBalances lists the balance of each credit batch in the basket.
+	BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error)
+	// BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
 	BasketBalanceByDenom(context.Context, *QueryBasketBalanceByDenomRequest) (*QueryBasketBalanceByDenomResponse, error)
 }
 
@@ -568,8 +578,8 @@ func (*UnimplementedQueryServer) Basket(ctx context.Context, req *QueryBasketReq
 func (*UnimplementedQueryServer) Baskets(ctx context.Context, req *QueryBasketsRequest) (*QueryBasketsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Baskets not implemented")
 }
-func (*UnimplementedQueryServer) BasketBalanceById(ctx context.Context, req *QueryBasketBalanceByIdRequest) (*QueryBasketBalanceByIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BasketBalanceById not implemented")
+func (*UnimplementedQueryServer) BasketBalances(ctx context.Context, req *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BasketBalances not implemented")
 }
 func (*UnimplementedQueryServer) BasketBalanceByDenom(ctx context.Context, req *QueryBasketBalanceByDenomRequest) (*QueryBasketBalanceByDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BasketBalanceByDenom not implemented")
@@ -615,20 +625,20 @@ func _Query_Baskets_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_BasketBalanceById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBasketBalanceByIdRequest)
+func _Query_BasketBalances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketBalancesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).BasketBalanceById(ctx, in)
+		return srv.(QueryServer).BasketBalances(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketBalanceById",
+		FullMethod: "/regen.ecocredit.basket.v1.Query/BasketBalances",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BasketBalanceById(ctx, req.(*QueryBasketBalanceByIdRequest))
+		return srv.(QueryServer).BasketBalances(ctx, req.(*QueryBasketBalancesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -664,8 +674,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Baskets_Handler,
 		},
 		{
-			MethodName: "BasketBalanceById",
-			Handler:    _Query_BasketBalanceById_Handler,
+			MethodName: "BasketBalances",
+			Handler:    _Query_BasketBalances_Handler,
 		},
 		{
 			MethodName: "BasketBalanceByDenom",
@@ -825,7 +835,7 @@ func (m *QueryBasketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryBasketBalanceByIdRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryBasketBalancesRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -835,25 +845,39 @@ func (m *QueryBasketBalanceByIdRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryBasketBalanceByIdRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryBasketBalancesRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryBasketBalanceByIdRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryBasketBalancesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.BasketId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.BasketId))
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x12
+	}
+	if len(m.BasketDenom) > 0 {
+		i -= len(m.BasketDenom)
+		copy(dAtA[i:], m.BasketDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BasketDenom)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryBasketBalanceByIdResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryBasketBalancesResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -863,12 +887,12 @@ func (m *QueryBasketBalanceByIdResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryBasketBalanceByIdResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryBasketBalancesResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryBasketBalanceByIdResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryBasketBalancesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -922,6 +946,13 @@ func (m *QueryBasketBalanceByDenomRequest) MarshalToSizedBuffer(dAtA []byte) (in
 	_ = i
 	var l int
 	_ = l
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.BasketDenom) > 0 {
 		i -= len(m.BasketDenom)
 		copy(dAtA[i:], m.BasketDenom)
@@ -952,9 +983,9 @@ func (m *QueryBasketBalanceByDenomResponse) MarshalToSizedBuffer(dAtA []byte) (i
 	_ = i
 	var l int
 	_ = l
-	if m.Pagination != nil {
+	if m.Balance != nil {
 		{
-			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Balance.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -962,21 +993,7 @@ func (m *QueryBasketBalanceByDenomResponse) MarshalToSizedBuffer(dAtA []byte) (i
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Balances) > 0 {
-		for iNdEx := len(m.Balances) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Balances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1050,19 +1067,24 @@ func (m *QueryBasketsResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryBasketBalanceByIdRequest) Size() (n int) {
+func (m *QueryBasketBalancesRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.BasketId != 0 {
-		n += 1 + sovQuery(uint64(m.BasketId))
+	l = len(m.BasketDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
 
-func (m *QueryBasketBalanceByIdResponse) Size() (n int) {
+func (m *QueryBasketBalancesResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1091,6 +1113,10 @@ func (m *QueryBasketBalanceByDenomRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -1100,14 +1126,8 @@ func (m *QueryBasketBalanceByDenomResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.Balances) > 0 {
-		for _, e := range m.Balances {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	if m.Pagination != nil {
-		l = m.Pagination.Size()
+	if m.Balance != nil {
+		l = m.Balance.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -1505,7 +1525,7 @@ func (m *QueryBasketsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryBasketBalanceByIdRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryBasketBalancesRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1528,17 +1548,17 @@ func (m *QueryBasketBalanceByIdRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryBasketBalanceByIdRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryBasketBalancesRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryBasketBalanceByIdRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryBasketBalancesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BasketId", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
 			}
-			m.BasketId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -1548,11 +1568,60 @@ func (m *QueryBasketBalanceByIdRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.BasketId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BasketDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1577,7 +1646,7 @@ func (m *QueryBasketBalanceByIdRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryBasketBalanceByIdResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryBasketBalancesResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1600,10 +1669,10 @@ func (m *QueryBasketBalanceByIdResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryBasketBalanceByIdResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryBasketBalancesResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryBasketBalanceByIdResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryBasketBalancesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1761,6 +1830,38 @@ func (m *QueryBasketBalanceByDenomRequest) Unmarshal(dAtA []byte) error {
 			}
 			m.BasketDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1816,7 +1917,7 @@ func (m *QueryBasketBalanceByDenomResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Balances", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Balance", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1843,44 +1944,10 @@ func (m *QueryBasketBalanceByDenomResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Balances = append(m.Balances, &BasketBalance{})
-			if err := m.Balances[len(m.Balances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			if m.Balance == nil {
+				m.Balance = &BasketBalance{}
 			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Pagination == nil {
-				m.Pagination = &query.PageResponse{}
-			}
-			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Balance.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -23,16 +23,16 @@ service Query {
             "/regen/ecocredit/v1alpha1/baskets";
     }
 
-    // BasketBalanceById lists the balance of each credit batch held by the basket.
-    rpc BasketBalanceById(QueryBasketBalanceByIdRequest) returns (QueryBasketBalanceByIdResponse) {
+    // BasketBalances lists the balance of each credit batch in the basket.
+    rpc BasketBalances(QueryBasketBalancesRequest) returns (QueryBasketBalancesResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets/{basket_id}/balance";
+            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balances";
     }
 
-    // BasketBalanceByDenom lists the balance of each credit batch held by the basket.
+    // BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
     rpc BasketBalanceByDenom(QueryBasketBalanceByDenomRequest) returns (QueryBasketBalanceByDenomResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balance";
+            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balances/{batch_denom}";
     }
 }
 
@@ -63,15 +63,18 @@ message QueryBasketsResponse {
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBasketBalanceByIdRequest is the Query/BasketBalanceById request type.
-message QueryBasketBalanceByIdRequest {
-    // basket_id is the id of the basket.
-    uint64 basket_id = 1;
+// QueryBasketBalancesRequest is the Query/BasketBalances request type.
+message QueryBasketBalancesRequest {
+    // basket_denom is the denom of the basket.
+    string basket_denom = 1;
+
+    // pagination defines an optional pagination for the request.
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryBasketBalanceByIdResponse is the Query/BasketBalanceById response type.
-message QueryBasketBalanceByIdResponse {
-    // balances is a list of credit balances held by the basket.
+// QueryBasketBalancesResponse is the Query/BasketBalances response type.
+message QueryBasketBalancesResponse {
+    // balances is a list of credit balances in the basket.
     repeated BasketBalance balances = 1;
 
     // pagination defines the pagination in the response.
@@ -82,13 +85,13 @@ message QueryBasketBalanceByIdResponse {
 message QueryBasketBalanceByDenomRequest {
     // basket_denom is the denom of the basket.
     string basket_denom = 1;
+
+    // batch_denom is the denom of the credit batch.
+    string batch_denom = 2;
 }
 
 // QueryBasketBalanceByDenomResponse is the Query/BasketBalanceByDenom response type.
 message QueryBasketBalanceByDenomResponse {
-    // balances is a list of credit balances held by the basket.
-    repeated BasketBalance balances = 1;
-
-    // pagination defines the pagination in the response.
-    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+    // balance is the balance of a specific credit batch in the basket.
+    BasketBalance balance = 1;
 }
