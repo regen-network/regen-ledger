@@ -5,6 +5,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -24,8 +26,10 @@ const (
 )
 
 var ModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{},
-	Prefix:          []byte{ORMPrefix},
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+	},
+	Prefix: []byte{ORMPrefix},
 }
 
 type serverImpl struct {
@@ -40,15 +44,28 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
+
+	basketStore basketv1.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	db, err := ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	basketStore, err := basketv1.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
+		basketStore:   basketStore,
 	}
 
 	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)

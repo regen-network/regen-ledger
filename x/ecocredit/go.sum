@@ -220,14 +220,13 @@ github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a/go.mod h1:F5haX7
 github.com/coreos/go-systemd/v22 v22.3.2/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/cosmos/cosmos-proto v1.0.0-alpha6/go.mod h1:msdDWOvfStHLG+Z2y2SJ0dcqimZ2vc8M1MPnZ4jOF7U=
 github.com/cosmos/cosmos-proto v1.0.0-alpha7 h1:yqYUOHF2jopwZh4dVQp3xgqwftE5/2hkrwIV6vkUbO0=
 github.com/cosmos/cosmos-proto v1.0.0-alpha7/go.mod h1:dosO4pSAbJF8zWCzCoTWP7nNsjcvSUBQmniFxDg5daw=
-github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3/go.mod h1:Ht15guGn9F8b0lv8NkjXE9/asAvVUOt2n4gvQ4q5MyU=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4 h1:z2si9sQNUTj2jw+24SujuUxcoNS3TVga/fdYsS4rJII=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4/go.mod h1:gZu6sOu2vl4Fd7I+BjDSx2bxndwPgFLGfOegek3SQQo=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 h1:bBglNlra8ZHb4dmbEE8V85ihLA+DkriSm7tcx6x/JWo=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2/go.mod h1:Gi7pzVRnvZ1N16JAXpLADzng0ePoE7YeEHaULSFB2Ts=
+github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7/go.mod h1:woV5EBAWmTaXKs7YXioQsYheXSZkmZIgLPq+Koi/GB8=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.9 h1:ZyGe/WnPjRgx9pHQNhWsvmPRCB3u6DZw35+YGvgI+I4=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.9/go.mod h1:WwRYmcnmSJpdOwr9ADwGr9gVBjYIre5TMz/nX4fStU0=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -912,8 +911,8 @@ github.com/regen-network/cosmos-sdk v0.44.2-regen-1 h1:Sm7rU4rMwLpEpgrQkF/4w/V/y
 github.com/regen-network/cosmos-sdk v0.44.2-regen-1/go.mod h1:fwQJdw+aECatpTvQTo1tSfHEsxACdZYU80QCZUPnHr4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api v0.1.0-alpha.1 h1:6Sz8chLlP5yZVFQeXh5pfR457AIlyDB2ocDTxQRCk+0=
-github.com/regen-network/regen-ledger/api v0.1.0-alpha.1/go.mod h1:wN88p7fU2gFrI23sFcDwiOTrY0KVRnL0RkGolO4C3oY=
+github.com/regen-network/regen-ledger/api v0.1.0 h1:RXLRatYYW5D7uciqz3dnV+a/SjE4VZX5o0hB7Uf2hUs=
+github.com/regen-network/regen-ledger/api v0.1.0/go.mod h1:kWly2pK0u3fDfyoYYilpEoTEg61pCjV/f5XSY0KzJQY=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
@@ -1593,7 +1592,6 @@ google.golang.org/grpc v1.37.0/go.mod h1:NREThFqKR1f3iQ6oBuvc5LadQuXVGo9rkm5ZGrQ
 google.golang.org/grpc v1.38.0/go.mod h1:NREThFqKR1f3iQ6oBuvc5LadQuXVGo9rkm5ZGrQdJfM=
 google.golang.org/grpc v1.40.0/go.mod h1:ogyxbiOoUXAkP+4+xa6PZSE9DZgIHtSpzjDTB9KAK34=
 google.golang.org/grpc v1.42.0/go.mod h1:k+4IHHFw41K8+bbowsex27ge2rCb65oeWqe4jJ590SU=
-google.golang.org/grpc v1.43.0/go.mod h1:k+4IHHFw41K8+bbowsex27ge2rCb65oeWqe4jJ590SU=
 google.golang.org/grpc v1.44.0 h1:weqSxi/TMs1SqFRMHCtBgXRs8k3X39QIDEZ0pRcttUg=
 google.golang.org/grpc v1.44.0/go.mod h1:k+4IHHFw41K8+bbowsex27ge2rCb65oeWqe4jJ590SU=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
@@ -1609,7 +1607,6 @@ google.golang.org/protobuf v1.25.0/go.mod h1:9JNX74DMeImyA3h4bdi1ymwjUzf21/xIlba
 google.golang.org/protobuf v1.25.1-0.20200805231151-a709e31e5d12/go.mod h1:9JNX74DMeImyA3h4bdi1ymwjUzf21/xIlbajtzgsN7c=
 google.golang.org/protobuf v1.26.0-rc.1/go.mod h1:jlhhOSvTdKEhbULTjvd4ARK9grFBp09yW+WbY/TyQbw=
 google.golang.org/protobuf v1.26.0/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
-google.golang.org/protobuf v1.27.0/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
 google.golang.org/protobuf v1.27.1 h1:SnqbnDw1V7RiZcXPx5MEeqPv2s79L9i7BJUlG/+RurQ=
 google.golang.org/protobuf v1.27.1/go.mod h1:9q0QmTI4eRPtz6boOQmLYwt+qCgq0jsYwAQnmE0givc=
 gopkg.in/alecthomas/kingpin.v2 v2.2.6/go.mod h1:FMv+mEhP44yOT+4EoQTLFTRgOQ1FBLkstjWtayDeSgw=
