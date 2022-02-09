@@ -329,7 +329,7 @@ func (m *MsgPutResponse) GetAmountReceived() string {
 type MsgTake struct {
 	// owner is the owner of the basket tokens.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// basket_denom is the basket denom to take credits from.
+	// basket_denom is the basket bank denom to take credits from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// amount is the integer number of basket tokens to convert into credits.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
