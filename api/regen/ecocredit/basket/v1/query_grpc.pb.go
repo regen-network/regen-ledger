@@ -26,9 +26,9 @@ type QueryClient interface {
 	Basket(ctx context.Context, in *QueryBasketRequest, opts ...grpc.CallOption) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
-	// BasketBalance lists the balance of each credit batch held by the basket.
+	// BasketBalanceById lists the balance of each credit batch held by the basket.
 	BasketBalanceById(ctx context.Context, in *QueryBasketBalanceByIdRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalance lists the balance of each credit batch held by the basket.
+	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
 	BasketBalanceByDenom(ctx context.Context, in *QueryBasketBalanceByDenomRequest, opts ...grpc.CallOption) (*QueryBasketBalanceByDenomResponse, error)
 }
 
@@ -84,9 +84,9 @@ type QueryServer interface {
 	Basket(context.Context, *QueryBasketRequest) (*QueryBasketResponse, error)
 	// Baskets lists all baskets in the ecocredit module.
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
-	// BasketBalance lists the balance of each credit batch held by the basket.
+	// BasketBalanceById lists the balance of each credit batch held by the basket.
 	BasketBalanceById(context.Context, *QueryBasketBalanceByIdRequest) (*QueryBasketBalanceByIdResponse, error)
-	// BasketBalance lists the balance of each credit batch held by the basket.
+	// BasketBalanceByDenom lists the balance of each credit batch held by the basket.
 	BasketBalanceByDenom(context.Context, *QueryBasketBalanceByDenomRequest) (*QueryBasketBalanceByDenomResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }

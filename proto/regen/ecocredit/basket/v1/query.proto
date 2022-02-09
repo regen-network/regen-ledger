@@ -23,13 +23,13 @@ service Query {
             "/regen/ecocredit/v1alpha1/baskets";
     }
 
-    // BasketBalance lists the balance of each credit batch held by the basket.
+    // BasketBalanceById lists the balance of each credit batch held by the basket.
     rpc BasketBalanceById(QueryBasketBalanceByIdRequest) returns (QueryBasketBalanceByIdResponse) {
         option (google.api.http).get =
             "/regen/ecocredit/v1alpha1/baskets/{basket_id}/balance";
     }
 
-    // BasketBalance lists the balance of each credit batch held by the basket.
+    // BasketBalanceByDenom lists the balance of each credit batch held by the basket.
     rpc BasketBalanceByDenom(QueryBasketBalanceByDenomRequest) returns (QueryBasketBalanceByDenomResponse) {
         option (google.api.http).get =
             "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balance";
