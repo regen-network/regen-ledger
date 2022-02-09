@@ -38,6 +38,10 @@ type EcocreditKeeper interface {
 	// add additional keeper methods here
 }
 
+// BankKeeper abstracts over methods that the main bank keeper
+// needs to expose to the basket keeper.
+//
+// NOTE: run `make mocks` whenever you add methods here
 type BankKeeper interface {
 	MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
