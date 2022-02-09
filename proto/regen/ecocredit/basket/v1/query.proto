@@ -14,25 +14,25 @@ service Query {
     // Basket queries one basket by denom.
     rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1/baskets/{basket_denom}";
+            "/regen/ecocredit/baskets/v1/{basket_denom}";
     }
 
     // Baskets lists all baskets in the ecocredit module.
     rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1/baskets";
+            "/regen/ecocredit/baskets/v1";
     }
 
     // BasketBalances lists the balance of each credit batch in the basket.
     rpc BasketBalances(QueryBasketBalancesRequest) returns (QueryBasketBalancesResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1/baskets/{basket_denom}/balances";
+            "/regen/ecocredit/baskets/v1/{basket_denom}/balances";
     }
 
     // BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
     rpc BasketBalanceByDenom(QueryBasketBalanceByDenomRequest) returns (QueryBasketBalanceByDenomResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1/baskets/{basket_denom}/balances/{batch_denom}";
+            "/regen/ecocredit/baskets/v1/{basket_denom}/balances/{batch_denom}";
     }
 }
 
