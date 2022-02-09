@@ -13,7 +13,7 @@ import (
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	basketStore     basketv1.StateStore
+	stateStore      basketv1.StateStore
 	bankKeeper      BankKeeper
 	ecocreditKeeper EcocreditKeeper
 }
@@ -26,7 +26,7 @@ func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper Ba
 	if err != nil {
 		panic(err)
 	}
-	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, basketStore: basketStore}
+	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, stateStore: basketStore}
 }
 
 // EcocreditKeeper abstracts over methods that the main eco-credit keeper
