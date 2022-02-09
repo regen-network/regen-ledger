@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             (unknown)
-// source: regen/ecocredit/basket/v1alpha1/tx.proto
+// source: regen/ecocredit/basket/v1/tx.proto
 
-package basketv1alpha1
+package basketv1
 
 import (
 	context "context"
@@ -41,7 +41,7 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 
 func (c *msgClient) Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error) {
 	out := new(MsgCreateResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (c *msgClient) Create(ctx context.Context, in *MsgCreate, opts ...grpc.Call
 
 func (c *msgClient) Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error) {
 	out := new(MsgPutResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Put", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/Put", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (c *msgClient) Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption
 
 func (c *msgClient) Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error) {
 	out := new(MsgTakeResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Take", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/Take", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func _Msg_Create_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Create",
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).Create(ctx, req.(*MsgCreate))
@@ -134,7 +134,7 @@ func _Msg_Put_Handler(srv interface{}, ctx context.Context, dec func(interface{}
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Put",
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/Put",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).Put(ctx, req.(*MsgPut))
@@ -152,7 +152,7 @@ func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Take",
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/Take",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).Take(ctx, req.(*MsgTake))
@@ -164,7 +164,7 @@ func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.ecocredit.basket.v1alpha1.Msg",
+	ServiceName: "regen.ecocredit.basket.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -181,5 +181,5 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/ecocredit/basket/v1alpha1/tx.proto",
+	Metadata: "regen/ecocredit/basket/v1/tx.proto",
 }

@@ -4,8 +4,10 @@ package regen.ecocredit.basket.v1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
 
+import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 // Msg is the regen.ecocredit.basket.v1beta1 Msg service.
 service Msg {
@@ -59,6 +61,13 @@ message MsgCreate {
   // min_start_date is the earliest start date for batches of credits allowed
   // into the basket.
   google.protobuf.Timestamp min_start_date = 8;
+
+  // fee is the fee that the curator will pay to create the basket. It must be >=
+  // the required Params.basket_creation_fee.
+  repeated cosmos.base.v1beta1.Coin fee = 9 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 // MsgCreateBasketResponse is the Msg/CreateBasket response type.
