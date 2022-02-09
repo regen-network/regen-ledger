@@ -3741,7 +3741,10 @@ type MsgCreate struct {
 	// into the basket.
 	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
 	// fee is the fee that the curator will pay to create the basket. It must be >=
-	// the required Params.basket_creation_fee.
+	// the required Params.basket_creation_fee. We include the fee explicitly
+	// here so that the curator explicitly acknowledges paying this fee and
+	// is not surprised to learn that the paid a big fee and didn't know
+	// beforehand.
 	Fee []*v1beta1.Coin `protobuf:"bytes,9,rep,name=fee,proto3" json:"fee,omitempty"`
 }
 
@@ -3968,7 +3971,7 @@ type MsgTake struct {
 
 	// owner is the owner of the basket tokens.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// basket_denom is the basket denom to take credits from.
+	// basket_denom is the basket bank denom to take credits from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// amount is the integer number of basket tokens to convert into credits.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
