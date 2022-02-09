@@ -7,16 +7,21 @@ import (
 	ormlist "github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ormtable "github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type BasketStore interface {
 	Insert(ctx context.Context, basket *Basket) error
+	InsertReturningID(ctx context.Context, basket *Basket) (uint64, error)
 	Update(ctx context.Context, basket *Basket) error
 	Save(ctx context.Context, basket *Basket) error
 	Delete(ctx context.Context, basket *Basket) error
-	Has(ctx context.Context, basket_denom string) (found bool, err error)
+	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, basket_denom string) (*Basket, error)
+	Get(ctx context.Context, id uint64) (*Basket, error)
+	HasByBasketDenom(ctx context.Context, basket_denom string) (found bool, err error)
+	// GetByBasketDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByBasketDenom(ctx context.Context, basket_denom string) (*Basket, error)
 	List(ctx context.Context, prefixKey BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error)
 	ListRange(ctx context.Context, from, to BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BasketIndexKey) error
@@ -42,13 +47,26 @@ type BasketIndexKey interface {
 }
 
 // primary key starting index..
-type BasketPrimaryKey = BasketBasketDenomIndexKey
+type BasketPrimaryKey = BasketIdIndexKey
+
+type BasketIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x BasketIdIndexKey) id() uint32            { return 0 }
+func (x BasketIdIndexKey) values() []interface{} { return x.vs }
+func (x BasketIdIndexKey) basketIndexKey()       {}
+
+func (this BasketIdIndexKey) WithId(id uint64) BasketIdIndexKey {
+	this.vs = []interface{}{id}
+	return this
+}
 
 type BasketBasketDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketBasketDenomIndexKey) id() uint32            { return 0 }
+func (x BasketBasketDenomIndexKey) id() uint32            { return 1 }
 func (x BasketBasketDenomIndexKey) values() []interface{} { return x.vs }
 func (x BasketBasketDenomIndexKey) basketIndexKey()       {}
 
@@ -58,7 +76,7 @@ func (this BasketBasketDenomIndexKey) WithBasketDenom(basket_denom string) Baske
 }
 
 type basketStore struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this basketStore) Insert(ctx context.Context, basket *Basket) error {
@@ -77,13 +95,37 @@ func (this basketStore) Delete(ctx context.Context, basket *Basket) error {
 	return this.table.Delete(ctx, basket)
 }
 
-func (this basketStore) Has(ctx context.Context, basket_denom string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, basket_denom)
+func (this basketStore) InsertReturningID(ctx context.Context, basket *Basket) (uint64, error) {
+	return this.table.InsertReturningID(ctx, basket)
 }
 
-func (this basketStore) Get(ctx context.Context, basket_denom string) (*Basket, error) {
+func (this basketStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id)
+}
+
+func (this basketStore) Get(ctx context.Context, id uint64) (*Basket, error) {
 	var basket Basket
-	found, err := this.table.PrimaryKey().Get(ctx, &basket, basket_denom)
+	found, err := this.table.PrimaryKey().Get(ctx, &basket, id)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &basket, nil
+}
+
+func (this basketStore) HasByBasketDenom(ctx context.Context, basket_denom string) (found bool, err error) {
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
+		basket_denom,
+	)
+}
+
+func (this basketStore) GetByBasketDenom(ctx context.Context, basket_denom string) (*Basket, error) {
+	var basket Basket
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &basket,
+		basket_denom,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +162,7 @@ func NewBasketStore(db ormtable.Schema) (BasketStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Basket{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return basketStore{table}, nil
+	return basketStore{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type BasketClassStore interface {
@@ -128,9 +170,9 @@ type BasketClassStore interface {
 	Update(ctx context.Context, basketClass *BasketClass) error
 	Save(ctx context.Context, basketClass *BasketClass) error
 	Delete(ctx context.Context, basketClass *BasketClass) error
-	Has(ctx context.Context, basket_denom string, class_id string) (found bool, err error)
+	Has(ctx context.Context, basket_id uint64, class_id string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, basket_denom string, class_id string) (*BasketClass, error)
+	Get(ctx context.Context, basket_id uint64, class_id string) (*BasketClass, error)
 	List(ctx context.Context, prefixKey BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error)
 	ListRange(ctx context.Context, from, to BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BasketClassIndexKey) error
@@ -156,23 +198,23 @@ type BasketClassIndexKey interface {
 }
 
 // primary key starting index..
-type BasketClassPrimaryKey = BasketClassBasketDenomClassIdIndexKey
+type BasketClassPrimaryKey = BasketClassBasketIdClassIdIndexKey
 
-type BasketClassBasketDenomClassIdIndexKey struct {
+type BasketClassBasketIdClassIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketClassBasketDenomClassIdIndexKey) id() uint32            { return 0 }
-func (x BasketClassBasketDenomClassIdIndexKey) values() []interface{} { return x.vs }
-func (x BasketClassBasketDenomClassIdIndexKey) basketClassIndexKey()  {}
+func (x BasketClassBasketIdClassIdIndexKey) id() uint32            { return 0 }
+func (x BasketClassBasketIdClassIdIndexKey) values() []interface{} { return x.vs }
+func (x BasketClassBasketIdClassIdIndexKey) basketClassIndexKey()  {}
 
-func (this BasketClassBasketDenomClassIdIndexKey) WithBasketDenom(basket_denom string) BasketClassBasketDenomClassIdIndexKey {
-	this.vs = []interface{}{basket_denom}
+func (this BasketClassBasketIdClassIdIndexKey) WithBasketId(basket_id uint64) BasketClassBasketIdClassIdIndexKey {
+	this.vs = []interface{}{basket_id}
 	return this
 }
 
-func (this BasketClassBasketDenomClassIdIndexKey) WithBasketDenomClassId(basket_denom string, class_id string) BasketClassBasketDenomClassIdIndexKey {
-	this.vs = []interface{}{basket_denom, class_id}
+func (this BasketClassBasketIdClassIdIndexKey) WithBasketIdClassId(basket_id uint64, class_id string) BasketClassBasketIdClassIdIndexKey {
+	this.vs = []interface{}{basket_id, class_id}
 	return this
 }
 
@@ -196,13 +238,13 @@ func (this basketClassStore) Delete(ctx context.Context, basketClass *BasketClas
 	return this.table.Delete(ctx, basketClass)
 }
 
-func (this basketClassStore) Has(ctx context.Context, basket_denom string, class_id string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, basket_denom, class_id)
+func (this basketClassStore) Has(ctx context.Context, basket_id uint64, class_id string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, basket_id, class_id)
 }
 
-func (this basketClassStore) Get(ctx context.Context, basket_denom string, class_id string) (*BasketClass, error) {
+func (this basketClassStore) Get(ctx context.Context, basket_id uint64, class_id string) (*BasketClass, error) {
 	var basketClass BasketClass
-	found, err := this.table.PrimaryKey().Get(ctx, &basketClass, basket_denom, class_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &basketClass, basket_id, class_id)
 	if err != nil {
 		return nil, err
 	}
@@ -247,9 +289,9 @@ type BasketBalanceStore interface {
 	Update(ctx context.Context, basketBalance *BasketBalance) error
 	Save(ctx context.Context, basketBalance *BasketBalance) error
 	Delete(ctx context.Context, basketBalance *BasketBalance) error
-	Has(ctx context.Context, basket_denom string, batch_denom string) (found bool, err error)
+	Has(ctx context.Context, basket_id uint64, batch_denom string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, basket_denom string, batch_denom string) (*BasketBalance, error)
+	Get(ctx context.Context, basket_id uint64, batch_denom string) (*BasketBalance, error)
 	List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
 	ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BasketBalanceIndexKey) error
@@ -275,23 +317,36 @@ type BasketBalanceIndexKey interface {
 }
 
 // primary key starting index..
-type BasketBalancePrimaryKey = BasketBalanceBasketDenomBatchDenomIndexKey
+type BasketBalancePrimaryKey = BasketBalanceBasketIdBatchDenomIndexKey
 
-type BasketBalanceBasketDenomBatchDenomIndexKey struct {
+type BasketBalanceBasketIdBatchDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketBalanceBasketDenomBatchDenomIndexKey) id() uint32             { return 0 }
-func (x BasketBalanceBasketDenomBatchDenomIndexKey) values() []interface{}  { return x.vs }
-func (x BasketBalanceBasketDenomBatchDenomIndexKey) basketBalanceIndexKey() {}
+func (x BasketBalanceBasketIdBatchDenomIndexKey) id() uint32             { return 0 }
+func (x BasketBalanceBasketIdBatchDenomIndexKey) values() []interface{}  { return x.vs }
+func (x BasketBalanceBasketIdBatchDenomIndexKey) basketBalanceIndexKey() {}
 
-func (this BasketBalanceBasketDenomBatchDenomIndexKey) WithBasketDenom(basket_denom string) BasketBalanceBasketDenomBatchDenomIndexKey {
-	this.vs = []interface{}{basket_denom}
+func (this BasketBalanceBasketIdBatchDenomIndexKey) WithBasketId(basket_id uint64) BasketBalanceBasketIdBatchDenomIndexKey {
+	this.vs = []interface{}{basket_id}
 	return this
 }
 
-func (this BasketBalanceBasketDenomBatchDenomIndexKey) WithBasketDenomBatchDenom(basket_denom string, batch_denom string) BasketBalanceBasketDenomBatchDenomIndexKey {
-	this.vs = []interface{}{basket_denom, batch_denom}
+func (this BasketBalanceBasketIdBatchDenomIndexKey) WithBasketIdBatchDenom(basket_id uint64, batch_denom string) BasketBalanceBasketIdBatchDenomIndexKey {
+	this.vs = []interface{}{basket_id, batch_denom}
+	return this
+}
+
+type BasketBalanceBatchStartDateIndexKey struct {
+	vs []interface{}
+}
+
+func (x BasketBalanceBatchStartDateIndexKey) id() uint32             { return 1 }
+func (x BasketBalanceBatchStartDateIndexKey) values() []interface{}  { return x.vs }
+func (x BasketBalanceBatchStartDateIndexKey) basketBalanceIndexKey() {}
+
+func (this BasketBalanceBatchStartDateIndexKey) WithBatchStartDate(batch_start_date *timestamppb.Timestamp) BasketBalanceBatchStartDateIndexKey {
+	this.vs = []interface{}{batch_start_date}
 	return this
 }
 
@@ -315,13 +370,13 @@ func (this basketBalanceStore) Delete(ctx context.Context, basketBalance *Basket
 	return this.table.Delete(ctx, basketBalance)
 }
 
-func (this basketBalanceStore) Has(ctx context.Context, basket_denom string, batch_denom string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, basket_denom, batch_denom)
+func (this basketBalanceStore) Has(ctx context.Context, basket_id uint64, batch_denom string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, basket_id, batch_denom)
 }
 
-func (this basketBalanceStore) Get(ctx context.Context, basket_denom string, batch_denom string) (*BasketBalance, error) {
+func (this basketBalanceStore) Get(ctx context.Context, basket_id uint64, batch_denom string) (*BasketBalance, error) {
 	var basketBalance BasketBalance
-	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_denom, batch_denom)
+	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_id, batch_denom)
 	if err != nil {
 		return nil, err
 	}

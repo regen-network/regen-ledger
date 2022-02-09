@@ -26,11 +26,20 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // Basket represents a basket in state.
 type Basket struct {
-	BasketDenom       string           `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
-	DisableAutoRetire bool             `protobuf:"varint,2,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	CreditTypeName    string           `protobuf:"bytes,3,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
-	MinStartDate      *types.Timestamp `protobuf:"bytes,5,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
-	Multiplier        string           `protobuf:"bytes,6,opt,name=multiplier,proto3" json:"multiplier,omitempty"`
+	// id is the uint64 ID of the basket, it is used internally for reducing
+	// storage space.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// basket_denom is the basket denom.
+	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
+	DisableAutoRetire bool `protobuf:"varint,3,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
+	// credit_type_name is the name of the credit type this basket is able to hold.
+	CreditTypeName string `protobuf:"bytes,4,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
+	// min_start_date is the earliest start date for batches of credits allowed
+	// into the basket.
+	MinStartDate *types.Timestamp `protobuf:"bytes,5,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
+	// exponent is the exponent for converting credits to/from basket tokens.
+	Exponent uint32 `protobuf:"varint,6,opt,name=exponent,proto3" json:"exponent,omitempty"`
 }
 
 func (m *Basket) Reset()         { *m = Basket{} }
@@ -66,6 +75,13 @@ func (m *Basket) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Basket proto.InternalMessageInfo
 
+func (m *Basket) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
+
 func (m *Basket) GetBasketDenom() string {
 	if m != nil {
 		return m.BasketDenom
@@ -94,17 +110,19 @@ func (m *Basket) GetMinStartDate() *types.Timestamp {
 	return nil
 }
 
-func (m *Basket) GetMultiplier() string {
+func (m *Basket) GetExponent() uint32 {
 	if m != nil {
-		return m.Multiplier
+		return m.Exponent
 	}
-	return ""
+	return 0
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.
 type BasketClass struct {
-	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
-	ClassId     string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// basket_id is the ID of the basket
+	BasketId uint64 `protobuf:"varint,1,opt,name=basket_id,json=basketId,proto3" json:"basket_id,omitempty"`
+	// class_id is the id of the credit class that is allowed to be deposited in the basket
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
 func (m *BasketClass) Reset()         { *m = BasketClass{} }
@@ -140,11 +158,11 @@ func (m *BasketClass) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BasketClass proto.InternalMessageInfo
 
-func (m *BasketClass) GetBasketDenom() string {
+func (m *BasketClass) GetBasketId() uint64 {
 	if m != nil {
-		return m.BasketDenom
+		return m.BasketId
 	}
-	return ""
+	return 0
 }
 
 func (m *BasketClass) GetClassId() string {
@@ -156,12 +174,14 @@ func (m *BasketClass) GetClassId() string {
 
 // BasketBalance stores the amount of credits from a batch in a basket
 type BasketBalance struct {
-	// basket_denom is the denom of the basket
-	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// basket_id is the ID of the basket
+	BasketId uint64 `protobuf:"varint,1,opt,name=basket_id,json=basketId,proto3" json:"basket_id,omitempty"`
 	// batch_id is the id of the credit batch
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// balance is the amount of ecocredits held in the basket
 	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
+	// batch_start_date is the start date of the batch
+	BatchStartDate *types.Timestamp `protobuf:"bytes,4,opt,name=batch_start_date,json=batchStartDate,proto3" json:"batch_start_date,omitempty"`
 }
 
 func (m *BasketBalance) Reset()         { *m = BasketBalance{} }
@@ -197,11 +217,11 @@ func (m *BasketBalance) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BasketBalance proto.InternalMessageInfo
 
-func (m *BasketBalance) GetBasketDenom() string {
+func (m *BasketBalance) GetBasketId() uint64 {
 	if m != nil {
-		return m.BasketDenom
+		return m.BasketId
 	}
-	return ""
+	return 0
 }
 
 func (m *BasketBalance) GetBatchDenom() string {
@@ -218,6 +238,13 @@ func (m *BasketBalance) GetBalance() string {
 	return ""
 }
 
+func (m *BasketBalance) GetBatchStartDate() *types.Timestamp {
+	if m != nil {
+		return m.BatchStartDate
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Basket)(nil), "regen.ecocredit.basket.v1alpha1.Basket")
 	proto.RegisterType((*BasketClass)(nil), "regen.ecocredit.basket.v1alpha1.BasketClass")
@@ -229,36 +256,39 @@ func init() {
 }
 
 var fileDescriptor_62795b251b5bf8a9 = []byte{
-	// 458 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0xb1, 0x6e, 0x13, 0x41,
-	0x10, 0x86, 0x7d, 0xb1, 0x70, 0x92, 0x71, 0xb0, 0xe0, 0x10, 0xe2, 0x30, 0xe2, 0xec, 0x58, 0x14,
-	0x96, 0x80, 0x5d, 0x05, 0x3a, 0x57, 0xc4, 0xa4, 0xa1, 0xa1, 0x30, 0xa9, 0xa0, 0x38, 0xed, 0xdd,
-	0x0d, 0xe7, 0x55, 0x6e, 0x6f, 0x4f, 0xbb, 0x73, 0x40, 0x4a, 0x5e, 0x00, 0x21, 0xd1, 0xf3, 0x3c,
-	0x94, 0x91, 0x68, 0x28, 0x91, 0xfd, 0x06, 0x3c, 0x01, 0xf2, 0xae, 0x4d, 0x0c, 0x12, 0x52, 0xca,
-	0x99, 0xfd, 0xf6, 0xff, 0xe7, 0x9f, 0x5d, 0x78, 0x68, 0xb0, 0xc0, 0x8a, 0x63, 0xa6, 0x33, 0x83,
-	0xb9, 0x24, 0x9e, 0x0a, 0x7b, 0x86, 0xc4, 0xdf, 0x1d, 0x89, 0xb2, 0x9e, 0x8b, 0x23, 0x6e, 0x49,
-	0x10, 0xb2, 0xda, 0x68, 0xd2, 0xe1, 0xc0, 0xc1, 0xec, 0x0f, 0xcc, 0x3c, 0xcc, 0x36, 0x70, 0xff,
-	0x7e, 0xa6, 0xad, 0xd2, 0x96, 0x6b, 0xa3, 0x2e, 0x15, 0xb4, 0x51, 0xfe, 0x7e, 0x7f, 0x50, 0x68,
-	0x5d, 0x94, 0xc8, 0x5d, 0x95, 0x36, 0x6f, 0x39, 0x49, 0x85, 0x96, 0x84, 0xaa, 0x3d, 0x30, 0xfa,
-	0xb8, 0x03, 0x9d, 0xa9, 0xd3, 0x0c, 0x0f, 0xe1, 0xc0, 0xab, 0x27, 0x39, 0x56, 0x5a, 0x45, 0xc1,
-	0x30, 0x18, 0xef, 0xcf, 0xba, 0xbe, 0x77, 0xb2, 0x6a, 0x85, 0x0c, 0x6e, 0xe5, 0xd2, 0x8a, 0xb4,
-	0xc4, 0x44, 0x34, 0xa4, 0x13, 0x83, 0x24, 0x0d, 0x46, 0x3b, 0xc3, 0x60, 0xbc, 0x37, 0xbb, 0xb9,
-	0x3e, 0x3a, 0x6e, 0x48, 0xcf, 0xdc, 0x41, 0x38, 0x86, 0x1b, 0x7e, 0xee, 0x84, 0xce, 0x6b, 0x4c,
-	0x2a, 0xa1, 0x30, 0x6a, 0x3b, 0xd9, 0x9e, 0xef, 0x9f, 0x9e, 0xd7, 0xf8, 0x52, 0x28, 0x0c, 0x9f,
-	0x41, 0x4f, 0xc9, 0x2a, 0xb1, 0x24, 0x0c, 0x25, 0xb9, 0x20, 0x8c, 0xae, 0x0d, 0x83, 0x71, 0xf7,
-	0x49, 0x9f, 0xf9, 0x04, 0x6c, 0x93, 0x80, 0x9d, 0x6e, 0x12, 0xcc, 0x0e, 0x94, 0xac, 0x5e, 0xad,
-	0x2e, 0x9c, 0x08, 0xc2, 0x30, 0x06, 0x50, 0x4d, 0x49, 0xb2, 0x2e, 0x25, 0x9a, 0xa8, 0xe3, 0x5c,
-	0xb6, 0x3a, 0x93, 0xe8, 0xd7, 0xd7, 0xef, 0x9f, 0xda, 0x21, 0xf4, 0xfe, 0x8d, 0x39, 0xaa, 0xa0,
-	0xeb, 0x57, 0xf0, 0xbc, 0x14, 0xd6, 0x5e, 0x65, 0x0f, 0x77, 0x61, 0x2f, 0x5b, 0xb1, 0x89, 0xcc,
-	0x5d, 0xf8, 0xfd, 0xd9, 0xae, 0xab, 0x5f, 0xe4, 0x93, 0x43, 0x67, 0x73, 0x0f, 0xee, 0xc0, 0xed,
-	0x6d, 0x95, 0x47, 0x97, 0xfc, 0xe8, 0x4b, 0x00, 0xd7, 0xbd, 0xe1, 0x54, 0x94, 0xa2, 0xca, 0xf0,
-	0x2a, 0x96, 0x03, 0xe8, 0xa6, 0x82, 0xb2, 0xf9, 0x9a, 0xf0, 0xae, 0xe0, 0x5a, 0x1e, 0x88, 0x60,
-	0x37, 0xf5, 0x72, 0xeb, 0x15, 0x6f, 0xca, 0xc9, 0x03, 0x37, 0x52, 0x0c, 0x7d, 0x88, 0xfe, 0x1a,
-	0x69, 0x5b, 0xaf, 0x3d, 0x7d, 0xf3, 0x6d, 0x11, 0x07, 0x17, 0x8b, 0x38, 0xf8, 0xb9, 0x88, 0x83,
-	0xcf, 0xcb, 0xb8, 0x75, 0xb1, 0x8c, 0x5b, 0x3f, 0x96, 0x71, 0xeb, 0xf5, 0x71, 0x21, 0x69, 0xde,
-	0xa4, 0x2c, 0xd3, 0x8a, 0xbb, 0xff, 0xf8, 0xb8, 0x42, 0x7a, 0xaf, 0xcd, 0xd9, 0xba, 0x2a, 0x31,
-	0x2f, 0xd0, 0xf0, 0x0f, 0xff, 0xff, 0xd3, 0x69, 0xc7, 0x3d, 0xdf, 0xd3, 0xdf, 0x01, 0x00, 0x00,
-	0xff, 0xff, 0xbb, 0xba, 0x5e, 0x33, 0xfd, 0x02, 0x00, 0x00,
+	// 512 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x53, 0x3d, 0x8f, 0xd3, 0x40,
+	0x10, 0xbd, 0x4d, 0x42, 0x2e, 0x99, 0xdc, 0x45, 0x61, 0x39, 0xc4, 0x12, 0x84, 0x13, 0x22, 0x0a,
+	0x4b, 0x80, 0xad, 0x40, 0x81, 0x94, 0x8a, 0x0b, 0x69, 0xae, 0xa1, 0x30, 0x57, 0x41, 0x61, 0xad,
+	0xed, 0x21, 0xb1, 0xce, 0xeb, 0xb5, 0xd6, 0x1b, 0xb8, 0xfb, 0x13, 0x88, 0x96, 0x86, 0xdf, 0x43,
+	0x79, 0x12, 0x0d, 0x25, 0x4a, 0x24, 0x7e, 0x00, 0xbf, 0x00, 0x65, 0x37, 0x1f, 0x77, 0x42, 0x40,
+	0x39, 0x33, 0xef, 0xcd, 0xdb, 0xf7, 0xc6, 0x86, 0x47, 0x0a, 0xa7, 0x98, 0xfb, 0x18, 0xcb, 0x58,
+	0x61, 0x92, 0x6a, 0x3f, 0xe2, 0xe5, 0x19, 0x6a, 0xff, 0xfd, 0x90, 0x67, 0xc5, 0x8c, 0x0f, 0xfd,
+	0x52, 0x73, 0x8d, 0x5e, 0xa1, 0xa4, 0x96, 0xb4, 0x67, 0xc0, 0xde, 0x16, 0xec, 0x59, 0xb0, 0xb7,
+	0x01, 0x77, 0xef, 0xc7, 0xb2, 0x14, 0xb2, 0xf4, 0xa5, 0x12, 0xbb, 0x0d, 0x52, 0x09, 0xcb, 0xef,
+	0xf6, 0xa6, 0x52, 0x4e, 0x33, 0xf4, 0x4d, 0x15, 0xcd, 0xdf, 0xf9, 0x3a, 0x15, 0x58, 0x6a, 0x2e,
+	0x0a, 0x0b, 0x18, 0x7c, 0xae, 0x40, 0x7d, 0x6c, 0x76, 0xd2, 0x36, 0x54, 0xd2, 0x84, 0x91, 0x3e,
+	0x71, 0x6b, 0x41, 0x25, 0x4d, 0xe8, 0x03, 0x38, 0xb0, 0x6a, 0x61, 0x82, 0xb9, 0x14, 0xac, 0xd2,
+	0x27, 0x6e, 0x33, 0x68, 0xd9, 0xde, 0x64, 0xd5, 0xa2, 0x1e, 0xdc, 0x4a, 0xd2, 0x92, 0x47, 0x19,
+	0x86, 0x7c, 0xae, 0x65, 0xa8, 0x50, 0xa7, 0x0a, 0x59, 0xb5, 0x4f, 0xdc, 0x46, 0x70, 0x73, 0x3d,
+	0x3a, 0x9e, 0x6b, 0x19, 0x98, 0x01, 0x75, 0xa1, 0x63, 0x7d, 0x84, 0xfa, 0xa2, 0xc0, 0x30, 0xe7,
+	0x02, 0x59, 0xcd, 0xac, 0x6d, 0xdb, 0xfe, 0xe9, 0x45, 0x81, 0xaf, 0xb8, 0x40, 0xfa, 0x02, 0xda,
+	0x22, 0xcd, 0xc3, 0x52, 0x73, 0xa5, 0xc3, 0x84, 0x6b, 0x64, 0x37, 0xfa, 0xc4, 0x6d, 0x3d, 0xed,
+	0x7a, 0xd6, 0x91, 0xb7, 0x71, 0xe4, 0x9d, 0x6e, 0x1c, 0x05, 0x07, 0x22, 0xcd, 0x5f, 0xaf, 0x08,
+	0x13, 0xae, 0x91, 0x76, 0xa1, 0x81, 0xe7, 0x85, 0xcc, 0x31, 0xd7, 0xac, 0xde, 0x27, 0xee, 0x61,
+	0xb0, 0xad, 0x47, 0x0f, 0x7f, 0x7d, 0xf9, 0xf6, 0xb1, 0xea, 0x40, 0x7d, 0x65, 0xb9, 0x43, 0x28,
+	0xbd, 0x6e, 0xb5, 0x43, 0x18, 0x61, 0x64, 0x80, 0xd0, 0xb2, 0xd1, 0xbc, 0xcc, 0x78, 0x59, 0xd2,
+	0x7b, 0xd0, 0x5c, 0x83, 0xb6, 0x31, 0x35, 0x6c, 0xe3, 0x24, 0xa1, 0x77, 0xa1, 0x11, 0xaf, 0x50,
+	0xab, 0x99, 0x0d, 0x6a, 0xdf, 0xd4, 0x27, 0xc9, 0xc8, 0x31, 0x62, 0x0c, 0x8e, 0x80, 0x6e, 0xf9,
+	0x8f, 0x77, 0xe0, 0xc1, 0x4f, 0x02, 0x87, 0x56, 0x67, 0xcc, 0x33, 0x9e, 0xc7, 0xf8, 0x6f, 0xa5,
+	0x1e, 0xb4, 0x22, 0xae, 0xe3, 0xd9, 0xb5, 0xab, 0x80, 0x69, 0xd9, 0xa3, 0x30, 0xd8, 0x8f, 0xec,
+	0x22, 0x73, 0x88, 0x66, 0xb0, 0x29, 0xe9, 0x04, 0x3a, 0x96, 0x7a, 0x25, 0xd6, 0xda, 0x7f, 0x63,
+	0x6d, 0x1b, 0xce, 0x36, 0xd8, 0xd1, 0x73, 0xe3, 0x67, 0x08, 0x77, 0xe0, 0xf6, 0xce, 0xcf, 0x95,
+	0x27, 0xd1, 0xa3, 0x3f, 0x65, 0x3a, 0x84, 0x55, 0xc7, 0x6f, 0xbf, 0x2e, 0x1c, 0x72, 0xb9, 0x70,
+	0xc8, 0x8f, 0x85, 0x43, 0x3e, 0x2d, 0x9d, 0xbd, 0xcb, 0xa5, 0xb3, 0xf7, 0x7d, 0xe9, 0xec, 0xbd,
+	0x39, 0x9e, 0xa6, 0x7a, 0x36, 0x8f, 0xbc, 0x58, 0x0a, 0xdf, 0x7c, 0xf1, 0x4f, 0x72, 0xd4, 0x1f,
+	0xa4, 0x3a, 0x5b, 0x57, 0x19, 0x26, 0x53, 0x54, 0xfe, 0xf9, 0xdf, 0xff, 0x9a, 0xa8, 0x6e, 0x5e,
+	0xfe, 0xec, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff, 0xbc, 0xf2, 0xd1, 0xf3, 0x5f, 0x03, 0x00, 0x00,
 }
 
 func (m *Basket) Marshal() (dAtA []byte, err error) {
@@ -281,12 +311,10 @@ func (m *Basket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Multiplier) > 0 {
-		i -= len(m.Multiplier)
-		copy(dAtA[i:], m.Multiplier)
-		i = encodeVarintState(dAtA, i, uint64(len(m.Multiplier)))
+	if m.Exponent != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.Exponent))
 		i--
-		dAtA[i] = 0x32
+		dAtA[i] = 0x30
 	}
 	if m.MinStartDate != nil {
 		{
@@ -305,7 +333,7 @@ func (m *Basket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		copy(dAtA[i:], m.CreditTypeName)
 		i = encodeVarintState(dAtA, i, uint64(len(m.CreditTypeName)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
 	}
 	if m.DisableAutoRetire {
 		i--
@@ -315,14 +343,19 @@ func (m *Basket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x18
 	}
 	if len(m.BasketDenom) > 0 {
 		i -= len(m.BasketDenom)
 		copy(dAtA[i:], m.BasketDenom)
 		i = encodeVarintState(dAtA, i, uint64(len(m.BasketDenom)))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -354,12 +387,10 @@ func (m *BasketClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.BasketDenom) > 0 {
-		i -= len(m.BasketDenom)
-		copy(dAtA[i:], m.BasketDenom)
-		i = encodeVarintState(dAtA, i, uint64(len(m.BasketDenom)))
+	if m.BasketId != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BasketId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -384,6 +415,18 @@ func (m *BasketBalance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.BatchStartDate != nil {
+		{
+			size, err := m.BatchStartDate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintState(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Balance) > 0 {
 		i -= len(m.Balance)
 		copy(dAtA[i:], m.Balance)
@@ -398,12 +441,10 @@ func (m *BasketBalance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.BasketDenom) > 0 {
-		i -= len(m.BasketDenom)
-		copy(dAtA[i:], m.BasketDenom)
-		i = encodeVarintState(dAtA, i, uint64(len(m.BasketDenom)))
+	if m.BasketId != 0 {
+		i = encodeVarintState(dAtA, i, uint64(m.BasketId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -425,6 +466,9 @@ func (m *Basket) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.Id != 0 {
+		n += 1 + sovState(uint64(m.Id))
+	}
 	l = len(m.BasketDenom)
 	if l > 0 {
 		n += 1 + l + sovState(uint64(l))
@@ -440,9 +484,8 @@ func (m *Basket) Size() (n int) {
 		l = m.MinStartDate.Size()
 		n += 1 + l + sovState(uint64(l))
 	}
-	l = len(m.Multiplier)
-	if l > 0 {
-		n += 1 + l + sovState(uint64(l))
+	if m.Exponent != 0 {
+		n += 1 + sovState(uint64(m.Exponent))
 	}
 	return n
 }
@@ -453,9 +496,8 @@ func (m *BasketClass) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.BasketDenom)
-	if l > 0 {
-		n += 1 + l + sovState(uint64(l))
+	if m.BasketId != 0 {
+		n += 1 + sovState(uint64(m.BasketId))
 	}
 	l = len(m.ClassId)
 	if l > 0 {
@@ -470,9 +512,8 @@ func (m *BasketBalance) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.BasketDenom)
-	if l > 0 {
-		n += 1 + l + sovState(uint64(l))
+	if m.BasketId != 0 {
+		n += 1 + sovState(uint64(m.BasketId))
 	}
 	l = len(m.BatchDenom)
 	if l > 0 {
@@ -480,6 +521,10 @@ func (m *BasketBalance) Size() (n int) {
 	}
 	l = len(m.Balance)
 	if l > 0 {
+		n += 1 + l + sovState(uint64(l))
+	}
+	if m.BatchStartDate != nil {
+		l = m.BatchStartDate.Size()
 		n += 1 + l + sovState(uint64(l))
 	}
 	return n
@@ -521,6 +566,25 @@ func (m *Basket) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
 			}
@@ -552,7 +616,7 @@ func (m *Basket) Unmarshal(dAtA []byte) error {
 			}
 			m.BasketDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
 			}
@@ -572,7 +636,7 @@ func (m *Basket) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.DisableAutoRetire = bool(v != 0)
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeName", wireType)
 			}
@@ -641,10 +705,10 @@ func (m *Basket) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Multiplier", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
 			}
-			var stringLen uint64
+			m.Exponent = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -654,24 +718,11 @@ func (m *Basket) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Exponent |= uint32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthState
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthState
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Multiplier = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipState(dAtA[iNdEx:])
@@ -726,10 +777,10 @@ func (m *BasketClass) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketId", wireType)
 			}
-			var stringLen uint64
+			m.BasketId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -739,24 +790,11 @@ func (m *BasketClass) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.BasketId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthState
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthState
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BasketDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
@@ -843,10 +881,10 @@ func (m *BasketBalance) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketId", wireType)
 			}
-			var stringLen uint64
+			m.BasketId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowState
@@ -856,24 +894,11 @@ func (m *BasketBalance) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.BasketId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthState
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthState
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BasketDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
@@ -937,6 +962,42 @@ func (m *BasketBalance) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Balance = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchStartDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowState
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthState
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthState
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BatchStartDate == nil {
+				m.BatchStartDate = &types.Timestamp{}
+			}
+			if err := m.BatchStartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

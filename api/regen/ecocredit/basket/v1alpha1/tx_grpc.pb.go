@@ -22,13 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateBasket creates a bank denom which wraps credits.
-	CreateBasket(ctx context.Context, in *MsgCreateBasket, opts ...grpc.CallOption) (*MsgCreateBasketResponse, error)
-	// AddToBasket adds credits to a basket in return for basket tokens.
-	AddToBasket(ctx context.Context, in *MsgAddToBasket, opts ...grpc.CallOption) (*MsgAddToBasketResponse, error)
-	// TakeFromBasket takes credits from a basket starting from the oldest
+	// Create creates a bank denom which wraps credits.
+	Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error)
+	// Put puts credits into a basket in return for basket tokens.
+	Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error)
+	// Take takes credits from a basket starting from the oldest
 	// credits first.
-	TakeFromBasket(ctx context.Context, in *MsgTakeFromBasket, opts ...grpc.CallOption) (*MsgTakeFromBasketResponse, error)
+	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
 }
 
 type msgClient struct {
@@ -39,27 +39,27 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateBasket(ctx context.Context, in *MsgCreateBasket, opts ...grpc.CallOption) (*MsgCreateBasketResponse, error) {
-	out := new(MsgCreateBasketResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/CreateBasket", in, out, opts...)
+func (c *msgClient) Create(ctx context.Context, in *MsgCreate, opts ...grpc.CallOption) (*MsgCreateResponse, error) {
+	out := new(MsgCreateResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) AddToBasket(ctx context.Context, in *MsgAddToBasket, opts ...grpc.CallOption) (*MsgAddToBasketResponse, error) {
-	out := new(MsgAddToBasketResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/AddToBasket", in, out, opts...)
+func (c *msgClient) Put(ctx context.Context, in *MsgPut, opts ...grpc.CallOption) (*MsgPutResponse, error) {
+	out := new(MsgPutResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Put", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) TakeFromBasket(ctx context.Context, in *MsgTakeFromBasket, opts ...grpc.CallOption) (*MsgTakeFromBasketResponse, error) {
-	out := new(MsgTakeFromBasketResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/TakeFromBasket", in, out, opts...)
+func (c *msgClient) Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error) {
+	out := new(MsgTakeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1alpha1.Msg/Take", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,13 +70,13 @@ func (c *msgClient) TakeFromBasket(ctx context.Context, in *MsgTakeFromBasket, o
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
 type MsgServer interface {
-	// CreateBasket creates a bank denom which wraps credits.
-	CreateBasket(context.Context, *MsgCreateBasket) (*MsgCreateBasketResponse, error)
-	// AddToBasket adds credits to a basket in return for basket tokens.
-	AddToBasket(context.Context, *MsgAddToBasket) (*MsgAddToBasketResponse, error)
-	// TakeFromBasket takes credits from a basket starting from the oldest
+	// Create creates a bank denom which wraps credits.
+	Create(context.Context, *MsgCreate) (*MsgCreateResponse, error)
+	// Put puts credits into a basket in return for basket tokens.
+	Put(context.Context, *MsgPut) (*MsgPutResponse, error)
+	// Take takes credits from a basket starting from the oldest
 	// credits first.
-	TakeFromBasket(context.Context, *MsgTakeFromBasket) (*MsgTakeFromBasketResponse, error)
+	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -84,14 +84,14 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (UnimplementedMsgServer) CreateBasket(context.Context, *MsgCreateBasket) (*MsgCreateBasketResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateBasket not implemented")
+func (UnimplementedMsgServer) Create(context.Context, *MsgCreate) (*MsgCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedMsgServer) AddToBasket(context.Context, *MsgAddToBasket) (*MsgAddToBasketResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddToBasket not implemented")
+func (UnimplementedMsgServer) Put(context.Context, *MsgPut) (*MsgPutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Put not implemented")
 }
-func (UnimplementedMsgServer) TakeFromBasket(context.Context, *MsgTakeFromBasket) (*MsgTakeFromBasketResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TakeFromBasket not implemented")
+func (UnimplementedMsgServer) Take(context.Context, *MsgTake) (*MsgTakeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Take not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -106,56 +106,56 @@ func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
 	s.RegisterService(&Msg_ServiceDesc, srv)
 }
 
-func _Msg_CreateBasket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateBasket)
+func _Msg_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).CreateBasket(ctx, in)
+		return srv.(MsgServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/CreateBasket",
+		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateBasket(ctx, req.(*MsgCreateBasket))
+		return srv.(MsgServer).Create(ctx, req.(*MsgCreate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_AddToBasket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddToBasket)
+func _Msg_Put_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPut)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AddToBasket(ctx, in)
+		return srv.(MsgServer).Put(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/AddToBasket",
+		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Put",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddToBasket(ctx, req.(*MsgAddToBasket))
+		return srv.(MsgServer).Put(ctx, req.(*MsgPut))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_TakeFromBasket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgTakeFromBasket)
+func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgTake)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).TakeFromBasket(ctx, in)
+		return srv.(MsgServer).Take(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/TakeFromBasket",
+		FullMethod: "/regen.ecocredit.basket.v1alpha1.Msg/Take",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).TakeFromBasket(ctx, req.(*MsgTakeFromBasket))
+		return srv.(MsgServer).Take(ctx, req.(*MsgTake))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,16 +168,16 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateBasket",
-			Handler:    _Msg_CreateBasket_Handler,
+			MethodName: "Create",
+			Handler:    _Msg_Create_Handler,
 		},
 		{
-			MethodName: "AddToBasket",
-			Handler:    _Msg_AddToBasket_Handler,
+			MethodName: "Put",
+			Handler:    _Msg_Put_Handler,
 		},
 		{
-			MethodName: "TakeFromBasket",
-			Handler:    _Msg_TakeFromBasket_Handler,
+			MethodName: "Take",
+			Handler:    _Msg_Take_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
