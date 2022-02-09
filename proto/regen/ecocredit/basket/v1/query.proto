@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.basket.v1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
@@ -14,25 +14,25 @@ service Query {
     // Basket queries one basket by denom.
     rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
+            "/regen/ecocredit/v1/baskets/{basket_denom}";
     }
 
     // Baskets lists all baskets in the ecocredit module.
     rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets";
+            "/regen/ecocredit/v1/baskets";
     }
 
     // BasketBalances lists the balance of each credit batch in the basket.
     rpc BasketBalances(QueryBasketBalancesRequest) returns (QueryBasketBalancesResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balances";
+            "/regen/ecocredit/v1/baskets/{basket_denom}/balances";
     }
 
     // BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
     rpc BasketBalanceByDenom(QueryBasketBalanceByDenomRequest) returns (QueryBasketBalanceByDenomResponse) {
         option (google.api.http).get =
-            "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/balances/{batch_denom}";
+            "/regen/ecocredit/v1/baskets/{basket_denom}/balances/{batch_denom}";
     }
 }
 
