@@ -92,6 +92,6 @@ message QueryBasketBalanceByDenomRequest {
 
 // QueryBasketBalanceByDenomResponse is the Query/BasketBalanceByDenom response type.
 message QueryBasketBalanceByDenomResponse {
-    // balance is the balance of a specific credit batch in the basket.
-    BasketBalance balance = 1;
+    // balance is the amount of the queried credit batch in the basket.
+    string balance = 1;
 }
