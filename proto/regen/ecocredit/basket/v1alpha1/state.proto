@@ -15,7 +15,7 @@ message Basket {
         index: {id: 1, fields: "basket_denom", unique: true}
     };
 
-    // id is the uint64 ID of the basket, it is used internally for reducing
+    // id is the uint64 ID of the basket. It is used internally for reducing
     // storage space.
     uint64 id = 1;
 
@@ -60,7 +60,7 @@ message BasketBalance {
     // basket_id is the ID of the basket
     uint64 basket_id = 1;
 
-    // batch_id is the id of the credit batch
+    // batch_denom is the denom of the credit batch
     string batch_denom = 2;
 
     // balance is the amount of ecocredits held in the basket
