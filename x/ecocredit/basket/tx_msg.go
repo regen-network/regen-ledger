@@ -19,9 +19,14 @@ var (
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
-		return sdkerrors.Wrap(err, "admin")
+		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address " + err.Error())
 	}
-
+	if m.Name == "" || len(m.Name) > 100 {
+		return sdkerrors.ErrInvalidRequest.Wrap("name must not be empty and must not be longer than 100 characters")
+	}
+	if m.Exponent > 32 {
+		return sdkerrors.ErrInvalidRequest.Wrap("exponent must not be bigger than 32")
+	}
 	return nil
 }
 
