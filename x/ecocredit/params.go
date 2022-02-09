@@ -11,10 +11,12 @@ import (
 var (
 	// This is a value of 20 REGEN
 	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
+	DefaultBasketCreationFee    = sdk.NewInt(2e7)
 	KeyCreditClassFee           = []byte("CreditClassFee")
 	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
+	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
 
 // TODO: remove after we open governance changes for precision
@@ -34,6 +36,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
+		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
 	}
 }
 
@@ -52,6 +55,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
+	if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
 		return err
 	}
 
@@ -157,13 +164,27 @@ func validateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
+func validateBasketCreationFee(i interface{}) error {
+	v, ok := i.(sdk.Coins)
+	if !ok {
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
+	}
+
+	if err := v.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NewParams creates a new Params object.
-func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
+func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType, basketCreationFee sdk.Coins) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		CreditTypes:          creditTypes,
+		BasketCreationFee:    basketCreationFee,
 	}
 }
 
@@ -181,5 +202,6 @@ func DefaultParams() Params {
 				Precision:    PRECISION,
 			},
 		},
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	)
 }
