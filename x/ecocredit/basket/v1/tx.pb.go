@@ -63,7 +63,10 @@ type MsgCreate struct {
 	// into the basket.
 	MinStartDate *types.Timestamp `protobuf:"bytes,8,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
 	// fee is the fee that the curator will pay to create the basket. It must be >=
-	// the required Params.basket_creation_fee.
+	// the required Params.basket_creation_fee. We include the fee explicitly
+	// here so that the curator explicitly acknowledges paying this fee and
+	// is not surprised to learn that the paid a big fee and didn't know
+	// beforehand.
 	Fee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,9,rep,name=fee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fee"`
 }
 
