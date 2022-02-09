@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+
+// BasketCredit represents the information for a credit batch inside a basket.
+message BasketCredit {
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // amount is the number of credits being put into or taken out of the basket.
+  // Decimal values are acceptable within the precision of the corresponding
+  //  credit type for this batch.
+  string amount = 2;
+}

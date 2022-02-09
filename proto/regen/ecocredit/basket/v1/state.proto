@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+
+// Basket represents a basket in state.
+message Basket {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 1,
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1, fields: "basket_denom", unique: true}
+    };
+
+    // id is the uint64 ID of the basket. It is used internally for reducing
+    // storage space.
+    uint64 id = 1;
+
+    // basket_denom is the basket bank denom.
+    string basket_denom = 2;
+
+    // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
+    bool disable_auto_retire = 3;
+
+    // credit_type_name is the name of the credit type this basket is able to hold.
+    string credit_type_name = 4;
+
+    // min_start_date is the earliest start date for batches of credits allowed
+    // into the basket.
+    google.protobuf.Timestamp min_start_date = 5;
+
+    // exponent is the exponent for converting credits to/from basket tokens.
+    uint32 exponent = 6;
+}
+
+// BasketClass describes a credit class that can be deposited in a basket.
+message BasketClass {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 2,
+        primary_key: {fields: "basket_id,class_id"}
+    };
+
+    // basket_id is the ID of the basket
+    uint64 basket_id = 1;
+    // class_id is the id of the credit class that is allowed to be deposited in the basket
+    string class_id = 2;
+}
+
+// BasketBalance stores the amount of credits from a batch in a basket
+message BasketBalance {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 3,
+        primary_key: {fields: "basket_id,batch_denom"}
+        index: {id: 1, fields: "batch_start_date"}
+    };
+
+    // basket_id is the ID of the basket
+    uint64 basket_id = 1;
+
+    // batch_denom is the denom of the credit batch
+    string batch_denom = 2;
+
+    // balance is the amount of ecocredits held in the basket
+    string balance = 3;
+
+    // batch_start_date is the start date of the batch. This field is used
+    // to create an index which is used to remove the oldest credits first.
+    google.protobuf.Timestamp batch_start_date = 4;
+}
