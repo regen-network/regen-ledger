@@ -2,8 +2,10 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -18,7 +20,13 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+	ORMPrefix                byte = 0x7
 )
+
+var ModuleSchema = ormdb.ModuleSchema{
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{},
+	Prefix:          []byte{ORMPrefix},
+}
 
 type serverImpl struct {
 	storeKey sdk.StoreKey
