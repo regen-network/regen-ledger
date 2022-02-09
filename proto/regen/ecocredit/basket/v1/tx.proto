@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.basket.v1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -109,7 +109,7 @@ message MsgTake {
   // owner is the owner of the basket tokens.
   string owner = 1;
 
-  // basket_denom is the basket denom to take credits from.
+  // basket_denom is the basket bank denom to take credits from.
   string basket_denom = 2;
 
   // amount is the integer number of basket tokens to convert into credits.
