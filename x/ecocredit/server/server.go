@@ -55,6 +55,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err)
 	}
 
+	return newServerWithDB(storeKey, paramSpace, accountKeeper, bankKeeper, cdc, db)
+}
+
+// newServerWithDB can be used in unit tests so setup some intial db state.
+func newServerWithDB(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec, db ormdb.ModuleDB) serverImpl {
 	basketStore, err := basketv1.NewStateStore(db)
 	if err != nil {
 		panic(err)
