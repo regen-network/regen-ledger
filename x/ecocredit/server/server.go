@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -44,34 +45,15 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
-
-	basketStore basketv1.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
-	db, err := ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
-	if err != nil {
-		panic(err)
-	}
-
-	return newServerWithDB(storeKey, paramSpace, accountKeeper, bankKeeper, cdc, db)
-}
-
-// newServerWithDB can be used in unit tests to setup some intial db state.
-func newServerWithDB(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec, db ormdb.ModuleDB) serverImpl {
-	basketStore, err := basketv1.NewStateStore(db)
-	if err != nil {
-		panic(err)
-	}
-
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
-		basketStore:   basketStore,
 	}
 
 	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
@@ -103,4 +85,12 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+
+	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	_ = basket.NewKeeper(db, impl, bankKeeper)
+	// TODO register basket Msg and Query servers
 }
