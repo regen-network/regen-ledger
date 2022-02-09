@@ -6,7 +6,6 @@ package basket
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -87,7 +86,7 @@ type EventPut struct {
 	// basket_denom is the basket bank denom that the credits were added to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are the credits that were added to the basket.
-	Credits []*v1.BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted from credits.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
@@ -139,7 +138,7 @@ func (m *EventPut) GetBasketDenom() string {
 	return ""
 }
 
-func (m *EventPut) GetCredits() []*v1.BasketCredit {
+func (m *EventPut) GetCredits() []*BasketCredit {
 	if m != nil {
 		return m.Credits
 	}
@@ -161,7 +160,7 @@ type EventTake struct {
 	// basket_denom is the basket bank denom that credits were taken from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are the credits that were taken from the basket.
-	Credits []*v1.BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted to credits.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
@@ -213,7 +212,7 @@ func (m *EventTake) GetBasketDenom() string {
 	return ""
 }
 
-func (m *EventTake) GetCredits() []*v1.BasketCredit {
+func (m *EventTake) GetCredits() []*BasketCredit {
 	if m != nil {
 		return m.Credits
 	}
@@ -740,7 +739,7 @@ func (m *EventPut) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &v1.BasketCredit{})
+			m.Credits = append(m.Credits, &BasketCredit{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -923,7 +922,7 @@ func (m *EventTake) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &v1.BasketCredit{})
+			m.Credits = append(m.Credits, &BasketCredit{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
