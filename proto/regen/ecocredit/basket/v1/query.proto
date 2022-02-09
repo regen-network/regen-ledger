@@ -29,7 +29,7 @@ service Query {
             "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances";
     }
 
-    // Basket queries the balance of a specific credit batch in the basket.
+    // BasketBalance queries the balance of a specific credit batch in the basket.
     rpc BasketBalance(QueryBasketBalanceRequest) returns (QueryBasketBalanceResponse) {
         option (google.api.http).get =
             "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances/{batch_denom}";
