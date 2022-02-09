@@ -29,7 +29,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		err string
 	}{
 		{MsgCreate{Curator: "wrong"}, "malformed curator address"},
-		{MsgCreate{Curator: a, Name: ""}, "name must not"},
+		{MsgCreate{Curator: a, Name: ""}, "name must not be empty"},
 		{MsgCreate{Curator: a, Name: randstr.String(101)}, "name must not"},
 		{MsgCreate{Curator: a, Name: randstr.String(60), Exponent: 33}, "exponent must"},
 
