@@ -29,8 +29,8 @@ service Query {
             "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances";
     }
 
-    // BasketBalanceByDenom queries the balance of a specific credit batch in the basket.
-    rpc BasketBalanceByDenom(QueryBasketBalanceByDenomRequest) returns (QueryBasketBalanceByDenomResponse) {
+    // Basket queries the balance of a specific credit batch in the basket.
+    rpc BasketBalance(QueryBasketBalanceRequest) returns (QueryBasketBalanceResponse) {
         option (google.api.http).get =
             "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances/{batch_denom}";
     }
@@ -81,8 +81,8 @@ message QueryBasketBalancesResponse {
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBasketBalanceByDenomRequest is the Query/BasketBalanceByDenom request type.
-message QueryBasketBalanceByDenomRequest {
+// QueryBasketBalanceRequest is the Query/BasketBalance request type.
+message QueryBasketBalanceRequest {
     // basket_denom is the denom of the basket.
     string basket_denom = 1;
 
@@ -90,8 +90,8 @@ message QueryBasketBalanceByDenomRequest {
     string batch_denom = 2;
 }
 
-// QueryBasketBalanceByDenomResponse is the Query/BasketBalanceByDenom response type.
-message QueryBasketBalanceByDenomResponse {
+// QueryBasketBalanceResponse is the Query/BasketBalance response type.
+message QueryBasketBalanceResponse {
     // balance is the amount of the queried credit batch in the basket.
     string balance = 1;
 }
