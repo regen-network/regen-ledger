@@ -48,13 +48,13 @@ message EventCreate {
 }
 
 // EventPut is an event emitted when credits are put into a basket in return
-// for basket token.
+// for basket tokens.
 message EventPut {
 
   // owner is the owner of credits put into the basket.
   string owner = 1;
 
-  // basket_denom is the basket denom that the credits were added to.
+  // basket_denom is the basket bank denom that the credits were added to.
   string basket_denom = 2;
 
   // credits are the credits that were added to the basket.
