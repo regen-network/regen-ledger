@@ -5,8 +5,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 // Keeper is the basket keeper.
@@ -15,6 +17,8 @@ type Keeper struct {
 	bankKeeper      BankKeeper
 	ecocreditKeeper EcocreditKeeper
 }
+
+var _ baskettypes.MsgServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
 func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper) Keeper {

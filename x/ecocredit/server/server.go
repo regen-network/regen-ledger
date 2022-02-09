@@ -92,5 +92,5 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	}
 
 	_ = basket.NewKeeper(db, impl, bankKeeper)
-	// TODO register basket Msg and Query servers
+	// TODO Msg and Query server registration
 }
