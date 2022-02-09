@@ -8,7 +8,6 @@ LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
 BUILDDIR ?= $(CURDIR)/build
 APP_DIR = ./app
-MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
@@ -144,21 +143,6 @@ build-regen-linux: go.sum $(BUILDDIR)/
 	cp artifacts/regen-*-linux-amd64 $(BUILDDIR)/regen
 
 .PHONY: build build-linux build-regen-all build-regen-linux
-
-mockgen_cmd=go run github.com/golang/mock/mockgen
-
-mocks: $(MOCKS_DIR)
-	$(mockgen_cmd) -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tm_db_DB.go github.com/tendermint/tm-db DB
-	$(mockgen_cmd) -source=types/module/module.go -package mocks -destination tests/mocks/types_module_module.go
-	$(mockgen_cmd) -source=types/invariant.go -package mocks -destination tests/mocks/types_invariant.go
-	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
-	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
-	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
-.PHONY: mocks
-
-$(MOCKS_DIR):
-	mkdir -p $(MOCKS_DIR)
 
 distclean: clean tools-clean
 clean:
@@ -411,3 +395,9 @@ localnet-stop:
 
 
 include sims.mk
+
+mocks:
+	mkdir -p x/ecocredit/server/basket/mocks
+	go install github.com/golang/mock/mockgen@latest
+	mockgen -source=x/ecocredit/server/basket/server.go -package mocks -destination x/ecocredit/server/basket/mocks/server.go
+.PHONY: mocks

@@ -2,8 +2,13 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -18,7 +23,15 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+	ORMPrefix                byte = 0x7
 )
+
+var ModuleSchema = ormdb.ModuleSchema{
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+	},
+	Prefix: []byte{ORMPrefix},
+}
 
 type serverImpl struct {
 	storeKey sdk.StoreKey
@@ -72,4 +85,12 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+
+	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	_ = basket.NewKeeper(db, impl, bankKeeper)
+	// TODO Msg and Query server registration
 }
