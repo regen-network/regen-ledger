@@ -28,7 +28,7 @@ type QueryClient interface {
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
 	// BasketBalances lists the balance of each credit batch in the basket.
 	BasketBalances(ctx context.Context, in *QueryBasketBalancesRequest, opts ...grpc.CallOption) (*QueryBasketBalancesResponse, error)
-	// Basket queries the balance of a specific credit batch in the basket.
+	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(ctx context.Context, in *QueryBasketBalanceRequest, opts ...grpc.CallOption) (*QueryBasketBalanceResponse, error)
 }
 
@@ -86,7 +86,7 @@ type QueryServer interface {
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
 	// BasketBalances lists the balance of each credit batch in the basket.
 	BasketBalances(context.Context, *QueryBasketBalancesRequest) (*QueryBasketBalancesResponse, error)
-	// Basket queries the balance of a specific credit batch in the basket.
+	// BasketBalance queries the balance of a specific credit batch in the basket.
 	BasketBalance(context.Context, *QueryBasketBalanceRequest) (*QueryBasketBalanceResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
