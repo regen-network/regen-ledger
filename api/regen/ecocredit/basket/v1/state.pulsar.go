@@ -1828,7 +1828,7 @@ type Basket struct {
 	// id is the uint64 ID of the basket. It is used internally for reducing
 	// storage space.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// basket_denom is the basket denom.
+	// basket_denom is the basket bank denom.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
 	DisableAutoRetire bool `protobuf:"varint,3,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
@@ -1961,7 +1961,8 @@ type BasketBalance struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// balance is the amount of ecocredits held in the basket
 	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
-	// batch_start_date is the start date of the batch.
+	// batch_start_date is the start date of the batch. This field is used
+	// to create an index which is used to remove the oldest credits first.
 	BatchStartDate *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=batch_start_date,json=batchStartDate,proto3" json:"batch_start_date,omitempty"`
 }
 
