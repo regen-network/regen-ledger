@@ -38,7 +38,9 @@ message MsgCreate {
   // tokens and for for denom metadata. An exponent of 6 will mean that 10^6
   // units of a basket token will be issued for 1.0 credits and that
   // this should be displayed as one unit in user interfaces. The exponent
-  // must be >= the precision for the credit type to avoid the need for rounding.
+  // must be >= the precision for the credit type to minimize the need for rounding
+  // (rounding may still be needed if the precision changes to be great than
+  // the exponent).
   uint32 exponent = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled.
