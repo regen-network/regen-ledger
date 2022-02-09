@@ -9,7 +9,6 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -79,7 +78,7 @@ func (m *QueryBasketRequest) GetBasketDenom() string {
 // QueryBasketResponse is the Query/Basket response type.
 type QueryBasketResponse struct {
 	// basket is the queried basket.
-	Basket *v1.Basket `protobuf:"bytes,1,opt,name=basket,proto3" json:"basket,omitempty"`
+	Basket *Basket `protobuf:"bytes,1,opt,name=basket,proto3" json:"basket,omitempty"`
 }
 
 func (m *QueryBasketResponse) Reset()         { *m = QueryBasketResponse{} }
@@ -115,7 +114,7 @@ func (m *QueryBasketResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBasketResponse proto.InternalMessageInfo
 
-func (m *QueryBasketResponse) GetBasket() *v1.Basket {
+func (m *QueryBasketResponse) GetBasket() *Basket {
 	if m != nil {
 		return m.Basket
 	}
@@ -171,7 +170,7 @@ func (m *QueryBasketsRequest) GetPagination() *query.PageRequest {
 // QueryBasketsResponse is the Query/Baskets response type.
 type QueryBasketsResponse struct {
 	// baskets are the fetched baskets.
-	Baskets []*v1.Basket `protobuf:"bytes,1,rep,name=baskets,proto3" json:"baskets,omitempty"`
+	Baskets []*Basket `protobuf:"bytes,1,rep,name=baskets,proto3" json:"baskets,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -209,7 +208,7 @@ func (m *QueryBasketsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBasketsResponse proto.InternalMessageInfo
 
-func (m *QueryBasketsResponse) GetBaskets() []*v1.Basket {
+func (m *QueryBasketsResponse) GetBaskets() []*Basket {
 	if m != nil {
 		return m.Baskets
 	}
@@ -281,7 +280,7 @@ func (m *QueryBasketBalancesRequest) GetPagination() *query.PageRequest {
 // QueryBasketBalancesResponse is the Query/BasketBalances response type.
 type QueryBasketBalancesResponse struct {
 	// balances is a list of credit balances in the basket.
-	Balances []*v1.BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
+	Balances []*BasketBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -319,7 +318,7 @@ func (m *QueryBasketBalancesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBasketBalancesResponse proto.InternalMessageInfo
 
-func (m *QueryBasketBalancesResponse) GetBalances() []*v1.BasketBalance {
+func (m *QueryBasketBalancesResponse) GetBalances() []*BasketBalance {
 	if m != nil {
 		return m.Balances
 	}
@@ -1278,7 +1277,7 @@ func (m *QueryBasketResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Basket == nil {
-				m.Basket = &v1.Basket{}
+				m.Basket = &Basket{}
 			}
 			if err := m.Basket.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1455,7 +1454,7 @@ func (m *QueryBasketsResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Baskets = append(m.Baskets, &v1.Basket{})
+			m.Baskets = append(m.Baskets, &Basket{})
 			if err := m.Baskets[len(m.Baskets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1699,7 +1698,7 @@ func (m *QueryBasketBalancesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Balances = append(m.Balances, &v1.BasketBalance{})
+			m.Balances = append(m.Balances, &BasketBalance{})
 			if err := m.Balances[len(m.Balances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
