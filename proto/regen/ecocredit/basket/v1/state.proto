@@ -19,7 +19,7 @@ message Basket {
     // storage space.
     uint64 id = 1;
 
-    // basket_denom is the basket denom.
+    // basket_denom is the basket bank denom.
     string basket_denom = 2;
 
     // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
