@@ -11,7 +11,7 @@ message BasketCredit {
   string batch_denom = 1;
 
   // amount is the number of credits being put into or taken out of the basket.
-  // Decimal values are acceptable within the precision returned by
-  // Query/Precision.
+  // Decimal values are acceptable within the precision of the corresponding
+  //  credit type for this batch.
   string amount = 2;
 }
