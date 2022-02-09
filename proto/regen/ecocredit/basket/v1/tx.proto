@@ -41,7 +41,7 @@ message MsgCreate {
   // units of a basket token will be issued for 1.0 credits and that
   // this should be displayed as one unit in user interfaces. The exponent
   // must be >= the precision of the credit type to minimize the need for
-  // rounding (rounding may still be needed if the precision changes to be great
+  // rounding (rounding may still be needed if the precision changes to be greater
   // than the exponent).
   uint32 exponent = 4;
 
