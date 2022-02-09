@@ -51,7 +51,7 @@ message EventCreate {
 // for basket tokens.
 message EventPut {
 
-  // owner is the owner of credits put into the basket.
+  // owner is the owner of the credits put into the basket.
   string owner = 1;
 
   // basket_denom is the basket bank denom that the credits were added to.
@@ -65,7 +65,7 @@ message EventPut {
 // from the oldest credits first.
 message EventTake {
 
-  // owner is the owner of the basket tokens taken from the basket.
+  // owner is the owner of the basket tokens redeemed from the basket.
   string owner = 1;
 
   // basket_denom is the basket bank denom that credits were taken from.
