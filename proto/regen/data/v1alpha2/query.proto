@@ -114,8 +114,8 @@ message QueryResolversResponse {
   // data object.
   repeated string resolver_urls = 1;
 
-  // pagination is the PageRequest to use for pagination.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  // pagination is the PageResponse to use for pagination.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryResolverInfoRequest is the Query/ResolverInfo request type.

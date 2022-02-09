@@ -53,8 +53,7 @@ func (m *MsgDefineResolver) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	_, err := url.ParseRequestURI(m.ResolverUrl)
-	if err != nil {
+	if _, err := url.ParseRequestURI(m.ResolverUrl); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("invalid resolver url")
 	}
 
@@ -74,8 +73,7 @@ func (m *MsgRegisterResolver) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("data cannot be empty")
 	}
 	for _, hash := range m.Data {
-		err := hash.Validate()
-		if err != nil {
+		if err := hash.Validate(); err != nil {
 			return err
 		}
 	}

@@ -26,7 +26,7 @@ message DataID {
 message DataAnchor {
   option (cosmos.orm.v1alpha1.table) = {
     id: 2
-    primary_key: {fields: "id", auto_increment: true}
+    primary_key: {fields: "id"}
   };
 
   // id is the compact data ID.
@@ -48,7 +48,7 @@ message DataSigner {
   bytes id = 1;
 
   // signer is the account address of the signer.
-  string signer = 2;
+  bytes signer = 2;
 
   // timestamp is the time at which the signer signed this data object.
   google.protobuf.Timestamp timestamp = 3;
