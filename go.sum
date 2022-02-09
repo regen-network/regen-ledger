@@ -240,6 +240,7 @@ github.com/cosmos/cosmos-proto v1.0.0-alpha7/go.mod h1:dosO4pSAbJF8zWCzCoTWP7nNs
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3/go.mod h1:Ht15guGn9F8b0lv8NkjXE9/asAvVUOt2n4gvQ4q5MyU=
 github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4/go.mod h1:gZu6sOu2vl4Fd7I+BjDSx2bxndwPgFLGfOegek3SQQo=
 github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2/go.mod h1:Gi7pzVRnvZ1N16JAXpLADzng0ePoE7YeEHaULSFB2Ts=
+github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.6/go.mod h1:pH7cqdUlm/zbtGUxlg9Lf/KL8poW4N9HkSN1AKAwRKk=
 github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7/go.mod h1:woV5EBAWmTaXKs7YXioQsYheXSZkmZIgLPq+Koi/GB8=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
