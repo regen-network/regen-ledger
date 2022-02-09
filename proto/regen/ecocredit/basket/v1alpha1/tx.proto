@@ -4,25 +4,25 @@ package regen.ecocredit.basket.v1alpha1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1alpha1";
 
-import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1alpha1/types.proto";
 
 // Msg is the regen.ecocredit.basket.v1beta1 Msg service.
 service Msg {
 
-  // CreateBasket creates a bank denom which wraps credits.
-  rpc CreateBasket(MsgCreateBasket) returns (MsgCreateBasketResponse);
+  // Create creates a bank denom which wraps credits.
+  rpc Create(MsgCreate) returns (MsgCreateResponse);
 
-  // AddToBasket adds credits to a basket in return for basket tokens.
-  rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
+  // Put puts credits into a basket in return for basket tokens.
+  rpc Put(MsgPut) returns (MsgPutResponse);
 
-  // TakeFromBasket takes credits from a basket starting from the oldest
+  // Take takes credits from a basket starting from the oldest
   // credits first.
-  rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
+  rpc Take(MsgTake) returns (MsgTakeResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
-message MsgCreateBasket {
+message MsgCreate {
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
   string curator = 1;
@@ -34,9 +34,11 @@ message MsgCreateBasket {
   // basket token
   string display_name = 3;
 
-  // exponent is the exponent that will be used for denom metadata. An exponent
-  // of 6 will mean that 10^6 units of a basket token should be displayed
-  // as one unit in user interfaces.
+  // exponent is the exponent that will be used for converting credits to basket
+  // tokens and for for denom metadata. An exponent of 6 will mean that 10^6
+  // units of a basket token will be issued for 1.0 credits and that
+  // this should be displayed as one unit in user interfaces. The exponent
+  // must be >= the precision for the credit type to avoid the need for rounding.
   uint32 exponent = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled.
@@ -52,49 +54,43 @@ message MsgCreateBasket {
    // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 7;
 
-  // batch_date_window is a duration of time measured into the past which sets
-  // a cutoff for batch start dates when adding new credits to the basket.
-  // Based on the current block timestamp, credits whose start date is before
-  // block timestamp - batch_date_window will not be allowed into the basket.
-  google.protobuf.Duration batch_date_window = 8;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 9;
+  // min_start_date is the earliest start date for batches of credits allowed
+  // into the basket.
+  google.protobuf.Timestamp min_start_date = 8;
 }
 
 // MsgCreateBasketResponse is the Msg/CreateBasket response type.
-message MsgCreateBasketResponse {
+message MsgCreateResponse {
 
   // basket_denom is the unique denomination ID of the newly created basket.
   string basket_denom = 1;
 }
 
 // MsgAddToBasket is the Msg/AddToBasket request type.
-message MsgAddToBasket {
-  // owner is the owner of credits being added to the basket.
+message MsgPut {
+
+  // owner is the owner of credits being put into the basket.
   string owner = 1;
 
   // basket_denom is the basket denom to add credits to.
   string basket_denom = 2;
 
   // credits are credits to add to the basket. If they do not match the basket's
-  // admission criteria the operation will fail.
+  // admission criteria the operation will fail. If there are any "dust" credits
+  // left over when converting credits to basket tokens, these credits will
+  // not be converted to basket tokens and instead remain with the owner.
   repeated BasketCredit credits = 3;
 }
 
 // MsgAddToBasketResponse is the Msg/AddToBasket response type.
-message MsgAddToBasketResponse {
+message MsgPutResponse {
 
-  // amount_received is the amount of basket tokens received.
+  // amount_received is the integer amount of basket tokens received.
   string amount_received = 1;
 }
 
 // MsgTakeFromBasket is the Msg/TakeFromBasket request type.
-message MsgTakeFromBasket {
+message MsgTake {
 
   // owner is the owner of the basket tokens.
   string owner = 1;
@@ -102,7 +98,7 @@ message MsgTakeFromBasket {
   // basket_denom is the basket denom to take credits from.
   string basket_denom = 2;
 
-  // amount is the number of credits to take from the basket.
+  // amount is the integer number of basket tokens to convert into credits.
   string amount = 3;
 
   // retirement_location is the optional retirement location for the credits
@@ -111,7 +107,7 @@ message MsgTakeFromBasket {
 }
 
 // MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
-message MsgTakeFromBasketResponse {
+message MsgTakeResponse {
 
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
