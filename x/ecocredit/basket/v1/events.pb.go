@@ -5,11 +5,10 @@ package v1
 
 import (
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types1 "github.com/cosmos/cosmos-sdk/types"
+	_ "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	_ "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -33,23 +32,6 @@ type EventCreate struct {
 	// curator is the address of the basket curator who is able to change certain
 	// basket settings.
 	Curator string `protobuf:"bytes,2,opt,name=curator,proto3" json:"curator,omitempty"`
-	// display_name is used to create the bank denom metadata display name for this
-	// basket token.
-	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// exponent is the exponent that will be used for converting credits to basket
-	// tokens and for bank denom metadata.
-	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled.
-	DisableAutoRetire bool `protobuf:"varint,5,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// credit_type_name filters against credits from this credit type name.
-	CreditTypeName string `protobuf:"bytes,6,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
-	// allowed_classes are the credit classes allowed to be put in the basket.
-	AllowedClasses []string `protobuf:"bytes,7,rep,name=allowed_classes,json=allowedClasses,proto3" json:"allowed_classes,omitempty"`
-	// min_start_date is the earliest start date for batches of credits allowed
-	// into the basket.
-	MinStartDate *types.Timestamp `protobuf:"bytes,8,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
-	// fee is the fee that the curator paid to create the basket.
-	Fee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,9,rep,name=fee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"fee"`
 }
 
 func (m *EventCreate) Reset()         { *m = EventCreate{} }
@@ -99,64 +81,17 @@ func (m *EventCreate) GetCurator() string {
 	return ""
 }
 
-func (m *EventCreate) GetDisplayName() string {
-	if m != nil {
-		return m.DisplayName
-	}
-	return ""
-}
-
-func (m *EventCreate) GetExponent() uint32 {
-	if m != nil {
-		return m.Exponent
-	}
-	return 0
-}
-
-func (m *EventCreate) GetDisableAutoRetire() bool {
-	if m != nil {
-		return m.DisableAutoRetire
-	}
-	return false
-}
-
-func (m *EventCreate) GetCreditTypeName() string {
-	if m != nil {
-		return m.CreditTypeName
-	}
-	return ""
-}
-
-func (m *EventCreate) GetAllowedClasses() []string {
-	if m != nil {
-		return m.AllowedClasses
-	}
-	return nil
-}
-
-func (m *EventCreate) GetMinStartDate() *types.Timestamp {
-	if m != nil {
-		return m.MinStartDate
-	}
-	return nil
-}
-
-func (m *EventCreate) GetFee() github_com_cosmos_cosmos_sdk_types.Coins {
-	if m != nil {
-		return m.Fee
-	}
-	return nil
-}
-
 // EventPut is an event emitted when credits are put into a basket in return
-// for basket token.
+// for basket tokens.
 type EventPut struct {
-	// owner is the owner of credits put into the basket.
+	// owner is the owner of the credits put into the basket.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	// basket_denom is the basket denom that the credits were added to.
+	// basket_denom is the basket bank denom that the credits were added to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// credits are the credits that were added to the basket.
 	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
+	// amount is the integer number of basket tokens converted from credits.
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *EventPut) Reset()         { *m = EventPut{} }
@@ -213,22 +148,24 @@ func (m *EventPut) GetCredits() []*BasketCredit {
 	return nil
 }
 
+func (m *EventPut) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
 // EventTake is an event emitted when credits are taken from a basket starting
 // from the oldest credits first.
 type EventTake struct {
-	// owner is the owner of the basket tokens taken from the basket.
+	// owner is the owner of the credits taken from the basket.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// basket_denom is the basket bank denom that credits were taken from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// credits are the credits that were taken from the basket.
+	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted to credits.
-	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
-	// retirement_location is the optional retirement location for the credits
-	// which will be used only if retire_on_take is true for this basket.
-	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
-	// retire_on_take is a boolean that dictates whether the ecocredits
-	// received in exchange for the basket tokens were received as
-	// retired or tradable credits.
-	RetireOnTake bool `protobuf:"varint,5,opt,name=retire_on_take,json=retireOnTake,proto3" json:"retire_on_take,omitempty"`
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *EventTake) Reset()         { *m = EventTake{} }
@@ -278,25 +215,18 @@ func (m *EventTake) GetBasketDenom() string {
 	return ""
 }
 
+func (m *EventTake) GetCredits() []*BasketCredit {
+	if m != nil {
+		return m.Credits
+	}
+	return nil
+}
+
 func (m *EventTake) GetAmount() string {
 	if m != nil {
 		return m.Amount
 	}
 	return ""
-}
-
-func (m *EventTake) GetRetirementLocation() string {
-	if m != nil {
-		return m.RetirementLocation
-	}
-	return ""
-}
-
-func (m *EventTake) GetRetireOnTake() bool {
-	if m != nil {
-		return m.RetireOnTake
-	}
-	return false
 }
 
 func init() {
@@ -310,44 +240,29 @@ func init() {
 }
 
 var fileDescriptor_bc7fc2fbcbd93cbc = []byte{
-	// 591 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x93, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0xe3, 0x86, 0xb6, 0xc9, 0xa6, 0x14, 0x70, 0x2b, 0xe4, 0xe6, 0xe0, 0x86, 0x0a, 0xa8,
-	0x2f, 0x5d, 0x93, 0x72, 0xe4, 0x42, 0x9b, 0x72, 0x43, 0x80, 0x4c, 0xb9, 0x20, 0x21, 0x6b, 0x63,
-	0x4f, 0x8d, 0x15, 0x7b, 0x37, 0xda, 0x1d, 0xa7, 0xed, 0x0b, 0x70, 0xe6, 0x39, 0x90, 0x38, 0xf1,
-	0x12, 0x3d, 0xf6, 0xc8, 0x09, 0x50, 0xfb, 0x22, 0x68, 0xff, 0xa4, 0x20, 0x95, 0x5e, 0x38, 0x65,
-	0xe7, 0x9b, 0x99, 0xcc, 0xb7, 0xfb, 0x1b, 0x93, 0xc7, 0x12, 0x0a, 0xe0, 0x31, 0x64, 0x22, 0x93,
-	0x90, 0x97, 0x18, 0x8f, 0x99, 0x9a, 0x00, 0xc6, 0xb3, 0x61, 0x0c, 0x33, 0xe0, 0xa8, 0xe8, 0x54,
-	0x0a, 0x14, 0xfe, 0x86, 0xa9, 0xa3, 0x57, 0x75, 0xd4, 0xd6, 0xd1, 0xd9, 0xb0, 0xbf, 0x5e, 0x88,
-	0x42, 0x98, 0xaa, 0x58, 0x9f, 0x6c, 0x43, 0x7f, 0xb3, 0x10, 0xa2, 0xa8, 0x20, 0x36, 0xd1, 0xb8,
-	0x39, 0x8a, 0xb1, 0xac, 0x41, 0x21, 0xab, 0xa7, 0xae, 0x20, 0xcc, 0x84, 0xaa, 0x85, 0xd2, 0x03,
-	0x21, 0x9e, 0x0d, 0xc7, 0x80, 0x6c, 0x18, 0x67, 0xa2, 0xe4, 0x2e, 0xff, 0xe8, 0x66, 0x67, 0x78,
-	0x3a, 0x05, 0x67, 0x6c, 0xeb, 0x6b, 0x9b, 0xf4, 0x5e, 0x68, 0xa7, 0x23, 0x09, 0x0c, 0xc1, 0x7f,
-	0x40, 0x56, 0x6c, 0x61, 0x9a, 0x03, 0x17, 0x75, 0xe0, 0x0d, 0xbc, 0xa8, 0x9b, 0xf4, 0xac, 0x76,
-	0xa0, 0x25, 0x3f, 0x20, 0xcb, 0x59, 0x23, 0x19, 0x0a, 0x19, 0x2c, 0x98, 0xec, 0x3c, 0xd4, 0xcd,
-	0x79, 0xa9, 0xa6, 0x15, 0x3b, 0x4d, 0x39, 0xab, 0x21, 0x68, 0xdb, 0x66, 0xa7, 0xbd, 0x62, 0x35,
-	0xf8, 0x7d, 0xd2, 0x81, 0x93, 0xa9, 0xe0, 0xc0, 0x31, 0xb8, 0x35, 0xf0, 0xa2, 0xdb, 0xc9, 0x55,
-	0xec, 0x53, 0xb2, 0x96, 0x97, 0x8a, 0x8d, 0x2b, 0x48, 0x59, 0x83, 0x22, 0x95, 0x80, 0xa5, 0x84,
-	0x60, 0x71, 0xe0, 0x45, 0x9d, 0xe4, 0x9e, 0x4b, 0xed, 0x35, 0x28, 0x12, 0x93, 0xf0, 0x23, 0x72,
-	0xd7, 0xde, 0x2d, 0xd5, 0x37, 0xb2, 0x23, 0x97, 0xcc, 0xc8, 0x55, 0xab, 0x1f, 0x9e, 0x4e, 0xc1,
-	0x4c, 0xdd, 0x26, 0x77, 0x58, 0x55, 0x89, 0x63, 0xc8, 0xd3, 0xac, 0x62, 0x4a, 0x81, 0x0a, 0x96,
-	0x07, 0x6d, 0x5d, 0xe8, 0xe4, 0x91, 0x55, 0xfd, 0xe7, 0x64, 0xb5, 0x2e, 0x79, 0xaa, 0x90, 0x49,
-	0x4c, 0x73, 0x86, 0x10, 0x74, 0x06, 0x5e, 0xd4, 0xdb, 0xed, 0x53, 0xcb, 0x83, 0xce, 0x79, 0xd0,
-	0xc3, 0x39, 0x8f, 0x64, 0xa5, 0x2e, 0xf9, 0x5b, 0xdd, 0x70, 0xa0, 0x1f, 0xf0, 0x03, 0x69, 0x1f,
-	0x01, 0x04, 0xdd, 0x41, 0x3b, 0xea, 0xed, 0x6e, 0x50, 0x4b, 0x49, 0xe3, 0x06, 0xea, 0x28, 0xd1,
-	0x91, 0x28, 0xf9, 0xfe, 0x93, 0xb3, 0x1f, 0x9b, 0xad, 0x2f, 0x3f, 0x37, 0xa3, 0xa2, 0xc4, 0x8f,
-	0xcd, 0x98, 0x66, 0xa2, 0x8e, 0x1d, 0x52, 0xfb, 0xb3, 0xa3, 0xf2, 0x89, 0x43, 0xa5, 0x1b, 0x54,
-	0xa2, 0xff, 0x77, 0xeb, 0x93, 0x47, 0x3a, 0x86, 0xd7, 0x9b, 0x06, 0xfd, 0x75, 0xb2, 0x28, 0x8e,
-	0x39, 0x48, 0x47, 0xc9, 0x06, 0xd7, 0x10, 0x2e, 0x5c, 0x47, 0xb8, 0x47, 0x96, 0xed, 0x0b, 0xa9,
-	0xa0, 0x6d, 0x8c, 0x6e, 0xd3, 0x1b, 0x17, 0x94, 0xee, 0x9b, 0xd3, 0xc8, 0xc8, 0xc9, 0xbc, 0x6f,
-	0xeb, 0x9b, 0x47, 0xba, 0xc6, 0xc8, 0x21, 0x9b, 0xc0, 0xff, 0x3b, 0xb9, 0x4f, 0x96, 0x58, 0x2d,
-	0x1a, 0x8e, 0x6e, 0x59, 0x5c, 0xe4, 0xc7, 0x64, 0xcd, 0xe2, 0xaf, 0x81, 0x63, 0x5a, 0x89, 0x8c,
-	0x61, 0x29, 0xb8, 0x59, 0x99, 0x6e, 0xe2, 0xff, 0x49, 0xbd, 0x74, 0x19, 0xff, 0x21, 0x59, 0xb5,
-	0x6a, 0x2a, 0x78, 0x8a, 0x6c, 0x32, 0xdf, 0x9b, 0x15, 0xab, 0xbe, 0xe6, 0xda, 0xe7, 0xfe, 0xbb,
-	0xb3, 0x8b, 0xd0, 0x3b, 0xbf, 0x08, 0xbd, 0x5f, 0x17, 0xa1, 0xf7, 0xf9, 0x32, 0x6c, 0x9d, 0x5f,
-	0x86, 0xad, 0xef, 0x97, 0x61, 0xeb, 0xfd, 0xb3, 0xbf, 0x38, 0x98, 0xb7, 0xd8, 0xe1, 0x80, 0xc7,
-	0x42, 0x4e, 0x5c, 0x54, 0x41, 0x5e, 0x80, 0x8c, 0x4f, 0xfe, 0xf5, 0x45, 0x8d, 0x97, 0xcc, 0x5a,
-	0x3c, 0xfd, 0x1d, 0x00, 0x00, 0xff, 0xff, 0xa5, 0x66, 0x86, 0xf7, 0x0f, 0x04, 0x00, 0x00,
+	// 346 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x91, 0xb1, 0x52, 0xf2, 0x40,
+	0x10, 0xc7, 0x09, 0x7c, 0x1f, 0x7c, 0x1c, 0x5f, 0x95, 0x61, 0x9c, 0x48, 0x11, 0x91, 0x19, 0x95,
+	0xc6, 0xdc, 0x44, 0x4b, 0x2b, 0x41, 0x1b, 0x2b, 0x87, 0xd1, 0xc6, 0xc6, 0xb9, 0x84, 0xf5, 0xcc,
+	0x40, 0x6e, 0x99, 0xcb, 0x26, 0xe8, 0x5b, 0xf8, 0x04, 0xfa, 0x3a, 0x96, 0x94, 0x96, 0x0e, 0xbc,
+	0x88, 0x93, 0x4b, 0xb0, 0x41, 0x7a, 0xbb, 0xfb, 0xef, 0xfe, 0xf7, 0xbf, 0xbf, 0xb9, 0x65, 0x87,
+	0x1a, 0x24, 0x28, 0x0e, 0x21, 0x86, 0x1a, 0xc6, 0x11, 0xf1, 0x40, 0x24, 0x13, 0x20, 0x9e, 0xf9,
+	0x1c, 0x32, 0x50, 0x94, 0x78, 0x33, 0x8d, 0x84, 0xf6, 0xae, 0xf1, 0x79, 0xdf, 0x3e, 0xaf, 0xf0,
+	0x79, 0x99, 0xdf, 0x69, 0x4b, 0x94, 0x68, 0x5c, 0x3c, 0x7f, 0x15, 0x03, 0x9d, 0x3d, 0x89, 0x28,
+	0xa7, 0xc0, 0x8d, 0x0a, 0xd2, 0x07, 0x4e, 0x51, 0x0c, 0x09, 0x89, 0x78, 0x56, 0x1a, 0xdc, 0x10,
+	0x93, 0x18, 0x93, 0x7c, 0x21, 0xf0, 0xcc, 0x0f, 0x80, 0x84, 0xcf, 0x43, 0x8c, 0x54, 0xd9, 0x3f,
+	0xd8, 0x4e, 0x46, 0xcf, 0x33, 0x28, 0xc1, 0x7a, 0x57, 0xac, 0x75, 0x99, 0x83, 0x0e, 0x35, 0x08,
+	0x02, 0x7b, 0x9f, 0xfd, 0x2f, 0x7c, 0xf7, 0x63, 0x50, 0x18, 0x3b, 0x56, 0xd7, 0xea, 0x37, 0x47,
+	0xad, 0xa2, 0x76, 0x91, 0x97, 0x6c, 0x87, 0x35, 0xc2, 0x54, 0x0b, 0x42, 0xed, 0x54, 0x4d, 0x77,
+	0x2d, 0x7b, 0xaf, 0x16, 0xfb, 0x67, 0xc2, 0xae, 0x53, 0xb2, 0xdb, 0xec, 0x2f, 0xce, 0x15, 0xe8,
+	0x32, 0xa2, 0x10, 0x1b, 0xf9, 0xd5, 0xcd, 0xfc, 0x73, 0xd6, 0x28, 0x88, 0x13, 0xa7, 0xd6, 0xad,
+	0xf5, 0x5b, 0x27, 0x47, 0xde, 0xd6, 0xcf, 0xf3, 0x06, 0xe6, 0x35, 0x34, 0xe5, 0xd1, 0x7a, 0xce,
+	0xde, 0x61, 0x75, 0x11, 0x63, 0xaa, 0xc8, 0xf9, 0x63, 0xf2, 0x4b, 0xd5, 0x7b, 0xb3, 0x58, 0xd3,
+	0x00, 0xde, 0x88, 0x09, 0xfc, 0x46, 0xc2, 0xc1, 0xed, 0xfb, 0xd2, 0xb5, 0x16, 0x4b, 0xd7, 0xfa,
+	0x5c, 0xba, 0xd6, 0xcb, 0xca, 0xad, 0x2c, 0x56, 0x6e, 0xe5, 0x63, 0xe5, 0x56, 0xee, 0xce, 0x64,
+	0x44, 0x8f, 0x69, 0xe0, 0x85, 0x18, 0x73, 0xb3, 0xed, 0x58, 0x01, 0xcd, 0x51, 0x4f, 0x4a, 0x35,
+	0x85, 0xb1, 0x04, 0xcd, 0x9f, 0x7e, 0xba, 0x78, 0x50, 0x37, 0xc7, 0x3e, 0xfd, 0x0a, 0x00, 0x00,
+	0xff, 0xff, 0xff, 0xb1, 0x4e, 0x5f, 0xaf, 0x02, 0x00, 0x00,
 }
 
 func (m *EventCreate) Marshal() (dAtA []byte, err error) {
@@ -370,70 +285,6 @@ func (m *EventCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Fee) > 0 {
-		for iNdEx := len(m.Fee) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Fee[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintEvents(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x4a
-		}
-	}
-	if m.MinStartDate != nil {
-		{
-			size, err := m.MinStartDate.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x42
-	}
-	if len(m.AllowedClasses) > 0 {
-		for iNdEx := len(m.AllowedClasses) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.AllowedClasses[iNdEx])
-			copy(dAtA[i:], m.AllowedClasses[iNdEx])
-			i = encodeVarintEvents(dAtA, i, uint64(len(m.AllowedClasses[iNdEx])))
-			i--
-			dAtA[i] = 0x3a
-		}
-	}
-	if len(m.CreditTypeName) > 0 {
-		i -= len(m.CreditTypeName)
-		copy(dAtA[i:], m.CreditTypeName)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.CreditTypeName)))
-		i--
-		dAtA[i] = 0x32
-	}
-	if m.DisableAutoRetire {
-		i--
-		if m.DisableAutoRetire {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x28
-	}
-	if m.Exponent != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.Exponent))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.DisplayName) > 0 {
-		i -= len(m.DisplayName)
-		copy(dAtA[i:], m.DisplayName)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.DisplayName)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.Curator) > 0 {
 		i -= len(m.Curator)
 		copy(dAtA[i:], m.Curator)
@@ -471,6 +322,13 @@ func (m *EventPut) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x22
+	}
 	if len(m.Credits) > 0 {
 		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -522,29 +380,26 @@ func (m *EventTake) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.RetireOnTake {
-		i--
-		if m.RetireOnTake {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.RetirementLocation) > 0 {
-		i -= len(m.RetirementLocation)
-		copy(dAtA[i:], m.RetirementLocation)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.RetirementLocation)))
-		i--
-		dAtA[i] = 0x22
-	}
 	if len(m.Amount) > 0 {
 		i -= len(m.Amount)
 		copy(dAtA[i:], m.Amount)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Amount)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
+	}
+	if len(m.Credits) > 0 {
+		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintEvents(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
 	}
 	if len(m.BasketDenom) > 0 {
 		i -= len(m.BasketDenom)
@@ -588,36 +443,6 @@ func (m *EventCreate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.DisplayName)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.Exponent != 0 {
-		n += 1 + sovEvents(uint64(m.Exponent))
-	}
-	if m.DisableAutoRetire {
-		n += 2
-	}
-	l = len(m.CreditTypeName)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if len(m.AllowedClasses) > 0 {
-		for _, s := range m.AllowedClasses {
-			l = len(s)
-			n += 1 + l + sovEvents(uint64(l))
-		}
-	}
-	if m.MinStartDate != nil {
-		l = m.MinStartDate.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if len(m.Fee) > 0 {
-		for _, e := range m.Fee {
-			l = e.Size()
-			n += 1 + l + sovEvents(uint64(l))
-		}
-	}
 	return n
 }
 
@@ -641,6 +466,10 @@ func (m *EventPut) Size() (n int) {
 			n += 1 + l + sovEvents(uint64(l))
 		}
 	}
+	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
 	return n
 }
 
@@ -658,16 +487,15 @@ func (m *EventTake) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
+	if len(m.Credits) > 0 {
+		for _, e := range m.Credits {
+			l = e.Size()
+			n += 1 + l + sovEvents(uint64(l))
+		}
+	}
 	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.RetirementLocation)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.RetireOnTake {
-		n += 2
 	}
 	return n
 }
@@ -770,211 +598,6 @@ func (m *EventCreate) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Curator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DisplayName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DisplayName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
-			}
-			m.Exponent = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Exponent |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.DisableAutoRetire = bool(v != 0)
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.CreditTypeName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllowedClasses", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AllowedClasses = append(m.AllowedClasses, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MinStartDate", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.MinStartDate == nil {
-				m.MinStartDate = &types.Timestamp{}
-			}
-			if err := m.MinStartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Fee = append(m.Fee, types1.Coin{})
-			if err := m.Fee[len(m.Fee)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1127,6 +750,38 @@ func (m *EventPut) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -1246,6 +901,40 @@ func (m *EventTake) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credits = append(m.Credits, &BasketCredit{})
+			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
@@ -1276,58 +965,6 @@ func (m *EventTake) Unmarshal(dAtA []byte) error {
 			}
 			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetirementLocation", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RetirementLocation = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetireOnTake", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.RetireOnTake = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])

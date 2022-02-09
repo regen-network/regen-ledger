@@ -18,33 +18,6 @@ message EventCreate {
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
   string curator = 2;
-
-  // display_name is used to create the bank denom metadata display name for this
-  // basket token.
-  string display_name = 3;
-
-  // exponent is the exponent that will be used for converting credits to basket
-  // tokens and for bank denom metadata.
-  uint32 exponent = 4;
-
-  // disable_auto_retire allows auto-retirement to be disabled.
-  bool disable_auto_retire = 5;
-
-  // credit_type_name filters against credits from this credit type name.
-  string credit_type_name = 6;
-
-   // allowed_classes are the credit classes allowed to be put in the basket.
-  repeated string allowed_classes = 7;
-
-  // min_start_date is the earliest start date for batches of credits allowed
-  // into the basket.
-  google.protobuf.Timestamp min_start_date = 8;
-
-  // fee is the fee that the curator paid to create the basket.
-  repeated cosmos.base.v1beta1.Coin fee = 9 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
 }
 
 // EventPut is an event emitted when credits are put into a basket in return
@@ -59,27 +32,24 @@ message EventPut {
 
   // credits are the credits that were added to the basket.
   repeated BasketCredit credits = 3;
+
+  // amount is the integer number of basket tokens converted from credits.
+  string amount = 4;
 }
 
 // EventTake is an event emitted when credits are taken from a basket starting
 // from the oldest credits first.
 message EventTake {
 
-  // owner is the owner of the basket tokens redeemed from the basket.
+  // owner is the owner of the credits taken from the basket.
   string owner = 1;
 
   // basket_denom is the basket bank denom that credits were taken from.
   string basket_denom = 2;
 
+  // credits are the credits that were taken from the basket.
+  repeated BasketCredit credits = 3;
+
   // amount is the integer number of basket tokens converted to credits.
-  string amount = 3;
-
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if retire_on_take is true for this basket.
-  string retirement_location = 4;
-
-  // retire_on_take is a boolean that dictates whether the ecocredits
-  // received in exchange for the basket tokens were received as
-  // retired or tradable credits.
-  bool retire_on_take = 5;
+  string amount = 4;
 }
