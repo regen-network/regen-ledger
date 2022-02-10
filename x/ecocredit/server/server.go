@@ -91,6 +91,6 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 		panic(err)
 	}
 
-	_ = basket.NewKeeper(db, impl, bankKeeper)
+	_ = basket.NewKeeper(db, impl, bankKeeper, ecocredit.ModuleName)
 	// TODO Msg and Query server registration
 }

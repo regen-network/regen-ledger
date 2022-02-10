@@ -25,12 +25,12 @@ var _ baskettypes.MsgServer = Keeper{}
 var _ baskettypes.QueryServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
-func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper) Keeper {
+func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper, moduleAccountName string) Keeper {
 	basketStore, err := basketv1.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
-	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, stateStore: basketStore}
+	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, stateStore: basketStore, moduleAccountName: moduleAccountName}
 }
 
 // EcocreditKeeper abstracts over methods that the main eco-credit keeper

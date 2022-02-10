@@ -3,6 +3,8 @@ package basket_test
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -30,7 +32,7 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	require.NoError(t, err)
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper)
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, ecocredit.ModuleName)
 
 	// add a basket
 	basketDenom := "foo"

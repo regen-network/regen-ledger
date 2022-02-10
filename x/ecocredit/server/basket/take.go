@@ -25,7 +25,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	amountBasketTokens, ok := sdk.NewIntFromString(msg.Amount)
 	if !ok {
-		return nil, sdkerrors.ErrInvalidRequest
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("bad integer %s", msg.Amount)
 	}
 
 	acct, err := sdk.AccAddressFromBech32(msg.Owner)
@@ -51,14 +51,16 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	}
 
 	multiplier := math.NewDecFinite(10, int32(basket.Exponent))
-	amountCreditsNeeded, err := amountBasketTokensDec.QuoPrec(multiplier, 0, math.RoundDefault)
+	amountCreditsNeeded, err := amountBasketTokensDec.QuoExact(multiplier)
 	if err != nil {
 		return nil, err
 	}
 
 	var credits []*baskettypes.BasketCredit
 	for {
-		it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketBalanceBatchStartDateIndexKey{})
+		it, err := k.stateStore.BasketBalanceStore().List(ctx,
+			basketv1.BasketBalanceBatchStartDateIndexKey{}
+		)
 		if err != nil {
 			return nil, err
 		}
