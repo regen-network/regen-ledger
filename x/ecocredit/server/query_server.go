@@ -126,12 +126,12 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 		return nil, err
 	}
 
-	tradable, err := GetDecimal(store, TradableBalanceKey(accAddr, denom))
+	tradable, err := getDecimal(store, TradableBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := GetDecimal(store, RetiredBalanceKey(accAddr, denom))
+	retired, err := getDecimal(store, RetiredBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
@@ -156,12 +156,12 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	store := ctx.KVStore(s.storeKey)
 	denom := BatchDenomT(request.BatchDenom)
 
-	tradable, err := GetDecimal(store, TradableSupplyKey(denom))
+	tradable, err := getDecimal(store, TradableSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := GetDecimal(store, RetiredSupplyKey(denom))
+	retired, err := getDecimal(store, RetiredSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}

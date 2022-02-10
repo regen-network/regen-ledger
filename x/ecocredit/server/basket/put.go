@@ -3,17 +3,18 @@ package basket
 import (
 	"context"
 	"fmt"
+	"math"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	math2 "math"
 
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	regenmath "github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.MsgPutResponse, error) {
@@ -36,7 +37,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			return nil, err
 		}
 		// get the amount of credits in dec
-		amt, err := math.NewPositiveFixedDecFromString(credit.Amount, basket.Exponent)
+		amt, err := regenmath.NewPositiveFixedDecFromString(credit.Amount, basket.Exponent)
 		if err != nil {
 			return nil, err
 		}
@@ -99,21 +100,21 @@ func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, bat
 }
 
 // updateBalances updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
-func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt math.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(k.storeKey)
 
 	// update the user balance
-	userBalanceKey := server.TradableBalanceKey(sender, server.BatchDenomT(batchInfo.BatchDenom))
-	userBalance, err := server.GetDecimal(store, userBalanceKey)
+	userBalanceKey := TradableBalanceKey(sender, BatchDenomT(batchInfo.BatchDenom))
+	userBalance, err := GetDecimal(store, userBalanceKey)
 	if err != nil {
 		return err
 	}
-	newUserBalance, err := math.SafeSubBalance(userBalance, amt)
+	newUserBalance, err := regenmath.SafeSubBalance(userBalance, amt)
 	if err != nil {
 		return err
 	}
-	server.SetDecimal(store, userBalanceKey, newUserBalance)
+	SetDecimal(store, userBalanceKey, newUserBalance)
 
 	// update basket balance with amount sent
 	var bal *basketv1.BasketBalance
@@ -130,7 +131,7 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt m
 			return err
 		}
 	} else {
-		newBalance, err := math.NewPositiveFixedDecFromString(bal.Balance, basket.Exponent)
+		newBalance, err := regenmath.NewPositiveFixedDecFromString(bal.Balance, basket.Exponent)
 		if err != nil {
 			return err
 		}
@@ -147,11 +148,10 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt m
 }
 
 // calculateTokenAward calculates the tokens to award to the depositor
-func calculateTokenAward(creditAmt math.Dec, exp uint32, denom string) (sdk.Coins, error) {
-	multiplier := math2.Pow10(int(exp))
+func calculateTokenAward(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
+	multiplier := math.Pow10(int(exp))
 	multiStr := fmt.Sprint(multiplier)
-
-	dec, err := math.NewPositiveFixedDecFromString(multiStr, exp)
+	dec, err := regenmath.NewPositiveFixedDecFromString(multiStr, exp)
 	if err != nil {
 		return sdk.Coins{}, err
 	}

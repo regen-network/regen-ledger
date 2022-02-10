@@ -179,8 +179,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
-	SetDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	SetDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
+	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	totalSupply, err := tradableSupply.Add(retiredSupply)
 	if err != nil {

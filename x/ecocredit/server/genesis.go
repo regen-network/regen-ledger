@@ -62,7 +62,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		tradable, err := GetDecimal(store, TradableSupplyKey(denomT))
+		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		retired, err := GetDecimal(store, RetiredSupplyKey(denomT))
+		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -107,7 +107,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 				return err
 			}
 			key := TradableBalanceKey(addr, denomT)
-			SetDecimal(store, key, d)
+			setDecimal(store, key, d)
 
 			key = TradableSupplyKey(denomT)
 			addAndSetDecimal(store, key, d)
@@ -120,7 +120,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 				return err
 			}
 			key := RetiredBalanceKey(addr, denomT)
-			SetDecimal(store, key, d)
+			setDecimal(store, key, d)
 
 			key = RetiredSupplyKey(denomT)
 			addAndSetDecimal(store, key, d)

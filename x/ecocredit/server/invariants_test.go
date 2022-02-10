@@ -342,13 +342,13 @@ func initBalances(t *testing.T, store sdk.KVStore, balances []*ecocredit.Balance
 			d, err := math.NewNonNegativeDecFromString(b.TradableBalance)
 			require.NoError(t, err)
 			key := TradableBalanceKey(addr, denomT)
-			SetDecimal(store, key, d)
+			setDecimal(store, key, d)
 		}
 		if b.RetiredBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.RetiredBalance)
 			require.NoError(t, err)
 			key := RetiredBalanceKey(addr, denomT)
-			SetDecimal(store, key, d)
+			setDecimal(store, key, d)
 		}
 	}
 }
