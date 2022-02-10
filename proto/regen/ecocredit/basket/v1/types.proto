@@ -15,3 +15,9 @@ message BasketCredit {
   //  credit type for this batch.
   string amount = 2;
 }
+
+// BasketCredits represents the slice of BasketCredit objects.
+message BasketCredits {
+  // credits is the list of basket credits
+  repeated BasketCredit credits = 1;
+}

@@ -6,6 +6,7 @@
 
 - [regen/ecocredit/basket/v1/types.proto](#regen/ecocredit/basket/v1/types.proto)
     - [BasketCredit](#regen.ecocredit.basket.v1.BasketCredit)
+    - [BasketCredits](#regen.ecocredit.basket.v1.BasketCredits)
   
 - [regen/ecocredit/basket/v1/tx.proto](#regen/ecocredit/basket/v1/tx.proto)
     - [MsgCreate](#regen.ecocredit.basket.v1.MsgCreate)
@@ -38,6 +39,21 @@ BasketCredit represents the information for a credit batch inside a basket.
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | amount | [string](#string) |  | amount is the number of credits being put into or taken out of the basket. Decimal values are acceptable within the precision of the corresponding credit type for this batch. |
+
+
+
+
+
+
+<a name="regen.ecocredit.basket.v1.BasketCredits"></a>
+
+### BasketCredits
+BasketCredits represents the slice of BasketCredit objects.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credits | [BasketCredit](#regen.ecocredit.basket.v1.BasketCredit) | repeated | credits is the list of basket credits |
 
 
 

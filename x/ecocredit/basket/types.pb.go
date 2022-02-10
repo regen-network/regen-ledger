@@ -79,8 +79,55 @@ func (m *BasketCredit) GetAmount() string {
 	return ""
 }
 
+// BasketCredits represents the slice of BasketCredit objects.
+type BasketCredits struct {
+	// credits is the list of basket credits
+	Credits []*BasketCredit `protobuf:"bytes,1,rep,name=credits,proto3" json:"credits,omitempty"`
+}
+
+func (m *BasketCredits) Reset()         { *m = BasketCredits{} }
+func (m *BasketCredits) String() string { return proto.CompactTextString(m) }
+func (*BasketCredits) ProtoMessage()    {}
+func (*BasketCredits) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e6c256e957c69c4d, []int{1}
+}
+func (m *BasketCredits) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BasketCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BasketCredits.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BasketCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BasketCredits.Merge(m, src)
+}
+func (m *BasketCredits) XXX_Size() int {
+	return m.Size()
+}
+func (m *BasketCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_BasketCredits.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BasketCredits proto.InternalMessageInfo
+
+func (m *BasketCredits) GetCredits() []*BasketCredit {
+	if m != nil {
+		return m.Credits
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*BasketCredit)(nil), "regen.ecocredit.basket.v1.BasketCredit")
+	proto.RegisterType((*BasketCredits)(nil), "regen.ecocredit.basket.v1.BasketCredits")
 }
 
 func init() {
@@ -88,7 +135,7 @@ func init() {
 }
 
 var fileDescriptor_e6c256e957c69c4d = []byte{
-	// 197 bytes of a gzipped FileDescriptorProto
+	// 229 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2d, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x4d, 0xce, 0x4f, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0xd1, 0x4f, 0x4a, 0x2c, 0xce,
 	0x4e, 0x2d, 0xd1, 0x2f, 0x33, 0xd4, 0x2f, 0xa9, 0x2c, 0x48, 0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f,
@@ -96,12 +143,14 @@ var fileDescriptor_e6c256e957c69c4d = []byte{
 	0xe7, 0xe2, 0x71, 0x02, 0x73, 0x9c, 0xc1, 0x32, 0x42, 0xf2, 0x5c, 0xdc, 0x49, 0x89, 0x25, 0xc9,
 	0x19, 0xf1, 0x29, 0xa9, 0x79, 0xf9, 0xb9, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x5c, 0x60,
 	0x21, 0x17, 0x90, 0x88, 0x90, 0x18, 0x17, 0x5b, 0x62, 0x6e, 0x7e, 0x69, 0x5e, 0x89, 0x04, 0x13,
-	0x58, 0x0e, 0xca, 0x73, 0x0a, 0x3a, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f,
+	0x58, 0x0e, 0xca, 0x53, 0x0a, 0xe2, 0xe2, 0x45, 0x36, 0xa8, 0x58, 0xc8, 0x91, 0x8b, 0x1d, 0x62,
+	0x5b, 0xb1, 0x04, 0xa3, 0x02, 0xb3, 0x06, 0xb7, 0x91, 0xba, 0x1e, 0x4e, 0x67, 0xe8, 0x21, 0x6b,
+	0x0d, 0x82, 0xe9, 0x73, 0x0a, 0x3a, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f,
 	0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28,
-	0x8b, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0xb0, 0x43, 0x74, 0xf3,
-	0x52, 0x4b, 0xca, 0xf3, 0x8b, 0xb2, 0xa1, 0xbc, 0x9c, 0xd4, 0x94, 0xf4, 0xd4, 0x22, 0xfd, 0x0a,
-	0x0c, 0x6f, 0x24, 0xb1, 0x81, 0x9d, 0x6f, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xcf, 0x71, 0xfc,
-	0x2f, 0xe7, 0x00, 0x00, 0x00,
+	0x8b, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0xb0, 0xa9, 0xba, 0x79,
+	0xa9, 0x25, 0xe5, 0xf9, 0x45, 0xd9, 0x50, 0x5e, 0x4e, 0x6a, 0x4a, 0x7a, 0x6a, 0x91, 0x7e, 0x05,
+	0x46, 0xd0, 0x24, 0xb1, 0x81, 0x83, 0xc4, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x9b, 0x6b, 0xa4,
+	0xd9, 0x3b, 0x01, 0x00, 0x00,
 }
 
 func (m *BasketCredit) Marshal() (dAtA []byte, err error) {
@@ -141,6 +190,43 @@ func (m *BasketCredit) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *BasketCredits) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BasketCredits) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BasketCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Credits) > 0 {
+		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTypes(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTypes(v)
 	base := offset
@@ -165,6 +251,21 @@ func (m *BasketCredit) Size() (n int) {
 	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *BasketCredits) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Credits) > 0 {
+		for _, e := range m.Credits {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
 	}
 	return n
 }
@@ -267,6 +368,93 @@ func (m *BasketCredit) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BasketCredits) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BasketCredits: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BasketCredits: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credits = append(m.Credits, &BasketCredit{})
+			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
