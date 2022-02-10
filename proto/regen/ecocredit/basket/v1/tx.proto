@@ -59,7 +59,7 @@ message MsgCreate {
   repeated string allowed_classes = 7;
 
   // min_start_date is the earliest start date for batches of credits allowed
-  // into the basket.
+  // into the basket. Required.
   google.protobuf.Timestamp min_start_date = 8;
 
   // fee is the fee that the curator will pay to create the basket. It must be
