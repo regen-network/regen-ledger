@@ -49,6 +49,10 @@ func (m MsgCreate) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrapf("allowed_classes[%d] must be defined", i)
 		}
 	}
+	if err := m.Fee.Validate(); err != nil {
+		return err
+	}
+
 	return nil
 }
 

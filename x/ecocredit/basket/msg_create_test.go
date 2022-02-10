@@ -47,6 +47,10 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"allowed_classes is required"},
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
+		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			"invalid denom"},
+		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+			"invalid denom"},
 
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: classes}, ""},
 		// nil min_start_time is also OK
