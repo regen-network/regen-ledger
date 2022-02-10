@@ -54,7 +54,7 @@ message BasketBalance {
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
         primary_key: {fields: "basket_id,batch_denom"}
-        index: {id: 1, fields: "batch_start_date"}
+        index: {id: 1, fields: "basket_id,batch_start_date"}
     };
 
     // basket_id is the ID of the basket
