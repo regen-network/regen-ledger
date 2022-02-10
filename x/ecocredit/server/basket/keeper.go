@@ -22,6 +22,7 @@ type Keeper struct {
 }
 
 var _ baskettypes.MsgServer = Keeper{}
+var _ baskettypes.QueryServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
 func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper) Keeper {
