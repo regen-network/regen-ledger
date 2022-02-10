@@ -15,7 +15,8 @@ var (
 const nameMaxLen = 32
 const displayNameMinLen = 3
 const displayNameMaxLen = 32
-const maxExponent = 32
+const exponentMax = 32
+const creditTNameMaxLen = 32
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
@@ -28,13 +29,16 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("name must not be empty and must not be longer than 32 characters long")
 	}
 	if len(m.DisplayName) < displayNameMinLen || len(m.DisplayName) > displayNameMaxLen {
-		return sdkerrors.ErrInvalidRequest.Wrap("display_name must be between 3 and 32 characters long")
+		return sdkerrors.ErrInvalidRequest.Wrapf("display_name must be between %d and %d characters long", displayNameMinLen, displayNameMaxLen)
 	}
-	if m.Exponent > maxExponent {
-		return sdkerrors.ErrInvalidRequest.Wrap("exponent must not be bigger than 32")
+	if m.Exponent > exponentMax {
+		return sdkerrors.ErrInvalidRequest.Wrapf("exponent must not be bigger than %d", exponentMax)
 	}
 	if m.CreditTypeName == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit_type_name must be defined")
+	}
+	if len(m.CreditTypeName) > creditTNameMaxLen {
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit_type_name must not be longer than %d", creditTNameMaxLen)
 	}
 
 	if m.MinStartDate == nil {
