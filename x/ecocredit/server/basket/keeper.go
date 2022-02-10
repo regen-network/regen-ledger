@@ -3,6 +3,8 @@ package basket
 import (
 	"context"
 
+	"github.com/cockroachdb/apd/v3"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -39,6 +41,7 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
+	AddCreditBalance(ctx context.Context, owner string, denom string, amount *apd.Decimal, retire bool, retirementLocation string) error
 	// add additional keeper methods here
 }
 

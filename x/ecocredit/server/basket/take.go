@@ -3,8 +3,7 @@ package basket
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types/math"
-
+	"github.com/cockroachdb/apd/v3"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
@@ -20,56 +19,103 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, ErrCantDisableRetire
 	}
 
-	amount, err := math.NewPositiveFixedDecFromString(msg.Amount, basket.Exponent)
+	amountBasketTokens, _, err := apd.NewFromString(msg.Amount)
 	if err != nil {
 		return nil, err
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketBalanceBatchStartDateIndexKey{})
+	multiplier := apd.New(10, int32(basket.Exponent))
+	amountCreditsNeeded := &apd.Decimal{}
+	_, err = apd.BaseContext.Quo(amountCreditsNeeded, amountBasketTokens, multiplier)
 	if err != nil {
 		return nil, err
 	}
 
 	var credits []*baskettypes.BasketCredit
-	for it.Next() {
+	for {
+		it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketBalanceBatchStartDateIndexKey{})
+		if err != nil {
+			return nil, err
+		}
+
 		basketBalance, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
+		it.Close()
 
-		balance, err := math.NewDecFromString(basketBalance.Balance)
+		balance, _, err := apd.NewFromString(basketBalance.Balance)
 		if err != nil {
 			return nil, err
 		}
 
-		if balance.Cmp(amount) > 0 {
+		cmp := balance.Cmp(amountCreditsNeeded)
+		if cmp > 0 {
 			credits = append(credits, &baskettypes.BasketCredit{
 				BatchDenom: basketBalance.BatchDenom,
-				Amount:     amount.String(),
+				Amount:     amountCreditsNeeded.String(),
 			})
 
-			newBalance, err := balance.Sub(amount)
+			err = k.ecocreditKeeper.AddCreditBalance(
+				ctx,
+				msg.Owner,
+				basketBalance.BatchDenom,
+				amountCreditsNeeded,
+				retire,
+				msg.RetirementLocation,
+			)
 			if err != nil {
 				return nil, err
 			}
 
-			basketBalance.Balance = newBalance.String()
-			err = it.Update(basketBalance)
+			_, err := apd.BaseContext.Sub(balance, balance, amountCreditsNeeded)
+			if err != nil {
+				return nil, err
+			}
+
+			basketBalance.Balance = balance.Text('f')
+			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}
 
 			break
 		} else {
-			err = it.Delete()
+			credits = append(credits, &baskettypes.BasketCredit{
+				BatchDenom: basketBalance.BatchDenom,
+				Amount:     balance.String(),
+			})
+
+			err = k.ecocreditKeeper.AddCreditBalance(
+				ctx,
+				msg.Owner,
+				basketBalance.BatchDenom,
+				balance,
+				retire,
+				msg.RetirementLocation,
+			)
+			if err != nil {
+				return nil, err
+			}
+
+			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
+			if err != nil {
+				return nil, err
+			}
+
+			// basket balance == credits needed
+			if cmp == 0 {
+				break
+			}
+
+			_, err = apd.BaseContext.Sub(amountCreditsNeeded, amountCreditsNeeded, balance)
 			if err != nil {
 				return nil, err
 			}
 		}
-
 	}
+
+	return &baskettypes.MsgTakeResponse{
+		Credits: credits,
+	}, nil
 }
