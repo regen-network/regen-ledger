@@ -42,7 +42,7 @@ func (m MsgTake) ValidateBasic() error {
 	return nil
 }
 
-// GetSigners returns the expected signers for MsgCreate.
+// GetSigners returns the expected signers for MsgTake.
 func (m MsgTake) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}

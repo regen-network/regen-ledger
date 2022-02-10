@@ -30,7 +30,17 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 			},
 		},
 		{
-			name: "invalid owner address",
+			name: "invalid owner address - empty",
+			fields: fields{
+				Owner:              "",
+				BasketDenom:        "BCT",
+				Amount:             "12.34",
+				RetirementLocation: "US-WA",
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid owner address - format",
 			fields: fields{
 				Owner:              "foo",
 				BasketDenom:        "BCT",
@@ -40,11 +50,31 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid basket denom",
+			name: "invalid basket denom - empty",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "",
+				Amount:             "12.34",
+				RetirementLocation: "US-WA",
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid basket denom - format",
 			fields: fields{
 				Owner:              addr.String(),
 				BasketDenom:        "foo!bar",
 				Amount:             "12.34",
+				RetirementLocation: "US-WA",
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid amount - empty",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "BCT",
+				Amount:             "",
 				RetirementLocation: "US-WA",
 			},
 			wantErr: true,
@@ -80,10 +110,20 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "invalid location",
+			name: "invalid retirement location - empty",
 			fields: fields{
 				Owner:              addr.String(),
-				BasketDenom:        "BCT!",
+				BasketDenom:        "BCT",
+				Amount:             "12.34",
+				RetirementLocation: "",
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid retirement location - format",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "foo-bar",
 			},
