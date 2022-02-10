@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
+func GetDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	bz := store.Get(key)
 	if bz == nil {
 		return math.NewDecFromInt64(0), nil
@@ -24,7 +24,7 @@ func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	return value, nil
 }
 
-func setDecimal(store sdk.KVStore, key []byte, value math.Dec) {
+func SetDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	// always remove all trailing zeros for canonical representation
 	value, _ = value.Reduce()
 
@@ -37,7 +37,7 @@ func setDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 }
 
 func addAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
-	value, err := getDecimal(store, key)
+	value, err := GetDecimal(store, key)
 	if err != nil {
 		return err
 	}
@@ -47,12 +47,12 @@ func addAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 		return err
 	}
 
-	setDecimal(store, key, value)
+	SetDecimal(store, key, value)
 	return nil
 }
 
 func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
-	value, err := getDecimal(store, key)
+	value, err := GetDecimal(store, key)
 	if err != nil {
 		return err
 	}
@@ -66,7 +66,7 @@ func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 		return err
 	}
 
-	setDecimal(store, key, value)
+	SetDecimal(store, key, value)
 	return nil
 }
 

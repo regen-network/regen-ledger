@@ -16,17 +16,18 @@ type Keeper struct {
 	basketStore     basketv1.StateStore
 	bankKeeper      BankKeeper
 	ecocreditKeeper EcocreditKeeper
+	storeKey        sdk.StoreKey
 }
 
 var _ baskettypes.MsgServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
-func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper) Keeper {
+func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper, storeKey sdk.StoreKey) Keeper {
 	basketStore, err := basketv1.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
-	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, basketStore: basketStore}
+	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, basketStore: basketStore, storeKey: storeKey}
 }
 
 // EcocreditKeeper abstracts over methods that the main eco-credit keeper

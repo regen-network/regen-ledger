@@ -335,27 +335,27 @@ func TestRetiredSupplyInvariants(t *testing.T) {
 
 func initBalances(t *testing.T, store sdk.KVStore, balances []*ecocredit.Balance) {
 	for _, b := range balances {
-		denomT := batchDenomT(b.BatchDenom)
+		denomT := BatchDenomT(b.BatchDenom)
 		addr, err := sdk.AccAddressFromBech32(b.Address)
 		require.NoError(t, err)
 		if b.TradableBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.TradableBalance)
 			require.NoError(t, err)
 			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			SetDecimal(store, key, d)
 		}
 		if b.RetiredBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.RetiredBalance)
 			require.NoError(t, err)
 			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			SetDecimal(store, key, d)
 		}
 	}
 }
 
 func initSupply(t *testing.T, store sdk.KVStore, supply []*ecocredit.Supply) {
 	for _, s := range supply {
-		denomT := batchDenomT(s.BatchDenom)
+		denomT := BatchDenomT(s.BatchDenom)
 		d, err := math.NewNonNegativeDecFromString(s.TradableSupply)
 		require.NoError(t, err)
 		key := TradableSupplyKey(denomT)

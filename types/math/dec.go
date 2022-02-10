@@ -146,6 +146,12 @@ func (x Dec) String() string {
 	return x.dec.Text('f')
 }
 
+/*
+Cmp compares x and y and returns:
+  -1 if d <  x
+   0 if d == x
+  +1 if d >  x
+*/
 func (x Dec) Cmp(y Dec) int {
 	return x.dec.Cmp(&y.dec)
 }

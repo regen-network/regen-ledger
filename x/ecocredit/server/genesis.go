@@ -49,9 +49,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
 func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
-	var denomT batchDenomT
+	var denomT BatchDenomT
 	for _, supply := range supplies {
-		denomT = batchDenomT(supply.BatchDenom)
+		denomT = BatchDenomT(supply.BatchDenom)
 		tradableSupply := math.NewDecFromInt64(0)
 		retiredSupply := math.NewDecFromInt64(0)
 		var err error
@@ -62,7 +62,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
+		tradable, err := GetDecimal(store, TradableSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
+		retired, err := GetDecimal(store, RetiredSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -98,7 +98,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 		if err != nil {
 			return err
 		}
-		denomT := batchDenomT(balance.BatchDenom)
+		denomT := BatchDenomT(balance.BatchDenom)
 
 		// set tradable balance and update supply
 		if balance.TradableBalance != "" {
@@ -107,7 +107,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 				return err
 			}
 			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			SetDecimal(store, key, d)
 
 			key = TradableSupplyKey(denomT)
 			addAndSetDecimal(store, key, d)
@@ -120,7 +120,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 				return err
 			}
 			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			SetDecimal(store, key, d)
 
 			key = RetiredSupplyKey(denomT)
 			addAndSetDecimal(store, key, d)
