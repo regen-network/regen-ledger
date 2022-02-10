@@ -90,7 +90,7 @@ func NewDecFromInt64(x int64) Dec {
 	return res
 }
 
-func NewFinite(coeff int64, exp int32) Dec {
+func NewDecFinite(coeff int64, exp int32) Dec {
 	var res Dec
 	res.dec.SetFinite(coeff, exp)
 	return res
@@ -123,6 +123,9 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 type RoundingMode string
 
 const (
+	// RoundDefault using the default RoundHalfUp rounding.
+	RoundDefault RoundingMode = ""
+
 	// RoundDown rounds toward 0; truncate.
 	RoundDown RoundingMode = apd.RoundDown
 	// RoundHalfUp rounds up if the digits are >= 0.5.

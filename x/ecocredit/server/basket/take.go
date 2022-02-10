@@ -3,7 +3,11 @@ package basket
 import (
 	"context"
 
-	"github.com/cockroachdb/apd/v3"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types/math"
+
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
@@ -19,14 +23,35 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, ErrCantDisableRetire
 	}
 
-	amountBasketTokens, _, err := apd.NewFromString(msg.Amount)
+	amountBasketTokens, ok := sdk.NewIntFromString(msg.Amount)
+	if !ok {
+		return nil, sdkerrors.ErrInvalidRequest
+	}
+
+	acct, err := sdk.AccAddressFromBech32(msg.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	multiplier := apd.New(10, int32(basket.Exponent))
-	amountCreditsNeeded := &apd.Decimal{}
-	_, err = apd.BaseContext.Quo(amountCreditsNeeded, amountBasketTokens, multiplier)
+	sdkContext := sdk.UnwrapSDKContext(ctx)
+	basketCoins := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amountBasketTokens))
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkContext, acct, k.moduleAccountName, basketCoins)
+	if err != nil {
+		return nil, err
+	}
+
+	err = k.bankKeeper.BurnCoins(sdkContext, k.moduleAccountName, basketCoins)
+	if err != nil {
+		return nil, err
+	}
+
+	amountBasketTokensDec, err := math.NewDecFromString(msg.Amount)
+	if err != nil {
+		return nil, err
+	}
+
+	multiplier := math.NewDecFinite(10, int32(basket.Exponent))
+	amountCreditsNeeded, err := amountBasketTokensDec.QuoPrec(multiplier, 0, math.RoundDefault)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +69,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		}
 		it.Close()
 
-		balance, _, err := apd.NewFromString(basketBalance.Balance)
+		balance, err := math.NewDecFromString(basketBalance.Balance)
 		if err != nil {
 			return nil, err
 		}
@@ -58,7 +83,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 			err = k.ecocreditKeeper.AddCreditBalance(
 				ctx,
-				msg.Owner,
+				acct,
 				basketBalance.BatchDenom,
 				amountCreditsNeeded,
 				retire,
@@ -68,12 +93,12 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				return nil, err
 			}
 
-			_, err := apd.BaseContext.Sub(balance, balance, amountCreditsNeeded)
+			newBalance, err := balance.Sub(amountCreditsNeeded)
 			if err != nil {
 				return nil, err
 			}
 
-			basketBalance.Balance = balance.Text('f')
+			basketBalance.Balance = newBalance.String()
 			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
 			if err != nil {
 				return nil, err
@@ -88,7 +113,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 			err = k.ecocreditKeeper.AddCreditBalance(
 				ctx,
-				msg.Owner,
+				acct,
 				basketBalance.BatchDenom,
 				balance,
 				retire,
@@ -108,7 +133,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				break
 			}
 
-			_, err = apd.BaseContext.Sub(amountCreditsNeeded, amountCreditsNeeded, balance)
+			amountCreditsNeeded, err = amountCreditsNeeded.Sub(balance)
 			if err != nil {
 				return nil, err
 			}

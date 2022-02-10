@@ -3,7 +3,7 @@ package basket
 import (
 	"context"
 
-	"github.com/cockroachdb/apd/v3"
+	"github.com/regen-network/regen-ledger/types/math"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,9 +15,10 @@ import (
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	stateStore      basketv1.StateStore
-	bankKeeper      BankKeeper
-	ecocreditKeeper EcocreditKeeper
+	stateStore        basketv1.StateStore
+	bankKeeper        BankKeeper
+	ecocreditKeeper   EcocreditKeeper
+	moduleAccountName string
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -41,7 +42,7 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
-	AddCreditBalance(ctx context.Context, owner string, denom string, amount *apd.Decimal, retire bool, retirementLocation string) error
+	AddCreditBalance(ctx context.Context, owner sdk.AccAddress, denom string, amount math.Dec, retire bool, retirementLocation string) error
 	// add additional keeper methods here
 }
 
