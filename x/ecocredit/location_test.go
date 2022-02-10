@@ -71,7 +71,7 @@ func TestValidateLocation(t *testing.T) {
 
 	for _, spec := range specs {
 		t.Run(spec.name, func(t *testing.T) {
-			if err := validateLocation(spec.location); spec.expectErr {
+			if err := ValidateLocation(spec.location); spec.expectErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
