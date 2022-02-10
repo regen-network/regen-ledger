@@ -4,6 +4,7 @@ package regen.ecocredit.basket.v1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/basket/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
@@ -28,9 +29,8 @@ message Basket {
     // credit_type_name is the name of the credit type this basket is able to hold.
     string credit_type_name = 4;
 
-    // min_start_date is the earliest start date for batches of credits allowed
-    // into the basket.
-    google.protobuf.Timestamp min_start_date = 5;
+    // date_criteria is the date criteria for batches admitted to the basket.
+    DateCriteria date_criteria = 5;
 
     // exponent is the exponent for converting credits to/from basket tokens.
     uint32 exponent = 6;
