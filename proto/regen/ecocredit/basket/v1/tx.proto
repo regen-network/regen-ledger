@@ -5,7 +5,6 @@ package regen.ecocredit.basket.v1;
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
@@ -58,9 +57,8 @@ message MsgCreate {
   // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 7;
 
-  // min_start_date is the earliest start date for batches of credits allowed
-  // into the basket.
-  google.protobuf.Timestamp min_start_date = 8;
+  // date_criteria is the date criteria for batches admitted to the basket.
+  DateCriteria date_criteria = 8;
 
   // fee is the fee that the curator will pay to create the basket. It must be
   // >= the required Params.basket_creation_fee. We include the fee explicitly
