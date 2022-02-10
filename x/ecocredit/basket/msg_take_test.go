@@ -14,6 +14,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 		BasketDenom        string
 		Amount             string
 		RetirementLocation string
+		RetireOnTake       bool
 	}
 	tests := []struct {
 		name    string
@@ -27,6 +28,17 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
+			},
+		},
+		{
+			name: "valid message - do not retire",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "BCT",
+				Amount:             "12.34",
+				RetirementLocation: "",
+				RetireOnTake:       false,
 			},
 		},
 		{
@@ -36,6 +48,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -46,6 +59,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -56,6 +70,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "",
 				Amount:             "12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -66,6 +81,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "foo!bar",
 				Amount:             "12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -76,6 +92,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -86,6 +103,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34.56",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -96,6 +114,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "0",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -106,6 +125,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "-12.34",
 				RetirementLocation: "US-WA",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -116,6 +136,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -126,6 +147,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        "BCT",
 				Amount:             "12.34",
 				RetirementLocation: "foo-bar",
+				RetireOnTake:       true,
 			},
 			wantErr: true,
 		},
@@ -137,6 +159,7 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 				BasketDenom:        tt.fields.BasketDenom,
 				Amount:             tt.fields.Amount,
 				RetirementLocation: tt.fields.RetirementLocation,
+				RetireOnTake:       tt.fields.RetireOnTake,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

@@ -10,8 +10,6 @@ import (
 
 var (
 	_ legacytx.LegacyMsg = &MsgTake{}
-
-	_ sdk.Msg = &MsgTake{}
 )
 
 // Route Implements LegacyMsg.
@@ -36,8 +34,10 @@ func (m MsgTake) ValidateBasic() error {
 	if _, err := math.NewPositiveDecFromString(m.Amount); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	if m.RetireOnTake {
+		if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
 	}
 	return nil
 }
