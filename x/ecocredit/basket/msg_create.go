@@ -13,8 +13,9 @@ var (
 )
 
 const nameMaxLen = 32
-const minDisplayName = 3
-const maxDisplayName = 32
+const displayNameMinLen = 3
+const displayNameMaxLen = 32
+const maxExponent = 32
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
@@ -24,20 +25,20 @@ func (m MsgCreate) ValidateBasic() error {
 	// TODO: add proper validation once we will have proper requirements.
 	// https://github.com/regen-network/regen-ledger/issues/732
 	if m.Name == "" || len(m.Name) > nameMaxLen {
-		return sdkerrors.ErrInvalidRequest.Wrap("name must not be empty and must not be longer than 32 characters")
+		return sdkerrors.ErrInvalidRequest.Wrap("name must not be empty and must not be longer than 32 characters long")
 	}
-	if len(m.DisplayName) < 3 || len(m.DisplayName) > maxDisplayName {
-		return sdkerrors.ErrInvalidRequest.Wrap("display_name length must be between 3 and 32 characters")
+	if len(m.DisplayName) < displayNameMinLen || len(m.DisplayName) > displayNameMaxLen {
+		return sdkerrors.ErrInvalidRequest.Wrap("display_name must be between 3 and 32 characters long")
 	}
-	if m.Exponent > 32 {
+	if m.Exponent > maxExponent {
 		return sdkerrors.ErrInvalidRequest.Wrap("exponent must not be bigger than 32")
 	}
 	if m.CreditTypeName == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("credit_type_name is required")
+		return sdkerrors.ErrInvalidRequest.Wrap("credit_type_name must be defined")
 	}
 
 	if m.MinStartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("min_start_date is required")
+		return sdkerrors.ErrInvalidRequest.Wrap("min_start_date must be defined")
 	}
 
 	if len(m.AllowedClasses) == 0 {
