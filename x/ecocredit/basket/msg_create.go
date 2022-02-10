@@ -41,10 +41,6 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit_type_name must not be longer than %d", creditTNameMaxLen)
 	}
 
-	if m.MinStartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("min_start_date must be defined")
-	}
-
 	if len(m.AllowedClasses) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("allowed_classes is required")
 	}

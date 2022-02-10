@@ -43,15 +43,14 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"credit_type_name must be defined"},
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: randstr.String(creditTNameMaxLen + 1)},
 			"credit_type_name must not be longer"},
-		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: nil},
-			"min_start_date must be defined"},
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: start},
 			"allowed_classes is required"},
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 
 		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, MinStartDate: start, AllowedClasses: classes}, ""},
-		// {MsgCreate{Curator: a, Name: randstr.String(1), Exponent: 32}, ""},
+		// nil min_start_time is also OK
+		{MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, MinStartDate: nil, AllowedClasses: classes}, ""},
 	}
 
 	for i, tc := range tcs {
