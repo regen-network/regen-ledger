@@ -12,10 +12,6 @@ var (
 	_ legacytx.LegacyMsg = &MsgCreate{}
 )
 
-///
-/// MsgCreate sdk.Msg interface
-///
-
 const nameMaxLen = 32
 
 // ValidateBasic does a stateless sanity check on the provided data.
