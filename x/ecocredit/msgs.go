@@ -101,7 +101,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return err
 	}
 
-	if err := validateLocation(m.ProjectLocation); err != nil {
+	if err := ValidateLocation(m.ProjectLocation); err != nil {
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 			}
 
 			if !retiredAmount.IsZero() {
-				if err = validateLocation(iss.RetirementLocation); err != nil {
+				if err = ValidateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -181,7 +181,7 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = validateLocation(credit.RetirementLocation); err != nil {
+			if err = ValidateLocation(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -226,7 +226,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if err := validateLocation(m.Location); err != nil {
+	if err := ValidateLocation(m.Location); err != nil {
 		return err
 	}
 
