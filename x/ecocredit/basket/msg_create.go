@@ -57,7 +57,7 @@ func (m MsgCreate) ValidateBasic() error {
 }
 
 // Validate additional validation with access to the state data.
-func (m MsgCreate) Validate(minFee sdk.Coin) error {
+func (m MsgCreate) Validate(minFee sdk.Coins) error {
 	// TODO: update function to do stateful validation
 	return nil
 }
@@ -68,15 +68,15 @@ func (m MsgCreate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-// GetSignBytes Implements LegacyMsg.
+// GetSignBytes implements LegacyMsg.
 func (m MsgCreate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
-// Route Implements LegacyMsg.
+// Route implements LegacyMsg.
 func (m MsgCreate) Route() string { return sdk.MsgTypeURL(&m) }
 
-// Type Implements LegacyMsg.
+// Type implements LegacyMsg.
 func (m MsgCreate) Type() string { return sdk.MsgTypeURL(&m) }
 
 func validateDateCriteria(d *DateCriteria) error {

@@ -14,7 +14,7 @@ import (
 // Keeper is the basket keeper.
 type Keeper struct {
 	stateStore      basketv1.StateStore
-	bankKeeper      BankKeeper
+	bankKeeper      BankKeeper // TODO: use ecocredit.BankKeeper
 	ecocreditKeeper EcocreditKeeper
 }
 
