@@ -15,22 +15,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-const (
-	TradableBalancePrefix    byte = 0x0
-	TradableSupplyPrefix     byte = 0x1
-	RetiredBalancePrefix     byte = 0x2
-	RetiredSupplyPrefix      byte = 0x3
-	CreditTypeSeqTablePrefix byte = 0x4
-	ClassInfoTablePrefix     byte = 0x5
-	BatchInfoTablePrefix     byte = 0x6
-	ORMPrefix                byte = 0x7
-)
-
 var ModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
 		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
 	},
-	Prefix: []byte{ORMPrefix},
+	Prefix: []byte{ecocredit.ORMPrefix},
 }
 
 type serverImpl struct {
@@ -56,19 +45,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		accountKeeper: accountKeeper,
 	}
 
-	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
+	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(ecocredit.CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.creditTypeSeqTable = creditTypeSeqTable.Build()
 
-	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
+	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
+	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}

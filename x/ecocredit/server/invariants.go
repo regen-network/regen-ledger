@@ -29,7 +29,7 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 	)
 	calTradableSupplies := make(map[string]math.Dec)
 
-	iterateBalances(store, TradableBalancePrefix, func(_, denom, b string) bool {
+	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(_, denom, b string) bool {
 		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
@@ -49,7 +49,7 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 		return false
 	})
 
-	if err := iterateSupplies(store, TradableSupplyPrefix, func(denom string, s string) (bool, error) {
+	if err := ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom string, s string) (bool, error) {
 		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true
@@ -85,7 +85,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		broken bool
 	)
 	calRetiredSupplies := make(map[string]math.Dec)
-	iterateBalances(store, RetiredBalancePrefix, func(_, denom, b string) bool {
+	ecocredit.IterateBalances(store, ecocredit.RetiredBalancePrefix, func(_, denom, b string) bool {
 		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
@@ -104,7 +104,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		return false
 	})
 
-	if err := iterateSupplies(store, RetiredSupplyPrefix, func(denom, s string) (bool, error) {
+	if err := ecocredit.IterateSupplies(store, ecocredit.RetiredSupplyPrefix, func(denom, s string) (bool, error) {
 		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true

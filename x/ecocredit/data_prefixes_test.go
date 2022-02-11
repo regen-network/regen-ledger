@@ -1,4 +1,4 @@
-package server
+package ecocredit
 
 import (
 	"testing"

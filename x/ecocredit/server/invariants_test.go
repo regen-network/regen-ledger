@@ -335,34 +335,34 @@ func TestRetiredSupplyInvariants(t *testing.T) {
 
 func initBalances(t *testing.T, store sdk.KVStore, balances []*ecocredit.Balance) {
 	for _, b := range balances {
-		denomT := BatchDenomT(b.BatchDenom)
+		denomT := ecocredit.BatchDenomT(b.BatchDenom)
 		addr, err := sdk.AccAddressFromBech32(b.Address)
 		require.NoError(t, err)
 		if b.TradableBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.TradableBalance)
 			require.NoError(t, err)
-			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.TradableBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 		}
 		if b.RetiredBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.RetiredBalance)
 			require.NoError(t, err)
-			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.RetiredBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 		}
 	}
 }
 
 func initSupply(t *testing.T, store sdk.KVStore, supply []*ecocredit.Supply) {
 	for _, s := range supply {
-		denomT := BatchDenomT(s.BatchDenom)
+		denomT := ecocredit.BatchDenomT(s.BatchDenom)
 		d, err := math.NewNonNegativeDecFromString(s.TradableSupply)
 		require.NoError(t, err)
-		key := TradableSupplyKey(denomT)
-		addAndSetDecimal(store, key, d)
+		key := ecocredit.TradableSupplyKey(denomT)
+		ecocredit.AddAndSetDecimal(store, key, d)
 		d, err = math.NewNonNegativeDecFromString(s.RetiredSupply)
 		require.NoError(t, err)
-		key = RetiredSupplyKey(denomT)
-		addAndSetDecimal(store, key, d)
+		key = ecocredit.RetiredSupplyKey(denomT)
+		ecocredit.AddAndSetDecimal(store, key, d)
 	}
 }

@@ -49,9 +49,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
 func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
-	var denomT BatchDenomT
+	var denomT ecocredit.BatchDenomT
 	for _, supply := range supplies {
-		denomT = BatchDenomT(supply.BatchDenom)
+		denomT = ecocredit.BatchDenomT(supply.BatchDenom)
 		tradableSupply := math.NewDecFromInt64(0)
 		retiredSupply := math.NewDecFromInt64(0)
 		var err error
@@ -62,7 +62,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
+		tradable, err := ecocredit.GetDecimal(store, ecocredit.TradableSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -78,7 +78,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
+		retired, err := ecocredit.GetDecimal(store, ecocredit.RetiredSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -98,7 +98,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 		if err != nil {
 			return err
 		}
-		denomT := BatchDenomT(balance.BatchDenom)
+		denomT := ecocredit.BatchDenomT(balance.BatchDenom)
 
 		// set tradable balance and update supply
 		if balance.TradableBalance != "" {
@@ -106,11 +106,11 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			if err != nil {
 				return err
 			}
-			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.TradableBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 
-			key = TradableSupplyKey(denomT)
-			addAndSetDecimal(store, key, d)
+			key = ecocredit.TradableSupplyKey(denomT)
+			ecocredit.AddAndSetDecimal(store, key, d)
 		}
 
 		// set retired balance and update supply
@@ -119,11 +119,11 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			if err != nil {
 				return err
 			}
-			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.RetiredBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 
-			key = RetiredSupplyKey(denomT)
-			addAndSetDecimal(store, key, d)
+			key = ecocredit.RetiredSupplyKey(denomT)
+			ecocredit.AddAndSetDecimal(store, key, d)
 		}
 	}
 
@@ -153,7 +153,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	}
 
 	suppliesMap := make(map[string]*ecocredit.Supply)
-	iterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
+	ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom, supply string) (bool, error) {
 		suppliesMap[denom] = &ecocredit.Supply{
 			BatchDenom:     denom,
 			TradableSupply: supply,
@@ -162,7 +162,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return false, nil
 	})
 
-	iterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
+	ecocredit.IterateSupplies(store, ecocredit.RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
 		if _, exists := suppliesMap[denom]; exists {
 			suppliesMap[denom].RetiredSupply = supply
 		} else {
@@ -183,7 +183,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	}
 
 	balancesMap := make(map[string]*ecocredit.Balance)
-	iterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) bool {
+	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(address, denom, balance string) bool {
 		balancesMap[fmt.Sprintf("%s%s", address, denom)] = &ecocredit.Balance{
 			Address:         address,
 			BatchDenom:      denom,
@@ -193,7 +193,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return false
 	})
 
-	iterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) bool {
+	ecocredit.IterateBalances(store, ecocredit.RetiredBalancePrefix, func(address, denom, balance string) bool {
 		index := fmt.Sprintf("%s%s", address, denom)
 		if _, exists := balancesMap[index]; exists {
 			balancesMap[index].RetiredBalance = balance

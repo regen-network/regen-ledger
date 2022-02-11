@@ -83,7 +83,7 @@ func TestPut(t *testing.T) {
 		BasketDenom:       basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeName:    "carbon",
-		MinStartDate:      timestamppb.New(startDate),
+		DateCriteria:     &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -99,8 +99,8 @@ func TestPut(t *testing.T) {
 	sk := sdk.NewKVStoreKey("test")
 	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
 	require.NotNil(t, k)
-	sdkCtx := sdkContextForStoreKey(sk)
-	sdkCtx = sdkCtx.WithContext(ctx)
+
+	sdkCtx := sdkContextForStoreKey(sk).WithContext(ctx).WithBlockTime(endDate)
 	ctx = sdk.WrapSDKContext(sdkCtx)
 	sdkCtx = ctx.Value(sdk.SdkContextKey).(sdk.Context)
 
@@ -230,6 +230,27 @@ func TestPut(t *testing.T) {
 			},
 			errMsg: "cannot use credit of type BadType in a basket that requires credit type carbon",
 		},
+		{
+			name: "batch out of time window",
+			startingBalance: "100000000",
+			msg: basket2.MsgPut{
+				Owner:       addr.String(),
+				BasketDenom: basketDenom,
+				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+			},
+			expectedAward: "2000000", // 2 million
+			setupCalls: func() {
+				badTime, err := time.Parse("2006-01-02", "1984-01-01")
+				require.NoError(t, err)
+				badTimeInfo := *batchInfoRes.Info
+				badTimeInfo.StartDate = &badTime
+				ecocreditKeeper.EXPECT().
+					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
+
+			},
+			errMsg: "cannot put a credit from a batch with start time",
+		},
 
 	}
 
@@ -237,10 +258,10 @@ func TestPut(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.setupCalls()
 			legacyStore := sdkCtx.KVStore(sk)
-			tradKey := basket.TradableBalanceKey(addr, basket.BatchDenomT(denom))
+			tradKey := ecocredit.TradableBalanceKey(addr, ecocredit.BatchDenomT(denom))
 			userFunds, err := math.NewDecFromString(tc.startingBalance)
 			require.NoError(t, err)
-			basket.SetDecimal(legacyStore, tradKey, userFunds)
+			ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
 			res, err := k.Put(ctx, &tc.msg)
 			if tc.errMsg == "" { //  no error!
 				require.NoError(t, err)

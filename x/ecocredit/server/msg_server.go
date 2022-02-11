@@ -100,7 +100,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenom := BatchDenomT(batchDenomStr)
+	batchDenom := ecocredit.BatchDenomT(batchDenomStr)
 	tradableSupply := math.NewDecFromInt64(0)
 	retiredSupply := math.NewDecFromInt64(0)
 
@@ -148,7 +148,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, batchDenom), tradable)
+			err = ecocredit.AddAndSetDecimal(store, ecocredit.TradableBalanceKey(recipientAddr, batchDenom), tradable)
 			if err != nil {
 				return nil, err
 			}
@@ -179,8 +179,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
-	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	ecocredit.SetDecimal(store, ecocredit.TradableSupplyKey(batchDenom), tradableSupply)
+	ecocredit.SetDecimal(store, ecocredit.RetiredSupplyKey(batchDenom), retiredSupply)
 
 	totalSupply, err := tradableSupply.Add(retiredSupply)
 	if err != nil {
@@ -240,7 +240,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	}
 
 	for _, credit := range req.Credits {
-		denom := BatchDenomT(credit.BatchDenom)
+		denom := ecocredit.BatchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
@@ -266,20 +266,20 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		}
 
 		// subtract balance
-		err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
+		err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableBalanceKey(senderAddr, denom), sum)
 		if err != nil {
 			return nil, err
 		}
 
 		// Add tradable balance
-		err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
+		err = ecocredit.AddAndSetDecimal(store, ecocredit.TradableBalanceKey(recipientAddr, denom), tradable)
 		if err != nil {
 			return nil, err
 		}
 
 		if !retired.IsZero() {
 			// subtract retired from tradable supply
-			err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
+			err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableSupplyKey(denom), retired)
 			if err != nil {
 				return nil, err
 			}
@@ -291,7 +291,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			}
 
 			// Add retired supply
-			err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+			err = ecocredit.AddAndSetDecimal(store, ecocredit.RetiredSupplyKey(denom), retired)
 			if err != nil {
 				return nil, err
 			}
@@ -325,7 +325,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 	}
 
 	for _, credit := range req.Credits {
-		denom := BatchDenomT(credit.BatchDenom)
+		denom := ecocredit.BatchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
@@ -352,7 +352,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		}
 
 		//  Add retired supply
-		err = addAndSetDecimal(store, RetiredSupplyKey(denom), toRetire)
+		err = ecocredit.AddAndSetDecimal(store, ecocredit.RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -376,7 +376,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 
 		// Check that the batch that were trying to cancel credits from
 		// exists
-		denom := BatchDenomT(credit.BatchDenom)
+		denom := ecocredit.BatchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
@@ -519,8 +519,8 @@ func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.Cla
 	return nextVal, nil
 }
 
-func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom BatchDenomT, retired math.Dec, location string) error {
-	err := addAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
+func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom ecocredit.BatchDenomT, retired math.Dec, location string) error {
+	err := ecocredit.AddAndSetDecimal(store, ecocredit.RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
 	}
@@ -534,15 +534,15 @@ func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batc
 }
 
 // subtracts `amount` from the tradable balance and tradable supply
-func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, batchDenom BatchDenomT, amount math.Dec) error {
+func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, batchDenom ecocredit.BatchDenomT, amount math.Dec) error {
 	// subtract tradable balance
-	err := subAndSetDecimal(store, TradableBalanceKey(holder, batchDenom), amount)
+	err := ecocredit.SubAndSetDecimal(store, ecocredit.TradableBalanceKey(holder, batchDenom), amount)
 	if err != nil {
 		return err
 	}
 
 	// subtract tradable supply
-	err = subAndSetDecimal(store, TradableSupplyKey(batchDenom), amount)
+	err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableSupplyKey(batchDenom), amount)
 	if err != nil {
 		return err
 	}
@@ -551,7 +551,7 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, 
 }
 
 // gets the precision of the credit type associated with the batch
-func (s serverImpl) getBatchPrecision(ctx types.Context, denom BatchDenomT) (uint32, error) {
+func (s serverImpl) getBatchPrecision(ctx types.Context, denom ecocredit.BatchDenomT) (uint32, error) {
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
 	if err != nil {

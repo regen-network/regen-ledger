@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,7 +21,7 @@ import (
 func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.MsgPutResponse, error) {
 	ownerAddr, _ := sdk.AccAddressFromBech32(req.Owner)
 
-	basket, err := k.basketStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
+	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -69,16 +70,28 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
 func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
-
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	blockTime := sdkCtx.BlockTime()
 	// check time window match
-	requiredStartTime := basket.MinStartDate.AsTime()
-	if batchInfo.StartDate.Before(requiredStartTime) {
+	var minStartDate time.Time
+	switch basket.DateCriteria.Sum.(type) {
+	case *basketv1.DateCriteria_MinStartDate:
+		min := basket.DateCriteria.Sum.(*basketv1.DateCriteria_MinStartDate).MinStartDate
+		minStartDate = min.AsTime()
+	case *basketv1.DateCriteria_StartDateWindow:
+		window := basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.AsDuration()
+		minStartDate = blockTime.Add(window)
+	default:
+		return sdkerrors.ErrInvalidRequest.Wrap("no date criteria was given") // TODO: is date criteria required?
+	}
+
+	if batchInfo.StartDate.Before(minStartDate) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start time %s "+
-			"into a basket that requires a min start time of %s", basket.MinStartDate.AsTime().String(), requiredStartTime.String())
+			"into a basket that requires a min start time of %s", batchInfo.StartDate.String(), minStartDate.String())
 	}
 
 	// check credit class match
-	found, err := k.basketStore.BasketClassStore().Has(ctx, basket.Id, batchInfo.ClassId)
+	found, err := k.stateStore.BasketClassStore().Has(ctx, basket.Id, batchInfo.ClassId)
 	if err != nil {
 		return err
 	}
@@ -105,8 +118,8 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 	store := sdkCtx.KVStore(k.storeKey)
 
 	// update the user balance
-	userBalanceKey := TradableBalanceKey(sender, BatchDenomT(batchInfo.BatchDenom))
-	userBalance, err := GetDecimal(store, userBalanceKey)
+	userBalanceKey := ecocredit.TradableBalanceKey(sender, ecocredit.BatchDenomT(batchInfo.BatchDenom))
+	userBalance, err := ecocredit.GetDecimal(store, userBalanceKey)
 	if err != nil {
 		return err
 	}
@@ -114,11 +127,11 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 	if err != nil {
 		return err
 	}
-	SetDecimal(store, userBalanceKey, newUserBalance)
+	ecocredit.SetDecimal(store, userBalanceKey, newUserBalance)
 
 	// update basket balance with amount sent
 	var bal *basketv1.BasketBalance
-	bal, err = k.basketStore.BasketBalanceStore().Get(ctx, basket.Id, batchInfo.BatchDenom)
+	bal, err = k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, batchInfo.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &basketv1.BasketBalance{
@@ -141,7 +154,7 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 		}
 		bal.Balance = newBalance.String()
 	}
-	if err = k.basketStore.BasketBalanceStore().Save(ctx, bal); err != nil {
+	if err = k.stateStore.BasketBalanceStore().Save(ctx, bal); err != nil {
 		return err
 	}
 	return nil
