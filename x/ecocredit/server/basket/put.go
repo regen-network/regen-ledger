@@ -88,8 +88,8 @@ func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, bat
 		}
 
 		if batchInfo.StartDate.Before(minStartDate) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start time %s "+
-				"into a basket that requires a min start time of %s", batchInfo.StartDate.String(), minStartDate.String())
+			return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start date %s "+
+				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.String(), minStartDate.String())
 		}
 
 	}
