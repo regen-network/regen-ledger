@@ -64,18 +64,19 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"allowed_classes-1",
 			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start},
 			"allowed_classes is required"},
-		{"allowed_classes-2", MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
+		{"allowed_classes-2",
+			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
-		{"fee-1", MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+		{"fee-1",
+			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
 		{"fee-2", MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
-		{"good-1",
+		{"good-1-fees-not-required",
 			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes}, ""},
-		// nil min_start_time is also OK
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, DateCriteria: nil, AllowedClasses: classes}, ""},
+			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 6, CreditTypeName: creditName, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {
