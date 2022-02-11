@@ -20,7 +20,7 @@ func TxAddToBasket() *cobra.Command {
 
 Parameters:
 		owner: account address of the owner of credits being put into the basket.
-		Note, the'--from' flag is ignored as it is implied from [owner]
+		Note, the '--from' flag is ignored as it is implied from [owner]
 		basket_denom: basket denom is the basket denom to add credits to.
 
 Example:
