@@ -21,7 +21,7 @@ func TxAddToBasket() *cobra.Command {
 Parameters:
 		owner: account address of the owner of credits being put into the basket.
 		Note, the '--from' flag is ignored as it is implied from [owner]
-		basket_denom: basket denom is the basket denom to add credits to.
+		basket_denom: basket identifier
 
 Example:
 		$regen tx ecocredit add-to-basket [owner] [basket_denom] [credits_json_file]
