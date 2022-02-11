@@ -1,8 +1,12 @@
 package basket_test
 
 import (
+	"context"
+	"fmt"
 	"testing"
 	"time"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/types/math"
 
@@ -20,16 +24,31 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestTake(t *testing.T) {
+type suite struct {
+	db              ormdb.ModuleDB
+	stateStore      basketv1.StateStore
+	ctx             context.Context
+	k               basket.Keeper
+	ctrl            *gomock.Controller
+	acct            sdk.AccAddress
+	bankKeeper      *mocks.MockBankKeeper
+	ecocreditKeeper *mocks.MockEcocreditKeeper
+	fooBasketId     uint64
+	barBasketId     uint64
+}
+
+func setup(t *testing.T) *suite {
 	// prepare database
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
-	stateStore, err := basketv1.NewStateStore(db)
+	s := &suite{}
+	var err error
+	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.stateStore, err = basketv1.NewStateStore(s.db)
 	assert.NilError(t, err)
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
-	ctx := sdk.WrapSDKContext(sdk.Context{}.WithContext(ormCtx))
+	s.ctx = sdk.WrapSDKContext(sdk.Context{}.WithContext(ormCtx))
 
 	// add some data
-	fooBasketId, err := stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "foo",
 		DisableAutoRetire: false,
 		CreditTypeName:    "C",
@@ -37,21 +56,21 @@ func TestTake(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
-		BasketId:       fooBasketId,
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.fooBasketId,
 		BatchDenom:     "C1",
 		Balance:        "3.0",
 		BatchStartDate: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 
-	assert.NilError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
-		BasketId:       fooBasketId,
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.fooBasketId,
 		BatchDenom:     "C2",
 		Balance:        "5.0",
 		BatchStartDate: timestamppb.New(time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 
-	barBasketId, err := stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	s.barBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "bar",
 		DisableAutoRetire: true,
 		CreditTypeName:    "C",
@@ -59,48 +78,59 @@ func TestTake(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
-		BasketId:       barBasketId,
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.barBasketId,
 		BatchDenom:     "C3",
 		Balance:        "7.0",
 		BatchStartDate: timestamppb.New(time.Date(2018, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 
-	assert.NilError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
-		BasketId:       barBasketId,
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.barBasketId,
 		BatchDenom:     "C4",
 		Balance:        "4.0",
 		BatchStartDate: timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 
 	// setup test keeper
-	ctrl := gomock.NewController(t)
+	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
-	bankKeeper := mocks.NewMockBankKeeper(ctrl)
-	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	moduleAccountName := "basket"
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, moduleAccountName)
+	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
+	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
+	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, ecocredit.ModuleName)
 
-	acct := sdk.AccAddress{0, 1, 2, 3, 4, 5}
+	s.acct = sdk.AccAddress{0, 1, 2, 3, 4, 5}
+
+	return s
+}
+
+func TestTakeMustRetire(t *testing.T) {
+	t.Parallel()
+	s := setup(t)
 
 	// foo requires RetireOnTake
-	_, err = k.Take(ctx, &baskettypes.MsgTake{
-		Owner:              acct.String(),
+	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:              s.acct.String(),
 		BasketDenom:        "foo",
 		Amount:             "6.0",
 		RetirementLocation: "",
 		RetireOnTake:       false,
 	})
 	assert.ErrorIs(t, err, basket.ErrCantDisableRetire)
+}
+
+func TestTakeRetire(t *testing.T) {
+	t.Parallel()
+	s := setup(t)
 
 	fooCoins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(6000000)))
-	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), acct, moduleAccountName, fooCoins)
-	bankKeeper.EXPECT().BurnCoins(gomock.Any(), moduleAccountName, fooCoins)
-	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C2", math.MatchEq(math.NewDecFromInt64(5)), true, "US")
-	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C1", math.MatchEq(math.NewDecFromInt64(1)), true, "US")
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, ecocredit.ModuleName, fooCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), ecocredit.ModuleName, fooCoins)
+	s.ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), s.acct, "C2", math.MatchEq(math.NewDecFromInt64(5)), true, "US")
+	s.ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), s.acct, "C1", math.MatchEq(math.NewDecFromInt64(1)), true, "US")
 
-	res, err := k.Take(ctx, &baskettypes.MsgTake{
-		Owner:              acct.String(),
+	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:              s.acct.String(),
 		BasketDenom:        "foo",
 		Amount:             "6000000",
 		RetirementLocation: "US",
@@ -109,7 +139,51 @@ func TestTake(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
 	assert.Equal(t, "C2", res.Credits[0].BatchDenom)
-	assert.Assert(t, "5.0", res.Credits[0].Amount)
+	assertDecStringEqual(t, "5.0", res.Credits[0].Amount)
 	assert.Equal(t, "C1", res.Credits[1].BatchDenom)
-	assert.Equal(t, "1.0", res.Credits[1].Amount)
+	assertDecStringEqual(t, "1.0", res.Credits[1].Amount)
+	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.fooBasketId, "C2")
+	assert.NilError(t, err)
+	assert.Assert(t, !found)
+	balance, err := s.stateStore.BasketBalanceStore().Get(s.ctx, s.fooBasketId, "C1")
+	assert.NilError(t, err)
+	assertDecStringEqual(t, "2.0", balance.Balance)
+}
+
+func TestTakeTradable(t *testing.T) {
+	t.Parallel()
+	s := setup(t)
+
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(10000000)))
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, ecocredit.ModuleName, barCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), ecocredit.ModuleName, barCoins)
+	s.ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), s.acct, "C3", math.MatchEq(math.NewDecFromInt64(7)), false, "")
+	s.ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), s.acct, "C4", math.MatchEq(math.NewDecFromInt64(3)), false, "")
+
+	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:        s.acct.String(),
+		BasketDenom:  "bar",
+		Amount:       "10000000",
+		RetireOnTake: false,
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, 2, len(res.Credits))
+	assert.Equal(t, "C3", res.Credits[0].BatchDenom)
+	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
+	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
+	assertDecStringEqual(t, "3.0", res.Credits[1].Amount)
+	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.barBasketId, "C3")
+	assert.NilError(t, err)
+	assert.Assert(t, !found)
+	balance, err := s.stateStore.BasketBalanceStore().Get(s.ctx, s.barBasketId, "C4")
+	assert.NilError(t, err)
+	assertDecStringEqual(t, "1.0", balance.Balance)
+}
+
+func assertDecStringEqual(t *testing.T, expected, actual string) {
+	dx, err := math.NewDecFromString(expected)
+	assert.NilError(t, err)
+	dy, err := math.NewDecFromString(actual)
+	assert.NilError(t, err)
+	assert.Assert(t, 0 == dx.Cmp(dy), fmt.Sprintf("%s != %s", expected, actual))
 }
