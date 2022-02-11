@@ -65,10 +65,10 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// mint and send tokens to depositor
 	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, coinsToSend); err != nil {
+	if err = k.bankKeeper.MintCoins(sdkCtx, baskettypes.BasketSubModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
-	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, coinsToSend); err != nil {
+	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, baskettypes.BasketSubModuleName, ownerAddr, coinsToSend); err != nil {
 		return nil, err
 	}
 
@@ -91,6 +91,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
+	errInvalidReq := sdkerrors.ErrInvalidAddress
 
 	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
 		// check time window match
@@ -104,7 +105,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 		}
 
 		if batchInfo.StartDate.Before(minStartDate) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start date %s "+
+			return errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
 				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.String(), minStartDate.String())
 		}
 
@@ -116,7 +117,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 		return err
 	}
 	if !found {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit class %s is not allowed in this basket", batchInfo.ClassId)
+		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", batchInfo.ClassId)
 	}
 
 	// check credit type match
@@ -127,7 +128,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	}
 	gotCreditType := res2.Info.CreditType.Name
 	if requiredCreditType != gotCreditType {
-		return sdkerrors.ErrInvalidRequest.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
+		return errInvalidReq.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
 	}
 	return nil
 }

@@ -75,7 +75,7 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	if err != nil {
 		panic(err)
 	}
-	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey, ecocredit.ModuleName)
+	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)

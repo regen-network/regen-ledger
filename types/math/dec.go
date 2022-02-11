@@ -121,6 +121,19 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
+// MulExact returns a new dec with value x * y. The product must not round or an error will be returned.
+func (x Dec) MulExact(y Dec) (Dec, error) {
+	var z Dec
+	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, err
+	}
+	if condition.Rounded() {
+		return z, errors.Wrap(err, "exact decimal product error")
+	}
+	return z, nil
+}
+
 type RoundingMode string
 
 const (
