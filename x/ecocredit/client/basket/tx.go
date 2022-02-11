@@ -71,7 +71,7 @@ Flags:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(FlagRetirementLocation, "", "location for the credits which will be used only if --retire-on-take falg is true")
+	cmd.Flags().String(FlagRetirementLocation, "", "location for the credits which will be used only if --retire-on-take flag is true")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
 
 	return cmd
