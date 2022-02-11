@@ -153,13 +153,16 @@ Flags:
 				}
 			}
 
+			fee := sdk.Coins{}
 			feeString, err := cmd.Flags().GetString(FlagBasketFee)
 			if err != nil {
 				return err
 			}
-			fee, err := sdk.ParseCoinsNormalized(feeString)
-			if err != nil {
-				return fmt.Errorf("failed to parse basket_fee: %w", err)
+			if feeString != "" {
+				fee, err = sdk.ParseCoinsNormalized(feeString)
+				if err != nil {
+					return fmt.Errorf("failed to parse basket_fee: %w", err)
+				}
 			}
 
 			msg := basket.MsgCreate{
@@ -199,7 +202,6 @@ Flags:
 	cmd.MarkFlagRequired(FlagExponent)
 	cmd.MarkFlagRequired(FlagCreditTypeName)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
-	cmd.MarkFlagRequired(FlagBasketFee)
 
 	return cmd
 }
