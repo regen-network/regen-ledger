@@ -22,7 +22,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err := k.stateStore.BasketStore().Insert(ctx, basketv1.Basket{
+	err = k.stateStore.BasketStore().Insert(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeName:    msg.CreditTypeName,
