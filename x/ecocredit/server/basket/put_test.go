@@ -23,6 +23,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"testing"
 	"time"
@@ -30,6 +31,7 @@ import (
 
 func TestPut(t *testing.T) {
 	basketDenom := "BASKET"
+	basketDenom2 := "BASKET2"
 	classId := "CARB2"
 	startDate, err := time.Parse("2006-01-02", "2020-01-01")
 	require.NoError(t, err)
@@ -87,9 +89,23 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
+	var dur time.Duration = -500000000000000000
+	err = basketTbl.Insert(ctx, &basketv1.Basket{
+		BasketDenom:       basketDenom2	,
+		DisableAutoRetire: true,
+		CreditTypeName:    "carbon",
+		DateCriteria:     &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
+		Exponent:          6,
+	})
+	require.NoError(t, err)
 	bsktClsTbl := db.GetTable(&basketv1.BasketClass{})
 	err = bsktClsTbl.Insert(ctx, &basketv1.BasketClass{
 		BasketId: 1,
+		ClassId:  classId,
+	})
+	require.NoError(t, err)
+	err = bsktClsTbl.Insert(ctx, &basketv1.BasketClass{
+		BasketId: 2,
 		ClassId:  classId,
 	})
 	require.NoError(t, err)
@@ -100,7 +116,7 @@ func TestPut(t *testing.T) {
 	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
 	require.NotNil(t, k)
 
-	sdkCtx := sdkContextForStoreKey(sk).WithContext(ctx).WithBlockTime(endDate)
+	sdkCtx := sdkContextForStoreKey(sk).WithContext(ctx).WithBlockTime(startDate)
 	ctx = sdk.WrapSDKContext(sdkCtx)
 	sdkCtx = ctx.Value(sdk.SdkContextKey).(sdk.Context)
 
