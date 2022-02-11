@@ -3,8 +3,6 @@ package basket
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types/math"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -44,8 +42,6 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
-	AddCreditBalance(ctx context.Context, owner sdk.AccAddress, denom string, amount math.Dec, retire bool, retirementLocation string) error
-	// add additional keeper methods here
 }
 
 // BankKeeper abstracts over methods that the main bank keeper

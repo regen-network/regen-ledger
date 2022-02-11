@@ -10,7 +10,6 @@ import (
 
 	types "github.com/cosmos/cosmos-sdk/types"
 	gomock "github.com/golang/mock/gomock"
-	math "github.com/regen-network/regen-ledger/types/math"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -35,20 +34,6 @@ func NewMockEcocreditKeeper(ctrl *gomock.Controller) *MockEcocreditKeeper {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockEcocreditKeeper) EXPECT() *MockEcocreditKeeperMockRecorder {
 	return m.recorder
-}
-
-// AddCreditBalance mocks base method.
-func (m *MockEcocreditKeeper) AddCreditBalance(ctx context.Context, owner types.AccAddress, denom string, amount math.Dec, retire bool, retirementLocation string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddCreditBalance", ctx, owner, denom, amount, retire, retirementLocation)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// AddCreditBalance indicates an expected call of AddCreditBalance.
-func (mr *MockEcocreditKeeperMockRecorder) AddCreditBalance(ctx, owner, denom, amount, retire, retirementLocation interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddCreditBalance", reflect.TypeOf((*MockEcocreditKeeper)(nil).AddCreditBalance), ctx, owner, denom, amount, retire, retirementLocation)
 }
 
 // Balance mocks base method.

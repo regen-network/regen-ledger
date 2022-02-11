@@ -4,6 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -88,7 +91,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				Amount:     amountCreditsNeeded.String(),
 			})
 
-			err = k.ecocreditKeeper.AddCreditBalance(
+			err = k.addCreditBalance(
 				ctx,
 				acct,
 				basketBalance.BatchDenom,
@@ -118,7 +121,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				Amount:     balance.String(),
 			})
 
-			err = k.ecocreditKeeper.AddCreditBalance(
+			err = k.addCreditBalance(
 				ctx,
 				acct,
 				basketBalance.BatchDenom,
@@ -150,4 +153,34 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	return &baskettypes.MsgTakeResponse{
 		Credits: credits,
 	}, nil
+}
+
+func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, retirementLocation string) error {
+	sdkCtx := types.UnwrapSDKContext(ctx)
+	store := sdkCtx.KVStore(k.storeKey)
+	if !retire {
+		return ecocredit.AddAndSetDecimal(store, ecocredit.TradableBalanceKey(owner, ecocredit.BatchDenomT(batchDenom)), amount)
+	} else {
+		err := ecocredit.AddAndSetDecimal(store, ecocredit.RetiredBalanceKey(owner, ecocredit.BatchDenomT(batchDenom)), amount)
+		if err != nil {
+			return err
+		}
+
+		err = ecocredit.AddAndSetDecimal(store, ecocredit.RetiredSupplyKey(ecocredit.BatchDenomT(batchDenom)), amount)
+		if err != nil {
+			return err
+		}
+
+		err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)), amount)
+		if err != nil {
+			return err
+		}
+
+		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
+			Retirer:    owner.String(),
+			BatchDenom: batchDenom,
+			Amount:     amount.String(),
+			Location:   retirementLocation,
+		})
+	}
 }
