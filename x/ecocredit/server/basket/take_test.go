@@ -116,7 +116,7 @@ func setup(t *testing.T) *suite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.storeKey, ecocredit.ModuleName)
+	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.storeKey)
 
 	s.acct = sdk.AccAddress{0, 1, 2, 3, 4, 5}
 
@@ -143,8 +143,8 @@ func TestTakeRetire(t *testing.T) {
 	s := setup(t)
 
 	fooCoins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(6000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, ecocredit.ModuleName, fooCoins)
-	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), ecocredit.ModuleName, fooCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, baskettypes.BasketSubModuleName, fooCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, fooCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:              s.acct.String(),
@@ -181,8 +181,8 @@ func TestTakeTradable(t *testing.T) {
 	s := setup(t)
 
 	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(10000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, ecocredit.ModuleName, barCoins)
-	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), ecocredit.ModuleName, barCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:        s.acct.String(),

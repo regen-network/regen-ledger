@@ -39,12 +39,12 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	sdkContext := sdk.UnwrapSDKContext(ctx)
 	basketCoins := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amountBasketTokens))
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkContext, acct, k.moduleAccountName, basketCoins)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkContext, acct, baskettypes.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.bankKeeper.BurnCoins(sdkContext, k.moduleAccountName, basketCoins)
+	err = k.bankKeeper.BurnCoins(sdkContext, baskettypes.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err
 	}
