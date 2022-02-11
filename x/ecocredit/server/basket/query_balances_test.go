@@ -60,6 +60,8 @@ func TestQueryBalances(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, res.Balances, 3)
 	require.Equal(t, "100.50", res.Balances[0].Balance)
+	require.Equal(t, "4.20", res.Balances[1].Balance)
+	require.Equal(t, "6.10", res.Balances[2].Balance)
 
 
 	// paginate
