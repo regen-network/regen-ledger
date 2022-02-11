@@ -4,8 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -21,6 +21,18 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
+
+	err := k.stateStore.BasketStore().Insert(ctx, basketv1.Basket{
+		BasketDenom:       denom,
+		DisableAutoRetire: msg.DisableAutoRetire,
+		CreditTypeName:    msg.CreditTypeName,
+		DateCriteria:      msg.DateCriteria.ToApi(),
+		Exponent:          msg.Exponent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, sender, feeModuleAccName, fee)
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{
