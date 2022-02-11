@@ -70,6 +70,15 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		return nil, err
 	}
 
+	if err = sdkCtx.EventManager().EmitTypedEvent(&baskettypes.EventPut{
+		Owner:       ownerAddr.String(),
+		BasketDenom: basket.BasketDenom,
+		Credits:     req.Credits,
+		Amount:      amountReceived.String(),
+	}); err != nil {
+		return nil, err
+	}
+
 	return &baskettypes.MsgPutResponse{AmountReceived: amountReceived.String()}, nil
 }
 
