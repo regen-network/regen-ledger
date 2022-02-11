@@ -6,6 +6,8 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
+// MatchEq is a gomock.Matcher which compares a decimal value to an
+// expected value in gomock calls.
 func MatchEq(dec Dec) gomock.Matcher {
 	return &decEq{dec: dec}
 }
