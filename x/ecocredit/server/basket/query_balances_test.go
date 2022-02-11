@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/golang/mock/gomock"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
@@ -53,7 +54,8 @@ func TestQueryBalances(t *testing.T) {
 	require.NoError(t, err)
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper)
+	sk := sdk.NewKVStoreKey("test")
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
 
 	// query all
 	res, err := k.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basketDenom})
