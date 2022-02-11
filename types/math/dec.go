@@ -90,6 +90,13 @@ func NewDecFromInt64(x int64) Dec {
 	return res
 }
 
+// NewDecFinite returns a decimal with a value of coeff * 10^exp.
+func NewDecFinite(coeff int64, exp int32) Dec {
+	var res Dec
+	res.dec.SetFinite(coeff, exp)
+	return res
+}
+
 // Add returns a new Dec with value `x+y` without mutating any argument and error if
 // there is an overflow.
 func (x Dec) Add(y Dec) (Dec, error) {
@@ -112,6 +119,19 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
 	return z, errors.Wrap(err, "decimal quotient error")
+}
+
+// MulExact returns a new dec with value x * y. The product must not round or an error will be returned.
+func (x Dec) MulExact(y Dec) (Dec, error) {
+	var z Dec
+	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, err
+	}
+	if condition.Rounded() {
+		return z, errors.Wrap(err, "exact decimal product error")
+	}
+	return z, nil
 }
 
 // QuoInteger returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
