@@ -13,9 +13,7 @@ const (
 	ModuleName = "ecocredit"
 
 	DefaultParamspace = ModuleName
-)
 
-const (
 	TradableBalancePrefix    byte = 0x0
 	TradableSupplyPrefix     byte = 0x1
 	RetiredBalancePrefix     byte = 0x2

@@ -34,6 +34,8 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			return nil, err
 		}
 		batchInfo := res.Info
+
+		// validate that the credit batch adheres to the basket's specifications
 		if err := k.validateCredit(ctx, basket, batchInfo); err != nil {
 			return nil, err
 		}
