@@ -11,6 +11,32 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
+// QueryBasketCmd returns a query command that retrieves a basket.
+func QueryBasketCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "basket [basket-denom]",
+		Short:   "Gets the info for a basket.",
+		Long:    "Retrieves the information for a basket definition, given a specific basket denom.",
+		Example: "regen q ecocredit basket BASKET",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			client := basket.NewQueryClient(ctx)
+
+			res, err := client.Basket(cmd.Context(), &basket.QueryBasketRequest{BasketDenom: args[0]})
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+	return cmd
+}
+
 // QueryBasketBalanceCmd returns a query command that retrieves the balance of a credit batch in the basket.
 func QueryBasketBalanceCmd() *cobra.Command {
 	cmd := &cobra.Command{
