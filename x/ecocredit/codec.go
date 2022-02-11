@@ -3,8 +3,6 @@ package ecocredit
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
@@ -21,7 +19,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
-	baskettypes.RegisterTypes(registry)
 }
 
 var (
