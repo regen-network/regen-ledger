@@ -337,6 +337,7 @@ func TestPut(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, res.AmountReceived, tc.expectedBasketCoins)
 				for _, credit := range tc.msg.Credits {
+					assertUserSentCredits(t, userFunds, credit.Amount, tradKey, legacyStore)
 					assertBasketHasCredits(t, ctx, credit, basketDenomToId[tc.msg.BasketDenom], basketBalanceTbl)
 				}
 			} else {
@@ -358,6 +359,18 @@ func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.B
 	require.NoError(t, err)
 	require.True(t, found)
 	require.Equal(t, basketBal.Balance, credit.Amount)
+}
+
+func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string, balanceKey []byte, store types.KVStore) {
+	amtSent, err := math.NewDecFromString(amountSent)
+	require.NoError(t, err)
+	currentBalance, err := ecocredit.GetDecimal(store, balanceKey)
+	require.NoError(t, err)
+
+	checkBalance, err := currentBalance.Add(amtSent)
+	require.NoError(t, err)
+
+	require.True(t, checkBalance.IsEqual(oldBalance))
 }
 
 
