@@ -34,6 +34,8 @@ func QueryBasketCmd() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
 
