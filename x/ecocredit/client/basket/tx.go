@@ -19,16 +19,15 @@ const (
 
 func TxTakeFromBasket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "take-from-basket [owner] [basket_denom] [amount]",
+		Use:   "take-from-basket [basket_denom] [amount]",
 		Short: "Takes credits from a basket",
 		Long: strings.TrimSpace(`takes credits from a basket starting from the oldest credits first.
 
 Parameters:
-		owner: account address of the owner of the basket.
-		Note, the '--from' flag is ignored as it is implied from [owner]
 		basket_denom: denom identifying basket from which we redeem credits.
 		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
+        from: account address of the owner of the basket.
 		retirement-location: retirement location is the optional retirement location for the credits
 		                    which will be used only if --retire-on-take flag is true.
 		retire-on-take: retire on take is a boolean that dictates whether the ecocredits
@@ -36,9 +35,8 @@ Flags:
 		                retired or tradable credits.
 		
 		`),
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Flags().Set(flags.FlagFrom, args[0])
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -56,8 +54,8 @@ Flags:
 
 			msg := keeper.MsgTake{
 				Owner:              clientCtx.FromAddress.String(),
-				BasketDenom:        args[1],
-				Amount:             args[2],
+				BasketDenom:        args[0],
+				Amount:             args[1],
 				RetirementLocation: retirementLocation,
 				RetireOnTake:       retireOnTake,
 			}
