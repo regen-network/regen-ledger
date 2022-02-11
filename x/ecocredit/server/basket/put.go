@@ -2,8 +2,6 @@ package basket
 
 import (
 	"context"
-	"fmt"
-	"math"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -21,11 +19,13 @@ import (
 func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.MsgPutResponse, error) {
 	ownerAddr, _ := sdk.AccAddressFromBech32(req.Owner)
 
+	// get the basket
 	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
 
+	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
 	for _, credit := range req.Credits {
 		// get credit batch info
@@ -46,19 +46,19 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		if err = k.updateBalances(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
 			return nil, err
 		}
-		// get the amount of basket tokens to award to the depositor
-		tokenAward, err := calculateTokenAward(amt, basket.Exponent, basket.BasketDenom)
+		// get the amount of basket tokens to give to the depositor
+		tokens, err := calculateTokens(amt, basket.Exponent, basket.BasketDenom)
 		if err != nil {
 			return nil, err
 		}
 		// update the total amount received so far
-		amountReceived = amountReceived.Add(tokenAward[0].Amount)
+		amountReceived = amountReceived.Add(tokens[0].Amount)
 		// mint and send tokens to depositor
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, tokenAward); err != nil {
+		if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, tokens); err != nil {
 			return nil, err
 		}
-		if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, tokenAward); err != nil {
+		if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, tokens); err != nil {
 			return nil, err
 		}
 	}
@@ -66,28 +66,30 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 }
 
 // validateCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:
-//  - batch's start time is within the basket's MinStartTime
+//  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
 func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
-	// check time window match
-	var minStartDate time.Time
-	switch basket.DateCriteria.Sum.(type) {
-	case *basketv1.DateCriteria_MinStartDate:
-		min := basket.DateCriteria.Sum.(*basketv1.DateCriteria_MinStartDate).MinStartDate
-		minStartDate = min.AsTime()
-	case *basketv1.DateCriteria_StartDateWindow:
-		window := basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.AsDuration()
-		minStartDate = blockTime.Add(window)
-	default:
-		return sdkerrors.ErrInvalidRequest.Wrap("no date criteria was given") // TODO: is date criteria required?
-	}
 
-	if batchInfo.StartDate.Before(minStartDate) {
-		return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start time %s "+
-			"into a basket that requires a min start time of %s", batchInfo.StartDate.String(), minStartDate.String())
+	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
+		// check time window match
+		var minStartDate time.Time
+		switch basket.DateCriteria.Sum.(type) {
+		case *basketv1.DateCriteria_MinStartDate:
+			min := basket.DateCriteria.Sum.(*basketv1.DateCriteria_MinStartDate).MinStartDate
+			minStartDate = min.AsTime()
+		case *basketv1.DateCriteria_StartDateWindow:
+			window := basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.AsDuration()
+			minStartDate = blockTime.Add(window)
+		}
+
+		if batchInfo.StartDate.Before(minStartDate) {
+			return sdkerrors.ErrInvalidRequest.Wrapf("cannot put a credit from a batch with start time %s "+
+				"into a basket that requires a min start time of %s", batchInfo.StartDate.String(), minStartDate.String())
+		}
+
 	}
 
 	// check credit class match
@@ -160,24 +162,19 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 	return nil
 }
 
-// calculateTokenAward calculates the tokens to award to the depositor
-func calculateTokenAward(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
-	multiplier := math.Pow10(int(exp))
-	multiStr := fmt.Sprint(multiplier)
-	dec, err := regenmath.NewPositiveFixedDecFromString(multiStr, exp)
+// calculateTokens calculates the tokens to award to the depositor
+func calculateTokens(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
+	var coins sdk.Coins
+	multiplier := regenmath.NewDecFinite(10, int32(exp))
+	tokenAmt, err := multiplier.MulExact(creditAmt)
 	if err != nil {
-		return sdk.Coins{}, err
+		return coins, err
 	}
 
-	tokens, err := creditAmt.Mul(dec)
+	i64Amt, err := tokenAmt.Int64()
 	if err != nil {
-		return sdk.Coins{}, err
+		return coins, err
 	}
 
-	i64Tokens, err := tokens.Int64()
-	if err != nil {
-		return sdk.Coins{}, err
-	}
-
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(i64Tokens))}, nil
+	return sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(i64Amt))}, nil
 }
