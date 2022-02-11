@@ -27,7 +27,7 @@ Parameters:
 		owner: account address of the owner of the basket.
 		Note, the '--from' flag is ignored as it is implied from [owner]
 		basket_denom: basket denom is the basket denom to take credits from.
-		amount: amount is the integer number of basket tokens to convert into credits.
+		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
 		retirement-location: retirement location is the optional retirement location for the credits
 		                    which will be used only if --retire-on-take flag is true.
