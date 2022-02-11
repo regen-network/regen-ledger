@@ -1,7 +1,10 @@
 package testsuite
 
 import (
+	"bytes"
 	"encoding/json"
+
+	"github.com/gogo/protobuf/jsonpb"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -156,12 +159,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
 	require := s.Require()
-	cdc := s.fixture.Codec()
 	exported, err := s.fixture.ExportGenesis(ctx.Context)
 	require.NoError(err)
 
 	var exportedGenesisState ecocredit.GenesisState
-	err = cdc.UnmarshalJSON(exported[ecocredit.ModuleName], &exportedGenesisState)
+	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
+		bytes.NewReader(exported[ecocredit.ModuleName]),
+		&exportedGenesisState,
+	)
 	require.NoError(err)
 
 	return exportedGenesisState
