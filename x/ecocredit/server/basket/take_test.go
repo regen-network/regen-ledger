@@ -6,27 +6,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	"github.com/regen-network/regen-ledger/types/math"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
+	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
 )
 
 type suite struct {
@@ -50,6 +48,7 @@ func setup(t *testing.T) *suite {
 	s := &suite{t: t}
 	var err error
 	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	assert.NilError(t, err)
 	s.stateStore, err = basketv1.NewStateStore(s.db)
 	assert.NilError(t, err)
 
