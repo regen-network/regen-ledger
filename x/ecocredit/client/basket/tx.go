@@ -26,7 +26,7 @@ func TxTakeFromBasket() *cobra.Command {
 Parameters:
 		owner: account address of the owner of the basket.
 		Note, the '--from' flag is ignored as it is implied from [owner]
-		basket_denom: basket denom is the basket denom to take credits from.
+		basket_denom: denom identifying basket from which we redeem credits.
 		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
 		retirement-location: retirement location is the optional retirement location for the credits
