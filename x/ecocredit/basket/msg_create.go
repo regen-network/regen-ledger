@@ -57,8 +57,17 @@ func (m MsgCreate) ValidateBasic() error {
 }
 
 // Validate additional validation with access to the state data.
+// minFee must be sorted.
 func (m MsgCreate) Validate(minFee sdk.Coins) error {
-	// TODO: update function to do stateful validation
+	// Note if user is adding too much denoms then we fails as well.
+	if len(minFee) != len(m.Fee) {
+		return errBadReq.Wrap("Wrong denom set, expected %v", m.Fee)
+	}
+	for i, c := range m.Fee.Sort() {
+		if minFee[i].Denom != c.Denom || minFee[i].Amount > c.Amount {
+			return errBadReq.Wrap("Wrong denom set, expected %v", m.Fee)
+		}
+	}
 	return nil
 }
 

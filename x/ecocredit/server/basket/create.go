@@ -11,8 +11,8 @@ import (
 
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	// TODO: use param
-	if err := msg.Validate(nil); err != nil {
+	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
+	if err := msg.Validate(fee); err != nil {
 		return nil, err
 	}
 	// TODO: need to decide about the denom creation
@@ -21,8 +21,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
-	k.bankKeeper.SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins)
+	k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, sender, feeModuleAccName, fee)
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{
 		BasketDenom: denom,

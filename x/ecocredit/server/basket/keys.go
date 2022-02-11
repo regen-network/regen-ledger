@@ -6,8 +6,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var feeBasketAcc []byte
+// var feeBasketAcc []byte
+var feeModuleAccName = ecocredit.ModuleName + "basket-fees"
 
 func init() {
-	feeBasketAcc = authtypes.NewModuleAddress(ecocredit.ModuleName + "basket-fees")
+	// feeBasketAcc = authtypes.NewModuleAddress(ecocredit.ModuleName + "basket-fees")
 }
