@@ -1,10 +1,16 @@
 package module
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
+
+	"github.com/gogo/protobuf/jsonpb"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -69,16 +75,54 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
+	legacyJson := cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
+
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	ormJson, err := jsonTarget.JSON()
+	if err != nil {
+		panic(err)
+	}
+
+	bz, err := server.MergeJSONMaps(legacyJson, ormJson)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
 	var data ecocredit.GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bytes.NewReader(bz), &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
 	}
 
-	return data.Validate()
+	err := data.Validate()
+	if err != nil {
+		return err
+	}
+
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		return err
+	}
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	if err != nil {
+		return err
+	}
+
+	return db.ValidateJSON(jsonSource)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {

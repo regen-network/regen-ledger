@@ -1,8 +1,12 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	"github.com/gogo/protobuf/jsonpb"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,11 +19,19 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// NOTE: currently we have ORM + non-ORM genesis in parallel. We will remove
+// the non-ORM genesis soon, but for now, we merge both genesis JSON's into
+// the same map.
+
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
 	var genesisState ecocredit.GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+
+	err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bytes.NewReader(data), &genesisState)
+	if err != nil {
+		return nil, err
+	}
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
@@ -44,7 +56,13 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	return []abci.ValidatorUpdate{}, nil
+	jsonSource, err := ormjson.NewRawMessageSource(data)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.db.ImportJSON(ctx, jsonSource)
+	return []abci.ValidatorUpdate{}, err
 }
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
@@ -224,5 +242,40 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Supplies:  supplies,
 	}
 
-	return cdc.MustMarshalJSON(gs), nil
+	legacyJson := cdc.MustMarshalJSON(gs)
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err := s.db.ExportJSON(ctx, jsonTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	ormJson, err := jsonTarget.JSON()
+	if err != nil {
+		return nil, err
+	}
+
+	return MergeJSONMaps(legacyJson, ormJson)
+}
+
+func MergeJSONMaps(a, b json.RawMessage) (json.RawMessage, error) {
+	var m1, m2 map[string]json.RawMessage
+	err := json.Unmarshal(a, &m1)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(b, &m2)
+	if err != nil {
+		return nil, err
+	}
+
+	for k, message := range m1 {
+		if _, ok := m2[k]; ok {
+			return nil, fmt.Errorf("duplicate map key %s when merging JSON", k)
+		}
+		m2[k] = message
+	}
+
+	return json.Marshal(m2)
 }

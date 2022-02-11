@@ -45,6 +45,8 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
+
+	db ormdb.ModuleDB
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -73,6 +75,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
+
+	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
 
 	return s
 }
