@@ -20,7 +20,7 @@ const (
 func TxTakeFromBasket() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "take-from-basket [owner] [basket_denom] [amount]",
-		Short: "takes credits from a basket",
+		Short: "Takes credits from a basket",
 		Long: strings.TrimSpace(`takes credits from a basket starting from the oldest credits first.
 
 Parameters:
