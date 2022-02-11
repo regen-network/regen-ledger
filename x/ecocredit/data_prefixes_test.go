@@ -1,4 +1,4 @@
-package server
+package ecocredit
 
 import (
 	"testing"
@@ -11,7 +11,7 @@ import (
 var addr = sdk.AccAddress(ed25519.GenPrivKey().PubKey().Address())
 
 func TestKeys(t *testing.T) {
-	batchDenom := batchDenomT("testing-denom")
+	batchDenom := BatchDenomT("testing-denom")
 
 	// tradable-balance-key
 	key := TradableBalanceKey(addr, batchDenom)
