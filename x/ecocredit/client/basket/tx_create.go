@@ -24,8 +24,8 @@ const (
 	FlagCreditTypeName    = "credit-type-name"
 	FlagAllowedClasses    = "allowed-classes"
 	FlagMinimumStartDate  = "minimum-start-date"
-	//FlagStartDateWindow   = "start-date-window"
-	FlagBasketFee = "basket-fee"
+	FlagStartDateWindow   = "start-date-window"
+	FlagBasketFee         = "basket-fee"
 )
 
 func TxCreateBasket() *cobra.Command {
@@ -119,33 +119,39 @@ Flags:
 				return fmt.Errorf("both min-start-date and start-date-window cannot be set")
 			}
 
-			var minStartDate *types.Timestamp
+			dateCriteria := basket.DateCriteria{}
+
 			if minStartDateString != "" {
 				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
 				if err != nil {
 					return fmt.Errorf("failed to parse min_start_date: %w", err)
 				}
-				minStartDate, err = types.TimestampProto(minStartDateTime)
+				minStartDate, err := types.TimestampProto(minStartDateTime)
 				if err != nil {
 					return fmt.Errorf("failed to parse min_start_date: %w", err)
 				}
+				dateCriteria.Sum = &basket.DateCriteria_MinStartDate{
+					MinStartDate: minStartDate,
+				}
 			}
 
-			//var startDateWindow *types.Duration
-			//if startDateWindowString != "" {
-			//	startDateWindowInt, err := cmd.Flags().GetInt64(FlagMinimumStartDate)
-			//	if err != nil {
-			//		return err
-			//	}
-			//	startDateWindowDuration := time.Duration(startDateWindowInt)
-			//	if err != nil {
-			//		return fmt.Errorf("failed to parse start-date-window: %w", err)
-			//	}
-			//	startDateWindow = types.DurationProto(startDateWindowDuration)
-			//	if err != nil {
-			//		return fmt.Errorf("failed to parse start-date-window: %w", err)
-			//	}
-			//}
+			if startDateWindowString != "" {
+				startDateWindowInt, err := cmd.Flags().GetInt64(FlagMinimumStartDate)
+				if err != nil {
+					return err
+				}
+				startDateWindowDuration := time.Duration(startDateWindowInt)
+				if err != nil {
+					return fmt.Errorf("failed to parse start-date-window: %w", err)
+				}
+				startDateWindow := types.DurationProto(startDateWindowDuration)
+				if err != nil {
+					return fmt.Errorf("failed to parse start-date-window: %w", err)
+				}
+				dateCriteria.Sum = &basket.DateCriteria_StartDateWindow{
+					StartDateWindow: startDateWindow,
+				}
+			}
 
 			feeString, err := cmd.Flags().GetString(FlagBasketFee)
 			if err != nil {
@@ -164,7 +170,7 @@ Flags:
 				DisableAutoRetire: disableAutoRetire,
 				CreditTypeName:    creditTypeName,
 				AllowedClasses:    allowedClasses,
-				MinStartDate:      minStartDate,
+				DateCriteria:      &dateCriteria,
 				Fee:               fee,
 			}
 
@@ -179,7 +185,14 @@ Flags:
 	flags.AddTxFlagsToCmd(cmd)
 
 	// command flags
-	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking credits from the basket")
+	cmd.Flags().String(FlagDisplayName, "", "the name used to create a bank denom display name")
+	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
+	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
+	cmd.Flags().String(FlagCreditTypeName, "", "filters against credits from this credit type name (e.g. \"carbon\")")
+	cmd.Flags().String(FlagAllowedClasses, "", "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
+	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
+	cmd.Flags().String(FlagStartDateWindow, "", "sets a cutoff for batch start dates when adding new credits to the basket (e.g. \"1325404800\")")
+	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")
 
 	// required flags
 	cmd.MarkFlagRequired(FlagDisplayName)
