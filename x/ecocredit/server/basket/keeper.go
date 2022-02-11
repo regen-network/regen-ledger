@@ -19,7 +19,7 @@ type Keeper struct {
 	bankKeeper        BankKeeper
 	ecocreditKeeper   EcocreditKeeper
 	moduleAccountName string
-	storeKey        sdk.StoreKey
+	storeKey          sdk.StoreKey
 }
 
 var _ baskettypes.MsgServer = Keeper{}

@@ -97,7 +97,8 @@ func setup(t *testing.T) *suite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, ecocredit.ModuleName)
+	sk := sdk.NewKVStoreKey("test")
+	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, sk, ecocredit.ModuleName)
 
 	s.acct = sdk.AccAddress{0, 1, 2, 3, 4, 5}
 
