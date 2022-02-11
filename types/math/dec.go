@@ -120,58 +120,6 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
-type RoundingMode string
-
-const (
-	// RoundDefault using the default RoundHalfUp rounding.
-	RoundDefault RoundingMode = ""
-
-	// RoundDown rounds toward 0; truncate.
-	RoundDown RoundingMode = apd.RoundDown
-	// RoundHalfUp rounds up if the digits are >= 0.5.
-	RoundHalfUp RoundingMode = apd.RoundHalfUp
-	// RoundHalfEven rounds up if the digits are > 0.5. If the digits are equal
-	// to 0.5, it rounds up if the previous digit is odd, always producing an
-	// even digit.
-	RoundHalfEven RoundingMode = apd.RoundHalfEven
-	// RoundCeiling towards +Inf: rounds up if digits are > 0 and the number
-	// is positive.
-	RoundCeiling RoundingMode = apd.RoundCeiling
-	// RoundFloor towards -Inf: rounds up if digits are > 0 and the number
-	// is negative.
-	RoundFloor RoundingMode = apd.RoundFloor
-	// RoundHalfDown rounds up if the digits are > 0.5.
-	RoundHalfDown RoundingMode = apd.RoundHalfDown
-	// RoundUp rounds away from 0.
-	RoundUp RoundingMode = apd.RoundUp
-	// Round05Up rounds zero or five away from 0; same as round-up, except that
-	// rounding up only occurs if the digit to be rounded up is 0 or 5.
-	Round05Up RoundingMode = apd.Round05Up
-)
-
-func (x Dec) QuoPrec(y Dec, precision uint32, mode RoundingMode) (Dec, error) {
-	ctx := apd.Context{
-		Precision:   precision,
-		MaxExponent: apd.MaxExponent,
-		MinExponent: apd.MinExponent,
-		Traps:       apd.DefaultTraps,
-		Rounding:    string(mode),
-	}
-	var z Dec
-	_, err := ctx.Quo(&z.dec, &x.dec, &y.dec)
-	return z, errors.Wrap(err, "decimal quotient error")
-}
-
-// QuoExact is a version of Quo that returns an error if any rounding occurred.
-func (x Dec) QuoExact(y Dec) (Dec, error) {
-	var z Dec
-	condition, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
-	if condition.Rounded() {
-		return z, errors.Wrap(err, "exact decimal quotient error")
-	}
-	return z, errors.Wrap(err, "decimal quotient error")
-}
-
 func (x Dec) MulExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
@@ -206,19 +154,6 @@ func (x Dec) Mul(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
 	return z, errors.Wrap(err, "decimal multiplication error")
-}
-
-func (x Dec) MulPrec(y Dec, precision uint32, mode RoundingMode) (Dec, error) {
-	ctx := apd.Context{
-		Precision:   precision,
-		MaxExponent: apd.MaxExponent,
-		MinExponent: apd.MinExponent,
-		Traps:       apd.DefaultTraps,
-		Rounding:    string(mode),
-	}
-	var z Dec
-	_, err := ctx.Mul(&z.dec, &x.dec, &y.dec)
-	return z, errors.Wrap(err, "decimal quotient error")
 }
 
 func (x Dec) Int64() (int64, error) {
