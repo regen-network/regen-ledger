@@ -3719,12 +3719,13 @@ type MsgCreate struct {
 	// basket token.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// exponent is the exponent that will be used for converting credits to basket
-	// tokens and for bank denom metadata. An exponent of 6 will mean that 10^6
-	// units of a basket token will be issued for 1.0 credits and that
-	// this should be displayed as one unit in user interfaces. The exponent
-	// must be >= the precision of the credit type to minimize the need for
-	// rounding (rounding may still be needed if the precision changes to be greater
-	// than the exponent).
+	// tokens and for bank denom metadata. It also limits the precision of
+	// credit amounts when putting credits into a basket. An exponent of 6 will
+	// mean that 10^6 units of a basket token will be issued for 1.0 credits and that
+	// this should be displayed as one unit in user interfaces. It also means
+	// that the maximum precision of credit amounts is 6 decimal places so that
+	// the need to round is eliminated. The exponent must be >= the precision of
+	// the credit type at the time the basket is created.
 	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"`
 	// disable_auto_retire allows auto-retirement to be disabled.
 	// The credits will be auto-retired if disable_auto_retire is

@@ -337,16 +337,21 @@ func (this BasketBalanceBasketIdBatchDenomIndexKey) WithBasketIdBatchDenom(baske
 	return this
 }
 
-type BasketBalanceBatchStartDateIndexKey struct {
+type BasketBalanceBasketIdBatchStartDateIndexKey struct {
 	vs []interface{}
 }
 
-func (x BasketBalanceBatchStartDateIndexKey) id() uint32             { return 1 }
-func (x BasketBalanceBatchStartDateIndexKey) values() []interface{}  { return x.vs }
-func (x BasketBalanceBatchStartDateIndexKey) basketBalanceIndexKey() {}
+func (x BasketBalanceBasketIdBatchStartDateIndexKey) id() uint32             { return 1 }
+func (x BasketBalanceBasketIdBatchStartDateIndexKey) values() []interface{}  { return x.vs }
+func (x BasketBalanceBasketIdBatchStartDateIndexKey) basketBalanceIndexKey() {}
 
-func (this BasketBalanceBatchStartDateIndexKey) WithBatchStartDate(batch_start_date *timestamppb.Timestamp) BasketBalanceBatchStartDateIndexKey {
-	this.vs = []interface{}{batch_start_date}
+func (this BasketBalanceBasketIdBatchStartDateIndexKey) WithBasketId(basket_id uint64) BasketBalanceBasketIdBatchStartDateIndexKey {
+	this.vs = []interface{}{basket_id}
+	return this
+}
+
+func (this BasketBalanceBasketIdBatchStartDateIndexKey) WithBasketIdBatchStartDate(basket_id uint64, batch_start_date *timestamppb.Timestamp) BasketBalanceBasketIdBatchStartDateIndexKey {
+	this.vs = []interface{}{basket_id, batch_start_date}
 	return this
 }
 
