@@ -19,7 +19,8 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 func (s serverImpl) tradableSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		store := ctx.KVStore(s.storeKey)
-		basketBalances := s.getBasketBalanceMap(ctx.Context())
+		goCtx := sdk.WrapSDKContext(ctx)
+		basketBalances := s.getBasketBalanceMap(goCtx)
 		return tradableSupplyInvariant(store, basketBalances)
 	}
 }
