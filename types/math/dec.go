@@ -90,6 +90,7 @@ func NewDecFromInt64(x int64) Dec {
 	return res
 }
 
+// NewDecFinite returns a decimal with a value of (10 * coeff)^exp.
 func NewDecFinite(coeff int64, exp int32) Dec {
 	var res Dec
 	res.dec.SetFinite(coeff, exp)
@@ -120,6 +121,7 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
+// MulExact returns a new dec with value x * y. The product must not round, else an error will be returned.
 func (x Dec) MulExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)

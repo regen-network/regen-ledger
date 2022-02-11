@@ -167,7 +167,7 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 // calculateTokens calculates the tokens to award to the depositor
 func calculateTokens(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
 	var coins sdk.Coins
-	multiplier := regenmath.NewDecFinite(10, int32(exp))
+	multiplier := regenmath.NewDecFinite(1, int32(exp))
 	tokenAmt, err := multiplier.MulExact(creditAmt)
 	if err != nil {
 		return coins, err
