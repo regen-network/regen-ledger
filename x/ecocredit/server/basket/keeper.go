@@ -41,7 +41,6 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
-	// add additional keeper methods here
 }
 
 // BankKeeper abstracts over methods that the main bank keeper
