@@ -399,5 +399,5 @@ include sims.mk
 mocks:
 	mkdir -p x/ecocredit/server/basket/mocks
 	go install github.com/golang/mock/mockgen@latest
-	mockgen -source=x/ecocredit/server/basket/server.go -package mocks -destination x/ecocredit/server/basket/mocks/server.go
+	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
 .PHONY: mocks
