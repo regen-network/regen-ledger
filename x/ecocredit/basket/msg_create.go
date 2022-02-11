@@ -84,7 +84,7 @@ func validateDateCriteria(d *DateCriteria) error {
 		return nil
 	}
 	if x := d.GetMinStartDate(); x != nil {
-		if x.Seconds < -2208992400 { // batch older than 1900-01-01 is an obvous error
+		if x.Seconds < -2208992400 { // batch older than 1900-01-01 is an obvious error
 			return errBadReq.Wrap("date_criteria.min_start_date must be after 1900-01-01")
 		}
 	} else if x := d.GetStartDateWindow(); x != nil {
