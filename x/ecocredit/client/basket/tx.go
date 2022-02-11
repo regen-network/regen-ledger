@@ -27,9 +27,10 @@ Parameters:
 		basket_denom: denom identifying basket from which we redeem credits.
 		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
-        from: account address of the owner of the basket.
+```suggestion
+		from: account address of the owner of the basket.
 		retirement-location: retirement location is the optional retirement location for the credits
-		                    which will be used only if --retire-on-take flag is true.
+				which will be used only if --retire-on-take flag is true.
 		retire-on-take: retire on take is a boolean that dictates whether the ecocredits
 		                received in exchange for the basket tokens will be received as
 		                retired or tradable credits.
