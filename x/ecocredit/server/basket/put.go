@@ -17,7 +17,10 @@ import (
 )
 
 func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.MsgPutResponse, error) {
-	ownerAddr, _ := sdk.AccAddressFromBech32(req.Owner)
+	ownerAddr, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, err
+	}
 
 	// get the basket
 	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
