@@ -17,7 +17,7 @@ func QueryBasketCmd() *cobra.Command {
 		Use:     "basket [basket-denom]",
 		Short:   "Gets the info for a basket",
 		Long:    "Retrieves the information for a basket given a specific basket denom",
-		Example: "regen q ecocredit basket BASKET",
+		Example: "regen q ecocredit basket SOMEBASKET",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
