@@ -10,14 +10,18 @@ import (
 
 var _ legacytx.LegacyMsg = &MsgPut{}
 
+// Route implements LegacyMsg.
 func (m MsgPut) Route() string { return sdk.MsgTypeURL(&m) }
 
+// Type implements LegacyMsg.
 func (m MsgPut) Type() string { return sdk.MsgTypeURL(&m) }
 
+// GetSignBytes implements LegacyMsg.
 func (m MsgPut) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgPut) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
@@ -41,6 +45,7 @@ func (m MsgPut) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCreate.
 func (m MsgPut) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
