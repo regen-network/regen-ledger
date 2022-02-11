@@ -35,8 +35,7 @@ func TestKeeper_Basket(t *testing.T) {
 	// add a basket
 	basketDenom := "foo"
 	batchDenom := "bar"
-	balance := "5.3"
-	id, err := stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	_, err = stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
@@ -46,7 +45,7 @@ func TestKeeper_Basket(t *testing.T) {
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
-	require.Equal(t, basketDenom, res.BasketDenom)
+	require.Equal(t, basketDenom, res.Basket.BasketDenom)
 
 	// bad query
 	res, err = k.Basket(ctx, &baskettypes.QueryBasketRequest{
