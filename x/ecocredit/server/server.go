@@ -34,6 +34,8 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
+
+	basketKeeper basket.Keeper
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -79,7 +81,6 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	if err != nil {
 		panic(err)
 	}
-
-	_ = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
+	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
 	// TODO Msg and Query server registration
 }

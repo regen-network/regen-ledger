@@ -32,10 +32,11 @@ func TestTradableSupplyInvariants(t *testing.T) {
 	acc2 := sdk.AccAddress([]byte("account2"))
 
 	testCases := []struct {
-		msg       string
-		balances  []*ecocredit.Balance
-		supply    []*ecocredit.Supply
-		expBroken bool
+		msg           string
+		balances      []*ecocredit.Balance
+		supply        []*ecocredit.Supply
+		basketBalance map[string]math.Dec
+		expBroken     bool
 	}{
 		{
 			"valid test case",
@@ -59,10 +60,11 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310",
+					TradableSupply: "320",
 					RetiredSupply:  "210",
 				},
 			},
+			map[string]math.Dec{"1/2": math.NewDecFromInt64(10)},
 			false,
 		},
 		{
@@ -87,15 +89,16 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310.579",
+					TradableSupply: "320.579",
 					RetiredSupply:  "0",
 				},
 				{
 					BatchDenom:     "3/4",
-					TradableSupply: "210.456",
+					TradableSupply: "220.456",
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{"1/2": math.NewDecFromInt64(10), "3/4": math.NewDecFromInt64(10)},
 			false,
 		},
 		{
@@ -124,6 +127,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{},
 			true,
 		},
 		{
@@ -148,7 +152,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310.57",
+					TradableSupply: "325.57",
 					RetiredSupply:  "0",
 				},
 				{
@@ -157,6 +161,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{},
 			true,
 		},
 	}
@@ -171,7 +176,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 
 			initSupply(t, store, tc.supply)
 
-			msg, broken := tradableSupplyInvariant(store)
+			msg, broken := tradableSupplyInvariant(store, tc.basketBalance)
 			if tc.expBroken {
 				require.True(t, broken, msg)
 			} else {
