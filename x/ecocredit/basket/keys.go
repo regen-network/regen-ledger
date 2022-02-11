@@ -2,4 +2,4 @@ package basket
 
 import "github.com/regen-network/regen-ledger/x/ecocredit"
 
-const BasketModuleName = ecocredit.ModuleName + "-basket"
+const BasketSubModuleName = ecocredit.ModuleName + "-basket"
