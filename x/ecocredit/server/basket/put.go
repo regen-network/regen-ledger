@@ -36,7 +36,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		batchInfo := res.Info
 
 		// validate that the credit batch adheres to the basket's specifications
-		if err := k.validateCredit(ctx, basket, batchInfo); err != nil {
+		if err := k.canBasketAcceptCredit(ctx, basket, batchInfo); err != nil {
 			return nil, err
 		}
 		// get the amount of credits in dec
@@ -45,46 +45,48 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			return nil, err
 		}
 		// update the user and basket balances
-		if err = k.updateBalances(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
+		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
-		tokens, err := calculateTokens(amt, basket.Exponent, basket.BasketDenom)
+		tokens, err := creditAmountToBasketCoins(amt, basket.Exponent, basket.BasketDenom)
 		if err != nil {
 			return nil, err
 		}
 		// update the total amount received so far
 		amountReceived = amountReceived.Add(tokens[0].Amount)
-		// mint and send tokens to depositor
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, tokens); err != nil {
-			return nil, err
-		}
-		if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, tokens); err != nil {
-			return nil, err
-		}
 	}
+
+	// mint and send tokens to depositor
+	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, coinsToSend); err != nil {
+		return nil, err
+	}
+	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, coinsToSend); err != nil {
+		return nil, err
+	}
+
 	return &baskettypes.MsgPutResponse{AmountReceived: amountReceived.String()}, nil
 }
 
-// validateCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:
+// canBasketAcceptCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 
 	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
 		// check time window match
 		var minStartDate time.Time
-		switch basket.DateCriteria.Sum.(type) {
+		switch criteria := basket.DateCriteria.Sum.(type) {
 		case *basketv1.DateCriteria_MinStartDate:
-			min := basket.DateCriteria.Sum.(*basketv1.DateCriteria_MinStartDate).MinStartDate
-			minStartDate = min.AsTime()
+			minStartDate = criteria.MinStartDate.AsTime()
 		case *basketv1.DateCriteria_StartDateWindow:
-			window := basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.AsDuration()
-			minStartDate = blockTime.Add(window)
+			window := criteria.StartDateWindow.AsDuration()
+			minStartDate = blockTime.Add(-window)
 		}
 
 		if batchInfo.StartDate.Before(minStartDate) {
@@ -116,8 +118,8 @@ func (k Keeper) validateCredit(ctx context.Context, basket *basketv1.Basket, bat
 	return nil
 }
 
-// updateBalances updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
-func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+// transferToBasket updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(k.storeKey)
 
@@ -164,8 +166,8 @@ func (k Keeper) updateBalances(ctx context.Context, sender sdk.AccAddress, amt r
 	return nil
 }
 
-// calculateTokens calculates the tokens to award to the depositor
-func calculateTokens(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
+// creditAmountToBasketCoins calculates the tokens to award to the depositor
+func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string) (sdk.Coins, error) {
 	var coins sdk.Coins
 	multiplier := regenmath.NewDecFinite(1, int32(exp))
 	tokenAmt, err := multiplier.MulExact(creditAmt)

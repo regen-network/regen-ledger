@@ -89,8 +89,8 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	var dur time.Duration = -500000000000000000
-	validStartDateWindow := startDate.Add(dur)
+	var dur time.Duration = 500000000000000000
+	validStartDateWindow := startDate.Add(-dur)
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom2	,
 		DisableAutoRetire: true,
@@ -307,8 +307,8 @@ func TestPut(t *testing.T) {
 			expectedAward: "2000000", // 2 million
 			expectCalls: func() {
 				badTimeInfo := *batchInfoRes.Info
-				bogusDur := time.Duration(-999999999999999)
-				badTime := validStartDateWindow.Add(bogusDur)
+				bogusDur := time.Duration(999999999999999)
+				badTime := validStartDateWindow.Add(-bogusDur)
 				badTimeInfo.StartDate = &badTime
 				ecocreditKeeper.EXPECT().
 					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
