@@ -71,6 +71,7 @@ func RetiredSupplyKey(batchDenom BatchDenomT) []byte {
 	return append(key, batchDenom...)
 }
 
+// GetDecimal retrieves a decimal by `key` from the given `store`
 func GetDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	bz := store.Get(key)
 	if bz == nil {
@@ -85,6 +86,7 @@ func GetDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	return value, nil
 }
 
+// SetDecimal stores a decimal by `key` in the given `store`
 func SetDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	// always remove all trailing zeros for canonical representation
 	value, _ = value.Reduce()
@@ -97,6 +99,7 @@ func SetDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	}
 }
 
+// AddAndSetDecimal retrieves a decimal from the given key, adds it to x, and saves it.
 func AddAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := GetDecimal(store, key)
 	if err != nil {
@@ -112,6 +115,7 @@ func AddAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	return nil
 }
 
+// SubAndSetDecimal retrieves a decimal from the given key, subtracts x from it, and saves it.
 func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := GetDecimal(store, key)
 	if err != nil {
@@ -131,6 +135,7 @@ func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	return nil
 }
 
+// IterateSupplies iterates over supplies and calls the specified callback function `cb`
 func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
 	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
 	defer iter.Close()
@@ -147,6 +152,7 @@ func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 	return nil
 }
 
+// IterateBalances iterates over balances and calls the specified callback function `cb`
 func IterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
 	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
 	defer iter.Close()

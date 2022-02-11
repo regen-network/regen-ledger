@@ -46,7 +46,7 @@ func TestPut(t *testing.T) {
 		Metadata:   nil,
 		CreditType: &ecocredit.CreditType{
 			Name:         "carbon",
-			Abbreviation: "C01",
+			Abbreviation: "C",
 			Unit:         "many carbons",
 			Precision:    6,
 		},
