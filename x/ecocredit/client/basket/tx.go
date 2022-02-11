@@ -25,7 +25,7 @@ func TxTakeFromBasket() *cobra.Command {
 
 Parameters:
 		owner: account address of the owner of the basket.
-		Note, the'--from' flag is ignored as it is implied from [owner]
+		Note, the '--from' flag is ignored as it is implied from [owner]
 		basket_denom: basket denom is the basket denom to take credits from.
 		amount: amount is the integer number of basket tokens to convert into credits.
 Flags:
