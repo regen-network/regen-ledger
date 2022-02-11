@@ -2,64 +2,85 @@ package basket
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/gogo/protobuf/types"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	keeper "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 const (
+	FlagDisplayName       = "display-name"
+	FlagExponent          = "exponent"
 	FlagDisableAutoRetire = "disable-auto-retire"
+	FlagCreditTypeName    = "credit-type-name"
+	FlagAllowedClasses    = "allowed-classes"
+	FlagMinimumStartDate  = "minimum-start-date"
+	//FlagStartDateWindow   = "start-date-window"
+	FlagBasketFee = "basket-fee"
 )
 
 func TxCreateBasket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-basket [curator] [name] [display_name] [exponent] [credit_type_name] [allowed_classes] [min_start_date]",
-		Short: "Creates a basket",
-		Long: strings.TrimSpace(`Creates a basket
+		Use:   "create-basket [name]",
+		Short: "Creates a bank denom that wraps credits",
+		Long: strings.TrimSpace(`Creates a bank denom that wraps credits
+
 Parameters:
-		curator: the account address of the curator of the basket.
-			Note, the '--from' flag is ignored as it is implied from [curator]
 		name: the name used to create a bank denom for this basket token.
-		display_name: the name used to create a bank Metadata display name.
-		exponent: the exponent that will be used for converting credits to basket tokens
-			and for bank denom metadata. It also limits the precision of credit amounts
+
+Flags:
+		display_name: the name used to create a bank denom display name.
+		exponent: the exponent used for converting credits to basket tokens and for bank
+			denom metadata. The exponent also limits the precision of credit amounts
 			when putting credits into a basket. An exponent of 6 will mean that 10^6 units
 			of a basket token will be issued for 1.0 credits and that this should be
 			displayed as one unit in user interfaces. It also means that the maximum
 			precision of credit amounts is 6 decimal places so that the need to round is
 			eliminated. The exponent must be >= the precision of the credit type at the
 			time the basket is created.
-		credit_type_name: filters against credits from this credit type name.
-		allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
-			the basket. Example: "C01,C02,B01"
-		min_start_date: the earliest start date for batches of credits allowed into the basket.
-		fee: the fee that the curator will pay to create the basket. It must be >= the required
-			Params.basket_creation_fee. We include the fee explicitly here so that the curator
-			explicitly acknowledges paying this fee and is not surprised to learn that the paid
-			a big fee and didn't know beforehand.
-Flags:
 		disable_auto_retire: disables the auto-retirement of credits upon taking credits
 			from the basket. The credits will be auto-retired if disable_auto_retire is
 			false unless the credits were previously put into the basket by the address
 			picking them from the basket, in which case they will remain tradable.
+		credit_type_name: filters against credits from this credit type name (e.g. "carbon").
+		allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
+			the basket (e.g. "C01,C02").
+		min_start_date: the earliest start date for batches of credits allowed into the basket.
+			Note: either min_start_date or start-date-window is required and not both.
+		start-date-window: the duration of time measured into the past which sets a cutoff for
+			batch start dates when adding new credits to the basket.
+			Note: either min_start_date or start-date-window is required and not both.
+		basket_fee: the fee that the curator will pay to create the basket. It must be >= the
+			required Params.basket_creation_fee. We include the fee explicitly here so that the
+			curator explicitly acknowledges paying this fee and is not surprised to learn that the
+			paid a big fee and didn't know beforehand.
 		`),
-		Args: cobra.ExactArgs(7),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Flags().Set(flags.FlagFrom, args[0])
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			exponent, err := strconv.ParseUint(args[3], 10, 32)
+			displayName, err := cmd.Flags().GetString(FlagDisplayName)
+			if err != nil {
+				return err
+			}
+
+			exponentString, err := cmd.Flags().GetString(FlagExponent)
+			if err != nil {
+				return err
+			}
+			exponent, err := strconv.ParseUint(exponentString, 10, 32)
 			if err != nil {
 				return err
 			}
@@ -69,25 +90,82 @@ Flags:
 				return err
 			}
 
-			classes := strings.Split(args[5], ",")
-			for i := range classes {
-				classes[i] = strings.TrimSpace(classes[i])
-			}
-
-			coins, err := sdk.ParseCoinsNormalized(args[6])
+			creditTypeName, err := cmd.Flags().GetString(FlagCreditTypeName)
 			if err != nil {
-				return fmt.Errorf("failed to parse coins: %w", err)
+				return err
 			}
 
-			msg := keeper.MsgCreate{
+			allowedClassesString, err := cmd.Flags().GetString(FlagAllowedClasses)
+			if err != nil {
+				return err
+			}
+			allowedClasses := strings.Split(allowedClassesString, ",")
+			for i := range allowedClasses {
+				allowedClasses[i] = strings.TrimSpace(allowedClasses[i])
+			}
+
+			minStartDateString, err := cmd.Flags().GetString(FlagMinimumStartDate)
+			if err != nil {
+				return err
+			}
+			startDateWindowString, err := cmd.Flags().GetString(FlagMinimumStartDate)
+			if err != nil {
+				return err
+			}
+
+			if minStartDateString == "" && startDateWindowString == "" {
+				return fmt.Errorf("either min-start-date or start-date-window required")
+			} else if minStartDateString != "" && startDateWindowString != "" {
+				return fmt.Errorf("both min-start-date and start-date-window cannot be set")
+			}
+
+			var minStartDate *types.Timestamp
+			if minStartDateString != "" {
+				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
+				if err != nil {
+					return fmt.Errorf("failed to parse min_start_date: %w", err)
+				}
+				minStartDate, err = types.TimestampProto(minStartDateTime)
+				if err != nil {
+					return fmt.Errorf("failed to parse min_start_date: %w", err)
+				}
+			}
+
+			//var startDateWindow *types.Duration
+			//if startDateWindowString != "" {
+			//	startDateWindowInt, err := cmd.Flags().GetInt64(FlagMinimumStartDate)
+			//	if err != nil {
+			//		return err
+			//	}
+			//	startDateWindowDuration := time.Duration(startDateWindowInt)
+			//	if err != nil {
+			//		return fmt.Errorf("failed to parse start-date-window: %w", err)
+			//	}
+			//	startDateWindow = types.DurationProto(startDateWindowDuration)
+			//	if err != nil {
+			//		return fmt.Errorf("failed to parse start-date-window: %w", err)
+			//	}
+			//}
+
+			feeString, err := cmd.Flags().GetString(FlagBasketFee)
+			if err != nil {
+				return err
+			}
+			fee, err := sdk.ParseCoinsNormalized(feeString)
+			if err != nil {
+				return fmt.Errorf("failed to parse basket_fee: %w", err)
+			}
+
+			msg := basket.MsgCreate{
 				Curator:           clientCtx.FromAddress.String(),
-				Name:              args[1],
-				DisplayName:       args[2],
+				Name:              args[0],
+				DisplayName:       displayName,
 				Exponent:          uint32(exponent),
 				DisableAutoRetire: disableAutoRetire,
-				CreditTypeName:    args[4],
-				AllowedClasses:    classes,
-				Fee:               coins,
+				CreditTypeName:    creditTypeName,
+				AllowedClasses:    allowedClasses,
+				MinStartDate:      minStartDate,
+				Fee:               fee,
 			}
 
 			if err := msg.ValidateBasic(); err != nil {
@@ -99,7 +177,16 @@ Flags:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+
+	// command flags
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking credits from the basket")
+
+	// required flags
+	cmd.MarkFlagRequired(FlagDisplayName)
+	cmd.MarkFlagRequired(FlagExponent)
+	cmd.MarkFlagRequired(FlagCreditTypeName)
+	cmd.MarkFlagRequired(FlagAllowedClasses)
+	cmd.MarkFlagRequired(FlagBasketFee)
 
 	return cmd
 }
