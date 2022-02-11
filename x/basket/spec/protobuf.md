@@ -6,6 +6,7 @@
 
 - [regen/ecocredit/basket/v1/types.proto](#regen/ecocredit/basket/v1/types.proto)
     - [BasketCredit](#regen.ecocredit.basket.v1.BasketCredit)
+    - [DateCriteria](#regen.ecocredit.basket.v1.DateCriteria)
   
 - [regen/ecocredit/basket/v1/tx.proto](#regen/ecocredit/basket/v1/tx.proto)
     - [MsgCreate](#regen.ecocredit.basket.v1.MsgCreate)
@@ -43,6 +44,22 @@ BasketCredit represents the information for a credit batch inside a basket.
 
 
 
+
+<a name="regen.ecocredit.basket.v1.DateCriteria"></a>
+
+### DateCriteria
+DateCriteria represents a basket credit batch date criteria.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| min_start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | min_start_date is the earliest start date for batches of credits allowed into the basket. |
+| start_date_window | [google.protobuf.Duration](#google.protobuf.Duration) |  | start_date_window is a duration of time measured into the past which sets a cutoff for batch start dates when adding new credits to the basket. Based on the current block timestamp, credits whose start date is before `block_timestamp - batch_date_window` will not be allowed into the basket. |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -71,11 +88,11 @@ MsgCreateBasket is the Msg/CreateBasket request type.
 | curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
 | name | [string](#string) |  | name will be used to create a bank denom for this basket token. |
 | display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token. |
-| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for converting credits to basket tokens and for bank denom metadata. An exponent of 6 will mean that 10^6 units of a basket token will be issued for 1.0 credits and that this should be displayed as one unit in user interfaces. The exponent must be >= the precision of the credit type to minimize the need for rounding (rounding may still be needed if the precision changes to be great than the exponent). |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for converting credits to basket tokens and for bank denom metadata. It also limits the precision of credit amounts when putting credits into a basket. An exponent of 6 will mean that 10^6 units of a basket token will be issued for 1.0 credits and that this should be displayed as one unit in user interfaces. It also means that the maximum precision of credit amounts is 6 decimal places so that the need to round is eliminated. The exponent must be >= the precision of the credit type at the time the basket is created. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
 | credit_type_name | [string](#string) |  | credit_type_name filters against credits from this credit type name. |
 | allowed_classes | [string](#string) | repeated | allowed_classes are the credit classes allowed to be put in the basket |
-| min_start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | min_start_date is the earliest start date for batches of credits allowed into the basket. |
+| date_criteria | [DateCriteria](#regen.ecocredit.basket.v1.DateCriteria) |  | date_criteria is the date criteria for batches admitted to the basket. |
 | fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | fee is the fee that the curator will pay to create the basket. It must be >= the required Params.basket_creation_fee. We include the fee explicitly here so that the curator explicitly acknowledges paying this fee and is not surprised to learn that the paid a big fee and didn't know beforehand. |
 
 
