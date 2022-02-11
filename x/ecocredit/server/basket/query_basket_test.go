@@ -35,7 +35,7 @@ func TestKeeper_Basket(t *testing.T) {
 	// add a basket
 	basketDenom := "foo"
 	batchDenom := "bar"
-	_, err = stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	err = stateStore.BasketStore().Insert(ctx, &basketv1.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
