@@ -41,6 +41,7 @@ func TradableBalanceKey(acc sdk.AccAddress, denom BatchDenomT) []byte {
 }
 
 // ParseBalanceKey parses the recipient address and batch-denom from tradable or retired balance key.
+// Balance keys take the following form: <storage prefix 1 byte><addr length 1 byte><addr><batchDenom>
 func ParseBalanceKey(key []byte) (sdk.AccAddress, BatchDenomT) {
 	addrLen := key[1]
 	addr := sdk.AccAddress(key[2 : 2+addrLen])

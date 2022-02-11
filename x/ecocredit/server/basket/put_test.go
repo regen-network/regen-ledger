@@ -153,11 +153,11 @@ func TestPut(t *testing.T) {
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(2_000_000)))
 				bankKeeper.EXPECT().
-					MintCoins(sdkCtx, ecocredit.ModuleName, coinAward).
+					MintCoins(sdkCtx, basket2.BasketModuleName, coinAward).
 					Return(nil)
 
 				bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, addr, coinAward).
+					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketModuleName, addr, coinAward).
 					Return(nil)
 			},
 		},
@@ -181,11 +181,11 @@ func TestPut(t *testing.T) {
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom2, sdk.NewInt(2_000_000)))
 				bankKeeper.EXPECT().
-					MintCoins(sdkCtx, ecocredit.ModuleName, coinAward).
+					MintCoins(sdkCtx, basket2.BasketModuleName, coinAward).
 					Return(nil)
 
 				bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, addr, coinAward).
+					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketModuleName, addr, coinAward).
 					Return(nil)
 			},
 		},
