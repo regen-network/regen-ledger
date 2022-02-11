@@ -61,11 +61,11 @@ func (m MsgCreate) ValidateBasic() error {
 func (m MsgCreate) Validate(minFee sdk.Coins) error {
 	// Note if user is adding too much denoms then we fails as well.
 	if len(minFee) != len(m.Fee) {
-		return errBadReq.Wrap("Wrong denom set, expected %v", m.Fee)
+		return errBadReq.Wrapf("Wrong denom set, expected %v", m.Fee)
 	}
 	for i, c := range m.Fee.Sort() {
-		if minFee[i].Denom != c.Denom || minFee[i].Amount > c.Amount {
-			return errBadReq.Wrap("Wrong denom set, expected %v", m.Fee)
+		if minFee[i].Denom != c.Denom || minFee[i].Amount.GT(c.Amount) {
+			return errBadReq.Wrapf("Wrong denom set, expected %v", m.Fee)
 		}
 	}
 	return nil
