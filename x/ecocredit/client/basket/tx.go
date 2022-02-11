@@ -27,7 +27,6 @@ Parameters:
 		basket_denom: denom identifying basket from which we redeem credits.
 		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
-```suggestion
 		from: account address of the owner of the basket.
 		retirement-location: retirement location is the optional retirement location for the credits
 				which will be used only if --retire-on-take flag is true.
