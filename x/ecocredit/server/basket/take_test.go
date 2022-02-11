@@ -1,11 +1,8 @@
 package basket_test
 
 import (
-	"os"
 	"testing"
 	"time"
-
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 
 	"github.com/regen-network/regen-ledger/types/math"
 
@@ -76,12 +73,6 @@ func TestTake(t *testing.T) {
 		BatchStartDate: timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 
-	jt := ormjson.NewRawMessageTarget()
-	assert.NilError(t, db.ExportJSON(ctx, jt))
-	bz, err := jt.JSON()
-	assert.NilError(t, err)
-	assert.NilError(t, os.WriteFile("testdata/take.json", bz, 644))
-
 	// setup test keeper
 	ctrl := gomock.NewController(t)
 	assert.NilError(t, err)
@@ -105,8 +96,8 @@ func TestTake(t *testing.T) {
 	fooCoins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(6000000)))
 	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), acct, moduleAccountName, fooCoins)
 	bankKeeper.EXPECT().BurnCoins(gomock.Any(), moduleAccountName, fooCoins)
-	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C2", math.NewDecFromInt64(5), true, "US")
-	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C1", math.NewDecFromInt64(1), true, "US")
+	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C2", math.MatchEq(math.NewDecFromInt64(5)), true, "US")
+	ecocreditKeeper.EXPECT().AddCreditBalance(gomock.Any(), acct, "C1", math.MatchEq(math.NewDecFromInt64(1)), true, "US")
 
 	res, err := k.Take(ctx, &baskettypes.MsgTake{
 		Owner:              acct.String(),
@@ -117,4 +108,8 @@ func TestTake(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
+	assert.Equal(t, "C2", res.Credits[0].BatchDenom)
+	assert.Assert(t, "5.0", res.Credits[0].Amount)
+	assert.Equal(t, "C1", res.Credits[1].BatchDenom)
+	assert.Equal(t, "1.0", res.Credits[1].Amount)
 }

@@ -2,6 +2,7 @@ package basket
 
 import (
 	"context"
+	"fmt"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -50,7 +51,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, err
 	}
 
-	multiplier := math.NewDecFinite(10, int32(basket.Exponent))
+	multiplier := math.NewDecFinite(1, int32(basket.Exponent))
 	amountCreditsNeeded, err := amountBasketTokensDec.QuoExact(multiplier)
 	if err != nil {
 		return nil, err
@@ -59,10 +60,14 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	var credits []*baskettypes.BasketCredit
 	for {
 		it, err := k.stateStore.BasketBalanceStore().List(ctx,
-			basketv1.BasketBalanceBatchStartDateIndexKey{}
+			basketv1.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
 		)
 		if err != nil {
 			return nil, err
+		}
+
+		if !it.Next() {
+			return nil, fmt.Errorf("unexpected failure - balance invariant broken")
 		}
 
 		basketBalance, err := it.Value()
@@ -125,7 +130,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				return nil, err
 			}
 
-			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
+			err = k.stateStore.BasketBalanceStore().Delete(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}
