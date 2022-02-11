@@ -1,6 +1,7 @@
 package basket_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -21,6 +22,7 @@ func TestKeeperExample(t *testing.T) {
 
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, ecocredit.ModuleName)
+	sk := sdk.NewKVStoreKey("test")
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk, ecocredit.ModuleName)
 	require.NotNil(t, k)
 }

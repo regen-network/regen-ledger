@@ -1,6 +1,7 @@
 package basket_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -42,7 +43,8 @@ func TestQueryBaskets(t *testing.T) {
 	require.NoError(t, err)
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, ecocredit.ModuleName)
+	sk := sdk.NewKVStoreKey("test")
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk, ecocredit.ModuleName)
 
 	// query all
 	res, err := k.Baskets(ctx, &baskettypes.QueryBasketsRequest{})
