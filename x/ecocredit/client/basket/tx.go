@@ -9,22 +9,23 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
-	keeper "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-func TxAddToBasket() *cobra.Command {
+func TxPutInBasket() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-to-basket [owner] [basket_denom] [credits_json_file]",
+		Use:   "put-in-basket [basket_denom] [credits_json_file]",
 		Short: "add credits to the basket",
 		Long: strings.TrimSpace(`add credits to the basket.
 
 Parameters:
-		owner: account address of the owner of credits being put into the basket.
-		Note, the '--from' flag is ignored as it is implied from [owner]
 		basket_denom: basket identifier
 
+Flags:
+		from: account address of the owner
+
 Example:
-		$regen tx ecocredit add-to-basket [owner] [basket_denom] [credits_json_file]
+		$regen tx ecocredit put-in-basket [basket_denom] [credits_json_file]
 		
 		Where credits_json_file contains:
 		
@@ -41,22 +42,21 @@ Example:
 			]
 		}
 		`),
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Flags().Set(flags.FlagFrom, args[0])
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			credits, err := parseBasketCredits(clientCtx, args[2])
+			credits, err := parseBasketCredits(clientCtx, args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := keeper.MsgPut{
+			msg := basket.MsgPut{
 				Owner:       clientCtx.FromAddress.String(),
-				BasketDenom: args[1],
+				BasketDenom: args[0],
 				Credits:     credits,
 			}
 
