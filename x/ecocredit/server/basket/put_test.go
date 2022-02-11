@@ -32,7 +32,7 @@ import (
 func TestPut(t *testing.T) {
 	basketDenom := "BASKET"
 	basketDenom2 := "BASKET2"
-	classId := "CARB2"
+	classId := "C02"
 	startDate, err := time.Parse("2006-01-02", "2020-01-01")
 	require.NoError(t, err)
 	endDate, err := time.Parse("2006-01-02", "2021-01-01")
