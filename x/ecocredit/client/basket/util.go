@@ -1,29 +1,27 @@
-package basket
+package basketclient
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 
-	"github.com/cosmos/cosmos-sdk/client"
-
-	keeper "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-func parseBasketCredits(clientCtx client.Context, creditsFile string) ([]*keeper.BasketCredit, error) {
-	credits := keeper.BasketCredits{}
+func parseBasketCredits(creditsFile string) ([]*basket.BasketCredit, error) {
+	credits := []*basket.BasketCredit{}
 
 	if creditsFile == "" {
 		return nil, fmt.Errorf("credits file path is empty")
 	}
 
-	contents, err := ioutil.ReadFile(creditsFile)
+	bz, err := ioutil.ReadFile(creditsFile)
 	if err != nil {
 		return nil, err
 	}
-
-	if err := clientCtx.Codec.UnmarshalJSON(contents, &credits); err != nil {
+	if err = json.Unmarshal(bz, &credits); err != nil {
 		return nil, err
 	}
 
-	return credits.Credits, nil
+	return credits, nil
 }

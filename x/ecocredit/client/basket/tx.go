@@ -1,4 +1,4 @@
-package basket
+package basketclient
 
 import (
 	"strings"
@@ -29,18 +29,16 @@ Example:
 		
 		Where credits_json_file contains:
 		
-		{
-			"credits": [
-				{
-					"batch_denom": "C01-20210101-20220101-001",
-					"amount": "10",
-				},
-				{
-					"batch_denom": "C01-20210101-20220101-001",
-					"amount": "10.5",
-				}
-			]
-		}
+		[
+			{
+				"batch_denom": "C01-20210101-20220101-001",
+				"amount": "10"
+			},
+			{
+				"batch_denom": "C01-20210101-20220101-001",
+				"amount": "10.5"
+			}
+		]
 		`),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -49,7 +47,7 @@ Example:
 				return err
 			}
 
-			credits, err := parseBasketCredits(clientCtx, args[1])
+			credits, err := parseBasketCredits(args[1])
 			if err != nil {
 				return err
 			}
