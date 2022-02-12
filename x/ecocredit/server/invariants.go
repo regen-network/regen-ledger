@@ -1,12 +1,13 @@
 package server
 
 import (
+	"context"
 	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 // RegisterInvariants registers the ecocredit module invariants.
@@ -18,18 +19,50 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 func (s serverImpl) tradableSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		store := ctx.KVStore(s.storeKey)
-		return tradableSupplyInvariant(store)
+		goCtx := sdk.WrapSDKContext(ctx)
+		basketBalances := s.getBasketBalanceMap(goCtx)
+		return tradableSupplyInvariant(store, basketBalances)
 	}
 }
 
-func tradableSupplyInvariant(store types.KVStore) (string, bool) {
+func (s serverImpl) getBasketBalanceMap(ctx context.Context) map[string]math.Dec {
+	res, err := s.basketKeeper.Baskets(ctx, &baskettypes.QueryBasketsRequest{})
+	if err != nil {
+		panic(err)
+	}
+	basketBalances := make(map[string]math.Dec) // map of batch_denom to balance
+	for _, basket := range res.Baskets {
+		res, err := s.basketKeeper.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basket.BasketDenom})
+		if err != nil {
+			panic(err)
+		}
+		for _, bal := range res.Balances {
+			amount, err := math.NewDecFromString(bal.Balance)
+			if err != nil {
+				panic(err)
+			}
+			if existingBal, ok := basketBalances[bal.BatchDenom]; ok {
+				existingBal, err = existingBal.Add(amount)
+				if err != nil {
+					panic(err)
+				}
+				basketBalances[bal.BatchDenom] = existingBal
+			} else {
+				basketBalances[bal.BatchDenom] = amount
+			}
+		}
+	}
+	return basketBalances
+}
+
+func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math.Dec) (string, bool) {
 	var (
 		msg    string
 		broken bool
 	)
 	calTradableSupplies := make(map[string]math.Dec)
 
-	iterateBalances(store, TradableBalancePrefix, func(_, denom, b string) bool {
+	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(_, denom, b string) bool {
 		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
@@ -49,7 +82,19 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 		return false
 	})
 
-	if err := iterateSupplies(store, TradableSupplyPrefix, func(denom string, s string) (bool, error) {
+	for denom, amt := range basketBalances {
+		if amount, ok := calTradableSupplies[denom]; ok {
+			amount, err := math.SafeAddBalance(amount, amt)
+			if err != nil {
+				panic(err)
+			}
+			calTradableSupplies[denom] = amount
+		} else {
+			panic("unknown denom in basket")
+		}
+	}
+
+	if err := ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom string, s string) (bool, error) {
 		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true
@@ -85,7 +130,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		broken bool
 	)
 	calRetiredSupplies := make(map[string]math.Dec)
-	iterateBalances(store, RetiredBalancePrefix, func(_, denom, b string) bool {
+	ecocredit.IterateBalances(store, ecocredit.RetiredBalancePrefix, func(_, denom, b string) bool {
 		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
@@ -104,7 +149,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		return false
 	})
 
-	if err := iterateSupplies(store, RetiredSupplyPrefix, func(denom, s string) (bool, error) {
+	if err := ecocredit.IterateSupplies(store, ecocredit.RetiredSupplyPrefix, func(denom, s string) (bool, error) {
 		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true
