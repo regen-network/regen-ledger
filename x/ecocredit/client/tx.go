@@ -40,6 +40,7 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassMetadataCmd(),
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
+		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
 	)
