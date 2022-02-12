@@ -41,6 +41,8 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
 		basketcli.TxCreateBasket(),
+		basketcli.TxPutInBasket(),
+		basketcli.TxTakeFromBasket(),
 	)
 	return cmd
 }
