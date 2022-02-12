@@ -5,7 +5,6 @@ package regen.ecocredit.basket.v1;
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
@@ -39,8 +38,8 @@ message MsgCreate {
   // exponent is the exponent that will be used for converting credits to basket
   // tokens and for bank denom metadata. It also limits the precision of
   // credit amounts when putting credits into a basket. An exponent of 6 will
-  // mean that 10^6 units of a basket token will be issued for 1.0 credits and that
-  // this should be displayed as one unit in user interfaces. It also means
+  // mean that 10^6 units of a basket token will be issued for 1.0 credits and
+  // that this should be displayed as one unit in user interfaces. It also means
   // that the maximum precision of credit amounts is 6 decimal places so that
   // the need to round is eliminated. The exponent must be >= the precision of
   // the credit type at the time the basket is created.
@@ -59,9 +58,8 @@ message MsgCreate {
   // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 7;
 
-  // min_start_date is the earliest start date for batches of credits allowed
-  // into the basket. Required.
-  google.protobuf.Timestamp min_start_date = 8;
+  // date_criteria is the date criteria for batches admitted to the basket.
+  DateCriteria date_criteria = 8;
 
   // fee is the fee that the curator will pay to create the basket. It must be
   // >= the required Params.basket_creation_fee. We include the fee explicitly

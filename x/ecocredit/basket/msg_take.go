@@ -12,13 +12,13 @@ var (
 	_ legacytx.LegacyMsg = &MsgTake{}
 )
 
-// Route Implements LegacyMsg.
+// Route implements LegacyMsg.
 func (m MsgTake) Route() string { return sdk.MsgTypeURL(&m) }
 
-// Type Implements LegacyMsg.
+// Type implements LegacyMsg.
 func (m MsgTake) Type() string { return sdk.MsgTypeURL(&m) }
 
-// GetSignBytes Implements LegacyMsg.
+// GetSignBytes implements LegacyMsg.
 func (m MsgTake) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
