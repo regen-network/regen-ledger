@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/gogo/protobuf/jsonpb"
 
@@ -250,32 +252,37 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, err
 	}
 
-	ormJson, err := jsonTarget.JSON()
+	err = MergeLegacyJSONIntoTarget(legacyJson, jsonTarget)
 	if err != nil {
 		return nil, err
 	}
 
-	return MergeJSONMaps(legacyJson, ormJson)
+	return jsonTarget.JSON()
 }
 
-func MergeJSONMaps(a, b json.RawMessage) (json.RawMessage, error) {
-	var m1, m2 map[string]json.RawMessage
-	err := json.Unmarshal(a, &m1)
+func MergeLegacyJSONIntoTarget(legacyJson json.RawMessage, target ormjson.WriteTarget) error {
+	var m map[string]json.RawMessage
+	err := json.Unmarshal(legacyJson, &m)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = json.Unmarshal(b, &m2)
-	if err != nil {
-		return nil, err
-	}
-
-	for k, message := range m1 {
-		if _, ok := m2[k]; ok {
-			return nil, fmt.Errorf("duplicate map key %s when merging JSON", k)
+	for k, message := range m {
+		w, err := target.OpenWriter(protoreflect.FullName(k))
+		if err != nil {
+			return err
 		}
-		m2[k] = message
+
+		_, err = w.Write(message)
+		if err != nil {
+			return err
+		}
+
+		err = w.Close()
+		if err != nil {
+			return err
+		}
 	}
 
-	return json.Marshal(m2)
+	return nil
 }

@@ -88,12 +88,12 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	ormJson, err := jsonTarget.JSON()
+	err = server.MergeLegacyJSONIntoTarget(legacyJson, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
 
-	bz, err := server.MergeJSONMaps(legacyJson, ormJson)
+	bz, err := jsonTarget.JSON()
 	if err != nil {
 		panic(err)
 	}
