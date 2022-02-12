@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
-	keeper "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 const (
@@ -17,12 +17,67 @@ const (
 	FlagRetireOnTake       = "retire-on-take"
 )
 
+func TxPutInBasket() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "put-in-basket [basket_denom] [credits_json_file]",
+		Short: "add credits to the basket",
+		Long: strings.TrimSpace(`add credits to the basket.
+Parameters:
+		basket_denom: basket identifier
+Flags:
+		from: account address of the owner
+Example:
+		$regen tx ecocredit put-in-basket [basket_denom] [credits_json_file]
+		
+		Where credits_json_file contains:
+		
+		[
+			{
+				"batch_denom": "C01-20210101-20220101-001",
+				"amount": "10"
+			},
+			{
+				"batch_denom": "C01-20210101-20220101-001",
+				"amount": "10.5"
+			}
+		]
+		`),
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			credits, err := parseBasketCredits(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := basket.MsgPut{
+				Owner:       clientCtx.FromAddress.String(),
+				BasketDenom: args[0],
+				Credits:     credits,
+			}
+
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
 func TxTakeFromBasket() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "take-from-basket [basket_denom] [amount]",
 		Short: "Takes credits from a basket",
 		Long: strings.TrimSpace(`takes credits from a basket starting from the oldest credits first.
-
 Parameters:
 		basket_denom: denom identifying basket from which we redeem credits.
 		amount: amount is a positive integer number of basket tokens to convert into credits.
@@ -52,7 +107,7 @@ Flags:
 				return err
 			}
 
-			msg := keeper.MsgTake{
+			msg := basket.MsgTake{
 				Owner:              clientCtx.FromAddress.String(),
 				BasketDenom:        args[0],
 				Amount:             args[1],
