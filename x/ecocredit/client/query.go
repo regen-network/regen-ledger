@@ -33,6 +33,7 @@ func QueryCmd(name string) *cobra.Command {
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
 		QueryParams(),
+		basketcli.QueryBasketCmd(),
 		basketcli.QueryBasketsCmd(),
 		basketcli.QueryBasketBalanceCmd(),
 		basketcli.QueryBasketBalancesCmd(),
