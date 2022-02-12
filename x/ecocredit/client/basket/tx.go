@@ -1,4 +1,4 @@
-package basket
+package basketclient
 
 import (
 	"strings"
