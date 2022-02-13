@@ -17,8 +17,10 @@ func TestHybridORMLegacyGenesis(t *testing.T) {
 
 	require.NoError(t, m.ValidateGenesis(cdc, nil, []byte(`
 {
-  "params":{
-    "allowlist_enabled":true
+  "regen.ecocredit.v1alpha2.GenesisState":{
+    "params":{
+      "allowlist_enabled":true
+    }
   }
 }`)))
 
@@ -31,8 +33,10 @@ func TestHybridORMLegacyGenesis(t *testing.T) {
 
 	require.NoError(t, m.ValidateGenesis(cdc, nil, []byte(`
 {
-  "params":{
-    "allowlist_enabled":true
+  "regen.ecocredit.v1alpha2.GenesisState":{
+    "params":{
+      "allowlist_enabled":true
+    }
   },
   "regen.ecocredit.basket.v1.Basket":[{
     "basket_denom":"foo"

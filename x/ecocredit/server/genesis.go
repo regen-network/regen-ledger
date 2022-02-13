@@ -1,9 +1,10 @@
 package server
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+
+	"github.com/gogo/protobuf/proto"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -28,9 +29,24 @@ import (
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
-	var genesisState ecocredit.GenesisState
+	jsonSource, err := ormjson.NewRawMessageSource(data)
+	if err != nil {
+		return nil, err
+	}
 
-	err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bytes.NewReader(data), &genesisState)
+	err = s.db.ImportJSON(ctx, jsonSource)
+
+	var genesisState ecocredit.GenesisState
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
+	if err != nil {
+		return nil, err
+	}
+
+	if r == nil {
+		return nil, nil
+	}
+
+	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
 	if err != nil {
 		return nil, err
 	}
@@ -58,13 +74,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	jsonSource, err := ormjson.NewRawMessageSource(data)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.db.ImportJSON(ctx, jsonSource)
-	return []abci.ValidatorUpdate{}, err
+	return nil, nil
 }
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
@@ -244,15 +254,13 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Supplies:  supplies,
 	}
 
-	legacyJson := cdc.MustMarshalJSON(gs)
-
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err := s.db.ExportJSON(ctx, jsonTarget)
 	if err != nil {
 		return nil, err
 	}
 
-	err = MergeLegacyJSONIntoTarget(legacyJson, jsonTarget)
+	err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
 	if err != nil {
 		return nil, err
 	}
@@ -260,29 +268,18 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	return jsonTarget.JSON()
 }
 
-func MergeLegacyJSONIntoTarget(legacyJson json.RawMessage, target ormjson.WriteTarget) error {
-	var m map[string]json.RawMessage
-	err := json.Unmarshal(legacyJson, &m)
+func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
 	if err != nil {
 		return err
 	}
 
-	for k, message := range m {
-		w, err := target.OpenWriter(protoreflect.FullName(k))
-		if err != nil {
-			return err
-		}
-
-		_, err = w.Write(message)
-		if err != nil {
-			return err
-		}
-
-		err = w.Close()
-		if err != nil {
-			return err
-		}
+	bz, err := cdc.MarshalJSON(message)
+	if err != nil {
+		return err
 	}
 
-	return nil
+	_, err = w.Write(bz)
+
+	return err
 }

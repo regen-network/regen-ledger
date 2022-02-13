@@ -162,9 +162,13 @@ func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.G
 	exported, err := s.fixture.ExportGenesis(ctx.Context)
 	require.NoError(err)
 
+	var wrapper map[string]json.RawMessage
+	err = json.Unmarshal(exported[ecocredit.ModuleName], &wrapper)
+	require.NoError(err)
+
 	var exportedGenesisState ecocredit.GenesisState
 	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
-		bytes.NewReader(exported[ecocredit.ModuleName]),
+		bytes.NewReader(wrapper["regen.ecocredit.v1alpha2.GenesisState"]),
 		&exportedGenesisState,
 	)
 	require.NoError(err)
@@ -178,7 +182,14 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	require.NoError(err)
 
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
+	wrapper := map[string]json.RawMessage{
+		"regen.ecocredit.v1alpha2.GenesisState": genesisBytes,
+	}
+
+	bz, err := json.Marshal(wrapper)
+	require.NoError(err)
+
+	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: bz}
 	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
 	return err
 }

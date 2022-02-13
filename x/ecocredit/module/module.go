@@ -1,11 +1,13 @@
 package module
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
+
+	"github.com/gogo/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/gogo/protobuf/jsonpb"
 
@@ -75,8 +77,6 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	legacyJson := cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
-
 	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
@@ -88,7 +88,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	err = server.MergeLegacyJSONIntoTarget(legacyJson, jsonTarget)
+	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -102,16 +102,6 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
-	var data ecocredit.GenesisState
-	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bytes.NewReader(bz), &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
-	}
-
-	err := data.Validate()
-	if err != nil {
-		return err
-	}
-
 	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
@@ -122,7 +112,27 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return err
 	}
 
-	return db.ValidateJSON(jsonSource)
+	err = db.ValidateJSON(jsonSource)
+	if err != nil {
+		return err
+	}
+
+	var data ecocredit.GenesisState
+
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&data)))
+	if err != nil {
+		return err
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
+	}
+
+	return data.Validate()
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
