@@ -25,6 +25,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 	a := addr1.String()
 	name := randstr.String((nameMaxLen + nameMinLen) / 2)
 	creditAbbr := randstr.String(10)
+	descr := "my project description"
 	start := &DateCriteria{&DateCriteria_MinStartDate{gogotypes.TimestampNow()}}
 
 	classes := []string{"eco_class1"}
@@ -61,6 +62,9 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"date_criteria-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
 			"unsupported date_criteria value"},
+		{"description",
+			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
+			"description can't be longer"},
 		{"allowed_classes-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start},
 			"allowed_classes is required"},
@@ -74,7 +78,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
-			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
 			MsgCreate{Curator: a, Name: name, Exponent: 6, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}

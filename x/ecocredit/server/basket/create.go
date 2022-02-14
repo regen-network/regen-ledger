@@ -17,7 +17,7 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
-	if err := basket.ValidateMsgCreate(msg, fee, msg.Name); err != nil {
+	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 
 	}
@@ -35,6 +35,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	denom := "eco/" + msg.Prefix + msg.Name
+	display := "eco/" + msg.Name
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
@@ -59,10 +60,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 				Aliases:  nil,
 			},
 		},
-		Base:    denom,
-		Display: msg.Name,
-		Name:    msg.DisplayName,
-		Symbol:  msg.DisplayName,
+		Description: msg.Description,
+		Base:        denom,
+		Display:     display,
+		Name:        msg.Name,
+		Symbol:      msg.Name,
 	})
 
 	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{

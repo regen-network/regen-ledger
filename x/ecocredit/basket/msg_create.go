@@ -17,6 +17,7 @@ var (
 
 const nameMinLen = 3
 const nameMaxLen = 8
+const descrMaxLen = 200
 const exponentMax = 32
 const creditAbbrMaxLen = 32
 
@@ -42,6 +43,9 @@ func (m MsgCreate) ValidateBasic() error {
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
 		return err
+	}
+	if len(m.Description) > descrMaxLen {
+		return errBadReq.Wrapf("description can't be longer than %d characters", descrMaxLen)
 	}
 	if len(m.AllowedClasses) == 0 {
 		return errBadReq.Wrap("allowed_classes is required")
