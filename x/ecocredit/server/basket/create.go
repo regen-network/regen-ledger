@@ -102,7 +102,8 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
 		}
 
-		err := k.stateStore.BasketClassStore().Insert(ctx,
+		correctCtx := sdk.WrapSDKContext(ctx.Context)
+		err := k.stateStore.BasketClassStore().Insert(correctCtx,
 			&basketv1.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,

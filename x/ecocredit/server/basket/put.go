@@ -65,10 +65,10 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// mint and send tokens to depositor
 	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	if err = k.bankKeeper.MintCoins(sdkCtx, baskettypes.BasketSubModuleName, coinsToSend); err != nil {
+	if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
-	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, baskettypes.BasketSubModuleName, ownerAddr, coinsToSend); err != nil {
+	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, coinsToSend); err != nil {
 		return nil, err
 	}
 
@@ -126,7 +126,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	if err != nil {
 		return err
 	}
-	gotCreditType := res2.Info.CreditType.Name
+	gotCreditType := res2.Info.CreditType.Abbreviation
 	if requiredCreditType != gotCreditType {
 		return errInvalidReq.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
 	}

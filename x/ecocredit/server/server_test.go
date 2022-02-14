@@ -51,7 +51,7 @@ func TestServer(t *testing.T) {
 
 	maccPerms := map[string][]string{
 		minttypes.ModuleName:      {authtypes.Minter},
-		ecocredittypes.ModuleName: {authtypes.Burner},
+		ecocredittypes.ModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -67,6 +67,6 @@ func TestServer(t *testing.T) {
 	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, distKeeper)
 	suite.Run(t, s)
 }

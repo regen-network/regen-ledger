@@ -3,7 +3,10 @@ package testsuite
 import (
 	"context"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"time"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -32,9 +35,11 @@ type IntegrationTestSuite struct {
 	queryClient       ecocredit.QueryClient
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
+	basketFee         sdk.Coin
 
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
+	mockDist   *mocks.MockDistributionKeeper
 
 	genesisCtx types.Context
 	blockTime  time.Time
@@ -45,11 +50,12 @@ type basketServer struct {
 	basket.MsgClient
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, distKeeper *mocks.MockDistributionKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
+		mockDist:       distKeeper,
 	}
 }
 
@@ -74,7 +80,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			Unit:         "hectare",
 			Precision:    6,
 		},
+		&ecocredit.CreditType{
+			Name:         "bazcredits",
+			Abbreviation: "BAZ",
+			Unit:         "FooBarBaz",
+			Precision:    6,
+		},
 	)
+	s.basketFee = sdk.NewInt64Coin("foo", 20)
+	ecocreditParams.BasketCreationFee = sdk.NewCoins(s.basketFee)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -86,31 +100,103 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) TestBasketScenario() {
-	user := s.signers[0]
-	// create a basket
 	require := s.Require()
+	user := s.signers[0]
+	user2 := s.signers[1]
+
+	userTotalCreditBalance, err := math.NewDecFromString("1000000000000000")
+	require.NoError(err)
+	classId, batchDenom := s.createClassAndIssueBatch(user, user, "bazcredits", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
+
+	// fund account to create a basket
 	balanceBefore := sdk.NewInt64Coin("foo", 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
+	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
+		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
+		return err
+	})
+	// create a basket
 	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "BASKET",
 		DisplayName:       "BSK",
 		Exponent:          6,
-		DisableAutoRetire: false,
-		CreditTypeName:    "carbon",
-		AllowedClasses:    []string{"C01"},
+		DisableAutoRetire: true,
+		CreditTypeName:    "BAZ",
+		AllowedClasses:    []string{classId},
 		DateCriteria:      nil,
-		Fee:               nil,
+		Fee:               sdk.NewCoins(s.basketFee),
 	})
 	require.NoError(err)
-	require.NotNil(res)
+	basketDenom := res.BasketDenom
+
+	// check it was created
 	qRes, err := s.basketServer.Baskets(s.ctx, &basket.QueryBasketsRequest{})
 	require.NoError(err)
 	require.Len(qRes.Baskets, 1)
+	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
 
 	// assert the fee was paid
 	balanceAfter := s.getUserBalance(user, "foo")
-	require.True(balanceAfter.IsLT(balanceBefore))
+	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
+
+	// put some credits in the basket
+	creditAmtDeposited := math.NewDecFromInt64(3)
+	pRes, err := s.basketServer.Put(s.ctx, &basket.MsgPut{
+		Owner:       user.String(),
+		BasketDenom: basketDenom,
+		Credits:     []*basket.BasketCredit{{BatchDenom: batchDenom, Amount: creditAmtDeposited.String()}},
+	})
+	require.NoError(err)
+	basketTokensReceived, err := math.NewPositiveDecFromString(pRes.AmountReceived)
+	require.NoError(err)
+
+	// make sure the bank actually has this balance for the user
+	basketBal := s.getUserBalance(user, basketDenom)
+	i64BT, err := basketTokensReceived.Int64()
+	require.NoError(err)
+	require.Equal(i64BT, basketBal.Amount.Int64())
+
+	// make sure the basket has the credits now.
+	basketBalance, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  batchDenom,
+	})
+	require.NoError(err)
+	require.Equal(basketBalance.Balance, creditAmtDeposited.String())
+
+	userCreditBalance, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+		Account:    user.String(),
+		BatchDenom: batchDenom,
+	})
+	require.NoError(err)
+
+	// ensure the core server is properly tracking the user balance
+	newUserTotal, err := userTotalCreditBalance.Sub(creditAmtDeposited)
+	require.NoError(err)
+	require.Equal(newUserTotal.String(), userCreditBalance.TradableAmount)
+
+	// send the basket coins to another account
+	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
+
+	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+		Owner:              user2.String(),
+		BasketDenom:        basketDenom,
+		Amount:             basketTokensReceived.String(), // take all of them
+		RetirementLocation: "US-NY",
+		RetireOnTake:       false,
+	})
+	require.NoError(err)
+	require.Equal(tRes.Credits[0].BatchDenom, batchDenom)
+	require.Equal(tRes.Credits[0].Amount, creditAmtDeposited.String())
+
+	// there should be nothing left in the basket
+	bRes, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  batchDenom,
+	})
+	require.Error(err)
+	require.Nil(bRes)
 }
 
 func (s *IntegrationTestSuite) getUserBalance(addr sdk.AccAddress, denom string) sdk.Coin {
@@ -1024,6 +1110,33 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
 }
 
-func (s *IntegrationTestSuite) TestBasketIntegration() {
+func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.AccAddress, creditType, tradableAmount, startStr, endStr string) (string, string) {
+	require := s.Require()
+	// fund the account so this doesn't fail
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 20000000)))
 
+	cRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+		Admin:          admin.String(),
+		Issuers:        []string{admin.String()},
+		Metadata:       nil,
+		CreditTypeName: creditType,
+	})
+	require.NoError(err)
+	classId := cRes.ClassId
+	start, err := time.Parse("2006-04-02", startStr)
+	require.NoError(err)
+	end, err := time.Parse("2006-04-02", endStr)
+	require.NoError(err)
+	bRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:          admin.String(),
+		ClassId:         classId,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
+		Metadata:        nil,
+		StartDate:       &start,
+		EndDate:         &end,
+		ProjectLocation: "US-NY",
+	})
+	require.NoError(err)
+	batchDenom := bRes.BatchDenom
+	return classId, batchDenom
 }
