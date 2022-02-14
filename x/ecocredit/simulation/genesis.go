@@ -211,6 +211,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		allowedClassCreators []string
 		allowListEnabled     bool
 		creditTypes          []*ecocredit.CreditType
+		basketCreationFee    sdk.Coins
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -267,12 +268,20 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { supplies = genSupplies(r, classes, batches, balances, creditTypes) },
 	)
 
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc, "basket_fee", &basketCreationFee, simState.Rand,
+		func(r *rand.Rand) {
+			basketCreationFee = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 100))))
+		},
+	)
+
 	ecocreditGenesis := ecocredit.GenesisState{
 		Params: ecocredit.Params{
 			CreditClassFee:       creditClassFee,
 			AllowedClassCreators: allowedClassCreators,
 			AllowlistEnabled:     allowListEnabled,
 			CreditTypes:          creditTypes,
+			BasketCreationFee:    basketCreationFee,
 		},
 		ClassInfo: classes,
 		BatchInfo: batches,

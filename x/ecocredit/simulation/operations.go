@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	regentypes "github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/basket"
 )
 
@@ -56,7 +57,8 @@ var (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
-	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient ecocredit.QueryClient) simulation.WeightedOperations {
+	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient ecocredit.QueryClient, basketQryClient basket.QueryClient) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass         int
@@ -117,7 +119,7 @@ func WeightedOperations(
 		},
 	)
 
-	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient)
+	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
 
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
