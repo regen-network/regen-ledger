@@ -30,17 +30,16 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeName, msg.Exponent); err != nil {
+	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
 
-	// TODO: need to decide about the denom creation
-	denom := msg.Name
+	denom := "eco/" + msg.Prefix + msg.Name
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
-		CreditTypeName:    msg.CreditTypeName,
+		CreditTypeName:    msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
 		Exponent:          msg.Exponent,
 	})
@@ -54,13 +53,13 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    msg.DisplayName,
+				Denom:    denom,
 				Exponent: msg.Exponent,
 				Aliases:  nil,
 			},
 		},
 		Base:    denom,
-		Display: msg.DisplayName,
+		Display: msg.Name,
 		Name:    msg.DisplayName,
 		Symbol:  msg.DisplayName,
 	})
