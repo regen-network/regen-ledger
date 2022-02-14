@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	regentypes "github.com/regen-network/regen-ledger/types"
+	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/basket"
 )
 
 // Simulation operation weights constants
@@ -116,7 +117,9 @@ func WeightedOperations(
 		},
 	)
 
-	return simulation.WeightedOperations{
+	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient)
+
+	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
 			SimulateMsgCreateClass(ak, bk, qryClient),
@@ -150,6 +153,8 @@ func WeightedOperations(
 			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
 		),
 	}
+
+	return append(ops, basketOps...)
 }
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
