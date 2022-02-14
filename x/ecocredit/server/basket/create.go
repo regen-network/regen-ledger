@@ -87,7 +87,6 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	k.bankKeeper.SetDenomMetaData(sdk.UnwrapSDKContext(ctx), banktypes.Metadata{
-		Description: "",
 		DenomUnits: []*banktypes.DenomUnit{
 			{
 				Denom:    msg.DisplayName,
@@ -97,8 +96,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		},
 		Base:    denom,
 		Display: msg.DisplayName,
-		Name:    msg.Name,
-		Symbol:  denom,
+		Name:    msg.DisplayName,
+		Symbol:  msg.DisplayName,
 	})
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{

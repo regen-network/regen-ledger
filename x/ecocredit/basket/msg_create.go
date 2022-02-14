@@ -59,15 +59,10 @@ func (m MsgCreate) ValidateBasic() error {
 // ValidateCreateFee additional validation with access to the state data.
 // minFee must be sorted.
 func ValidateCreateFee(m *MsgCreate, minFee sdk.Coins) error {
-	// Note if user is adding too much denoms then we fails as well.
-	if len(minFee) != len(m.Fee) {
-		return errBadReq.Wrapf("Wrong denom set, expected %v", m.Fee)
+	if !m.Fee.IsAllGTE(minFee) {
+		return sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", minFee, m.Fee)
 	}
-	for i, c := range m.Fee.Sort() {
-		if minFee[i].Denom != c.Denom || minFee[i].Amount.GT(c.Amount) {
-			return errBadReq.Wrapf("Wrong denom set, expected %v", m.Fee)
-		}
-	}
+
 	return nil
 }
 
