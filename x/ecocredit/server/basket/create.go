@@ -30,28 +30,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-
-	res, err := k.ecocreditKeeper.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
-	if err != nil {
+	if err = assertCreditTypeExists(ctx, k.ecocreditKeeper, msg.CreditTypeName, msg.Exponent); err != nil {
 		return nil, err
-	}
-
-	found := false
-	for _, creditType := range res.CreditTypes {
-		if creditType.Abbreviation == msg.CreditTypeName {
-			found = true
-			if creditType.Precision > msg.Exponent {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-					"basket exponent %d must be >= credit type precision %d",
-					msg.Exponent,
-					creditType.Precision,
-				)
-			}
-			break
-		}
-	}
-	if !found {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("can't find credit type %s", msg.CreditTypeName)
 	}
 
 	// TODO: need to decide about the denom creation
@@ -68,22 +48,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	for _, class := range msg.AllowedClasses {
-		_, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: class})
-		if err != nil {
-			return nil, err
-		}
-
-		err = k.stateStore.BasketClassStore().Insert(ctx,
-			&basketv1.BasketClass{
-				BasketId: id,
-				ClassId:  class,
-			},
-		)
-
-		if err != nil {
-			return nil, err
-		}
+	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses); err != nil {
+		return nil, err
 	}
 
 	k.bankKeeper.SetDenomMetaData(sdk.UnwrapSDKContext(ctx), banktypes.Metadata{
@@ -106,4 +72,53 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	})
 
 	return &basket.MsgCreateResponse{BasketDenom: denom}, err
+}
+
+// assertCreditTypeExists returns error if a given credit type doesn't exist or it's precision
+// is bigger then the requested exponent.
+func assertCreditTypeExists(ctx context.Context, k EcocreditKeeper, creditType string, exponent uint32) error {
+	res, err := k.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
+	if err != nil {
+		return err
+	}
+
+	found := false
+	for _, c := range res.CreditTypes {
+		if c.Abbreviation == creditType {
+			found = true
+			if c.Precision > exponent {
+				return sdkerrors.ErrInvalidRequest.Wrapf(
+					"exponent %d must be >= credit type precision %d",
+					exponent,
+					c.Precision,
+				)
+			}
+			break
+		}
+	}
+	if !found {
+		return sdkerrors.ErrInvalidRequest.Wrapf("can't find credit type %s", creditType)
+	}
+	return nil
+}
+
+func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string) error {
+	for _, class := range allowedClasses {
+		// TODO: we should be able to check if class exists without deserializing it.
+		_, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: class})
+		if err != nil {
+			return err
+		}
+
+		err = k.stateStore.BasketClassStore().Insert(ctx,
+			&basketv1.BasketClass{
+				BasketId: basketID,
+				ClassId:  class,
+			},
+		)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
