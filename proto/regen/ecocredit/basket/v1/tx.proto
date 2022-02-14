@@ -34,7 +34,7 @@ message MsgCreate {
   // `eco/<prefix><name>` and its display name will be `eco/<name>`.
   string name = 2;
 
-  // prefix is a single character lower-case alphabetic character that denotes
+  // prefix is a single alphabetic character that denotes
   // the denom prefix and indicates in some way what relationship is between
   // the denom and display denom. Standard conventions are that m indicates
   // milli (10^3), u indicates micro (10^6), n indicates nano (10^9).
