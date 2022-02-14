@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// BasketCredit represents the information for a credit batch inside a basket.
+message BasketCredit {
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // amount is the number of credits being put into or taken out of the basket.
+  // Decimal values are acceptable within the precision of the corresponding
+  //  credit type for this batch.
+  string amount = 2;
+}
+
+// DateCriteria represents a basket credit batch date criteria.
+message DateCriteria {
+
+  // sum is the oneof representing the date criteria.
+  oneof sum {
+    // min_start_date is the earliest start date for batches of credits allowed
+    // into the basket.
+    google.protobuf.Timestamp min_start_date = 1;
+
+    // start_date_window is a duration of time measured into the past which sets
+    // a cutoff for batch start dates when adding new credits to the basket.
+    // Based on the current block timestamp, credits whose start date is before
+    // `block_timestamp - batch_date_window` will not be allowed into the basket.
+    google.protobuf.Duration start_date_window = 2;
+  }
+}

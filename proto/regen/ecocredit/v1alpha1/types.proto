@@ -90,6 +90,12 @@ message Params {
 
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 4;
+
+  // basket_creation_fee is the fee to create a new basket denom.
+  repeated cosmos.base.v1beta1.Coin basket_creation_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
