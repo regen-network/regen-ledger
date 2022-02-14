@@ -40,7 +40,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -70,14 +70,14 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err)
 	}
-	s.basketKeeper = basket.NewKeeper(db, s, bankKeeper, storeKey)
+	s.basketKeeper = basket.NewKeeper(db, s, bankKeeper, distKeeper, storeKey)
 
 	return s
 }
 
 func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper) {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
+	bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) {
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)

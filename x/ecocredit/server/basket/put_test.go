@@ -2,6 +2,9 @@ package basket_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
@@ -16,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basket2 "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
@@ -25,8 +29,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"testing"
-	"time"
 )
 
 func TestPut(t *testing.T) {
@@ -40,10 +42,10 @@ func TestPut(t *testing.T) {
 	denom, err := ecocredit.FormatDenom(classId, 1, &startDate, &endDate)
 	require.NoError(t, err)
 	testClassInfo := ecocredit.ClassInfo{
-		ClassId:    classId,
-		Admin:      "somebody",
-		Issuers:    nil,
-		Metadata:   nil,
+		ClassId:  classId,
+		Admin:    "somebody",
+		Issuers:  nil,
+		Metadata: nil,
 		CreditType: &ecocredit.CreditType{
 			Name:         "carbon",
 			Abbreviation: "C",
@@ -66,9 +68,8 @@ func TestPut(t *testing.T) {
 	}
 	batchInfoRes := ecocredit.QueryBatchInfoResponse{Info: &testBatchInfo}
 
-
 	ctx := context.Background()
-	 _,_, addr := testdata.KeyTestPubAddr()
+	_, _, addr := testdata.KeyTestPubAddr()
 	ctrl := gomock.NewController(t)
 	b := ormtest.NewMemoryBackend()
 	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{
@@ -85,7 +86,7 @@ func TestPut(t *testing.T) {
 		BasketDenom:       basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeName:    "carbon",
-		DateCriteria:     &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
+		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -93,10 +94,10 @@ func TestPut(t *testing.T) {
 	var dur time.Duration = 500000000000000000
 	validStartDateWindow := startDate.Add(-dur)
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
-		BasketDenom:       basketDenom2	,
+		BasketDenom:       basketDenom2,
 		DisableAutoRetire: true,
 		CreditTypeName:    "carbon",
-		DateCriteria:     &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
+		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -115,17 +116,18 @@ func TestPut(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	bankKeeper := mocks.NewMockBankKeeper(ctrl)
+	bankKeeper := mocks2.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
+	distKeeper := mocks2.NewMockDistributionKeeper(ctrl)
 	sk := sdk.NewKVStoreKey("test")
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, distKeeper, sk)
 	require.NotNil(t, k)
 
 	sdkCtx := sdkContextForStoreKey(sk).WithContext(ctx).WithBlockTime(startDate)
 	ctx = sdk.WrapSDKContext(sdkCtx)
 	sdkCtx = ctx.Value(sdk.SdkContextKey).(sdk.Context)
 
-	testCases := []struct{
+	testCases := []struct {
 		name                string
 		startingBalance     string
 		msg                 basket2.MsgPut
@@ -134,7 +136,7 @@ func TestPut(t *testing.T) {
 		errMsg              string
 	}{
 		{
-			name: "valid case",
+			name:            "valid case",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -162,7 +164,7 @@ func TestPut(t *testing.T) {
 			},
 		},
 		{
-			name: "valid case - basket 2 with rolling window",
+			name:            "valid case - basket 2 with rolling window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -190,7 +192,7 @@ func TestPut(t *testing.T) {
 			},
 		},
 		{
-			name: "insufficient funds",
+			name:            "insufficient funds",
 			startingBalance: "1",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -211,7 +213,7 @@ func TestPut(t *testing.T) {
 			errMsg: "insufficient funds",
 		},
 		{
-			name: "basket not found",
+			name:            "basket not found",
 			startingBalance: "1",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -224,7 +226,7 @@ func TestPut(t *testing.T) {
 			errMsg: ormerrors.NotFound.Error(),
 		},
 		{
-			name: "batch not found",
+			name:            "batch not found",
 			startingBalance: "20",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -240,7 +242,7 @@ func TestPut(t *testing.T) {
 			errMsg: orm.ErrNotFound.Error(),
 		},
 		{
-			name: "class not allowed",
+			name:            "class not allowed",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -258,7 +260,7 @@ func TestPut(t *testing.T) {
 			errMsg: "credit class blah01 is not allowed in this basket",
 		},
 		{
-			name: "wrong credit type",
+			name:            "wrong credit type",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -280,7 +282,7 @@ func TestPut(t *testing.T) {
 			errMsg: "cannot use credit of type BadType in a basket that requires credit type carbon",
 		},
 		{
-			name: "batch out of time window",
+			name:            "batch out of time window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -301,7 +303,7 @@ func TestPut(t *testing.T) {
 			errMsg: "cannot put a credit from a batch with start date",
 		},
 		{
-			name: "batch outside of rolling time window",
+			name:            "batch outside of rolling time window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -321,7 +323,6 @@ func TestPut(t *testing.T) {
 			},
 			errMsg: "cannot put a credit from a batch with start date",
 		},
-
 	}
 
 	for _, tc := range testCases {
@@ -351,7 +352,7 @@ func TestPut(t *testing.T) {
 func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.BasketCredit, basketID uint64, basketBalTbl ormtable.Table) {
 	basketBal := basketv1.BasketBalance{
 		BasketId:       basketID,
-		BatchDenom:    credit.BatchDenom,
+		BatchDenom:     credit.BatchDenom,
 		Balance:        "",
 		BatchStartDate: nil,
 	}
@@ -372,7 +373,6 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 
 	require.True(t, checkBalance.IsEqual(oldBalance))
 }
-
 
 func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
 	db := dbm.NewMemDB()

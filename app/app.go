@@ -364,6 +364,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.GetSubspace(ecocredit.DefaultParamspace),
 		app.AccountKeeper,
 		app.BankKeeper,
+		app.DistrKeeper,
 	)
 	newModules := []moduletypes.Module{ecocreditModule}
 	err := app.smm.RegisterModules(newModules)
@@ -452,7 +453,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
-			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
+			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
 

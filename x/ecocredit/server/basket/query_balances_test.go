@@ -1,73 +1,55 @@
 package basket_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/golang/mock/gomock"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestQueryBalances(t *testing.T) {
-	// prepare database
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
-	stateStore, err := basketv1.NewStateStore(db)
-	require.NoError(t, err)
-	ctx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	t.Parallel()
+	s := setupBase(t)
 
 	// add some baskets
 	basketDenom := "foo"
 	batchDenoms := []string{"bar", "baz", "qux"}
-	require.NoError(t, stateStore.BasketStore().Insert(ctx, &basketv1.Basket{
+	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
 		BasketDenom: basketDenom,
 	}))
-	require.NoError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[0],
 		Balance:        "100.50",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[1],
 		Balance:        "4.20",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, stateStore.BasketBalanceStore().Insert(ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[2],
 		Balance:        "6.10",
 		BatchStartDate: nil,
 	}))
 
-
 	// setup test keeper
-	ctrl := gomock.NewController(t)
-	require.NoError(t, err)
-	bankKeeper := mocks.NewMockBankKeeper(ctrl)
-	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	sk := sdk.NewKVStoreKey("test")
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
 
 	// query all
-	res, err := k.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basketDenom})
+	res, err := s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basketDenom})
 	require.NoError(t, err)
 	require.Len(t, res.Balances, 3)
 	require.Equal(t, "100.50", res.Balances[0].Balance)
 	require.Equal(t, "4.20", res.Balances[1].Balance)
 	require.Equal(t, "6.10", res.Balances[2].Balance)
 
-
 	// paginate
-	res, err = k.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{
+	res, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{
 		BasketDenom: basketDenom,
 		Pagination: &query.PageRequest{
 			Limit:      2,
@@ -82,7 +64,7 @@ func TestQueryBalances(t *testing.T) {
 	require.Equal(t, "4.20", res.Balances[1].Balance)
 
 	// bad query
-	res, err = k.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
+	res, err = s.k.BasketBalances(s.ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: "nope"})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not found")
 }
