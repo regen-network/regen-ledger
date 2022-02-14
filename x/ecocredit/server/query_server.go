@@ -3,14 +3,12 @@ package server
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -57,6 +55,10 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	var classInfo ecocredit.ClassInfo
 	err := s.classInfoTable.GetOne(ctx, orm.RowID(classID), &classInfo)
 	return &classInfo, err
+}
+
+func (s serverImpl) HasClassInfo(ctx types.Context, classID string) bool {
+	return s.classInfoTable.Has(ctx, orm.RowID(classID))
 }
 
 // Batches queries for all batches in the given credit class.
