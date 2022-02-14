@@ -12,11 +12,10 @@ var (
 	_ legacytx.LegacyMsg = &MsgCreate{}
 )
 
-const nameMaxLen = 32
-const displayNameMinLen = 3
-const displayNameMaxLen = 32
+const nameMinLen = 3
+const nameMaxLen = 8
 const exponentMax = 32
-const creditNameMaxLen = 32
+const creditAbbrMaxLen = 32
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
@@ -25,22 +24,17 @@ func (m MsgCreate) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address " + err.Error())
 	}
-	// TODO: add proper validation once we will have proper requirements.
-	// https://github.com/regen-network/regen-ledger/issues/732
-	if m.Name == "" || len(m.Name) > nameMaxLen {
-		return errBadReq.Wrapf("name must not be empty and must not be longer than %d characters long", nameMaxLen)
-	}
-	if len(m.DisplayName) < displayNameMinLen || len(m.DisplayName) > displayNameMaxLen {
-		return errBadReq.Wrapf("display_name must be between %d and %d characters long", displayNameMinLen, displayNameMaxLen)
+	if len(m.Name) < nameMinLen || len(m.Name) > nameMaxLen {
+		return errBadReq.Wrapf("name must be between %d and %d characters long", nameMinLen, nameMaxLen)
 	}
 	if m.Exponent > exponentMax {
 		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
 	}
-	if m.CreditTypeName == "" {
+	if m.CreditTypeAbbrev == "" {
 		return errBadReq.Wrap("credit_type_name must be defined")
 	}
-	if len(m.CreditTypeName) > creditNameMaxLen {
-		return errBadReq.Wrapf("credit_type_name must not be longer than %d", creditNameMaxLen)
+	if len(m.CreditTypeAbbrev) > creditAbbrMaxLen {
+		return errBadReq.Wrapf("credit_type_name must not be longer than %d", creditAbbrMaxLen)
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
 		return err
@@ -56,9 +50,9 @@ func (m MsgCreate) ValidateBasic() error {
 	return m.Fee.Validate()
 }
 
-// ValidateCreateFee additional validation with access to the state data.
+// ValidateMsgCreate additional validation with access to the state data.
 // minFee must be sorted.
-func ValidateCreateFee(m *MsgCreate, minFee sdk.Coins) error {
+func ValidateMsgCreate(m *MsgCreate, minFee sdk.Coins) error {
 	if !m.Fee.IsAllGTE(minFee) {
 		return sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", minFee, m.Fee)
 	}

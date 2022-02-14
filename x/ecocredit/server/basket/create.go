@@ -17,7 +17,7 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
-	if err := basket.ValidateCreateFee(msg, fee); err != nil {
+	if err := basket.ValidateMsgCreate(msg, fee, msg.Name); err != nil {
 		return nil, err
 
 	}
@@ -39,9 +39,10 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
-		CreditTypeName:    msg.CreditTypeAbbrev,
-		DateCriteria:      msg.DateCriteria.ToApi(),
-		Exponent:          msg.Exponent,
+		// TODO: need to release new api
+		CreditTypeName: msg.CreditTypeAbbrev,
+		DateCriteria:   msg.DateCriteria.ToApi(),
+		Exponent:       msg.Exponent,
 	})
 	if err != nil {
 		return nil, err
