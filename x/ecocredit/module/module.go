@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -64,6 +66,7 @@ func (a Module) Name() string {
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	ecocredit.RegisterTypes(registry)
+	baskettypes.RegisterTypes(registry)
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
@@ -103,6 +106,7 @@ func (Module) ConsensusVersion() uint64 { return 1 }
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	ecocredit.RegisterLegacyAminoCodec(cdc)
+	baskettypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions
