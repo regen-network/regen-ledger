@@ -2,6 +2,8 @@ package testsuite
 
 import (
 	"context"
+	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"time"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -26,6 +28,7 @@ type IntegrationTestSuite struct {
 	sdkCtx            sdk.Context
 	ctx               context.Context
 	msgClient         ecocredit.MsgClient
+	basketServer      basketServer
 	queryClient       ecocredit.QueryClient
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
@@ -35,6 +38,11 @@ type IntegrationTestSuite struct {
 
 	genesisCtx types.Context
 	blockTime  time.Time
+}
+
+type basketServer struct {
+	basket.QueryClient
+	basket.MsgClient
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -53,7 +61,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// TODO clean up once types.Context merged upstream into sdk.Context
 	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
-	s.ctx = types.Context{Context: s.sdkCtx}
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
@@ -71,16 +79,55 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
+	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
-func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coins) error {
-	if err := s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, amounts); err != nil {
-		return err
-	}
-	return s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, minttypes.ModuleName, addr, amounts)
+func (s *IntegrationTestSuite) TestBasketScenario() {
+	user := s.signers[0]
+	// create a basket
+	require := s.Require()
+	balanceBefore := sdk.NewInt64Coin("foo", 30000)
+	s.fundAccount(user, sdk.NewCoins(balanceBefore))
+	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+		Curator:           s.signers[0].String(),
+		Name:              "BASKET",
+		DisplayName:       "BSK",
+		Exponent:          6,
+		DisableAutoRetire: false,
+		CreditTypeName:    "carbon",
+		AllowedClasses:    []string{"C01"},
+		DateCriteria:      nil,
+		Fee:               nil,
+	})
+	require.NoError(err)
+	require.NotNil(res)
+	qRes, err := s.basketServer.Baskets(s.ctx, &basket.QueryBasketsRequest{})
+	require.NoError(err)
+	require.Len(qRes.Baskets, 1)
+
+	// assert the fee was paid
+	balanceAfter := s.getUserBalance(user, "foo")
+	require.True(balanceAfter.IsLT(balanceBefore))
+}
+
+func (s *IntegrationTestSuite) getUserBalance(addr sdk.AccAddress, denom string) sdk.Coin {
+	require := s.Require()
+	bRes, err := s.bankKeeper.Balance(s.ctx, &types2.QueryBalanceRequest{
+		Address: addr.String(),
+		Denom:   denom,
+	})
+	require.NoError(err)
+	return *bRes.Balance
+}
+
+func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coins) {
+	err := s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, amounts)
+	s.Require().NoError(err)
+	err = s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, minttypes.ModuleName, addr, amounts)
+	s.Require().NoError(err)
 }
 
 func (s *IntegrationTestSuite) TestUpdateClassAdmin() {
@@ -89,7 +136,7 @@ func (s *IntegrationTestSuite) TestUpdateClassAdmin() {
 	issuer2 := s.signers[2].String()
 	newAdmin := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1, issuer2}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -143,7 +190,7 @@ func (s *IntegrationTestSuite) TestUpdateClassIssuers() {
 	issuer2 := s.signers[2].String()
 	issuer3 := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -196,7 +243,7 @@ func (s *IntegrationTestSuite) TestUpdateClassMetadata() {
 	admin := s.signers[0]
 	issuer1 := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -266,7 +313,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -871,7 +918,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the creator account
-			s.Require().NoError(s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens))))
+			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Admin:          tc.creatorAcc.String(),
@@ -961,7 +1008,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			require.NoError(err)
 
 			// fund the admin account so tx will go through
-			s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens))))
+			s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)
@@ -975,4 +1022,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// reset the space to avoid corrupting other tests
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
+}
+
+func (s *IntegrationTestSuite) TestBasketIntegration() {
+
 }

@@ -66,17 +66,18 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
+	db, err := ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+	s.basketKeeper = basket.NewKeeper(db, s, bankKeeper, storeKey)
+
 	return s
 }
 
 func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
-	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
-	if err != nil {
-		panic(err)
-	}
-	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
