@@ -38,6 +38,9 @@ message MsgCreate {
   // the denom prefix and indicates in some way what relationship is between
   // the denom and display denom. Standard conventions are that m indicates
   // milli (10^3), u indicates micro (10^6), n indicates nano (10^9).
+  // Typical usage of prefix should correspond with the `exponent` field, 
+  // which is used to convert decimal ecocredit amounts to integral
+  // basket tokens.
   string prefix = 3;
 
   // description is a human-readable description of the basket denom that should
