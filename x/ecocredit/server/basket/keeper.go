@@ -3,8 +3,6 @@ package basket
 import (
 	"context"
 
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -16,21 +14,34 @@ import (
 // Keeper is the basket keeper.
 type Keeper struct {
 	stateStore      basketv1.StateStore
-	bankKeeper      BankKeeper // TODO: use ecocredit.BankKeeper
+	bankKeeper      ecocredit.BankKeeper
 	ecocreditKeeper EcocreditKeeper
 	storeKey        sdk.StoreKey
+	distKeeper      ecocredit.DistributionKeeper
 }
 
 var _ baskettypes.MsgServer = Keeper{}
 var _ baskettypes.QueryServer = Keeper{}
 
 // NewKeeper returns a new keeper instance.
-func NewKeeper(db ormdb.ModuleDB, ecocreditKeeper EcocreditKeeper, bankKeeper BankKeeper, storeKey sdk.StoreKey) Keeper {
+func NewKeeper(
+	db ormdb.ModuleDB,
+	ecocreditKeeper EcocreditKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distKeeper ecocredit.DistributionKeeper,
+	storeKey sdk.StoreKey,
+) Keeper {
 	basketStore, err := basketv1.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
-	return Keeper{bankKeeper: bankKeeper, ecocreditKeeper: ecocreditKeeper, stateStore: basketStore, storeKey: storeKey}
+	return Keeper{
+		bankKeeper:      bankKeeper,
+		ecocreditKeeper: ecocreditKeeper,
+		distKeeper:      distKeeper,
+		stateStore:      basketStore,
+		storeKey:        storeKey,
+	}
 }
 
 // EcocreditKeeper abstracts over methods that the main eco-credit keeper
@@ -43,16 +54,4 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
-}
-
-// BankKeeper abstracts over methods that the main bank keeper
-// needs to expose to the basket keeper.
-//
-// NOTE: run `make mocks` whenever you add methods here
-type BankKeeper interface {
-	MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
-	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
-	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
-	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 }

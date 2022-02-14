@@ -4,6 +4,10 @@ import (
 	"context"
 	"testing"
 
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -20,7 +24,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,10 +35,11 @@ type baseSuite struct {
 	k               basket.Keeper
 	ctrl            *gomock.Controller
 	addr            sdk.AccAddress
-	bankKeeper      *mocks.MockBankKeeper
+	bankKeeper      *mocks2.MockBankKeeper
 	ecocreditKeeper *mocks.MockEcocreditKeeper
 	storeKey        *sdk.KVStoreKey
 	sdkCtx          sdk.Context
+	distKeeper      *mocks2.MockDistributionKeeper
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -59,9 +63,10 @@ func setupBase(t *testing.T) *baseSuite {
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
-	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
+	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
 	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.storeKey)
+	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
+	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.distKeeper, s.storeKey)
 
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
@@ -70,13 +75,6 @@ func setupBase(t *testing.T) *baseSuite {
 
 // this is an example of how we will unit test the basket functionality with mocks
 func TestKeeperExample(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
-	require.NoError(t, err)
-
-	bankKeeper := mocks.NewMockBankKeeper(ctrl)
-	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	sk := sdk.NewKVStoreKey("test")
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
-	require.NotNil(t, k)
+	s := setupBase(t)
+	require.NotNil(t, s.k)
 }

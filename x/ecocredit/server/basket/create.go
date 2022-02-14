@@ -3,6 +3,7 @@ package basket
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -25,9 +26,32 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, sender, feeModuleAccName, fee)
+	err = k.distKeeper.FundCommunityPool(sdk.UnwrapSDKContext(ctx), fee, sender)
 	if err != nil {
 		return nil, err
+	}
+
+	res, err := k.ecocreditKeeper.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
+	if err != nil {
+		return nil, err
+	}
+
+	found := false
+	for _, creditType := range res.CreditTypes {
+		if creditType.Abbreviation == msg.CreditTypeName {
+			found = true
+			if creditType.Precision > msg.Exponent {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+					"basket exponent %d must be >= credit type precision %d",
+					msg.Exponent,
+					creditType.Precision,
+				)
+			}
+			break
+		}
+	}
+	if !found {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("can't find credit type %s", msg.CreditTypeName)
 	}
 
 	// TODO: need to decide about the denom creation
