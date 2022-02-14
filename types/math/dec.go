@@ -134,6 +134,16 @@ func (x Dec) MulExact(y Dec) (Dec, error) {
 	return z, nil
 }
 
+// QuoExact is a version of Quo that returns an error if any rounding occurred.
+func (x Dec) QuoExact(y Dec) (Dec, error) {
+	var z Dec
+	condition, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
+	if condition.Rounded() {
+		return z, errors.Wrap(err, "exact decimal quotient error")
+	}
+	return z, errors.Wrap(err, "decimal quotient error")
+}
+
 // QuoInteger returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
 // without mutating any argument and error if there is an overflow.
 func (x Dec) QuoInteger(y Dec) (Dec, error) {
