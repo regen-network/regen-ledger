@@ -1,20 +1,12 @@
 package basket_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -22,46 +14,21 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
 
-type suite struct {
-	t               *testing.T
-	db              ormdb.ModuleDB
-	stateStore      basketv1.StateStore
-	ctx             context.Context
-	k               basket.Keeper
-	ctrl            *gomock.Controller
-	acct            sdk.AccAddress
-	bankKeeper      *mocks.MockBankKeeper
-	ecocreditKeeper *mocks.MockEcocreditKeeper
-	fooBasketId     uint64
-	barBasketId     uint64
-	storeKey        *sdk.KVStoreKey
-	sdkCtx          sdk.Context
+type takeSuite struct {
+	*baseSuite
+	fooBasketId uint64
+	barBasketId uint64
 }
 
-func setup(t *testing.T) *suite {
+func setupTake(t *testing.T) *takeSuite {
 	// prepare database
-	s := &suite{t: t}
-	var err error
-	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
-	assert.NilError(t, err)
-	s.stateStore, err = basketv1.NewStateStore(s.db)
-	assert.NilError(t, err)
-
-	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	s.storeKey = sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
-	assert.NilError(t, cms.LoadLatestVersion())
-	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
-	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	s := &takeSuite{baseSuite: setupBase(t)}
 
 	// add some data
+	var err error
 	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "foo",
 		DisableAutoRetire: false,
@@ -110,25 +77,16 @@ func setup(t *testing.T) *suite {
 	}))
 	s.setTradableSupply("C4", "4.0")
 
-	// setup test keeper
-	s.ctrl = gomock.NewController(t)
-	assert.NilError(t, err)
-	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.storeKey)
-
-	s.acct = sdk.AccAddress{0, 1, 2, 3, 4, 5}
-
 	return s
 }
 
 func TestTakeMustRetire(t *testing.T) {
 	t.Parallel()
-	s := setup(t)
+	s := setupTake(t)
 
 	// foo requires RetireOnTake
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.acct.String(),
+		Owner:              s.addr.String(),
 		BasketDenom:        "foo",
 		Amount:             "6.0",
 		RetirementLocation: "",
@@ -139,14 +97,14 @@ func TestTakeMustRetire(t *testing.T) {
 
 func TestTakeRetire(t *testing.T) {
 	t.Parallel()
-	s := setup(t)
+	s := setupTake(t)
 
 	fooCoins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(6000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, baskettypes.BasketSubModuleName, fooCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, fooCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, fooCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.acct.String(),
+		Owner:              s.addr.String(),
 		BasketDenom:        "foo",
 		Amount:             "6000000",
 		RetirementLocation: "US",
@@ -177,14 +135,14 @@ func TestTakeRetire(t *testing.T) {
 
 func TestTakeTradable(t *testing.T) {
 	t.Parallel()
-	s := setup(t)
+	s := setupTake(t)
 
 	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(10000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.acct, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:        s.acct.String(),
+		Owner:        s.addr.String(),
 		BasketDenom:  "bar",
 		Amount:       "10000000",
 		RetireOnTake: false,
@@ -220,42 +178,42 @@ func assertDecStringEqual(t *testing.T, expected, actual string) {
 	assert.Assert(t, 0 == dx.Cmp(dy), fmt.Sprintf("%s != %s", expected, actual))
 }
 
-func (s suite) expectTradableBalance(batchDenom string, expected string) {
+func (s takeSuite) expectTradableBalance(batchDenom string, expected string) {
 	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.TradableBalanceKey(s.acct, ecocredit.BatchDenomT(batchDenom)))
+	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(batchDenom)))
 	assert.NilError(s.t, err)
 	s.expectDec(expected, bal)
 }
 
-func (s suite) expectRetiredBalance(batchDenom string, expected string) {
+func (s takeSuite) expectRetiredBalance(batchDenom string, expected string) {
 	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.RetiredBalanceKey(s.acct, ecocredit.BatchDenomT(batchDenom)))
+	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.RetiredBalanceKey(s.addr, ecocredit.BatchDenomT(batchDenom)))
 	assert.NilError(s.t, err)
 	s.expectDec(expected, bal)
 }
 
-func (s suite) expectTradableSupply(batchDenom string, expected string) {
+func (s takeSuite) expectTradableSupply(batchDenom string, expected string) {
 	kvStore := s.sdkCtx.KVStore(s.storeKey)
 	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)))
 	assert.NilError(s.t, err)
 	s.expectDec(expected, bal)
 }
 
-func (s suite) expectRetiredSupply(batchDenom string, expected string) {
+func (s takeSuite) expectRetiredSupply(batchDenom string, expected string) {
 	kvStore := s.sdkCtx.KVStore(s.storeKey)
 	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.RetiredSupplyKey(ecocredit.BatchDenomT(batchDenom)))
 	assert.NilError(s.t, err)
 	s.expectDec(expected, bal)
 }
 
-func (s suite) setTradableSupply(batchDenom string, amount string) {
+func (s takeSuite) setTradableSupply(batchDenom string, amount string) {
 	kvStore := s.sdkCtx.KVStore(s.storeKey)
 	dec, err := math.NewDecFromString(amount)
 	assert.NilError(s.t, err)
 	ecocredit.SetDecimal(kvStore, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)), dec)
 }
 
-func (s suite) expectDec(expected string, actual math.Dec) {
+func (s takeSuite) expectDec(expected string, actual math.Dec) {
 	dec, err := math.NewDecFromString(expected)
 	assert.NilError(s.t, err)
 	assert.Assert(s.t, actual.Cmp(dec) == 0)
