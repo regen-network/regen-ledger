@@ -35,6 +35,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	}
 
 	err = s.db.ImportJSON(ctx, jsonSource)
+	if err != nil {
+		return nil, err
+	}
 
 	var genesisState ecocredit.GenesisState
 	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
@@ -280,6 +283,9 @@ func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, targe
 	}
 
 	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return w.Close()
 }

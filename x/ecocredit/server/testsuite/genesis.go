@@ -167,11 +167,14 @@ func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.G
 	require.NoError(err)
 
 	var exportedGenesisState ecocredit.GenesisState
-	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
-		bytes.NewReader(wrapper["regen.ecocredit.v1alpha2.GenesisState"]),
-		&exportedGenesisState,
-	)
-	require.NoError(err)
+	legacyGenesisBz, ok := wrapper["regen.ecocredit.v1alpha1.GenesisState"]
+	if ok {
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
+			bytes.NewReader(legacyGenesisBz),
+			&exportedGenesisState,
+		)
+		require.NoError(err)
+	}
 
 	return exportedGenesisState
 }
@@ -183,7 +186,7 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 	require.NoError(err)
 
 	wrapper := map[string]json.RawMessage{
-		"regen.ecocredit.v1alpha2.GenesisState": genesisBytes,
+		"regen.ecocredit.v1alpha1.GenesisState": genesisBytes,
 	}
 
 	bz, err := json.Marshal(wrapper)
