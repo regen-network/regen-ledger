@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 
+	"github.com/gogo/protobuf/proto"
+
 	"github.com/gogo/protobuf/jsonpb"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -167,7 +169,7 @@ func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.G
 	require.NoError(err)
 
 	var exportedGenesisState ecocredit.GenesisState
-	legacyGenesisBz, ok := wrapper["regen.ecocredit.v1alpha1.GenesisState"]
+	legacyGenesisBz, ok := wrapper[proto.MessageName(&ecocredit.GenesisState{})]
 	if ok {
 		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
 			bytes.NewReader(legacyGenesisBz),
@@ -186,7 +188,7 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 	require.NoError(err)
 
 	wrapper := map[string]json.RawMessage{
-		"regen.ecocredit.v1alpha1.GenesisState": genesisBytes,
+		proto.MessageName(&ecocredit.GenesisState{}): genesisBytes,
 	}
 
 	bz, err := json.Marshal(wrapper)
