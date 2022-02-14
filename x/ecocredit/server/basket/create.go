@@ -3,19 +3,18 @@ package basket
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	rgCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
 	if err := basket.ValidateCreateFee(msg, fee); err != nil {
 		return nil, err
@@ -26,7 +25,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err = k.distKeeper.FundCommunityPool(sdk.UnwrapSDKContext(ctx), fee, sender)
+	err = k.distKeeper.FundCommunityPool(rgCtx.Context, fee, sender)
 	if err != nil {
 		return nil, err
 	}
@@ -48,11 +47,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses); err != nil {
+	if err = k.indexAllowedClasses(rgCtx, id, msg.AllowedClasses); err != nil {
 		return nil, err
 	}
 
-	k.bankKeeper.SetDenomMetaData(sdk.UnwrapSDKContext(ctx), banktypes.Metadata{
+	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
 		DenomUnits: []*banktypes.DenomUnit{
 			{
 				Denom:    msg.DisplayName,
@@ -66,7 +65,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Symbol:  msg.DisplayName,
 	})
 
-	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{
+	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
 		BasketDenom: denom,
 		Curator:     msg.Curator,
 	})
@@ -102,15 +101,14 @@ func assertCreditTypeExists(ctx context.Context, k EcocreditKeeper, creditType s
 	return nil
 }
 
-func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string) error {
+func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedClasses []string) error {
 	for _, class := range allowedClasses {
 		// TODO: we should be able to check if class exists without deserializing it.
-		_, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: class})
-		if err != nil {
-			return err
+		if !k.ecocreditKeeper.HasClassInfo(ctx, class) {
+			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
 		}
 
-		err = k.stateStore.BasketClassStore().Insert(ctx,
+		err := k.stateStore.BasketClassStore().Insert(ctx,
 			&basketv1.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,

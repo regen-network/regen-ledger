@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
@@ -54,4 +55,5 @@ type EcocreditKeeper interface {
 	ecocredit.QueryServer
 
 	GetCreateBasketFee(ctx context.Context) sdk.Coins
+	HasClassInfo(ctx types.Context, classID string) bool
 }
