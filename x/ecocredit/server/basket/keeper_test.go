@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
@@ -19,6 +20,7 @@ func TestKeeperExample(t *testing.T) {
 
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper)
+	sk := sdk.NewKVStoreKey("test")
+	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, sk)
 	require.NotNil(t, k)
 }
