@@ -56,9 +56,9 @@ func (m MsgCreate) ValidateBasic() error {
 	return m.Fee.Validate()
 }
 
-// Validate additional validation with access to the state data.
+// ValidateCreateFee additional validation with access to the state data.
 // minFee must be sorted.
-func (m MsgCreate) Validate(minFee sdk.Coins) error {
+func ValidateCreateFee(m *MsgCreate, minFee sdk.Coins) error {
 	// Note if user is adding too much denoms then we fails as well.
 	if len(minFee) != len(m.Fee) {
 		return errBadReq.Wrapf("Wrong denom set, expected %v", m.Fee)

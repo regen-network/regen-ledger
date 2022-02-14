@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	types "github.com/cosmos/cosmos-sdk/types"
+	types0 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	gomock "github.com/golang/mock/gomock"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -247,4 +248,16 @@ func (m *MockBankKeeper) SendCoinsFromModuleToAccount(ctx types.Context, senderM
 func (mr *MockBankKeeperMockRecorder) SendCoinsFromModuleToAccount(ctx, senderModule, recipientAddr, amt interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCoinsFromModuleToAccount", reflect.TypeOf((*MockBankKeeper)(nil).SendCoinsFromModuleToAccount), ctx, senderModule, recipientAddr, amt)
+}
+
+// SetDenomMetaData mocks base method.
+func (m *MockBankKeeper) SetDenomMetaData(ctx types.Context, denomMetaData types0.Metadata) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetDenomMetaData", ctx, denomMetaData)
+}
+
+// SetDenomMetaData indicates an expected call of SetDenomMetaData.
+func (mr *MockBankKeeperMockRecorder) SetDenomMetaData(ctx, denomMetaData interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDenomMetaData", reflect.TypeOf((*MockBankKeeper)(nil).SetDenomMetaData), ctx, denomMetaData)
 }
