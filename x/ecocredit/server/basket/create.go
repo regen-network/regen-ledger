@@ -73,8 +73,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	return &basket.MsgCreateResponse{BasketDenom: denom}, err
 }
 
-// validateCreditType returns error if a given credit type doesn't exist or it's precision
-// is bigger then the requested exponent.
+// validateCreditType returns error if a given credit type abbreviation doesn't exist or
+// it's precision is bigger then the requested exponent.
 func validateCreditType(ctx context.Context, k EcocreditKeeper, creditType string, exponent uint32) error {
 	res, err := k.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
 	if err != nil {
@@ -82,7 +82,7 @@ func validateCreditType(ctx context.Context, k EcocreditKeeper, creditType strin
 	}
 
 	for _, c := range res.CreditTypes {
-		if c.Name == creditType {
+		if c.Abbreviation == creditType {
 			if c.Precision > exponent {
 				return sdkerrors.ErrInvalidRequest.Wrapf(
 					"exponent %d must be >= credit type precision %d",
