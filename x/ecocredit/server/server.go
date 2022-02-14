@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -88,6 +89,6 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-
-	// TODO Msg and Query server registration
+	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
+	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
 }
