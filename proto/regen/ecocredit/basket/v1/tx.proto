@@ -28,12 +28,25 @@ message MsgCreate {
   // basket settings.
   string curator = 1;
 
-  // name will be used to create a bank denom for this basket token.
+  // name will be used to together with prefix to create a bank denom for this
+  // basket token. It can be between 3-8 alphanumeric characters, with the
+  // first character being alphabetic. The bank denom will be
+  // `eco/<prefix><name>` and its display name will be `eco/<name>`.
   string name = 2;
 
-  // display_name will be used to create a bank Metadata display name for this
-  // basket token.
-  string display_name = 3;
+  // prefix is a single alphabetic character that denotes
+  // the denom prefix and indicates in some way what relationship is between
+  // the denom and display denom. Standard conventions are that m indicates
+  // milli (10^3), u indicates micro (10^6), n indicates nano (10^9).
+  // Typical usage of prefix should correspond with the `exponent` field, 
+  // which is used to convert decimal ecocredit amounts to integral
+  // basket tokens.
+  string prefix = 3;
+
+  // description is a human-readable description of the basket denom that should
+  // be at most 256 characters.
+  string description = 4;
+
 
   // exponent is the exponent that will be used for converting credits to basket
   // tokens and for bank denom metadata. It also limits the precision of
@@ -43,30 +56,31 @@ message MsgCreate {
   // that the maximum precision of credit amounts is 6 decimal places so that
   // the need to round is eliminated. The exponent must be >= the precision of
   // the credit type at the time the basket is created.
-  uint32 exponent = 4;
+  uint32 exponent = 5;
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is
   // false unless the credits were previously put into the basket by the
   // address picking them from the basket, in which case they will remain
   // tradable.
-  bool disable_auto_retire = 5;
+  bool disable_auto_retire = 6;
 
-  // credit_type_name filters against credits from this credit type name.
-  string credit_type_name = 6;
+  // credit_type_abbrev is the abbreviation of the credit type this basket is
+  // able to hold.
+  string credit_type_abbrev = 7;
 
   // allowed_classes are the credit classes allowed to be put in the basket
-  repeated string allowed_classes = 7;
+  repeated string allowed_classes = 8;
 
   // date_criteria is the date criteria for batches admitted to the basket.
-  DateCriteria date_criteria = 8;
+  DateCriteria date_criteria = 9;
 
   // fee is the fee that the curator will pay to create the basket. It must be
   // >= the required Params.basket_creation_fee. We include the fee explicitly
   // here so that the curator explicitly acknowledges paying this fee and
   // is not surprised to learn that the paid a big fee and didn't know
   // beforehand.
-  repeated cosmos.base.v1beta1.Coin fee = 9 [
+  repeated cosmos.base.v1beta1.Coin fee = 10 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
