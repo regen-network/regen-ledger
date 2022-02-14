@@ -1,0 +1,98 @@
+syntax = "proto3";
+package regen.bond.v1alpha1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/bond";
+
+// Msg defines the Msg service.
+service Msg {
+
+  // IssueBond issues a new bond
+  rpc IssueBond(MsgIssueBond) returns (MsgIssueBondResponse);
+
+  // SellBond sells a bond to a new owner
+  rpc SellBond(MsgSellBond) returns (MsgIssueBondResponse);
+}
+
+// MsgIssueBond is the Msg/IssueBond request type.
+message MsgIssueBond {
+
+  string emission_denom = 1;
+
+  // bond name
+  string name = 2;
+
+  // account address of current holder of the bond
+  string holder = 3;
+
+  // face value of the bond
+  string face_value = 4;
+
+  // currency of the face value
+  string face_currency = 5;
+
+  // date of issuance
+  google.protobuf.Timestamp issuance_date = 6 [(gogoproto.stdtime) = true];
+
+  // date of maturity
+  google.protobuf.Timestamp maturity_date = 7 [(gogoproto.stdtime) = true];
+
+  // coupon rate
+  string coupon_rate = 8;
+
+  // coupon frequency
+  string coupon_frequency = 9;
+
+  // project code
+  string project = 10;
+
+  // metadata encoded in base64
+  string metadata = 11;
+}
+
+// MsgIssueBondResponse is the Msg/IssueBond response type.
+message MsgIssueBondResponse {
+  // bond_id is the unique ID of the newly created bond.
+  string bond_id = 1;
+}
+
+// MsgIssueBond is the Msg/IssueBond request type.
+message MsgSellBond {
+
+  // bond_id is the unique ID of the newly created bond.
+  string bond_id = 1;
+
+  // buyer of the bond
+  string buyer = 2;
+
+  // amount of bought bond
+  string amount = 3;
+
+  // holder of the bond
+  string holder = 4;
+}
+
+// MsgSellBondResponse is the Msg/MsgSellBond response type.
+message MsgSellBondResponse {
+
+  // bond_id is the unique ID of the newly created bond.
+  repeated string bond_id = 1;
+}
+
+// MsgIssueBond is the Msg/MsgMatureBond request type.
+message MsgMatureEmission {
+
+  // bond_id is the unique ID of all bonds that belongs to one emission.
+  string emission_denom = 1;
+}
+
+// MsgMatureBondResponse is the Msg/MsgMatureBond response type.
+message MsgMatureEmissionResponse {
+
+  // bond_id is the unique ID of all bonds that belongs to one emission.
+  string emission_denom = 1;
+}
+

@@ -1,0 +1,12 @@
+{
+  "emission_denom": "emission-denom-03",
+  "name": "Bond 03",
+  "face_value": "1000",
+  "face_currency": "EUR",
+  "issuance_date": "2022-02-21T00:00:00Z",
+  "maturity_date": "2023-02-21T00:00:00Z",
+  "coupon_rate": "8",
+  "coupon_frequency": "quarterly",
+  "project": "P01",
+  "metadata": ""
+}

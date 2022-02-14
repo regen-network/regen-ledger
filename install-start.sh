@@ -1,0 +1,2 @@
+make install
+regen start

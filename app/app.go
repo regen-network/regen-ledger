@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/regen-network/regen-ledger/v2/x/bond"
 	"io"
 	"math/big"
 	"net/http"
@@ -92,6 +93,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	bondmodule "github.com/regen-network/regen-ledger/v2/x/bond/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
@@ -133,6 +135,7 @@ var (
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
 			ecocreditmodule.Module{},
+			bondmodule.Module{},
 		}, setCustomModuleBasics()...)...,
 	)
 
@@ -146,6 +149,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		ecocredit.ModuleName:           {authtypes.Burner},
+		bond.ModuleName:                {authtypes.Burner},
 	}
 )
 
@@ -360,7 +364,12 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.AccountKeeper,
 		app.BankKeeper,
 	)
-	newModules := []moduletypes.Module{ecocreditModule}
+	bondModule := bondmodule.NewModule(
+		app.GetSubspace(bond.DefaultParamspace),
+		app.AccountKeeper,
+		app.BankKeeper,
+	)
+	newModules := []moduletypes.Module{ecocreditModule, bondModule}
 	err := app.smm.RegisterModules(newModules)
 	if err != nil {
 		panic(err)
@@ -448,6 +457,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
 			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
+			bondmodule.NewModule(app.GetSubspace(bond.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
 
@@ -661,6 +671,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
+	paramsKeeper.Subspace(bond.DefaultParamspace)
 	initCustomParamsKeeper(&paramsKeeper)
 
 	return paramsKeeper

@@ -1,0 +1,49 @@
+syntax = "proto3";
+package regen.bond.v1alpha1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/bond";
+
+// BatchInfo represents the high-level on-chain information for a bond.
+message BondInfo {
+
+  // id is the unique ID of bond.
+  string id = 1;
+
+  // emission_denom is the unique id of emission
+  string emission_denom = 2;
+
+  string name = 3;
+
+  string holder = 4;
+
+  string parent_bond = 5;
+
+  string face_value = 6;
+
+  string face_currency = 7;
+
+  string creation_date = 8;
+
+  string issuance_date = 9;
+
+  string maturity_date = 10;
+
+  string coupon_rate = 11;
+
+  string coupon_frequency = 12;
+
+  Status status = 13;
+
+  string project = 14;
+
+  string metadata = 15;
+
+  enum Status {
+    ACTIVE = 0;
+    CLOSED = 1;
+    MATURED = 2;
+  }
+}

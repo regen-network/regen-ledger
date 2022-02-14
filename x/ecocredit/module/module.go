@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -28,6 +29,7 @@ import (
 )
 
 type Module struct {
+	log           log.Logger
 	paramSpace    paramtypes.Subspace
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
