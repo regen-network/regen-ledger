@@ -4,6 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/gogo/protobuf/proto"
+
+	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	"github.com/gogo/protobuf/jsonpb"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -15,11 +22,37 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// NOTE: currently we have ORM + non-ORM genesis in parallel. We will remove
+// the non-ORM genesis soon, but for now, we merge both genesis JSON's into
+// the same map.
+
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+	jsonSource, err := ormjson.NewRawMessageSource(data)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.db.ImportJSON(ctx, jsonSource)
+	if err != nil {
+		return nil, err
+	}
+
 	var genesisState ecocredit.GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
+	if err != nil {
+		return nil, err
+	}
+
+	if r == nil {
+		return nil, nil
+	}
+
+	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+	if err != nil {
+		return nil, err
+	}
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
@@ -44,7 +77,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	return []abci.ValidatorUpdate{}, nil
+	return nil, nil
 }
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
@@ -224,5 +257,37 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Supplies:  supplies,
 	}
 
-	return cdc.MustMarshalJSON(gs), nil
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err := s.db.ExportJSON(ctx, jsonTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonTarget.JSON()
+}
+
+// MergeLegacyJSONIntoTarget merges legacy genesis JSON in message into the
+// ormjson.WriteTarget under key which has the name of the legacy message.
+func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
+	if err != nil {
+		return err
+	}
+
+	bz, err := cdc.MarshalJSON(message)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
 }

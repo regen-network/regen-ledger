@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -298,7 +300,16 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", out.String())
 
-	simState.GenState[ecocredit.ModuleName] = simState.Cdc.MustMarshalJSON(&ecocreditGenesis)
+	wrapper := map[string]json.RawMessage{
+		proto.MessageName(&ecocreditGenesis): bz,
+	}
+
+	bz, err := json.Marshal(wrapper)
+	if err != nil {
+		panic(err)
+	}
+
+	simState.GenState[ecocredit.ModuleName] = bz
 }
 
 func genRandomBalances(r *rand.Rand, total string, n int) []string {
