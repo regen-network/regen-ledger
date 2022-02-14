@@ -3,12 +3,16 @@ package server_test
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -31,11 +35,13 @@ func TestServer(t *testing.T) {
 
 	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+	distKey := sdk.NewKVStoreKey(disttypes.StoreKey)
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
+	baseApp.MountStore(distKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
 
@@ -56,7 +62,9 @@ func TestServer(t *testing.T) {
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
+	ctrl := gomock.NewController(t)
+	distKeeper := mocks2.NewMockDistributionKeeper(ctrl)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
 	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)

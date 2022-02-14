@@ -27,21 +27,28 @@ import (
 )
 
 type Module struct {
-	paramSpace    paramtypes.Subspace
-	accountKeeper ecocredit.AccountKeeper
-	bankKeeper    ecocredit.BankKeeper
+	paramSpace         paramtypes.Subspace
+	accountKeeper      ecocredit.AccountKeeper
+	bankKeeper         ecocredit.BankKeeper
+	distributionKeeper ecocredit.DistributionKeeper
 }
 
 // NewModule returns a new Module object.
-func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) Module {
+func NewModule(
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distributionKeeper ecocredit.DistributionKeeper,
+) Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
 	}
 
 	return Module{
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
+		paramSpace:         paramSpace,
+		bankKeeper:         bankKeeper,
+		accountKeeper:      accountKeeper,
+		distributionKeeper: distributionKeeper,
 	}
 }
 
@@ -60,7 +67,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
+	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
 }
 
 //nolint:errcheck
