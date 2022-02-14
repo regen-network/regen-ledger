@@ -76,14 +76,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper) {
+func RegisterServices(
+	configurator server.Configurator,
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distKeeper ecocredit.DistributionKeeper,
+) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
-	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
+	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, distKeeper, impl.storeKey)
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
