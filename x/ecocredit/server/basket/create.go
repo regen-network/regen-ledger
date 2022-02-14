@@ -82,7 +82,7 @@ func validateCreditType(ctx context.Context, k EcocreditKeeper, creditType strin
 	}
 
 	for _, c := range res.CreditTypes {
-		if c.Abbreviation == creditType {
+		if c.Name == creditType {
 			if c.Precision > exponent {
 				return sdkerrors.ErrInvalidRequest.Wrapf(
 					"exponent %d must be >= credit type precision %d",
