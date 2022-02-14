@@ -10,6 +10,7 @@ import (
 
 	types "github.com/cosmos/cosmos-sdk/types"
 	gomock "github.com/golang/mock/gomock"
+	types0 "github.com/regen-network/regen-ledger/types"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -138,6 +139,20 @@ func (m *MockEcocreditKeeper) GetCreateBasketFee(ctx context.Context) types.Coin
 func (mr *MockEcocreditKeeperMockRecorder) GetCreateBasketFee(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCreateBasketFee", reflect.TypeOf((*MockEcocreditKeeper)(nil).GetCreateBasketFee), ctx)
+}
+
+// HasClassInfo mocks base method.
+func (m *MockEcocreditKeeper) HasClassInfo(ctx types0.Context, classID string) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HasClassInfo", ctx, classID)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// HasClassInfo indicates an expected call of HasClassInfo.
+func (mr *MockEcocreditKeeperMockRecorder) HasClassInfo(ctx, classID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasClassInfo", reflect.TypeOf((*MockEcocreditKeeper)(nil).HasClassInfo), ctx, classID)
 }
 
 // Params mocks base method.

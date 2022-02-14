@@ -54,7 +54,7 @@ func TestBadCreditType(t *testing.T) {
 		Curator:        s.addr.String(),
 		CreditTypeName: "F",
 	})
-	assert.ErrorContains(t, err, "can't find credit type")
+	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
@@ -106,7 +106,7 @@ func TestMissingClass(t *testing.T) {
 			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
 		}}, nil,
 	)
-	s.ecocreditKeeper.EXPECT().ClassInfo(gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("not found"))
+	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), gomock.Any()).Return(false)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
 		CreditTypeName: "C",
@@ -114,7 +114,7 @@ func TestMissingClass(t *testing.T) {
 		Name:           "foo",
 		AllowedClasses: []string{"bar"},
 	})
-	assert.ErrorContains(t, err, "not found")
+	assert.ErrorContains(t, err, "doesn't exist")
 }
 
 func TestGoodBasket(t *testing.T) {
@@ -128,9 +128,7 @@ func TestGoodBasket(t *testing.T) {
 			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
 		}}, nil,
 	)
-	s.ecocreditKeeper.EXPECT().ClassInfo(gomock.Any(), &ecocredit.QueryClassInfoRequest{ClassId: "bar"}).Return(&ecocredit.QueryClassInfoResponse{
-		Info: &ecocredit.ClassInfo{ClassId: "bar"},
-	}, nil)
+	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), "bar").Return(true)
 	seconds := time.Hour * 24 * 356 * 5
 	dateCriteria := &baskettypes.DateCriteria_StartDateWindow{
 		StartDateWindow: gogotypes.DurationProto(seconds),
