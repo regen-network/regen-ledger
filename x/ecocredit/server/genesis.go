@@ -271,6 +271,8 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	return jsonTarget.JSON()
 }
 
+// MergeLegacyJSONIntoTarget merges legacy genesis JSON in message into the
+// ormjson.WriteTarget under key which has the name of the legacy message.
 func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
 	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
 	if err != nil {
