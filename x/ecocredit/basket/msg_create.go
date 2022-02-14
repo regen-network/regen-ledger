@@ -1,6 +1,9 @@
 package basket
 
 import (
+	"fmt"
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -18,14 +21,15 @@ const exponentMax = 32
 const creditAbbrMaxLen = 32
 
 var errBadReq = sdkerrors.ErrInvalidRequest
+var reName = regexp.MustCompile(fmt.Sprintf("^[[:alnum:]]{%d,%d}$", nameMinLen, nameMaxLen))
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address " + err.Error())
 	}
-	if len(m.Name) < nameMinLen || len(m.Name) > nameMaxLen {
-		return errBadReq.Wrapf("name must be between %d and %d characters long", nameMinLen, nameMaxLen)
+	if !reName.MatchString(m.Name) {
+		return errBadReq.Wrapf("name must be between %d and %d alpha-numeric characters long", nameMinLen, nameMaxLen)
 	}
 	if m.Exponent > exponentMax {
 		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
