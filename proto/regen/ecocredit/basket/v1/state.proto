@@ -26,8 +26,8 @@ message Basket {
     // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
     bool disable_auto_retire = 3;
 
-    // credit_type_name is the name of the credit type this basket is able to hold.
-    string credit_type_name = 4;
+    // credit_type_abbrev is the abbreviation of the credit type this basket is able to hold.
+    string credit_type_abbrev = 4;
 
     // date_criteria is the date criteria for batches admitted to the basket.
     DateCriteria date_criteria = 5;

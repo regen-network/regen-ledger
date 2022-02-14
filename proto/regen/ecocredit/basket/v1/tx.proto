@@ -62,8 +62,9 @@ message MsgCreate {
   // tradable.
   bool disable_auto_retire = 6;
 
-  // credit_type_name filters against credits from this credit type name.
-  string credit_type_name = 7;
+  // credit_type_abbrev is the abbreviation of the credit type this basket is
+  // able to hold.
+  string credit_type_abbrev = 7;
 
   // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 8;
