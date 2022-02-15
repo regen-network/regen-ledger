@@ -146,3 +146,36 @@ func TestMsgCreateSignBytes(t *testing.T) {
 	bz := m.GetSignBytes()
 	require.NotEmpty(t, bz)
 }
+
+func TestBasketDenom(t *testing.T) {
+	tcs := []struct {
+		tname        string
+		abbrev       string
+		exponent     uint32
+		denom        string
+		displayDenom string
+		err          bool
+	}{
+		{"wrong exponent",
+			"X", 5, "", "", true},
+		{"exponent-0",
+			"X", 0, "eco.X.foo", "eco.X.foo", false},
+		{"exponent-1`",
+			"X", 1, "eco.dX.foo", "eco.X.foo", false},
+		{"exponent-2",
+			"X", 2, "eco.cX.foo", "eco.X.foo", false},
+		{"exponent-6",
+			"X", 6, "eco.uX.foo", "eco.X.foo", false},
+	}
+	require := require.New(t)
+	for _, tc := range tcs {
+		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+		if tc.err {
+			require.Error(err, tc.tname)
+		} else {
+			require.NoError(err, tc.tname)
+			require.Equal(tc.denom, d, tc.tname)
+			require.Equal(tc.displayDenom, displayD, tc.tname)
+		}
+	}
+}
