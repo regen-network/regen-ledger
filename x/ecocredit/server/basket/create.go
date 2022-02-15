@@ -40,8 +40,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	denomTail := msg.CreditTypeAbbrev + "." + msg.Name
-	displayDenomName := basketDenomPrefix + denomTail          // eco.<exponent><credit-type-abbrev>.<name>
-	denom := basketDenomPrefix + denomPrefix + "." + denomTail // eco.<credit-class>.<name>
+	displayDenomName := basketDenomPrefix + denomTail    // eco.<exponent><credit-type-abbrev>.<name>
+	denom := basketDenomPrefix + denomPrefix + denomTail // eco.<credit-class>.<name>
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
