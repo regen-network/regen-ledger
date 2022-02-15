@@ -31,7 +31,7 @@ const (
 
 // basket operations weights
 const (
-	WeightCreate = 100
+	WeightCreate = 50
 	WeightPut    = 100
 	WeightTake   = 100
 )
@@ -244,7 +244,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			batches := batchesRes.Batches
 			if len(batches) != 0 {
 				for _, item := range batches {
-					balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{Account: owner.Address.String(), BatchDenom: item.BatchDenom})
+					balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
+						Account: owner.Address.String(), BatchDenom: item.BatchDenom,
+					})
 					if err != nil {
 						return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 					}
@@ -277,9 +279,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					}
 				}
 			}
-
 		}
-
 		if len(credits) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no basket credits"), nil, nil
 		}
@@ -330,8 +330,89 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		owner, _ := simtypes.RandomAcc(r, accs)
+		ownerAddr := owner.Address.String()
 
-		return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, ""), nil, nil
+		ctx := regentypes.Context{Context: sdkCtx}
+		res, err := bsktQryClient.Baskets(ctx, &basket.QueryBasketsRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
+		}
+
+		baskets := res.Baskets
+		if len(baskets) == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no baskets"), nil, nil
+		}
+
+		rBasket := baskets[r.Intn(len(baskets))]
+		balancesRes, err := bsktQryClient.BasketBalances(ctx, &basket.QueryBasketBalancesRequest{
+			BasketDenom: rBasket.BasketDenom,
+		})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
+		}
+		balances := balancesRes.Balances
+
+		if len(balances) == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no balances"), nil, nil
+		}
+
+		balance := balances[r.Intn(len(balances))]
+
+		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{Account: ownerAddr, BatchDenom: balance.BatchDenom})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
+		}
+
+		var amt string
+		if rBasket.DisableAutoRetire {
+			amt = balanceRes.TradableAmount
+		} else {
+			amt = balanceRes.RetiredAmount
+		}
+
+		if amt == "0" {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no balances"), nil, nil
+		}
+
+		msg := &basket.MsgTake{
+			Owner:              ownerAddr,
+			BasketDenom:        rBasket.BasketDenom,
+			Amount:             amt,
+			RetirementLocation: "AQ",
+			RetireOnTake:       !rBasket.DisableAutoRetire,
+		}
+
+		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "fee error"), nil, err
+		}
+
+		account := ak.GetAccount(sdkCtx, owner.Address)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			owner.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "unable to generate mock tx"), nil, err
+		}
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			if strings.Contains(err.Error(), "insufficient funds") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "not enough balance"), nil, nil
+			}
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
