@@ -3,7 +3,6 @@ package testsuite
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	types3 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -73,12 +72,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
-
-	// THIS DOESNT WORK AH!!!!!!!!!!!
-	basketAcc := types3.NewEmptyModuleAccount(basket.BasketSubModuleName, types3.Minter, types3.Burner)
-	s.ak.SetModuleAccount(s.sdkCtx, basketAcc)
-	ma := s.ak.GetModuleAccount(s.sdkCtx, basket.BasketSubModuleName)
-	s.Require().NotNil(ma)
 
 	ecocreditParams := ecocredit.DefaultParams()
 	// Add biodiversity credit type for testing credit type sequence numbers

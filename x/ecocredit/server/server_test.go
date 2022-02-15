@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -50,8 +51,9 @@ func TestServer(t *testing.T) {
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
-		minttypes.ModuleName:      {authtypes.Minter},
-		ecocredittypes.ModuleName: {authtypes.Burner, authtypes.Minter},
+		minttypes.ModuleName:       {authtypes.Minter},
+		ecocredittypes.ModuleName:  {authtypes.Burner, authtypes.Minter},
+		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
