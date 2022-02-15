@@ -18,14 +18,15 @@ import (
 )
 
 const (
-	FlagDisplayName       = "display-name"
-	FlagExponent          = "exponent"
-	FlagDisableAutoRetire = "disable-auto-retire"
-	FlagCreditTypeName    = "credit-type-name"
-	FlagAllowedClasses    = "allowed-classes"
-	FlagMinimumStartDate  = "minimum-start-date"
-	FlagStartDateWindow   = "start-date-window"
-	FlagBasketFee         = "basket-fee"
+	FlagDenomPrefix            = "denom-prefix"
+	FlagExponent               = "exponent"
+	FlagDisableAutoRetire      = "disable-auto-retire"
+	FlagCreditTypeAbbreviation = "credit-type-abbreviation"
+	FlagAllowedClasses         = "allowed-classes"
+	FlagMinimumStartDate       = "minimum-start-date"
+	FlagStartDateWindow        = "start-date-window"
+	FlagBasketFee              = "basket-fee"
+	FlagDenomDescription       = "description-description"
 )
 
 func TxCreateBasket() *cobra.Command {
@@ -38,7 +39,7 @@ Parameters:
 		name: the name used to create a bank denom for this basket token.
 
 Flags:
-		display_name: the name used to create a bank denom display name.
+		denom_prefix: the prefix to be used in the basket coin's base denom. Must only be one character.
 		exponent: the exponent used for converting credits to basket tokens and for bank
 			denom metadata. The exponent also limits the precision of credit amounts
 			when putting credits into a basket. An exponent of 6 will mean that 10^6 units
@@ -51,7 +52,7 @@ Flags:
 			from the basket. The credits will be auto-retired if disable_auto_retire is
 			false unless the credits were previously put into the basket by the address
 			picking them from the basket, in which case they will remain tradable.
-		credit_type_name: filters against credits from this credit type name (e.g. "carbon").
+		credit_type_abbreviation: filters against credits from this credit type abbreviation (e.g. "BIO").
 		allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
 			the basket (e.g. "C01,C02").
 		min_start_date: the earliest start date for batches of credits allowed into the basket.
@@ -63,6 +64,7 @@ Flags:
 			required Params.basket_creation_fee. We include the fee explicitly here so that the
 			curator explicitly acknowledges paying this fee and is not surprised to learn that the
 			paid a big fee and didn't know beforehand.
+		description: the description to be used in the basket coin's bank denom metadata.
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -71,7 +73,7 @@ Flags:
 				return err
 			}
 
-			displayName, err := cmd.Flags().GetString(FlagDisplayName)
+			denomPrefix, err := cmd.Flags().GetString(FlagDenomPrefix)
 			if err != nil {
 				return err
 			}
@@ -90,7 +92,7 @@ Flags:
 				return err
 			}
 
-			creditTypeName, err := cmd.Flags().GetString(FlagCreditTypeName)
+			creditTypeName, err := cmd.Flags().GetString(FlagCreditTypeAbbreviation)
 			if err != nil {
 				return err
 			}
@@ -109,6 +111,11 @@ Flags:
 				return err
 			}
 			startDateWindowString, err := cmd.Flags().GetString(FlagMinimumStartDate)
+			if err != nil {
+				return err
+			}
+
+			denomDescription, err := cmd.Flags().GetString(FlagDenomDescription)
 			if err != nil {
 				return err
 			}
@@ -141,13 +148,7 @@ Flags:
 					return err
 				}
 				startDateWindowDuration := time.Duration(startDateWindowInt)
-				if err != nil {
-					return fmt.Errorf("failed to parse start-date-window: %w", err)
-				}
 				startDateWindow := types.DurationProto(startDateWindowDuration)
-				if err != nil {
-					return fmt.Errorf("failed to parse start-date-window: %w", err)
-				}
 				dateCriteria.Sum = &basket.DateCriteria_StartDateWindow{
 					StartDateWindow: startDateWindow,
 				}
@@ -168,10 +169,11 @@ Flags:
 			msg := basket.MsgCreate{
 				Curator:           clientCtx.FromAddress.String(),
 				Name:              args[0],
-				DisplayName:       displayName,
+				Prefix:            denomPrefix,
+				Description:       denomDescription,
 				Exponent:          uint32(exponent),
 				DisableAutoRetire: disableAutoRetire,
-				CreditTypeName:    creditTypeName,
+				CreditTypeAbbrev:  creditTypeName,
 				AllowedClasses:    allowedClasses,
 				DateCriteria:      &dateCriteria,
 				Fee:               fee,
@@ -188,20 +190,22 @@ Flags:
 	flags.AddTxFlagsToCmd(cmd)
 
 	// command flags
-	cmd.Flags().String(FlagDisplayName, "", "the name used to create a bank denom display name")
+	cmd.Flags().String(FlagDenomPrefix, "", "the name used to create a bank denom display name")
 	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
-	cmd.Flags().String(FlagCreditTypeName, "", "filters against credits from this credit type name (e.g. \"carbon\")")
+	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
 	cmd.Flags().String(FlagAllowedClasses, "", "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
 	cmd.Flags().String(FlagStartDateWindow, "", "sets a cutoff for batch start dates when adding new credits to the basket (e.g. \"1325404800\")")
 	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")
+	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
 	// required flags
-	cmd.MarkFlagRequired(FlagDisplayName)
+	cmd.MarkFlagRequired(FlagDenomPrefix)
 	cmd.MarkFlagRequired(FlagExponent)
-	cmd.MarkFlagRequired(FlagCreditTypeName)
+	cmd.MarkFlagRequired(FlagCreditTypeAbbreviation)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
+	cmd.MarkFlagRequired(FlagDenomPrefix)
 
 	return cmd
 }

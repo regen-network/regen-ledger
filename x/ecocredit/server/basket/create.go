@@ -17,9 +17,8 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
-	if err := basket.ValidateCreateFee(msg, fee); err != nil {
+	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
-
 	}
 	sender, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
@@ -30,17 +29,18 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeName, msg.Exponent); err != nil {
+	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
-
-	// TODO: need to decide about the denom creation
-	denom := msg.Name
+	denom, displayDenomName, err := basket.MsgCreateDenom(msg)
+	if err != nil {
+		return nil, err
+	}
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
-		CreditTypeName:    msg.CreditTypeName,
+		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
 		Exponent:          msg.Exponent,
 	})
@@ -51,18 +51,26 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
+	denomUnits := []*banktypes.DenomUnit{{
+		Denom:    displayDenomName,
+		Exponent: msg.Exponent,
+		Aliases:  nil,
+	}}
+	if msg.Exponent != 0 {
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    denom,
+			Exponent: 0, // convertion from base denom to this denom
+			Aliases:  nil,
+		})
+	}
+
 	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    msg.DisplayName,
-				Exponent: msg.Exponent,
-				Aliases:  nil,
-			},
-		},
-		Base:    denom,
-		Display: msg.DisplayName,
-		Name:    msg.DisplayName,
-		Symbol:  msg.DisplayName,
+		DenomUnits:  denomUnits,
+		Description: msg.Description,
+		Base:        denom,
+		Display:     displayDenomName,
+		Name:        msg.Name,
+		Symbol:      msg.Name,
 	})
 
 	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{

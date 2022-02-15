@@ -15,6 +15,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"gotest.tools/v3/assert"
 )
@@ -51,8 +52,8 @@ func TestBadCreditType(t *testing.T) {
 		}}, nil,
 	)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:        s.addr.String(),
-		CreditTypeName: "F",
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "F",
 	})
 	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
@@ -64,9 +65,9 @@ func TestBadCreditType(t *testing.T) {
 		}}, nil,
 	)
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:        s.addr.String(),
-		CreditTypeName: "C",
-		Exponent:       3,
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "C",
+		Exponent:         3,
 	})
 	assert.ErrorContains(t, err, "exponent")
 }
@@ -75,8 +76,16 @@ func TestDuplicateDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
+	mc := baskettypes.MsgCreate{
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "C",
+		Exponent:         6,
+		Name:             "foo",
+	}
+	denom, _, err := basket.MsgCreateDenom(&mc)
+	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
-		&basketv1.Basket{BasketDenom: "foo"},
+		&basketv1.Basket{BasketDenom: denom},
 	))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
@@ -86,12 +95,7 @@ func TestDuplicateDenom(t *testing.T) {
 			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
 		}}, nil,
 	)
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:        s.addr.String(),
-		CreditTypeName: "C",
-		Exponent:       6,
-		Name:           "foo",
-	})
+	_, err = s.k.Create(s.ctx, &mc)
 	assert.ErrorContains(t, err, "unique")
 }
 
@@ -108,11 +112,11 @@ func TestMissingClass(t *testing.T) {
 	)
 	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), gomock.Any()).Return(false)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:        s.addr.String(),
-		CreditTypeName: "C",
-		Exponent:       6,
-		Name:           "foo",
-		AllowedClasses: []string{"bar"},
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "C",
+		Exponent:         6,
+		Name:             "foo",
+		AllowedClasses:   []string{"bar"},
 	})
 	assert.ErrorContains(t, err, "doesn't exist")
 }
@@ -135,34 +139,37 @@ func TestGoodBasket(t *testing.T) {
 	}
 	s.bankKeeper.EXPECT().SetDenomMetaData(gomock.Any(),
 		banktypes.Metadata{
-			Name:    "foo",
-			Display: "foo",
-			Base:    "ufoo",
-			Symbol:  "foo",
-			DenomUnits: []*banktypes.DenomUnit{
-				{
-					Denom:    "foo",
-					Exponent: 6,
-				},
-			},
+			Name:        "foo",
+			Display:     "eco.C.foo",
+			Base:        "eco.uC.foo",
+			Symbol:      "foo",
+			Description: "hi",
+			DenomUnits: []*banktypes.DenomUnit{{
+				Denom:    "eco.C.foo",
+				Exponent: 6,
+			}, {
+				Denom:    "eco.uC.foo",
+				Exponent: 0,
+			}},
 		},
 	)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:        s.addr.String(),
-		CreditTypeName: "C",
-		Exponent:       6,
-		Name:           "ufoo",
-		DisplayName:    "foo",
-		AllowedClasses: []string{"bar"},
-		DateCriteria:   &baskettypes.DateCriteria{Sum: dateCriteria},
+		Curator:          s.addr.String(),
+		Description:      "hi",
+		Name:             "foo",
+		Prefix:           "u",
+		CreditTypeAbbrev: "C",
+		Exponent:         6,
+		AllowedClasses:   []string{"bar"},
+		DateCriteria:     &baskettypes.DateCriteria{Sum: dateCriteria},
 	})
 	assert.NilError(t, err)
 
-	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "ufoo")
+	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
-	assert.Equal(t, "ufoo", basket.BasketDenom)
+	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
-	assert.Equal(t, "C", basket.CreditTypeName)
+	assert.Equal(t, "C", basket.CreditTypeAbbrev)
 	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.String())
 }
