@@ -78,15 +78,15 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 		{"fee-1",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
-		{"fee-2", MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+		{"fee-2", MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {

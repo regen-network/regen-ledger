@@ -158,7 +158,6 @@ func TestGoodBasket(t *testing.T) {
 		Curator:          s.addr.String(),
 		Description:      "hi",
 		Name:             "foo",
-		Prefix:           "u",
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		AllowedClasses:   []string{"bar"},

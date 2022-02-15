@@ -31,8 +31,9 @@ func setupTake(t *testing.T) *takeSuite {
 	var err error
 	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "foo",
+		Name:              "foo",
 		DisableAutoRetire: false,
-		CreditTypeAbbrev:    "C",
+		CreditTypeAbbrev:  "C",
 		Exponent:          6,
 	})
 	assert.NilError(t, err)
@@ -55,8 +56,9 @@ func setupTake(t *testing.T) *takeSuite {
 
 	s.barBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "bar",
+		Name:              "bar",
 		DisableAutoRetire: true,
-		CreditTypeAbbrev:    "C",
+		CreditTypeAbbrev:  "C",
 		Exponent:          6,
 	})
 	assert.NilError(t, err)
