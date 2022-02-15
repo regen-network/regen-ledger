@@ -76,7 +76,7 @@ func TestDuplicateDenom(t *testing.T) {
 	s := setupBase(t)
 
 	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
-		&basketv1.Basket{BasketDenom: "eco/foo"},
+		&basketv1.Basket{BasketDenom: "eco.foo"},
 	))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
@@ -140,16 +140,13 @@ func TestGoodBasket(t *testing.T) {
 			Base:        "eco.uC.foo",
 			Symbol:      "foo",
 			Description: "hi",
-			DenomUnits: []*banktypes.DenomUnit{
-				{
-					Denom:    "eco.uC.foo",
-					Exponent: 0,
-				},
-				{
-					Denom:    "eco/foo",
-					Exponent: 6,
-				},
-			},
+			DenomUnits: []*banktypes.DenomUnit{{
+				Denom:    "eco.C.foo",
+				Exponent: 6,
+			}, {
+				Denom:    "eco.uC.foo",
+				Exponent: 0,
+			}},
 		},
 	)
 
@@ -165,7 +162,7 @@ func TestGoodBasket(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco/ufoo")
+	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
 	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
