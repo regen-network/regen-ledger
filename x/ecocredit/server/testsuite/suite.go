@@ -127,7 +127,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		Curator:           s.signers[0].String(),
 		Name:              "BASKET",
 		Exponent:          6,
-		Prefix:            "u",
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "BAZ",
 		AllowedClasses:    []string{classId},
@@ -235,7 +234,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
 		Name:              "RETIRE",
-		Prefix:            "u",
 		Exponent:          6,
 		DisableAutoRetire: false,
 		CreditTypeAbbrev:  "BAZ",
