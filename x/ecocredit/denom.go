@@ -3,7 +3,10 @@ package ecocredit
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"time"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Calculate the ID to use for a new credit class, based on the credit type and
@@ -75,4 +78,39 @@ func ValidateDenom(denom string) error {
 		return ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")
 	}
 	return nil
+}
+
+// exponent prefix map https://en.wikipedia.org/wiki/Metric_prefix
+var exponentPrefixMap = map[uint32]string{
+	0:  "",
+	1:  "d",
+	2:  "c",
+	3:  "m",
+	6:  "u",
+	9:  "n",
+	12: "p",
+	15: "f",
+	18: "a",
+	21: "z",
+	24: "y",
+}
+var validExponents string
+
+func init() {
+	var exponents = make([]uint32, len(exponentPrefixMap))
+	for e := range exponentPrefixMap {
+		exponents = append(exponents, e)
+	}
+	sort.Slice(exponents, func(i, j int) bool { return validExponents[i] < validExponents[j] })
+	validExponents = fmt.Sprint(validExponents)
+}
+
+// ExponentToPrefix returns a denom prefix for a given exponent.
+// Returns error if the exponent is not supported.
+func ExponentToPrefix(prefix string, exponent uint32) (string, error) {
+	e, ok := exponentPrefixMap[exponent]
+	if !ok {
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)
+	}
+	return e, nil
 }
