@@ -24,7 +24,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
 	name := randstr.String((nameMaxLen + nameMinLen) / 2)
-	creditAbbr := randstr.String(10)
+	creditAbbr := "FOO"
 	descr := "my project description"
 	start := &DateCriteria{&DateCriteria_MinStartDate{gogotypes.TimestampNow()}}
 
@@ -40,25 +40,25 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"malformed curator address"},
 		{"name-1",
 			MsgCreate{Curator: a, Name: ""},
-			"name must be between"},
+			"name must start with an alphabetic character"},
 		{"name-long",
 			MsgCreate{Curator: a, Name: randstr.String(nameMaxLen + 1)},
-			"name must be between"},
+			"name must start with an alphabetic character"},
 		{"name-short",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen - 1)},
-			"name must be between"},
+			"name must start with an alphabetic character"},
 		{"name-no-alpahnum",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen) + "*"},
-			"name must be between"},
+			"name must start with an alphabetic character"},
 		{"exponent-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax + 1},
 			"exponent must not be bigger than"},
 		{"credity_type-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax},
-			"credit_type_name must be defined"},
+			"credit_type_abbrev must be defined"},
 		{"credity_type-2",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
-			"credit_type_name must not be longer"},
+			"credit_type_abbrev must not be longer"},
 		{"date_criteria-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
 			"unsupported date_criteria value"},
@@ -72,15 +72,15 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 		{"fee-1",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
-		{"fee-2", MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+		{"fee-2", MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
-			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
+			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Name: name, Exponent: 6, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
+			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 6, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {
