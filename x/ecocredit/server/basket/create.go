@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-const basketDenomPrefix = "eco/"
+const basketDenomPrefix = "eco."
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
@@ -39,11 +39,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	baseDenomName := denomPrefix + basketDenomPrefix + msg.Prefix + msg.Name
-	displayDenomName := basketDenomPrefix + msg.Name
+	denomTail := msg.CreditTypeAbbrev + "." + msg.Name
+	displayDenomName := basketDenomPrefix + denomTail          // eco.<exponent><credit-type-abbrev>.<name>
+	denom := basketDenomPrefix + denomPrefix + "." + denomTail // eco.<credit-class>.<name>
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
-		BasketDenom:       baseDenomName,
+		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
@@ -56,32 +57,34 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
+	denomUnits := []*banktypes.DenomUnit{{
+		Denom:    displayDenomName,
+		Exponent: msg.Exponent,
+		Aliases:  nil,
+	}}
+	if msg.Exponent != 0 {
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    denom,
+			Exponent: 0, // convertion from base denom to this denom
+			Aliases:  nil,
+		})
+	}
+
 	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    baseDenomName,
-				Exponent: 0,
-				Aliases:  nil,
-			},
-			{
-				Denom:    displayDenomName,
-				Exponent: msg.Exponent,
-				Aliases:  nil,
-			},
-		},
+		DenomUnits:  denomUnits,
 		Description: msg.Description,
-		Base:        baseDenomName,
+		Base:        denom,
 		Display:     displayDenomName,
 		Name:        msg.Name,
 		Symbol:      msg.Name,
 	})
 
 	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
-		BasketDenom: baseDenomName,
+		BasketDenom: denom,
 		Curator:     msg.Curator,
 	})
 
-	return &basket.MsgCreateResponse{BasketDenom: baseDenomName}, err
+	return &basket.MsgCreateResponse{BasketDenom: denom}, err
 }
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
