@@ -52,7 +52,7 @@ func TestServer(t *testing.T) {
 
 	maccPerms := map[string][]string{
 		minttypes.ModuleName:       {authtypes.Minter},
-		ecocredittypes.ModuleName:  {authtypes.Burner, authtypes.Minter},
+		ecocredittypes.ModuleName:  {authtypes.Burner},
 		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
