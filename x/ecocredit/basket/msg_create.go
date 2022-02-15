@@ -39,11 +39,8 @@ func (m MsgCreate) ValidateBasic() error {
 	if m.Exponent > exponentMax {
 		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
 	}
-	if m.CreditTypeAbbrev == "" {
-		return errBadReq.Wrap("credit_type_abbrev must be defined")
-	}
-	if len(m.CreditTypeAbbrev) > creditTypeAbbrMaxLen {
-		return errBadReq.Wrapf("credit_type_abbrev must not be longer than %d", creditTypeAbbrMaxLen)
+	if err := ecocredit.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+		return err
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
 		return err
