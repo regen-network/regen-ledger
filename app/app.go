@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"io"
 	"math/big"
 	"net/http"
@@ -147,6 +148,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		ecocredit.ModuleName:           {authtypes.Burner, authtypes.Minter},
+		basket.BasketSubModuleName:     {authtypes.Burner, authtypes.Minter},
 	}
 )
 
