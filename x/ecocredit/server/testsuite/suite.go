@@ -64,6 +64,10 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	sdk.SetCoinDenomRegex(func() string {
+		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+	})
+
 	s.fixture = s.fixtureFactory.Setup()
 
 	s.blockTime = time.Now().UTC()
