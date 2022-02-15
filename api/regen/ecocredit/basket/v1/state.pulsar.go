@@ -18,6 +18,7 @@ var (
 	md_Basket                     protoreflect.MessageDescriptor
 	fd_Basket_id                  protoreflect.FieldDescriptor
 	fd_Basket_basket_denom        protoreflect.FieldDescriptor
+	fd_Basket_name                protoreflect.FieldDescriptor
 	fd_Basket_disable_auto_retire protoreflect.FieldDescriptor
 	fd_Basket_credit_type_abbrev  protoreflect.FieldDescriptor
 	fd_Basket_date_criteria       protoreflect.FieldDescriptor
@@ -29,6 +30,7 @@ func init() {
 	md_Basket = File_regen_ecocredit_basket_v1_state_proto.Messages().ByName("Basket")
 	fd_Basket_id = md_Basket.Fields().ByName("id")
 	fd_Basket_basket_denom = md_Basket.Fields().ByName("basket_denom")
+	fd_Basket_name = md_Basket.Fields().ByName("name")
 	fd_Basket_disable_auto_retire = md_Basket.Fields().ByName("disable_auto_retire")
 	fd_Basket_credit_type_abbrev = md_Basket.Fields().ByName("credit_type_abbrev")
 	fd_Basket_date_criteria = md_Basket.Fields().ByName("date_criteria")
@@ -112,6 +114,12 @@ func (x *fastReflection_Basket) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.Name != "" {
+		value := protoreflect.ValueOfString(x.Name)
+		if !f(fd_Basket_name, value) {
+			return
+		}
+	}
 	if x.DisableAutoRetire != false {
 		value := protoreflect.ValueOfBool(x.DisableAutoRetire)
 		if !f(fd_Basket_disable_auto_retire, value) {
@@ -155,6 +163,8 @@ func (x *fastReflection_Basket) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Id != uint64(0)
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
 		return x.BasketDenom != ""
+	case "regen.ecocredit.basket.v1.Basket.name":
+		return x.Name != ""
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		return x.DisableAutoRetire != false
 	case "regen.ecocredit.basket.v1.Basket.credit_type_abbrev":
@@ -183,6 +193,8 @@ func (x *fastReflection_Basket) Clear(fd protoreflect.FieldDescriptor) {
 		x.Id = uint64(0)
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
 		x.BasketDenom = ""
+	case "regen.ecocredit.basket.v1.Basket.name":
+		x.Name = ""
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		x.DisableAutoRetire = false
 	case "regen.ecocredit.basket.v1.Basket.credit_type_abbrev":
@@ -212,6 +224,9 @@ func (x *fastReflection_Basket) Get(descriptor protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfUint64(value)
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
 		value := x.BasketDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.Basket.name":
+		value := x.Name
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		value := x.DisableAutoRetire
@@ -249,6 +264,8 @@ func (x *fastReflection_Basket) Set(fd protoreflect.FieldDescriptor, value proto
 		x.Id = value.Uint()
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
 		x.BasketDenom = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.Basket.name":
+		x.Name = value.Interface().(string)
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		x.DisableAutoRetire = value.Bool()
 	case "regen.ecocredit.basket.v1.Basket.credit_type_abbrev":
@@ -286,6 +303,8 @@ func (x *fastReflection_Basket) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field id of message regen.ecocredit.basket.v1.Basket is not mutable"))
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
 		panic(fmt.Errorf("field basket_denom of message regen.ecocredit.basket.v1.Basket is not mutable"))
+	case "regen.ecocredit.basket.v1.Basket.name":
+		panic(fmt.Errorf("field name of message regen.ecocredit.basket.v1.Basket is not mutable"))
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		panic(fmt.Errorf("field disable_auto_retire of message regen.ecocredit.basket.v1.Basket is not mutable"))
 	case "regen.ecocredit.basket.v1.Basket.credit_type_abbrev":
@@ -308,6 +327,8 @@ func (x *fastReflection_Basket) NewField(fd protoreflect.FieldDescriptor) protor
 	case "regen.ecocredit.basket.v1.Basket.id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "regen.ecocredit.basket.v1.Basket.basket_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.Basket.name":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.basket.v1.Basket.disable_auto_retire":
 		return protoreflect.ValueOfBool(false)
@@ -394,6 +415,10 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.Name)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.DisableAutoRetire {
 			n += 2
 		}
@@ -440,7 +465,7 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 		if x.Exponent != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Exponent))
 			i--
-			dAtA[i] = 0x30
+			dAtA[i] = 0x38
 		}
 		if x.DateCriteria != nil {
 			encoded, err := options.Marshal(x.DateCriteria)
@@ -454,14 +479,14 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 			copy(dAtA[i:], encoded)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x32
 		}
 		if len(x.CreditTypeAbbrev) > 0 {
 			i -= len(x.CreditTypeAbbrev)
 			copy(dAtA[i:], x.CreditTypeAbbrev)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CreditTypeAbbrev)))
 			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x2a
 		}
 		if x.DisableAutoRetire {
 			i--
@@ -471,7 +496,14 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 				dAtA[i] = 0
 			}
 			i--
-			dAtA[i] = 0x18
+			dAtA[i] = 0x20
+		}
+		if len(x.Name) > 0 {
+			i -= len(x.Name)
+			copy(dAtA[i:], x.Name)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Name)))
+			i--
+			dAtA[i] = 0x1a
 		}
 		if len(x.BasketDenom) > 0 {
 			i -= len(x.BasketDenom)
@@ -586,6 +618,38 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 				x.BasketDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Name = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
 				}
@@ -605,7 +669,7 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.DisableAutoRetire = bool(v != 0)
-			case 4:
+			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CreditTypeAbbrev", wireType)
 				}
@@ -637,7 +701,7 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 				}
 				x.CreditTypeAbbrev = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 5:
+			case 6:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DateCriteria", wireType)
 				}
@@ -673,7 +737,7 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 6:
+			case 7:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
 				}
@@ -1830,14 +1894,18 @@ type Basket struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	// basket_denom is the basket bank denom.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// name is the unique name of the basket specified in MsgCreate. Basket
+	// names must be unique across all credit types and choices of exponent
+	// above and beyond the uniqueness constraint on basket_denom.
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
-	DisableAutoRetire bool `protobuf:"varint,3,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
+	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 	// credit_type_abbrev is the abbreviation of the credit type this basket is able to hold.
-	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
+	CreditTypeAbbrev string `protobuf:"bytes,5,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// date_criteria is the date criteria for batches admitted to the basket.
-	DateCriteria *DateCriteria `protobuf:"bytes,5,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
+	DateCriteria *DateCriteria `protobuf:"bytes,6,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
 	// exponent is the exponent for converting credits to/from basket tokens.
-	Exponent uint32 `protobuf:"varint,6,opt,name=exponent,proto3" json:"exponent,omitempty"`
+	Exponent uint32 `protobuf:"varint,7,opt,name=exponent,proto3" json:"exponent,omitempty"`
 }
 
 func (x *Basket) Reset() {
@@ -1870,6 +1938,13 @@ func (x *Basket) GetId() uint64 {
 func (x *Basket) GetBasketDenom() string {
 	if x != nil {
 		return x.BasketDenom
+	}
+	return ""
+}
+
+func (x *Basket) GetName() string {
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
@@ -2026,26 +2101,28 @@ var file_regen_ecocredit_basket_v1_state_proto_rawDesc = []byte{
 	0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x1a, 0x25, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79,
-	0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa9, 0x02, 0x0a, 0x06, 0x42, 0x61,
+	0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc9, 0x02, 0x0a, 0x06, 0x42, 0x61,
 	0x73, 0x6b, 0x65, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64,
 	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b,
-	0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x2e, 0x0a, 0x13, 0x64, 0x69, 0x73, 0x61, 0x62,
-	0x6c, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x6f, 0x5f, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x75, 0x74,
-	0x6f, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x2c, 0x0a, 0x12, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x41,
-	0x62, 0x62, 0x72, 0x65, 0x76, 0x12, 0x4c, 0x0a, 0x0d, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x63, 0x72,
-	0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62,
-	0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x61, 0x74, 0x65, 0x43, 0x72, 0x69,
-	0x74, 0x65, 0x72, 0x69, 0x61, 0x52, 0x0c, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x69, 0x74, 0x65,
-	0x72, 0x69, 0x61, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18,
-	0x06, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x3a,
-	0x24, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x1e, 0x0a, 0x06, 0x0a, 0x02, 0x69, 0x64, 0x10, 0x01, 0x12,
-	0x12, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x10,
-	0x01, 0x18, 0x01, 0x18, 0x01, 0x22, 0x65, 0x0a, 0x0b, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x43,
+	0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x2e, 0x0a, 0x13, 0x64,
+	0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x6f, 0x5f, 0x72, 0x65, 0x74, 0x69,
+	0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c,
+	0x65, 0x41, 0x75, 0x74, 0x6f, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x2c, 0x0a, 0x12, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x61, 0x62, 0x62, 0x72, 0x65,
+	0x76, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x41, 0x62, 0x62, 0x72, 0x65, 0x76, 0x12, 0x4c, 0x0a, 0x0d, 0x64, 0x61, 0x74,
+	0x65, 0x5f, 0x63, 0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x61, 0x74,
+	0x65, 0x43, 0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x52, 0x0c, 0x64, 0x61, 0x74, 0x65, 0x43,
+	0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
+	0x65, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
+	0x65, 0x6e, 0x74, 0x3a, 0x30, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x2a, 0x0a, 0x06, 0x0a, 0x02, 0x69,
+	0x64, 0x10, 0x01, 0x12, 0x12, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65,
+	0x6e, 0x6f, 0x6d, 0x10, 0x01, 0x18, 0x01, 0x12, 0x0a, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x10,
+	0x02, 0x18, 0x01, 0x18, 0x01, 0x22, 0x65, 0x0a, 0x0b, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x43,
 	0x6c, 0x61, 0x73, 0x73, 0x12, 0x1b, 0x0a, 0x09, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x69,
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x49,
 	0x64, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
