@@ -3,7 +3,6 @@ package testsuite
 import (
 	"context"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -41,7 +40,6 @@ type IntegrationTestSuite struct {
 
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
-	ak         keeper.AccountKeeper
 	mockDist   *mocks.MockDistributionKeeper
 
 	genesisCtx types.Context
@@ -53,13 +51,12 @@ type basketServer struct {
 	basket.MsgClient
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, distKeeper *mocks.MockDistributionKeeper, ak keeper.AccountKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, distKeeper *mocks.MockDistributionKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		mockDist:       distKeeper,
-		ak:             ak,
 	}
 }
 
