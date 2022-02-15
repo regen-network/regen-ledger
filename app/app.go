@@ -2,13 +2,10 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"io"
 	"math/big"
 	"net/http"
 	"os"
-
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -93,8 +90,10 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	// unnamed import of statik for swagger UI support
