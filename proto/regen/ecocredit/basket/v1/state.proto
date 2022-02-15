@@ -24,6 +24,9 @@ message Basket {
     // basket_denom is the basket bank denom.
     string basket_denom = 2;
 
+    // name is the unique name of the basket specified in MsgCreate. Basket
+    // names must be unique across all credit types and choices of exponent
+    // above and beyond the uniqueness constraint on basket_denom.
     string name = 3;
 
     // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
