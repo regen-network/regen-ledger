@@ -7,6 +7,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -90,7 +91,10 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	upgradeV22xName := "v2.2-upgrade"
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeV22xName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		// get the params
-		ecoParams := app.ParamsKeeper.Subspace(ecocredittypes.ModuleName)
+		ecoParams, ok := app.ParamsKeeper.GetSubspace(ecocredittypes.ModuleName)
+		if !ok {
+			panic(fmt.Sprintf("unable to upgrade: subspace %s not found", ecocredittypes.ModuleName))
+		}
 
 		// set basket creation fee to 1,0000 REGEN
 		ecoParams.Set(ctx, ecocredittypes.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
