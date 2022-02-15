@@ -165,7 +165,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 func randomDateCriteria(r *rand.Rand) *basket.DateCriteria {
 	includeCriteria := r.Int63n(101) <= 50
 	if includeCriteria {
-		seconds := time.Hour * 24 * 356 * 5
+		seconds := time.Hour * 24
 		if includeCriteria {
 			return &basket.DateCriteria{
 				Sum: &basket.DateCriteria_MinStartDate{
@@ -182,7 +182,7 @@ func randomDateCriteria(r *rand.Rand) *basket.DateCriteria {
 			}
 		}
 	} else {
-		return &basket.DateCriteria{}
+		return nil
 	}
 }
 
