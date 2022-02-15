@@ -22,6 +22,9 @@ type BasketStore interface {
 	HasByBasketDenom(ctx context.Context, basket_denom string) (found bool, err error)
 	// GetByBasketDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByBasketDenom(ctx context.Context, basket_denom string) (*Basket, error)
+	HasByName(ctx context.Context, name string) (found bool, err error)
+	// GetByName returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByName(ctx context.Context, name string) (*Basket, error)
 	List(ctx context.Context, prefixKey BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error)
 	ListRange(ctx context.Context, from, to BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BasketIndexKey) error
@@ -75,6 +78,19 @@ func (this BasketBasketDenomIndexKey) WithBasketDenom(basket_denom string) Baske
 	return this
 }
 
+type BasketNameIndexKey struct {
+	vs []interface{}
+}
+
+func (x BasketNameIndexKey) id() uint32            { return 2 }
+func (x BasketNameIndexKey) values() []interface{} { return x.vs }
+func (x BasketNameIndexKey) basketIndexKey()       {}
+
+func (this BasketNameIndexKey) WithName(name string) BasketNameIndexKey {
+	this.vs = []interface{}{name}
+	return this
+}
+
 type basketStore struct {
 	table ormtable.AutoIncrementTable
 }
@@ -125,6 +141,26 @@ func (this basketStore) GetByBasketDenom(ctx context.Context, basket_denom strin
 	var basket Basket
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &basket,
 		basket_denom,
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &basket, nil
+}
+
+func (this basketStore) HasByName(ctx context.Context, name string) (found bool, err error) {
+	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
+		name,
+	)
+}
+
+func (this basketStore) GetByName(ctx context.Context, name string) (*Basket, error) {
+	var basket Basket
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &basket,
+		name,
 	)
 	if err != nil {
 		return nil, err
