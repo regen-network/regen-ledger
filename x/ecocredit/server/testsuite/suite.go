@@ -2,6 +2,8 @@ package testsuite
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	types3 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -39,6 +41,7 @@ type IntegrationTestSuite struct {
 
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
+	ak         keeper.AccountKeeper
 	mockDist   *mocks.MockDistributionKeeper
 
 	genesisCtx types.Context
@@ -50,12 +53,13 @@ type basketServer struct {
 	basket.MsgClient
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, distKeeper *mocks.MockDistributionKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, distKeeper *mocks.MockDistributionKeeper, ak keeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		mockDist:       distKeeper,
+		ak:             ak,
 	}
 }
 
@@ -69,6 +73,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
+
+	// THIS DOESNT WORK AH!!!!!!!!!!!
+	basketAcc := types3.NewEmptyModuleAccount(basket.BasketSubModuleName, types3.Minter, types3.Burner)
+	s.ak.SetModuleAccount(s.sdkCtx, basketAcc)
+	ma := s.ak.GetModuleAccount(s.sdkCtx, basket.BasketSubModuleName)
+	s.Require().NotNil(ma)
 
 	ecocreditParams := ecocredit.DefaultParams()
 	// Add biodiversity credit type for testing credit type sequence numbers
@@ -179,10 +189,11 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// send the basket coins to another account
 	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
 
+	// take all the credits from the basket
 	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
 		Owner:              user2.String(),
 		BasketDenom:        basketDenom,
-		Amount:             basketTokensReceived.String(), // take all of them
+		Amount:             basketTokensReceived.String(),
 		RetirementLocation: "US-NY",
 		RetireOnTake:       false,
 	})
@@ -196,7 +207,12 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		BatchDenom:  batchDenom,
 	})
 	require.Error(err)
+	require.Contains(err.Error(), "not found")
 	require.Nil(bRes)
+
+	// basket token balance of user2 should be empty now
+	endBal := s.getUserBalance(user2, basketDenom)
+	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 }
 
 func (s *IntegrationTestSuite) getUserBalance(addr sdk.AccAddress, denom string) sdk.Coin {

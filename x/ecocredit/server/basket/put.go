@@ -65,10 +65,10 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// mint and send tokens to depositor
 	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	if err = k.bankKeeper.MintCoins(sdkCtx, ecocredit.ModuleName, coinsToSend); err != nil {
+	if err = k.bankKeeper.MintCoins(sdkCtx, baskettypes.BasketSubModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
-	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, ecocredit.ModuleName, ownerAddr, coinsToSend); err != nil {
+	if err = k.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, baskettypes.BasketSubModuleName, ownerAddr, coinsToSend); err != nil {
 		return nil, err
 	}
 
