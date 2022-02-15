@@ -52,7 +52,7 @@ func TestBadCreditType(t *testing.T) {
 	)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
-		CreditTypeName: "F",
+		CreditTypeAbbrev: "F",
 	})
 	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
@@ -65,7 +65,7 @@ func TestBadCreditType(t *testing.T) {
 	)
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
-		CreditTypeName: "C",
+		CreditTypeAbbrev: "C",
 		Exponent:       3,
 	})
 	assert.ErrorContains(t, err, "exponent")
@@ -76,7 +76,7 @@ func TestDuplicateDenom(t *testing.T) {
 	s := setupBase(t)
 
 	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
-		&basketv1.Basket{BasketDenom: "foo"},
+		&basketv1.Basket{BasketDenom: "eco/foo"},
 	))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
@@ -88,7 +88,7 @@ func TestDuplicateDenom(t *testing.T) {
 	)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
-		CreditTypeName: "C",
+		CreditTypeAbbrev: "C",
 		Exponent:       6,
 		Name:           "foo",
 	})
@@ -109,7 +109,7 @@ func TestMissingClass(t *testing.T) {
 	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), gomock.Any()).Return(false)
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
-		CreditTypeName: "C",
+		CreditTypeAbbrev: "C",
 		Exponent:       6,
 		Name:           "foo",
 		AllowedClasses: []string{"bar"},
@@ -136,12 +136,17 @@ func TestGoodBasket(t *testing.T) {
 	s.bankKeeper.EXPECT().SetDenomMetaData(gomock.Any(),
 		banktypes.Metadata{
 			Name:    "foo",
-			Display: "foo",
-			Base:    "ufoo",
+			Display: "eco/foo",
+			Base:    "eco/ufoo",
 			Symbol:  "foo",
+			Description: "hi",
 			DenomUnits: []*banktypes.DenomUnit{
 				{
-					Denom:    "foo",
+					Denom:    "eco/ufoo",
+					Exponent: 0,
+				},
+				{
+					Denom:    "eco/foo",
 					Exponent: 6,
 				},
 			},
@@ -150,19 +155,20 @@ func TestGoodBasket(t *testing.T) {
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:        s.addr.String(),
-		CreditTypeName: "C",
+		Description: "hi",
+		Name:           "foo",
+		Prefix: 		"u",
+		CreditTypeAbbrev: "C",
 		Exponent:       6,
-		Name:           "ufoo",
-		DisplayName:    "foo",
 		AllowedClasses: []string{"bar"},
 		DateCriteria:   &baskettypes.DateCriteria{Sum: dateCriteria},
 	})
 	assert.NilError(t, err)
 
-	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "ufoo")
+	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco/ufoo")
 	assert.NilError(t, err)
-	assert.Equal(t, "ufoo", basket.BasketDenom)
+	assert.Equal(t, "eco/ufoo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
-	assert.Equal(t, "C", basket.CreditTypeName)
+	assert.Equal(t, "C", basket.CreditTypeAbbrev)
 	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.String())
 }

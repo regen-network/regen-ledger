@@ -57,7 +57,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax},
 			"credit_type_name must be defined"},
 		{"credity_type-2",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: randstr.String(creditAbbrMaxLen + 1)},
+			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
 			"credit_type_name must not be longer"},
 		{"date_criteria-1",
 			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},

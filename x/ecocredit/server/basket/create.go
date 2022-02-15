@@ -13,6 +13,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
+const basketDenomPrefix = "eco/"
+
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
@@ -34,16 +36,15 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	denom := "eco/" + msg.Prefix + msg.Name
-	display := "eco/" + msg.Name
+	baseDenomName := basketDenomPrefix + msg.Prefix + msg.Name
+	displayDenomName := basketDenomPrefix + msg.Name
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
-		BasketDenom:       denom,
+		BasketDenom:       baseDenomName,
 		DisableAutoRetire: msg.DisableAutoRetire,
-		// TODO: need to release new api
-		CreditTypeName: msg.CreditTypeAbbrev,
-		DateCriteria:   msg.DateCriteria.ToApi(),
-		Exponent:       msg.Exponent,
+		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
+		DateCriteria:      msg.DateCriteria.ToApi(),
+		Exponent:          msg.Exponent,
 	})
 	if err != nil {
 		return nil, err
@@ -55,24 +56,29 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    denom,
+				Denom:    baseDenomName,
+				Exponent: 0,
+				Aliases:  nil,
+			},
+			{
+				Denom:    displayDenomName,
 				Exponent: msg.Exponent,
 				Aliases:  nil,
 			},
 		},
 		Description: msg.Description,
-		Base:        denom,
-		Display:     display,
+		Base:        baseDenomName,
+		Display:     displayDenomName,
 		Name:        msg.Name,
 		Symbol:      msg.Name,
 	})
 
 	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
-		BasketDenom: denom,
+		BasketDenom: baseDenomName,
 		Curator:     msg.Curator,
 	})
 
-	return &basket.MsgCreateResponse{BasketDenom: denom}, err
+	return &basket.MsgCreateResponse{BasketDenom: baseDenomName}, err
 }
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or

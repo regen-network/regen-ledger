@@ -19,10 +19,14 @@ const nameMinLen = 3
 const nameMaxLen = 8
 const descrMaxLen = 200
 const exponentMax = 32
-const creditAbbrMaxLen = 32
+const creditTypeAbbrMaxLen = 3
+const prefixMaxLen = 1
 
 var errBadReq = sdkerrors.ErrInvalidRequest
-var reName = regexp.MustCompile(fmt.Sprintf("^[[:alnum:]]{%d,%d}$", nameMinLen, nameMaxLen))
+
+// first character must be alphabetic, the rest can be alphanumeric. we reduce by one to account for the first character
+// being forced to alphabetic.
+var reName = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
@@ -30,16 +34,16 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address " + err.Error())
 	}
 	if !reName.MatchString(m.Name) {
-		return errBadReq.Wrapf("name must be between %d and %d alpha-numeric characters long", nameMinLen, nameMaxLen)
+		return errBadReq.Wrapf("name must start with an alphabetic character, and be between %d and %d alphanumeric characters long", nameMinLen, nameMaxLen)
 	}
 	if m.Exponent > exponentMax {
 		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
 	}
 	if m.CreditTypeAbbrev == "" {
-		return errBadReq.Wrap("credit_type_name must be defined")
+		return errBadReq.Wrap("credit_type_abbrev must be defined")
 	}
-	if len(m.CreditTypeAbbrev) > creditAbbrMaxLen {
-		return errBadReq.Wrapf("credit_type_name must not be longer than %d", creditAbbrMaxLen)
+	if len(m.CreditTypeAbbrev) > creditTypeAbbrMaxLen {
+		return errBadReq.Wrapf("credit_type_abbrev must not be longer than %d", creditTypeAbbrMaxLen)
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
 		return err
@@ -54,6 +58,9 @@ func (m MsgCreate) ValidateBasic() error {
 		if m.AllowedClasses[i] == "" {
 			return errBadReq.Wrapf("allowed_classes[%d] must be defined", i)
 		}
+	}
+	if len(m.Prefix) != prefixMaxLen {
+		return sdkerrors.ErrInvalidRequest.Wrapf("prefix cannot be longer than %d character(s)", prefixMaxLen)
 	}
 	return m.Fee.Validate()
 }

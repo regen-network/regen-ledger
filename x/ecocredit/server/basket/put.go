@@ -121,7 +121,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	}
 
 	// check credit type match
-	requiredCreditType := basket.CreditTypeName
+	requiredCreditType := basket.CreditTypeAbbrev
 	res2, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
 	if err != nil {
 		return err

@@ -85,7 +85,7 @@ func TestPut(t *testing.T) {
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom,
 		DisableAutoRetire: true,
-		CreditTypeName:    "carbon",
+		CreditTypeAbbrev:    "carbon",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
 		Exponent:          6,
 	})
@@ -96,7 +96,7 @@ func TestPut(t *testing.T) {
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom2,
 		DisableAutoRetire: true,
-		CreditTypeName:    "carbon",
+		CreditTypeAbbrev:    "carbon",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
 		Exponent:          6,
 	})
