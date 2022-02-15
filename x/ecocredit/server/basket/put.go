@@ -91,7 +91,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
-	errInvalidReq := sdkerrors.ErrInvalidAddress
+	errInvalidReq := sdkerrors.ErrInvalidRequest
 
 	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
 		// check time window match

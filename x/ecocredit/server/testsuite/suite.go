@@ -126,7 +126,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		DisplayName:       "BSK",
 		Exponent:          6,
 		DisableAutoRetire: true,
-		CreditTypeName:    "BAZ",
+		CreditTypeName:    "bazcredits",
 		AllowedClasses:    []string{classId},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
