@@ -107,6 +107,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	user := s.signers[0]
 	user2 := s.signers[1]
 
+	// create a class and issue a batch
 	userTotalCreditBalance, err := math.NewDecFromString("1000000000000000")
 	require.NoError(err)
 	classId, batchDenom := s.createClassAndIssueBatch(user, user, "bazcredits", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
@@ -167,22 +168,22 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	})
 	require.NoError(err)
 	require.Equal(basketBalance.Balance, creditAmtDeposited.String())
-
+	// make sure user doesn't have any of that credit - should error out
 	userCreditBalance, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 		Account:    user.String(),
 		BatchDenom: batchDenom,
 	})
 	require.NoError(err)
 
-	// ensure the core server is properly tracking the user balance
+	// make sure the core server is properly tracking the user balance
 	newUserTotal, err := userTotalCreditBalance.Sub(creditAmtDeposited)
 	require.NoError(err)
 	require.Equal(newUserTotal.String(), userCreditBalance.TradableAmount)
 
-	// send the basket coins to another account
+	// send the basket coins to another account - user2
 	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
 
-	// take all the credits from the basket
+	// user2 can take all the credits from the basket
 	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
 		Owner:              user2.String(),
 		BasketDenom:        basketDenom,
