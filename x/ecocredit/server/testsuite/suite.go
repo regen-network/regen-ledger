@@ -269,6 +269,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Len(tRes.Credits, 1) // should only be one credit
 	require.Equal(creditsToDeposit.String(), tRes.Credits[0].Amount)
 
+	// check retired balance, should be equal to the amount we put in
 	cbRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 		Account:    user.String(),
 		BatchDenom: batchDenom,
