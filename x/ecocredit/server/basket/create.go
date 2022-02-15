@@ -43,6 +43,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
 		Exponent:          msg.Exponent,
+		Name:              msg.Name,
 	})
 	if err != nil {
 		return nil, err
