@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/golang/mock/gomock"
@@ -126,7 +127,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		DisplayName:       "BSK",
 		Exponent:          6,
 		DisableAutoRetire: true,
-		CreditTypeName:    "bazcredits",
+		CreditTypeName:    "BAZ",
 		AllowedClasses:    []string{classId},
 		DateCriteria:      nil,
 		Fee:               sdk.NewCoins(s.basketFee),
@@ -140,11 +141,12 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Len(qRes.Baskets, 1)
 	require.Equal(qRes.Baskets[0].BasketDenom, basketDenom)
 
-	// assert the fee was paid
+	// assert the fee was paid - the fee mechanism was mocked, but we still call the same underlying SendFromAccountToModule
+	// function so the result is the same
 	balanceAfter := s.getUserBalance(user, "foo")
 	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
 
-	// put some credits in the basket
+	// put some BAZ credits in the basket
 	creditAmtDeposited := math.NewDecFromInt64(3)
 	pRes, err := s.basketServer.Put(s.ctx, &basket.MsgPut{
 		Owner:       user.String(),
@@ -168,6 +170,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	})
 	require.NoError(err)
 	require.Equal(basketBalance.Balance, creditAmtDeposited.String())
+
 	// make sure user doesn't have any of that credit - should error out
 	userCreditBalance, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 		Account:    user.String(),
@@ -195,6 +198,18 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	require.Equal(tRes.Credits[0].BatchDenom, batchDenom)
 	require.Equal(tRes.Credits[0].Amount, creditAmtDeposited.String())
 
+	// user shouldn't be able to take any since we sent our tokens to user2
+	noRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
+		Owner:              user.String(),
+		BasketDenom:        basketDenom,
+		Amount:             basketTokensReceived.String(),
+		RetirementLocation: "US-NY",
+		RetireOnTake:       false,
+	})
+	require.Error(err)
+	require.Contains(err.Error(), sdkerrors.ErrInsufficientFunds.Error())
+	require.Nil(noRes)
+
 	// there should be nothing left in the basket
 	bRes, err := s.basketServer.BasketBalance(s.ctx, &basket.QueryBasketBalanceRequest{
 		BasketDenom: basketDenom,
@@ -207,6 +222,59 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// basket token balance of user2 should be empty now
 	endBal := s.getUserBalance(user2, basketDenom)
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
+
+	// check retire enabled basket
+
+	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
+		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
+		return err
+	})
+	// create a retire enabled basket
+	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
+		Curator:           s.signers[0].String(),
+		Name:              "RETIRE",
+		DisplayName:       "RET",
+		Exponent:          6,
+		DisableAutoRetire: false,
+		CreditTypeName:    "BAZ",
+		AllowedClasses:    []string{classId},
+		DateCriteria:      nil,
+		Fee:               sdk.NewCoins(s.basketFee),
+	})
+	require.NoError(err)
+	basketDenom = resR.BasketDenom
+
+	creditsToDeposit := math.NewDecFromInt64(3)
+
+	// put some credits in the basket
+	pRes, err = s.basketServer.Put(s.ctx, &basket.MsgPut{
+		Owner:       user.String(),
+		BasketDenom: basketDenom,
+		Credits:     []*basket.BasketCredit{{Amount: creditsToDeposit.String(), BatchDenom: batchDenom}},
+	})
+	require.NoError(err)
+
+	amountBasketCoins, err := math.NewDecFromString(pRes.AmountReceived)
+	require.NoError(err)
+
+	// take them out of the basket, retiring them
+	tRes, err = s.basketServer.Take(s.ctx, &basket.MsgTake{
+		Owner:              user.String(),
+		BasketDenom:        basketDenom,
+		Amount:             amountBasketCoins.String(),
+		RetirementLocation: "US-NY",
+		RetireOnTake:       true,
+	})
+	require.NoError(err)
+	require.Len(tRes.Credits, 1) // should only be one credit
+	require.Equal(creditsToDeposit.String(), tRes.Credits[0].Amount)
+
+	cbRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+		Account:    user.String(),
+		BatchDenom: batchDenom,
+	})
+	require.NoError(err)
+	require.Equal(creditsToDeposit.String(), cbRes.RetiredAmount)
 }
 
 func (s *IntegrationTestSuite) getUserBalance(addr sdk.AccAddress, denom string) sdk.Coin {
