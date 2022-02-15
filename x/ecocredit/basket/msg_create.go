@@ -24,8 +24,8 @@ const prefixMaxLen = 1
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
-// first character must be alphabetic, the rest can be alphanumeric. we reduce by one to account for the first character
-// being forced to alphabetic.
+// first character must be alphabetic, the rest can be alphanumeric. We reduce length constraints by one to account for
+// the first character being forced to alphabetic.
 var reName = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
 
 // ValidateBasic does a stateless sanity check on the provided data.
