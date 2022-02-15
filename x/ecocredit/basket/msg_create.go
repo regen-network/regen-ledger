@@ -18,9 +18,7 @@ var (
 const nameMinLen = 3
 const nameMaxLen = 8
 const descrMaxLen = 200
-const exponentMax = 32
 const creditTypeAbbrMaxLen = 3
-const prefixMaxLen = 1
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
@@ -36,8 +34,8 @@ func (m MsgCreate) ValidateBasic() error {
 	if !reName.MatchString(m.Name) {
 		return errBadReq.Wrapf("name must start with an alphabetic character, and be between %d and %d alphanumeric characters long", nameMinLen, nameMaxLen)
 	}
-	if m.Exponent > exponentMax {
-		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
+	if _, err := ecocredit.ExponentToPrefix(m.Exponent); err != nil {
+		return err
 	}
 	if err := ecocredit.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return err
@@ -55,9 +53,6 @@ func (m MsgCreate) ValidateBasic() error {
 		if m.AllowedClasses[i] == "" {
 			return errBadReq.Wrapf("allowed_classes[%d] must be defined", i)
 		}
-	}
-	if len(m.Prefix) != prefixMaxLen {
-		return sdkerrors.ErrInvalidRequest.Wrapf("prefix cannot be longer than %d character(s)", prefixMaxLen)
 	}
 	return m.Fee.Validate()
 }

@@ -101,13 +101,13 @@ func init() {
 	for e := range exponentPrefixMap {
 		exponents = append(exponents, e)
 	}
-	sort.Slice(exponents, func(i, j int) bool { return validExponents[i] < validExponents[j] })
+	sort.Slice(exponents, func(i, j int) bool { return exponents[i] < exponents[j] })
 	validExponents = fmt.Sprint(validExponents)
 }
 
 // ExponentToPrefix returns a denom prefix for a given exponent.
 // Returns error if the exponent is not supported.
-func ExponentToPrefix(prefix string, exponent uint32) (string, error) {
+func ExponentToPrefix(exponent uint32) (string, error) {
 	e, ok := exponentPrefixMap[exponent]
 	if !ok {
 		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)

@@ -21,7 +21,6 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
-
 	}
 	sender, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
@@ -35,8 +34,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
+	denomPrefix, err := ecocredit.ExponentToPrefix(msg.Exponent)
+	if err != nil {
+		return nil, err
+	}
 
-	baseDenomName := basketDenomPrefix + msg.Prefix + msg.Name
+	baseDenomName := denomPrefix + basketDenomPrefix + msg.Prefix + msg.Name
 	displayDenomName := basketDenomPrefix + msg.Name
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{

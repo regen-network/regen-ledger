@@ -23,7 +23,7 @@ func errorMatches(t *testing.T, err error, expect string) {
 func TestMsgCreateValidateBasic(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
-	name := randstr.String((nameMaxLen + nameMinLen) / 2)
+	name := randstr.String((nameMaxLen+nameMinLen)/2, "ABCDEFGHIJKL")
 	creditAbbr := "FOO"
 	descr := "my project description"
 	start := &DateCriteria{&DateCriteria_MinStartDate{gogotypes.TimestampNow()}}
@@ -50,37 +50,43 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"name-no-alpahnum",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen) + "*"},
 			"name must start with an alphabetic character"},
+		{"name-no-alpah-prefix",
+			MsgCreate{Curator: a, Name: "1" + randstr.String(nameMinLen)},
+			"name must start with an alphabetic character"},
 		{"exponent-1",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax + 1},
-			"exponent must not be bigger than"},
+			MsgCreate{Curator: a, Name: name, Exponent: 4},
+			"exponent must be one of"},
+		{"exponent-1",
+			MsgCreate{Curator: a, Name: name, Exponent: 17},
+			"exponent must be one of"},
 		{"credity_type-1",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax},
+			MsgCreate{Curator: a, Name: name, Exponent: 3},
 			"credit type abbreviation must be 1-3"},
 		{"credity_type-2",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
 			"credit type abbreviation must be 1-3"},
 		{"date_criteria-1",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
 			"unsupported date_criteria value"},
 		{"description",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
 			"description can't be longer"},
 		{"allowed_classes-1",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start},
 			"allowed_classes is required"},
 		{"allowed_classes-2",
-			MsgCreate{Curator: a, Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 		{"fee-1",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
-		{"fee-2", MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: exponentMax, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+		{"fee-2", MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
 			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 6, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
+			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {
