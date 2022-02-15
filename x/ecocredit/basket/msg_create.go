@@ -101,3 +101,20 @@ func validateDateCriteria(d *DateCriteria) error {
 	}
 	return nil
 }
+
+// MsgCreateDenom formats denom and display denom:
+// * denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
+// * display denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
+// Returns error if MsgCrete.Exponent is not supported
+func MsgCreateDenom(m *MsgCreate) (string, string, error) {
+	const basketDenomPrefix = "eco."
+	denomPrefix, err := ecocredit.ExponentToPrefix(m.Exponent)
+	if err != nil {
+		return "", "", err
+	}
+
+	denomTail := m.CreditTypeAbbrev + "." + m.Name
+	displayDenomName := basketDenomPrefix + denomTail    //
+	denom := basketDenomPrefix + denomPrefix + denomTail // eco.<credit-class>.<name>
+	return denom, displayDenomName, nil
+}

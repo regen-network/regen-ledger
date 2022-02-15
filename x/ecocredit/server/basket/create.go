@@ -13,8 +13,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-const basketDenomPrefix = "eco."
-
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
@@ -34,14 +32,10 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
-	denomPrefix, err := ecocredit.ExponentToPrefix(msg.Exponent)
+	denom, displayDenomName, err := basket.MsgCreateDenom(msg)
 	if err != nil {
 		return nil, err
 	}
-
-	denomTail := msg.CreditTypeAbbrev + "." + msg.Name
-	displayDenomName := basketDenomPrefix + denomTail    // eco.<exponent><credit-type-abbrev>.<name>
-	denom := basketDenomPrefix + denomPrefix + denomTail // eco.<credit-class>.<name>
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,

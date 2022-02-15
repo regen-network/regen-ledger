@@ -15,6 +15,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"gotest.tools/v3/assert"
 )
@@ -75,8 +76,16 @@ func TestDuplicateDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
+	mc := baskettypes.MsgCreate{
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "C",
+		Exponent:         6,
+		Name:             "foo",
+	}
+	denom, _, err := basket.MsgCreateDenom(&mc)
+	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
-		&basketv1.Basket{BasketDenom: "eco.foo"},
+		&basketv1.Basket{BasketDenom: denom},
 	))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
@@ -86,12 +95,7 @@ func TestDuplicateDenom(t *testing.T) {
 			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
 		}}, nil,
 	)
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
-		CreditTypeAbbrev: "C",
-		Exponent:         6,
-		Name:             "foo",
-	})
+	_, err = s.k.Create(s.ctx, &mc)
 	assert.ErrorContains(t, err, "unique")
 }
 
