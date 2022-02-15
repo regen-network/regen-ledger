@@ -31,7 +31,7 @@ const (
 
 // basket operations weights
 const (
-	WeightCreate = 50
+	WeightCreate = 100
 	WeightPut    = 100
 	WeightTake   = 100
 )
@@ -223,7 +223,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		for _, class := range classes {
 			if class.CreditType.Abbreviation == rBasket.CreditTypeName {
 				classInfoList = append(classInfoList, *class)
-				if max == 2 {
+				if max == 3 {
 					break
 				}
 				max++
