@@ -1,8 +1,9 @@
 package server_test
 
 import (
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"testing"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 
 	"github.com/golang/mock/gomock"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
