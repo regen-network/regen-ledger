@@ -30,23 +30,16 @@ message MsgCreate {
 
   // name will be used to together with prefix to create a bank denom for this
   // basket token. It can be between 3-8 alphanumeric characters, with the
-  // first character being alphabetic. The bank denom will be
-  // `eco/<prefix><name>` and its display name will be `eco/<name>`.
+  // first character being alphabetic.
+  //
+  // The bank denom will be formed from name, credit type and exponent and be
+  // of the form `eco.<prefix><credit_type_abbrev>.<name>` where prefix
+  // is derived from exponent.
   string name = 2;
-
-  // prefix is a single alphabetic character that denotes
-  // the denom prefix and indicates in some way what relationship is between
-  // the denom and display denom. Standard conventions are that m indicates
-  // milli (10^3), u indicates micro (10^6), n indicates nano (10^9).
-  // Typical usage of prefix should correspond with the `exponent` field, 
-  // which is used to convert decimal ecocredit amounts to integral
-  // basket tokens.
-  string prefix = 3;
 
   // description is a human-readable description of the basket denom that should
   // be at most 256 characters.
-  string description = 4;
-
+  string description = 3;
 
   // exponent is the exponent that will be used for converting credits to basket
   // tokens and for bank denom metadata. It also limits the precision of
@@ -55,32 +48,48 @@ message MsgCreate {
   // this should be displayed as one unit in user interfaces. It also means
   // that the maximum precision of credit amounts is 6 decimal places so that
   // the need to round is eliminated. The exponent must be >= the precision of
-  // the credit type at the time the basket is created.
-  uint32 exponent = 5;
+  // the credit type at the time the basket is created and be of one of the
+  // following values 0, 1, 2, 3, 6, 9, 12, 15, 18, 21, or 24 which correspond
+  // to the exponents which have an official SI prefix.
+  //
+  // The exponent will be used to form the prefix part of the the bank denom
+  // and will be mapped as follows:
+  //   0 - no prefix
+  //   1 - d (deci)
+  //   2 - c (centi)
+  //   3 - m (milli)
+  //   6 - u (micro)
+  //   9 - n (nano)
+  //   12 - p (pico)
+  //   15 - f (femto)
+  //   18 - a (atto)
+  //   21 - z (zepto)
+  //   24 - y (yocto)
+  uint32 exponent = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is
   // false unless the credits were previously put into the basket by the
   // address picking them from the basket, in which case they will remain
   // tradable.
-  bool disable_auto_retire = 6;
+  bool disable_auto_retire = 5;
 
   // credit_type_abbrev is the abbreviation of the credit type this basket is
   // able to hold.
-  string credit_type_abbrev = 7;
+  string credit_type_abbrev = 6;
 
   // allowed_classes are the credit classes allowed to be put in the basket
-  repeated string allowed_classes = 8;
+  repeated string allowed_classes = 7;
 
   // date_criteria is the date criteria for batches admitted to the basket.
-  DateCriteria date_criteria = 9;
+  DateCriteria date_criteria = 8;
 
   // fee is the fee that the curator will pay to create the basket. It must be
   // >= the required Params.basket_creation_fee. We include the fee explicitly
   // here so that the curator explicitly acknowledges paying this fee and
   // is not surprised to learn that the paid a big fee and didn't know
   // beforehand.
-  repeated cosmos.base.v1beta1.Coin fee = 10 [
+  repeated cosmos.base.v1beta1.Coin fee = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
