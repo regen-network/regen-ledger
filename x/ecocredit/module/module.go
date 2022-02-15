@@ -6,6 +6,14 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/gogo/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/gogo/protobuf/jsonpb"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -79,12 +87,58 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	bz, err := jsonTarget.JSON()
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		return err
+	}
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	if err != nil {
+		return err
+	}
+
+	err = db.ValidateJSON(jsonSource)
+	if err != nil {
+		return err
+	}
+
 	var data ecocredit.GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&data)))
+	if err != nil {
+		return err
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
 	}
 

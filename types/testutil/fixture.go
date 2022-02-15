@@ -43,14 +43,14 @@ type Fixture interface {
 	// random or correspond to nodes in a test network which have keyrings.
 	Signers() []sdk.AccAddress
 
-	// InitGenesis initializes genesis for all modules with provided genesisData.
-	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
-
 	// ExportGenesis returns raw encoded JSON genesis state for all modules.
 	ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error)
 
 	// Codec is the app ProtoCodec.
 	Codec() *codec.ProtoCodec
+
+	// InitGenesis initializes genesis for all modules with provided genesisData.
+	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
 
 	// Teardown performs any teardown actions for the fixture.
 	Teardown()

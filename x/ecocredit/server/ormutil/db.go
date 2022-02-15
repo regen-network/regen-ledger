@@ -3,10 +3,11 @@ package ormutil
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/types"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewStoreKeyDB creates an ormdb.ModuleDB from an ormdb.ModuleDB and a StoreKey.
@@ -14,7 +15,7 @@ import (
 // before fuller integration has been done.
 func NewStoreKeyDB(desc ormdb.ModuleSchema, key storetypes.StoreKey, options ormdb.ModuleDBOptions) (ormdb.ModuleDB, error) {
 	getBackend := func(ctx context.Context) (ormtable.Backend, error) {
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		sdkCtx := types.UnwrapSDKContext(ctx)
 		store := sdkCtx.KVStore(key)
 		wrapper := storeWrapper{store}
 		return ormtable.NewBackend(ormtable.BackendOptions{

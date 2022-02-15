@@ -37,6 +37,8 @@ type serverImpl struct {
 	batchInfoTable orm.PrimaryKeyTable
 
 	basketKeeper basket.Keeper
+
+	db ormdb.ModuleDB
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -66,17 +68,23 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
-	db, err := ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
-	s.basketKeeper = basket.NewKeeper(db, s, bankKeeper, distKeeper, storeKey)
+
+	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
 
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) {
+func RegisterServices(
+	configurator server.Configurator,
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distKeeper ecocredit.DistributionKeeper,
+) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
