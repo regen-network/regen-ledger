@@ -17,7 +17,7 @@ var (
 
 const nameMinLen = 3
 const nameMaxLen = 8
-const descrMaxLen = 200
+const descrMaxLen = 255
 const creditTypeAbbrMaxLen = 3
 
 var errBadReq = sdkerrors.ErrInvalidRequest
