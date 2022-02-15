@@ -14,6 +14,7 @@ message Basket {
         id: 1,
         primary_key: {fields: "id", auto_increment: true}
         index: {id: 1, fields: "basket_denom", unique: true}
+        index: {id: 2, fields: "name", unique: true}
     };
 
     // id is the uint64 ID of the basket. It is used internally for reducing
@@ -23,17 +24,22 @@ message Basket {
     // basket_denom is the basket bank denom.
     string basket_denom = 2;
 
+    // name is the unique name of the basket specified in MsgCreate. Basket
+    // names must be unique across all credit types and choices of exponent
+    // above and beyond the uniqueness constraint on basket_denom.
+    string name = 3;
+
     // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
-    bool disable_auto_retire = 3;
+    bool disable_auto_retire = 4;
 
     // credit_type_abbrev is the abbreviation of the credit type this basket is able to hold.
-    string credit_type_abbrev = 4;
+    string credit_type_abbrev = 5;
 
     // date_criteria is the date criteria for batches admitted to the basket.
-    DateCriteria date_criteria = 5;
+    DateCriteria date_criteria = 6;
 
     // exponent is the exponent for converting credits to/from basket tokens.
-    uint32 exponent = 6;
+    uint32 exponent = 7;
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.
