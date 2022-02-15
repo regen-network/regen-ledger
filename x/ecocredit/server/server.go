@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -36,6 +37,8 @@ type serverImpl struct {
 	batchInfoTable orm.PrimaryKeyTable
 
 	basketKeeper basket.Keeper
+
+	db ormdb.ModuleDB
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -65,22 +68,32 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
+	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper) {
+func RegisterServices(
+	configurator server.Configurator,
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distKeeper ecocredit.DistributionKeeper,
+) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
-	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, impl.storeKey)
+	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, distKeeper, impl.storeKey)
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-
-	// TODO Msg and Query server registration
+	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
+	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
 }
