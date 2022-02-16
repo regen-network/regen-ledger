@@ -42,9 +42,10 @@ message EventCreateBatch {
   string project_location = 7;
 }
 
-// EventReceive is an event emitted when credits are received either upon
-// creation of a new batch or upon transfer. Each batch_denom created or
-// transferred will result in a separate EventReceive for easy indexing.
+// EventReceive is an event emitted when credits are received either via
+// creation of a new batch, transfer of credits, or taking credits from a
+// basket. Each batch_denom created, transferred or taken from a baset will
+// result in a separate EventReceive for easy indexing.
 message EventReceive {
   // sender is the sender of the credits in the case that this event is the
   // result of a transfer. It will not be set when credits are received at
