@@ -91,6 +91,7 @@ func NewDecFromInt64(x int64) Dec {
 }
 
 // NewDecFinite returns a decimal with a value of coeff * 10^exp.
+// TODO: missing tests
 func NewDecFinite(coeff int64, exp int32) Dec {
 	var res Dec
 	res.dec.SetFinite(coeff, exp)
@@ -122,6 +123,7 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 }
 
 // MulExact returns a new dec with value x * y. The product must not round or an error will be returned.
+// TODO: missing tests
 func (x Dec) MulExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
@@ -135,6 +137,7 @@ func (x Dec) MulExact(y Dec) (Dec, error) {
 }
 
 // QuoExact is a version of Quo that returns an error if any rounding occurred.
+// TODO: missing tests
 func (x Dec) QuoExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)

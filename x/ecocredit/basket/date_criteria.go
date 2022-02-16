@@ -12,6 +12,10 @@ func (d *DateCriteria) ToApi() *basketv1.DateCriteria {
 	if d == nil {
 		return nil
 	}
+	// NOTE(@aaronc): I would choose a marshal/unmarshal approach to
+	// automatically handle any new cases that get added to the oneof.
+	// This is faster but more brittle to changes. We have no performance reason
+	// to do this because basket creation is very infrequent.
 	if x := d.GetMinStartDate(); x != nil {
 		return &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{
 			&timestamppb.Timestamp{Seconds: x.Seconds, Nanos: x.Nanos}}}

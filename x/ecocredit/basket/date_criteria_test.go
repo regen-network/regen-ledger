@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// NOTE(aaronc): no tests would be needed with Marshal/Unmarshal conversion
 func TestDateCriteriaToApi(t *testing.T) {
 	require := require.New(t)
 

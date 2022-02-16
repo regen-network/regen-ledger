@@ -96,7 +96,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			panic(fmt.Sprintf("unable to upgrade: subspace %s not found", ecocredittypes.ModuleName))
 		}
 
-		// set basket creation fee to 1,0000 REGEN
+		// set basket creation fee to 1,000 REGEN
 		ecoParams.Set(ctx, ecocredittypes.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
