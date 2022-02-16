@@ -53,22 +53,22 @@ message EventReceive {
   // initial issuance or taken from a basket.
   string sender = 1;
 
+  // recipient is the recipient of the credits.
+  string recipient = 2;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 3;
+
+  // tradable_amount is the decimal number of tradable credits received.
+  string tradable_amount = 4;
+
+  // retired_amount is the decimal number of retired credits received.
+  string retired_amount = 5;
+
   // basket_denom is the denom of the basket. when the basket_denom field is set, it indicates that this event was
   // triggered by the transfer of credits from a basket. It will not be set if the credits were sent by a user, or
   // by initial issuance.
-  string basket_denom = 2;
-
-  // recipient is the recipient of the credits.
-  string recipient = 3;
-
-  // batch_denom is the unique ID of credit batch.
-  string batch_denom = 4;
-
-  // tradable_amount is the decimal number of tradable credits received.
-  string tradable_amount = 5;
-
-  // retired_amount is the decimal number of retired credits received.
-  string retired_amount = 6;
+  string basket_denom = 6;
 }
 
 // EventRetire is an event emitted when credits are retired. When credits are
