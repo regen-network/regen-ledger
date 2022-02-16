@@ -16,7 +16,7 @@ import (
 )
 
 // Classes queries for all credit classes with pagination.
-func (s serverImpl) Classes(ctx context.Context, request *v1beta1.QueryClassesRequest) (*v1beta1.QueryClassesResponse, error) {
+func (k Keeper) Classes(ctx context.Context, request *v1beta1.QueryClassesRequest) (*v1beta1.QueryClassesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -24,7 +24,7 @@ func (s serverImpl) Classes(ctx context.Context, request *v1beta1.QueryClassesRe
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	it, err := s.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := k.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -52,20 +52,20 @@ func (s serverImpl) Classes(ctx context.Context, request *v1beta1.QueryClassesRe
 }
 
 // ClassInfo queries for information on a credit class.
-func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassInfoRequest) (*v1beta1.QueryClassInfoResponse, error) {
+func (k Keeper) ClassInfo(ctx context.Context, request *v1beta1.QueryClassInfoRequest) (*v1beta1.QueryClassInfoResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
 		return nil, err
 	}
-	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
+	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
 	issuers := make([]sdk.AccAddress, 0)
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id))
+	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id))
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *v1beta1.QueryClassIn
 	}}, nil
 }
 
-func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIssuersRequest) (*v1beta1.QueryClassIssuersResponse, error) {
+func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIssuersRequest) (*v1beta1.QueryClassIssuersResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -98,12 +98,12 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 		return nil, err
 	}
 
-	classInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
+	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := s.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -135,7 +135,7 @@ func (s serverImpl) ClassIssuers(ctx context.Context, request *v1beta1.QueryClas
 }
 
 // Projects queries projects of a given credit batch.
-func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjectsRequest) (*v1beta1.QueryProjectsResponse, error) {
+func (k Keeper) Projects(ctx context.Context, request *v1beta1.QueryProjectsRequest) (*v1beta1.QueryProjectsResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -143,11 +143,11 @@ func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjects
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	cInfo, err := s.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
+	cInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := s.stateStore.ProjectInfoStore().List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := k.stateStore.ProjectInfoStore().List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -163,7 +163,7 @@ func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjects
 		if err != nil {
 			return nil, err
 		}
-		classInfo, err := s.stateStore.ClassInfoStore().Get(ctx, info.ClassId)
+		classInfo, err := k.stateStore.ClassInfoStore().Get(ctx, info.ClassId)
 		if err != nil {
 			return nil, err
 		}
@@ -185,19 +185,19 @@ func (s serverImpl) Projects(ctx context.Context, request *v1beta1.QueryProjects
 	}, nil
 }
 
-func (s serverImpl) ProjectInfo(ctx context.Context, request *v1beta1.QueryProjectInfoRequest) (*v1beta1.QueryProjectInfoResponse, error) {
+func (k Keeper) ProjectInfo(ctx context.Context, request *v1beta1.QueryProjectInfoRequest) (*v1beta1.QueryProjectInfoResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
 		return nil, err
 	}
-	pInfo, err := s.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
+	pInfo, err := k.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	cInfo, err := s.stateStore.ClassInfoStore().Get(ctx, pInfo.ClassId)
+	cInfo, err := k.stateStore.ClassInfoStore().Get(ctx, pInfo.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +212,7 @@ func (s serverImpl) ProjectInfo(ctx context.Context, request *v1beta1.QueryProje
 }
 
 // Batches queries for all batches in the given credit class.
-func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRequest) (*v1beta1.QueryBatchesResponse, error) {
+func (k Keeper) Batches(ctx context.Context, request *v1beta1.QueryBatchesRequest) (*v1beta1.QueryBatchesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -220,11 +220,11 @@ func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRe
 		request.Pagination = &query.PageRequest{}
 	}
 	p := request.Pagination
-	project, err := s.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
+	project, err := k.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := s.stateStore.BatchInfoStore().List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
+	it, err := k.stateStore.BatchInfoStore().List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
 		Key:        p.Key,
 		Offset:     p.Offset,
 		Limit:      p.Limit,
@@ -236,7 +236,7 @@ func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRe
 	}
 
 	projectName := request.ProjectId
-	pinfo, err := s.stateStore.ProjectInfoStore().GetByName(ctx, projectName)
+	pinfo, err := k.stateStore.ProjectInfoStore().GetByName(ctx, projectName)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +275,7 @@ func (s serverImpl) Batches(ctx context.Context, request *v1beta1.QueryBatchesRe
 }
 
 // BatchInfo queries for information on a credit batch.
-func (s serverImpl) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchInfoRequest) (*v1beta1.QueryBatchInfoResponse, error) {
+func (k Keeper) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchInfoRequest) (*v1beta1.QueryBatchInfoResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -283,12 +283,12 @@ func (s serverImpl) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchIn
 		return nil, err
 	}
 
-	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	project, err := s.stateStore.ProjectInfoStore().Get(ctx, batch.ProjectId)
+	project, err := k.stateStore.ProjectInfoStore().Get(ctx, batch.ProjectId)
 	if err != nil {
 		return nil, err
 	}
@@ -315,14 +315,14 @@ func (s serverImpl) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchIn
 
 // Balance queries the balance (both tradable and retired) of a given credit
 // batch for a given account.
-func (s serverImpl) Balance(ctx context.Context, req *v1beta1.QueryBalanceRequest) (*v1beta1.QueryBalanceResponse, error) {
+func (k Keeper) Balance(ctx context.Context, req *v1beta1.QueryBalanceRequest) (*v1beta1.QueryBalanceResponse, error) {
 	if req == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 	if err := ecocredit.ValidateDenom(req.BatchDenom); err != nil {
 		return nil, err
 	}
-	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, req.BatchDenom)
+	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -331,7 +331,7 @@ func (s serverImpl) Balance(ctx context.Context, req *v1beta1.QueryBalanceReques
 	}
 	addr, _ := sdk.AccAddressFromBech32(req.Account)
 
-	balance, err := s.stateStore.BatchBalanceStore().Get(ctx, addr, batch.Id)
+	balance, err := k.stateStore.BatchBalanceStore().Get(ctx, addr, batch.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -348,7 +348,7 @@ func (s serverImpl) Balance(ctx context.Context, req *v1beta1.QueryBalanceReques
 }
 
 // Supply queries the supply (tradable, retired, cancelled) of a given credit batch.
-func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequest) (*v1beta1.QuerySupplyResponse, error) {
+func (k Keeper) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequest) (*v1beta1.QuerySupplyResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
@@ -357,12 +357,12 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 		return nil, err
 	}
 
-	batch, err := s.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	supply, err := s.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
+	supply, err := k.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -375,9 +375,9 @@ func (s serverImpl) Supply(ctx context.Context, request *v1beta1.QuerySupplyRequ
 }
 
 // CreditTypes queries the list of allowed types that credit classes can have.
-func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequest) (*v1beta1.QueryCreditTypesResponse, error) {
+func (k Keeper) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequest) (*v1beta1.QueryCreditTypesResponse, error) {
 	creditTypes := make([]*v1beta1.CreditType, 0)
-	it, err := s.stateStore.CreditTypeStore().List(ctx, ecocreditv1beta1.CreditTypePrimaryKey{})
+	it, err := k.stateStore.CreditTypeStore().List(ctx, ecocreditv1beta1.CreditTypePrimaryKey{})
 	if err != nil {
 		return nil, err
 	}
@@ -398,10 +398,10 @@ func (s serverImpl) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypes
 
 // Params queries the ecocredit module parameters.
 // TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-func (s serverImpl) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
+func (k Keeper) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params
-	s.paramSpace.GetParamSet(sdkCtx, &params)
+	k.params.GetParamSet(sdkCtx, &params)
 	v1beta1types := make([]*v1beta1.CreditType, len(params.CreditTypes))
 	for i, typ := range params.CreditTypes {
 		v1beta1types[i] = &v1beta1.CreditType{

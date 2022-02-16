@@ -10,6 +10,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
 )
 
+// TODO: Revisit this once we have proper gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(10)
+
 func (k Keeper) CreateClass(goCtx context.Context, req *v1beta1.MsgCreateClass) (*v1beta1.MsgCreateClassResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
 	// Charge the admin a fee to create the credit class
@@ -121,17 +125,22 @@ func (k Keeper) getCreditClassFee(ctx sdk.Context) sdk.Coins {
 	return params.CreditClassFee
 }
 
-func (k Keeper) getCreditType(ctx sdk.Context, creditTypeName string) (ecocredit.CreditType, error) {
+func (k Keeper) getCreditType(ctx sdk.Context, creditTypeName string) (ecocreditv1beta1.CreditType, error) {
 	creditTypes := k.getAllCreditTypes(ctx)
 	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
 		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
 		// be normalized here.
 		if creditType.Name == creditTypeName {
-			return *creditType, nil
+			return ecocreditv1beta1.CreditType{
+				Abbreviation: creditType.Abbreviation,
+				Name:         creditType.Name,
+				Unit:         creditType.Unit,
+				Precision:    creditType.Precision,
+			}, nil
 		}
 	}
-	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
+	return ecocreditv1beta1.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
 }
 
 func (k Keeper) getAllCreditTypes(ctx sdk.Context) []*ecocredit.CreditType {
