@@ -112,7 +112,7 @@ Flags:
 			}
 
 			if minStartDateString != "" && startDateWindow != 0 {
-				return fmt.Errorf("both min-start-date and start-date-window cannot be set")
+				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
 			}
 
 			dateCriteria := basket.DateCriteria{}
