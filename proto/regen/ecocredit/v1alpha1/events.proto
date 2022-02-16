@@ -47,6 +47,7 @@ message EventCreateBatch {
 // basket. Each batch_denom created, transferred or taken from a baset will
 // result in a separate EventReceive for easy indexing.
 message EventReceive {
+
   // sender is the sender of the credits in the case that this event is the
   // result of a transfer. It will not be set when credits are received at
   // initial issuance or taken from a basket.
