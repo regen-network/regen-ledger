@@ -179,6 +179,10 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
+			if strings.Contains(err.Error(), "unique key violation") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
+			}
+
 			fmt.Println("++++++++++++++++MsgCreate+++++++++++++++++++++++++++++++++")
 			fmt.Println(msg.String())
 			fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
