@@ -32,7 +32,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
-	denom, displayDenomName, err := basket.MsgCreateDenom(msg)
+	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
 	if err != nil {
 		return nil, err
 	}
@@ -43,6 +43,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
 		Exponent:          msg.Exponent,
+		Name:              msg.Name,
 	})
 	if err != nil {
 		return nil, err
@@ -52,7 +53,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	denomUnits := []*banktypes.DenomUnit{{
-		Denom:    displayDenomName,
+		Denom:    displayDenom,
 		Exponent: msg.Exponent,
 		Aliases:  nil,
 	}}
@@ -68,7 +69,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		DenomUnits:  denomUnits,
 		Description: msg.Description,
 		Base:        denom,
-		Display:     displayDenomName,
+		Display:     displayDenom,
 		Name:        msg.Name,
 		Symbol:      msg.Name,
 	})

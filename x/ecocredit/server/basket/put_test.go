@@ -84,6 +84,7 @@ func TestPut(t *testing.T) {
 	basketTbl := db.GetTable(&basketv1.Basket{})
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom,
+		Name:              basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
@@ -95,6 +96,7 @@ func TestPut(t *testing.T) {
 	validStartDateWindow := startDate.Add(-dur)
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom2,
+		Name:              basketDenom2,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},

@@ -18,7 +18,6 @@ import (
 )
 
 const (
-	FlagDenomPrefix            = "denom-prefix"
 	FlagExponent               = "exponent"
 	FlagDisableAutoRetire      = "disable-auto-retire"
 	FlagCreditTypeAbbreviation = "credit-type-abbreviation"
@@ -39,7 +38,6 @@ Parameters:
 		name: the name used to create a bank denom for this basket token.
 
 Flags:
-		denom_prefix: the prefix to be used in the basket coin's base denom. Must only be one character.
 		exponent: the exponent used for converting credits to basket tokens and for bank
 			denom metadata. The exponent also limits the precision of credit amounts
 			when putting credits into a basket. An exponent of 6 will mean that 10^6 units
@@ -69,11 +67,6 @@ Flags:
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			denomPrefix, err := cmd.Flags().GetString(FlagDenomPrefix)
 			if err != nil {
 				return err
 			}
@@ -169,7 +162,6 @@ Flags:
 			msg := basket.MsgCreate{
 				Curator:           clientCtx.FromAddress.String(),
 				Name:              args[0],
-				Prefix:            denomPrefix,
 				Description:       denomDescription,
 				Exponent:          uint32(exponent),
 				DisableAutoRetire: disableAutoRetire,
@@ -190,7 +182,6 @@ Flags:
 	flags.AddTxFlagsToCmd(cmd)
 
 	// command flags
-	cmd.Flags().String(FlagDenomPrefix, "", "the name used to create a bank denom display name")
 	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
@@ -201,11 +192,9 @@ Flags:
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
 	// required flags
-	cmd.MarkFlagRequired(FlagDenomPrefix)
 	cmd.MarkFlagRequired(FlagExponent)
 	cmd.MarkFlagRequired(FlagCreditTypeAbbreviation)
 	cmd.MarkFlagRequired(FlagAllowedClasses)
-	cmd.MarkFlagRequired(FlagDenomPrefix)
 
 	return cmd
 }
