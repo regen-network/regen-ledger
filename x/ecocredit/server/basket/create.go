@@ -17,9 +17,8 @@ import (
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
-	if err := basket.ValidateCreateFee(msg, fee); err != nil {
+	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
-
 	}
 	sender, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
@@ -30,19 +29,21 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeName, msg.Exponent); err != nil {
+	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
-
-	// TODO: need to decide about the denom creation
-	denom := msg.Name
+	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
+	if err != nil {
+		return nil, err
+	}
 
 	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
-		CreditTypeName:    msg.CreditTypeName,
+		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
 		Exponent:          msg.Exponent,
+		Name:              msg.Name,
 	})
 	if err != nil {
 		return nil, err
@@ -51,18 +52,26 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
+	denomUnits := []*banktypes.DenomUnit{{
+		Denom:    displayDenom,
+		Exponent: msg.Exponent,
+		Aliases:  nil,
+	}}
+	if msg.Exponent != 0 {
+		denomUnits = append(denomUnits, &banktypes.DenomUnit{
+			Denom:    denom,
+			Exponent: 0, // convertion from base denom to this denom
+			Aliases:  nil,
+		})
+	}
+
 	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
-		DenomUnits: []*banktypes.DenomUnit{
-			{
-				Denom:    msg.DisplayName,
-				Exponent: msg.Exponent,
-				Aliases:  nil,
-			},
-		},
-		Base:    denom,
-		Display: msg.DisplayName,
-		Name:    msg.DisplayName,
-		Symbol:  msg.DisplayName,
+		DenomUnits:  denomUnits,
+		Description: msg.Description,
+		Base:        denom,
+		Display:     displayDenom,
+		Name:        msg.Name,
+		Symbol:      msg.Name,
 	})
 
 	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
@@ -102,7 +111,8 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
 		}
 
-		err := k.stateStore.BasketClassStore().Insert(ctx,
+		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
+		err := k.stateStore.BasketClassStore().Insert(wrappedCtx,
 			&basketv1.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,

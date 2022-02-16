@@ -42,7 +42,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -73,6 +73,8 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err)
 	}
 
+	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
+
 	return s
 }
 
@@ -83,12 +85,7 @@ func RegisterServices(
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
 ) {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
-	db, err := ormutil.NewStoreKeyDB(ModuleSchema, configurator.ModuleKey(), ormdb.ModuleDBOptions{})
-	if err != nil {
-		panic(err)
-	}
-	impl.basketKeeper = basket.NewKeeper(db, impl, bankKeeper, distKeeper, impl.storeKey)
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)

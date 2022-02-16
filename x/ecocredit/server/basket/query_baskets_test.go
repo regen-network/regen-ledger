@@ -16,13 +16,13 @@ func TestQueryBaskets(t *testing.T) {
 
 	// add some baskets
 	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
-		BasketDenom: "foo",
+		BasketDenom: "foo", Name: "foo",
 	}))
 	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
-		BasketDenom: "bar",
+		BasketDenom: "bar", Name: "bar",
 	}))
 	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
-		BasketDenom: "baz",
+		BasketDenom: "baz", Name: "baz",
 	}))
 
 	// query all

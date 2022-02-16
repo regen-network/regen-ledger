@@ -1,6 +1,9 @@
 package basket
 
 import (
+	"fmt"
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -12,38 +15,36 @@ var (
 	_ legacytx.LegacyMsg = &MsgCreate{}
 )
 
-const nameMaxLen = 32
-const displayNameMinLen = 3
-const displayNameMaxLen = 32
-const exponentMax = 32
-const creditNameMaxLen = 32
+const nameMinLen = 3
+const nameMaxLen = 8
+const descrMaxLen = 255
+const creditTypeAbbrMaxLen = 3
 
 var errBadReq = sdkerrors.ErrInvalidRequest
+
+// first character must be alphabetic, the rest can be alphanumeric. We reduce length constraints by one to account for
+// the first character being forced to alphabetic.
+var reName = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap("malformed curator address " + err.Error())
 	}
-	// TODO: add proper validation once we will have proper requirements.
-	// https://github.com/regen-network/regen-ledger/issues/732
-	if m.Name == "" || len(m.Name) > nameMaxLen {
-		return errBadReq.Wrapf("name must not be empty and must not be longer than %d characters long", nameMaxLen)
+	if !reName.MatchString(m.Name) {
+		return errBadReq.Wrapf("name must start with an alphabetic character, and be between %d and %d alphanumeric characters long", nameMinLen, nameMaxLen)
 	}
-	if len(m.DisplayName) < displayNameMinLen || len(m.DisplayName) > displayNameMaxLen {
-		return errBadReq.Wrapf("display_name must be between %d and %d characters long", displayNameMinLen, displayNameMaxLen)
+	if _, err := ecocredit.ExponentToPrefix(m.Exponent); err != nil {
+		return err
 	}
-	if m.Exponent > exponentMax {
-		return errBadReq.Wrapf("exponent must not be bigger than %d", exponentMax)
-	}
-	if m.CreditTypeName == "" {
-		return errBadReq.Wrap("credit_type_name must be defined")
-	}
-	if len(m.CreditTypeName) > creditNameMaxLen {
-		return errBadReq.Wrapf("credit_type_name must not be longer than %d", creditNameMaxLen)
+	if err := ecocredit.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+		return err
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
 		return err
+	}
+	if len(m.Description) > descrMaxLen {
+		return errBadReq.Wrapf("description can't be longer than %d characters", descrMaxLen)
 	}
 	if len(m.AllowedClasses) == 0 {
 		return errBadReq.Wrap("allowed_classes is required")
@@ -56,9 +57,9 @@ func (m MsgCreate) ValidateBasic() error {
 	return m.Fee.Validate()
 }
 
-// ValidateCreateFee additional validation with access to the state data.
+// ValidateMsgCreate additional validation with access to the state data.
 // minFee must be sorted.
-func ValidateCreateFee(m *MsgCreate, minFee sdk.Coins) error {
+func ValidateMsgCreate(m *MsgCreate, minFee sdk.Coins) error {
 	if !m.Fee.IsAllGTE(minFee) {
 		return sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", minFee, m.Fee)
 	}
@@ -99,4 +100,21 @@ func validateDateCriteria(d *DateCriteria) error {
 		return errBadReq.Wrapf("unsupported date_criteria value %t", d)
 	}
 	return nil
+}
+
+// BasketDenom formats denom and display denom:
+// * denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
+// * display denom: eco.<m.Exponent><m.CreditTypeAbbrev>.<m.Name>
+// Returns error if MsgCrete.Exponent is not supported
+func BasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, string, error) {
+	const basketDenomPrefix = "eco."
+	denomPrefix, err := ecocredit.ExponentToPrefix(exponent)
+	if err != nil {
+		return "", "", err
+	}
+
+	denomTail := creditTypeAbbrev + "." + name
+	displayDenomName := basketDenomPrefix + denomTail    //
+	denom := basketDenomPrefix + denomPrefix + denomTail // eco.<credit-class>.<name>
+	return denom, displayDenomName, nil
 }

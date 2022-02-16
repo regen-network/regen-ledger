@@ -28,21 +28,43 @@ message MsgCreate {
   // basket settings.
   string curator = 1;
 
-  // name will be used to create a bank denom for this basket token.
+  // name will be used to together with prefix to create a bank denom for this
+  // basket token. It can be between 3-8 alphanumeric characters, with the
+  // first character being alphabetic.
+  //
+  // The bank denom will be formed from name, credit type and exponent and be
+  // of the form `eco.<prefix><credit_type_abbrev>.<name>` where prefix
+  // is derived from exponent.
   string name = 2;
 
-  // display_name will be used to create a bank Metadata display name for this
-  // basket token.
-  string display_name = 3;
+  // description is a human-readable description of the basket denom that should
+  // be at most 256 characters.
+  string description = 3;
 
   // exponent is the exponent that will be used for converting credits to basket
   // tokens and for bank denom metadata. It also limits the precision of
   // credit amounts when putting credits into a basket. An exponent of 6 will
-  // mean that 10^6 units of a basket token will be issued for 1.0 credits and
-  // that this should be displayed as one unit in user interfaces. It also means
+  // mean that 10^6 units of a basket token will be issued for 1.0 credits and that
+  // this should be displayed as one unit in user interfaces. It also means
   // that the maximum precision of credit amounts is 6 decimal places so that
   // the need to round is eliminated. The exponent must be >= the precision of
-  // the credit type at the time the basket is created.
+  // the credit type at the time the basket is created and be of one of the
+  // following values 0, 1, 2, 3, 6, 9, 12, 15, 18, 21, or 24 which correspond
+  // to the exponents which have an official SI prefix.
+  //
+  // The exponent will be used to form the prefix part of the the bank denom
+  // and will be mapped as follows:
+  //   0 - no prefix
+  //   1 - d (deci)
+  //   2 - c (centi)
+  //   3 - m (milli)
+  //   6 - u (micro)
+  //   9 - n (nano)
+  //   12 - p (pico)
+  //   15 - f (femto)
+  //   18 - a (atto)
+  //   21 - z (zepto)
+  //   24 - y (yocto)
   uint32 exponent = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled.
@@ -52,8 +74,9 @@ message MsgCreate {
   // tradable.
   bool disable_auto_retire = 5;
 
-  // credit_type_name filters against credits from this credit type name.
-  string credit_type_name = 6;
+  // credit_type_abbrev is the abbreviation of the credit type this basket is
+  // able to hold.
+  string credit_type_abbrev = 6;
 
   // allowed_classes are the credit classes allowed to be put in the basket
   repeated string allowed_classes = 7;
@@ -108,7 +131,7 @@ message MsgTake {
   // owner is the owner of the basket tokens.
   string owner = 1;
 
-  // basket_denom is the basket denom to take credits from.
+  // basket_denom is the basket bank denom to take credits from.
   string basket_denom = 2;
 
   // amount is the integer number of basket tokens to convert into credits.

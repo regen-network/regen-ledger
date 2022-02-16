@@ -23,9 +23,9 @@ func errorMatches(t *testing.T, err error, expect string) {
 func TestMsgCreateValidateBasic(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
-	name := randstr.String(nameMaxLen)
-	dName := randstr.String((displayNameMaxLen + displayNameMinLen) / 2)
-	creditName := randstr.String(10)
+	name := randstr.String((nameMaxLen+nameMinLen)/2, "ABCDEFGHIJKL")
+	creditAbbr := "FOO"
+	descr := "my project description"
 	start := &DateCriteria{&DateCriteria_MinStartDate{gogotypes.TimestampNow()}}
 
 	classes := []string{"eco_class1"}
@@ -39,44 +39,54 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			MsgCreate{Curator: "wrong"},
 			"malformed curator address"},
 		{"name-1",
-			MsgCreate{Curator: a, Name: ""}, "name must not be empty"},
-		{"name-2",
+			MsgCreate{Curator: a, Name: ""},
+			"name must start with an alphabetic character"},
+		{"name-long",
 			MsgCreate{Curator: a, Name: randstr.String(nameMaxLen + 1)},
-			"name must not be empty and must not be longer than"},
-		{"name-3",
-			MsgCreate{Curator: a, Name: name, DisplayName: ""},
-			"display_name must be between"},
-		{"name-4",
-			MsgCreate{Curator: a, Name: name, DisplayName: randstr.String(displayNameMaxLen + 1)},
-			"display_name must be between"},
+			"name must start with an alphabetic character"},
+		{"name-short",
+			MsgCreate{Curator: a, Name: randstr.String(nameMinLen - 1)},
+			"name must start with an alphabetic character"},
+		{"name-no-alpahnum",
+			MsgCreate{Curator: a, Name: randstr.String(nameMinLen) + "*"},
+			"name must start with an alphabetic character"},
+		{"name-no-alpah-prefix",
+			MsgCreate{Curator: a, Name: "1" + randstr.String(nameMinLen)},
+			"name must start with an alphabetic character"},
 		{"exponent-1",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax + 1},
-			"exponent must not be bigger than"},
+			MsgCreate{Curator: a, Name: name, Exponent: 4},
+			"exponent must be one of"},
+		{"exponent-1",
+			MsgCreate{Curator: a, Name: name, Exponent: 17},
+			"exponent must be one of"},
 		{"credity_type-1",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax},
-			"credit_type_name must be defined"},
+			MsgCreate{Curator: a, Name: name, Exponent: 3},
+			"credit type abbreviation must be 1-3"},
 		{"credity_type-2",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: randstr.String(creditNameMaxLen + 1)},
-			"credit_type_name must not be longer"},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
+			"credit type abbreviation must be 1-3"},
 		{"date_criteria-1",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: &DateCriteria{}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
 			"unsupported date_criteria value"},
+		{"description",
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
+			"description can't be longer"},
 		{"allowed_classes-1",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start},
 			"allowed_classes is required"},
 		{"allowed_classes-2",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 		{"fee-1",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
-		{"fee-2", MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: exponentMax, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+		{"fee-2", MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 0, CreditTypeName: creditName, DateCriteria: start, AllowedClasses: classes}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Name: name, DisplayName: dName, Exponent: 6, CreditTypeName: creditName, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {
@@ -135,4 +145,37 @@ func TestMsgCreateSignBytes(t *testing.T) {
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	bz := m.GetSignBytes()
 	require.NotEmpty(t, bz)
+}
+
+func TestBasketDenom(t *testing.T) {
+	tcs := []struct {
+		tname        string
+		abbrev       string
+		exponent     uint32
+		denom        string
+		displayDenom string
+		err          bool
+	}{
+		{"wrong exponent",
+			"X", 5, "", "", true},
+		{"exponent-0",
+			"X", 0, "eco.X.foo", "eco.X.foo", false},
+		{"exponent-1`",
+			"X", 1, "eco.dX.foo", "eco.X.foo", false},
+		{"exponent-2",
+			"X", 2, "eco.cX.foo", "eco.X.foo", false},
+		{"exponent-6",
+			"X", 6, "eco.uX.foo", "eco.X.foo", false},
+	}
+	require := require.New(t)
+	for _, tc := range tcs {
+		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+		if tc.err {
+			require.Error(err, tc.tname)
+		} else {
+			require.NoError(err, tc.tname)
+			require.Equal(tc.denom, d, tc.tname)
+			require.Equal(tc.displayDenom, displayD, tc.tname)
+		}
+	}
 }

@@ -3,6 +3,8 @@ package server_test
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+
 	"github.com/golang/mock/gomock"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 
@@ -50,8 +52,9 @@ func TestServer(t *testing.T) {
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
-		minttypes.ModuleName:      {authtypes.Minter},
-		ecocredittypes.ModuleName: {authtypes.Burner},
+		minttypes.ModuleName:       {authtypes.Minter},
+		ecocredittypes.ModuleName:  {authtypes.Burner},
+		basket.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -67,6 +70,6 @@ func TestServer(t *testing.T) {
 	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, distKeeper)
 	suite.Run(t, s)
 }

@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package regen.ecocredit.basket.v1;
+
+import "google/api/annotations.proto";
+import "regen/ecocredit/basket/v1/state.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
+
+// Msg is the regen.ecocredit.basket.v1beta1 Query service.
+service Query {
+
+    // Basket queries one basket by denom.
+    rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
+        option (google.api.http).get =
+            "/regen/ecocredit/basket/v1/baskets/{basket_denom}";
+    }
+
+    // Baskets lists all baskets in the ecocredit module.
+    rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
+        option (google.api.http).get =
+            "/regen/ecocredit/basket/v1/baskets";
+    }
+
+    // BasketBalances lists the balance of each credit batch in the basket.
+    rpc BasketBalances(QueryBasketBalancesRequest) returns (QueryBasketBalancesResponse) {
+        option (google.api.http).get =
+            "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances";
+    }
+
+    // BasketBalance queries the balance of a specific credit batch in the basket.
+    rpc BasketBalance(QueryBasketBalanceRequest) returns (QueryBasketBalanceResponse) {
+        option (google.api.http).get =
+            "/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances/{batch_denom}";
+    }
+}
+
+// QueryBasketRequest is the Query/Basket request type.
+message QueryBasketRequest {
+    // basket_denom represents the denom of the basket to query.
+    string basket_denom = 1;
+}
+
+// QueryBasketResponse is the Query/Basket response type.
+message QueryBasketResponse {
+    // basket is the queried basket.
+    Basket basket = 1;
+}
+
+// QueryBasketsRequest is the Query/Baskets request type.
+message QueryBasketsRequest {
+    // pagination defines an optional pagination for the request.
+    cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryBasketsResponse is the Query/Baskets response type.
+message QueryBasketsResponse {
+    // baskets are the fetched baskets.
+    repeated Basket baskets = 1;
+
+    // pagination defines the pagination in the response.
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBasketBalancesRequest is the Query/BasketBalances request type.
+message QueryBasketBalancesRequest {
+    // basket_denom is the denom of the basket.
+    string basket_denom = 1;
+
+    // pagination defines an optional pagination for the request.
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBasketBalancesResponse is the Query/BasketBalances response type.
+message QueryBasketBalancesResponse {
+    // balances is a list of credit balances in the basket.
+    repeated BasketBalance balances = 1;
+
+    // pagination defines the pagination in the response.
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBasketBalanceRequest is the Query/BasketBalance request type.
+message QueryBasketBalanceRequest {
+    // basket_denom is the denom of the basket.
+    string basket_denom = 1;
+
+    // batch_denom is the denom of the credit batch.
+    string batch_denom = 2;
+}
+
+// QueryBasketBalanceResponse is the Query/BasketBalance response type.
+message QueryBasketBalanceResponse {
+    // balance is the amount of the queried credit batch in the basket.
+    string balance = 1;
+}

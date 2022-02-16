@@ -84,8 +84,9 @@ func TestPut(t *testing.T) {
 	basketTbl := db.GetTable(&basketv1.Basket{})
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom,
+		Name:              basketDenom,
 		DisableAutoRetire: true,
-		CreditTypeName:    "carbon",
+		CreditTypeAbbrev:  "C",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
 		Exponent:          6,
 	})
@@ -95,8 +96,9 @@ func TestPut(t *testing.T) {
 	validStartDateWindow := startDate.Add(-dur)
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
 		BasketDenom:       basketDenom2,
+		Name:              basketDenom2,
 		DisableAutoRetire: true,
-		CreditTypeName:    "carbon",
+		CreditTypeAbbrev:  "C",
 		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
 		Exponent:          6,
 	})
@@ -274,12 +276,12 @@ func TestPut(t *testing.T) {
 					Return(&batchInfoRes, nil)
 
 				badClass := *classInfoRes.Info
-				badClass.CreditType.Name = "BadType"
+				badClass.CreditType.Abbreviation = "FOO"
 				ecocreditKeeper.EXPECT().
 					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&ecocredit.QueryClassInfoResponse{Info: &badClass}, nil)
 			},
-			errMsg: "cannot use credit of type BadType in a basket that requires credit type carbon",
+			errMsg: "cannot use credit of type FOO in a basket that requires credit type C",
 		},
 		{
 			name:            "batch out of time window",
