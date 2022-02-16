@@ -78,15 +78,15 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: []string{"class1", ""}},
 			"allowed_classes[1] must be defined"},
 		{"fee-1",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{Denom: "1a"}}},
 			"invalid denom"},
-		{"fee-2", MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
+		{"fee-2", MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Fee: sdk.Coins{sdk.Coin{"aa", sdk.NewInt(-1)}}},
 			"invalid denom"},
 
 		{"good-1-fees-not-required",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
 		{"good-date-criteria-not-required",
-			MsgCreate{Curator: a, Prefix: "o", Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
+			MsgCreate{Curator: a, Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
 
 	for _, tc := range tcs {
@@ -145,4 +145,37 @@ func TestMsgCreateSignBytes(t *testing.T) {
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	bz := m.GetSignBytes()
 	require.NotEmpty(t, bz)
+}
+
+func TestBasketDenom(t *testing.T) {
+	tcs := []struct {
+		tname        string
+		abbrev       string
+		exponent     uint32
+		denom        string
+		displayDenom string
+		err          bool
+	}{
+		{"wrong exponent",
+			"X", 5, "", "", true},
+		{"exponent-0",
+			"X", 0, "eco.X.foo", "eco.X.foo", false},
+		{"exponent-1`",
+			"X", 1, "eco.dX.foo", "eco.X.foo", false},
+		{"exponent-2",
+			"X", 2, "eco.cX.foo", "eco.X.foo", false},
+		{"exponent-6",
+			"X", 6, "eco.uX.foo", "eco.X.foo", false},
+	}
+	require := require.New(t)
+	for _, tc := range tcs {
+		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+		if tc.err {
+			require.Error(err, tc.tname)
+		} else {
+			require.NoError(err, tc.tname)
+			require.Equal(tc.denom, d, tc.tname)
+			require.Equal(tc.displayDenom, displayD, tc.tname)
+		}
+	}
 }
