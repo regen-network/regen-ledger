@@ -7,6 +7,7 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -21,6 +22,7 @@ require (
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
+	gotest.tools/v3 v3.1.0
 	pgregory.net/rapid v0.4.7
 	sigs.k8s.io/yaml v1.1.0
 )
@@ -63,6 +65,7 @@ require (
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/golang/snappy v0.0.3-0.20201103224600-674baa8c7fc3 // indirect
 	github.com/google/btree v1.0.0 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect

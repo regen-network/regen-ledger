@@ -159,5 +159,7 @@ func (k Keeper) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (
 	if err != nil {
 		return ecocreditv1beta1.CreditType{}, err
 	}
-	return k.getCreditType(sdkCtx, classInfo.CreditType)
+	p := &ecocredit.Params{}
+	k.params.GetParamSet(sdkCtx, p)
+	return k.getCreditType(classInfo.CreditType, p.CreditTypes)
 }

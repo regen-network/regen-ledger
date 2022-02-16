@@ -93,7 +93,7 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer 
 		return err
 	}
 	if !found {
-		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for class %s", issuer, classID)
+		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for the class", issuer)
 	}
 	return nil
 }

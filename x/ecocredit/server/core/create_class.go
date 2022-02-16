@@ -16,7 +16,6 @@ const gasCostPerIteration = uint64(10)
 
 func (k Keeper) CreateClass(goCtx context.Context, req *v1beta1.MsgCreateClass) (*v1beta1.MsgCreateClassResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
-	// Charge the admin a fee to create the credit class
 	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -29,12 +28,13 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1beta1.MsgCreateClass) 
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
-	err = k.chargeCreditClassFee(sdkCtx, adminAddress)
+	// Charge the admin a fee to create the credit class
+	err = k.chargeCreditClassFee(sdkCtx, adminAddress, params.CreditClassFee)
 	if err != nil {
 		return nil, err
 	}
 
-	creditType, err := k.getCreditType(sdkCtx, req.CreditTypeName)
+	creditType, err := k.getCreditType(req.CreditTypeName, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +99,7 @@ func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, design
 	return false
 }
 
-func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress) error {
-	creditClassFee := k.getCreditClassFee(ctx)
-
+func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress, creditClassFee sdk.Coins) error {
 	// Move the fee to the ecocredit module's account
 	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, creatorAddr, ecocredit.ModuleName, creditClassFee)
 	if err != nil {
@@ -119,14 +117,7 @@ func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress
 	return nil
 }
 
-func (k Keeper) getCreditClassFee(ctx sdk.Context) sdk.Coins {
-	var params ecocredit.Params
-	k.params.GetParamSet(ctx, &params)
-	return params.CreditClassFee
-}
-
-func (k Keeper) getCreditType(ctx sdk.Context, creditTypeName string) (ecocreditv1beta1.CreditType, error) {
-	creditTypes := k.getAllCreditTypes(ctx)
+func (k Keeper) getCreditType(creditTypeName string, creditTypes []*ecocredit.CreditType) (ecocreditv1beta1.CreditType, error) {
 	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
 		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
@@ -141,10 +132,4 @@ func (k Keeper) getCreditType(ctx sdk.Context, creditTypeName string) (ecocredit
 		}
 	}
 	return ecocreditv1beta1.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
-}
-
-func (k Keeper) getAllCreditTypes(ctx sdk.Context) []*ecocredit.CreditType {
-	var params ecocredit.Params
-	k.params.GetParamSet(ctx, &params)
-	return params.CreditTypes
 }
