@@ -103,7 +103,7 @@ Flags:
 			if err != nil {
 				return err
 			}
-			startDateWindowString, err := cmd.Flags().GetString(FlagMinimumStartDate)
+			startDateWindow, err := cmd.Flags().GetUint64(FlagStartDateWindow)
 			if err != nil {
 				return err
 			}
@@ -113,9 +113,9 @@ Flags:
 				return err
 			}
 
-			if minStartDateString == "" && startDateWindowString == "" {
+			if minStartDateString == "" && startDateWindow == 0 {
 				return fmt.Errorf("either min-start-date or start-date-window required")
-			} else if minStartDateString != "" && startDateWindowString != "" {
+			} else if minStartDateString != "" && startDateWindow != 0 {
 				return fmt.Errorf("both min-start-date and start-date-window cannot be set")
 			}
 
@@ -135,12 +135,8 @@ Flags:
 				}
 			}
 
-			if startDateWindowString != "" {
-				startDateWindowInt, err := cmd.Flags().GetInt64(FlagMinimumStartDate)
-				if err != nil {
-					return err
-				}
-				startDateWindowDuration := time.Duration(startDateWindowInt)
+			if startDateWindow != 0 {
+				startDateWindowDuration := time.Duration(startDateWindow)
 				startDateWindow := types.DurationProto(startDateWindowDuration)
 				dateCriteria.Sum = &basket.DateCriteria_StartDateWindow{
 					StartDateWindow: startDateWindow,
@@ -187,7 +183,7 @@ Flags:
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
 	cmd.Flags().String(FlagAllowedClasses, "", "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
-	cmd.Flags().String(FlagStartDateWindow, "", "sets a cutoff for batch start dates when adding new credits to the basket (e.g. \"1325404800\")")
+	cmd.Flags().Uint64(FlagStartDateWindow, 0, "sets a cutoff for batch start dates when adding new credits to the basket (e.g. 1325404800)")
 	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
