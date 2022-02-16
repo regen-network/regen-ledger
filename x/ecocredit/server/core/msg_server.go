@@ -107,7 +107,7 @@ func (s serverImpl) CreateProject(ctx context.Context, req *v1beta1.MsgCreatePro
 			if err != nil {
 				return nil, err
 			}
-			found, err = s.stateStore.ProjectInfoStore().HasByClassIdName(ctx, classInfo.Id, projectID)
+			found, err = s.stateStore.ProjectInfoStore().HasByName(ctx, projectID)
 			if err != nil {
 				return nil, err
 			}
@@ -512,20 +512,10 @@ func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, de
 	return false
 }
 
-// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
-// Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(goCtx context.Context, classID uint64, issuer string) error {
-	addr, _ := sdk.AccAddressFromBech32(issuer)
-	found, err := s.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
-	if err != nil {
-		return err
-	}
-	if !found {
-		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for class %s", issuer, classID)
-	}
-	return nil
-}
-
+// TODO: Given the following state
+// project FOO. Sequence of FOO = 10. Inc it to 11 -> FOO11
+// Project FOO1. Sequence of FOO1 = 0 (doesnt exist yet). Inc it to 1 -> FOO11
+// Solution: escape the sequence? FOO1-1. FOO-11?
 func (s serverImpl) genProjectID(ctx context.Context, classRowID uint64, classID string) (string, error) {
 	var nextID uint64
 	projectSeqNo, err := s.stateStore.ProjectSequenceStore().Get(ctx, classRowID)
