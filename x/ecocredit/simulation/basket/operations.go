@@ -126,39 +126,77 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "credit type not found"), nil, nil
 		}
 
-		precision := int(creditType.Precision)
-		exponent := uint32(simtypes.RandIntBetween(r, precision, precision+5))
-
+		precision := creditType.Precision
 		dateCriteria := randomDateCriteria(r)
 		dateCriteria = nil
 		msg := &basket.MsgCreate{
-			Name:              simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 32)),
-			DisplayName:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 32)),
+			Name:              simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 8)),
+			Description:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 256)),
 			Fee:               params.BasketCreationFee,
 			DisableAutoRetire: r.Float32() < 0.5,
 			Curator:           curator.Address.String(),
-			Exponent:          exponent,
+			Exponent:          randomExponent(r, precision),
 			AllowedClasses:    classIds,
-			CreditTypeName:    creditType.Abbreviation,
+			CreditTypeAbbrev:  creditType.Abbreviation,
 			DateCriteria:      dateCriteria,
 		}
 
-		txCtx := simulation.OperationInput{
-			R:               r,
-			App:             app,
-			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
-			Cdc:             nil,
-			Msg:             msg,
-			MsgType:         msg.Type(),
-			Context:         sdkCtx,
-			SimAccount:      curator,
-			AccountKeeper:   ak,
-			Bankkeeper:      bk,
-			ModuleName:      ecocredit.ModuleName,
-			CoinsSpentInMsg: spendable,
+		// txCtx := simulation.OperationInput{
+		// 	R:               r,
+		// 	App:             app,
+		// 	TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+		// 	Cdc:             nil,
+		// 	Msg:             msg,
+		// 	MsgType:         msg.Type(),
+		// 	Context:         sdkCtx,
+		// 	SimAccount:      curator,
+		// 	AccountKeeper:   ak,
+		// 	Bankkeeper:      bk,
+		// 	ModuleName:      ecocredit.ModuleName,
+		// 	CoinsSpentInMsg: spendable,
+		// }
+
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "fee error"), nil, err
 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		account := ak.GetAccount(sdkCtx, curator.Address)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			2000000,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			curator.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			fmt.Println("++++++++++++++++MsgCreate+++++++++++++++++++++++++++++++++")
+			fmt.Println(msg.String())
+			fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
+			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+
+	}
+}
+
+func randomExponent(r *rand.Rand, precision uint32) uint32 {
+	exponents := []uint32{0, 1, 2, 3, 6, 9, 12, 15, 18, 21, 24}
+	for {
+		x := exponents[r.Intn(len(exponents))]
+		if x > precision {
+			return x
+		}
 	}
 }
 
@@ -221,9 +259,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		r.Shuffle(len(classes), func(i, j int) { classes[i], classes[j] = classes[j], classes[i] })
 		for _, class := range classes {
-			if class.CreditType.Abbreviation == rBasket.CreditTypeName {
+			if class.CreditType.Abbreviation == rBasket.CreditTypeAbbrev {
 				classInfoList = append(classInfoList, *class)
-				if max == 3 {
+				if max == 2 {
 					break
 				}
 				max++
@@ -243,6 +281,8 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			batches := batchesRes.Batches
 			if len(batches) != 0 {
+				r.Shuffle(len(batches), func(i, j int) { batches[i], batches[j] = batches[j], batches[i] })
+				count := 0
 				for _, item := range batches {
 					balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
 						Account: owner.Address.String(), BatchDenom: item.BatchDenom,
@@ -277,6 +317,10 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 						}
 					}
+					if count == 4 {
+						break
+					}
+					count++
 				}
 			}
 		}
@@ -314,6 +358,13 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			if strings.Contains(err.Error(), "is not allowed in this basket") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
+			}
+
+			if strings.Contains(err.Error(), "greater than max") {
+				fmt.Println("++++++++++++++++MsgPut+++++++++++++++++++++++++++++++++")
+				fmt.Println(msg.String())
+				fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
 				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
 			}
 
@@ -409,6 +460,10 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if strings.Contains(err.Error(), "insufficient funds") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "not enough balance"), nil, nil
 			}
+			fmt.Println("++++++++++++++++++++MsgTake+++++++++++++++++++++++++++++")
+			fmt.Println(msg.String())
+			fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
+
 			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 

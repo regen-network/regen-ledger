@@ -307,7 +307,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		panic(err)
 	}
 
-	fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", out.String())
+	// fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", out.String())
 
 	wrapper := map[string]json.RawMessage{
 		proto.MessageName(&ecocreditGenesis): bz,
