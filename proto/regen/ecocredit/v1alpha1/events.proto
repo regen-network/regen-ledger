@@ -48,10 +48,10 @@ message EventCreateBatch {
 message EventReceive {
   // sender is the sender of the credits in the case that this event is the
   // result of a transfer. It will not be set when credits are received at
-  // initial issuance.
+  // initial issuance or taken from a basket.
   string sender = 1;
 
-  // recipient is the recipient of the credits
+  // recipient is the recipient of the credits.
   string recipient = 2;
 
   // batch_denom is the unique ID of credit batch.
