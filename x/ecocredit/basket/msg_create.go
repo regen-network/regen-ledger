@@ -18,7 +18,6 @@ var (
 const nameMinLen = 3
 const nameMaxLen = 8
 const descrMaxLen = 255
-const creditTypeAbbrMaxLen = 3
 
 var errBadReq = sdkerrors.ErrInvalidRequest
 
@@ -59,6 +58,7 @@ func (m MsgCreate) ValidateBasic() error {
 
 // ValidateMsgCreate additional validation with access to the state data.
 // minFee must be sorted.
+// NOTE: not covered and only used in server code. suggesting deleting and handling in msg server code
 func ValidateMsgCreate(m *MsgCreate, minFee sdk.Coins) error {
 	if !m.Fee.IsAllGTE(minFee) {
 		return sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", minFee, m.Fee)

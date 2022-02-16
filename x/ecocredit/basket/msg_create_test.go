@@ -20,6 +20,8 @@ func errorMatches(t *testing.T, err error, expect string) {
 	}
 }
 
+const creditTypeAbbrMaxLen = 3
+
 func TestMsgCreateValidateBasic(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
@@ -43,13 +45,13 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"name must start with an alphabetic character"},
 		{"name-long",
 			MsgCreate{Curator: a, Name: randstr.String(nameMaxLen + 1)},
-			"name must start with an alphabetic character"},
+			"name must start with an alphabetic character"}, // NOTE(@aaronc): error should indicate name is too long or simply invalid
 		{"name-short",
-			MsgCreate{Curator: a, Name: randstr.String(nameMinLen - 1)},
+			MsgCreate{Curator: a, Name: randstr.String(nameMinLen - 1)}, // NOTE(@aaronc): ditto
 			"name must start with an alphabetic character"},
 		{"name-no-alpahnum",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen) + "*"},
-			"name must start with an alphabetic character"},
+			"name must start with an alphabetic character"}, // NOTE(@aaronc): ditto
 		{"name-no-alpah-prefix",
 			MsgCreate{Curator: a, Name: "1" + randstr.String(nameMinLen)},
 			"name must start with an alphabetic character"},

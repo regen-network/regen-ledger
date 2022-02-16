@@ -23,5 +23,5 @@ func (d *DateCriteria) ToApi() *basketv1.DateCriteria {
 		return &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{
 			&durationpb.Duration{Seconds: x.Seconds, Nanos: x.Nanos}}}
 	}
-	return nil
+	return nil // this will be an error if a new value is added to the oneof
 }
