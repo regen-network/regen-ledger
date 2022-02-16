@@ -104,7 +104,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		params := res.Params
 		spendable := bk.SpendableCoins(sdkCtx, curator.Address)
-		if spendable.IsAllLTE(params.BasketCreationFee) {
+		if !spendable.IsAllGTE(params.BasketCreationFee) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "not enough balance"), nil, nil
 		}
 
@@ -140,21 +140,6 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CreditTypeAbbrev:  creditType.Abbreviation,
 			DateCriteria:      dateCriteria,
 		}
-
-		// txCtx := simulation.OperationInput{
-		// 	R:               r,
-		// 	App:             app,
-		// 	TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
-		// 	Cdc:             nil,
-		// 	Msg:             msg,
-		// 	MsgType:         msg.Type(),
-		// 	Context:         sdkCtx,
-		// 	SimAccount:      curator,
-		// 	AccountKeeper:   ak,
-		// 	Bankkeeper:      bk,
-		// 	ModuleName:      ecocredit.ModuleName,
-		// 	CoinsSpentInMsg: spendable,
-		// }
 
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
 		if err != nil {
@@ -511,52 +496,4 @@ func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.
 	}
 
 	return creditTypes[r.Intn(len(creditTypes))], nil
-}
-
-// GenAndDeliverTxWithRandFees generates a transaction with a random fee and delivers it.
-func GenAndDeliverTxWithRandFees(txCtx simulation.OperationInput) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
-
-	var fees sdk.Coins
-	var err error
-
-	coins, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
-	if hasNeg {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
-	}
-
-	fees, err = simtypes.RandomFees(txCtx.R, txCtx.Context, coins)
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
-	}
-	return GenAndDeliverTx(txCtx, fees)
-}
-
-// GenAndDeliverTx generates a transactions and delivers it.
-func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
-	tx, err := helpers.GenTx(
-		txCtx.TxGen,
-		[]sdk.Msg{txCtx.Msg},
-		fees,
-		2000000,
-		txCtx.Context.ChainID(),
-		[]uint64{account.GetAccountNumber()},
-		[]uint64{account.GetSequence()},
-		txCtx.SimAccount.PrivKey,
-	)
-
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
-	}
-
-	_, r1, err := txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
-	fmt.Println(r1)
-	if err != nil {
-		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
-	}
-
-	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
-
 }
