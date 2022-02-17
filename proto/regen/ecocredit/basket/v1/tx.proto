@@ -125,7 +125,7 @@ message MsgPutResponse {
   string amount_received = 1;
 }
 
-// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+// MsgTake is the Msg/Take request type.
 message MsgTake {
 
   // owner is the owner of the basket tokens.
@@ -147,7 +147,7 @@ message MsgTake {
   bool retire_on_take = 5;
 }
 
-// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+// MsgTakeResponse is the Msg/Take response type.
 message MsgTakeResponse {
 
   // credits are the credits taken out of the basket.
