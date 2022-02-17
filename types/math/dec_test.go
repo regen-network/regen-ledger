@@ -49,6 +49,8 @@ func TestDec(t *testing.T) {
 	t.Run("TestAddSub", rapid.MakeCheck(testAddSub))
 	t.Run("TestMulQuoA", rapid.MakeCheck(testMulQuoA))
 	t.Run("TestMulQuoB", rapid.MakeCheck(testMulQuoB))
+	t.Run("TestMulQuoExact", rapid.MakeCheck(testMulQuoExact))
+	t.Run("TestQuoMulExact", rapid.MakeCheck(testQuoMulExact))
 
 	// Properties about comparision and equality
 	t.Run("TestCmpInverse", rapid.MakeCheck(testCmpInverse))
@@ -464,6 +466,44 @@ func testMulQuoB(t *rapid.T) {
 	require.True(t, a.Equal(d))
 }
 
+// Property: (a * 10^b) / 10^b == a using MulExact and QuoExact
+// and a with no more than b decimal places (b <= 32).
+func testMulQuoExact(t *rapid.T) {
+	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	decPrec := func(d Dec) bool { return d.NumDecimalPlaces() <= b }
+	a := genDec.Filter(decPrec).Draw(t, "a").(Dec)
+
+	c := NewDecFinite(1, int32(b))
+
+	d, err := a.MulExact(c)
+	require.NoError(t, err)
+
+	e, err := d.QuoExact(c)
+	require.NoError(t, err)
+
+	require.True(t, a.IsEqual(e))
+}
+
+// Property: (a / b) * b == a using QuoExact and MulExact and
+// a as an integer.
+func testQuoMulExact(t *rapid.T) {
+	a := rapid.Uint64().Draw(t, "a").(uint64)
+	aDec, err := NewDecFromString(fmt.Sprintf("%d", a))
+	require.NoError(t, err)
+	b := rapid.Uint32Range(0, 32).Draw(t, "b").(uint32)
+	c := NewDecFinite(1, int32(b))
+
+	require.NoError(t, err)
+
+	d, err := aDec.QuoExact(c)
+	require.NoError(t, err)
+
+	e, err := d.MulExact(c)
+	require.NoError(t, err)
+
+	require.True(t, aDec.IsEqual(e))
+}
+
 // Property: Cmp(a, b) == -Cmp(b, a)
 func testCmpInverse(t *rapid.T) {
 	a := genDec.Draw(t, "a").(Dec)
@@ -549,4 +589,75 @@ func floatDecimalPlaces(t *rapid.T, f float64) uint32 {
 	} else {
 		return uint32(res)
 	}
+}
+
+func TestReduce(t *testing.T) {
+	a, err := NewDecFromString("1.30000")
+	require.NoError(t, err)
+	b, n := a.Reduce()
+	require.Equal(t, 4, n)
+	require.True(t, a.IsEqual(b))
+	require.Equal(t, "1.3", b.String())
+}
+
+func TestMulExactGood(t *testing.T) {
+	a, err := NewDecFromString("1.000001")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 6)
+	c, err := a.MulExact(b)
+	require.NoError(t, err)
+	d, err := c.Int64()
+	require.NoError(t, err)
+	require.Equal(t, int64(1000001), d)
+}
+
+func TestMulExactBad(t *testing.T) {
+	a, err := NewDecFromString("1.000000000000000000000000000000000000123456789")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 10)
+	_, err = a.MulExact(b)
+	require.ErrorIs(t, err, ErrUnexpectedRounding)
+}
+
+func TestQuoExactGood(t *testing.T) {
+	a, err := NewDecFromString("1000001")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 6)
+	c, err := a.QuoExact(b)
+	require.NoError(t, err)
+	require.Equal(t, "1.000001", c.String())
+}
+
+func TestQuoExactBad(t *testing.T) {
+	a, err := NewDecFromString("1000000000000000000000000000000000000123456789")
+	require.NoError(t, err)
+	b := NewDecFinite(1, 10)
+	_, err = a.QuoExact(b)
+	require.ErrorIs(t, err, ErrUnexpectedRounding)
+}
+
+func TestToBigInt(t *testing.T) {
+	intStr := "1000000000000000000000000000000000000123456789"
+	a, err := NewDecFromString(intStr)
+	require.NoError(t, err)
+	b, err := a.BigInt()
+	require.Equal(t, intStr, b.String())
+
+	intStrWithTrailingZeros := "1000000000000000000000000000000000000123456789.00000000"
+	a, err = NewDecFromString(intStrWithTrailingZeros)
+	require.NoError(t, err)
+	b, err = a.BigInt()
+	require.Equal(t, intStr, b.String())
+
+	intStr2 := "123.456e6"
+	a, err = NewDecFromString(intStr2)
+	require.NoError(t, err)
+	b, err = a.BigInt()
+	require.Equal(t, "123456000", b.String())
+
+	intStr3 := "12345.6"
+	a, err = NewDecFromString(intStr3)
+	require.NoError(t, err)
+	_, err = a.BigInt()
+	require.ErrorIs(t, err, ErrNonIntegeral)
 }
