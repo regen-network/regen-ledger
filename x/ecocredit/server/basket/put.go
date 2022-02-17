@@ -190,10 +190,10 @@ func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string
 		return coins, err
 	}
 
-	i64Amt, err := tokenAmt.Int64()
+	amtInt, err := tokenAmt.BigInt()
 	if err != nil {
 		return coins, err
 	}
 
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(i64Amt))}, nil
+	return sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt))}, nil
 }
