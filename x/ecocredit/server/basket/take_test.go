@@ -177,7 +177,7 @@ func TestTakeAllTradable(t *testing.T) {
 	t.Parallel()
 	s := setupTake(t)
 
-	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(11000000)))
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(11000000))) // == 7C4 + 4C4
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
