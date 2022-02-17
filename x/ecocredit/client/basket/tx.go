@@ -122,7 +122,7 @@ Example:
 				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
 			}
 
-			dateCriteria := basket.DateCriteria{}
+			dateCriteria := &basket.DateCriteria{}
 
 			if minStartDateString != "" {
 				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
@@ -166,7 +166,7 @@ Example:
 				DisableAutoRetire: disableAutoRetire,
 				CreditTypeAbbrev:  creditTypeName,
 				AllowedClasses:    allowedClasses,
-				DateCriteria:      &dateCriteria,
+				DateCriteria:      dateCriteria,
 				Fee:               fee,
 			}
 
