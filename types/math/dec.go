@@ -2,6 +2,7 @@ package math
 
 import (
 	"fmt"
+	"math/big"
 
 	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -19,7 +20,11 @@ type Dec struct {
 
 const mathCodespace = "math"
 
-var ErrInvalidDecString = errors.Register(mathCodespace, 1, "invalid decimal string")
+var (
+	ErrInvalidDecString   = errors.Register(mathCodespace, 1, "invalid decimal string")
+	ErrUnexpectedRounding = errors.Register(mathCodespace, 2, "unexpected rounding")
+	ErrNonIntegeral       = errors.Register(mathCodespace, 3, "value is non-integral")
+)
 
 // In cosmos-sdk#7773, decimal128 (with 34 digits of precision) was suggested for performing
 // Quo/Mult arithmetic generically across the SDK. Even though the SDK
@@ -121,7 +126,8 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
-// MulExact returns a new dec with value x * y. The product must not round or an error will be returned.
+// MulExact returns a new dec with value x * y. The product must not round or
+// ErrUnexpectedRounding will be returned.
 func (x Dec) MulExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
@@ -129,17 +135,20 @@ func (x Dec) MulExact(y Dec) (Dec, error) {
 		return z, err
 	}
 	if condition.Rounded() {
-		return z, errors.Wrap(err, "exact decimal product error")
+		return z, ErrUnexpectedRounding
 	}
 	return z, nil
 }
 
-// QuoExact is a version of Quo that returns an error if any rounding occurred.
+// QuoExact is a version of Quo that returns ErrUnexpectedRounding if any rounding occurred.
 func (x Dec) QuoExact(y Dec) (Dec, error) {
 	var z Dec
 	condition, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, err
+	}
 	if condition.Rounded() {
-		return z, errors.Wrap(err, "exact decimal quotient error")
+		return z, ErrUnexpectedRounding
 	}
 	return z, errors.Wrap(err, "decimal quotient error")
 }
@@ -168,8 +177,22 @@ func (x Dec) Mul(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal multiplication error")
 }
 
+// Int64 converts x to an int64 or returns an error if x cannot
+// fit precisely into an int64.
 func (x Dec) Int64() (int64, error) {
 	return x.dec.Int64()
+}
+
+// BigInt converts x to a *big.Int or returns an error if x cannot
+// fit precisely into an *big.Int.
+func (x Dec) BigInt() (*big.Int, error) {
+	y, _ := x.Reduce()
+	z := &big.Int{}
+	z, ok := z.SetString(y.String(), 10)
+	if !ok {
+		return nil, ErrNonIntegeral
+	}
+	return z, nil
 }
 
 func (x Dec) String() string {
@@ -205,6 +228,8 @@ func (x Dec) NumDecimalPlaces() uint32 {
 	return uint32(-exp)
 }
 
+// Reduce returns a copy of x with all trailing zeros removed and the number
+// of trailing zeros removed.
 func (x Dec) Reduce() (Dec, int) {
 	y := Dec{}
 	_, n := y.dec.Reduce(&x.dec)
