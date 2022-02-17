@@ -5,13 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 func (k Keeper) RegisterInvariants(ir sdk.InvariantRegistry) {
@@ -39,7 +37,7 @@ func (k Keeper) basketSupplyInvariant() sdk.Invariant {
 			}
 			balSdkInt := sdk.NewIntFromBigInt(balInt)
 			if !c.Amount.Equal(balSdkInt) {
-				inbalances = append(inbalances, fmt.Sprint("Basket denom %q is imbalanced, expected: %v, got %v",
+				inbalances = append(inbalances, fmt.Sprintf("Basket denom %q is imbalanced, expected: %v, got %v",
 					b.BasketDenom, balSdkInt, c.Amount))
 			}
 		}
@@ -52,7 +50,7 @@ func (k Keeper) basketSupplyInvariant() sdk.Invariant {
 
 // computeBasketBalances returns a map from basket id to the total number of eco credits
 func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec, error) {
-	it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketPrimaryKey{})
+	it, err := k.stateStore.BasketBalanceStore().List(ctx, &basketv1.BasketBalancePrimaryKey{})
 	if err != nil {
 		return nil, fmt.Errorf("can't create basket balance iterator, %w", err)
 	}
@@ -68,12 +66,12 @@ func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec,
 		}
 		if a, ok := balances[b.BasketId]; ok {
 			if a, err = a.Add(bal); err != nil {
-				panic(fmt.Errorf("Can't add balances: %w", err))
+				return nil, fmt.Errorf("Can't add balances: %w", err)
 			}
 			balances[b.BasketId] = a
 		} else {
 			balances[b.BasketId] = bal
 		}
 	}
-	return balances
+	return balances, nil
 }

@@ -16,6 +16,7 @@ import (
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(ecocredit.ModuleName, "tradable-supply", s.tradableSupplyInvariant())
 	ir.RegisterRoute(ecocredit.ModuleName, "retired-supply", s.retiredSupplyInvariant())
+	s.basketKeeper.RegisterInvariants(ir)
 }
 
 func (s serverImpl) tradableSupplyInvariant() sdk.Invariant {
