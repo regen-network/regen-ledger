@@ -80,6 +80,9 @@ func TestDec(t *testing.T) {
 	minusFivePointZero, err := NewDecFromString("-5.0")
 	require.NoError(t, err)
 
+	twoThousand := NewDecFinite(2, 3)
+	require.True(t, twoThousand.IsEqual(NewDecFromInt64(2000)))
+
 	res, err := two.Add(zero)
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(two))
@@ -143,6 +146,10 @@ func TestDec(t *testing.T) {
 	require.False(t, minusOne.IsZero())
 	require.False(t, minusOne.IsPositive())
 	require.True(t, minusOne.IsNegative())
+
+	res, err = one.MulExact(two)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(two))
 }
 
 // TODO: Think a bit more about the probability distribution of Dec
