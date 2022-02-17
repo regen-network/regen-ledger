@@ -1,0 +1,79 @@
+package basket
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+)
+
+func (k Keeper) RegisterInvariants(ir sdk.InvariantRegistry) {
+	ir.RegisterRoute(ecocredit.ModuleName, "basket-supply", k.basketSupplyInvariant())
+}
+
+func (k Keeper) basketSupplyInvariant() sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		goCtx := sdk.WrapSDKContext(ctx)
+
+		bals, err := k.computeBasketBalances(goCtx)
+		if err != nil {
+			return err.Error(), true
+		}
+		var inbalances []string
+		for bid, bal := range bals {
+			b, err := k.stateStore.BasketStore().Get(goCtx, bid)
+			if err != nil {
+				return fmt.Sprintf("Can't get basket %v: %w", bid, err), true
+			}
+			c := k.bankKeeper.GetSupply(ctx, b.BasketDenom)
+			balInt, err := bal.BigInt()
+			if err != nil {
+				return fmt.Sprintf("Can't convert Dec to big.Int, %w", err), true
+			}
+			balSdkInt := sdk.NewIntFromBigInt(balInt)
+			if !c.Amount.Equal(balSdkInt) {
+				inbalances = append(inbalances, fmt.Sprint("Basket denom %q is imbalanced, expected: %v, got %v",
+					b.BasketDenom, balSdkInt, c.Amount))
+			}
+		}
+		if len(inbalances) != 0 {
+			return strings.Join(inbalances, "\n"), true
+		}
+		return "", false
+	}
+}
+
+// computeBasketBalances returns a map from basket id to the total number of eco credits
+func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec, error) {
+	it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketPrimaryKey{})
+	if err != nil {
+		return nil, fmt.Errorf("can't create basket balance iterator, %w", err)
+	}
+	balances := map[uint64]math.Dec{}
+	for it.Next() {
+		b, err := it.Value()
+		if err != nil {
+			return nil, fmt.Errorf("Can't get basket balance %w", err)
+		}
+		bal, err := math.NewDecFromString(b.Balance)
+		if err != nil {
+			return nil, fmt.Errorf("Can't decode balance %s as math.Dec: %w", b.Balance, err)
+		}
+		if a, ok := balances[b.BasketId]; ok {
+			if a, err = a.Add(bal); err != nil {
+				panic(fmt.Errorf("Can't add balances: %w", err))
+			}
+			balances[b.BasketId] = a
+		} else {
+			balances[b.BasketId] = bal
+		}
+	}
+	return balances
+}

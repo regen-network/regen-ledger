@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -30,7 +32,7 @@ func (s serverImpl) getBasketBalanceMap(ctx context.Context) map[string]math.Dec
 	if err != nil {
 		panic(err)
 	}
-	basketBalances := make(map[string]math.Dec) // map of batch_denom to balance
+	batchBalances := make(map[string]math.Dec) // map of a basket batch_denom to balance
 	for _, basket := range res.Baskets {
 		res, err := s.basketKeeper.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basket.BasketDenom})
 		if err != nil {
@@ -41,18 +43,18 @@ func (s serverImpl) getBasketBalanceMap(ctx context.Context) map[string]math.Dec
 			if err != nil {
 				panic(err)
 			}
-			if existingBal, ok := basketBalances[bal.BatchDenom]; ok {
+			if existingBal, ok := batchBalances[bal.BatchDenom]; ok {
 				existingBal, err = existingBal.Add(amount)
 				if err != nil {
 					panic(err)
 				}
-				basketBalances[bal.BatchDenom] = existingBal
+				batchBalances[bal.BatchDenom] = existingBal
 			} else {
-				basketBalances[bal.BatchDenom] = amount
+				batchBalances[bal.BatchDenom] = amount
 			}
 		}
 	}
-	return basketBalances
+	return batchBalances
 }
 
 func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math.Dec) (string, bool) {
@@ -60,7 +62,8 @@ func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math
 		msg    string
 		broken bool
 	)
-	calTradableSupplies := make(map[string]math.Dec)
+	// sum of tradeable eco credits with credits locked in baskets
+	sumBatchSupplies := make(map[string]math.Dec) // map batch denom => balance
 
 	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(_, denom, b string) bool {
 		balance, err := math.NewNonNegativeDecFromString(b)
@@ -68,27 +71,27 @@ func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math
 			broken = true
 			msg += fmt.Sprintf("error while parsing tradable balance %v", err)
 		}
-		if supply, ok := calTradableSupplies[denom]; ok {
+		if supply, ok := sumBatchSupplies[denom]; ok {
 			supply, err := math.SafeAddBalance(supply, balance)
 			if err != nil {
 				broken = true
 				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
 			}
-			calTradableSupplies[denom] = supply
+			sumBatchSupplies[denom] = supply
 		} else {
-			calTradableSupplies[denom] = balance
+			sumBatchSupplies[denom] = balance
 		}
 
 		return false
 	})
 
 	for denom, amt := range basketBalances {
-		if amount, ok := calTradableSupplies[denom]; ok {
+		if amount, ok := sumBatchSupplies[denom]; ok {
 			amount, err := math.SafeAddBalance(amount, amt)
 			if err != nil {
 				panic(err)
 			}
-			calTradableSupplies[denom] = amount
+			sumBatchSupplies[denom] = amount
 		} else {
 			panic("unknown denom in basket")
 		}
@@ -100,7 +103,7 @@ func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math
 			broken = true
 			msg += fmt.Sprintf("error while parsing tradable supply for denom: %s", denom)
 		}
-		if s1, ok := calTradableSupplies[denom]; ok {
+		if s1, ok := sumBatchSupplies[denom]; ok {
 			if supply.Cmp(s1) != 0 {
 				broken = true
 				msg += fmt.Sprintf("tradable supply is incorrect for %s credit batch, expected %v, got %v", denom, supply, s1)
