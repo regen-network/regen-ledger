@@ -62,7 +62,7 @@ Flags:
 			paid a big fee and didn't know beforehand.
 		description: the description to be used in the basket coin's bank denom metadata.
 Example:
-		$regen tx eco-credit create-basket HEAED
+		$regen tx ecocredit create-basket HEAED
 			--from regen...
 			--exponent=3
 			--credit-type-abbreviation=FOO
