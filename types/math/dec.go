@@ -119,8 +119,6 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
-<<<<<<< HEAD
-=======
 // MulExact returns a new dec with value x * y. The product must not round or
 // ErrUnexpectedRounding will be returned.
 func (x Dec) MulExact(y Dec) (Dec, error) {
@@ -148,7 +146,6 @@ func (x Dec) QuoExact(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
->>>>>>> a154072 (feat(types): better tests for math and correct decimal -> integer conversion in x/ecocredit (#783))
 // QuoInteger returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
 // without mutating any argument and error if there is an overflow.
 func (x Dec) QuoInteger(y Dec) (Dec, error) {
@@ -231,13 +228,8 @@ func (x Dec) NumDecimalPlaces() uint32 {
 	return uint32(-exp)
 }
 
-<<<<<<< HEAD
-// Reduce removes trailing zeros from x and returns x and the
-// number of zeros removed.
-=======
 // Reduce returns a copy of x with all trailing zeros removed and the number
 // of trailing zeros removed.
->>>>>>> a154072 (feat(types): better tests for math and correct decimal -> integer conversion in x/ecocredit (#783))
 func (x Dec) Reduce() (Dec, int) {
 	y := Dec{}
 	_, n := y.dec.Reduce(&x.dec)
