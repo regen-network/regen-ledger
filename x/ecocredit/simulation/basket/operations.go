@@ -168,9 +168,9 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}
 
-			fmt.Println("++++++++++++++++MsgCreate+++++++++++++++++++++++++++++++++")
-			fmt.Println(msg.String())
-			fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
+			if strings.Contains(err.Error(), "insufficient funds") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
+			}
 			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
@@ -306,7 +306,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 						}
 					}
-					if count == 4 {
+					if count == 3 {
 						break
 					}
 					count++
@@ -350,11 +350,8 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
 			}
 
-			if strings.Contains(err.Error(), "greater than max") {
-				fmt.Println("++++++++++++++++MsgPut+++++++++++++++++++++++++++++++++")
+			if strings.Contains(err.Error(), "message index") {
 				fmt.Println(msg.String())
-				fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++")
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "class is not allowed"), nil, nil
 			}
 
 			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
@@ -473,8 +470,7 @@ func randomClasses(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.Que
 		return []string{classes[0].ClassId}, nil
 	}
 
-	max := simtypes.RandIntBetween(r, 1, len(classes))
-
+	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
 	r.Shuffle(len(classes), func(i, j int) { classes[i], classes[j] = classes[j], classes[i] })
 	classIds := make([]string, max)
 	for i := 0; i < max; i++ {
@@ -482,6 +478,13 @@ func randomClasses(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.Que
 	}
 
 	return classIds, nil
+}
+
+func min(x, y int) int {
+	if x > y {
+		return y
+	}
+	return x
 }
 
 func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.QueryClient) (*ecocredit.CreditType, error) {
