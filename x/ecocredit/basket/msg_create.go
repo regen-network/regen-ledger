@@ -17,7 +17,7 @@ var (
 
 const nameMinLen = 3
 const nameMaxLen = 8
-const descrMaxLen = 255
+const descrMaxLen = 256
 const creditTypeAbbrMaxLen = 3
 
 var errBadReq = sdkerrors.ErrInvalidRequest
@@ -85,7 +85,7 @@ func (m MsgCreate) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgCreate) Type() string { return sdk.MsgTypeURL(&m) }
 
 func validateDateCriteria(d *DateCriteria) error {
-	if d == nil {
+	if d == nil || d.String() == "" {
 		return nil
 	}
 	if x := d.GetMinStartDate(); x != nil {
