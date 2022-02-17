@@ -52,7 +52,7 @@ message MsgCreate {
   // following values 0, 1, 2, 3, 6, 9, 12, 15, 18, 21, or 24 which correspond
   // to the exponents which have an official SI prefix.
   //
-  // The exponent will be used to form the prefix part of the the bank denom
+  // The exponent will be used to form the prefix part of the bank denom
   // and will be mapped as follows:
   //   0 - no prefix
   //   1 - d (deci)
