@@ -1,6 +1,7 @@
 package basket
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -20,4 +21,22 @@ func (d *DateCriteria) ToApi() *basketv1.DateCriteria {
 			&durationpb.Duration{Seconds: x.Seconds, Nanos: x.Nanos}}}
 	}
 	return nil
+}
+
+var _ codec.AminoMarshaler = &DateCriteria{}
+
+func (d DateCriteria) MarshalAminoJSON() ([]byte, error) {
+	return d.Marshal()
+}
+
+func (d *DateCriteria) UnmarshalAminoJSON(bytes []byte) error {
+	return d.Unmarshal(bytes)
+}
+
+func (d DateCriteria) MarshalAmino() ([]byte, error) {
+	return d.Marshal()
+}
+
+func (d *DateCriteria) UnmarshalAmino(bytes []byte) error {
+	return d.Unmarshal(bytes)
 }
