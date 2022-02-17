@@ -46,19 +46,17 @@ Flags:
 			precision of credit amounts is 6 decimal places so that the need to round is
 			eliminated. The exponent must be >= the precision of the credit type at the
 			time the basket is created.
-		disable_auto_retire: disables the auto-retirement of credits upon taking credits
+		disable-auto-retire: disables the auto-retirement of credits upon taking credits
 			from the basket. The credits will be auto-retired if disable_auto_retire is
 			false unless the credits were previously put into the basket by the address
 			picking them from the basket, in which case they will remain tradable.
-		credit_type_abbreviation: filters against credits from this credit type abbreviation (e.g. "BIO").
+		credit-type-abbreviation: filters against credits from this credit type abbreviation (e.g. "BIO").
 		allowed_classes: comma separated (no spaces) list of credit classes allowed to be put in
 			the basket (e.g. "C01,C02").
-		min_start_date: the earliest start date for batches of credits allowed into the basket.
-			Note: either min_start_date or start-date-window is required and not both.
+		min-start-date: the earliest start date for batches of credits allowed into the basket.
 		start-date-window: the duration of time (in seconds) measured into the past which sets a
 			cutoff for batch start dates when adding new credits to the basket.
-			Note: either min_start_date or start-date-window is required and not both.
-		basket_fee: the fee that the curator will pay to create the basket. It must be >= the
+		basket-fee: the fee that the curator will pay to create the basket. It must be >= the
 			required Params.basket_creation_fee. We include the fee explicitly here so that the
 			curator explicitly acknowledges paying this fee and is not surprised to learn that the
 			paid a big fee and didn't know beforehand.
@@ -103,7 +101,7 @@ Flags:
 			if err != nil {
 				return err
 			}
-			startDateWindowString, err := cmd.Flags().GetString(FlagMinimumStartDate)
+			startDateWindow, err := cmd.Flags().GetUint64(FlagStartDateWindow)
 			if err != nil {
 				return err
 			}
@@ -113,10 +111,8 @@ Flags:
 				return err
 			}
 
-			if minStartDateString == "" && startDateWindowString == "" {
-				return fmt.Errorf("either min-start-date or start-date-window required")
-			} else if minStartDateString != "" && startDateWindowString != "" {
-				return fmt.Errorf("both min-start-date and start-date-window cannot be set")
+			if minStartDateString != "" && startDateWindow != 0 {
+				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
 			}
 
 			dateCriteria := basket.DateCriteria{}
@@ -135,12 +131,8 @@ Flags:
 				}
 			}
 
-			if startDateWindowString != "" {
-				startDateWindowInt, err := cmd.Flags().GetInt64(FlagMinimumStartDate)
-				if err != nil {
-					return err
-				}
-				startDateWindowDuration := time.Duration(startDateWindowInt)
+			if startDateWindow != 0 {
+				startDateWindowDuration := time.Duration(startDateWindow)
 				startDateWindow := types.DurationProto(startDateWindowDuration)
 				dateCriteria.Sum = &basket.DateCriteria_StartDateWindow{
 					StartDateWindow: startDateWindow,
@@ -187,7 +179,7 @@ Flags:
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
 	cmd.Flags().String(FlagAllowedClasses, "", "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
-	cmd.Flags().String(FlagStartDateWindow, "", "sets a cutoff for batch start dates when adding new credits to the basket (e.g. \"1325404800\")")
+	cmd.Flags().Uint64(FlagStartDateWindow, 0, "sets a cutoff for batch start dates when adding new credits to the basket (e.g. 1325404800)")
 	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")
 	cmd.Flags().String(FlagDenomDescription, "", "the description to be used in the bank denom metadata.")
 
