@@ -173,6 +173,26 @@ func TestTakeTradable(t *testing.T) {
 	s.expectRetiredSupply("C4", "0")
 }
 
+func TestTakeTooMuchTradable(t *testing.T) {
+	t.Parallel()
+	s := setupTake(t)
+
+	// Try to take more than what's in the basket, should error.
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(99999999999)))
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
+
+	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:        s.addr.String(),
+		BasketDenom:  "bar",
+		Amount:       "99999999999",
+		RetireOnTake: false,
+	})
+	// IRL, the error below should throw earlier, on SendCoinsFromAccountToModule
+	// We're just testing here that some error is thrown.
+	assert.Error(t, err, "unexpected failure - balance invariant broken")
+}
+
 func TestTakeAllTradable(t *testing.T) {
 	t.Parallel()
 	s := setupTake(t)
