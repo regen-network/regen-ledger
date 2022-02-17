@@ -2,6 +2,7 @@ package basket
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -190,10 +191,11 @@ func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string
 		return coins, err
 	}
 
-	i64Amt, err := tokenAmt.Int64()
-	if err != nil {
-		return coins, err
+	tokenStr := tokenAmt.String()
+	tokenInt, ok := sdk.NewIntFromString(tokenStr)
+	if !ok {
+		return nil, fmt.Errorf(": can't convert token amount %s to integer", tokenStr)
 	}
 
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(i64Amt))}, nil
+	return sdk.Coins{sdk.NewCoin(denom, tokenInt)}, nil
 }
