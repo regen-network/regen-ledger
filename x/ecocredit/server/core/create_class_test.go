@@ -13,7 +13,7 @@ func TestValidState(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(_ interface{}, p *ecocredit.Params)  {
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any, p *ecocredit.Params)  {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
@@ -33,6 +33,7 @@ func TestValidState(t *testing.T) {
 
 	ci, err := s.stateStore.ClassInfoStore().GetByName(s.ctx, res.ClassId)
 	assert.NilError(t, err)
+	assert.Equal(t, res.ClassId, ci.Name)
 	_, err = s.stateStore.ClassIssuerStore().Get(s.ctx, ci.Id, s.addr)
 	assert.NilError(t, err)
 }
@@ -42,7 +43,7 @@ func TestNotAuthorized(t *testing.T) {
 	s := setupBase(t)
 
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(_ interface{}, p *ecocredit.Params)  {
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any, p *ecocredit.Params)  {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
 	}).AnyTimes()
@@ -54,7 +55,7 @@ func TestNotAuthorized(t *testing.T) {
 	})
 	assert.ErrorContains(t, err, "is not allowed to create credit classes")
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(_ interface{}, p *ecocredit.Params)  {
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any, p *ecocredit.Params)  {
 		p.AllowlistEnabled = false
 	}).AnyTimes()
 	_, err = s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
@@ -71,7 +72,7 @@ func TestSequences(t *testing.T) {
 	s := setupBase(t)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(_ interface{}, p *ecocredit.Params)  {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any, p *ecocredit.Params)  {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}

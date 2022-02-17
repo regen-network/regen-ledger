@@ -26,13 +26,13 @@ func (k Keeper) CreateProject(ctx context.Context, req *v1beta1.MsgCreateProject
 
 	projectID := req.ProjectId
 	if projectID == "" {
-		found := false
-		for ; !found; sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence") {
+		exists := true
+		for ; exists; sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence") {
 			projectID, err = k.genProjectID(ctx, classInfo.Id, classInfo.Name)
 			if err != nil {
 				return nil, err
 			}
-			found, err = k.stateStore.ProjectInfoStore().HasByClassIdName(ctx, classInfo.Id, projectID)
+			exists, err = k.stateStore.ProjectInfoStore().HasByClassIdName(ctx, classInfo.Id, projectID)
 			if err != nil {
 				return nil, err
 			}

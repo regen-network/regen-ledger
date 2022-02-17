@@ -117,12 +117,12 @@ func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress
 	return nil
 }
 
-func (k Keeper) getCreditType(creditTypeName string, creditTypes []*ecocredit.CreditType) (ecocreditv1beta1.CreditType, error) {
-	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
+func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocreditv1beta1.CreditType, error) {
+	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
 		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
 		// be normalized here.
-		if creditType.Name == creditTypeName {
+		if creditType.Abbreviation == ctAbbrev {
 			return ecocreditv1beta1.CreditType{
 				Abbreviation: creditType.Abbreviation,
 				Name:         creditType.Name,
@@ -131,5 +131,5 @@ func (k Keeper) getCreditType(creditTypeName string, creditTypes []*ecocredit.Cr
 			}, nil
 		}
 	}
-	return ecocreditv1beta1.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
+	return ecocreditv1beta1.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
 }
