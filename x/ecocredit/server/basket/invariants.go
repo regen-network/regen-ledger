@@ -3,6 +3,7 @@ package basket
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,28 +25,48 @@ func (k Keeper) basketSupplyInvariant() sdk.Invariant {
 		if err != nil {
 			return err.Error(), true
 		}
-		var inbalances []string
-		for bid, bal := range bals {
-			b, err := k.stateStore.BasketStore().Get(goCtx, bid)
-			if err != nil {
-				return fmt.Sprintf("Can't get basket %v: %v", bid, err), true
-			}
-			c := k.bankKeeper.GetSupply(ctx, b.BasketDenom)
-			balInt, err := bal.BigInt()
-			if err != nil {
-				return fmt.Sprintf("Can't convert Dec to big.Int, %v", err), true
-			}
-			balSdkInt := sdk.NewIntFromBigInt(balInt)
-			if !c.Amount.Equal(balSdkInt) {
-				inbalances = append(inbalances, fmt.Sprintf("Basket denom %q is imbalanced, expected: %v, got %v",
-					b.BasketDenom, balSdkInt, c.Amount))
-			}
-		}
-		if len(inbalances) != 0 {
-			return strings.Join(inbalances, "\n"), true
-		}
-		return "", false
+		return BasketSupplyInvariant(ctx, k.stateStore.BasketStore(), k.bankKeeper, bals)
 	}
+}
+
+type bankSupplyStore interface {
+	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+}
+
+// BasketSupplyInvariant cross check the balance of baskets and bank
+func BasketSupplyInvariant(ctx sdk.Context, store basketv1.BasketStore, bank bankSupplyStore, basketBalances map[uint64]math.Dec) (string, bool) {
+	goCtx := sdk.WrapSDKContext(ctx)
+
+	bids := make([]uint64, len(basketBalances))
+	i := 0
+	for bid := range basketBalances {
+		bids[i] = bid
+		i++
+	}
+	sort.Slice(bids, func(i, j int) bool { return bids[i] < bids[j] })
+
+	var inbalances []string
+	for _, bid := range bids {
+		bal := basketBalances[bid]
+		balInt, err := bal.BigInt()
+		if err != nil {
+			return fmt.Sprintf("Can't convert Dec to big.Int, %v", err), true
+		}
+		b, err := store.Get(goCtx, bid)
+		if err != nil {
+			return fmt.Sprintf("Can't get basket %v: %v", bid, err), true
+		}
+		c := bank.GetSupply(ctx, b.BasketDenom)
+		balSdkInt := sdk.NewIntFromBigInt(balInt)
+		if !c.Amount.Equal(balSdkInt) {
+			inbalances = append(inbalances, fmt.Sprintf("Basket denom %s is imbalanced, expected: %v, got %v",
+				b.BasketDenom, balSdkInt, c.Amount))
+		}
+	}
+	if len(inbalances) != 0 {
+		return strings.Join(inbalances, "\n"), true
+	}
+	return "", false
 }
 
 // computeBasketBalances returns a map from basket id to the total number of eco credits
