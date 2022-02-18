@@ -89,15 +89,6 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	})
 
 	app.UpgradeKeeper.SetUpgradeHandler("v3.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// get the params
-		ecoParams, ok := app.ParamsKeeper.GetSubspace(ecocredittypes.ModuleName)
-		if !ok {
-			panic(fmt.Sprintf("unable to upgrade: subspace %s not found", ecocredittypes.ModuleName))
-		}
-
-		// set basket creation fee to 1,000 REGEN
-		ecoParams.Set(ctx, ecocredittypes.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
-
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 

@@ -80,8 +80,15 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
 
-	configurator.RegisterMigration(ecocredit.ModuleName, 2,
-		func(sdk.Context) error { return nil })
+	err := configurator.RegisterMigration(ecocredit.ModuleName, 2,
+		func(ctx sdk.Context) error {
+			// set basket creation fee to 1,000 REGEN
+			a.paramSpace.Set(ctx, ecocredit.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+			return nil
+		})
+	if err != nil {
+		panic(fmt.Sprintf("failed to migrate x/ecocredit from version 1 to 2: %v", err))
+	}
 }
 
 //nolint:errcheck
