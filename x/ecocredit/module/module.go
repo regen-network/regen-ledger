@@ -83,7 +83,9 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
-	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
+	ctx := context.Background()
+	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
+	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
