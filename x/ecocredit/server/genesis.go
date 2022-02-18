@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -29,6 +30,7 @@ import (
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+	fmt.Println("was this called?")
 	jsonSource, err := ormjson.NewRawMessageSource(data)
 	if err != nil {
 		return nil, err
@@ -45,15 +47,20 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	if r == nil {
-		return nil, nil
+	if r == nil { // r is nil when theres no table data, so we can just unmarshal the data given
+		bz := bytes.NewBuffer(data)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &genesisState)
+		if err != nil {
+			return nil, err
+		}
+	} else { // r is not nil, so there is table data and we can just use r.
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
-	if err != nil {
-		return nil, err
-	}
-
+	fmt.Println(genesisState.Params)
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
 	if err := s.creditTypeSeqTable.Import(ctx, genesisState.Sequences, 0); err != nil {
