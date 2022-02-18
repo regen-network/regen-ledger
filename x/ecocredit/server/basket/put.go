@@ -32,7 +32,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
+	sdkContext := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
+		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut iteration")
 		// get credit batch info
 		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
