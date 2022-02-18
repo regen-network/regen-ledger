@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -117,12 +116,12 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		cfg := &configurator{
+			Configurator:     sdkmodule.NewConfigurator(mm.cdc, msgRegistrar, queryRegistrar),
 			msgServer:        msgRegistrar,
 			queryServer:      queryRegistrar,
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
-			migrations:       map[string]map[uint64]sdkmodule.MigrationHandler{},
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -247,6 +246,7 @@ func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[s
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
 
 type configurator struct {
+	sdkmodule.Configurator
 	msgServer                 gogogrpc.Server
 	queryServer               gogogrpc.Server
 	key                       *rootModuleKey
@@ -260,24 +260,6 @@ type configurator struct {
 }
 
 var _ Configurator = &configurator{}
-
-func (c *configurator) RegisterMigration(moduleName string, forVersion uint64, handler sdkmodule.MigrationHandler) error {
-	if forVersion == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidVersion, "module migration versions should start at 1")
-	}
-
-	if c.migrations[moduleName] == nil {
-		c.migrations[moduleName] = map[uint64]sdkmodule.MigrationHandler{}
-	}
-
-	if c.migrations[moduleName][forVersion] != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrLogic, "another migration for module %s and version %d already exists", moduleName, forVersion)
-	}
-
-	c.migrations[moduleName][forVersion] = handler
-
-	return nil
-}
 
 func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
 	c.weightedOperationHandler = operationsHandler
