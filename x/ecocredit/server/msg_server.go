@@ -12,10 +12,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-// TODO: Revisit this once we have proper gas fee framework.
-// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
-const gasCostPerIteration = uint64(10)
-
 // CreateClass creates a new class of ecocredit
 //
 // The admin is charged a fee for creating the class. This is controlled by
@@ -176,7 +172,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCreateBatch iteration")
 	}
 
 	ecocredit.SetDecimal(store, ecocredit.TradableSupplyKey(batchDenom), tradableSupply)
@@ -308,7 +304,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgSend iteration")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -357,7 +353,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgRetire iteration")
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
@@ -446,7 +442,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCancel iteration")
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
@@ -569,7 +565,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom ecocredit.BatchDe
 // Checks if the given address is in the allowlist of credit class creators
 func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit / credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
