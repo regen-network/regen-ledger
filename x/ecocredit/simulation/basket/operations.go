@@ -288,12 +288,12 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					if tradableAmount != "0" {
 						d, err := math.NewPositiveDecFromString(tradableAmount)
 						if err != nil {
-							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
+							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
 						}
 
 						dInt, err := d.Int64()
 						if err != nil {
-							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
+							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
 						}
 
 						if dInt == 1 {
@@ -432,35 +432,22 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, owner.Address)
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "fee error"), nil, err
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      owner,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
 		}
 
-		account := ak.GetAccount(sdkCtx, owner.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			2000000,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			owner.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "unable to generate mock tx"), nil, err
-		}
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
-			if strings.Contains(err.Error(), "insufficient funds") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "not enough balance"), nil, nil
-			}
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
-		}
-
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
