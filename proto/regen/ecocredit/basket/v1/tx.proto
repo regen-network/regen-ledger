@@ -102,7 +102,7 @@ message MsgCreateResponse {
   string basket_denom = 1;
 }
 
-// MsgAddToBasket is the Msg/AddToBasket request type.
+// MsgPut is the Msg/Put request type.
 message MsgPut {
 
   // owner is the owner of credits being put into the basket.
@@ -118,7 +118,7 @@ message MsgPut {
   repeated BasketCredit credits = 3;
 }
 
-// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+// MsgPutResponse is the Msg/Put response type.
 message MsgPutResponse {
 
   // amount_received is the integer amount of basket tokens received.

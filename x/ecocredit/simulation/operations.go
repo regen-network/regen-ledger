@@ -306,15 +306,6 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		retiredBalance, err := math.NewNonNegativeDecFromString(balres.RetiredAmount)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
-		}
-
-		if tradableBalance.IsZero() && retiredBalance.IsZero() {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "balance is zero"), nil, nil
-		}
-
 		recipient, _ := simtypes.RandomAcc(r, accs)
 		if batch.Issuer == recipient.Address.String() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "sender & recipient are same"), nil, nil

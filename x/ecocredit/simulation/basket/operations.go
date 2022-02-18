@@ -199,9 +199,8 @@ func randomDateCriteria(r *rand.Rand) *basket.DateCriteria {
 				},
 			}
 		}
-	} else {
-		return nil
 	}
+	return nil
 }
 
 // SimulateMsgPut generates a Basket/MsgPut with random values.
@@ -263,7 +262,6 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				}
 			}
 		}
-
 		if len(classInfoList) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no classes"), nil, nil
 		}
@@ -384,28 +382,47 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no baskets"), nil, nil
 		}
 
-		rBasket := baskets[r.Intn(len(baskets))]
-		balancesRes, err := bsktQryClient.BasketBalances(ctx, &basket.QueryBasketBalancesRequest{
-			BasketDenom: rBasket.BasketDenom,
-		})
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
+		var rBasket *basket.Basket
+		var bBalances []*basket.BasketBalance
+		for _, b := range baskets {
+			balancesRes, err := bsktQryClient.BasketBalances(ctx, &basket.QueryBasketBalancesRequest{
+				BasketDenom: b.BasketDenom,
+			})
+			if err != nil {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
+			}
+			balances := balancesRes.Balances
+			if len(balances) != 0 {
+				rBasket = b
+				bBalances = balances
+				break
+			}
 		}
-		balances := balancesRes.Balances
-		if len(balances) == 0 {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no balances"), nil, nil
+		if rBasket == nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no basket"), nil, nil
 		}
 
-		balance := balances[r.Intn(len(balances))]
-		iAmount, err := strconv.Atoi(balance.Balance)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
+		var amt int
+		for _, b := range bBalances {
+			iAmount, err := strconv.Atoi(b.Balance)
+			if err != nil {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
+			}
+
+			if iAmount == 0 {
+				continue
+			} else if iAmount == 1 {
+				amt = iAmount
+				break
+			} else {
+				amt = simtypes.RandIntBetween(r, 1, iAmount)
+				break
+			}
+		}
+		if amt == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "basket balance"), nil, nil
 		}
 
-		amt := 1
-		if iAmount > 1 {
-			amt = simtypes.RandIntBetween(r, 1, iAmount)
-		}
 		msg := &basket.MsgTake{
 			Owner:              ownerAddr,
 			BasketDenom:        rBasket.BasketDenom,
@@ -440,7 +457,6 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if strings.Contains(err.Error(), "insufficient funds") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "not enough balance"), nil, nil
 			}
-
 			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
