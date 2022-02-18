@@ -2,7 +2,6 @@ package basket
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
