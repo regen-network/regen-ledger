@@ -126,17 +126,13 @@ Flags:
 				if err != nil {
 					return fmt.Errorf("failed to parse min_start_date: %w", err)
 				}
-				dateCriteria.Sum = &basket.DateCriteria_MinStartDate{
-					MinStartDate: minStartDate,
-				}
+				dateCriteria.MinStartDate = minStartDate
 			}
 
 			if startDateWindow != 0 {
 				startDateWindowDuration := time.Duration(startDateWindow)
 				startDateWindow := types.DurationProto(startDateWindowDuration)
-				dateCriteria.Sum = &basket.DateCriteria_StartDateWindow{
-					StartDateWindow: startDateWindow,
-				}
+				dateCriteria.StartDateWindow = startDateWindow
 			}
 
 			fee := sdk.Coins{}

@@ -134,7 +134,7 @@ func TestGoodBasket(t *testing.T) {
 	)
 	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), "bar").Return(true)
 	seconds := time.Hour * 24 * 356 * 5
-	dateCriteria := &baskettypes.DateCriteria_StartDateWindow{
+	dateCriteria := &baskettypes.DateCriteria{
 		StartDateWindow: gogotypes.DurationProto(seconds),
 	}
 	s.bankKeeper.EXPECT().SetDenomMetaData(gomock.Any(),
@@ -161,7 +161,7 @@ func TestGoodBasket(t *testing.T) {
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		AllowedClasses:   []string{"bar"},
-		DateCriteria:     &baskettypes.DateCriteria{Sum: dateCriteria},
+		DateCriteria:     dateCriteria,
 	})
 	assert.NilError(t, err)
 
@@ -170,5 +170,5 @@ func TestGoodBasket(t *testing.T) {
 	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
 	assert.Equal(t, "C", basket.CreditTypeAbbrev)
-	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), basket.DateCriteria.Sum.(*basketv1.DateCriteria_StartDateWindow).StartDateWindow.String())
+	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), basket.DateCriteria.StartDateWindow.String())
 }

@@ -82,6 +82,7 @@ message MsgCreate {
   repeated string allowed_classes = 7;
 
   // date_criteria is the date criteria for batches admitted to the basket.
+  // At most, only one of the fields in the date_criteria should be set.
   DateCriteria date_criteria = 8;
 
   // fee is the fee that the curator will pay to create the basket. It must be
