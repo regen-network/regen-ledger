@@ -122,11 +122,11 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 
 	// check credit type match
 	requiredCreditType := basket.CreditTypeAbbrev
-	res2, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
+	res, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
 	if err != nil {
 		return err
 	}
-	gotCreditType := res2.Info.CreditType.Abbreviation
+	gotCreditType := res.Info.CreditType.Abbreviation
 	if requiredCreditType != gotCreditType {
 		return errInvalidReq.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
 	}
@@ -190,10 +190,10 @@ func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string
 		return coins, err
 	}
 
-	i64Amt, err := tokenAmt.Int64()
+	amtInt, err := tokenAmt.BigInt()
 	if err != nil {
 		return coins, err
 	}
 
-	return sdk.Coins{sdk.NewCoin(denom, sdk.NewInt(i64Amt))}, nil
+	return sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt))}, nil
 }
