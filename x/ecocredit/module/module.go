@@ -80,7 +80,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
 
-	err := configurator.RegisterMigration(ecocredit.ModuleName, 2,
+	err := configurator.RegisterMigration(ecocredit.ModuleName, 1,
 		func(ctx sdk.Context) error {
 			// set basket creation fee to 1,000 REGEN
 			a.paramSpace.Set(ctx, ecocredit.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
