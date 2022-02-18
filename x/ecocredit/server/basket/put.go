@@ -95,13 +95,13 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
 
-	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
+	if basket.DateCriteria != nil {
 		// check time window match
 		var minStartDate time.Time
-		switch criteria := basket.DateCriteria.Sum.(type) {
-		case *basketv1.DateCriteria_MinStartDate:
+		var criteria = basket.DateCriteria
+		if criteria.MinStartDate != nil {
 			minStartDate = criteria.MinStartDate.AsTime()
-		case *basketv1.DateCriteria_StartDateWindow:
+		} else if criteria.StartDateWindow != nil {
 			window := criteria.StartDateWindow.AsDuration()
 			minStartDate = blockTime.Add(-window)
 		}
@@ -124,11 +124,11 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 
 	// check credit type match
 	requiredCreditType := basket.CreditTypeAbbrev
-	res2, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
+	res, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
 	if err != nil {
 		return err
 	}
-	gotCreditType := res2.Info.CreditType.Abbreviation
+	gotCreditType := res.Info.CreditType.Abbreviation
 	if requiredCreditType != gotCreditType {
 		return errInvalidReq.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
 	}
