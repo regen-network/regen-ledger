@@ -79,6 +79,9 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
+
+	configurator.RegisterMigration(ecocredit.ModuleName, 2,
+		func(sdk.Context) error { return nil })
 }
 
 //nolint:errcheck
@@ -156,7 +159,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 1 }
+func (Module) ConsensusVersion() uint64 { return 2 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
