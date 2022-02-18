@@ -32,7 +32,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
+	sdkContext := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
+		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut iteration")
 		// get credit batch info
 		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
@@ -93,13 +95,13 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
 
-	if basket.DateCriteria != nil && basket.DateCriteria.Sum != nil {
+	if basket.DateCriteria != nil {
 		// check time window match
 		var minStartDate time.Time
-		switch criteria := basket.DateCriteria.Sum.(type) {
-		case *basketv1.DateCriteria_MinStartDate:
+		var criteria = basket.DateCriteria
+		if criteria.MinStartDate != nil {
 			minStartDate = criteria.MinStartDate.AsTime()
-		case *basketv1.DateCriteria_StartDateWindow:
+		} else if criteria.StartDateWindow != nil {
 			window := criteria.StartDateWindow.AsDuration()
 			minStartDate = blockTime.Add(-window)
 		}

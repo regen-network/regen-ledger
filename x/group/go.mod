@@ -108,7 +108,7 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
-	github.com/regen-network/regen-ledger/api v0.5.0 // indirect
+	github.com/regen-network/regen-ledger/api v0.6.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/rs/zerolog v1.23.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect

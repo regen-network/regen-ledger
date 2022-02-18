@@ -13,11 +13,9 @@ func (d *DateCriteria) ToApi() *basketv1.DateCriteria {
 		return nil
 	}
 	if x := d.GetMinStartDate(); x != nil {
-		return &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{
-			&timestamppb.Timestamp{Seconds: x.Seconds, Nanos: x.Nanos}}}
+		return &basketv1.DateCriteria{MinStartDate: &timestamppb.Timestamp{Seconds: x.Seconds, Nanos: x.Nanos}}
 	} else if x := d.GetStartDateWindow(); x != nil {
-		return &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{
-			&durationpb.Duration{Seconds: x.Seconds, Nanos: x.Nanos}}}
+		return &basketv1.DateCriteria{StartDateWindow: &durationpb.Duration{Seconds: x.Seconds, Nanos: x.Nanos}}
 	}
 	return nil
 }
