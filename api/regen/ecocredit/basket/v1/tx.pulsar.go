@@ -3761,6 +3761,7 @@ type MsgCreate struct {
 	// allowed_classes are the credit classes allowed to be put in the basket
 	AllowedClasses []string `protobuf:"bytes,7,rep,name=allowed_classes,json=allowedClasses,proto3" json:"allowed_classes,omitempty"`
 	// date_criteria is the date criteria for batches admitted to the basket.
+	// At most, only one of the fields in the date_criteria should be set.
 	DateCriteria *DateCriteria `protobuf:"bytes,8,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
 	// fee is the fee that the curator will pay to create the basket. It must be
 	// >= the required Params.basket_creation_fee. We include the fee explicitly
