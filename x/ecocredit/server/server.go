@@ -88,9 +88,10 @@ func RegisterServices(
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
+	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
+
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
-	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
 }
