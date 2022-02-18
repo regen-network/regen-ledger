@@ -5,7 +5,6 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
-	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
 
@@ -128,8 +127,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		precision := creditType.Precision
-		dateCriteria := randomDateCriteria(r) // TODO: remove this after #790 backported
-		dateCriteria = nil
+		dateCriteria := randomDateCriteria(r, sdkCtx)
 		msg := &basket.MsgCreate{
 			Name:              simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 8)),
 			Description:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 256)),
@@ -180,23 +178,20 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	}
 }
 
-func randomDateCriteria(r *rand.Rand) *basket.DateCriteria {
-	includeCriteria := r.Int63n(101) <= 50
+func randomDateCriteria(r *rand.Rand, ctx sdk.Context) *basket.DateCriteria {
+	// 30% chance of date-criteria being enable
+	includeCriteria := r.Int63n(101) <= 30
 	if includeCriteria {
-		seconds := time.Hour * 24
-		if includeCriteria {
+		seconds := ctx.BlockTime().AddDate(0, -1, 0).Unix()
+		if r.Float32() < 0.5 {
 			return &basket.DateCriteria{
-				Sum: &basket.DateCriteria_MinStartDate{
-					MinStartDate: &gogotypes.Timestamp{
-						Seconds: int64(seconds),
-					},
+				MinStartDate: &gogotypes.Timestamp{
+					Seconds: seconds,
 				},
 			}
 		} else {
 			return &basket.DateCriteria{
-				Sum: &basket.DateCriteria_StartDateWindow{
-					StartDateWindow: gogotypes.DurationProto(seconds),
-				},
+				StartDateWindow: &gogotypes.Duration{Seconds: int64(seconds)},
 			}
 		}
 	}
