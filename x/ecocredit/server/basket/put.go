@@ -191,11 +191,10 @@ func creditAmountToBasketCoins(creditAmt regenmath.Dec, exp uint32, denom string
 		return coins, err
 	}
 
-	tokenStr := tokenAmt.String()
-	tokenInt, ok := sdk.NewIntFromString(tokenStr)
-	if !ok {
-		return nil, fmt.Errorf(": can't convert token amount %s to integer", tokenStr)
+	amtInt, err := tokenAmt.BigInt()
+	if err != nil {
+		return coins, err
 	}
 
-	return sdk.Coins{sdk.NewCoin(denom, tokenInt)}, nil
+	return sdk.Coins{sdk.NewCoin(denom, sdk.NewIntFromBigInt(amtInt))}, nil
 }
