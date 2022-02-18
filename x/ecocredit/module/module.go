@@ -79,11 +79,23 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
+
+	err := configurator.RegisterMigration(ecocredit.ModuleName, 1,
+		func(ctx sdk.Context) error {
+			// set basket creation fee to 1,000 REGEN
+			a.paramSpace.Set(ctx, ecocredit.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
+			return nil
+		})
+	if err != nil {
+		panic(fmt.Sprintf("failed to migrate x/ecocredit from version 1 to 2: %v", err))
+	}
 }
 
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
-	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
+	ctx := context.Background()
+	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
+	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
@@ -154,7 +166,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 1 }
+func (Module) ConsensusVersion() uint64 { return 2 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}

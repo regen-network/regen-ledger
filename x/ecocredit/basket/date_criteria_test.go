@@ -14,13 +14,13 @@ func TestDateCriteriaToApi(t *testing.T) {
 	require.Nil(dc.ToApi(), "handles nil")
 
 	tstamp := &types.Timestamp{Seconds: 10}
-	dc = &DateCriteria{&DateCriteria_MinStartDate{tstamp}}
+	dc = &DateCriteria{MinStartDate: tstamp}
 	tstampStd, err := types.TimestampFromProto(tstamp)
 	require.NoError(err)
 	require.Equal(tstampStd, dc.ToApi().GetMinStartDate().AsTime(), "handles min start date")
 
 	dur := &types.Duration{Seconds: 50}
-	dc = &DateCriteria{&DateCriteria_StartDateWindow{dur}}
+	dc = &DateCriteria{StartDateWindow: dur}
 	durStd, err := types.DurationFromProto(dur)
 	require.NoError(err)
 	dw := dc.ToApi().GetStartDateWindow()
