@@ -87,7 +87,7 @@ func TestPut(t *testing.T) {
 		Name:              basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
+		DateCriteria:      &basketv1.DateCriteria{MinStartDate: timestamppb.New(startDate)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -99,7 +99,7 @@ func TestPut(t *testing.T) {
 		Name:              basketDenom2,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
+		DateCriteria:      &basketv1.DateCriteria{StartDateWindow: durationpb.New(dur)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
