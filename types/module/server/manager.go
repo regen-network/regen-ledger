@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -121,6 +122,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
+			migrations:       map[string]map[uint64]sdkmodule.MigrationHandler{},
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -255,9 +257,28 @@ type configurator struct {
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
 	registerInvariantsHandler RegisterInvariantsHandler
+	migrations                map[string]map[uint64]sdkmodule.MigrationHandler
 }
 
 var _ Configurator = &configurator{}
+
+func (c *configurator) RegisterMigration(moduleName string, forVersion uint64, handler sdkmodule.MigrationHandler) error {
+	if forVersion == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidVersion, "module migration versions should start at 1")
+	}
+
+	if c.migrations[moduleName] == nil {
+		c.migrations[moduleName] = map[uint64]sdkmodule.MigrationHandler{}
+	}
+
+	if c.migrations[moduleName][forVersion] != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrLogic, "another migration for module %s and version %d already exists", moduleName, forVersion)
+	}
+
+	c.migrations[moduleName][forVersion] = handler
+
+	return nil
+}
 
 func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
 	c.weightedOperationHandler = operationsHandler
