@@ -576,20 +576,16 @@ func (x *fastReflection_DateCriteria) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_DateCriteria) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Sum != nil {
-		switch o := x.Sum.(type) {
-		case *DateCriteria_MinStartDate:
-			v := o.MinStartDate
-			value := protoreflect.ValueOfMessage(v.ProtoReflect())
-			if !f(fd_DateCriteria_min_start_date, value) {
-				return
-			}
-		case *DateCriteria_StartDateWindow:
-			v := o.StartDateWindow
-			value := protoreflect.ValueOfMessage(v.ProtoReflect())
-			if !f(fd_DateCriteria_start_date_window, value) {
-				return
-			}
+	if x.MinStartDate != nil {
+		value := protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
+		if !f(fd_DateCriteria_min_start_date, value) {
+			return
+		}
+	}
+	if x.StartDateWindow != nil {
+		value := protoreflect.ValueOfMessage(x.StartDateWindow.ProtoReflect())
+		if !f(fd_DateCriteria_start_date_window, value) {
+			return
 		}
 	}
 }
@@ -608,21 +604,9 @@ func (x *fastReflection_DateCriteria) Range(f func(protoreflect.FieldDescriptor,
 func (x *fastReflection_DateCriteria) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		if x.Sum == nil {
-			return false
-		} else if _, ok := x.Sum.(*DateCriteria_MinStartDate); ok {
-			return true
-		} else {
-			return false
-		}
+		return x.MinStartDate != nil
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		if x.Sum == nil {
-			return false
-		} else if _, ok := x.Sum.(*DateCriteria_StartDateWindow); ok {
-			return true
-		} else {
-			return false
-		}
+		return x.StartDateWindow != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -640,9 +624,9 @@ func (x *fastReflection_DateCriteria) Has(fd protoreflect.FieldDescriptor) bool 
 func (x *fastReflection_DateCriteria) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		x.Sum = nil
+		x.MinStartDate = nil
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		x.Sum = nil
+		x.StartDateWindow = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -660,21 +644,11 @@ func (x *fastReflection_DateCriteria) Clear(fd protoreflect.FieldDescriptor) {
 func (x *fastReflection_DateCriteria) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		if x.Sum == nil {
-			return protoreflect.ValueOfMessage((*timestamppb.Timestamp)(nil).ProtoReflect())
-		} else if v, ok := x.Sum.(*DateCriteria_MinStartDate); ok {
-			return protoreflect.ValueOfMessage(v.MinStartDate.ProtoReflect())
-		} else {
-			return protoreflect.ValueOfMessage((*timestamppb.Timestamp)(nil).ProtoReflect())
-		}
+		value := x.MinStartDate
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		if x.Sum == nil {
-			return protoreflect.ValueOfMessage((*durationpb.Duration)(nil).ProtoReflect())
-		} else if v, ok := x.Sum.(*DateCriteria_StartDateWindow); ok {
-			return protoreflect.ValueOfMessage(v.StartDateWindow.ProtoReflect())
-		} else {
-			return protoreflect.ValueOfMessage((*durationpb.Duration)(nil).ProtoReflect())
-		}
+		value := x.StartDateWindow
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -696,11 +670,9 @@ func (x *fastReflection_DateCriteria) Get(descriptor protoreflect.FieldDescripto
 func (x *fastReflection_DateCriteria) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		cv := value.Message().Interface().(*timestamppb.Timestamp)
-		x.Sum = &DateCriteria_MinStartDate{MinStartDate: cv}
+		x.MinStartDate = value.Message().Interface().(*timestamppb.Timestamp)
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		cv := value.Message().Interface().(*durationpb.Duration)
-		x.Sum = &DateCriteria_StartDateWindow{StartDateWindow: cv}
+		x.StartDateWindow = value.Message().Interface().(*durationpb.Duration)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -722,37 +694,15 @@ func (x *fastReflection_DateCriteria) Set(fd protoreflect.FieldDescriptor, value
 func (x *fastReflection_DateCriteria) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		if x.Sum == nil {
-			value := &timestamppb.Timestamp{}
-			oneofValue := &DateCriteria_MinStartDate{MinStartDate: value}
-			x.Sum = oneofValue
-			return protoreflect.ValueOfMessage(value.ProtoReflect())
+		if x.MinStartDate == nil {
+			x.MinStartDate = new(timestamppb.Timestamp)
 		}
-		switch m := x.Sum.(type) {
-		case *DateCriteria_MinStartDate:
-			return protoreflect.ValueOfMessage(m.MinStartDate.ProtoReflect())
-		default:
-			value := &timestamppb.Timestamp{}
-			oneofValue := &DateCriteria_MinStartDate{MinStartDate: value}
-			x.Sum = oneofValue
-			return protoreflect.ValueOfMessage(value.ProtoReflect())
-		}
+		return protoreflect.ValueOfMessage(x.MinStartDate.ProtoReflect())
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		if x.Sum == nil {
-			value := &durationpb.Duration{}
-			oneofValue := &DateCriteria_StartDateWindow{StartDateWindow: value}
-			x.Sum = oneofValue
-			return protoreflect.ValueOfMessage(value.ProtoReflect())
+		if x.StartDateWindow == nil {
+			x.StartDateWindow = new(durationpb.Duration)
 		}
-		switch m := x.Sum.(type) {
-		case *DateCriteria_StartDateWindow:
-			return protoreflect.ValueOfMessage(m.StartDateWindow.ProtoReflect())
-		default:
-			value := &durationpb.Duration{}
-			oneofValue := &DateCriteria_StartDateWindow{StartDateWindow: value}
-			x.Sum = oneofValue
-			return protoreflect.ValueOfMessage(value.ProtoReflect())
-		}
+		return protoreflect.ValueOfMessage(x.StartDateWindow.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -767,11 +717,11 @@ func (x *fastReflection_DateCriteria) Mutable(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_DateCriteria) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.basket.v1.DateCriteria.min_start_date":
-		value := &timestamppb.Timestamp{}
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "regen.ecocredit.basket.v1.DateCriteria.start_date_window":
-		value := &durationpb.Duration{}
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
+		m := new(durationpb.Duration)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.DateCriteria"))
@@ -785,16 +735,6 @@ func (x *fastReflection_DateCriteria) NewField(fd protoreflect.FieldDescriptor) 
 // It panics if the oneof descriptor does not belong to this message.
 func (x *fastReflection_DateCriteria) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
-	case "regen.ecocredit.basket.v1.DateCriteria.sum":
-		if x.Sum == nil {
-			return nil
-		}
-		switch x.Sum.(type) {
-		case *DateCriteria_MinStartDate:
-			return x.Descriptor().Fields().ByName("min_start_date")
-		case *DateCriteria_StartDateWindow:
-			return x.Descriptor().Fields().ByName("start_date_window")
-		}
 	default:
 		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.basket.v1.DateCriteria", d.FullName()))
 	}
@@ -851,17 +791,11 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		switch x := x.Sum.(type) {
-		case *DateCriteria_MinStartDate:
-			if x == nil {
-				break
-			}
+		if x.MinStartDate != nil {
 			l = options.Size(x.MinStartDate)
 			n += 1 + l + runtime.Sov(uint64(l))
-		case *DateCriteria_StartDateWindow:
-			if x == nil {
-				break
-			}
+		}
+		if x.StartDateWindow != nil {
 			l = options.Size(x.StartDateWindow)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -894,21 +828,7 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		switch x := x.Sum.(type) {
-		case *DateCriteria_MinStartDate:
-			encoded, err := options.Marshal(x.MinStartDate)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0xa
-		case *DateCriteria_StartDateWindow:
+		if x.StartDateWindow != nil {
 			encoded, err := options.Marshal(x.StartDateWindow)
 			if err != nil {
 				return protoiface.MarshalOutput{
@@ -921,6 +841,20 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0x12
+		}
+		if x.MinStartDate != nil {
+			encoded, err := options.Marshal(x.MinStartDate)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -1000,11 +934,12 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				v := &timestamppb.Timestamp{}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], v); err != nil {
+				if x.MinStartDate == nil {
+					x.MinStartDate = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.MinStartDate); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
-				x.Sum = &DateCriteria_MinStartDate{v}
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -1035,11 +970,12 @@ func (x *fastReflection_DateCriteria) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				v := &durationpb.Duration{}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], v); err != nil {
+				if x.StartDateWindow == nil {
+					x.StartDateWindow = &durationpb.Duration{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.StartDateWindow); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
-				x.Sum = &DateCriteria_StartDateWindow{v}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -1137,18 +1073,23 @@ func (x *BasketCredit) GetAmount() string {
 	return ""
 }
 
-// DateCriteria represents a basket credit batch date criteria.
+// DateCriteria represents the information for credit acceptance in a basket.
+// At most, only one of the values should be set.
 type DateCriteria struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// sum is the oneof representing the date criteria.
-	//
-	// Types that are assignable to Sum:
-	//	*DateCriteria_MinStartDate
-	//	*DateCriteria_StartDateWindow
-	Sum isDateCriteria_Sum `protobuf_oneof:"sum"`
+	// min_start_date (optional) is the earliest start date for batches of credits allowed
+	// into the basket.
+	// At most only one of `start_date_window` and `min_start_date` can be set.
+	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
+	// start_date_window (optional) is a duration of time measured into the past which sets
+	// a cutoff for batch start dates when adding new credits to the basket.
+	// Based on the current block timestamp, credits whose start date is before
+	// `block_timestamp - batch_date_window` will not be allowed into the basket.
+	// At most only one of `start_date_window` and `min_start_date` can be set.
+	StartDateWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=start_date_window,json=startDateWindow,proto3" json:"start_date_window,omitempty"`
 }
 
 func (x *DateCriteria) Reset() {
@@ -1171,48 +1112,19 @@ func (*DateCriteria) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_basket_v1_types_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *DateCriteria) GetSum() isDateCriteria_Sum {
-	if x != nil {
-		return x.Sum
-	}
-	return nil
-}
-
 func (x *DateCriteria) GetMinStartDate() *timestamppb.Timestamp {
-	if x, ok := x.GetSum().(*DateCriteria_MinStartDate); ok {
+	if x != nil {
 		return x.MinStartDate
 	}
 	return nil
 }
 
 func (x *DateCriteria) GetStartDateWindow() *durationpb.Duration {
-	if x, ok := x.GetSum().(*DateCriteria_StartDateWindow); ok {
+	if x != nil {
 		return x.StartDateWindow
 	}
 	return nil
 }
-
-type isDateCriteria_Sum interface {
-	isDateCriteria_Sum()
-}
-
-type DateCriteria_MinStartDate struct {
-	// min_start_date is the earliest start date for batches of credits allowed
-	// into the basket.
-	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=min_start_date,json=minStartDate,proto3,oneof"`
-}
-
-type DateCriteria_StartDateWindow struct {
-	// start_date_window is a duration of time measured into the past which sets
-	// a cutoff for batch start dates when adding new credits to the basket.
-	// Based on the current block timestamp, credits whose start date is before
-	// `block_timestamp - batch_date_window` will not be allowed into the basket.
-	StartDateWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=start_date_window,json=startDateWindow,proto3,oneof"`
-}
-
-func (*DateCriteria_MinStartDate) isDateCriteria_Sum() {}
-
-func (*DateCriteria_StartDateWindow) isDateCriteria_Sum() {}
 
 var File_regen_ecocredit_basket_v1_types_proto protoreflect.FileDescriptor
 
@@ -1229,34 +1141,34 @@ var file_regen_ecocredit_basket_v1_types_proto_rawDesc = []byte{
 	0x64, 0x69, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e,
 	0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44,
 	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0xa2, 0x01, 0x0a,
-	0x0c, 0x44, 0x61, 0x74, 0x65, 0x43, 0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x12, 0x42, 0x0a,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x97, 0x01, 0x0a,
+	0x0c, 0x44, 0x61, 0x74, 0x65, 0x43, 0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x12, 0x40, 0x0a,
 	0x0e, 0x6d, 0x69, 0x6e, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
-	0x70, 0x48, 0x00, 0x52, 0x0c, 0x6d, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74,
-	0x65, 0x12, 0x47, 0x0a, 0x11, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x5f,
-	0x77, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44,
-	0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x48, 0x00, 0x52, 0x0f, 0x73, 0x74, 0x61, 0x72, 0x74,
-	0x44, 0x61, 0x74, 0x65, 0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x42, 0x05, 0x0a, 0x03, 0x73, 0x75,
-	0x6d, 0x42, 0x80, 0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x25,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c,
-	0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x52, 0x0c, 0x6d, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12,
+	0x45, 0x0a, 0x11, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x77, 0x69,
+	0x6e, 0x64, 0x6f, 0x77, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65,
+	0x57, 0x69, 0x6e, 0x64, 0x6f, 0x77, 0x42, 0x80, 0x02, 0x0a, 0x1d, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50,
+	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x61, 0x73, 0x6b,
+	0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02, 0x19, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x42, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c,
+	0x56, 0x31, 0xe2, 0x02, 0x25, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47,
+	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x1c, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x42,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -1318,10 +1230,6 @@ func file_regen_ecocredit_basket_v1_types_proto_init() {
 				return nil
 			}
 		}
-	}
-	file_regen_ecocredit_basket_v1_types_proto_msgTypes[1].OneofWrappers = []interface{}{
-		(*DateCriteria_MinStartDate)(nil),
-		(*DateCriteria_StartDateWindow)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
