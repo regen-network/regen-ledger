@@ -456,7 +456,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			params.NewAppModule(app.ParamsKeeper),
 			evidence.NewAppModule(app.EvidenceKeeper),
 			feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+			// authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry), // enable after updating sdk version v0.46
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
 			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
