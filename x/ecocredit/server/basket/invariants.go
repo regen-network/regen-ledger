@@ -28,12 +28,12 @@ func (k Keeper) basketSupplyInvariant() sdk.Invariant {
 		for bid, bal := range bals {
 			b, err := k.stateStore.BasketStore().Get(goCtx, bid)
 			if err != nil {
-				return fmt.Sprintf("Can't get basket %v: %w", bid, err), true
+				return fmt.Sprintf("Can't get basket %v: %v", bid, err), true
 			}
 			c := k.bankKeeper.GetSupply(ctx, b.BasketDenom)
 			balInt, err := bal.BigInt()
 			if err != nil {
-				return fmt.Sprintf("Can't convert Dec to big.Int, %w", err), true
+				return fmt.Sprintf("Can't convert Dec to big.Int, %v", err), true
 			}
 			balSdkInt := sdk.NewIntFromBigInt(balInt)
 			if !c.Amount.Equal(balSdkInt) {
