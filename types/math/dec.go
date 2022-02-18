@@ -95,6 +95,13 @@ func NewDecFromInt64(x int64) Dec {
 	return res
 }
 
+// NewDecFinite returns a decimal with a value of coeff * 10^exp.
+func NewDecFinite(coeff int64, exp int32) Dec {
+	var res Dec
+	res.dec.SetFinite(coeff, exp)
+	return res
+}
+
 // Add returns a new Dec with value `x+y` without mutating any argument and error if
 // there is an overflow.
 func (x Dec) Add(y Dec) (Dec, error) {

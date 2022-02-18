@@ -82,6 +82,9 @@ func TestDec(t *testing.T) {
 	minusFivePointZero, err := NewDecFromString("-5.0")
 	require.NoError(t, err)
 
+	twoThousand := NewDecFinite(2, 3)
+	require.True(t, twoThousand.Equal(NewDecFromInt64(2000)))
+
 	res, err := two.Add(zero)
 	require.NoError(t, err)
 	require.True(t, res.Equal(two))
@@ -145,6 +148,10 @@ func TestDec(t *testing.T) {
 	require.False(t, minusOne.IsZero())
 	require.False(t, minusOne.IsPositive())
 	require.True(t, minusOne.IsNegative())
+
+	res, err = one.MulExact(two)
+	require.NoError(t, err)
+	require.True(t, res.Equal(two))
 }
 
 // TODO: Think a bit more about the probability distribution of Dec
@@ -481,7 +488,7 @@ func testMulQuoExact(t *rapid.T) {
 	e, err := d.QuoExact(c)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(e))
+	require.True(t, a.Equal(e))
 }
 
 // Property: (a / b) * b == a using QuoExact and MulExact and
@@ -501,7 +508,7 @@ func testQuoMulExact(t *rapid.T) {
 	e, err := d.MulExact(c)
 	require.NoError(t, err)
 
-	require.True(t, aDec.IsEqual(e))
+	require.True(t, aDec.Equal(e))
 }
 
 // Property: Cmp(a, b) == -Cmp(b, a)
@@ -596,7 +603,7 @@ func TestReduce(t *testing.T) {
 	require.NoError(t, err)
 	b, n := a.Reduce()
 	require.Equal(t, 4, n)
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 	require.Equal(t, "1.3", b.String())
 }
 
