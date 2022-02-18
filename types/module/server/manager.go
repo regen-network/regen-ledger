@@ -247,7 +247,6 @@ func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[s
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
 
 type configurator struct {
-	sdkmodule.Configurator
 	msgServer                 gogogrpc.Server
 	queryServer               gogogrpc.Server
 	key                       *rootModuleKey
