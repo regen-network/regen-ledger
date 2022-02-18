@@ -7,9 +7,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
-
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -27,9 +24,10 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
