@@ -7,9 +7,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
-
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -27,9 +24,10 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -88,17 +86,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 
-	upgradeV22xName := "v2.2-upgrade"
-	app.UpgradeKeeper.SetUpgradeHandler(upgradeV22xName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// get the params
-		ecoParams, ok := app.ParamsKeeper.GetSubspace(ecocredittypes.ModuleName)
-		if !ok {
-			panic(fmt.Sprintf("unable to upgrade: subspace %s not found", ecocredittypes.ModuleName))
-		}
-
-		// set basket creation fee to 1,0000 REGEN
-		ecoParams.Set(ctx, ecocredittypes.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
-
+	app.UpgradeKeeper.SetUpgradeHandler("v3.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 

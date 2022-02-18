@@ -87,7 +87,7 @@ func TestPut(t *testing.T) {
 		Name:              basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_MinStartDate{MinStartDate: timestamppb.New(startDate)}},
+		DateCriteria:      &basketv1.DateCriteria{MinStartDate: timestamppb.New(startDate)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -99,7 +99,7 @@ func TestPut(t *testing.T) {
 		Name:              basketDenom2,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{Sum: &basketv1.DateCriteria_StartDateWindow{StartDateWindow: durationpb.New(dur)}},
+		DateCriteria:      &basketv1.DateCriteria{StartDateWindow: durationpb.New(dur)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
@@ -133,6 +133,7 @@ func TestPut(t *testing.T) {
 		name                string
 		startingBalance     string
 		msg                 basket2.MsgPut
+		expectedCredits     []*basket2.BasketCredit
 		expectedBasketCoins string
 		expectCalls         func()
 		errMsg              string
@@ -145,6 +146,7 @@ func TestPut(t *testing.T) {
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
+			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
 				ecocreditKeeper.EXPECT().
@@ -166,6 +168,35 @@ func TestPut(t *testing.T) {
 			},
 		},
 		{
+			name:            "valid case - basket with existing balance",
+			startingBalance: "100000000",
+			msg: basket2.MsgPut{
+				Owner:       addr.String(),
+				BasketDenom: basketDenom,
+				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "1"}},
+			},
+			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "3"}},
+			expectedBasketCoins: "1000000", // 1 million
+			expectCalls: func() {
+				ecocreditKeeper.EXPECT().
+					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+					Return(&batchInfoRes, nil)
+
+				ecocreditKeeper.EXPECT().
+					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+					Return(&classInfoRes, nil)
+
+				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(1_000_000)))
+				bankKeeper.EXPECT().
+					MintCoins(sdkCtx, basket2.BasketSubModuleName, coinAward).
+					Return(nil)
+
+				bankKeeper.EXPECT().
+					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketSubModuleName, addr, coinAward).
+					Return(nil)
+			},
+		},
+		{
 			name:            "valid case - basket 2 with rolling window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
@@ -173,6 +204,7 @@ func TestPut(t *testing.T) {
 				BasketDenom: basketDenom2,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
+			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
 				ecocreditKeeper.EXPECT().
@@ -341,6 +373,8 @@ func TestPut(t *testing.T) {
 				require.Equal(t, res.AmountReceived, tc.expectedBasketCoins)
 				for _, credit := range tc.msg.Credits {
 					assertUserSentCredits(t, userFunds, credit.Amount, tradKey, legacyStore)
+				}
+				for _, credit := range tc.expectedCredits {
 					assertBasketHasCredits(t, ctx, credit, basketDenomToId[tc.msg.BasketDenom], basketBalanceTbl)
 				}
 			} else {

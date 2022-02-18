@@ -4,15 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types/math"
-
 	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -78,6 +76,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 			return nil, err
 		}
 		it.Close()
+		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgTake iteration")
 
 		balance, err := math.NewDecFromString(basketBalance.Balance)
 		if err != nil {
