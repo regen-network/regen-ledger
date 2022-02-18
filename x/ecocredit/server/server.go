@@ -94,5 +94,4 @@ func RegisterServices(
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
-	configurator.RegisterInvariantsHandler(impl.basketKeeper.RegisterInvariants)
 }
