@@ -402,10 +402,14 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, nil
 		}
 
+		amt := 1
+		if iAmount > 1 {
+			amt = simtypes.RandIntBetween(r, 1, iAmount)
+		}
 		msg := &basket.MsgTake{
 			Owner:              ownerAddr,
 			BasketDenom:        rBasket.BasketDenom,
-			Amount:             fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, iAmount)),
+			Amount:             fmt.Sprintf("%d", amt),
 			RetirementLocation: "AQ",
 			RetireOnTake:       !rBasket.DisableAutoRetire,
 		}
