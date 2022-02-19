@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -45,13 +46,17 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	if r == nil {
-		return nil, nil
-	}
-
-	err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
-	if err != nil {
-		return nil, err
+	if r == nil { // r is nil when theres no table data, so we can just unmarshal the data given
+		bz := bytes.NewBuffer(data)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &genesisState)
+		if err != nil {
+			return nil, err
+		}
+	} else { // r is not nil, so there is table data and we can just use r.
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)

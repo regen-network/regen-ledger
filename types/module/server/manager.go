@@ -116,6 +116,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		cfg := &configurator{
+			Configurator:     sdkmodule.NewConfigurator(mm.cdc, msgRegistrar, queryRegistrar),
 			msgServer:        msgRegistrar,
 			queryServer:      queryRegistrar,
 			key:              key,
