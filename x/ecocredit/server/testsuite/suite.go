@@ -1038,6 +1038,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		allowlist        []string
 		allowlistEnabled bool
 		wantErr          bool
+		errMsg           string
 	}{
 		{
 			name:             "valid allowlist and enabled",
@@ -1059,6 +1060,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			creatorAcc:       s.signers[1],
 			allowlistEnabled: true,
 			wantErr:          true,
+			errMsg:           "not allowed",
 		},
 		{
 			name:             "valid allowlist but disabled - anyone can create credits",
@@ -1073,6 +1075,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			creatorAcc:       s.signers[0],
 			allowlistEnabled: true,
 			wantErr:          true,
+			errMsg:           "not allowed",
 		},
 	}
 

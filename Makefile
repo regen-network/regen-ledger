@@ -402,3 +402,6 @@ mocks:
 	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
 	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
 .PHONY: mocks
+
+tidy:
+	./scripts/go-mod-tidy-all.sh
