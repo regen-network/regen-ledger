@@ -256,7 +256,6 @@ type configurator struct {
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
 	registerInvariantsHandler RegisterInvariantsHandler
-	migrations                map[string]map[uint64]sdkmodule.MigrationHandler
 }
 
 var _ Configurator = &configurator{}
