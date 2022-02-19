@@ -60,8 +60,8 @@ Flags:
 			required Params.basket_creation_fee. We include the fee explicitly here so that the
 			curator explicitly acknowledges paying this fee and is not surprised to learn that the
 			paid a big fee and didn't know beforehand.
-		description: the description to be used in the basket coin's bank denom metadata.
-Example:
+		description: the description to be used in the basket coin's bank denom metadata.`),
+		Example: `
 		$regen tx ecocredit create-basket HEAED
 			--from regen...
 			--exponent=3
@@ -69,7 +69,7 @@ Example:
 			--allowed_classes="class1,class2"
 			--basket-fee=100regen
 			--description="any description"
-		`),
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
