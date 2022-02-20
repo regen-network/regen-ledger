@@ -26,6 +26,8 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
+
+	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }
 
 type DistributionKeeper interface {

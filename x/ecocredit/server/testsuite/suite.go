@@ -24,6 +24,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+const basketFeeDenom = "bfee"
+
 type IntegrationTestSuite struct {
 	suite.Suite
 
@@ -93,7 +95,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			Precision:    6,
 		},
 	)
-	s.basketFee = sdk.NewInt64Coin("foo", 20)
+	s.basketFee = sdk.NewInt64Coin(basketFeeDenom, 20)
 	ecocreditParams.BasketCreationFee = sdk.NewCoins(s.basketFee)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
@@ -116,7 +118,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	classId, batchDenom := s.createClassAndIssueBatch(user, user, "bazcredits", userTotalCreditBalance.String(), "2020-01-01", "2022-01-01")
 
 	// fund account to create a basket
-	balanceBefore := sdk.NewInt64Coin("foo", 30000)
+	balanceBefore := sdk.NewInt64Coin(basketFeeDenom, 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
 	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
 		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
@@ -144,7 +146,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// assert the fee was paid - the fee mechanism was mocked, but we still call the same underlying SendFromAccountToModule
 	// function so the result is the same
-	balanceAfter := s.getUserBalance(user, "foo")
+	balanceAfter := s.getUserBalance(user, basketFeeDenom)
 	require.Equal(balanceAfter.Add(s.basketFee), balanceBefore)
 
 	// put some BAZ credits in the basket
@@ -1038,6 +1040,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		allowlist        []string
 		allowlistEnabled bool
 		wantErr          bool
+		errMsg           string
 	}{
 		{
 			name:             "valid allowlist and enabled",
@@ -1059,6 +1062,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			creatorAcc:       s.signers[1],
 			allowlistEnabled: true,
 			wantErr:          true,
+			errMsg:           "not allowed",
 		},
 		{
 			name:             "valid allowlist but disabled - anyone can create credits",
@@ -1073,6 +1077,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			creatorAcc:       s.signers[0],
 			allowlistEnabled: true,
 			wantErr:          true,
+			errMsg:           "not allowed",
 		},
 	}
 
