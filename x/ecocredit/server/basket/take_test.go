@@ -178,14 +178,15 @@ func TestTakeTooMuchTradable(t *testing.T) {
 	s := setupTake(t)
 
 	// Try to take more than what's in the basket, should error.
-	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(99999999999)))
+	amount := sdk.NewInt(99999999999)
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", amount))
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:        s.addr.String(),
 		BasketDenom:  "bar",
-		Amount:       "99999999999",
+		Amount:       amount.String(),
 		RetireOnTake: false,
 	})
 	// IRL, the error below should throw earlier, on SendCoinsFromAccountToModule
