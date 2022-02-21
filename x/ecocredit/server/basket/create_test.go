@@ -24,7 +24,6 @@ func TestFeeToLow(t *testing.T) {
 	t.Parallel()
 
 	s := setupBase(t)
-
 	minFee := sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(100)))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(minFee)
