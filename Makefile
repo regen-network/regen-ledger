@@ -424,3 +424,7 @@ regen-mocks:
 	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
 .PHONY: regen-mocks
 
+
+tidy:
+	./scripts/go-mod-tidy-all.sh
+.PHONY: tidy
