@@ -171,9 +171,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 		ctx, storeKey := setupStore(t)
 		store := ctx.KVStore(storeKey)
 		t.Run(tc.msg, func(t *testing.T) {
-
 			initBalances(t, store, tc.balances)
-
 			initSupply(t, store, tc.supply)
 
 			msg, broken := tradableSupplyInvariant(store, tc.basketBalance)
