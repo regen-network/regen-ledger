@@ -11,14 +11,15 @@ import (
 func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1beta1.MsgUpdateClassAdmin) (*v1beta1.MsgUpdateClassAdminResponse, error) {
 	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
 	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
 	classAdmin := sdk.AccAddress(classInfo.Admin)
+	newAdmin, _ := sdk.AccAddressFromBech32(req.NewAdmin)
 	if !classAdmin.Equals(reqAddr) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
-	classInfo.Admin = reqAddr
+	classInfo.Admin = newAdmin
 	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
@@ -28,7 +29,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1beta1.MsgUpdateClas
 func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpdateClassIssuers) (*v1beta1.MsgUpdateClassIssuersResponse, error) {
 	class, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
 	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
 	admin := sdk.AccAddress(class.Admin)
@@ -36,6 +37,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpdateCl
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", class.Admin, req.Admin)
 	}
 
+	// remove issuers
 	for _, issuer := range req.RemoveIssuers {
 		if err = k.stateStore.ClassIssuerStore().Delete(ctx, &ecocreditv1beta1.ClassIssuer{
 			ClassId: class.Id,
@@ -60,7 +62,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1beta1.MsgUpdateCl
 func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1beta1.MsgUpdateClassMetadata) (*v1beta1.MsgUpdateClassMetadataResponse, error) {
 	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
 	reqAddr, _ := sdk.AccAddressFromBech32(req.Admin)
 	admin := sdk.AccAddress(classInfo.Admin)
