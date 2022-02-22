@@ -47,14 +47,19 @@ func BasketSupplyInvariant(ctx sdk.Context, store basketv1.BasketStore, bank ban
 
 	var inbalances []string
 	for _, bid := range bids {
-		bal := basketBalances[bid]
-		balInt, err := bal.BigInt()
-		if err != nil {
-			return fmt.Sprintf("Can't convert Dec to big.Int, %v", err), true
-		}
 		b, err := store.Get(goCtx, bid)
 		if err != nil {
 			return fmt.Sprintf("Can't get basket %v: %v", bid, err), true
+		}
+		bal := basketBalances[bid]
+		exp := math.NewDecFinite(1, int32(b.Exponent))
+		mul, err := bal.Mul(exp)
+		if err != nil {
+			return fmt.Sprintf("Can't multiply balance by exponent, %v", err), true
+		}
+		balInt, err := mul.BigInt()
+		if err != nil {
+			return fmt.Sprintf("Can't convert Dec to big.Int, %v", err), true
 		}
 		c := bank.GetSupply(ctx, b.BasketDenom)
 		balSdkInt := sdk.NewIntFromBigInt(balInt)
