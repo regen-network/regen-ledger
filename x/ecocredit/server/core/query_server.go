@@ -2,12 +2,10 @@ package core
 
 import (
 	"context"
-	queryv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/gogo/protobuf/types"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
@@ -20,35 +18,36 @@ func (k Keeper) Classes(ctx context.Context, request *v1beta1.QueryClassesReques
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
-	if request.Pagination == nil {
-		request.Pagination = &query.PageRequest{}
-	}
-	p := request.Pagination
-	it, err := k.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(&queryv1beta1.PageRequest{
-		Key:        p.Key,
-		Offset:     p.Offset,
-		Limit:      p.Limit,
-		CountTotal: p.CountTotal,
-		Reverse:    p.Reverse,
-	}))
+
+	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
+	it, err := k.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	if err != nil {
+		return nil, err
+	}
+
 	infos := make([]*v1beta1.ClassInfo, 0)
 	for it.Next() {
 		info, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		infos = append(infos, &v1beta1.ClassInfo{
-			Id:         info.Id,
-			Name:       info.Name,
-			Admin:      info.Admin,
-			Metadata:   info.Metadata,
-			CreditType: info.CreditType,
-		})
+		var ci v1beta1.ClassInfo
+		if err = PulsarToGogoSlow(info, &ci); err != nil {
+			return nil, err
+		}
+		infos = append(infos, &ci)
 	}
-	return nil, err
+	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
+	return &v1beta1.QueryClassesResponse{
+		Classes:    infos,
+		Pagination: pr,
+	}, err
 }
 
 // ClassInfo queries for information on a credit class.
@@ -76,24 +75,22 @@ func (k Keeper) ClassInfo(ctx context.Context, request *v1beta1.QueryClassInfoRe
 		}
 		issuers = append(issuers, val.Issuer)
 	}
-
-	return &v1beta1.QueryClassInfoResponse{Info: &v1beta1.ClassInfo{
-		Id:         classInfo.Id,
-		Name:       request.ClassId,
-		Admin:      classInfo.Admin,
-		Metadata:   classInfo.Metadata,
-		CreditType: classInfo.CreditType,
-	}}, nil
+	var ci v1beta1.ClassInfo
+	if err = PulsarToGogoSlow(classInfo, &ci); err != nil {
+		return nil, err
+	}
+	return &v1beta1.QueryClassInfoResponse{Info: &ci}, nil
 }
 
 func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIssuersRequest) (*v1beta1.QueryClassIssuersResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
-	if request.Pagination == nil {
-		request.Pagination = &query.PageRequest{}
+
+	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
 	}
-	p := request.Pagination
 	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
 		return nil, err
 	}
@@ -103,13 +100,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
-		Key:        p.Key,
-		Offset:     p.Offset,
-		Limit:      p.Limit,
-		CountTotal: p.CountTotal,
-		Reverse:    p.Reverse,
-	}))
+	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -123,14 +114,13 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 
 		issuers = append(issuers, string(issuer.Issuer))
 	}
-	pr := it.PageResponse()
-
+	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
 	return &v1beta1.QueryClassIssuersResponse{
-		Issuers: issuers,
-		Pagination: &query.PageResponse{
-			NextKey: pr.NextKey,
-			Total:   pr.Total,
-		},
+		Issuers:    issuers,
+		Pagination: pr,
 	}, nil
 }
 
@@ -139,21 +129,15 @@ func (k Keeper) Projects(ctx context.Context, request *v1beta1.QueryProjectsRequ
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
-	if request.Pagination == nil {
-		request.Pagination = &query.PageRequest{}
+	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
 	}
-	p := request.Pagination
 	cInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ProjectInfoStore().List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
-		Key:        p.Key,
-		Offset:     p.Offset,
-		Limit:      p.Limit,
-		CountTotal: p.CountTotal,
-		Reverse:    p.Reverse,
-	}))
+	it, err := k.stateStore.ProjectInfoStore().List(ctx, ecocreditv1beta1.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -163,25 +147,19 @@ func (k Keeper) Projects(ctx context.Context, request *v1beta1.QueryProjectsRequ
 		if err != nil {
 			return nil, err
 		}
-		classInfo, err := k.stateStore.ClassInfoStore().Get(ctx, info.ClassId)
-		if err != nil {
+		var pi v1beta1.ProjectInfo
+		if err = PulsarToGogoSlow(info, &pi); err != nil {
 			return nil, err
 		}
-		projectInfos = append(projectInfos, &v1beta1.ProjectInfo{
-			Id:              info.Id,
-			Name:            info.Name,
-			ClassId:         classInfo.Id,
-			ProjectLocation: info.ProjectLocation,
-			Metadata:        info.Metadata,
-		})
+		projectInfos = append(projectInfos, &pi)
 	}
-	pg := it.PageResponse()
+	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
 	return &v1beta1.QueryProjectsResponse{
-		Projects: projectInfos,
-		Pagination: &query.PageResponse{
-			NextKey: pg.NextKey,
-			Total:   pg.Total,
-		},
+		Projects:   projectInfos,
+		Pagination: pr,
 	}, nil
 }
 
@@ -216,27 +194,15 @@ func (k Keeper) Batches(ctx context.Context, request *v1beta1.QueryBatchesReques
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
-	if request.Pagination == nil {
-		request.Pagination = &query.PageRequest{}
+	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
 	}
-	p := request.Pagination
 	project, err := k.stateStore.ProjectInfoStore().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.BatchInfoStore().List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(&queryv1beta1.PageRequest{
-		Key:        p.Key,
-		Offset:     p.Offset,
-		Limit:      p.Limit,
-		CountTotal: p.CountTotal,
-		Reverse:    p.Reverse,
-	}))
-	if err != nil {
-		return nil, err
-	}
-
-	projectName := request.ProjectId
-	pinfo, err := k.stateStore.ProjectInfoStore().GetByName(ctx, projectName)
+	it, err := k.stateStore.BatchInfoStore().List(ctx, ecocreditv1beta1.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -247,30 +213,19 @@ func (k Keeper) Batches(ctx context.Context, request *v1beta1.QueryBatchesReques
 		if err != nil {
 			return nil, err
 		}
-
-		protoStart, err := types.TimestampProto(batch.StartDate.AsTime())
-		if err != nil {
+		var bi v1beta1.BatchInfo
+		if err = PulsarToGogoSlow(batch, &bi); err != nil {
 			return nil, err
 		}
-		protoEnd, err := types.TimestampProto(batch.EndDate.AsTime())
-		if err != nil {
-			return nil, err
-		}
-		batches = append(batches, &v1beta1.BatchInfo{
-			ProjectId:  pinfo.Id,
-			BatchDenom: batch.BatchDenom,
-			Metadata:   batch.Metadata,
-			StartDate:  protoStart,
-			EndDate:    protoEnd,
-		})
+		batches = append(batches, &bi)
 	}
-	pr := it.PageResponse()
+	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
 	return &v1beta1.QueryBatchesResponse{
-		Batches: batches,
-		Pagination: &query.PageResponse{
-			NextKey: pr.NextKey,
-			Total:   pr.Total,
-		},
+		Batches:    batches,
+		Pagination: pr,
 	}, nil
 }
 
@@ -287,30 +242,11 @@ func (k Keeper) BatchInfo(ctx context.Context, request *v1beta1.QueryBatchInfoRe
 	if err != nil {
 		return nil, err
 	}
-
-	project, err := k.stateStore.ProjectInfoStore().Get(ctx, batch.ProjectId)
-	if err != nil {
+	var bi v1beta1.BatchInfo
+	if err = PulsarToGogoSlow(batch, &bi); err != nil {
 		return nil, err
 	}
-
-	protoStart, err := types.TimestampProto(batch.StartDate.AsTime())
-	if err != nil {
-		return nil, err
-	}
-	protoEnd, err := types.TimestampProto(batch.EndDate.AsTime())
-	if err != nil {
-		return nil, err
-	}
-	return &v1beta1.QueryBatchInfoResponse{
-		Info: &v1beta1.BatchInfo{
-			Id:         batch.Id,
-			ProjectId:  project.Id,
-			BatchDenom: request.BatchDenom,
-			Metadata:   batch.Metadata,
-			StartDate:  protoStart,
-			EndDate:    protoEnd,
-		},
-	}, nil
+	return &v1beta1.QueryBatchInfoResponse{Info: &bi}, nil
 }
 
 // Balance queries the balance (both tradable and retired) of a given credit
@@ -333,13 +269,13 @@ func (k Keeper) Balance(ctx context.Context, req *v1beta1.QueryBalanceRequest) (
 
 	balance, err := k.stateStore.BatchBalanceStore().Get(ctx, addr, batch.Id)
 	if err != nil {
+		if ormerrors.IsNotFound(err) {
+			return &v1beta1.QueryBalanceResponse{
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+			}, nil
+		}
 		return nil, err
-	}
-	if balance == nil {
-		return &v1beta1.QueryBalanceResponse{
-			TradableAmount: "0",
-			RetiredAmount:  "0",
-		}, nil
 	}
 	return &v1beta1.QueryBalanceResponse{
 		TradableAmount: balance.Tradable,
@@ -386,18 +322,19 @@ func (k Keeper) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequ
 		if err != nil {
 			return nil, err
 		}
-		creditTypes = append(creditTypes, &v1beta1.CreditType{
-			Abbreviation: ct.Abbreviation,
-			Name:         ct.Name,
-			Unit:         ct.Unit,
-			Precision:    ct.Precision,
-		})
+		var cType v1beta1.CreditType
+		if err = PulsarToGogoSlow(ct, &cType); err != nil {
+			return nil, err
+		}
+		creditTypes = append(creditTypes, &cType)
 	}
 	return &v1beta1.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }
 
 // Params queries the ecocredit module parameters.
 // TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
+// Currently this is an ugly hack that grabs v1alpha types and converts them into v1beta types.
+// will be gone with #729.
 func (k Keeper) Params(ctx context.Context, _ *v1beta1.QueryParamsRequest) (*v1beta1.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params
