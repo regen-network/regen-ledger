@@ -397,22 +397,23 @@ proto-update-deps:
 ###                                Localnet                                 ###
 ###############################################################################
 
-# Run a 4-node testnet locally via docker compose
-localnet-start: build-linux localnet-stop
-	$(if $(shell $(DOCKER) inspect -f '{{ .Id }}' regenledger/regen-env 2>/dev/null),$(info found image regenledger/regen-env),$(MAKE) -C contrib/images regen-env)
-	if ! test -f build/node0/regen/config/genesis.json; then $(DOCKER) run --rm \
-		--user $(shell id -u):$(shell id -g) \
-		-v $(BUILDDIR):/regen:Z \
-		-v /etc/group:/etc/group:ro \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/shadow:/etc/shadow:ro \
-		regenledger/regen-env testnet init-files --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
+localnet-build-env:
+	$(MAKE) -C contrib/images regen-env
+
+localnet-build-nodes:
+	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data regenledger/regen-env \
+			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test
 	docker-compose up -d
+
+
+# localnet-start will run a 4-node testnet locally. The nodes are
+# based off the docker images in: ./contrib/images/regen-env
+localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
 	docker-compose down -v 
 
-.PHONY: localnet-start localnet-stop
+.PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
 
 
 include sims.mk
