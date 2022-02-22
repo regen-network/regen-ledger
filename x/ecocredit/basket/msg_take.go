@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -31,8 +30,12 @@ func (m MsgTake) ValidateBasic() error {
 	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", m.BasketDenom)
 	}
-	if _, err := math.NewPositiveDecFromString(m.Amount); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	i, ok := sdk.NewIntFromString(m.Amount)
+	if !ok {
+		return sdkerrors.ErrInvalidRequest.Wrapf("%s can't be converted to an integer", m.Amount)
+	}
+	if !i.IsPositive() {
+		return sdkerrors.ErrInvalidRequest.Wrapf("%s must be positive", m.Amount)
 	}
 	if m.RetireOnTake {
 		if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
