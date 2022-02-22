@@ -85,7 +85,7 @@ func (m MsgCreate) Route() string { return sdk.MsgTypeURL(&m) }
 func (m MsgCreate) Type() string { return sdk.MsgTypeURL(&m) }
 
 func validateDateCriteria(d *DateCriteria) error {
-	if d == nil || d.String() == "" {
+	if d == nil {
 		return nil
 	}
 	minStartDate := d.GetMinStartDate()

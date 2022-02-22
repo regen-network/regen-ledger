@@ -122,7 +122,7 @@ Flags:
 				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
 			}
 
-			dateCriteria := &basket.DateCriteria{}
+			var dateCriteria *basket.DateCriteria
 
 			if minStartDateString != "" {
 				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
@@ -133,13 +133,13 @@ Flags:
 				if err != nil {
 					return fmt.Errorf("failed to parse min_start_date: %w", err)
 				}
-				dateCriteria.MinStartDate = minStartDate
+				dateCriteria = &basket.DateCriteria{MinStartDate: minStartDate}
 			}
 
 			if startDateWindow != 0 {
 				startDateWindowDuration := time.Duration(startDateWindow)
 				startDateWindow := types.DurationProto(startDateWindowDuration)
-				dateCriteria.StartDateWindow = startDateWindow
+				dateCriteria = &basket.DateCriteria{StartDateWindow: startDateWindow}
 			}
 
 			fee := sdk.Coins{}

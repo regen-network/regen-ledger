@@ -65,6 +65,9 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"credity_type-2",
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
 			"credit type abbreviation must be 1-3"},
+		{"date_criteria-1",
+			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
+			"unsupported date_criteria value"},
 		{"description",
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
 			"description can't be longer"},
@@ -81,9 +84,6 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 			"invalid denom"},
 		{"good-1-fees-not-required",
 			MsgCreate{Curator: a, Name: name, Exponent: 0, CreditTypeAbbrev: creditAbbr, DateCriteria: start, AllowedClasses: classes, Description: descr}, ""},
-		{"good-date-criteria-1",
-			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}, AllowedClasses: classes},
-			""},
 		{"good-date-criteria-not-required",
 			MsgCreate{Curator: a, Name: name, Exponent: 18, CreditTypeAbbrev: creditAbbr, DateCriteria: nil, AllowedClasses: classes, Fee: sdk.Coins{sdk.NewInt64Coin("regen", 1)}}, ""},
 	}
@@ -102,9 +102,15 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 		d   DateCriteria
 		err string
 	}{
+		{"nil-min_start_date",
+			DateCriteria{MinStartDate: nil},
+			"unsupported date_criteria value"},
 		{"bad-min_start_date",
 			DateCriteria{MinStartDate: &gogotypes.Timestamp{Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()}},
 			"date_criteria.min_start_date must be after"},
+		{"nil-start_date_window",
+			DateCriteria{StartDateWindow: nil},
+			"unsupported date_criteria value"},
 		{"bad-start_date_window",
 			DateCriteria{StartDateWindow: &gogotypes.Duration{Seconds: 3600}},
 			"date_criteria.start_date_window must be at least 1 day"},
