@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-* [#783](https://github.com/regen-network/regen-ledger/pull/783) Added Dec to BigInt conversion to math package.
+* [#783](https://github.com/regen-network/regen-ledger/pull/783) Add Dec to BigInt conversion to math package.
 
 #### Fixed
 
@@ -21,37 +21,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-* [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
-* [#787](https://github.com/regen-network/regen-ledger/pull/787) Add basket supply invariant.
-* [#787](https://github.com/regen-network/regen-ledger/pull/787) Add basket supply invariant.
-* [#776](https://github.com/regen-network/regen-ledger/pull/776) Add basket name and prefix updates.
-* [#771](https://github.com/regen-network/regen-ledger/pull/771) Add basket integration tests.
-* [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
-* [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
-* [#764](https://github.com/regen-network/regen-ledger/pull/764) Add basket genesis initialization.
-* [#762](https://github.com/regen-network/regen-ledger/pull/762) Add Create message server method.
-* [#765](https://github.com/regen-network/regen-ledger/pull/765) Add codec and server registration.
-* [#754](https://github.com/regen-network/regen-ledger/pull/754) Add Create transaction CLI command.
-* [#766](https://github.com/regen-network/regen-ledger/pull/766) Add Baskets query CLI command.
-* [#749](https://github.com/regen-network/regen-ledger/pull/749) Add Take transaction CLI command.
-* [#766](https://github.com/regen-network/regen-ledger/pull/766) Add Basket query CLI command.
-* [#763](https://github.com/regen-network/regen-ledger/pull/763) Add BasketBalances query server method. 
-* [#746](https://github.com/regen-network/regen-ledger/pull/746) Add Take message server method. 
-* [#758](https://github.com/regen-network/regen-ledger/pull/758) Add Put message server method. 
-* [#735](https://github.com/regen-network/regen-ledger/pull/735) Add Basket query server method. 
-* [#760](https://github.com/regen-network/regen-ledger/pull/760) Add BasketBalance query CLI commands. 
-* [#757](https://github.com/regen-network/regen-ledger/pull/757) Add start date window for date criteria. 
-* [#751](https://github.com/regen-network/regen-ledger/pull/751) Add BasketBalance query server method. 
-* [#745](https://github.com/regen-network/regen-ledger/pull/745) Add sdk.Msg implementation for MsgCreate. 
-* [#748](https://github.com/regen-network/regen-ledger/pull/748) Add sdk.Msg implementation for MsgTake. 
-* [#747](https://github.com/regen-network/regen-ledger/pull/747) Add sdk.Msg implementation for MsgPut. 
-* [#735](https://github.com/regen-network/regen-ledger/pull/735) Add minimal baskets ORM and keeper setup. 
 * [#737](https://github.com/regen-network/regen-ledger/pull/737) Add basket proto definitions.
+* [#735](https://github.com/regen-network/regen-ledger/pull/735) Add minimal baskets ORM and keeper setup.
+* [#747](https://github.com/regen-network/regen-ledger/pull/747) Add sdk.Msg implementation for MsgPut. 
+* [#748](https://github.com/regen-network/regen-ledger/pull/748) Add sdk.Msg implementation for MsgTake. 
+* [#745](https://github.com/regen-network/regen-ledger/pull/745) Add sdk.Msg implementation for MsgCreate. 
+* [#751](https://github.com/regen-network/regen-ledger/pull/751) Add BasketBalance query server method. 
+* [#757](https://github.com/regen-network/regen-ledger/pull/757) Add start date window for date criteria. 
+* [#760](https://github.com/regen-network/regen-ledger/pull/760) Add BasketBalance query CLI commands. 
+* [#735](https://github.com/regen-network/regen-ledger/pull/735) Add Basket query server method. 
+* [#758](https://github.com/regen-network/regen-ledger/pull/758) Add Put message server method. 
+* [#746](https://github.com/regen-network/regen-ledger/pull/746) Add Take message server method. 
+* [#763](https://github.com/regen-network/regen-ledger/pull/763) Add BasketBalances query server method. 
+* [#766](https://github.com/regen-network/regen-ledger/pull/766) Add Basket query CLI command.
+* [#749](https://github.com/regen-network/regen-ledger/pull/749) Add Take transaction CLI command.
+* [#766](https://github.com/regen-network/regen-ledger/pull/766) Add Baskets query CLI command.
+* [#754](https://github.com/regen-network/regen-ledger/pull/754) Add Create transaction CLI command.
+* [#765](https://github.com/regen-network/regen-ledger/pull/765) Add codec and server registration.
+* [#762](https://github.com/regen-network/regen-ledger/pull/762) Add Create message server method.
+* [#764](https://github.com/regen-network/regen-ledger/pull/764) Add basket genesis initialization.
+* [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
+* [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
+* [#771](https://github.com/regen-network/regen-ledger/pull/771) Add basket integration tests.
+* [#776](https://github.com/regen-network/regen-ledger/pull/776) Add basket name and prefix updates.
+* [#787](https://github.com/regen-network/regen-ledger/pull/787) Add basket supply invariant.
+* [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
 
 #### Changed
 
-* [#789](https://github.com/regen-network/regen-ledger/pull/789) Update consensus version and service registration.
 * [#764](https://github.com/regen-network/regen-ledger/pull/764) Update genesis to support ORM and non-ORM genesis.
+* [#789](https://github.com/regen-network/regen-ledger/pull/789) Update consensus version and service registration.
 
 ## [v2.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.1.0) - 2021-11-23
 
