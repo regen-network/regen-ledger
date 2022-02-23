@@ -62,19 +62,6 @@ func (k Keeper) ClassInfo(ctx context.Context, request *v1beta1.QueryClassInfoRe
 	if err != nil {
 		return nil, err
 	}
-
-	issuers := make([]sdk.AccAddress, 0)
-	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id))
-	if err != nil {
-		return nil, err
-	}
-	for it.Next() {
-		val, err := it.Value()
-		if err != nil {
-			return nil, err
-		}
-		issuers = append(issuers, val.Issuer)
-	}
 	var ci v1beta1.ClassInfo
 	if err = PulsarToGogoSlow(classInfo, &ci); err != nil {
 		return nil, err
@@ -107,12 +94,11 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 
 	issuers := make([]string, 0)
 	for it.Next() {
-		issuer, err := it.Value()
+		val, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-
-		issuers = append(issuers, string(issuer.Issuer))
+		issuers = append(issuers, sdk.AccAddress(val.Issuer).String())
 	}
 	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
@@ -124,7 +110,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 	}, nil
 }
 
-// Projects queries projects of a given credit batch.
+// Projects queries all projects of a given credit class.
 func (k Keeper) Projects(ctx context.Context, request *v1beta1.QueryProjectsRequest) (*v1beta1.QueryProjectsResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -174,19 +160,11 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *v1beta1.QueryProjectIn
 	if err != nil {
 		return nil, err
 	}
-
-	cInfo, err := k.stateStore.ClassInfoStore().Get(ctx, pInfo.ClassId)
-	if err != nil {
+	var pi v1beta1.ProjectInfo
+	if err = PulsarToGogoSlow(pInfo, &pi); err != nil {
 		return nil, err
 	}
-
-	return &v1beta1.QueryProjectInfoResponse{Info: &v1beta1.ProjectInfo{
-		Id:              pInfo.Id,
-		Name:            request.ProjectId,
-		ClassId:         cInfo.Id,
-		ProjectLocation: pInfo.ProjectLocation,
-		Metadata:        pInfo.Metadata,
-	}}, nil
+	return &v1beta1.QueryProjectInfoResponse{Info: &pi}, nil
 }
 
 // Batches queries for all batches in the given credit class.

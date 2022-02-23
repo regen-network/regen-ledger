@@ -68,6 +68,16 @@ func TestGeneratedProjectID(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, "C0101", "got project id: %s", res.ProjectId)
+
+	res, err = s.k.CreateProject(s.ctx, &v1beta1.MsgCreateProject{
+		Issuer:          s.addr.String(),
+		ClassId:         "C01",
+		Metadata:        nil,
+		ProjectLocation: "US-NY",
+		ProjectId:       "",
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, res.ProjectId, "C0102", "got project id: %s", res.ProjectId)
 }
 
 func TestBadClassID(t *testing.T) {
