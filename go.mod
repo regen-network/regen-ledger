@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v2
+module github.com/regen-network/regen-ledger/v3
 
 go 1.17
 
@@ -9,7 +9,7 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
 	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/cast v1.4.1
