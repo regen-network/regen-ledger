@@ -28,16 +28,21 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
+
   // Params holds all the parameters of this module.
    Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryBondsRequest is request type for the Query/Bonds RPC method.
 message QueryBondsRequest {
+
   // Pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QueryBondsResponse is response type for the Query/Bonds RPC method.
 message QueryBondsResponse {
+
   // Bonds info.
   repeated BondInfo bonds = 1;
 
