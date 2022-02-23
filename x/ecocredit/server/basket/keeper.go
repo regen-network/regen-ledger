@@ -45,7 +45,7 @@ func NewKeeper(
 	}
 }
 
-// EcocreditKeeper abstracts over methods that the main eco-credit keeper
+// EcocreditKeeper abstracts over methods that the main ecocredit keeper
 // needs to expose to the basket keeper.
 //
 // NOTE: run `make mocks` whenever you add methods here

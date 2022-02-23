@@ -60,8 +60,16 @@ Flags:
 			required Params.basket_creation_fee. We include the fee explicitly here so that the
 			curator explicitly acknowledges paying this fee and is not surprised to learn that the
 			paid a big fee and didn't know beforehand.
-		description: the description to be used in the basket coin's bank denom metadata.
-		`),
+		description: the description to be used in the basket coin's bank denom metadata.`),
+		Example: `
+		$regen tx ecocredit create-basket HEAED
+			--from regen...
+			--exponent=3
+			--credit-type-abbreviation=FOO
+			--allowed_classes="class1,class2"
+			--basket-fee=100regen
+			--description="any description"
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -88,11 +96,10 @@ Flags:
 				return err
 			}
 
-			allowedClassesString, err := cmd.Flags().GetString(FlagAllowedClasses)
+			allowedClasses, err := cmd.Flags().GetStringSlice(FlagAllowedClasses)
 			if err != nil {
 				return err
 			}
-			allowedClasses := strings.Split(allowedClassesString, ",")
 			for i := range allowedClasses {
 				allowedClasses[i] = strings.TrimSpace(allowedClasses[i])
 			}
@@ -115,7 +122,7 @@ Flags:
 				return fmt.Errorf("both %s and %s cannot be set", FlagStartDateWindow, FlagMinimumStartDate)
 			}
 
-			dateCriteria := basket.DateCriteria{}
+			var dateCriteria *basket.DateCriteria
 
 			if minStartDateString != "" {
 				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
@@ -126,13 +133,13 @@ Flags:
 				if err != nil {
 					return fmt.Errorf("failed to parse min_start_date: %w", err)
 				}
-				dateCriteria.MinStartDate = minStartDate
+				dateCriteria = &basket.DateCriteria{MinStartDate: minStartDate}
 			}
 
 			if startDateWindow != 0 {
 				startDateWindowDuration := time.Duration(startDateWindow)
 				startDateWindow := types.DurationProto(startDateWindowDuration)
-				dateCriteria.StartDateWindow = startDateWindow
+				dateCriteria = &basket.DateCriteria{StartDateWindow: startDateWindow}
 			}
 
 			fee := sdk.Coins{}
@@ -155,7 +162,7 @@ Flags:
 				DisableAutoRetire: disableAutoRetire,
 				CreditTypeAbbrev:  creditTypeName,
 				AllowedClasses:    allowedClasses,
-				DateCriteria:      &dateCriteria,
+				DateCriteria:      dateCriteria,
 				Fee:               fee,
 			}
 
@@ -173,7 +180,7 @@ Flags:
 	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
 	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
-	cmd.Flags().String(FlagAllowedClasses, "", "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
+	cmd.Flags().StringSlice(FlagAllowedClasses, []string{}, "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
 	cmd.Flags().Uint64(FlagStartDateWindow, 0, "sets a cutoff for batch start dates when adding new credits to the basket (e.g. 1325404800)")
 	cmd.Flags().String(FlagBasketFee, "", "the fee that the curator will pay to create the basket (e.g. \"20regen\")")

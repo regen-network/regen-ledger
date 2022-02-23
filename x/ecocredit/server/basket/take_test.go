@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -164,6 +165,63 @@ func TestTakeTradable(t *testing.T) {
 
 	s.expectTradableBalance("C3", "7")
 	s.expectTradableBalance("C4", "3")
+	s.expectRetiredBalance("C3", "0")
+	s.expectRetiredBalance("C4", "0")
+	s.expectTradableSupply("C3", "7")
+	s.expectTradableSupply("C4", "4")
+	s.expectRetiredSupply("C3", "0")
+	s.expectRetiredSupply("C4", "0")
+}
+
+func TestTakeTooMuchTradable(t *testing.T) {
+	t.Parallel()
+	s := setupTake(t)
+
+	// Try to take more than what's in the basket, should error.
+	amount := sdk.NewInt(99999999999)
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", amount))
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
+
+	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:        s.addr.String(),
+		BasketDenom:  "bar",
+		Amount:       amount.String(),
+		RetireOnTake: false,
+	})
+	// IRL, the error below should throw earlier, on SendCoinsFromAccountToModule
+	// We're just testing here that some error is thrown.
+	assert.Error(t, err, "unexpected failure - balance invariant broken")
+}
+
+func TestTakeAllTradable(t *testing.T) {
+	t.Parallel()
+	s := setupTake(t)
+
+	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(11000000))) // == 7C4 + 4C4
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
+
+	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:        s.addr.String(),
+		BasketDenom:  "bar",
+		Amount:       "11000000",
+		RetireOnTake: false,
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, 2, len(res.Credits))
+	assert.Equal(t, "C3", res.Credits[0].BatchDenom)
+	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
+	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
+	assertDecStringEqual(t, "4.0", res.Credits[1].Amount)
+	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.barBasketId, "C3")
+	assert.NilError(t, err)
+	assert.Assert(t, !found)
+	_, err = s.stateStore.BasketBalanceStore().Get(s.ctx, s.barBasketId, "C4")
+	assert.ErrorIs(t, err, ormerrors.NotFound)
+
+	s.expectTradableBalance("C3", "7")
+	s.expectTradableBalance("C4", "4")
 	s.expectRetiredBalance("C3", "0")
 	s.expectRetiredBalance("C4", "0")
 	s.expectTradableSupply("C3", "7")
