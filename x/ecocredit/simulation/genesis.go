@@ -31,7 +31,7 @@ const (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 100)))))
+	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10)))))
 }
 
 // genAllowedClassCreators generate random set of creators
@@ -62,7 +62,7 @@ func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
 			Name:         "biodiversity",
 			Abbreviation: "BIO",
 			Unit:         "ton",
-			Precision:    6,
+			Precision:    6, // TODO: randomize precision, precision is currently locked to 6
 		},
 	}
 }
@@ -213,6 +213,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		allowedClassCreators []string
 		allowListEnabled     bool
 		creditTypes          []*ecocredit.CreditType
+		basketCreationFee    sdk.Coins
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -269,12 +270,20 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { supplies = genSupplies(r, classes, batches, balances, creditTypes) },
 	)
 
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc, "basket_fee", &basketCreationFee, simState.Rand,
+		func(r *rand.Rand) {
+			basketCreationFee = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 0, 10))))
+		},
+	)
+
 	ecocreditGenesis := ecocredit.GenesisState{
 		Params: ecocredit.Params{
 			CreditClassFee:       creditClassFee,
 			AllowedClassCreators: allowedClassCreators,
 			AllowlistEnabled:     allowListEnabled,
 			CreditTypes:          creditTypes,
+			BasketCreationFee:    basketCreationFee,
 		},
 		ClassInfo: classes,
 		BatchInfo: batches,
