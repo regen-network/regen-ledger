@@ -17,4 +17,4 @@ The MVP version of baskets proposed in Regen Ledger `v3.0.0` differs from the fu
 
 ## Changelog
 
-For a full list of changes since regen-ledger v2.1.0, please see the [CHANGELOG.md](./CHANGELOG.md)
+For a full list of changes since regen-ledger `v2.1.0`, please see the [CHANGELOG.md](./CHANGELOG.md)
