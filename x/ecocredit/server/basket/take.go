@@ -95,6 +95,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				acct,
 				basketBalance.BatchDenom,
 				amountCreditsNeeded,
+				basket.BasketDenom,
 				retire,
 				msg.RetirementLocation,
 			)
@@ -125,6 +126,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				acct,
 				basketBalance.BatchDenom,
 				balance,
+				basket.BasketDenom,
 				retire,
 				msg.RetirementLocation,
 			)
@@ -160,7 +162,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	}, err
 }
 
-func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, retire bool, retirementLocation string) error {
+func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementLocation string) error {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(k.storeKey)
 	if !retire {
@@ -173,6 +175,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
 			TradableAmount: amount.String(),
+			BasketDenom:    basketDenom,
 		})
 	} else {
 		err := ecocredit.AddAndSetDecimal(store, ecocredit.RetiredBalanceKey(owner, ecocredit.BatchDenomT(batchDenom)), amount)
@@ -194,6 +197,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			Recipient:     owner.String(),
 			BatchDenom:    batchDenom,
 			RetiredAmount: amount.String(),
+			BasketDenom:   basketDenom,
 		})
 		if err != nil {
 			return err
