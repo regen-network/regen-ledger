@@ -88,10 +88,10 @@ message EventReceive {
   // retired_amount is the decimal number of retired credits received.
   string retired_amount = 5;
 
-  // basket_denom is the denom of the basket. when the basket_denom field is
+  // basket_denom is the denom of the basket. When the basket_denom field is
   // set, it indicates that this event was triggered by the transfer of credits
-  // from a basket. It will not be set if the credits were sent by a user, or by
-  // initial issuance.
+  // from a basket. It will not be set if the credits were transferred or received
+  // at initial issuance.
   string basket_denom = 6;
 }
 
