@@ -20,6 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
 // Simulation operation weights constants
@@ -134,7 +135,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Fee:               params.BasketCreationFee,
 			DisableAutoRetire: r.Float32() < 0.5,
 			Curator:           curator.Address.String(),
-			Exponent:          randomExponent(r, precision),
+			Exponent:          utils.RandomExponent(r, precision),
 			AllowedClasses:    classIds,
 			CreditTypeAbbrev:  creditType.Abbreviation,
 			DateCriteria:      dateCriteria,
@@ -215,7 +216,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no baskets"), nil, nil
 		}
 
-		classes, err := GetAndShuffleClasses(sdkCtx, r, qryClient)
+		classes, err := utils.GetAndShuffleClasses(sdkCtx, r, qryClient)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 		}
@@ -246,7 +247,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 						max++
 					}
 				} else {
-					if Contains(class.Issuers, ownerAddr) {
+					if utils.Contains(class.Issuers, ownerAddr) {
 						classInfoList = append(classInfoList, *class)
 						max++
 					}
@@ -442,12 +443,12 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
 func randomClasses(r *rand.Rand, ctx sdk.Context, qryClient ecocredit.QueryClient) ([]string, error) {
-	classes, err := GetAndShuffleClasses(ctx, r, qryClient)
+	classes, err := utils.GetAndShuffleClasses(ctx, r, qryClient)
 	if err != nil {
 		return nil, err
 	}
@@ -459,6 +460,13 @@ func randomClasses(r *rand.Rand, ctx sdk.Context, qryClient ecocredit.QueryClien
 	}
 
 	return classIds, nil
+}
+
+func min(x, y int) int {
+	if x > y {
+		return y
+	}
+	return x
 }
 
 func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.QueryClient) (*ecocredit.CreditType, error) {

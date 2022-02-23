@@ -1,4 +1,4 @@
-package basketsims
+package utils
 
 import (
 	"math/rand"
@@ -29,14 +29,7 @@ func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient ecocredit.
 	return classes, nil
 }
 
-func min(x, y int) int {
-	if x > y {
-		return y
-	}
-	return x
-}
-
-func randomExponent(r *rand.Rand, precision uint32) uint32 {
+func RandomExponent(r *rand.Rand, precision uint32) uint32 {
 	exponents := []uint32{0, 1, 2, 3, 6, 9, 12, 15, 18, 21, 24}
 	for {
 		x := exponents[r.Intn(len(exponents))]

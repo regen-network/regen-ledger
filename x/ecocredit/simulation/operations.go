@@ -17,6 +17,7 @@ import (
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
 // Simulation operation weights constants
@@ -174,7 +175,7 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		params := res.Params
-		if params.AllowlistEnabled && !basketsims.Contains(params.AllowedClassCreators, admin.Address.String()) {
+		if params.AllowlistEnabled && !utils.Contains(params.AllowedClassCreators, admin.Address.String()) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not allowed to create credit class"), nil, nil // skip
 		}
 
@@ -207,7 +208,7 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -219,7 +220,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuer := accs[0]
 
-		classes, err := basketsims.GetAndShuffleClasses(sdkCtx, r, qryClient)
+		classes, err := utils.GetAndShuffleClasses(sdkCtx, r, qryClient)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, err.Error()), nil, err
 		}
@@ -230,7 +231,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		var classID string
 		for _, class := range classes {
-			if basketsims.Contains(class.Issuers, issuer.Address.String()) {
+			if utils.Contains(class.Issuers, issuer.Address.String()) {
 				classID = class.ClassId
 				break
 			}
@@ -270,7 +271,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -374,7 +375,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -453,7 +454,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -522,7 +523,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -568,7 +569,7 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -609,7 +610,7 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -651,7 +652,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			CoinsSpentInMsg: spendable,
 		}
 
-		return basketsims.GenAndDeliverTxWithRandFees(txCtx)
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -673,7 +674,7 @@ func getAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 }
 
 func getRandomClass(ctx sdk.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
-	classes, err := basketsims.GetAndShuffleClasses(ctx, r, qryClient)
+	classes, err := utils.GetAndShuffleClasses(ctx, r, qryClient)
 	if err != nil {
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
 	}
