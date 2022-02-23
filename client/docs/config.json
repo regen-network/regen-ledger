@@ -23,7 +23,7 @@
         },
         {
           "url": "./tmp-swagger-gen/regen/ecocredit/basket/v1/query.swagger.json",
-      },
+        },
         {
             "url": "./tmp-swagger-gen/regen/group/v1alpha1/query.swagger.json",
             "operationIds": {
