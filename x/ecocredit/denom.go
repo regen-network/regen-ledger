@@ -97,12 +97,12 @@ var exponentPrefixMap = map[uint32]string{
 var validExponents string
 
 func init() {
-	var exponents = make([]uint32, len(exponentPrefixMap))
+	var exponents = make([]uint32, 0, len(exponentPrefixMap))
 	for e := range exponentPrefixMap {
 		exponents = append(exponents, e)
 	}
 	sort.Slice(exponents, func(i, j int) bool { return exponents[i] < exponents[j] })
-	validExponents = fmt.Sprint(validExponents)
+	validExponents = fmt.Sprint(exponents)
 }
 
 // ExponentToPrefix returns a denom prefix for a given exponent.

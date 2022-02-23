@@ -108,12 +108,12 @@ Example:
 	return cmd
 }
 
-// QueryBasketBalancesCmd returns a query command that retrieves the the balance of each credit batch for the given basket denom.
+// QueryBasketBalancesCmd returns a query command that retrieves the balance of each credit batch for the given basket denom.
 func QueryBasketBalancesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "basket-balances [basket-denom]",
-		Short: "Retrieves the the balance of each credit batch for the given basket denom",
-		Long: strings.TrimSpace(`Retrieves the the balance of each credit batch for the given basket denom
+		Short: "Retrieves the balance of each credit batch for the given basket denom",
+		Long: strings.TrimSpace(`Retrieves the balance of each credit batch for the given basket denom
 
 Examples:
 		$regen q ecocredit basket-balances BASKET1

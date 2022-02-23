@@ -834,7 +834,9 @@ paths:
                     credit_type:
                       description: >-
                         credit_type describes the type of credit (e.g. carbon,
-                        biodiversity), as well as unit and precision.
+                        biodiversity), as
+
+                        well as unit and precision.
                       type: object
                       properties:
                         name:
@@ -1000,7 +1002,9 @@ paths:
                   credit_type:
                     description: >-
                       credit_type describes the type of credit (e.g. carbon,
-                      biodiversity), as well as unit and precision.
+                      biodiversity), as
+
+                      well as unit and precision.
                     type: object
                     properties:
                       name:
@@ -1405,6 +1409,26 @@ paths:
 
                         (e.g. carbon, biodiversity...)
                     title: credit_types is a list of definitions for credit types
+                  basket_creation_fee:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    description: >-
+                      basket_creation_fee is the fee to create a new basket
+                      denom.
             description: QueryParamsResponse is the Query/Params response type.
         default:
           description: An unexpected error response
@@ -1428,6 +1452,512 @@ paths:
                     value:
                       type: string
                       format: byte
+      tags:
+        - Query
+  /regen/ecocredit/basket/v1/baskets:
+    get:
+      summary: Baskets lists all baskets in the ecocredit module.
+      operationId: Baskets
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              baskets:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                      description: >-
+                        id is the uint64 ID of the basket. It is used internally
+                        for reducing
+
+                        storage space.
+                    basket_denom:
+                      type: string
+                      description: basket_denom is the basket bank denom.
+                    name:
+                      type: string
+                      description: >-
+                        name is the unique name of the basket specified in
+                        MsgCreate. Basket
+
+                        names must be unique across all credit types and choices
+                        of exponent
+
+                        above and beyond the uniqueness constraint on
+                        basket_denom.
+                    disable_auto_retire:
+                      type: boolean
+                      format: boolean
+                      description: >-
+                        disable_auto_retire indicates whether or not the credits
+                        will be retired upon withdraw from the basket.
+                    credit_type_abbrev:
+                      type: string
+                      description: >-
+                        credit_type_abbrev is the abbreviation of the credit
+                        type this basket is able to hold.
+                    date_criteria:
+                      description: >-
+                        date_criteria is the date criteria for batches admitted
+                        to the basket.
+                      type: object
+                      properties:
+                        min_start_date:
+                          type: string
+                          format: date-time
+                          description: >-
+                            min_start_date (optional) is the earliest start date
+                            for batches of credits allowed
+
+                            into the basket.
+
+                            At most only one of `start_date_window` and
+                            `min_start_date` can be set.
+                        start_date_window:
+                          type: string
+                          description: >-
+                            start_date_window (optional) is a duration of time
+                            measured into the past which sets
+
+                            a cutoff for batch start dates when adding new
+                            credits to the basket.
+
+                            Based on the current block timestamp, credits whose
+                            start date is before
+
+                            `block_timestamp - batch_date_window` will not be
+                            allowed into the basket.
+
+                            At most only one of `start_date_window` and
+                            `min_start_date` can be set.
+                    exponent:
+                      type: integer
+                      format: int64
+                      description: >-
+                        exponent is the exponent for converting credits to/from
+                        basket tokens.
+                  description: Basket represents a basket in state.
+                description: baskets are the fetched baskets.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: QueryBasketsResponse is the Query/Baskets response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  '/regen/ecocredit/basket/v1/baskets/{basket_denom}':
+    get:
+      summary: Basket queries one basket by denom.
+      operationId: Basket
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              basket:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                    description: >-
+                      id is the uint64 ID of the basket. It is used internally
+                      for reducing
+
+                      storage space.
+                  basket_denom:
+                    type: string
+                    description: basket_denom is the basket bank denom.
+                  name:
+                    type: string
+                    description: >-
+                      name is the unique name of the basket specified in
+                      MsgCreate. Basket
+
+                      names must be unique across all credit types and choices
+                      of exponent
+
+                      above and beyond the uniqueness constraint on
+                      basket_denom.
+                  disable_auto_retire:
+                    type: boolean
+                    format: boolean
+                    description: >-
+                      disable_auto_retire indicates whether or not the credits
+                      will be retired upon withdraw from the basket.
+                  credit_type_abbrev:
+                    type: string
+                    description: >-
+                      credit_type_abbrev is the abbreviation of the credit type
+                      this basket is able to hold.
+                  date_criteria:
+                    description: >-
+                      date_criteria is the date criteria for batches admitted to
+                      the basket.
+                    type: object
+                    properties:
+                      min_start_date:
+                        type: string
+                        format: date-time
+                        description: >-
+                          min_start_date (optional) is the earliest start date
+                          for batches of credits allowed
+
+                          into the basket.
+
+                          At most only one of `start_date_window` and
+                          `min_start_date` can be set.
+                      start_date_window:
+                        type: string
+                        description: >-
+                          start_date_window (optional) is a duration of time
+                          measured into the past which sets
+
+                          a cutoff for batch start dates when adding new credits
+                          to the basket.
+
+                          Based on the current block timestamp, credits whose
+                          start date is before
+
+                          `block_timestamp - batch_date_window` will not be
+                          allowed into the basket.
+
+                          At most only one of `start_date_window` and
+                          `min_start_date` can be set.
+                  exponent:
+                    type: integer
+                    format: int64
+                    description: >-
+                      exponent is the exponent for converting credits to/from
+                      basket tokens.
+                description: Basket represents a basket in state.
+            description: QueryBasketResponse is the Query/Basket response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: basket_denom
+          description: basket_denom represents the denom of the basket to query.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances':
+    get:
+      summary: BasketBalances lists the balance of each credit batch in the basket.
+      operationId: BasketBalances
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              balances:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    basket_id:
+                      type: string
+                      format: uint64
+                      title: basket_id is the ID of the basket
+                    batch_denom:
+                      type: string
+                      title: batch_denom is the denom of the credit batch
+                    balance:
+                      type: string
+                      title: balance is the amount of ecocredits held in the basket
+                    batch_start_date:
+                      type: string
+                      format: date-time
+                      description: >-
+                        batch_start_date is the start date of the batch. This
+                        field is used
+
+                        to create an index which is used to remove the oldest
+                        credits first.
+                  title: >-
+                    BasketBalance stores the amount of credits from a batch in a
+                    basket
+                description: balances is a list of credit balances in the basket.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryBasketBalancesResponse is the Query/BasketBalances response
+              type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: basket_denom
+          description: basket_denom is the denom of the basket.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  '/regen/ecocredit/basket/v1/baskets/{basket_denom}/balances/{batch_denom}':
+    get:
+      summary: >-
+        BasketBalance queries the balance of a specific credit batch in the
+        basket.
+      operationId: BasketBalance
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              balance:
+                type: string
+                description: >-
+                  balance is the amount of the queried credit batch in the
+                  basket.
+            description: >-
+              QueryBasketBalanceResponse is the Query/BasketBalance response
+              type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: basket_denom
+          description: basket_denom is the denom of the basket.
+          in: path
+          required: true
+          type: string
+        - name: batch_denom
+          description: batch_denom is the denom of the credit batch.
+          in: path
+          required: true
+          type: string
       tags:
         - Query
   '/regen/group/v1alpha1/admins/{admin}/accounts':
@@ -39491,7 +40021,9 @@ definitions:
       credit_type:
         description: >-
           credit_type describes the type of credit (e.g. carbon, biodiversity),
-          as well as unit and precision.
+          as
+
+          well as unit and precision.
         type: object
         properties:
           name:
@@ -39612,6 +40144,21 @@ definitions:
 
             (e.g. carbon, biodiversity...)
         title: credit_types is a list of definitions for credit types
+      basket_creation_fee:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+        description: basket_creation_fee is the fee to create a new basket denom.
     description: |-
       Params defines the updatable global parameters of the ecocredit module for
       use with the x/params module.
@@ -39820,7 +40367,9 @@ definitions:
           credit_type:
             description: >-
               credit_type describes the type of credit (e.g. carbon,
-              biodiversity), as well as unit and precision.
+              biodiversity), as
+
+              well as unit and precision.
             type: object
             properties:
               name:
@@ -39882,7 +40431,9 @@ definitions:
             credit_type:
               description: >-
                 credit_type describes the type of credit (e.g. carbon,
-                biodiversity), as well as unit and precision.
+                biodiversity), as
+
+                well as unit and precision.
               type: object
               properties:
                 name:
@@ -40039,6 +40590,24 @@ definitions:
 
                 (e.g. carbon, biodiversity...)
             title: credit_types is a list of definitions for credit types
+          basket_creation_fee:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            description: basket_creation_fee is the fee to create a new basket denom.
     description: QueryParamsResponse is the Query/Params response type.
   regen.ecocredit.v1alpha1.QuerySupplyResponse:
     type: object
@@ -40054,6 +40623,370 @@ definitions:
           retired_supply is the decimal number of retired credits in the batch
           supply.
     description: QuerySupplyResponse is the Query/Supply response type.
+  regen.ecocredit.basket.v1.Basket:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+        description: |-
+          id is the uint64 ID of the basket. It is used internally for reducing
+          storage space.
+      basket_denom:
+        type: string
+        description: basket_denom is the basket bank denom.
+      name:
+        type: string
+        description: |-
+          name is the unique name of the basket specified in MsgCreate. Basket
+          names must be unique across all credit types and choices of exponent
+          above and beyond the uniqueness constraint on basket_denom.
+      disable_auto_retire:
+        type: boolean
+        format: boolean
+        description: >-
+          disable_auto_retire indicates whether or not the credits will be
+          retired upon withdraw from the basket.
+      credit_type_abbrev:
+        type: string
+        description: >-
+          credit_type_abbrev is the abbreviation of the credit type this basket
+          is able to hold.
+      date_criteria:
+        description: date_criteria is the date criteria for batches admitted to the basket.
+        type: object
+        properties:
+          min_start_date:
+            type: string
+            format: date-time
+            description: >-
+              min_start_date (optional) is the earliest start date for batches
+              of credits allowed
+
+              into the basket.
+
+              At most only one of `start_date_window` and `min_start_date` can
+              be set.
+          start_date_window:
+            type: string
+            description: >-
+              start_date_window (optional) is a duration of time measured into
+              the past which sets
+
+              a cutoff for batch start dates when adding new credits to the
+              basket.
+
+              Based on the current block timestamp, credits whose start date is
+              before
+
+              `block_timestamp - batch_date_window` will not be allowed into the
+              basket.
+
+              At most only one of `start_date_window` and `min_start_date` can
+              be set.
+      exponent:
+        type: integer
+        format: int64
+        description: exponent is the exponent for converting credits to/from basket tokens.
+    description: Basket represents a basket in state.
+  regen.ecocredit.basket.v1.BasketBalance:
+    type: object
+    properties:
+      basket_id:
+        type: string
+        format: uint64
+        title: basket_id is the ID of the basket
+      batch_denom:
+        type: string
+        title: batch_denom is the denom of the credit batch
+      balance:
+        type: string
+        title: balance is the amount of ecocredits held in the basket
+      batch_start_date:
+        type: string
+        format: date-time
+        description: |-
+          batch_start_date is the start date of the batch. This field is used
+          to create an index which is used to remove the oldest credits first.
+    title: BasketBalance stores the amount of credits from a batch in a basket
+  regen.ecocredit.basket.v1.DateCriteria:
+    type: object
+    properties:
+      min_start_date:
+        type: string
+        format: date-time
+        description: >-
+          min_start_date (optional) is the earliest start date for batches of
+          credits allowed
+
+          into the basket.
+
+          At most only one of `start_date_window` and `min_start_date` can be
+          set.
+      start_date_window:
+        type: string
+        description: >-
+          start_date_window (optional) is a duration of time measured into the
+          past which sets
+
+          a cutoff for batch start dates when adding new credits to the basket.
+
+          Based on the current block timestamp, credits whose start date is
+          before
+
+          `block_timestamp - batch_date_window` will not be allowed into the
+          basket.
+
+          At most only one of `start_date_window` and `min_start_date` can be
+          set.
+    description: >-
+      DateCriteria represents the information for credit acceptance in a basket.
+
+      At most, only one of the values should be set.
+
+      NOTE: gogo proto `oneof` is not compatible with Amino signing, hence we
+      directly define
+
+      both `start_date_window` and `min_start_date`. In the future, with pulsar,
+      this should change
+
+      and we should use `oneof`.
+  regen.ecocredit.basket.v1.QueryBasketBalanceResponse:
+    type: object
+    properties:
+      balance:
+        type: string
+        description: balance is the amount of the queried credit batch in the basket.
+    description: QueryBasketBalanceResponse is the Query/BasketBalance response type.
+  regen.ecocredit.basket.v1.QueryBasketBalancesResponse:
+    type: object
+    properties:
+      balances:
+        type: array
+        items:
+          type: object
+          properties:
+            basket_id:
+              type: string
+              format: uint64
+              title: basket_id is the ID of the basket
+            batch_denom:
+              type: string
+              title: batch_denom is the denom of the credit batch
+            balance:
+              type: string
+              title: balance is the amount of ecocredits held in the basket
+            batch_start_date:
+              type: string
+              format: date-time
+              description: >-
+                batch_start_date is the start date of the batch. This field is
+                used
+
+                to create an index which is used to remove the oldest credits
+                first.
+          title: BasketBalance stores the amount of credits from a batch in a basket
+        description: balances is a list of credit balances in the basket.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryBasketBalancesResponse is the Query/BasketBalances response type.
+  regen.ecocredit.basket.v1.QueryBasketResponse:
+    type: object
+    properties:
+      basket:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+            description: >-
+              id is the uint64 ID of the basket. It is used internally for
+              reducing
+
+              storage space.
+          basket_denom:
+            type: string
+            description: basket_denom is the basket bank denom.
+          name:
+            type: string
+            description: >-
+              name is the unique name of the basket specified in MsgCreate.
+              Basket
+
+              names must be unique across all credit types and choices of
+              exponent
+
+              above and beyond the uniqueness constraint on basket_denom.
+          disable_auto_retire:
+            type: boolean
+            format: boolean
+            description: >-
+              disable_auto_retire indicates whether or not the credits will be
+              retired upon withdraw from the basket.
+          credit_type_abbrev:
+            type: string
+            description: >-
+              credit_type_abbrev is the abbreviation of the credit type this
+              basket is able to hold.
+          date_criteria:
+            description: >-
+              date_criteria is the date criteria for batches admitted to the
+              basket.
+            type: object
+            properties:
+              min_start_date:
+                type: string
+                format: date-time
+                description: >-
+                  min_start_date (optional) is the earliest start date for
+                  batches of credits allowed
+
+                  into the basket.
+
+                  At most only one of `start_date_window` and `min_start_date`
+                  can be set.
+              start_date_window:
+                type: string
+                description: >-
+                  start_date_window (optional) is a duration of time measured
+                  into the past which sets
+
+                  a cutoff for batch start dates when adding new credits to the
+                  basket.
+
+                  Based on the current block timestamp, credits whose start date
+                  is before
+
+                  `block_timestamp - batch_date_window` will not be allowed into
+                  the basket.
+
+                  At most only one of `start_date_window` and `min_start_date`
+                  can be set.
+          exponent:
+            type: integer
+            format: int64
+            description: >-
+              exponent is the exponent for converting credits to/from basket
+              tokens.
+        description: Basket represents a basket in state.
+    description: QueryBasketResponse is the Query/Basket response type.
+  regen.ecocredit.basket.v1.QueryBasketsResponse:
+    type: object
+    properties:
+      baskets:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+              description: >-
+                id is the uint64 ID of the basket. It is used internally for
+                reducing
+
+                storage space.
+            basket_denom:
+              type: string
+              description: basket_denom is the basket bank denom.
+            name:
+              type: string
+              description: >-
+                name is the unique name of the basket specified in MsgCreate.
+                Basket
+
+                names must be unique across all credit types and choices of
+                exponent
+
+                above and beyond the uniqueness constraint on basket_denom.
+            disable_auto_retire:
+              type: boolean
+              format: boolean
+              description: >-
+                disable_auto_retire indicates whether or not the credits will be
+                retired upon withdraw from the basket.
+            credit_type_abbrev:
+              type: string
+              description: >-
+                credit_type_abbrev is the abbreviation of the credit type this
+                basket is able to hold.
+            date_criteria:
+              description: >-
+                date_criteria is the date criteria for batches admitted to the
+                basket.
+              type: object
+              properties:
+                min_start_date:
+                  type: string
+                  format: date-time
+                  description: >-
+                    min_start_date (optional) is the earliest start date for
+                    batches of credits allowed
+
+                    into the basket.
+
+                    At most only one of `start_date_window` and `min_start_date`
+                    can be set.
+                start_date_window:
+                  type: string
+                  description: >-
+                    start_date_window (optional) is a duration of time measured
+                    into the past which sets
+
+                    a cutoff for batch start dates when adding new credits to
+                    the basket.
+
+                    Based on the current block timestamp, credits whose start
+                    date is before
+
+                    `block_timestamp - batch_date_window` will not be allowed
+                    into the basket.
+
+                    At most only one of `start_date_window` and `min_start_date`
+                    can be set.
+            exponent:
+              type: integer
+              format: int64
+              description: >-
+                exponent is the exponent for converting credits to/from basket
+                tokens.
+          description: Basket represents a basket in state.
+        description: baskets are the fetched baskets.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryBasketsResponse is the Query/Baskets response type.
   regen.group.v1alpha1.Choice:
     type: string
     enum:
