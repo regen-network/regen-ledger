@@ -11,6 +11,7 @@ Regen Ledger `v3.0.0` includes a scoped-down, minimum-viable basket implementati
 The MVP version of baskets proposed in Regen Ledger `v3.0.0` differs from the full specification in the RFC above in that:
 
 - `BasketCritera` is restricted to only allow for:
+  - A credit type
   - A list of credit classes
   - A recency filter represented either as a fixed minimum batch start date, or a rolling recency window (e.g. batch start date must be within the last 6 months)
 - Retrieving ecocredits from a basket can only be done via `Take`, not `Pick`. All calls of `Take` will always retrieve the oldest ecocredits first (by batch start date), ensuring the basket flushes out old credits over time.
