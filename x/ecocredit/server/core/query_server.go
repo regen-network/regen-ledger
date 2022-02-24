@@ -243,7 +243,10 @@ func (k Keeper) Balance(ctx context.Context, req *v1beta1.QueryBalanceRequest) (
 	if batch == nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("batch with denom %s not found", req.BatchDenom)
 	}
-	addr, _ := sdk.AccAddressFromBech32(req.Account)
+	addr, err := sdk.AccAddressFromBech32(req.Account)
+	if err != nil {
+		return nil, err
+	}
 
 	balance, err := k.stateStore.BatchBalanceStore().Get(ctx, addr, batch.Id)
 	if err != nil {
