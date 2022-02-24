@@ -5,7 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
 )
 
 type Keeper struct {
@@ -26,4 +25,5 @@ func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params P
 	}
 }
 
-var _ v1beta1.MsgServer = &Keeper{}
+// TODO: uncomment when impl
+//var _ v1beta1.MsgServer = &Keeper{}
