@@ -18,6 +18,11 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, err
 	}
 
+	classes, err := k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, basket.BasketDenom)
+	if err != nil {
+		return nil, err
+	}
+
 	basketGogo := &baskettypes.Basket{}
 	err = PulsarToGogoSlow(basket, basketGogo)
 	if err != nil {
