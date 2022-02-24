@@ -43,7 +43,7 @@ message BondInfo {
   string coupon_rate = 11;
 
   // coupon frequency
-  string coupon_frequency = 12;
+  CouponFrequency coupon_frequency = 12;
 
   // bond status
   Status status = 13;
@@ -58,5 +58,11 @@ message BondInfo {
     ACTIVE = 0;
     CLOSED = 1;
     MATURED = 2;
+  }
+
+  enum CouponFrequency {
+    MONTHLY = 0;
+    QUARTERLY = 1;
+    ANNUALLY = 2;
   }
 }
