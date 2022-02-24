@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/cosmos/cosmos-sdk v0.45.0
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.10
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
