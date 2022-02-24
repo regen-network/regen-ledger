@@ -46,6 +46,9 @@ message QueryBasketRequest {
 message QueryBasketResponse {
     // basket is the queried basket.
     Basket basket = 1;
+
+    // classes are the credit classes that can be deposited in the basket.
+    repeated string classes = 2;
 }
 
 // QueryBasketsRequest is the Query/Baskets request type.
