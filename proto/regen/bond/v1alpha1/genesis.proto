@@ -10,7 +10,11 @@ option go_package = "github.com/regen-network/regen-ledger/x/bond";
 
 // GenesisState defines the bond module's genesis state.
 message GenesisState {
+
+  // Params contains the updateable global parameters for use with the x/params
+  // module
   Params params = 1 [(gogoproto.nullable) = false];
 
+  // bond_info is the list of bond info.
   repeated BondInfo bond_info = 2;
 }

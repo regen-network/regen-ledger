@@ -3,7 +3,6 @@ package regen.bond.v1alpha1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/bond";
 
@@ -14,7 +13,7 @@ service Msg {
   rpc IssueBond(MsgIssueBond) returns (MsgIssueBondResponse);
 
   // SellBond sells a bond to a new owner
-  rpc SellBond(MsgSellBond) returns (MsgIssueBondResponse);
+  rpc SellBond(MsgSellBond) returns (MsgSellBondResponse);
 }
 
 // MsgIssueBond is the Msg/IssueBond request type.

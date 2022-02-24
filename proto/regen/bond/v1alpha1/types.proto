@@ -1,9 +1,6 @@
 syntax = "proto3";
 package regen.bond.v1alpha1;
 
-import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
-
 option go_package = "github.com/regen-network/regen-ledger/x/bond";
 
 // BatchInfo represents the high-level on-chain information for a bond.
@@ -54,15 +51,29 @@ message BondInfo {
   // metadata encoded in base64
   string metadata = 15;
 
+  // Enumeration of project statuses
   enum Status {
+
+    // Active
     ACTIVE = 0;
+
+    // Closed
     CLOSED = 1;
+
+    // Matured
     MATURED = 2;
   }
 
+  // Enumeration of coupon frequency
   enum CouponFrequency {
+
+    // Monthly
     MONTHLY = 0;
+
+    // Quarterly
     QUARTERLY = 1;
+
+    // Annually
     ANNUALLY = 2;
   }
 }
