@@ -37,13 +37,7 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 			return nil, err
 		}
 
-		basketClassGogo := &baskettypes.BasketClass{}
-		err = PulsarToGogoSlow(class, basketClassGogo)
-		if err != nil {
-			return nil, err
-		}
-
-		classes = append(classes, basketClassGogo.ClassId)
+		classes = append(classes, class.ClassId)
 	}
 
 	it.Close()
