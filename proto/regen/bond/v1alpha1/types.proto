@@ -54,26 +54,32 @@ message BondInfo {
   // Enumeration of project statuses
   enum Status {
 
+    // Unspecified
+    STATUS_UNSPECIFIED = 0;
+
     // Active
-    ACTIVE = 0;
+    STATUS_ACTIVE = 1;
 
     // Closed
-    CLOSED = 1;
+    STATUS_CLOSED = 2;
 
     // Matured
-    MATURED = 2;
+    STATUS_MATURED = 3;
   }
 
   // Enumeration of coupon frequency
   enum CouponFrequency {
 
+    // Unspecified
+    COUPON_FREQUENCY_UNSPECIFIED = 0;
+
     // Monthly
-    MONTHLY = 0;
+    COUPON_FREQUENCY_MONTHLY = 1;
 
     // Quarterly
-    QUARTERLY = 1;
+    COUPON_FREQUENCY_QUARTERLY = 2;
 
     // Annually
-    ANNUALLY = 2;
+    COUPON_FREQUENCY_ANNUALLY = 3;
   }
 }
