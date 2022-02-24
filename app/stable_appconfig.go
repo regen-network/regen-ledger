@@ -23,7 +23,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	// ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
