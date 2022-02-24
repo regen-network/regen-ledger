@@ -6,28 +6,24 @@
 package app
 
 import (
-	"encoding/json"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/authz"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	// ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -49,60 +45,23 @@ func setCustomKVStoreKeys() []string {
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
+
 	// This is the upgrade plan name we used in the gov proposal.
-	upgradeName := "v2.0-upgrade"
-	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-		// 1st-time running in-store migrations, using 1 as fromVersion to
-		// avoid running InitGenesis.
-		// Explicitly skipping x/auth migrations. It is already patched in regen-ledger v1.0.
-		fromVM := map[string]uint64{
-			"auth":         auth.AppModule{}.ConsensusVersion(),
-			"bank":         1,
-			"capability":   1,
-			"crisis":       1,
-			"distribution": 1,
-			"evidence":     1,
-			"gov":          1,
-			"mint":         1,
-			"params":       1,
-			"slashing":     1,
-			"staking":      1,
-			"upgrade":      1,
-			"vesting":      1,
-			"ibc":          1,
-			"genutil":      1,
-			"transfer":     1,
-			"ecocredit":    1, // we don't run InitGenesis for ecocredit in `RunMigrations`, but manually instead.
+	const upgradeName = "v3.0.0"
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// TODO: once integrating basepp need to register a proper ecocredit consensus version
+		// fromVM[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion() - 1
+
+		ecoParams, ok := app.ParamsKeeper.GetSubspace(ecocredit.ModuleName)
+		if !ok {
+			return nil, fmt.Errorf("unable to upgrade: subspace %s not found", ecocredit.ModuleName)
 		}
 
-		gen := ecocredittypes.DefaultGenesisState()
-		gen.Params.AllowlistEnabled = true
-		gen.Params.CreditClassFee = sdk.NewCoins(sdk.NewCoin("uregen", ecocredittypes.DefaultCreditClassFeeTokens))
-
-		modules := make(map[string]json.RawMessage)
-		modules[ecocredittypes.ModuleName] = app.cdc.MustMarshalJSON(gen)
-		app.smm.InitGenesis(ctx, modules, []abci.ValidatorUpdate{})
+		// set basket creation fee to 1'0000 REGEN
+		ecoParams.Set(ctx, ecocredit.KeyBasketCreationFee, sdk.NewCoins(sdk.NewInt64Coin("uregen", 1e9)))
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
-
-	app.UpgradeKeeper.SetUpgradeHandler("v3.0.0", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
-
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, feegrant.ModuleName, ecocredittypes.ModuleName},
-		}
-
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
 }
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
