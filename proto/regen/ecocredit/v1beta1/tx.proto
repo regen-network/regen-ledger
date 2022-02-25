@@ -281,10 +281,10 @@ message MsgUpdateClassIssuers {
   string class_id = 2;
 
   // add_issuers are the issuers to add to the class issuers list.
-  repeated bytes add_issuers = 3;
+  repeated string add_issuers = 3;
 
   // remove_issuers are the issuers to remove from the class issuers list.
-  repeated bytes remove_issuers = 4;
+  repeated string remove_issuers = 4;
 }
 
 // MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.

@@ -9441,7 +9441,7 @@ func (x *fastReflection_MsgUpdateClassAdminResponse) ProtoMethods() *protoiface.
 var _ protoreflect.List = (*_MsgUpdateClassIssuers_3_list)(nil)
 
 type _MsgUpdateClassIssuers_3_list struct {
-	list *[][]byte
+	list *[]string
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) Len() int {
@@ -9452,17 +9452,17 @@ func (x *_MsgUpdateClassIssuers_3_list) Len() int {
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfBytes((*x.list)[i])
+	return protoreflect.ValueOfString((*x.list)[i])
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Bytes()
+	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Bytes()
+	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
@@ -9476,8 +9476,8 @@ func (x *_MsgUpdateClassIssuers_3_list) Truncate(n int) {
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) NewElement() protoreflect.Value {
-	var v []byte
-	return protoreflect.ValueOfBytes(v)
+	v := ""
+	return protoreflect.ValueOfString(v)
 }
 
 func (x *_MsgUpdateClassIssuers_3_list) IsValid() bool {
@@ -9487,7 +9487,7 @@ func (x *_MsgUpdateClassIssuers_3_list) IsValid() bool {
 var _ protoreflect.List = (*_MsgUpdateClassIssuers_4_list)(nil)
 
 type _MsgUpdateClassIssuers_4_list struct {
-	list *[][]byte
+	list *[]string
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) Len() int {
@@ -9498,17 +9498,17 @@ func (x *_MsgUpdateClassIssuers_4_list) Len() int {
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfBytes((*x.list)[i])
+	return protoreflect.ValueOfString((*x.list)[i])
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Bytes()
+	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Bytes()
+	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
@@ -9522,8 +9522,8 @@ func (x *_MsgUpdateClassIssuers_4_list) Truncate(n int) {
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) NewElement() protoreflect.Value {
-	var v []byte
-	return protoreflect.ValueOfBytes(v)
+	v := ""
+	return protoreflect.ValueOfString(v)
 }
 
 func (x *_MsgUpdateClassIssuers_4_list) IsValid() bool {
@@ -9771,13 +9771,13 @@ func (x *fastReflection_MsgUpdateClassIssuers) Mutable(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "regen.ecocredit.v1beta1.MsgUpdateClassIssuers.add_issuers":
 		if x.AddIssuers == nil {
-			x.AddIssuers = [][]byte{}
+			x.AddIssuers = []string{}
 		}
 		value := &_MsgUpdateClassIssuers_3_list{list: &x.AddIssuers}
 		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.v1beta1.MsgUpdateClassIssuers.remove_issuers":
 		if x.RemoveIssuers == nil {
-			x.RemoveIssuers = [][]byte{}
+			x.RemoveIssuers = []string{}
 		}
 		value := &_MsgUpdateClassIssuers_4_list{list: &x.RemoveIssuers}
 		return protoreflect.ValueOfList(value)
@@ -9803,10 +9803,10 @@ func (x *fastReflection_MsgUpdateClassIssuers) NewField(fd protoreflect.FieldDes
 	case "regen.ecocredit.v1beta1.MsgUpdateClassIssuers.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1beta1.MsgUpdateClassIssuers.add_issuers":
-		list := [][]byte{}
+		list := []string{}
 		return protoreflect.ValueOfList(&_MsgUpdateClassIssuers_3_list{list: &list})
 	case "regen.ecocredit.v1beta1.MsgUpdateClassIssuers.remove_issuers":
-		list := [][]byte{}
+		list := []string{}
 		return protoreflect.ValueOfList(&_MsgUpdateClassIssuers_4_list{list: &list})
 	default:
 		if fd.IsExtension() {
@@ -9886,14 +9886,14 @@ func (x *fastReflection_MsgUpdateClassIssuers) ProtoMethods() *protoiface.Method
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if len(x.AddIssuers) > 0 {
-			for _, b := range x.AddIssuers {
-				l = len(b)
+			for _, s := range x.AddIssuers {
+				l = len(s)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
 		if len(x.RemoveIssuers) > 0 {
-			for _, b := range x.RemoveIssuers {
-				l = len(b)
+			for _, s := range x.RemoveIssuers {
+				l = len(s)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
@@ -10075,7 +10075,7 @@ func (x *fastReflection_MsgUpdateClassIssuers) ProtoMethods() *protoiface.Method
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AddIssuers", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -10085,29 +10085,29 @@ func (x *fastReflection_MsgUpdateClassIssuers) ProtoMethods() *protoiface.Method
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AddIssuers = append(x.AddIssuers, make([]byte, postIndex-iNdEx))
-				copy(x.AddIssuers[len(x.AddIssuers)-1], dAtA[iNdEx:postIndex])
+				x.AddIssuers = append(x.AddIssuers, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RemoveIssuers", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -10117,23 +10117,23 @@ func (x *fastReflection_MsgUpdateClassIssuers) ProtoMethods() *protoiface.Method
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.RemoveIssuers = append(x.RemoveIssuers, make([]byte, postIndex-iNdEx))
-				copy(x.RemoveIssuers[len(x.RemoveIssuers)-1], dAtA[iNdEx:postIndex])
+				x.RemoveIssuers = append(x.RemoveIssuers, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -12122,9 +12122,9 @@ type MsgUpdateClassIssuers struct {
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// add_issuers are the issuers to add to the class issuers list.
-	AddIssuers [][]byte `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
+	AddIssuers []string `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
 	// remove_issuers are the issuers to remove from the class issuers list.
-	RemoveIssuers [][]byte `protobuf:"bytes,4,rep,name=remove_issuers,json=removeIssuers,proto3" json:"remove_issuers,omitempty"`
+	RemoveIssuers []string `protobuf:"bytes,4,rep,name=remove_issuers,json=removeIssuers,proto3" json:"remove_issuers,omitempty"`
 }
 
 func (x *MsgUpdateClassIssuers) Reset() {
@@ -12161,14 +12161,14 @@ func (x *MsgUpdateClassIssuers) GetClassId() string {
 	return ""
 }
 
-func (x *MsgUpdateClassIssuers) GetAddIssuers() [][]byte {
+func (x *MsgUpdateClassIssuers) GetAddIssuers() []string {
 	if x != nil {
 		return x.AddIssuers
 	}
 	return nil
 }
 
-func (x *MsgUpdateClassIssuers) GetRemoveIssuers() [][]byte {
+func (x *MsgUpdateClassIssuers) GetRemoveIssuers() []string {
 	if x != nil {
 		return x.RemoveIssuers
 	}
@@ -12661,10 +12661,10 @@ var file_regen_ecocredit_v1beta1_tx_proto_rawDesc = []byte{
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x19, 0x0a,
 	0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x61, 0x64, 0x64, 0x5f,
-	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0c, 0x52, 0x0a, 0x61,
+	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0a, 0x61,
 	0x64, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x6d,
 	0x6f, 0x76, 0x65, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28,
-	0x0c, 0x52, 0x0d, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
+	0x09, 0x52, 0x0d, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
 	0x22, 0x1f, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
 	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x65, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c,
