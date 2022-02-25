@@ -165,8 +165,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:      recipient,
 			BatchDenom:     string(batchDenom),
-			RetiredAmount:  tradable.String(),
-			TradableAmount: retired.String(),
+			RetiredAmount:  retired.String(),
+			TradableAmount: tradable.String(),
 		})
 		if err != nil {
 			return nil, err
