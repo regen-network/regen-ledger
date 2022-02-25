@@ -20,6 +20,8 @@ jobs:
             **/**.go
             go.mod
             go.sum
+      - name: make tidy
+        run: make tidy
       - uses: golangci/golangci-lint-action@master
         with:
           version: v1.44
