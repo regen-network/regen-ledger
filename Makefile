@@ -123,24 +123,24 @@ build-regen-all: go.sum
 	$(if $(shell docker inspect -f '{{ .Id }}' tendermint/xrnnode 2>/dev/null),$(info found image tendermint/xrnnode),docker pull tendermint/xrnnode:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
-        --env TARGET_OS='darwin linux windows' \
-        --env APP=regen \
-        --env VERSION=$(VERSION) \
-        --env COMMIT=$(COMMIT) \
-        --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-        --name latest-build tendermint/xrnnode:latest
+		--env TARGET_OS='darwin linux windows' \
+		--env APP=regen \
+		--env VERSION=$(VERSION) \
+		--env COMMIT=$(COMMIT) \
+		--env LEDGER_ENABLED=$(LEDGER_ENABLED) \
+		--name latest-build tendermint/xrnnode:latest
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 build-regen-linux: go.sum $(BUILDDIR)/
 	$(if $(shell docker inspect -f '{{ .Id }}' tendermint/xrnnode 2>/dev/null),$(info found image tendermint/xrnnode),docker pull tendermint/xrnnode:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
-        --env TARGET_OS='linux' \
-        --env APP=regen \
-        --env VERSION=$(VERSION) \
-        --env COMMIT=$(COMMIT) \
-        --env LEDGER_ENABLED=false \
-        --name latest-build tendermint/xrnnode:latest
+		--env TARGET_OS='linux' \
+		--env APP=regen \
+		--env VERSION=$(VERSION) \
+		--env COMMIT=$(COMMIT) \
+		--env LEDGER_ENABLED=false \
+		--name latest-build tendermint/xrnnode:latest
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 	cp artifacts/regen-*-linux-amd64 $(BUILDDIR)/regen
 
@@ -164,9 +164,9 @@ $(MOCKS_DIR):
 distclean: clean tools-clean
 clean:
 	rm -rf \
-    $(BUILDDIR)/ \
-    artifacts/ \
-    tmp-swagger-gen/
+	$(BUILDDIR)/ \
+	artifacts/ \
+	tmp-swagger-gen/
 
 .PHONY: distclean clean
 
@@ -179,6 +179,9 @@ go.sum: go.mod
 	go mod verify
 	go mod tidy
 
+tidy:
+	./scripts/go-mod-tidy-all.sh
+
 ###############################################################################
 ###                              Documentation                              ###
 ###############################################################################
@@ -187,7 +190,7 @@ proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
 		sh ./scripts/protoc-swagger-gen.sh; fi
-	
+
 update-swagger-docs: statik
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
@@ -417,3 +420,14 @@ localnet-stop:
 
 
 include sims.mk
+<<<<<<< HEAD
+=======
+
+mocks:
+	mkdir -p x/ecocredit/server/basket/mocks
+	go install github.com/golang/mock/mockgen@latest
+	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
+	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
+.PHONY: mocks
+
+>>>>>>> 57ee993 (fix: event receive attributes (#809))
