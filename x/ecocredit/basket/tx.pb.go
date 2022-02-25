@@ -30,7 +30,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateBasket is the Msg/CreateBasket request type.
+// MsgCreate is the Msg/Create request type.
 type MsgCreate struct {
 	// curator is the address of the basket curator who is able to change certain
 	// basket settings.
@@ -57,7 +57,7 @@ type MsgCreate struct {
 	// following values 0, 1, 2, 3, 6, 9, 12, 15, 18, 21, or 24 which correspond
 	// to the exponents which have an official SI prefix.
 	//
-	// The exponent will be used to form the prefix part of the the bank denom
+	// The exponent will be used to form the prefix part of the bank denom
 	// and will be mapped as follows:
 	//   0 - no prefix
 	//   1 - d (deci)
@@ -189,7 +189,7 @@ func (m *MsgCreate) GetFee() github_com_cosmos_cosmos_sdk_types.Coins {
 	return nil
 }
 
-// MsgCreateBasketResponse is the Msg/CreateBasket response type.
+// MsgCreateResponse is the Msg/Create response type.
 type MsgCreateResponse struct {
 	// basket_denom is the unique denomination ID of the newly created basket.
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
@@ -235,7 +235,7 @@ func (m *MsgCreateResponse) GetBasketDenom() string {
 	return ""
 }
 
-// MsgAddToBasket is the Msg/AddToBasket request type.
+// MsgPut is the Msg/Put request type.
 type MsgPut struct {
 	// owner is the owner of credits being put into the basket.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -302,7 +302,7 @@ func (m *MsgPut) GetCredits() []*BasketCredit {
 	return nil
 }
 
-// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+// MsgPutResponse is the Msg/Put response type.
 type MsgPutResponse struct {
 	// amount_received is the integer amount of basket tokens received.
 	AmountReceived string `protobuf:"bytes,1,opt,name=amount_received,json=amountReceived,proto3" json:"amount_received,omitempty"`
@@ -348,7 +348,7 @@ func (m *MsgPutResponse) GetAmountReceived() string {
 	return ""
 }
 
-// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+// MsgTake is the Msg/Take request type.
 type MsgTake struct {
 	// owner is the owner of the basket tokens.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -433,7 +433,7 @@ func (m *MsgTake) GetRetireOnTake() bool {
 	return false
 }
 
-// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+// MsgTakeResponse is the Msg/Take response type.
 type MsgTakeResponse struct {
 	// credits are the credits taken out of the basket.
 	Credits []*BasketCredit `protobuf:"bytes,1,rep,name=credits,proto3" json:"credits,omitempty"`
@@ -1469,7 +1469,10 @@ func (m *MsgCreate) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -1551,7 +1554,10 @@ func (m *MsgCreateResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -1699,7 +1705,10 @@ func (m *MsgPut) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -1781,7 +1790,10 @@ func (m *MsgPutResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -1979,7 +1991,10 @@ func (m *MsgTake) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -2063,7 +2078,10 @@ func (m *MsgTakeResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {

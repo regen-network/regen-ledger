@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "google/api/annotations.proto";
-import "regen/ecocredit/basket/v1/state.proto";
+import "regen/ecocredit/basket/v1/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
