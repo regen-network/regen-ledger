@@ -911,8 +911,8 @@ github.com/regen-network/cosmos-sdk v0.44.2-regen-1 h1:Sm7rU4rMwLpEpgrQkF/4w/V/y
 github.com/regen-network/cosmos-sdk v0.44.2-regen-1/go.mod h1:fwQJdw+aECatpTvQTo1tSfHEsxACdZYU80QCZUPnHr4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
-github.com/regen-network/regen-ledger/api v0.6.0 h1:Wsr+zWimB/i9wYM8q4ffU8qn38AldbYjDe0lhQ9n8VU=
-github.com/regen-network/regen-ledger/api v0.6.0/go.mod h1:kWly2pK0u3fDfyoYYilpEoTEg61pCjV/f5XSY0KzJQY=
+github.com/regen-network/regen-ledger/api v0.8.0 h1:Aovi26UTimyOoInl8xyE99Y3TE70P3CWr0t569KpFN0=
+github.com/regen-network/regen-ledger/api v0.8.0/go.mod h1:kWly2pK0u3fDfyoYYilpEoTEg61pCjV/f5XSY0KzJQY=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=

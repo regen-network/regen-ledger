@@ -3,7 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "google/api/annotations.proto";
-import "regen/ecocredit/basket/v1/state.proto";
+import "regen/ecocredit/basket/v1/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
@@ -46,6 +46,9 @@ message QueryBasketRequest {
 message QueryBasketResponse {
     // basket is the queried basket.
     Basket basket = 1;
+
+    // classes are the credit classes that can be deposited in the basket.
+    repeated string classes = 2;
 }
 
 // QueryBasketsRequest is the Query/Baskets request type.

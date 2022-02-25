@@ -137,18 +137,20 @@ EventCreateClass is an event emitted when a credit class is created.
 <a name="regen.ecocredit.v1alpha1.EventReceive"></a>
 
 ### EventReceive
-EventReceive is an event emitted when credits are received either upon
-creation of a new batch or upon transfer. Each batch_denom created or
-transferred will result in a separate EventReceive for easy indexing.
+EventReceive is an event emitted when credits are received either via
+creation of a new batch, transfer of credits, or taking credits from a
+basket. Each batch_denom created, transferred or taken from a basket will
+result in a separate EventReceive for easy indexing.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
-| recipient | [string](#string) |  | recipient is the recipient of the credits |
+| sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance or taken from a basket. |
+| recipient | [string](#string) |  | recipient is the recipient of the credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits received. |
 | retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits received. |
+| basket_denom | [string](#string) |  | basket_denom is the denom of the basket. when the basket_denom field is set, it indicates that this event was triggered by the transfer of credits from a basket. It will not be set if the credits were sent by a user, or by initial issuance. |
 
 
 

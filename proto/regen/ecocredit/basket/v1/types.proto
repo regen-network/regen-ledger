@@ -37,3 +37,46 @@ message DateCriteria {
   // At most only one of `start_date_window` and `min_start_date` can be set.
   google.protobuf.Duration start_date_window = 2;
 }
+
+// Basket represents a basket in state.
+message Basket {
+  // id is the uint64 ID of the basket. It is used internally for reducing
+  // storage space.
+  uint64 id = 1;
+
+  // basket_denom is the basket bank denom.
+  string basket_denom = 2;
+
+  // name is the unique name of the basket specified in MsgCreate. Basket
+  // names must be unique across all credit types and choices of exponent
+  // above and beyond the uniqueness constraint on basket_denom.
+  string name = 3;
+
+  // disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
+  bool disable_auto_retire = 4;
+
+  // credit_type_abbrev is the abbreviation of the credit type this basket is able to hold.
+  string credit_type_abbrev = 5;
+
+  // date_criteria is the date criteria for batches admitted to the basket.
+  DateCriteria date_criteria = 6;
+
+  // exponent is the exponent for converting credits to/from basket tokens.
+  uint32 exponent = 7;
+}
+
+// BasketBalance stores the amount of credits from a batch in a basket
+message BasketBalance {
+  // basket_id is the ID of the basket
+  uint64 basket_id = 1;
+
+  // batch_denom is the denom of the credit batch
+  string batch_denom = 2;
+
+  // balance is the amount of ecocredits held in the basket
+  string balance = 3;
+
+  // batch_start_date is the start date of the batch. This field is used
+  // to create an index which is used to remove the oldest credits first.
+  google.protobuf.Timestamp batch_start_date = 4;
+}

@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -24,5 +25,22 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, err
 	}
 
-	return &baskettypes.QueryBasketResponse{Basket: basketGogo}, nil
+	it, err := k.stateStore.BasketClassStore().List(ctx, basketv1.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
+	if err != nil {
+		return nil, err
+	}
+
+	var classes []string
+	for it.Next() {
+		class, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		classes = append(classes, class.ClassId)
+	}
+
+	it.Close()
+
+	return &baskettypes.QueryBasketResponse{Basket: basketGogo, Classes: classes}, nil
 }
