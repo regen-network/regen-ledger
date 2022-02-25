@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#789](https://github.com/regen-network/regen-ledger/pull/789) Update consensus version of ecocredit module and service registration.
 
 #### Fixed
+
 * [#807](https://github.com/regen-network/regen-ledger/pull/807) fix attributes on ecocredit receive events
 
 ## [v2.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.1.0) - 2021-11-23
