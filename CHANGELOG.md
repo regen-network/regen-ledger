@@ -45,7 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#776](https://github.com/regen-network/regen-ledger/pull/776) Add basket name and prefix updates.
 * [#787](https://github.com/regen-network/regen-ledger/pull/787) Add basket supply invariant.
 * [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
-* [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
 * [#803](https://github.com/regen-network/regen-ledger/pull/803) Add classes to basket query response.
 
 #### Changed
