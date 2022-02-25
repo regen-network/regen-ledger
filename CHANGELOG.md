@@ -41,16 +41,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#762](https://github.com/regen-network/regen-ledger/pull/762) Add Create message server method.
 * [#764](https://github.com/regen-network/regen-ledger/pull/764) Add basket genesis initialization.
 * [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
-* [#772](https://github.com/regen-network/regen-ledger/pull/772) Add basket event proto definitions.
 * [#771](https://github.com/regen-network/regen-ledger/pull/771) Add basket integration tests.
 * [#776](https://github.com/regen-network/regen-ledger/pull/776) Add basket name and prefix updates.
 * [#787](https://github.com/regen-network/regen-ledger/pull/787) Add basket supply invariant.
 * [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
+* [#769](https://github.com/regen-network/regen-ledger/pull/769) Add basket simulation tests.
+* [#803](https://github.com/regen-network/regen-ledger/pull/803) Add classes to basket query response.
 
 #### Changed
 
 * [#764](https://github.com/regen-network/regen-ledger/pull/764) Update genesis to support ORM and non-ORM genesis.
-* [#789](https://github.com/regen-network/regen-ledger/pull/789) Update consensus version and service registration.
+* [#789](https://github.com/regen-network/regen-ledger/pull/789) Update consensus version of ecocredit module and service registration.
+
+#### Fixed
+* [#807](https://github.com/regen-network/regen-ledger/pull/807) fix attributes on ecocredit receive events
 
 ## [v2.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.1.0) - 2021-11-23
 
