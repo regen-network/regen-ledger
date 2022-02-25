@@ -220,3 +220,19 @@ message BatchSupply {
     // amount_cancelled will always equal the original credit issuance amount.
     string cancelled_amount = 4;
 }
+
+// Params tracks the chain's global parameters
+message Params {
+    option (cosmos.orm.v1alpha1.singleton) = {
+        id: 11,
+    };
+    // allowed_class_creators is a list of addresses that are allowed to create classes
+    repeated bytes allowed_class_creators = 1;
+
+    // allowlist_enabled defines a boolean value for permissionless class creation.
+    // when set to true, only addresses in the allowed_class_creators list will be
+    // able to create classes.
+    bool allowlist_enabled = 2;
+
+    // TODO(TYLER): what do we do for coins????????????
+}

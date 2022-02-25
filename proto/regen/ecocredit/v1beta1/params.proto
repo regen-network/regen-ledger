@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1beta1;
+
+import "regen/ecocredit/v1beta1/state.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+
+// MsgUpdateAllowedClassCreators is a structure to update the allow list
+message MsgUpdateAllowedClassCreators {
+    // add_creators is a list of addresses to add to the allow list
+    string add_creators = 1;
+    // remove_creators is a list of addresses to remove from the allow list
+    string remove_creators = 2;
+}
+
+// MsgToggleAllowlist is a structure to toggle the global allow list.
+message MsgToggleAllowlist {
+    // setting is the boolean value to set for the allowlist.
+    // true = on , false = off.
+    bool setting = 1;
+}
+
+message MsgUpdateCreditTypes {
+    // add_credit_types is a list of credit types to add to the credit type list.
+    repeated CreditType add_credit_types = 1;
+}
+
+message MsgUpdateCreditClassFees {
+    // add_credit_class_fee defines coins to add to the existing fee list
+    repeated cosmos.base.v1beta1.Coin add_credit_class_fee = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+
+    // remove_credit_class_fee defines coins to remove from the existing fee list
+    repeated cosmos.base.v1beta1.Coin remove_credit_class_fee = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+}
+
+message MsgUpdateBasketCreationFees {
+    // add_basket_creation_fee defines coins to add to the existing fee list
+    repeated cosmos.base.v1beta1.Coin add_basket_creation_fee = 1 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+
+    // remove_basket_creation_fee defines coins to remove from the existing fee list
+    repeated cosmos.base.v1beta1.Coin remove_basket_creation_fee = 2 [
+        (gogoproto.nullable) = false,
+        (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    ];
+}

@@ -4,6 +4,7 @@ package regen.ecocredit.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/v1beta1/params.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
 
@@ -42,6 +43,9 @@ service Msg {
 
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
+
+  // UpdateParams updates the chain parameters.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -305,3 +309,20 @@ message MsgUpdateClassMetadata {
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+
+// MsgUpdateParams is the MsgUpdateParams request type.
+message MsgUpdateParams {
+  string root_address = 1;
+  // update_class_fees defines a list of class creation fees to add and/or remove.
+  MsgUpdateCreditClassFees update_class_fees = 2;
+  // update_basket_fees defines a list of basket creation fees to add and/or remove.
+  MsgUpdateBasketCreationFees update_basket_fees = 3;
+  // update_class_allowlist defines a list of addresses to add and/or remove from the class creation allowlist.
+  MsgUpdateAllowedClassCreators update_class_allowlist = 4;
+  // toggle_allowlist toggles an allowlist to the setting defined in the message.
+  MsgToggleAllowlist toggle_allowlist = 5;
+}
+
+// MsgUpdateParamsResponse is the MsgUpdateParams response type.
+message MsgUpdateParamsResponse {}

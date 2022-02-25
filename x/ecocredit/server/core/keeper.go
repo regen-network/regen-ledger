@@ -8,6 +8,7 @@ import (
 )
 
 type Keeper struct {
+	ak         ecocredit.AccountKeeper
 	stateStore ecocreditv1beta1.StateStore
 	bankKeeper ecocredit.BankKeeper
 	params     ParamKeeper
@@ -26,4 +27,4 @@ func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params P
 }
 
 // TODO: uncomment when impl
-//var _ v1beta1.MsgServer = &Keeper{}
+// var _ v1beta1.MsgServer = &Keeper{}
