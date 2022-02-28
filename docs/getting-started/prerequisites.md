@@ -22,7 +22,7 @@ We recommend the following hardware specifications:
 
 - 8GB RAM
 - 4vCPUs
-- 200GB Disk space
+- 500GB Disk space
 
 ### Software
 
