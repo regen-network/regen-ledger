@@ -9,10 +9,15 @@ services:
       - "1317:1317"
       - "9090:9090"
     environment:
+      - DEBUG=1
       - ID=0
       - LOG=${LOG:-regen.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     volumes:
-      - ./build:/regen:Z
+      - ./.testnets:/data:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.2
@@ -25,10 +30,15 @@ services:
       - "1318:1317"
       - "9091:9090"
     environment:
+      - DEBUG=1
       - ID=1
       - LOG=${LOG:-regen.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     volumes:
-      - ./build:/regen:Z
+      - ./.testnets:/data:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.3
@@ -37,14 +47,19 @@ services:
     container_name: regennode2
     image: "regenledger/regen-env"
     environment:
+      - DEBUG=1
       - ID=2
       - LOG=${LOG:-regen.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     ports:
       - "26676-26677:26656-26657"
       - "1319:1317"
       - "9092:9090"
     volumes:
-      - ./build:/regen:Z
+      - ./.testnets:/data:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.4
@@ -53,14 +68,19 @@ services:
     container_name: regennode3
     image: "regenledger/regen-env"
     environment:
+      - DEBUG=1
       - ID=3
       - LOG=${LOG:-regen.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
     ports:
       - "26686-26687:26656-26657"
       - "1320:1317"
       - "9093:9090"
     volumes:
-      - ./build:/regen:Z
+      - ./.testnets:/data:Z
     networks:
       localnet:
         ipv4_address: 192.168.10.5
