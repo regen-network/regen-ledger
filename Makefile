@@ -156,6 +156,10 @@ mocks: $(MOCKS_DIR)
 	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
 	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
 	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
+
+	mkdir -p x/ecocredit/server/basket/mocks
+	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
+	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
 .PHONY: mocks
 
 $(MOCKS_DIR):
@@ -420,14 +424,3 @@ localnet-stop:
 
 
 include sims.mk
-<<<<<<< HEAD
-=======
-
-mocks:
-	mkdir -p x/ecocredit/server/basket/mocks
-	go install github.com/golang/mock/mockgen@latest
-	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
-	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
-.PHONY: mocks
-
->>>>>>> 57ee993 (fix: event receive attributes (#809))
