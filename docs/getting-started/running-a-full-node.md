@@ -167,13 +167,21 @@ regen start
 
 [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
-To install `cosmovisor`, run the following command:
+To install `cosmovisor`, run the following commands:
+
+<!-- TODO: update version and replace with go install once replace directives resolved -->
 
 ```bash
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
+cd ~
+git clone https://github.com/cosmos/cosmos-sdk
+cd cosmos-sdk
+git checkout cosmovisor/v1.1.0
+make cosmovisor
+cp cosmovisor/cosmovisor ~/go/bin/cosmovisor
+cd ~
 ```
 
-Check to ensure the install was successful:
+Check to ensure the installation was successful:
 
 ```bash
 cosmovisor version
@@ -201,10 +209,12 @@ After=network-online.target
 [Service]
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
+Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/backups"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="UNSAFE_SKIP_BACKUP=false"
 User=${USER}
-ExecStart=${GOBIN}/cosmovisor start
+ExecStart=${GOBIN}/cosmovisor run
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
@@ -217,6 +227,12 @@ Move the file to the systemd directory:
 
 ```bash
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
+```
+
+Create backups directory:
+
+```bash
+mkdir ${HOME}/backups
 ```
 
 Reload systemctl and start `cosmovisor`:
