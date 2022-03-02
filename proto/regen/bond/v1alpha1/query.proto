@@ -17,9 +17,15 @@ service Query {
     option (google.api.http).get = "/regen/bond/v1alpha1/params";
   }
 
-  // Parameters queries the parameters of the module.
+  // Bonds queries all bonds.
   rpc Bonds(QueryBondsRequest) returns (QueryBondsResponse) {
     option (google.api.http).get = "/regen/bond/v1alpha1/bonds";
+  }
+
+  // Bond queries for information on a bond.
+  rpc Bond(QueryBondRequest) returns (QueryBondResponse) {
+    option (google.api.http).get =
+        "/regen/bond/v1alpha1/bonds/{id}";
   }
 }
 
@@ -30,7 +36,7 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
 
   // Params holds all the parameters of this module.
-   Params params = 1 [(gogoproto.nullable) = false];
+  Params params = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryBondsRequest is request type for the Query/Bonds RPC method.
@@ -43,9 +49,25 @@ message QueryBondsRequest {
 // QueryBondsResponse is response type for the Query/Bonds RPC method.
 message QueryBondsResponse {
 
-  // Bonds info.
-  repeated BondInfo bonds = 1;
+  // list of Bond entities
+  repeated Bond bonds = 1;
 
   // Pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
+// QueryBondsRequest is request type for the Query/Bond RPC method.
+message QueryBondRequest {
+
+  // id is the unique ID of the bond to query
+  string id = 1;
+}
+
+// QueryBondsResponse is response type for the Query/Bond RPC method.
+message QueryBondResponse {
+
+  // one Bond found by id
+  Bond bond = 1;
+}
+
+

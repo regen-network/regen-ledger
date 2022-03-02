@@ -8,5 +8,5 @@ option go_package = "github.com/regen-network/regen-ledger/x/bond";
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  
+
 }

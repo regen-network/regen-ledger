@@ -3,8 +3,8 @@ package regen.bond.v1alpha1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/bond";
 
-// BatchInfo represents the high-level on-chain information for a bond.
-message BondInfo {
+// Bond represents the high-level on-chain information for a bond.
+message Bond {
 
   // id of the bond
   string id = 1;
@@ -15,7 +15,7 @@ message BondInfo {
   // bond name
   string name = 3;
 
-  // account address of current holder of the bond
+  // account address of current bond holder
   string holder = 4;
 
   // parent bond from which the bond was created by selling to a new holder
@@ -31,10 +31,10 @@ message BondInfo {
   string creation_date = 8;
 
   // date of issuance
-  string issuance_date = 9;
+  google.protobuf.Timestamp issuance_date = 9 [(gogoproto.stdtime) = true];
 
   // date of maturity
-  string maturity_date = 10;
+  google.protobuf.Timestamp maturity_date = 10 [(gogoproto.stdtime) = true];
 
   // coupon rate
   string coupon_rate = 11;
@@ -48,8 +48,8 @@ message BondInfo {
   // project code to which the bond belongs
   string project = 14;
 
-  // metadata encoded in base64
-  string metadata = 15;
+  // metadata
+  bytes metadata = 15;
 
   // Enumeration of project statuses
   enum Status {

@@ -49,8 +49,8 @@ message MsgIssueBond {
   // project code
   string project = 10;
 
-  // metadata encoded in base64
-  string metadata = 11;
+  // metadata
+  bytes metadata = 11;
 }
 
 // MsgIssueBondResponse is the Msg/IssueBond response type.

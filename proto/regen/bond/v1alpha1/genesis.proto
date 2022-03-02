@@ -16,5 +16,5 @@ message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
 
   // bond_info is the list of bond info.
-  repeated BondInfo bond_info = 2;
+  repeated Bond bonds = 2;
 }
