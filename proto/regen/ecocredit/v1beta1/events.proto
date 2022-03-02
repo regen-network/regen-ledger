@@ -54,24 +54,25 @@ message EventCreateBatch {
   // quantified and verified.
   string end_date = 6;
 
-  // project_location is the location of the project.
-  // Full documentation can be found in MsgCreateProject.project_location.
+  // project_location is the location of the project backing the credits in this
+  // batch. Full documentation can be found in MsgCreateBatch.project_location.
   string project_location = 7;
 
   // project_id is the unique ID of the project this batch belongs to.
   string project_id = 8;
 }
 
-// EventReceive is an event emitted when credits are received either upon
-// creation of a new batch or upon transfer. Each batch_denom created or
-// transferred will result in a separate EventReceive for easy indexing.
+// EventReceive is an event emitted when credits are received either via
+// creation of a new batch, transfer of credits, or taking credits from a
+// basket. Each batch_denom created, transferred or taken from a basket will
+// result in a separate EventReceive for easy indexing.
 message EventReceive {
   // sender is the sender of the credits in the case that this event is the
   // result of a transfer. It will not be set when credits are received at
-  // initial issuance.
+  // initial issuance or taken from a basket.
   string sender = 1;
 
-  // recipient is the recipient of the credits
+  // recipient is the recipient of the credits.
   string recipient = 2;
 
   // batch_denom is the unique ID of credit batch.
@@ -82,6 +83,12 @@ message EventReceive {
 
   // retired_amount is the decimal number of retired credits received.
   string retired_amount = 5;
+
+  // basket_denom is the denom of the basket. When the basket_denom field is
+  // set, it indicates that this event was triggered by the transfer of credits
+  // from a basket. It will not be set if the credits were transferred or received
+  // at initial issuance.
+  string basket_denom = 6;
 }
 
 // EventRetire is an event emitted when credits are retired. When credits are
