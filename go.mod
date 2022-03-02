@@ -153,6 +153,8 @@ replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
+replace github.com/regen-network/regen-ledger/api => ./api
+
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
