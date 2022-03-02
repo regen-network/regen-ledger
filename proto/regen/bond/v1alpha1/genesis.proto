@@ -1,7 +1,6 @@
 syntax = "proto3";
 package regen.bond.v1alpha1;
 
-import "gogoproto/gogo.proto";
 import "regen/bond/v1alpha1/types.proto";
 
 
