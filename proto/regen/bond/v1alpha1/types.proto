@@ -39,8 +39,8 @@ message Bond {
   // date of maturity
   google.protobuf.Timestamp maturity_date = 10 [(gogoproto.stdtime) = true];
 
-  // coupon rate
-  string coupon_rate = 11;
+  // coupon rate is the APY of the bond
+  double coupon_rate = 11;
 
   // coupon frequency
   CouponFrequency coupon_frequency = 12;

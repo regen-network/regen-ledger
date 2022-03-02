@@ -40,8 +40,8 @@ message MsgIssueBond {
   // date of maturity
   google.protobuf.Timestamp maturity_date = 7 [(gogoproto.stdtime) = true];
 
-  // coupon rate
-  string coupon_rate = 8;
+  // coupon rate is the APY of the bond
+  double coupon_rate = 8;
 
   // coupon frequency
   string coupon_frequency = 9;
