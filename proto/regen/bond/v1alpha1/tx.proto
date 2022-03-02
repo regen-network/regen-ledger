@@ -25,7 +25,7 @@ message MsgIssueBond {
   // bond name
   string name = 2;
 
-  // account address of current holder of the bond
+  // account address of current bond holder
   string holder = 3;
 
   // face value
