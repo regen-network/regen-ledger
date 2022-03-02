@@ -142,7 +142,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 *For Redwood Testnet:*
 
 ```bash
-PERSISTENT_PEERS="a5528d8f5fabd3d50e91e8d6a97e355403c5b842@redwood.regen.network:26656"
+PERSISTENT_PEERS="d5ceac343e48c7522c3a5a8c0cf5cb896d1f8a60@redwood.regen.network:26656,61f53f226a4a71968a87583f58902405e289b4b9@redwood-sentry.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
@@ -167,18 +167,10 @@ regen start
 
 [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
-To install `cosmovisor`, run the following commands:
-
-<!-- TODO: update version and replace with go install once replace directives resolved -->
+To install `cosmovisor`, run the following command:
 
 ```bash
-cd ~
-git clone https://github.com/cosmos/cosmos-sdk
-cd cosmos-sdk
-git checkout cosmovisor/v1.1.0
-make cosmovisor
-cp cosmovisor/cosmovisor ~/go/bin/cosmovisor
-cd ~
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
 ```
 
 Check to ensure the installation was successful:
@@ -209,12 +201,11 @@ After=network-online.target
 [Service]
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
-Environment="DAEMON_DATA_BACKUP_DIR=${HOME}/backups"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
 Environment="UNSAFE_SKIP_BACKUP=false"
 User=${USER}
-ExecStart=${GOBIN}/cosmovisor run
+ExecStart=${GOBIN}/cosmovisor start
 Restart=always
 RestartSec=3
 LimitNOFILE=4096
@@ -227,12 +218,6 @@ Move the file to the systemd directory:
 
 ```bash
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
-```
-
-Create backups directory:
-
-```bash
-mkdir ${HOME}/backups
 ```
 
 Reload systemctl and start `cosmovisor`:
