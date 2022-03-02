@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-
 	"github.com/regen-network/regen-ledger/types/ormstore"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
@@ -126,6 +125,10 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 	id, err := s.getID(ctx, request.Iri)
 	if err != nil {
 		return nil, err
+	}
+
+	if request.Pagination == nil {
+		request.Pagination = &query.PageRequest{}
 	}
 
 	it, err := s.stateStore.DataResolverStore().

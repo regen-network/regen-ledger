@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -242,8 +241,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 	require.NotNil(iri)
 
 	res3, err := s.queryClient.Resolvers(s.ctx, &data.QueryResolversRequest{
-		Iri:        iri,
-		Pagination: &query.PageRequest{},
+		Iri: iri,
 	})
 	require.NoError(err)
 	require.NotNil(res3)
