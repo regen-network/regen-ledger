@@ -245,10 +245,12 @@ func (s *IntegrationTestSuite) TestResolver() {
 	})
 	require.NoError(err)
 	require.NotNil(res3)
+	require.Equal([]string{testUrl}, res3.ResolverUrls)
 
 	res4, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
 		Url: testUrl,
 	})
 	require.NoError(err)
 	require.NotNil(res4)
+	require.Equal(s.addr1.String(), res4.Manager)
 }
