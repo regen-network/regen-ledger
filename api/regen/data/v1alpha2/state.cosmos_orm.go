@@ -161,7 +161,6 @@ func NewDataIDStore(db ormtable.Schema) (DataIDStore, error) {
 
 type DataAnchorStore interface {
 	Insert(ctx context.Context, dataAnchor *DataAnchor) error
-	InsertReturningID(ctx context.Context, dataAnchor *DataAnchor) (uint64, error)
 	Update(ctx context.Context, dataAnchor *DataAnchor) error
 	Save(ctx context.Context, dataAnchor *DataAnchor) error
 	Delete(ctx context.Context, dataAnchor *DataAnchor) error
@@ -209,7 +208,7 @@ func (this DataAnchorIdIndexKey) WithId(id []byte) DataAnchorIdIndexKey {
 }
 
 type dataAnchorStore struct {
-	table ormtable.AutoIncrementTable
+	table ormtable.Table
 }
 
 func (this dataAnchorStore) Insert(ctx context.Context, dataAnchor *DataAnchor) error {
@@ -226,10 +225,6 @@ func (this dataAnchorStore) Save(ctx context.Context, dataAnchor *DataAnchor) er
 
 func (this dataAnchorStore) Delete(ctx context.Context, dataAnchor *DataAnchor) error {
 	return this.table.Delete(ctx, dataAnchor)
-}
-
-func (this dataAnchorStore) InsertReturningID(ctx context.Context, dataAnchor *DataAnchor) (uint64, error) {
-	return this.table.InsertReturningID(ctx, dataAnchor)
 }
 
 func (this dataAnchorStore) Has(ctx context.Context, id []byte) (found bool, err error) {
@@ -275,7 +270,7 @@ func NewDataAnchorStore(db ormtable.Schema) (DataAnchorStore, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&DataAnchor{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataAnchorStore{table.(ormtable.AutoIncrementTable)}, nil
+	return dataAnchorStore{table}, nil
 }
 
 type DataSignerStore interface {
@@ -283,9 +278,9 @@ type DataSignerStore interface {
 	Update(ctx context.Context, dataSigner *DataSigner) error
 	Save(ctx context.Context, dataSigner *DataSigner) error
 	Delete(ctx context.Context, dataSigner *DataSigner) error
-	Has(ctx context.Context, id []byte, signer string) (found bool, err error)
+	Has(ctx context.Context, id []byte, signer []byte) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, id []byte, signer string) (*DataSigner, error)
+	Get(ctx context.Context, id []byte, signer []byte) (*DataSigner, error)
 	List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
 	ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
 	DeleteBy(ctx context.Context, prefixKey DataSignerIndexKey) error
@@ -326,7 +321,7 @@ func (this DataSignerIdSignerIndexKey) WithId(id []byte) DataSignerIdSignerIndex
 	return this
 }
 
-func (this DataSignerIdSignerIndexKey) WithIdSigner(id []byte, signer string) DataSignerIdSignerIndexKey {
+func (this DataSignerIdSignerIndexKey) WithIdSigner(id []byte, signer []byte) DataSignerIdSignerIndexKey {
 	this.vs = []interface{}{id, signer}
 	return this
 }
@@ -351,11 +346,11 @@ func (this dataSignerStore) Delete(ctx context.Context, dataSigner *DataSigner) 
 	return this.table.Delete(ctx, dataSigner)
 }
 
-func (this dataSignerStore) Has(ctx context.Context, id []byte, signer string) (found bool, err error) {
+func (this dataSignerStore) Has(ctx context.Context, id []byte, signer []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id, signer)
 }
 
-func (this dataSignerStore) Get(ctx context.Context, id []byte, signer string) (*DataSigner, error) {
+func (this dataSignerStore) Get(ctx context.Context, id []byte, signer []byte) (*DataSigner, error) {
 	var dataSigner DataSigner
 	found, err := this.table.PrimaryKey().Get(ctx, &dataSigner, id, signer)
 	if err != nil {

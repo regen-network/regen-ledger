@@ -152,6 +152,11 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 
 		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
 	}
+
+	if it.PageResponse() != nil {
+		res.Pagination = ormstore.PulsarPageResToGogoPageRes(it.PageResponse())
+	}
+
 	return res, nil
 }
 
