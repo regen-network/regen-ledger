@@ -4,18 +4,12 @@ package regen.bond.v1alpha1;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "regen/bond/v1alpha1/params.proto";
 import "regen/bond/v1alpha1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/bond";
 
 // Query defines the gRPC query service.
 service Query {
-
-  // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/regen/bond/v1alpha1/params";
-  }
 
   // Bonds queries all bonds.
   rpc Bonds(QueryBondsRequest) returns (QueryBondsResponse) {
@@ -27,16 +21,6 @@ service Query {
     option (google.api.http).get =
         "/regen/bond/v1alpha1/bonds/{id}";
   }
-}
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-
-  // Params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryBondsRequest is request type for the Query/Bonds RPC method.

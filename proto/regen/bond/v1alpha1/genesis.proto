@@ -2,7 +2,6 @@ syntax = "proto3";
 package regen.bond.v1alpha1;
 
 import "gogoproto/gogo.proto";
-import "regen/bond/v1alpha1/params.proto";
 import "regen/bond/v1alpha1/types.proto";
 
 
@@ -11,10 +10,6 @@ option go_package = "github.com/regen-network/regen-ledger/x/bond";
 // GenesisState defines the bond module's genesis state.
 message GenesisState {
 
-  // Params contains the updateable global parameters for use with the x/params
-  // module
-  Params params = 1 [(gogoproto.nullable) = false];
-
-  // bond_info is the list of bond info.
-  repeated Bond bonds = 2;
+  // bonds is the list of bonds.
+  repeated Bond bonds = 1;
 }
