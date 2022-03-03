@@ -13,14 +13,14 @@ func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(ctx interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(1)
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
 
 	res, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
 		Admin:          s.addr.String(),
@@ -31,9 +31,12 @@ func TestCreateClass_Valid(t *testing.T) {
 	assert.NilError(t, err, "error creating class: %+w", err)
 	assert.Equal(t, res.ClassId, "C01")
 
+	// check class info
 	ci, err := s.stateStore.ClassInfoStore().GetByName(s.ctx, res.ClassId)
 	assert.NilError(t, err)
 	assert.Equal(t, res.ClassId, ci.Name)
+	
+	// check class issuer
 	_, err = s.stateStore.ClassIssuerStore().Get(s.ctx, ci.Id, s.addr)
 	assert.NilError(t, err)
 }
@@ -42,14 +45,15 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(ctx interface{}, p *ecocredit.Params) {
+	any := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
-	}).AnyTimes()
+	}).Times(1)
 	_, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
-		Admin:          s.addr.String(),
-		Issuers:        []string{s.addr.String()},
-		Metadata:       nil,
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         nil,
 		CreditTypeAbbrev: "C",
 	})
 	assert.ErrorContains(t, err, "is not allowed to create credit classes")
@@ -75,10 +79,10 @@ func TestCreateClass_Sequence(t *testing.T) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(2)
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).AnyTimes()
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).AnyTimes()
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
 
 	res, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
 		Admin:          s.addr.String(),
