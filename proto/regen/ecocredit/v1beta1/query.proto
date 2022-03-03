@@ -24,7 +24,14 @@ service Query {
         "/regen/ecocredit/v1beta1/classes/{class_id}";
   }
 
-  // Projects queries for all projects within a class with pagination.
+  // ClassIssuers queries for the addresses of the issuers for a credit class.
+  rpc ClassIssuers(QueryClassIssuersRequest) returns (QueryClassIssuersResponse) {
+    option (google.api.http).get =
+      "/regen/ecocredit/v1beta1/classes/{class_id}/issuers";
+  }
+
+
+    // Projects queries for all projects within a class with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1beta1/classes/{class_id}/projects";
@@ -111,6 +118,24 @@ message QueryClassInfoResponse {
 
   // info is the ClassInfo for the credit class.
   ClassInfo info = 1;
+}
+
+// QueryClassIssuersRequest is the Query/ClassIssuers request type.
+message QueryClassIssuersRequest {
+  // class_id is the unique ID of credit class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryClassIssuersRequest is the Query/ClassIssuers response type.
+message QueryClassIssuersResponse {
+  // issuers is a list of issuers for the credit class
+  repeated string issuers = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryProjectsRequest is the Query/Projects request type.
@@ -218,6 +243,10 @@ message QuerySupplyResponse {
   // retired_supply is the decimal number of retired credits in the batch
   // supply.
   string retired_supply = 2;
+
+  // cancelled_amount is the decimal number of cancelled credits in the batch
+  // supply.
+  string cancelled_amount = 3;
 }
 
 // QueryCreditTypesRequest is the Query/Credit_Types request type

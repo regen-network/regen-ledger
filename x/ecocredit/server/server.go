@@ -2,12 +2,15 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
@@ -71,6 +74,12 @@ type serverImpl struct {
 	projectInfoSeq          orm.Sequence
 	projectsByClassIDIndex  orm.Index
 	batchesByProjectIDIndex orm.Index
+}
+
+var ModuleSchema = ormdb.ModuleSchema{
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+		1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto,
+	},
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,

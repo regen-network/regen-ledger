@@ -26,6 +26,8 @@ type QueryClient interface {
 	Classes(ctx context.Context, in *QueryClassesRequest, opts ...grpc.CallOption) (*QueryClassesResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
+	// ClassIssuers queries for the addresses of the issuers for a credit class.
+	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
 	// ClassInfo queries for information on a project.
@@ -66,6 +68,15 @@ func (c *queryClient) Classes(ctx context.Context, in *QueryClassesRequest, opts
 func (c *queryClient) ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error) {
 	out := new(QueryClassInfoResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1beta1.Query/ClassInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error) {
+	out := new(QueryClassIssuersResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1beta1.Query/ClassIssuers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -152,6 +163,8 @@ type QueryServer interface {
 	Classes(context.Context, *QueryClassesRequest) (*QueryClassesResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
+	// ClassIssuers queries for the addresses of the issuers for a credit class.
+	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
 	// ClassInfo queries for information on a project.
@@ -182,6 +195,9 @@ func (UnimplementedQueryServer) Classes(context.Context, *QueryClassesRequest) (
 }
 func (UnimplementedQueryServer) ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassInfo not implemented")
+}
+func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassIssuers not implemented")
 }
 func (UnimplementedQueryServer) Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Projects not implemented")
@@ -252,6 +268,24 @@ func _Query_ClassInfo_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).ClassInfo(ctx, req.(*QueryClassInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassIssuers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassIssuersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassIssuers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1beta1.Query/ClassIssuers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassIssuers(ctx, req.(*QueryClassIssuersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -414,6 +448,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClassInfo",
 			Handler:    _Query_ClassInfo_Handler,
+		},
+		{
+			MethodName: "ClassIssuers",
+			Handler:    _Query_ClassIssuers_Handler,
 		},
 		{
 			MethodName: "Projects",

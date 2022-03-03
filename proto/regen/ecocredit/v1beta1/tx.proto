@@ -96,7 +96,6 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
-
   // project_id is the ID of the newly created project.
   string project_id = 1;
 }
@@ -152,7 +151,6 @@ message MsgCreateBatch {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
-
   // batch_denom is the unique denomination ID of the newly created batch.
   string batch_denom = 1;
 }
@@ -282,8 +280,11 @@ message MsgUpdateClassIssuers {
   // class_id is the unique ID of the credit class.
   string class_id = 2;
 
-  // issuers are the updated account addresses of the approved issuers.
-  repeated string issuers = 3;
+  // add_issuers are the issuers to add to the class issuers list.
+  repeated string add_issuers = 3;
+
+  // remove_issuers are the issuers to remove from the class issuers list.
+  repeated string remove_issuers = 4;
 }
 
 // MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.

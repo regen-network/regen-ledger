@@ -4,7 +4,7 @@ package regen.ecocredit.marketplace.v1beta1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/v1beta1";
 
 // Filter is used to create filtered buy orders which match credit batch
 // sell orders based on selection criteria rather than matching individual
