@@ -54,9 +54,9 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 	})
 	assert.ErrorContains(t, err, "is not allowed to create credit classes")
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(ctx interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
-	}).AnyTimes()
+	}).Times(1)
 	_, err = s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
 		Admin:          s.addr.String(),
 		Issuers:        []string{s.addr.String()},
