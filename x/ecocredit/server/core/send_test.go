@@ -17,7 +17,7 @@ func TestSend_Valid(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(1)
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
@@ -65,7 +65,7 @@ func TestSend_Errors(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(1)
 
 	// test sending more than user balance
 	_, err := s.k.Send(s.ctx, &v1beta1.MsgSend{
