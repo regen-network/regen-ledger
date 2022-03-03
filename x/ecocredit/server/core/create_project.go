@@ -3,8 +3,6 @@ package core
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -82,18 +80,4 @@ func (k Keeper) genProjectID(ctx context.Context, classRowID uint64, classID str
 	}
 
 	return ecocredit.FormatProjectID(classID, nextID), nil
-}
-
-// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
-// Returns ErrUnauthorized otherwise.
-func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer string) error {
-	addr, _ := sdk.AccAddressFromBech32(issuer)
-	found, err := k.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
-	if err != nil {
-		return err
-	}
-	if !found {
-		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for the class", issuer)
-	}
-	return nil
 }
