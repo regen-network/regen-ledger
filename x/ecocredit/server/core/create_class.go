@@ -10,6 +10,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
 )
 
+// CreateClass creates a new class of ecocredit
+//
+// The admin is charged a fee for creating the class. This is controlled by
+// the global parameter CreditClassFee, which can be updated through the
+// governance process.
 func (k Keeper) CreateClass(goCtx context.Context, req *v1beta1.MsgCreateClass) (*v1beta1.MsgCreateClassResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
 	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
