@@ -39,13 +39,19 @@ func TestCreateClass_Valid(t *testing.T) {
 	// check class issuer
 	_, err = s.stateStore.ClassIssuerStore().Get(s.ctx, ci.Id, s.addr)
 	assert.NilError(t, err)
+
+	// check sequence number
+	seq, err := s.stateStore.ClassSequenceStore().Get(s.ctx, "C")
+	assert.NilError(t, err)
+	assert.Equal(t, uint64(2), seq.NextClassId)
 }
 
 func TestCreateClass_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-
 	any := gomock.Any()
+
+	// allowlist = true and sender is not in allowlist
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
@@ -54,17 +60,6 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,
-		CreditTypeAbbrev: "C",
-	})
-	assert.ErrorContains(t, err, "is not allowed to create credit classes")
-
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
-		p.AllowlistEnabled = false
-	}).Times(1)
-	_, err = s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
-		Admin:          s.addr.String(),
-		Issuers:        []string{s.addr.String()},
-		Metadata:       nil,
 		CreditTypeAbbrev: "C",
 	})
 	assert.ErrorContains(t, err, "is not allowed to create credit classes")
