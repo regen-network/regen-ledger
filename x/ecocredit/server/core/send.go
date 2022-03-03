@@ -151,15 +151,3 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_Send
 	}
 	return nil
 }
-
-func (k Keeper) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (ecocredit.CreditType, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, classId)
-	if err != nil {
-		return ecocredit.CreditType{}, err
-	}
-	p := &ecocredit.Params{}
-	k.params.GetParamSet(sdkCtx, p)
-	return k.getCreditType(classInfo.CreditType, p.CreditTypes)
-}
