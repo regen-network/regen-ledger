@@ -72,7 +72,7 @@ func genClasses(r *rand.Rand, accounts []simtypes.Account, creditTypes []*ecocre
 	for i := 1; i < 4; i++ {
 		creditType := creditTypes[r.Intn(len(creditTypes))]
 		classes[i-1] = &ecocredit.ClassInfo{
-			ClassId:    ecocredit.FormatClassID(*creditType, uint64(i)),
+			ClassId:    ecocredit.FormatClassID(creditType.Abbreviation, uint64(i)),
 			Admin:      accounts[0].Address.String(),
 			Issuers:    []string{accounts[0].Address.String(), accounts[1].Address.String(), accounts[2].Address.String()},
 			Metadata:   []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 100))),

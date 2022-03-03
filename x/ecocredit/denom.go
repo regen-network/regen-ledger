@@ -3,20 +3,21 @@ package ecocredit
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
 )
 
-// Calculate the ID to use for a new credit class, based on the credit type and
+// FormatClassID formats the ID to use for a new credit class, based on the credit type and
 // sequence number. This format may evolve over time, but will maintain
 // backwards compatibility.
 //
 // The initial version has format:
 // <credit type abbreviation><class seq no>
-func FormatClassID(creditType CreditType, classSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo)
+func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
+	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// Calculate the denomination to use for a batch, based on the batch
+// FormatDenom formats the denomination to use for a batch, based on the batch
 // information. This format may evolve over time, but will maintain backwards
 // compatibility.
 //
@@ -57,7 +58,7 @@ var (
 	reFullBatchDenom = regexp.MustCompile(fmt.Sprintf(`^%s$`, ReBatchDenom))
 )
 
-// Validate a class ID conforms to the format described in FormatClassID. The
+// ValidateClassID validates a class ID conforms to the format described in FormatClassID. The
 // return is nil if the ID is valid.
 func ValidateClassID(classId string) error {
 	matches := reFullClassID.FindStringSubmatch(classId)
@@ -67,7 +68,7 @@ func ValidateClassID(classId string) error {
 	return nil
 }
 
-// Validate a batch denomination conforms to the format described in
+// ValidateDenom validates a batch denomination conforms to the format described in
 // FormatDenom. The return is nil if the denom is valid.
 func ValidateDenom(denom string) error {
 	matches := reFullBatchDenom.FindStringSubmatch(denom)
@@ -75,4 +76,17 @@ func ValidateDenom(denom string) error {
 		return ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")
 	}
 	return nil
+}
+
+// GetClassIdFromBatchDenom returns the classID in a batch denom
+func GetClassIdFromBatchDenom(denom string) string {
+	var s strings.Builder
+	for _, r := range denom {
+		if r != '-' {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
 }

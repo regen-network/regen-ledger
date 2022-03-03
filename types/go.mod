@@ -5,12 +5,12 @@ go 1.17
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.45.0
-	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha4
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.7
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.10
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/regen-network/regen-ledger/api v0.1.0-alpha.1
+	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.15
