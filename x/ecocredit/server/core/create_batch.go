@@ -42,12 +42,13 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch) (*
 		return nil, err
 	}
 
+	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
 	rowID, err := k.stateStore.BatchInfoStore().InsertReturningID(ctx, &ecocreditv1beta1.BatchInfo{
 		ProjectId:  projectInfo.Id,
 		BatchDenom: batchDenom,
 		Metadata:   req.Metadata,
-		StartDate:  timestamppb.New(req.StartDate.UTC()),
-		EndDate:    timestamppb.New(req.EndDate.UTC()),
+		StartDate:  startDate,
+		EndDate:    endDate,
 	})
 	if err != nil {
 		return nil, err
@@ -116,6 +117,24 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch) (*
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
 		CancelledAmount: math.NewDecFromInt64(0).String(),
+	}); err != nil {
+		return nil, err
+	}
+
+	totalAmount, err := tradableSupply.Add(retiredSupply)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCreateBatch{
+		ClassId:         classInfo.Name,
+		BatchDenom:      batchDenom,
+		Issuer:          req.Issuer,
+		TotalAmount:     totalAmount.String(),
+		StartDate:       startDate.String(),
+		EndDate:         endDate.String(),
+		ProjectLocation: projectInfo.ProjectLocation,
+		ProjectId:       projectInfo.Name,
 	}); err != nil {
 		return nil, err
 	}
