@@ -117,13 +117,3 @@ func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress
 
 	return nil
 }
-
-func (k Keeper) getCreditType(typeAbbrev string, creditTypes []*ecocredit.CreditType) (ecocredit.CreditType, error) {
-	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
-	for _, creditType := range creditTypes {
-		if creditType.Abbreviation == typeAbbrev {
-			return *creditType, nil
-		}
-	}
-	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", typeAbbrev)
-}
