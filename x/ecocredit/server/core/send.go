@@ -11,6 +11,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
 )
 
+// Send sends credits to a recipient.
+// Send also retires credits if the amount to retire is specified in the request.
 func (k Keeper) Send(ctx context.Context, req *v1beta1.MsgSend) (*v1beta1.MsgSendResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	sender, _ := sdk.AccAddressFromBech32(req.Sender)
