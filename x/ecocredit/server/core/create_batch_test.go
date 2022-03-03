@@ -22,7 +22,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(1)
 
 	start, end := time.Now(), time.Now()
 	res, err := s.k.CreateBatch(s.ctx, &v1beta1.MsgCreateBatch{
@@ -69,7 +69,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).AnyTimes()
+	}).Times(1)
 
 	start, end := time.Now(), time.Now()
 	_, err := s.k.CreateBatch(s.ctx, &v1beta1.MsgCreateBatch{
