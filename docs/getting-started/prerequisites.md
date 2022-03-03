@@ -20,9 +20,9 @@ For more information, see [Go](https://golang.org/).
 
 We recommend the following hardware specifications:
 
-- 8GB RAM
+- 16G RAM
 - 4vCPUs
-- 200GB Disk space
+- 500GB Disk space
 
 ### Software
 
