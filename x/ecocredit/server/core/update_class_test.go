@@ -1,6 +1,7 @@
 package core
 
 import (
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -105,18 +106,13 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	assert.NilError(t, err)
 
 	// check that the new addrs were added
-	matchSet := make(map[string]struct{})
+	count := 0
 	it, err := s.stateStore.ClassIssuerStore().List(s.ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
 	assert.NilError(t, err)
 	for it.Next() {
-		val, err := it.Value()
-		assert.NilError(t, err)
-		addr := types.AccAddress(val.Issuer).String()
-		_, ok := matchSet[addr]
-		assert.Equal(t, false, ok, "duplicate address in class issuer store %s", addr)
-		matchSet[addr] = struct{}{}
+		count++
 	}
-	assert.Equal(t, len(addrs) + len(newAddrs), len(matchSet), "expected to get %d address matches, got %d", len(addrs) + len(newAddrs), len(matchSet))
+	assert.Equal(t, len(addrs) + len(newAddrs), count, "expected to get %d address matches, got %d", len(addrs) + len(newAddrs), count)
 
 	// remove the original addrs
 	removeAddrs := addrs
@@ -150,11 +146,16 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1beta1.ClassInfo{
+	classRowId, err := s.stateStore.ClassInfoStore().InsertReturningID(s.ctx, &ecocreditv1beta1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
 		CreditType: "C",
+	})
+	assert.NilError(t, err)
+	err = s.stateStore.ClassIssuerStore().Insert(s.ctx, &ecocreditv1beta1.ClassIssuer{
+		ClassId: classRowId,
+		Issuer:  s.addr,
 	})
 	assert.NilError(t, err)
 
@@ -175,6 +176,15 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 		RemoveIssuers: nil,
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrNotFound.Error())
+
+	// try to add an issuer that already exists
+	_, err = s.k.UpdateClassIssuers(s.ctx, &v1beta1.MsgUpdateClassIssuers{
+		Admin:         s.addr.String(),
+		ClassId:       "C01",
+		AddIssuers:    []string{s.addr.String()},
+		RemoveIssuers: nil,
+	})
+	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
 }
 
 func TestUpdateClass_Metadata(t *testing.T) {
