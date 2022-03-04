@@ -155,7 +155,7 @@ replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
-replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.6.10
+replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.7.0
 
 // Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 // TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
