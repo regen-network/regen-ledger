@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -78,7 +78,7 @@ type serverImpl struct {
 
 var ModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto,
+		1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
 	},
 }
 
