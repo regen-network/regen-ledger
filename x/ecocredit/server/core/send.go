@@ -132,7 +132,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1beta1.MsgSend_Send
 	}); err != nil {
 		return err
 	}
-	// update the "retired" balance only if credits were retired
+	// update the "retired" supply only if credits were retired
 	if didRetire {
 		if err := k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1beta1.BatchSupply{
 			BatchId:         batch.Id,
