@@ -4,7 +4,7 @@ package regen.ecocredit.basket.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1beta1";
 
 // BasketBalance stores the amount of credits from a batch in a basket
 message BasketBalance {

@@ -2,4 +2,4 @@ syntax = "proto3";
 
 package regen.ecocredit.basket.v1beta1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1beta1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1beta1";

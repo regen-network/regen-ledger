@@ -233,7 +233,7 @@ func (x ClassInfoAdminIndexKey) id() uint32            { return 2 }
 func (x ClassInfoAdminIndexKey) values() []interface{} { return x.vs }
 func (x ClassInfoAdminIndexKey) classInfoIndexKey()    {}
 
-func (this ClassInfoAdminIndexKey) WithAdmin(admin string) ClassInfoAdminIndexKey {
+func (this ClassInfoAdminIndexKey) WithAdmin(admin []byte) ClassInfoAdminIndexKey {
 	this.vs = []interface{}{admin}
 	return this
 }
@@ -346,9 +346,9 @@ type ClassIssuerStore interface {
 	Update(ctx context.Context, classIssuer *ClassIssuer) error
 	Save(ctx context.Context, classIssuer *ClassIssuer) error
 	Delete(ctx context.Context, classIssuer *ClassIssuer) error
-	Has(ctx context.Context, class_id string, issuer string) (found bool, err error)
+	Has(ctx context.Context, class_id uint64, issuer []byte) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, class_id string, issuer string) (*ClassIssuer, error)
+	Get(ctx context.Context, class_id uint64, issuer []byte) (*ClassIssuer, error)
 	List(ctx context.Context, prefixKey ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error)
 	ListRange(ctx context.Context, from, to ClassIssuerIndexKey, opts ...ormlist.Option) (ClassIssuerIterator, error)
 	DeleteBy(ctx context.Context, prefixKey ClassIssuerIndexKey) error
@@ -384,12 +384,12 @@ func (x ClassIssuerClassIdIssuerIndexKey) id() uint32            { return 0 }
 func (x ClassIssuerClassIdIssuerIndexKey) values() []interface{} { return x.vs }
 func (x ClassIssuerClassIdIssuerIndexKey) classIssuerIndexKey()  {}
 
-func (this ClassIssuerClassIdIssuerIndexKey) WithClassId(class_id string) ClassIssuerClassIdIssuerIndexKey {
+func (this ClassIssuerClassIdIssuerIndexKey) WithClassId(class_id uint64) ClassIssuerClassIdIssuerIndexKey {
 	this.vs = []interface{}{class_id}
 	return this
 }
 
-func (this ClassIssuerClassIdIssuerIndexKey) WithClassIdIssuer(class_id string, issuer string) ClassIssuerClassIdIssuerIndexKey {
+func (this ClassIssuerClassIdIssuerIndexKey) WithClassIdIssuer(class_id uint64, issuer []byte) ClassIssuerClassIdIssuerIndexKey {
 	this.vs = []interface{}{class_id, issuer}
 	return this
 }
@@ -414,11 +414,11 @@ func (this classIssuerStore) Delete(ctx context.Context, classIssuer *ClassIssue
 	return this.table.Delete(ctx, classIssuer)
 }
 
-func (this classIssuerStore) Has(ctx context.Context, class_id string, issuer string) (found bool, err error) {
+func (this classIssuerStore) Has(ctx context.Context, class_id uint64, issuer []byte) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, class_id, issuer)
 }
 
-func (this classIssuerStore) Get(ctx context.Context, class_id string, issuer string) (*ClassIssuer, error) {
+func (this classIssuerStore) Get(ctx context.Context, class_id uint64, issuer []byte) (*ClassIssuer, error) {
 	var classIssuer ClassIssuer
 	found, err := this.table.PrimaryKey().Get(ctx, &classIssuer, class_id, issuer)
 	if err != nil {

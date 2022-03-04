@@ -125,7 +125,7 @@ func TestGenesisValidate(t *testing.T) {
 				return genesisState
 			},
 			true,
-			"invalid creator address: decoding bech32 failed: invalid index of 1: invalid address",
+			"invalid creator address: decoding bech32 failed",
 		},
 		{
 			"invalid: type name does not match param name",
@@ -426,7 +426,7 @@ func TestGenesisValidate(t *testing.T) {
 			err := tc.gensisState().Validate()
 			if tc.expectErr {
 				require.Error(t, err)
-				require.Equal(t, tc.errorMsg, err.Error())
+				require.Contains(t, err.Error(), tc.errorMsg)
 			} else {
 				require.NoError(t, err)
 			}
