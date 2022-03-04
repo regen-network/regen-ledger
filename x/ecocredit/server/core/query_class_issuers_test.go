@@ -46,7 +46,10 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// paginated request
-	res, err = s.k.ClassIssuers(s.ctx, &v1beta1.QueryClassIssuersRequest{ClassId: "C01", Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})
+	res, err = s.k.ClassIssuers(s.ctx, &v1beta1.QueryClassIssuersRequest{
+		ClassId: "C01",
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Issuers))
 	assert.Equal(t, uint64(3), res.Pagination.Total)
