@@ -39,7 +39,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 			{
 				Recipient:     addr2.String(),
 				TradableAmount: "2.4",
-				RetiredAmount:  "2.4",
+				RetiredAmount:  "3.4",
 			},
 		},
 		Metadata:  nil,
@@ -47,7 +47,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 		EndDate:   &end,
 	})
 	totalTradable := "12.4"
-	totalRetired := "7.7"
+	totalRetired := "8.7"
 
 	// check the batch
 	batch, err := s.stateStore.BatchInfoStore().Get(s.ctx, 1)
@@ -70,7 +70,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	bal2, err := s.stateStore.BatchBalanceStore().Get(s.ctx, addr2, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, "2.4", bal2.Tradable)
-	assert.Equal(t, "2.4", bal2.Retired)
+	assert.Equal(t, "3.4", bal2.Retired)
 
 	// check sequence number
 	seq, err := s.stateStore.BatchSequenceStore().Get(s.ctx, projectName)
