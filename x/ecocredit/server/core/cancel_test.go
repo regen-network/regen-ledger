@@ -19,6 +19,9 @@ func TestCancel_Valid(t *testing.T) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
+	// Supply -> tradable: 10.5 , retired: 10.5
+	// s.addr balance -> tradable 10.5 , retired 10.5
+
 	_, err := s.k.Cancel(s.ctx, &v1beta1.MsgCancel{
 		Holder: s.addr.String(),
 		Credits: []*v1beta1.MsgCancel_CancelCredits{
@@ -29,6 +32,8 @@ func TestCancel_Valid(t *testing.T) {
 		},
 	})
 	assert.NilError(t, err)
+
+	// we cancel 10.5 credits, removing them from the s.addr balance, as well as supply, resulting in 0 to both.
 
 	sup, err := s.stateStore.BatchSupplyStore().Get(s.ctx, 1)
 	assert.NilError(t, err)
