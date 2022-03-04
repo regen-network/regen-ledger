@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestBalance(t *testing.T) {
+func TestQuery_Balance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	noBalanceAddr := genAddrs(1)[0]
