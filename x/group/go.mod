@@ -150,4 +150,4 @@ replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/regen-network/regen-ledger/x/ecocredit => ../ecocredit
 
-replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.7.0
+replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.6.10
