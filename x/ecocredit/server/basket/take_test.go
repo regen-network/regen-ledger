@@ -223,8 +223,11 @@ func (s takeSuite) expectDec(expected string, actual math.Dec) {
 	assert.Assert(s.t, actual.Cmp(dec) == 0)
 }
 
-func (s *takeSuite) givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
-	var err error
+func givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
+	val, err := ctx.Get(takeSuite{})
+	assert.NilError(t, err)
+	s := val.(*takeSuite)
+
 	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "foo",
 		Name:              "foo",
@@ -251,7 +254,11 @@ func (s *takeSuite) givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
 	s.setTradableSupply("C2", "5.0")
 }
 
-func (s *takeSuite) takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
+func takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
+	val, err := ctx.Get(takeSuite{})
+	assert.NilError(t, err)
+	s := val.(*takeSuite)
+
 	_, s.err = s.k.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:              s.addr.String(),
 		BasketDenom:        "foo",
@@ -261,18 +268,30 @@ func (s *takeSuite) takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
 	})
 }
 
-func (s *takeSuite) expectMustRetireError(t gobdd.StepTest, ctx gobdd.Context) {
+func expectMustRetireError(t gobdd.StepTest, ctx gobdd.Context) {
+	val, err := ctx.Get(takeSuite{})
+	assert.NilError(t, err)
+	s := val.(*takeSuite)
+
 	assert.ErrorIs(t, s.err, basket.ErrCantDisableRetire)
 }
 
 func TestTake(t *testing.T) {
-	ts := &takeSuite{baseSuite: setupBase(t)}
 	suite := gobdd.NewSuite(t,
 		gobdd.WithFeaturesPath("../../basket/features/take.feature"),
+		gobdd.WithBeforeScenario(func(ctx gobdd.Context) {
+			val, err := ctx.Get(gobdd.TestingTKey{})
+			if err != nil {
+				panic(err)
+			}
+			t := val.(*testing.T)
+			ts := &takeSuite{baseSuite: setupBase(t)}
+			ctx.Set(takeSuite{}, ts)
+		}),
 		gobdd.RunInParallel(),
 	)
-	suite.AddStep(`a basket foo`, ts.givenABasketFoo)
-	suite.AddStep(`I try to take credits from foo`, ts.takeCreditsFromFoo)
-	suite.AddStep(`expect must retire error`, ts.expectMustRetireError)
+	suite.AddStep(`a basket foo`, givenABasketFoo)
+	suite.AddStep(`I try to take credits from foo`, takeCreditsFromFoo)
+	suite.AddStep(`expect must retire error`, expectMustRetireError)
 	suite.Run()
 }
