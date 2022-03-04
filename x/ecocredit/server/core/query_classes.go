@@ -5,16 +5,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // Classes queries for all credit classes with pagination.
 func (k Keeper) Classes(ctx context.Context, request *v1beta1.QueryClassesRequest) (*v1beta1.QueryClassesResponse, error) {
-	if request == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "empty request")
-	}
-
 	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
