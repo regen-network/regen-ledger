@@ -124,3 +124,5 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/regen-network/regen-ledger/types => ../../types
+
+replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.6.10

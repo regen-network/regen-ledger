@@ -132,4 +132,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
+replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.6.10
+
 replace github.com/regen-network/regen-ledger/api => ../api
