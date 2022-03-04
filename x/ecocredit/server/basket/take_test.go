@@ -2,6 +2,7 @@ package basket_test
 
 import (
 	"fmt"
+	"github.com/go-bdd/gobdd"
 	"testing"
 	"time"
 
@@ -21,6 +22,7 @@ type takeSuite struct {
 	*baseSuite
 	fooBasketId uint64
 	barBasketId uint64
+	err         error
 }
 
 func setupTake(t *testing.T) *takeSuite {
@@ -219,4 +221,58 @@ func (s takeSuite) expectDec(expected string, actual math.Dec) {
 	dec, err := math.NewDecFromString(expected)
 	assert.NilError(s.t, err)
 	assert.Assert(s.t, actual.Cmp(dec) == 0)
+}
+
+func (s *takeSuite) givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
+	var err error
+	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
+		BasketDenom:       "foo",
+		Name:              "foo",
+		DisableAutoRetire: false,
+		CreditTypeAbbrev:  "C",
+		Exponent:          6,
+	})
+	assert.NilError(t, err)
+
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.fooBasketId,
+		BatchDenom:     "C1",
+		Balance:        "3.0",
+		BatchStartDate: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+	}))
+	s.setTradableSupply("C1", "3.0")
+
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+		BasketId:       s.fooBasketId,
+		BatchDenom:     "C2",
+		Balance:        "5.0",
+		BatchStartDate: timestamppb.New(time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)),
+	}))
+	s.setTradableSupply("C2", "5.0")
+}
+
+func (s *takeSuite) takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
+	_, s.err = s.k.Take(s.ctx, &baskettypes.MsgTake{
+		Owner:              s.addr.String(),
+		BasketDenom:        "foo",
+		Amount:             "6.0",
+		RetirementLocation: "",
+		RetireOnTake:       false,
+	})
+}
+
+func (s *takeSuite) expectMustRetireError(t gobdd.StepTest, ctx gobdd.Context) {
+	assert.ErrorIs(t, s.err, basket.ErrCantDisableRetire)
+}
+
+func TestTake(t *testing.T) {
+	ts := &takeSuite{baseSuite: setupBase(t)}
+	suite := gobdd.NewSuite(t,
+		gobdd.WithFeaturesPath("../../basket/features/take.feature"),
+		gobdd.RunInParallel(),
+	)
+	suite.AddStep(`a basket foo`, ts.givenABasketFoo)
+	suite.AddStep(`I try to take credits from foo`, ts.takeCreditsFromFoo)
+	suite.AddStep(`expect must retire error`, ts.expectMustRetireError)
+	suite.Run()
 }

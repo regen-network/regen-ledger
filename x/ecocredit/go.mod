@@ -50,7 +50,9 @@ require (
 	github.com/cosmos/iavl v0.17.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
+	github.com/cucumber/gherkin-go/v13 v13.0.0 // indirect
 	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect
+	github.com/cucumber/messages-go/v12 v12.0.0 // indirect
 	github.com/cucumber/messages-go/v16 v16.0.1 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -63,6 +65,7 @@ require (
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-bdd/gobdd v1.1.3 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
