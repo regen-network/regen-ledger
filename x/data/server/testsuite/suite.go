@@ -3,7 +3,6 @@ package testsuite
 import (
 	"context"
 	"crypto"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -22,6 +21,8 @@ type IntegrationTestSuite struct {
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress
 	addr2       sdk.AccAddress
+
+	hash *data.ContentHash
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
@@ -29,24 +30,19 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *Integratio
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	require := s.Require()
+
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
-	s.Require().GreaterOrEqual(len(s.fixture.Signers()), 2)
+	require.GreaterOrEqual(len(s.fixture.Signers()), 2)
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
-}
 
-func (s *IntegrationTestSuite) TearDownSuite() {
-	s.fixture.Teardown()
-}
-
-func (s *IntegrationTestSuite) TestGraphScenario() {
-	testContent := []byte("xyzabc123")
+	content := []byte("xyzabc123")
 	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(testContent)
-	require := s.Require()
+	_, err := hash.Write(content)
 	require.NoError(err)
 	digest := hash.Sum(nil)
 	graphHash := &data.ContentHash_Graph{
@@ -54,12 +50,20 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}
-	contentHash := &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+	s.hash = &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+}
 
-	//// anchor some data
+func (s *IntegrationTestSuite) TearDownSuite() {
+	s.fixture.Teardown()
+}
+
+func (s *IntegrationTestSuite) TestGraphScenario() {
+	require := s.Require()
+
+	// anchor some data
 	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
-		Hash:   contentHash,
+		Hash:   s.hash,
 	})
 	require.NoError(err)
 	require.NotNil(anchorRes)
@@ -67,12 +71,12 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	// anchoring same data twice is a no-op
 	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
-		Hash:   contentHash,
+		Hash:   s.hash,
 	})
 	require.NoError(err)
 
 	// can query data and get timestamp
-	iri, err := contentHash.ToIRI()
+	iri, err := s.hash.ToIRI()
 	require.NoError(err)
 	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
 		Iri: iri,
@@ -86,6 +90,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
 	require.NoError(err)
 	require.Empty(signerRes.Signers)
+	graphHash := s.hash.GetGraph()
 	iri, err = graphHash.ToIRI()
 	require.NoError(err)
 	require.Equal(iri, queryRes.Entry.Iri)
@@ -99,7 +104,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// can retrieve signature, same timestamp
 	// can query data and get timestamp
-	iri, err = contentHash.ToIRI()
+	iri, err = s.hash.ToIRI()
 	require.NoError(err)
 	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
 	require.NoError(err)
@@ -133,17 +138,17 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(bySignerRes)
 	require.Len(bySignerRes.Entries, 1)
-	require.Equal(contentHash, bySignerRes.Entries[0].Hash)
+	require.Equal(s.hash, bySignerRes.Entries[0].Hash)
 
 	// query and get both signatures
-	iri, err = contentHash.ToIRI()
+	iri, err = s.hash.ToIRI()
 	require.NoError(err)
 	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp)
 
-	iri2, err := contentHash.ToIRI()
+	iri2, err := s.hash.ToIRI()
 	require.NoError(err)
 	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri2, Pagination: nil})
 	require.NoError(err)
@@ -170,7 +175,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	}
 	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 
-	//// anchor some data
+	// anchor some data
 	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
@@ -209,4 +214,43 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp)
+}
+
+func (s *IntegrationTestSuite) TestResolver() {
+	require := s.Require()
+	testUrl := "http://foo.bar"
+	testData := []*data.ContentHash{s.hash}
+
+	res1, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Manager:     s.addr1.String(),
+		ResolverUrl: testUrl,
+	})
+	require.NoError(err)
+	require.NotNil(res1)
+
+	res2, err := s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
+		Manager:    s.addr1.String(),
+		ResolverId: res1.ResolverId,
+		Data:       testData,
+	})
+	require.NoError(err)
+	require.NotNil(res2)
+
+	iri, err := s.hash.ToIRI()
+	require.NoError(err)
+	require.NotNil(iri)
+
+	res3, err := s.queryClient.Resolvers(s.ctx, &data.QueryResolversRequest{
+		Iri: iri,
+	})
+	require.NoError(err)
+	require.NotNil(res3)
+	require.Equal([]string{testUrl}, res3.ResolverUrls)
+
+	res4, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
+		Url: testUrl,
+	})
+	require.NoError(err)
+	require.NotNil(res4)
+	require.Equal(s.addr1.String(), res4.Manager)
 }
