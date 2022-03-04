@@ -103,8 +103,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1beta1.MsgCreateBatch) (*
 		if err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventReceive{
 			Recipient:      recipient.String(),
 			BatchDenom:     batchDenom,
-			RetiredAmount:  tradable.String(),
-			TradableAmount: retired.String(),
+			RetiredAmount:  retired.String(),
+			TradableAmount: tradable.String(),
 		}); err != nil {
 			return nil, err
 		}
