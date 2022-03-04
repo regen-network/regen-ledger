@@ -13,6 +13,8 @@ import (
 func TestQuery_Params(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	any := gomock.Any()
+
 	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &ecocreditv1beta1.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
@@ -20,7 +22,7 @@ func TestQuery_Params(t *testing.T) {
 		Precision:    6,
 	}))
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).SetArg(1, ecocredit.Params{
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).SetArg(1, ecocredit.Params{
 		CreditClassFee:       types.NewCoins(types.NewInt64Coin("foo", 30)),
 		AllowedClassCreators: []string{s.addr.String()},
 		AllowlistEnabled:     false,
