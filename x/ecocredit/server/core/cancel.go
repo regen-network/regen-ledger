@@ -9,9 +9,13 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
 )
 
+// Cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.MsgCancelResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	holder, _ := sdk.AccAddressFromBech32(req.Holder)
+	holder, err := sdk.AccAddressFromBech32(req.Holder)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
