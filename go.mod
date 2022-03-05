@@ -153,6 +153,8 @@ replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
 
+replace github.com/regen-network/regen-ledger/api => ./api
+
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
 replace github.com/coinbase/rosetta-sdk-go => github.com/coinbase/rosetta-sdk-go v0.6.10
