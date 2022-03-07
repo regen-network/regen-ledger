@@ -4,6 +4,7 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -32,4 +33,18 @@ func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditTy
 		}
 	}
 	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
+}
+
+// getNonNegativeFixedDecs takes an arbitrary amount of decimal strings, and returns their corresponding fixed decimals
+// in a slice.
+func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, error) {
+	decs := make([]math.Dec, len(decimals))
+	for i, decimal := range decimals {
+		dec, err := math.NewNonNegativeFixedDecFromString(decimal, precision)
+		if err != nil {
+			return nil, err
+		}
+		decs[i] = dec
+	}
+	return decs, nil
 }
