@@ -26,7 +26,7 @@ service Query {
   // ClassIssuers queries for the addresses of the issuers for a credit class.
   rpc ClassIssuers(QueryClassIssuersRequest) returns (QueryClassIssuersResponse) {
     option (google.api.http).get =
-      "/regen/ecocredit/v1alpha2/classes/{class_id}/issuers";
+      "/regen/ecocredit/v1beta1/classes/{class_id}/issuers";
   }
 
 
@@ -73,7 +73,6 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1beta1/credit-types";
   }
-
 }
 
 // QueryClassesRequest is the Query/Classes request type.

@@ -40,8 +40,8 @@ type MsgCreateClass struct {
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
-	CreditTypeName string `protobuf:"bytes,4,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
+	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
+	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// fee_denom is the currency denom to be used to pay the credit class fee.
 	// This denom MUST exist in the governance controlled allowed credit class fee list.
 	// The user's balance must be at least equal to the amount specified in the credit class fee list.
@@ -102,9 +102,9 @@ func (m *MsgCreateClass) GetMetadata() []byte {
 	return nil
 }
 
-func (m *MsgCreateClass) GetCreditTypeName() string {
+func (m *MsgCreateClass) GetCreditTypeAbbrev() string {
 	if m != nil {
-		return m.CreditTypeName
+		return m.CreditTypeAbbrev
 	}
 	return ""
 }
@@ -1126,9 +1126,9 @@ type MsgUpdateClassIssuers struct {
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// add_issuers are the issuers to add to the class issuers list.
-	AddIssuers [][]byte `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
+	AddIssuers []string `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
 	// remove_issuers are the issuers to remove from the class issuers list.
-	RemoveIssuers [][]byte `protobuf:"bytes,4,rep,name=remove_issuers,json=removeIssuers,proto3" json:"remove_issuers,omitempty"`
+	RemoveIssuers []string `protobuf:"bytes,4,rep,name=remove_issuers,json=removeIssuers,proto3" json:"remove_issuers,omitempty"`
 }
 
 func (m *MsgUpdateClassIssuers) Reset()         { *m = MsgUpdateClassIssuers{} }
@@ -1178,14 +1178,14 @@ func (m *MsgUpdateClassIssuers) GetClassId() string {
 	return ""
 }
 
-func (m *MsgUpdateClassIssuers) GetAddIssuers() [][]byte {
+func (m *MsgUpdateClassIssuers) GetAddIssuers() []string {
 	if m != nil {
 		return m.AddIssuers
 	}
 	return nil
 }
 
-func (m *MsgUpdateClassIssuers) GetRemoveIssuers() [][]byte {
+func (m *MsgUpdateClassIssuers) GetRemoveIssuers() []string {
 	if m != nil {
 		return m.RemoveIssuers
 	}
@@ -1523,9 +1523,9 @@ type MsgUpdateAllowedCreditClassCreatorsRequest struct {
 	// this MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_creators is a list of addresses to be added to the allow list for credit class creation.
-	AddCreators [][]byte `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
+	AddCreators []string `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
 	// remove_creators is a list of addresses to be removed from the allow list for credit class creation.
-	RemoveCreators [][]byte `protobuf:"bytes,3,rep,name=remove_creators,json=removeCreators,proto3" json:"remove_creators,omitempty"`
+	RemoveCreators []string `protobuf:"bytes,3,rep,name=remove_creators,json=removeCreators,proto3" json:"remove_creators,omitempty"`
 }
 
 func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Reset() {
@@ -1572,14 +1572,14 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) GetRootAddress() string {
 	return ""
 }
 
-func (m *MsgUpdateAllowedCreditClassCreatorsRequest) GetAddCreators() [][]byte {
+func (m *MsgUpdateAllowedCreditClassCreatorsRequest) GetAddCreators() []string {
 	if m != nil {
 		return m.AddCreators
 	}
 	return nil
 }
 
-func (m *MsgUpdateAllowedCreditClassCreatorsRequest) GetRemoveCreators() [][]byte {
+func (m *MsgUpdateAllowedCreditClassCreatorsRequest) GetRemoveCreators() []string {
 	if m != nil {
 		return m.RemoveCreators
 	}
@@ -1784,6 +1784,163 @@ func (m *MsgUpdateCreditClassFeeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateCreditClassFeeResponse proto.InternalMessageInfo
 
+// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFee request type.
+type MsgUpdateBasketFeeRequest struct {
+	// root_address is the address of the caller.
+	// this MUST equal the address of the gov module for the tx to succeed.
+	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
+	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+	AddFees []*MsgUpdateBasketFeeRequest_Fee `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
+	// remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
+	RemoveFees []*MsgUpdateBasketFeeRequest_Fee `protobuf:"bytes,3,rep,name=remove_fees,json=removeFees,proto3" json:"remove_fees,omitempty"`
+}
+
+func (m *MsgUpdateBasketFeeRequest) Reset()         { *m = MsgUpdateBasketFeeRequest{} }
+func (m *MsgUpdateBasketFeeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeRequest) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a7efad3b6b8cd694, []int{26}
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeRequest proto.InternalMessageInfo
+
+func (m *MsgUpdateBasketFeeRequest) GetRootAddress() string {
+	if m != nil {
+		return m.RootAddress
+	}
+	return ""
+}
+
+func (m *MsgUpdateBasketFeeRequest) GetAddFees() []*MsgUpdateBasketFeeRequest_Fee {
+	if m != nil {
+		return m.AddFees
+	}
+	return nil
+}
+
+func (m *MsgUpdateBasketFeeRequest) GetRemoveFees() []*MsgUpdateBasketFeeRequest_Fee {
+	if m != nil {
+		return m.RemoveFees
+	}
+	return nil
+}
+
+// Fee represents a fee to be used in the credit class creation fee.
+type MsgUpdateBasketFeeRequest_Fee struct {
+	// denom is the coin denom
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// amount is the amount of the coin needed to create the credit class.
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Reset()         { *m = MsgUpdateBasketFeeRequest_Fee{} }
+func (m *MsgUpdateBasketFeeRequest_Fee) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeRequest_Fee) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeRequest_Fee) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a7efad3b6b8cd694, []int{26, 0}
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee proto.InternalMessageInfo
+
+func (m *MsgUpdateBasketFeeRequest_Fee) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+type MsgUpdateBasketFeeResponse struct {
+}
+
+func (m *MsgUpdateBasketFeeResponse) Reset()         { *m = MsgUpdateBasketFeeResponse{} }
+func (m *MsgUpdateBasketFeeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeResponse) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a7efad3b6b8cd694, []int{27}
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeResponse.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreateClass)(nil), "regen.ecocredit.v1beta1.MsgCreateClass")
 	proto.RegisterType((*MsgCreateClassResponse)(nil), "regen.ecocredit.v1beta1.MsgCreateClassResponse")
@@ -1816,97 +1973,103 @@ func init() {
 	proto.RegisterType((*MsgUpdateCreditClassFeeRequest)(nil), "regen.ecocredit.v1beta1.MsgUpdateCreditClassFeeRequest")
 	proto.RegisterType((*MsgUpdateCreditClassFeeRequest_Fee)(nil), "regen.ecocredit.v1beta1.MsgUpdateCreditClassFeeRequest.Fee")
 	proto.RegisterType((*MsgUpdateCreditClassFeeResponse)(nil), "regen.ecocredit.v1beta1.MsgUpdateCreditClassFeeResponse")
+	proto.RegisterType((*MsgUpdateBasketFeeRequest)(nil), "regen.ecocredit.v1beta1.MsgUpdateBasketFeeRequest")
+	proto.RegisterType((*MsgUpdateBasketFeeRequest_Fee)(nil), "regen.ecocredit.v1beta1.MsgUpdateBasketFeeRequest.Fee")
+	proto.RegisterType((*MsgUpdateBasketFeeResponse)(nil), "regen.ecocredit.v1beta1.MsgUpdateBasketFeeResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1beta1/tx.proto", fileDescriptor_a7efad3b6b8cd694) }
 
 var fileDescriptor_a7efad3b6b8cd694 = []byte{
-	// 1349 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0x4f, 0x6f, 0x1b, 0x55,
-	0x10, 0xef, 0xda, 0x69, 0x62, 0x8f, 0xe3, 0x24, 0x7d, 0x29, 0xad, 0xbb, 0x6d, 0x1d, 0x77, 0x2b,
-	0xd4, 0xb4, 0xb4, 0x6b, 0x9a, 0x00, 0xa5, 0xea, 0x01, 0xa5, 0xa9, 0xa2, 0x06, 0xd5, 0x15, 0x6c,
-	0x4b, 0x85, 0x10, 0x92, 0xb5, 0xf1, 0x9b, 0x6c, 0x0d, 0xf6, 0xae, 0xd9, 0xf7, 0xd2, 0xb4, 0x08,
-	0x89, 0x0b, 0x17, 0x6e, 0xbd, 0x73, 0xe4, 0x88, 0x28, 0xe7, 0x7e, 0x03, 0x8e, 0xbd, 0x20, 0x71,
-	0x03, 0xb5, 0xe2, 0x13, 0xf0, 0x05, 0xd0, 0xfb, 0xb3, 0x2f, 0x5e, 0xc7, 0xf6, 0xda, 0x14, 0x89,
-	0x8b, 0xed, 0x99, 0xfd, 0xcd, 0x6f, 0xfe, 0xec, 0xbc, 0x37, 0x93, 0x40, 0x2d, 0xc6, 0x00, 0xc3,
-	0x3a, 0xb6, 0xa2, 0x56, 0x8c, 0xb4, 0xcd, 0xeb, 0x8f, 0xae, 0xee, 0x20, 0xf7, 0xaf, 0xd6, 0xf9,
-	0x63, 0xb7, 0x17, 0x47, 0x3c, 0x22, 0x27, 0x25, 0xc2, 0x35, 0x08, 0x57, 0x23, 0xec, 0xe3, 0x41,
-	0x14, 0x44, 0x12, 0x53, 0x17, 0xbf, 0x14, 0xdc, 0x5e, 0x09, 0xa2, 0x28, 0xe8, 0x60, 0x5d, 0x4a,
-	0x3b, 0x7b, 0xbb, 0x75, 0xde, 0xee, 0x22, 0xe3, 0x7e, 0xb7, 0xa7, 0x01, 0xe7, 0x47, 0x79, 0x64,
-	0xdc, 0xe7, 0xa8, 0x40, 0xce, 0x8f, 0x16, 0x2c, 0x34, 0x58, 0xb0, 0x19, 0xa3, 0xcf, 0x71, 0xb3,
-	0xe3, 0x33, 0x46, 0x8e, 0xc3, 0x51, 0x9f, 0x76, 0xdb, 0x61, 0xc5, 0xaa, 0x59, 0xab, 0x45, 0x4f,
-	0x09, 0xa4, 0x02, 0x73, 0x6d, 0xc6, 0xf6, 0x30, 0x66, 0x95, 0x5c, 0x2d, 0xbf, 0x5a, 0xf4, 0x12,
-	0x91, 0xd8, 0x50, 0xe8, 0x22, 0xf7, 0xa9, 0xcf, 0xfd, 0x4a, 0xbe, 0x66, 0xad, 0xce, 0x7b, 0x46,
-	0x26, 0xab, 0xb0, 0xa4, 0x9c, 0x37, 0xf9, 0x93, 0x1e, 0x36, 0x43, 0xbf, 0x8b, 0x95, 0x19, 0x49,
-	0xbb, 0xa0, 0xf4, 0xf7, 0x9f, 0xf4, 0xf0, 0xae, 0xdf, 0x45, 0x72, 0x1a, 0x8a, 0xbb, 0x88, 0x4d,
-	0x8a, 0x61, 0xd4, 0xad, 0x1c, 0x95, 0x90, 0xc2, 0x2e, 0xe2, 0x2d, 0x21, 0x3b, 0xeb, 0x70, 0x22,
-	0x1d, 0xa4, 0x87, 0xac, 0x17, 0x85, 0x0c, 0xc9, 0x29, 0x28, 0xb4, 0x84, 0xa2, 0xd9, 0xa6, 0x3a,
-	0xde, 0x39, 0x29, 0x6f, 0x53, 0xe7, 0x27, 0x0b, 0x96, 0x8c, 0xd5, 0x47, 0x71, 0xf4, 0x05, 0xb6,
-	0x38, 0x39, 0x01, 0xb3, 0x2a, 0x6e, 0x8d, 0xd6, 0x52, 0x8a, 0x27, 0x97, 0xe2, 0x19, 0x9b, 0xdf,
-	0x45, 0x58, 0xea, 0x29, 0xe6, 0x66, 0x27, 0x6a, 0xf9, 0xbc, 0x1d, 0x85, 0x3a, 0xbf, 0x45, 0xad,
-	0xbf, 0xa3, 0xd5, 0xe4, 0x2c, 0x40, 0x02, 0x6d, 0x53, 0x9d, 0x61, 0x51, 0x6b, 0xb6, 0xa9, 0x73,
-	0x1d, 0x2a, 0x83, 0xc1, 0x9a, 0x24, 0xd3, 0xa6, 0xd6, 0xa0, 0xe9, 0x5f, 0xf9, 0xbe, 0x77, 0x78,
-	0xd3, 0xe7, 0xad, 0x87, 0x23, 0xd3, 0x4c, 0x33, 0xe5, 0x06, 0x98, 0xc8, 0xc7, 0x50, 0x10, 0x40,
-	0x3f, 0x6c, 0x61, 0x25, 0x5f, 0xcb, 0xaf, 0x96, 0xd6, 0xde, 0x75, 0x47, 0x74, 0xa5, 0x9b, 0xf6,
-	0xe8, 0xca, 0xcf, 0x6d, 0x6d, 0xec, 0x19, 0x9a, 0x54, 0xf5, 0x66, 0x06, 0xaa, 0xf7, 0x01, 0x00,
-	0xe3, 0x7e, 0xcc, 0x9b, 0xd4, 0xe7, 0x28, 0x4b, 0x52, 0x5a, 0xb3, 0x5d, 0xd5, 0xd7, 0x6e, 0xd2,
-	0xd7, 0xee, 0xfd, 0xa4, 0xaf, 0x6f, 0xce, 0x3c, 0xfd, 0x63, 0xc5, 0xf2, 0x8a, 0xd2, 0xe6, 0x96,
-	0xcf, 0x91, 0xdc, 0x80, 0x02, 0x86, 0x54, 0x99, 0xcf, 0x4e, 0x68, 0x3e, 0x87, 0x21, 0x15, 0xc6,
-	0xf6, 0x33, 0x0b, 0xca, 0xa9, 0xa8, 0xc9, 0x19, 0x28, 0xc6, 0xd8, 0x6a, 0xf7, 0xda, 0x18, 0xf2,
-	0xa4, 0xcc, 0x46, 0x41, 0x2e, 0xc0, 0x22, 0x8f, 0x7d, 0xea, 0xef, 0x74, 0xb0, 0xe9, 0x77, 0xa3,
-	0xbd, 0x90, 0xeb, 0x02, 0x2e, 0x24, 0xea, 0x0d, 0xa9, 0x25, 0x6f, 0xc2, 0x42, 0x8c, 0xbc, 0x1d,
-	0x23, 0x4d, 0x70, 0x79, 0x89, 0x2b, 0x6b, 0xad, 0x86, 0xd5, 0x61, 0x59, 0x29, 0xba, 0x18, 0x1e,
-	0x6a, 0x1f, 0x72, 0xf0, 0x28, 0xe9, 0x20, 0xe7, 0x7a, 0xdf, 0x29, 0x90, 0x81, 0x9b, 0x06, 0x59,
-	0x81, 0xd2, 0x8e, 0x50, 0xe8, 0xe3, 0xa3, 0x42, 0x07, 0xa9, 0x52, 0x07, 0xe8, 0x79, 0x0e, 0xe6,
-	0x1a, 0x2c, 0xb8, 0x87, 0x21, 0x15, 0xbd, 0xc1, 0x30, 0xa4, 0x07, 0xbd, 0xa1, 0xa4, 0x74, 0xf6,
-	0xb9, 0xc1, 0xec, 0xb7, 0x60, 0x4e, 0x35, 0x00, 0xd3, 0x9d, 0x71, 0x79, 0x5c, 0x67, 0x08, 0x47,
-	0xae, 0xf8, 0xd8, 0x54, 0x36, 0x5e, 0x62, 0x6c, 0xff, 0x62, 0x41, 0xa9, 0xef, 0x41, 0x66, 0xe8,
-	0xff, 0x7f, 0xd9, 0x8f, 0xc1, 0xa2, 0xce, 0x28, 0xa9, 0xb7, 0xf3, 0x9b, 0x05, 0xc5, 0x06, 0x0b,
-	0x3c, 0x09, 0x16, 0x05, 0x7d, 0x18, 0x75, 0xfa, 0x0a, 0xaa, 0x24, 0xf2, 0xe1, 0x41, 0xc9, 0x72,
-	0xb2, 0x64, 0x6f, 0x8f, 0x2b, 0x99, 0x22, 0x73, 0xd5, 0xd7, 0x60, 0xd9, 0xc4, 0x31, 0x32, 0xa1,
-	0xaa, 0xb4, 0x8c, 0x6c, 0xdf, 0x86, 0x72, 0xca, 0x2a, 0xbb, 0xa6, 0x27, 0x60, 0x36, 0x55, 0x4a,
-	0x2d, 0x39, 0xcb, 0x70, 0xcc, 0x44, 0x62, 0x92, 0x7d, 0xae, 0x92, 0xdd, 0x14, 0x47, 0xa4, 0xf3,
-	0x1f, 0x25, 0xab, 0xc8, 0x5c, 0xf5, 0x75, 0xa8, 0x47, 0x6e, 0x43, 0x39, 0xf5, 0xe4, 0x75, 0x13,
-	0x52, 0x64, 0x26, 0xa1, 0x16, 0x2c, 0x37, 0x58, 0xf0, 0x49, 0x8f, 0x26, 0xd3, 0x64, 0x43, 0x4e,
-	0xb8, 0xe1, 0x73, 0x6f, 0xcc, 0x60, 0x38, 0x0d, 0xc5, 0x10, 0xf7, 0x9b, 0xca, 0x48, 0xbf, 0x94,
-	0x10, 0xf7, 0x25, 0x9b, 0x73, 0x16, 0x4e, 0x0f, 0x71, 0x62, 0x62, 0x78, 0x6a, 0xc1, 0x1b, 0xe9,
-	0xe7, 0xdb, 0x7a, 0x9c, 0x4e, 0x1d, 0xc6, 0x0a, 0x94, 0x7c, 0x4a, 0x9b, 0xc9, 0x74, 0x16, 0xa7,
-	0x73, 0xde, 0x03, 0x9f, 0xd2, 0x84, 0x51, 0x1e, 0x8c, 0x6e, 0xf4, 0x08, 0x0d, 0x66, 0x46, 0x62,
-	0xca, 0x4a, 0xab, 0x61, 0xce, 0x0a, 0x9c, 0x1d, 0x1a, 0x91, 0x89, 0x19, 0xe5, 0xfd, 0xd3, 0x07,
-	0x68, 0x24, 0x17, 0xf9, 0xd4, 0x31, 0x8f, 0x99, 0xa9, 0x4e, 0x0d, 0xaa, 0xc3, 0xdd, 0x98, 0x40,
-	0xbe, 0xb3, 0xe0, 0x64, 0x83, 0x05, 0x77, 0x71, 0x7f, 0xd3, 0x2c, 0x11, 0x1e, 0x7e, 0xb5, 0x87,
-	0x4c, 0xdc, 0x53, 0xf3, 0x7d, 0x1b, 0x07, 0xab, 0x58, 0xb2, 0x19, 0xcf, 0x8f, 0x6c, 0xc6, 0x3e,
-	0x86, 0xd2, 0xc1, 0x4a, 0xc2, 0xc8, 0x39, 0x98, 0x8f, 0xa3, 0x88, 0x37, 0x7d, 0x4a, 0x63, 0x64,
-	0x4c, 0x27, 0x50, 0x12, 0xba, 0x0d, 0xa5, 0x72, 0x6c, 0x39, 0xb2, 0x07, 0xa2, 0xd0, 0x21, 0x3e,
-	0x80, 0x53, 0x0d, 0x16, 0xdc, 0x8f, 0x82, 0xa0, 0x83, 0x1b, 0x9d, 0x4e, 0xb4, 0x7f, 0xa7, 0xcd,
-	0x78, 0x12, 0xe3, 0x20, 0xb7, 0x75, 0x88, 0x5b, 0x34, 0x34, 0x97, 0xc6, 0xd2, 0x71, 0xc1, 0xd3,
-	0x92, 0x73, 0x06, 0xec, 0x61, 0xbc, 0xda, 0xeb, 0x0f, 0x16, 0x5c, 0x32, 0xb5, 0x93, 0x8f, 0x51,
-	0x5f, 0xb4, 0xb2, 0x90, 0x72, 0x74, 0x44, 0xe2, 0x8d, 0x4e, 0x1c, 0xc7, 0x39, 0x98, 0x17, 0xcd,
-	0xd5, 0xd2, 0x96, 0xf2, 0x6c, 0xcf, 0x7b, 0xa2, 0xe1, 0x12, 0x32, 0x71, 0x41, 0xeb, 0xf6, 0x32,
-	0x28, 0xd5, 0x83, 0xba, 0xeb, 0x12, 0xa0, 0x73, 0x05, 0xde, 0x9a, 0x28, 0x38, 0x9d, 0xcc, 0xb3,
-	0x5c, 0x7f, 0x23, 0x1c, 0x00, 0xb7, 0x10, 0xa7, 0x48, 0xe0, 0x01, 0x14, 0x44, 0x02, 0xbb, 0x88,
-	0xc9, 0xc5, 0x74, 0x63, 0xdc, 0xc5, 0x34, 0xc6, 0x9b, 0x2b, 0x7e, 0xce, 0xf9, 0x94, 0x6e, 0x21,
-	0x32, 0xf2, 0x39, 0x94, 0x74, 0xd6, 0x92, 0x3a, 0xff, 0xfa, 0xd4, 0xa0, 0xf8, 0x04, 0xbb, 0xbd,
-	0x0e, 0xf9, 0x2d, 0x44, 0x71, 0xae, 0xfa, 0x6f, 0x3c, 0x25, 0x8c, 0xbc, 0xec, 0xce, 0xc1, 0xca,
-	0x48, 0x37, 0xaa, 0xa6, 0x6b, 0x7f, 0x97, 0x20, 0xdf, 0x60, 0x01, 0x09, 0xa0, 0xd4, 0xbf, 0xf2,
-	0x5f, 0xc8, 0xde, 0xf2, 0x24, 0xd0, 0xae, 0x4f, 0x08, 0x34, 0x9b, 0x49, 0x17, 0xca, 0xe9, 0x05,
-	0xfc, 0x62, 0x36, 0x83, 0x86, 0xda, 0x57, 0x27, 0x86, 0x1a, 0x77, 0x26, 0x2f, 0xb5, 0x06, 0x5f,
-	0x98, 0x70, 0x7b, 0x9d, 0x24, 0xaf, 0xf4, 0xc6, 0xe5, 0xc1, 0x8c, 0x5c, 0xa6, 0x6a, 0x59, 0x5b,
-	0x90, 0xbd, 0x9a, 0x85, 0x30, 0x9c, 0x9f, 0xc2, 0xac, 0xde, 0x28, 0x9c, 0xec, 0x45, 0xc1, 0xbe,
-	0x94, 0x8d, 0xe9, 0x67, 0xd6, 0xe3, 0xdb, 0xc9, 0x9e, 0xca, 0xe3, 0x99, 0xd3, 0xb3, 0x94, 0x3c,
-	0x82, 0xa5, 0x43, 0x83, 0xf4, 0xf2, 0x04, 0xa7, 0xc0, 0xa0, 0xed, 0x77, 0xa6, 0x41, 0x1b, 0xbf,
-	0xdf, 0x00, 0x19, 0x32, 0x3b, 0xdd, 0x09, 0xb9, 0x34, 0xde, 0x7e, 0x6f, 0x3a, 0xbc, 0xf1, 0xfe,
-	0x2d, 0x2c, 0x0f, 0x1b, 0x83, 0xf5, 0x09, 0xe9, 0x12, 0x03, 0xfb, 0xda, 0x94, 0x06, 0x26, 0x00,
-	0x0e, 0xe5, 0xd4, 0xdc, 0x21, 0x63, 0xb7, 0xad, 0x61, 0x83, 0x72, 0xfc, 0xe9, 0x1a, 0x3a, 0xd4,
-	0xc8, 0xd7, 0xb0, 0x38, 0x30, 0x79, 0xc8, 0xda, 0x38, 0x96, 0xe1, 0xe3, 0xcf, 0x5e, 0x9f, 0xca,
-	0x46, 0xfb, 0xfe, 0xd9, 0x82, 0x5a, 0xd6, 0xe8, 0x20, 0x9b, 0xd9, 0xf5, 0xcc, 0x9c, 0x8a, 0xf6,
-	0xad, 0xd7, 0x23, 0xd1, 0xf1, 0x7e, 0x6f, 0xc1, 0xf1, 0x61, 0x57, 0x31, 0xb9, 0xf6, 0x2f, 0x67,
-	0x84, 0xfd, 0xfe, 0xf4, 0x86, 0x2a, 0x96, 0x9b, 0xf7, 0x7e, 0x7d, 0x59, 0xb5, 0x5e, 0xbc, 0xac,
-	0x5a, 0x7f, 0xbe, 0xac, 0x5a, 0x4f, 0x5f, 0x55, 0x8f, 0xbc, 0x78, 0x55, 0x3d, 0xf2, 0xfb, 0xab,
-	0xea, 0x91, 0xcf, 0xae, 0x07, 0x6d, 0xfe, 0x70, 0x6f, 0xc7, 0x6d, 0x45, 0xdd, 0xba, 0x64, 0xbf,
-	0x12, 0x22, 0xdf, 0x8f, 0xe2, 0x2f, 0xb5, 0xd4, 0x41, 0x1a, 0x60, 0x5c, 0x7f, 0x7c, 0xf8, 0xbf,
-	0x48, 0x3b, 0xb3, 0xf2, 0x2f, 0xec, 0xf5, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x26, 0x35, 0x69,
-	0xa5, 0xd9, 0x12, 0x00, 0x00,
+	// 1407 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0xcf, 0x6f, 0x13, 0xc7,
+	0x17, 0x67, 0xed, 0x90, 0xd8, 0xcf, 0x31, 0x09, 0x13, 0xbe, 0x60, 0x16, 0x70, 0xcc, 0xa2, 0xaf,
+	0x08, 0x14, 0xd6, 0x25, 0x69, 0xa1, 0x88, 0x43, 0x95, 0x04, 0x45, 0xa4, 0xc2, 0x55, 0x31, 0x94,
+	0x56, 0x55, 0x25, 0x6b, 0xed, 0x79, 0x59, 0x5c, 0xec, 0x5d, 0x77, 0x67, 0x92, 0x40, 0x55, 0xa9,
+	0x97, 0x5e, 0x7a, 0xe3, 0xde, 0x43, 0x8f, 0x3d, 0x54, 0xa5, 0x67, 0xfe, 0x83, 0x1e, 0xb9, 0x54,
+	0xea, 0xad, 0x15, 0xa8, 0xe7, 0xfe, 0x0b, 0xd5, 0xce, 0xcc, 0x4e, 0xbc, 0xfe, 0xb1, 0x6b, 0x93,
+	0x4a, 0xbd, 0x24, 0x7e, 0x6f, 0x3f, 0xef, 0xf3, 0x7e, 0xec, 0x9b, 0x79, 0xcf, 0x86, 0x4a, 0x80,
+	0x2e, 0x7a, 0x55, 0x6c, 0xf9, 0xad, 0x00, 0x69, 0x9b, 0x57, 0xf7, 0xae, 0x35, 0x91, 0x3b, 0xd7,
+	0xaa, 0xfc, 0x89, 0xdd, 0x0b, 0x7c, 0xee, 0x93, 0x53, 0x02, 0x61, 0x6b, 0x84, 0xad, 0x10, 0xe6,
+	0x09, 0xd7, 0x77, 0x7d, 0x81, 0xa9, 0x86, 0x9f, 0x24, 0xdc, 0x5c, 0x76, 0x7d, 0xdf, 0xed, 0x60,
+	0x55, 0x48, 0xcd, 0xdd, 0x9d, 0x2a, 0x6f, 0x77, 0x91, 0x71, 0xa7, 0xdb, 0x53, 0x80, 0x0b, 0xe3,
+	0x3c, 0x32, 0xee, 0x70, 0x94, 0x20, 0xeb, 0x47, 0x03, 0x8e, 0xd5, 0x98, 0xbb, 0x19, 0xa0, 0xc3,
+	0x71, 0xb3, 0xe3, 0x30, 0x46, 0x4e, 0xc0, 0x51, 0x87, 0x76, 0xdb, 0x5e, 0xc9, 0xa8, 0x18, 0x2b,
+	0xf9, 0xba, 0x14, 0x48, 0x09, 0xe6, 0xda, 0x8c, 0xed, 0x62, 0xc0, 0x4a, 0x99, 0x4a, 0x76, 0x25,
+	0x5f, 0x8f, 0x44, 0x62, 0x42, 0xae, 0x8b, 0xdc, 0xa1, 0x0e, 0x77, 0x4a, 0xd9, 0x8a, 0xb1, 0x32,
+	0x5f, 0xd7, 0x32, 0xb9, 0x02, 0x44, 0x3a, 0x6f, 0xf0, 0xa7, 0x3d, 0x6c, 0x38, 0xcd, 0x66, 0x80,
+	0x7b, 0xa5, 0x19, 0x41, 0xbc, 0x28, 0x9f, 0x3c, 0x78, 0xda, 0xc3, 0x75, 0xa1, 0x27, 0x67, 0x20,
+	0xbf, 0x83, 0xd8, 0xa0, 0xe8, 0xf9, 0xdd, 0xd2, 0x51, 0x01, 0xca, 0xed, 0x20, 0xde, 0x0e, 0x65,
+	0x6b, 0x0d, 0x4e, 0xc6, 0x03, 0xad, 0x23, 0xeb, 0xf9, 0x1e, 0x43, 0x72, 0x1a, 0x72, 0xad, 0x50,
+	0xd1, 0x68, 0x53, 0x15, 0xf3, 0x9c, 0x90, 0xb7, 0xa9, 0xf5, 0x93, 0x01, 0x8b, 0xda, 0xea, 0xa3,
+	0xc0, 0xff, 0x02, 0x5b, 0x9c, 0x9c, 0x84, 0x59, 0x19, 0xbb, 0x42, 0x2b, 0x29, 0xc6, 0x93, 0x89,
+	0xf1, 0x24, 0xe6, 0x78, 0x09, 0x16, 0x7b, 0x92, 0xb9, 0xd1, 0xf1, 0x5b, 0x0e, 0x6f, 0xfb, 0x9e,
+	0xca, 0x70, 0x41, 0xe9, 0xef, 0x2a, 0x35, 0x39, 0x07, 0x10, 0x41, 0xdb, 0x54, 0x65, 0x98, 0x57,
+	0x9a, 0x6d, 0x6a, 0xdd, 0x84, 0xd2, 0x60, 0xb0, 0x3a, 0xc9, 0xb8, 0xa9, 0x31, 0x68, 0xfa, 0x57,
+	0xb6, 0xef, 0x3d, 0x6e, 0x38, 0xbc, 0xf5, 0x68, 0x6c, 0x9a, 0x71, 0xa6, 0xcc, 0x00, 0x13, 0xb9,
+	0x07, 0xb9, 0x10, 0xe8, 0x78, 0x2d, 0x2c, 0x65, 0x2b, 0xd9, 0x95, 0xc2, 0xea, 0xbb, 0xf6, 0x98,
+	0xce, 0xb4, 0xe3, 0x1e, 0x6d, 0xf1, 0x77, 0x5b, 0x19, 0xd7, 0x35, 0x4d, 0xac, 0x7a, 0x33, 0x03,
+	0xd5, 0x7b, 0x1f, 0x80, 0x71, 0x27, 0xe0, 0x0d, 0xea, 0x70, 0x14, 0x25, 0x29, 0xac, 0x9a, 0xb6,
+	0xec, 0x6d, 0x3b, 0xea, 0x6d, 0xfb, 0x41, 0xd4, 0xdb, 0x1b, 0x33, 0xcf, 0xfe, 0x58, 0x36, 0xea,
+	0x79, 0x61, 0x73, 0xdb, 0xe1, 0x48, 0x6e, 0x41, 0x0e, 0x3d, 0x2a, 0xcd, 0x67, 0x27, 0x34, 0x9f,
+	0x43, 0x8f, 0x86, 0xc6, 0xe6, 0x73, 0x03, 0x8a, 0xb1, 0xa8, 0xc9, 0x59, 0xc8, 0x07, 0xd8, 0x6a,
+	0xf7, 0xda, 0xe8, 0xf1, 0xa8, 0xcc, 0x5a, 0x41, 0x2e, 0xc2, 0x02, 0x0f, 0x1c, 0xea, 0x34, 0x3b,
+	0xd8, 0x70, 0xba, 0xfe, 0xae, 0xc7, 0x55, 0x01, 0x8f, 0x45, 0xea, 0x75, 0xa1, 0x25, 0xff, 0x87,
+	0x63, 0x01, 0xf2, 0x76, 0x80, 0x34, 0xc2, 0x65, 0x05, 0xae, 0xa8, 0xb4, 0x0a, 0x56, 0x85, 0x25,
+	0xa9, 0xe8, 0xa2, 0x37, 0xd4, 0x3e, 0xe4, 0xe0, 0x51, 0xd4, 0x41, 0xd6, 0xcd, 0xbe, 0x53, 0x20,
+	0x02, 0xd7, 0x0d, 0xb2, 0x0c, 0x85, 0x66, 0xa8, 0x50, 0xc7, 0x47, 0x86, 0x0e, 0x42, 0x25, 0x0f,
+	0xd0, 0x8b, 0x0c, 0xcc, 0xd5, 0x98, 0x7b, 0x1f, 0x3d, 0x1a, 0xf6, 0x06, 0x43, 0x8f, 0x1e, 0xf4,
+	0x86, 0x94, 0xe2, 0xd9, 0x67, 0x06, 0xb3, 0xdf, 0x82, 0x39, 0xd9, 0x00, 0x4c, 0x75, 0xc6, 0x95,
+	0xa4, 0xce, 0x08, 0x1d, 0xd9, 0xe1, 0x9f, 0x4d, 0x69, 0x53, 0x8f, 0x8c, 0xcd, 0x5f, 0x0c, 0x28,
+	0xf4, 0x3d, 0x48, 0x0d, 0xfd, 0xbf, 0x2f, 0xfb, 0x71, 0x58, 0x50, 0x19, 0x45, 0xf5, 0xb6, 0x7e,
+	0x33, 0x20, 0x5f, 0x63, 0x6e, 0x5d, 0x80, 0xc3, 0x82, 0x3e, 0xf2, 0x3b, 0x7d, 0x05, 0x95, 0x12,
+	0xf9, 0xe0, 0xa0, 0x64, 0x19, 0x51, 0xb2, 0xb7, 0x93, 0x4a, 0x26, 0xc9, 0x6c, 0xf9, 0x6f, 0xb0,
+	0x6c, 0xe1, 0x31, 0xd2, 0xa1, 0xca, 0xb4, 0xb4, 0x6c, 0xde, 0x81, 0x62, 0xcc, 0x2a, 0xbd, 0xa6,
+	0x27, 0x61, 0x36, 0x56, 0x4a, 0x25, 0x59, 0x4b, 0x70, 0x5c, 0x47, 0xa2, 0x93, 0x7d, 0x21, 0x93,
+	0xdd, 0x0c, 0x8f, 0x48, 0xe7, 0x5f, 0x4a, 0x56, 0x92, 0xd9, 0xf2, 0xdf, 0x50, 0x8f, 0xdc, 0x81,
+	0x62, 0xec, 0xc9, 0x61, 0x13, 0x92, 0x64, 0x3a, 0xa1, 0x16, 0x2c, 0xd5, 0x98, 0xfb, 0x71, 0x8f,
+	0x46, 0xd3, 0x64, 0x5d, 0x4c, 0xb9, 0xd1, 0xb3, 0x2f, 0x61, 0x30, 0x9c, 0x81, 0xbc, 0x87, 0xfb,
+	0x0d, 0x69, 0xa4, 0x5e, 0x8a, 0x87, 0xfb, 0x82, 0xcd, 0x3a, 0x07, 0x67, 0x46, 0x38, 0xd1, 0x31,
+	0x3c, 0x33, 0xe0, 0x7f, 0xf1, 0xe7, 0xdb, 0x6a, 0xa4, 0x4e, 0x1d, 0xc6, 0x32, 0x14, 0x1c, 0x4a,
+	0x1b, 0xd1, 0x84, 0xce, 0x8a, 0x09, 0x0d, 0x0e, 0xa5, 0x11, 0xa3, 0x38, 0x18, 0x5d, 0x7f, 0x0f,
+	0x35, 0x66, 0x46, 0x60, 0x8a, 0x52, 0xab, 0x60, 0xd6, 0x32, 0x9c, 0x1b, 0x19, 0x91, 0x8e, 0x19,
+	0xc5, 0xfd, 0xd3, 0x07, 0xa8, 0x45, 0x17, 0xf9, 0xd4, 0x31, 0x27, 0xcc, 0x54, 0xab, 0x02, 0xe5,
+	0xd1, 0x6e, 0x74, 0x20, 0xdf, 0x1a, 0x70, 0xaa, 0xc6, 0xdc, 0x0f, 0x71, 0x7f, 0x53, 0xaf, 0x11,
+	0x75, 0xfc, 0x72, 0x17, 0x59, 0x78, 0x4f, 0xcd, 0xf7, 0x6d, 0x1d, 0xac, 0x64, 0x88, 0x66, 0xbc,
+	0x30, 0xb6, 0x19, 0xfb, 0x18, 0x0a, 0x07, 0x4b, 0x09, 0x23, 0xe7, 0x61, 0x3e, 0xf0, 0x7d, 0xde,
+	0x70, 0x28, 0x0d, 0x90, 0x31, 0x95, 0x40, 0x21, 0xd4, 0xad, 0x4b, 0x95, 0x65, 0x8a, 0x91, 0x3d,
+	0x10, 0x85, 0x0a, 0xf1, 0x21, 0x9c, 0xae, 0x31, 0xf7, 0x81, 0xef, 0xba, 0x1d, 0x5c, 0xef, 0x74,
+	0xfc, 0xfd, 0xbb, 0x6d, 0xc6, 0xa3, 0x18, 0x07, 0xb9, 0x8d, 0x21, 0xee, 0xb0, 0xa1, 0xb9, 0x30,
+	0x16, 0x8e, 0x73, 0x75, 0x25, 0x59, 0x67, 0xc1, 0x1c, 0xc5, 0xab, 0xbc, 0x7e, 0x6f, 0xc0, 0x65,
+	0x5d, 0x3b, 0xf1, 0x18, 0xd5, 0x45, 0x2b, 0x0a, 0x29, 0x46, 0x87, 0x1f, 0xbe, 0xd1, 0x89, 0xe3,
+	0x38, 0x0f, 0xf3, 0x61, 0x73, 0xb5, 0x94, 0xa5, 0xda, 0xff, 0xc2, 0x86, 0x8b, 0xc8, 0xc2, 0x0b,
+	0x5a, 0xb5, 0x97, 0x46, 0xc9, 0x1e, 0x54, 0x5d, 0x17, 0x01, 0xad, 0xab, 0xf0, 0xd6, 0x44, 0xc1,
+	0xa9, 0x64, 0x9e, 0x67, 0xfa, 0x1b, 0xe1, 0x00, 0xb8, 0x85, 0x38, 0x45, 0x02, 0x0f, 0x21, 0x17,
+	0x26, 0xb0, 0x83, 0x18, 0x5d, 0x4c, 0xb7, 0x92, 0x2e, 0xa6, 0x04, 0x6f, 0x76, 0xf8, 0x71, 0xce,
+	0xa1, 0x74, 0x0b, 0x91, 0x91, 0xcf, 0xa1, 0xa0, 0xb2, 0x16, 0xd4, 0xd9, 0xc3, 0x53, 0x83, 0xe4,
+	0x0b, 0xd9, 0xcd, 0x35, 0xc8, 0x6e, 0x21, 0x86, 0xe7, 0xaa, 0xff, 0xc6, 0x93, 0xc2, 0xd8, 0xcb,
+	0xee, 0x3c, 0x2c, 0x8f, 0x75, 0xa3, 0x6a, 0xfa, 0x43, 0x46, 0xf4, 0xa5, 0xc4, 0x6c, 0x38, 0xec,
+	0x31, 0xf2, 0xe9, 0xca, 0x79, 0x6f, 0xa8, 0x9c, 0xd7, 0xd3, 0x73, 0x1e, 0x74, 0x14, 0xaf, 0xe4,
+	0x27, 0xa3, 0x2a, 0xf9, 0xa6, 0xac, 0x87, 0x2e, 0xa2, 0x3c, 0x60, 0x43, 0x1e, 0x64, 0xfd, 0x56,
+	0xff, 0x9e, 0x87, 0x6c, 0x8d, 0xb9, 0xc4, 0x85, 0x42, 0xff, 0xd7, 0xa6, 0x8b, 0xe9, 0x5b, 0xb2,
+	0x00, 0x9a, 0xd5, 0x09, 0x81, 0x7a, 0xb3, 0xeb, 0x42, 0x31, 0xfe, 0x05, 0xe6, 0x52, 0x3a, 0x83,
+	0x82, 0x9a, 0xd7, 0x26, 0x86, 0x6a, 0x77, 0x3a, 0x2f, 0xf9, 0x35, 0xe2, 0xe2, 0x84, 0xdb, 0xff,
+	0x24, 0x79, 0xc5, 0x37, 0xd6, 0x3a, 0xcc, 0x88, 0x65, 0xb4, 0x92, 0xb6, 0x45, 0x9a, 0x2b, 0x69,
+	0x08, 0xcd, 0xf9, 0x29, 0xcc, 0xaa, 0x8d, 0xcc, 0x4a, 0x5f, 0xb4, 0xcc, 0xcb, 0xe9, 0x98, 0x7e,
+	0x66, 0xb5, 0xfe, 0x58, 0xe9, 0x5b, 0x4d, 0x32, 0x73, 0x7c, 0x17, 0x21, 0x7b, 0xb0, 0x38, 0xb4,
+	0x88, 0x5c, 0x99, 0xe0, 0x16, 0xd1, 0x68, 0xf3, 0x9d, 0x69, 0xd0, 0xda, 0xef, 0xd7, 0x40, 0x46,
+	0xec, 0x1e, 0xf6, 0x84, 0x5c, 0x0a, 0x6f, 0x5e, 0x9f, 0x0e, 0xaf, 0xbd, 0x7f, 0x03, 0x4b, 0xa3,
+	0xd6, 0x88, 0xea, 0x84, 0x74, 0x91, 0x81, 0x79, 0x63, 0x4a, 0x03, 0x1d, 0x00, 0x87, 0x62, 0x6c,
+	0x6e, 0x93, 0xc4, 0x6d, 0x75, 0xd4, 0xa2, 0x91, 0x7c, 0xba, 0x46, 0x2e, 0x05, 0xe4, 0x2b, 0x58,
+	0x18, 0x98, 0xdc, 0x64, 0x35, 0x89, 0x65, 0xf4, 0xfa, 0x60, 0xae, 0x4d, 0x65, 0xa3, 0x7c, 0xff,
+	0x6c, 0x40, 0x25, 0x6d, 0xf4, 0x92, 0xcd, 0xf4, 0x7a, 0xa6, 0x6e, 0x15, 0xe6, 0xed, 0xc3, 0x91,
+	0xa8, 0x78, 0xbf, 0x33, 0xe0, 0xc4, 0xa8, 0x51, 0x46, 0x6e, 0xbc, 0xe1, 0x8c, 0x35, 0xdf, 0x9b,
+	0xde, 0xf0, 0xe0, 0xbd, 0x0d, 0x0c, 0x84, 0xe4, 0xf7, 0x36, 0x7a, 0x3e, 0x25, 0xbf, 0xb7, 0x31,
+	0x13, 0x67, 0xe3, 0xfe, 0xaf, 0xaf, 0xca, 0xc6, 0xcb, 0x57, 0x65, 0xe3, 0xcf, 0x57, 0x65, 0xe3,
+	0xd9, 0xeb, 0xf2, 0x91, 0x97, 0xaf, 0xcb, 0x47, 0x7e, 0x7f, 0x5d, 0x3e, 0xf2, 0xd9, 0x4d, 0xb7,
+	0xcd, 0x1f, 0xed, 0x36, 0xed, 0x96, 0xdf, 0xad, 0x0a, 0xe2, 0xab, 0x1e, 0xf2, 0x7d, 0x3f, 0x78,
+	0xac, 0xa4, 0x0e, 0x52, 0x17, 0x83, 0xea, 0x93, 0xe1, 0x5f, 0x01, 0x9b, 0xb3, 0xe2, 0xd7, 0x91,
+	0xb5, 0x7f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x86, 0x7c, 0x12, 0xde, 0x99, 0x14, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1953,6 +2116,7 @@ type MsgClient interface {
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreatorsRequest, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFeeRequest, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
+	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
 type msgClient struct {
@@ -2080,6 +2244,15 @@ func (c *msgClient) UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCredi
 	return out, nil
 }
 
+func (c *msgClient) UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error) {
+	out := new(MsgUpdateBasketFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1beta1.Msg/UpdateBasketFee", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// CreateClass creates a new credit class with an approved list of issuers and
@@ -2114,6 +2287,7 @@ type MsgServer interface {
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreatorsRequest) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error)
+	UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -2158,6 +2332,9 @@ func (*UnimplementedMsgServer) UpdateAllowedCreditClassCreators(ctx context.Cont
 }
 func (*UnimplementedMsgServer) UpdateCreditClassFee(ctx context.Context, req *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCreditClassFee not implemented")
+}
+func (*UnimplementedMsgServer) UpdateBasketFee(ctx context.Context, req *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFee not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -2398,6 +2575,24 @@ func _Msg_UpdateCreditClassFee_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBasketFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBasketFeeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBasketFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1beta1.Msg/UpdateBasketFee",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBasketFee(ctx, req.(*MsgUpdateBasketFeeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.v1beta1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -2454,6 +2649,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			MethodName: "UpdateCreditClassFee",
 			Handler:    _Msg_UpdateCreditClassFee_Handler,
 		},
+		{
+			MethodName: "UpdateBasketFee",
+			Handler:    _Msg_UpdateBasketFee_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "regen/ecocredit/v1beta1/tx.proto",
@@ -2486,10 +2685,10 @@ func (m *MsgCreateClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	if len(m.CreditTypeName) > 0 {
-		i -= len(m.CreditTypeName)
-		copy(dAtA[i:], m.CreditTypeName)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.CreditTypeName)))
+	if len(m.CreditTypeAbbrev) > 0 {
+		i -= len(m.CreditTypeAbbrev)
+		copy(dAtA[i:], m.CreditTypeAbbrev)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.CreditTypeAbbrev)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -3667,6 +3866,124 @@ func (m *MsgUpdateCreditClassFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateBasketFeeRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RemoveFees) > 0 {
+		for iNdEx := len(m.RemoveFees) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.RemoveFees[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.AddFees) > 0 {
+		for iNdEx := len(m.AddFees) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AddFees[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.RootAddress) > 0 {
+		i -= len(m.RootAddress)
+		copy(dAtA[i:], m.RootAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RootAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateBasketFeeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -3698,7 +4015,7 @@ func (m *MsgCreateClass) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.CreditTypeName)
+	l = len(m.CreditTypeAbbrev)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -4033,14 +4350,14 @@ func (m *MsgUpdateClassIssuers) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if len(m.AddIssuers) > 0 {
-		for _, b := range m.AddIssuers {
-			l = len(b)
+		for _, s := range m.AddIssuers {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
 	if len(m.RemoveIssuers) > 0 {
-		for _, b := range m.RemoveIssuers {
-			l = len(b)
+		for _, s := range m.RemoveIssuers {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
@@ -4150,14 +4467,14 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if len(m.AddCreators) > 0 {
-		for _, b := range m.AddCreators {
-			l = len(b)
+		for _, s := range m.AddCreators {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
 	if len(m.RemoveCreators) > 0 {
-		for _, b := range m.RemoveCreators {
-			l = len(b)
+		for _, s := range m.RemoveCreators {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
@@ -4216,6 +4533,57 @@ func (m *MsgUpdateCreditClassFeeRequest_Fee) Size() (n int) {
 }
 
 func (m *MsgUpdateCreditClassFeeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgUpdateBasketFeeRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RootAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.AddFees) > 0 {
+		for _, e := range m.AddFees {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	if len(m.RemoveFees) > 0 {
+		for _, e := range m.RemoveFees {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateBasketFeeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -4359,7 +4727,7 @@ func (m *MsgCreateClass) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeName", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeAbbrev", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4387,7 +4755,7 @@ func (m *MsgCreateClass) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditTypeName = string(dAtA[iNdEx:postIndex])
+			m.CreditTypeAbbrev = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
@@ -4427,10 +4795,7 @@ func (m *MsgCreateClass) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -4512,10 +4877,7 @@ func (m *MsgCreateClassResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -4727,10 +5089,7 @@ func (m *MsgCreateProject) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -4812,10 +5171,7 @@ func (m *MsgCreateProjectResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5069,10 +5425,7 @@ func (m *MsgCreateBatch) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5250,10 +5603,7 @@ func (m *MsgCreateBatch_BatchIssuance) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5335,10 +5685,7 @@ func (m *MsgCreateBatchResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5486,10 +5833,7 @@ func (m *MsgSend) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5667,10 +6011,7 @@ func (m *MsgSend_SendCredits) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5720,10 +6061,7 @@ func (m *MsgSendResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5871,10 +6209,7 @@ func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -5988,10 +6323,7 @@ func (m *MsgRetire_RetireCredits) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6041,10 +6373,7 @@ func (m *MsgRetireResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6160,10 +6489,7 @@ func (m *MsgCancel) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6277,10 +6603,7 @@ func (m *MsgCancel_CancelCredits) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6330,10 +6653,7 @@ func (m *MsgCancelResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6479,10 +6799,7 @@ func (m *MsgUpdateClassAdmin) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6532,10 +6849,7 @@ func (m *MsgUpdateClassAdminResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6647,7 +6961,7 @@ func (m *MsgUpdateClassIssuers) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AddIssuers", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -6657,29 +6971,29 @@ func (m *MsgUpdateClassIssuers) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AddIssuers = append(m.AddIssuers, make([]byte, postIndex-iNdEx))
-			copy(m.AddIssuers[len(m.AddIssuers)-1], dAtA[iNdEx:postIndex])
+			m.AddIssuers = append(m.AddIssuers, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RemoveIssuers", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -6689,23 +7003,23 @@ func (m *MsgUpdateClassIssuers) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RemoveIssuers = append(m.RemoveIssuers, make([]byte, postIndex-iNdEx))
-			copy(m.RemoveIssuers[len(m.RemoveIssuers)-1], dAtA[iNdEx:postIndex])
+			m.RemoveIssuers = append(m.RemoveIssuers, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -6713,10 +7027,7 @@ func (m *MsgUpdateClassIssuers) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6766,10 +7077,7 @@ func (m *MsgUpdateClassIssuersResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6917,10 +7225,7 @@ func (m *MsgUpdateClassMetadata) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -6970,10 +7275,7 @@ func (m *MsgUpdateClassMetadataResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7089,10 +7391,7 @@ func (m *MsgNewCreditTypeRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7142,10 +7441,7 @@ func (m *MsgNewCreditTypeResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7247,10 +7543,7 @@ func (m *MsgToggleAllowListRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7300,10 +7593,7 @@ func (m *MsgToggleAllowListResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7383,7 +7673,7 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Unmarshal(dAtA []byte) erro
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AddCreators", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -7393,29 +7683,29 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AddCreators = append(m.AddCreators, make([]byte, postIndex-iNdEx))
-			copy(m.AddCreators[len(m.AddCreators)-1], dAtA[iNdEx:postIndex])
+			m.AddCreators = append(m.AddCreators, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RemoveCreators", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -7425,23 +7715,23 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RemoveCreators = append(m.RemoveCreators, make([]byte, postIndex-iNdEx))
-			copy(m.RemoveCreators[len(m.RemoveCreators)-1], dAtA[iNdEx:postIndex])
+			m.RemoveCreators = append(m.RemoveCreators, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -7449,10 +7739,7 @@ func (m *MsgUpdateAllowedCreditClassCreatorsRequest) Unmarshal(dAtA []byte) erro
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7502,10 +7789,7 @@ func (m *MsgUpdateAllowedCreditClassCreatorsResponse) Unmarshal(dAtA []byte) err
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7655,10 +7939,7 @@ func (m *MsgUpdateCreditClassFeeRequest) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7772,10 +8053,7 @@ func (m *MsgUpdateCreditClassFeeRequest_Fee) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {
@@ -7825,10 +8103,321 @@ func (m *MsgUpdateCreditClassFeeResponse) Unmarshal(dAtA []byte) error {
 			if err != nil {
 				return err
 			}
-			if skippy < 0 {
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
-			if (iNdEx + skippy) < 0 {
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RootAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RootAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AddFees", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AddFees = append(m.AddFees, &MsgUpdateBasketFeeRequest_Fee{})
+			if err := m.AddFees[len(m.AddFees)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemoveFees", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemoveFees = append(m.RemoveFees, &MsgUpdateBasketFeeRequest_Fee{})
+			if err := m.RemoveFees[len(m.RemoveFees)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Fee: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Fee: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
 				return ErrInvalidLengthTx
 			}
 			if (iNdEx + skippy) > l {

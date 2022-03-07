@@ -14,7 +14,7 @@ Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
 
-<!-- TODO: update to use dedicated full node operated by RND -->
+<!-- TODO: update to include dedicated full node operated by RND -->
 
 The following URL is the node address for a full node operated by VitWit:
 
@@ -30,9 +30,10 @@ Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
 
-The following URL is the node address for a full node operated by RND:
+The following URLs are node addresses for full nodes operated by RND and VitWit:
 
 [http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
+[http://redwood-sentry.vitwit.com:26657/](http://redwood-sentry.vitwit.com:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
@@ -44,9 +45,10 @@ Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` u
 
 When the time comes to introduce new experimental features, Hambach Testnet will be restarted with an incremented chain ID rather than going through the upgrade process due to the inability to support migrations for experimental modules. It's important to keep this in mind when developing with Hambach Testnet and we recommend creating scripts that can be used to reseed the network following a restart.
 
-The following URL is the node address for a full node operated by RND:
+The following URLs are node addresses for full nodes operated by RND and VitWit:
 
 [http://hambach.regen.network:26657/](http://hambach.regen.network:26657/)
+[http://hambach-sentry.vitwit.com:26657/](http://hambach-sentry.vitwit.com:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
@@ -87,3 +89,19 @@ regen config
 ```
 
 For more information about using the CLI, see [Command-Line Interface](../regen-ledger/interfaces.md#command-line-interface).
+
+## Testnet Tokens
+
+In order to interact with the test networks, you'll need some tokens. You can redeem tokens for each test network by executing the following `curl` commands.
+
+*For Redwood Testnet:*
+
+```bash
+curl http://redwood-sentry.vitwit.com:8000/faucet/<account_address>
+```
+
+*For Hambach Testnet:*
+
+```bash
+curl http://hambach-sentry.vitwit.com:8000/faucet/<account_address>
+```

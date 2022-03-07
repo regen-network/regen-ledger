@@ -11,6 +11,7 @@ const (
 	AnchorTimestampPrefix
 	IDSignerPrefix
 	SignerIDPrefix
+	ORMStatePrefix
 )
 
 func AnchorTimestampKey(id []byte) []byte {

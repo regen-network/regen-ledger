@@ -1690,6 +1690,120 @@ func NewCreditClassFeeStore(db ormtable.Schema) (CreditClassFeeStore, error) {
 	return creditClassFeeStore{table}, nil
 }
 
+type BasketFeeStore interface {
+	Insert(ctx context.Context, basketFee *BasketFee) error
+	Update(ctx context.Context, basketFee *BasketFee) error
+	Save(ctx context.Context, basketFee *BasketFee) error
+	Delete(ctx context.Context, basketFee *BasketFee) error
+	Has(ctx context.Context, denom string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, denom string) (*BasketFee, error)
+	List(ctx context.Context, prefixKey BasketFeeIndexKey, opts ...ormlist.Option) (BasketFeeIterator, error)
+	ListRange(ctx context.Context, from, to BasketFeeIndexKey, opts ...ormlist.Option) (BasketFeeIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BasketFeeIndexKey) error
+	DeleteRange(ctx context.Context, from, to BasketFeeIndexKey) error
+
+	doNotImplement()
+}
+
+type BasketFeeIterator struct {
+	ormtable.Iterator
+}
+
+func (i BasketFeeIterator) Value() (*BasketFee, error) {
+	var basketFee BasketFee
+	err := i.UnmarshalMessage(&basketFee)
+	return &basketFee, err
+}
+
+type BasketFeeIndexKey interface {
+	id() uint32
+	values() []interface{}
+	basketFeeIndexKey()
+}
+
+// primary key starting index..
+type BasketFeePrimaryKey = BasketFeeDenomIndexKey
+
+type BasketFeeDenomIndexKey struct {
+	vs []interface{}
+}
+
+func (x BasketFeeDenomIndexKey) id() uint32            { return 0 }
+func (x BasketFeeDenomIndexKey) values() []interface{} { return x.vs }
+func (x BasketFeeDenomIndexKey) basketFeeIndexKey()    {}
+
+func (this BasketFeeDenomIndexKey) WithDenom(denom string) BasketFeeDenomIndexKey {
+	this.vs = []interface{}{denom}
+	return this
+}
+
+type basketFeeStore struct {
+	table ormtable.Table
+}
+
+func (this basketFeeStore) Insert(ctx context.Context, basketFee *BasketFee) error {
+	return this.table.Insert(ctx, basketFee)
+}
+
+func (this basketFeeStore) Update(ctx context.Context, basketFee *BasketFee) error {
+	return this.table.Update(ctx, basketFee)
+}
+
+func (this basketFeeStore) Save(ctx context.Context, basketFee *BasketFee) error {
+	return this.table.Save(ctx, basketFee)
+}
+
+func (this basketFeeStore) Delete(ctx context.Context, basketFee *BasketFee) error {
+	return this.table.Delete(ctx, basketFee)
+}
+
+func (this basketFeeStore) Has(ctx context.Context, denom string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, denom)
+}
+
+func (this basketFeeStore) Get(ctx context.Context, denom string) (*BasketFee, error) {
+	var basketFee BasketFee
+	found, err := this.table.PrimaryKey().Get(ctx, &basketFee, denom)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &basketFee, nil
+}
+
+func (this basketFeeStore) List(ctx context.Context, prefixKey BasketFeeIndexKey, opts ...ormlist.Option) (BasketFeeIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return BasketFeeIterator{it}, err
+}
+
+func (this basketFeeStore) ListRange(ctx context.Context, from, to BasketFeeIndexKey, opts ...ormlist.Option) (BasketFeeIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return BasketFeeIterator{it}, err
+}
+
+func (this basketFeeStore) DeleteBy(ctx context.Context, prefixKey BasketFeeIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this basketFeeStore) DeleteRange(ctx context.Context, from, to BasketFeeIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this basketFeeStore) doNotImplement() {}
+
+var _ BasketFeeStore = basketFeeStore{}
+
+func NewBasketFeeStore(db ormtable.Schema) (BasketFeeStore, error) {
+	table := db.GetTable(&BasketFee{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&BasketFee{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return basketFeeStore{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeStore() CreditTypeStore
 	ClassInfoStore() ClassInfoStore
@@ -1704,6 +1818,7 @@ type StateStore interface {
 	AllowedClassCreatorsStore() AllowedClassCreatorsStore
 	AllowlistEnabledStore() AllowlistEnabledStore
 	CreditClassFeeStore() CreditClassFeeStore
+	BasketFeeStore() BasketFeeStore
 
 	doNotImplement()
 }
@@ -1722,6 +1837,7 @@ type stateStore struct {
 	allowedClassCreators AllowedClassCreatorsStore
 	allowlistEnabled     AllowlistEnabledStore
 	creditClassFee       CreditClassFeeStore
+	basketFee            BasketFeeStore
 }
 
 func (x stateStore) CreditTypeStore() CreditTypeStore {
@@ -1774,6 +1890,10 @@ func (x stateStore) AllowlistEnabledStore() AllowlistEnabledStore {
 
 func (x stateStore) CreditClassFeeStore() CreditClassFeeStore {
 	return x.creditClassFee
+}
+
+func (x stateStore) BasketFeeStore() BasketFeeStore {
+	return x.basketFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -1846,6 +1966,11 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	basketFeeStore, err := NewBasketFeeStore(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeStore,
 		classInfoStore,
@@ -1860,5 +1985,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		allowedClassCreatorsStore,
 		allowlistEnabledStore,
 		creditClassFeeStore,
+		basketFeeStore,
 	}, nil
 }

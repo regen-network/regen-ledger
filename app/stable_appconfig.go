@@ -6,27 +6,22 @@
 package app
 
 import (
-	"encoding/json"
-
-	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/CosmWasm/wasmd/x/wasm"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/authz"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
@@ -49,64 +44,39 @@ func setCustomKVStoreKeys() []string {
 	return []string{}
 }
 
-func (app *RegenApp) registerUpgradeHandlers() {
-	// This is the upgrade plan name we used in the gov proposal.
-	upgradeName := "v2.0-upgrade"
-	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-		// 1st-time running in-store migrations, using 1 as fromVersion to
-		// avoid running InitGenesis.
-		// Explicitly skipping x/auth migrations. It is already patched in regen-ledger v1.0.
-		fromVM := map[string]uint64{
-			"auth":         auth.AppModule{}.ConsensusVersion(),
-			"bank":         1,
-			"capability":   1,
-			"crisis":       1,
-			"distribution": 1,
-			"evidence":     1,
-			"gov":          1,
-			"mint":         1,
-			"params":       1,
-			"slashing":     1,
-			"staking":      1,
-			"upgrade":      1,
-			"vesting":      1,
-			"ibc":          1,
-			"genutil":      1,
-			"transfer":     1,
-			"ecocredit":    1, // we don't run InitGenesis for ecocredit in `RunMigrations`, but manually instead.
-		}
+func setCustomMaccPerms() map[string][]string {
+	return map[string][]string{}
+}
 
-		gen := ecocredittypes.DefaultGenesisState()
-		gen.Params.AllowlistEnabled = true
-		gen.Params.CreditClassFee = sdk.NewCoins(sdk.NewCoin("uregen", ecocredittypes.DefaultCreditClassFeeTokens))
+func setCustomOrderBeginBlocker() []string {
+	return []string{}
+}
 
-		modules := make(map[string]json.RawMessage)
-		modules[ecocredittypes.ModuleName] = app.cdc.MustMarshalJSON(gen)
-		app.smm.InitGenesis(ctx, modules, []abci.ValidatorUpdate{})
+func setCustomOrderEndBlocker() []string {
+	return []string{}
+}
 
-		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	})
+func (app *RegenApp) registerUpgradeHandlers() {}
 
-	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{authz.ModuleName, feegrant.ModuleName, ecocredittypes.ModuleName},
-		}
-
-		// configure store loader that checks if version == upgradeHeight and applies store upgrades
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
+func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
+	return ante.NewAnteHandler(
+		ante.HandlerOptions{
+			AccountKeeper:   app.AccountKeeper,
+			BankKeeper:      app.BankKeeper,
+			SignModeHandler: encCfg.TxConfig.SignModeHandler(),
+			FeegrantKeeper:  app.FeeGrantKeeper,
+			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+		},
+	)
 }
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
+func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string,
+	_ servertypes.AppOptions,
+	_ []wasm.Option) {
 }
 
 func setCustomOrderInitGenesis() []string {
@@ -118,3 +88,5 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 }
 
 func initCustomParamsKeeper(_ *paramskeeper.Keeper) {}
+
+func (app *RegenApp) initializeCustomScopedKeepers() {}

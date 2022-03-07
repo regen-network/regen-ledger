@@ -49,3 +49,27 @@ jobs:
         with:
           flags: ${{matrix.envs}}
           file: coverage.txt
+
+  liveness-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2.1.5
+        with:
+          go-version: 1.17
+      - uses: technote-space/get-diff-action@v6.0.1
+        id: git_diff
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - name: start localnet
+        run: |
+          make clean localnet-start
+        if: env.GIT_DIFF
+      - name: test liveness
+        run: |
+          ./contrib/localnet_liveness.sh 100 5 50 localhost
+        if: env.GIT_DIFF

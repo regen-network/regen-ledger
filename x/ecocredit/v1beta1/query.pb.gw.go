@@ -1080,7 +1080,7 @@ var (
 
 	pattern_Query_ClassInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1beta1", "classes", "class_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ClassIssuers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "classes", "class_id", "issuers"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_ClassIssuers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1beta1", "classes", "class_id", "issuers"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_Projects_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1beta1", "classes", "class_id", "projects"}, "", runtime.AssumeColonVerbOpt(false)))
 

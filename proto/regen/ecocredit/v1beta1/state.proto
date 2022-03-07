@@ -246,7 +246,7 @@ message AllowlistEnabled {
     bool enabled = 1;
 }
 
-// CreditClassFee stores the valid coins and amounts to be used in credit class fees.
+// CreditClassFee stores the valid coin denoms and amounts that may be used as the fee for credit class creation.
 // This is controlled via governance.
 message CreditClassFee {
     option (cosmos.orm.v1alpha1.table) = {
@@ -255,6 +255,21 @@ message CreditClassFee {
     };
 
     // denom is the denom of the coin allowed to be used for credit class fees
+    string denom = 1;
+
+    // amount is the fee amount
+    string amount = 2;
+}
+
+// BasketFee stores the valid coin denoms and amounts that may be used as the fee for creating a basket.
+// This is controlled via governance.
+message BasketFee {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 14,
+        primary_key: {fields: "denom"}
+    };
+
+    // denom is the denom of the coin allowed to be used for basket creation fees
     string denom = 1;
 
     // amount is the fee amount
