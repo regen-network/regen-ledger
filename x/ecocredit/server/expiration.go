@@ -12,6 +12,7 @@ import (
 func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 	blockTime := uint64(ctx.BlockTime().Add(time.Nanosecond).UnixNano())
 	minTime := uint64(0)
+
 	sellOrdersIter, err := s.sellOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
 		return err
