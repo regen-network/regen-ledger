@@ -22,23 +22,23 @@ const (
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
 
-	ProjectInfoTablePrefix    byte = 0x12
-	ProjectInfoTableSeqPrefix byte = 0x13
-	ProjectsByClassIDIndex    byte = 0x14
-	BatchesByProjectIndex     byte = 0x15
+	ProjectInfoTablePrefix    byte = 0x10
+	ProjectInfoTableSeqPrefix byte = 0x11
+	ProjectsByClassIDIndex    byte = 0x12
+	BatchesByProjectIndex     byte = 0x13
 
 	// sell order table
-	SellOrderTablePrefix             byte = 0x10
-	SellOrderTableSeqPrefix          byte = 0x11
-	SellOrderByAddressIndexPrefix    byte = 0x12
-	SellOrderByBatchDenomIndexPrefix byte = 0x13
-	SellOrderByExpirationIndexPrefix byte = 0x14
+	SellOrderTablePrefix             byte = 0x20
+	SellOrderTableSeqPrefix          byte = 0x21
+	SellOrderByExpirationIndexPrefix byte = 0x22
+	SellOrderByAddressIndexPrefix    byte = 0x23
+	SellOrderByBatchDenomIndexPrefix byte = 0x24
 
 	// buy order table
-	BuyOrderTablePrefix             byte = 0x20
-	BuyOrderTableSeqPrefix          byte = 0x21
-	BuyOrderByAddressIndexPrefix    byte = 0x22
-	BuyOrderByExpirationIndexPrefix byte = 0x23
+	BuyOrderTablePrefix             byte = 0x25
+	BuyOrderTableSeqPrefix          byte = 0x26
+	BuyOrderByExpirationIndexPrefix byte = 0x27
+	BuyOrderByAddressIndexPrefix    byte = 0x28
 
 	AskDenomTablePrefix byte = 0x30
 )
