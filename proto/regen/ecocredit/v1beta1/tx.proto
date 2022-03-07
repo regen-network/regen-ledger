@@ -55,8 +55,8 @@ message MsgCreateClass {
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 3;
 
-  // credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
-  string credit_type_name = 4;
+  // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
+  string credit_type_abbrev = 4;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
