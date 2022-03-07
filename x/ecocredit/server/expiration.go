@@ -16,7 +16,7 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 
 	sellOrdersIter, err := s.sellOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
-		logger.Error("problem with getting prefix scan iteratorr", "err", err)
+		logger.Error("problem with getting prefix scan iterator", "err", err)
 		return err
 	}
 	defer sellOrdersIter.Close()
