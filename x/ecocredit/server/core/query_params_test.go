@@ -3,9 +3,9 @@ package core
 import (
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -15,7 +15,7 @@ func TestQuery_Params(t *testing.T) {
 	s := setupBase(t)
 	any := gomock.Any()
 
-	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &ecocreditv1beta1.CreditType{
+	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &ecocreditv1.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "a ton",
@@ -34,7 +34,7 @@ func TestQuery_Params(t *testing.T) {
 		}},
 	})
 
-	res, err := s.k.Params(s.ctx, &v1beta1.QueryParamsRequest{})
+	res, err := s.k.Params(s.ctx, &v1.QueryParamsRequest{})
 	assert.NilError(t, err)
 	assert.Equal(t,false, res.Params.AllowlistEnabled)
 	assert.Equal(t, s.addr.String(), res.Params.AllowedClassCreators[0])
