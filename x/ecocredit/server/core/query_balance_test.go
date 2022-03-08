@@ -2,8 +2,8 @@ package core
 
 import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -17,14 +17,14 @@ func TestQuery_Balance(t *testing.T) {
 	retired := "50.3214"
 
 	// make a batch and give s.addr some balance
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1beta1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   nil,
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1beta1.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: tradable,
@@ -32,7 +32,7 @@ func TestQuery_Balance(t *testing.T) {
 	}))
 
 	// valid query
-	res, err := s.k.Balance(s.ctx, &v1beta1.QueryBalanceRequest{
+	res, err := s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: batchDenom,
 	})
@@ -41,7 +41,7 @@ func TestQuery_Balance(t *testing.T) {
 	assert.Equal(t, retired, res.RetiredAmount)
 
 	// random addr should just give 0
-	res, err = s.k.Balance(s.ctx, &v1beta1.QueryBalanceRequest{
+	res, err = s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
 		Account:    noBalanceAddr.String(),
 		BatchDenom: batchDenom,
 	})
@@ -50,7 +50,7 @@ func TestQuery_Balance(t *testing.T) {
 	assert.Equal(t, "0", res.RetiredAmount)
 
 	// query with invalid batch should return not found
-	_, err = s.k.Balance(s.ctx, &v1beta1.QueryBalanceRequest{
+	_, err = s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: "A00-00000000-00000000-001",
 	})
