@@ -3,10 +3,11 @@ package data
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"net/url"
 )
 
 var (
-	_, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}
+	_, _, _, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
 )
 
 func (m *MsgAnchorData) ValidateBasic() error {
@@ -45,4 +46,41 @@ func (m *MsgSignData) GetSigners() []sdk.AccAddress {
 	}
 
 	return addrs
+}
+
+func (m *MsgDefineResolver) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Manager); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
+
+	if _, err := url.ParseRequestURI(m.ResolverUrl); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid resolver url")
+	}
+
+	return nil
+}
+
+func (m *MsgDefineResolver) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Manager)
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgRegisterResolver) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Manager); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
+	if len(m.Data) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("data cannot be empty")
+	}
+	for _, hash := range m.Data {
+		if err := hash.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *MsgRegisterResolver) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Manager)
+	return []sdk.AccAddress{addr}
 }
