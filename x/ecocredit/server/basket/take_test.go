@@ -2,10 +2,10 @@ package basket_test
 
 import (
 	"fmt"
-	"github.com/go-bdd/gobdd"
 	"testing"
 	"time"
 
+	"github.com/aaronc/gocuke"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -223,11 +223,14 @@ func (s takeSuite) expectDec(expected string, actual math.Dec) {
 	assert.Assert(s.t, actual.Cmp(dec) == 0)
 }
 
-func givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
-	val, err := ctx.Get(takeSuite{})
-	assert.NilError(t, err)
-	s := val.(*takeSuite)
+func TestTake(t *testing.T) {
+	gocuke.NewRunner(t, func(t gocuke.TestingT) gocuke.StepDefinitions {
+		return &takeSuite{baseSuite: setupBase(t)}
+	}).Path("../../basket/features/take.feature").Run()
+}
 
+func (s *takeSuite) ABasketFooWithAutoretireEnabled() {
+	var err error
 	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
 		BasketDenom:       "foo",
 		Name:              "foo",
@@ -235,9 +238,9 @@ func givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
 		CreditTypeAbbrev:  "C",
 		Exponent:          6,
 	})
-	assert.NilError(t, err)
+	assert.NilError(s.t, err)
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(s.t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C1",
 		Balance:        "3.0",
@@ -245,7 +248,7 @@ func givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
 	}))
 	s.setTradableSupply("C1", "3.0")
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(s.t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C2",
 		Balance:        "5.0",
@@ -254,11 +257,7 @@ func givenABasketFoo(t gobdd.StepTest, ctx gobdd.Context) {
 	s.setTradableSupply("C2", "5.0")
 }
 
-func takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
-	val, err := ctx.Get(takeSuite{})
-	assert.NilError(t, err)
-	s := val.(*takeSuite)
-
+func (s *takeSuite) ITryToTakeCreditsFromFoo() {
 	_, s.err = s.k.Take(s.ctx, &baskettypes.MsgTake{
 		Owner:              s.addr.String(),
 		BasketDenom:        "foo",
@@ -268,30 +267,6 @@ func takeCreditsFromFoo(t gobdd.StepTest, ctx gobdd.Context) {
 	})
 }
 
-func expectMustRetireError(t gobdd.StepTest, ctx gobdd.Context) {
-	val, err := ctx.Get(takeSuite{})
-	assert.NilError(t, err)
-	s := val.(*takeSuite)
-
-	assert.ErrorIs(t, s.err, basket.ErrCantDisableRetire)
-}
-
-func TestTake(t *testing.T) {
-	suite := gobdd.NewSuite(t,
-		gobdd.WithFeaturesPath("../../basket/features/take.feature"),
-		gobdd.WithBeforeScenario(func(ctx gobdd.Context) {
-			val, err := ctx.Get(gobdd.TestingTKey{})
-			if err != nil {
-				panic(err)
-			}
-			t := val.(*testing.T)
-			ts := &takeSuite{baseSuite: setupBase(t)}
-			ctx.Set(takeSuite{}, ts)
-		}),
-		gobdd.RunInParallel(),
-	)
-	suite.AddStep(`a basket foo`, givenABasketFoo)
-	suite.AddStep(`I try to take credits from foo`, takeCreditsFromFoo)
-	suite.AddStep(`expect must retire error`, expectMustRetireError)
-	suite.Run()
+func (s *takeSuite) ExpectMustRetireError() {
+	assert.ErrorIs(s.t, s.err, basket.ErrCantDisableRetire)
 }

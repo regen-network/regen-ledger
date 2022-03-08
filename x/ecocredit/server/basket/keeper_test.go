@@ -2,6 +2,7 @@ package basket_test
 
 import (
 	"context"
+	"github.com/aaronc/gocuke"
 	"testing"
 
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -28,7 +29,7 @@ import (
 )
 
 type baseSuite struct {
-	t               *testing.T
+	t               gocuke.TestingT
 	db              ormdb.ModuleDB
 	stateStore      basketv1.StateStore
 	ctx             context.Context
@@ -42,7 +43,7 @@ type baseSuite struct {
 	distKeeper      *mocks2.MockDistributionKeeper
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
