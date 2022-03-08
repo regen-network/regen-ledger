@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
+
+// DataID stores a compact data ID and its full IRI.
+message DataID {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1
+    primary_key: {fields: "id"}
+    index:{id:1, fields:"iri", unique:true}
+  };
+
+  // id is the compact automatically-generated data ID.
+  bytes id = 1;
+
+  // iri is the IRI of the data which contains its full ContentHash.
+  string iri = 2;
+}
+
+// DataAnchor stores the anchor timestamp for a data object.
+message DataAnchor {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: {fields: "id"}
+  };
+
+  // id is the compact data ID.
+  bytes id = 1;
+
+  // timestamp is the anchor timestamp for this object - the time at which
+  // it was first known to the blockchain.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// DataSigner is a join table for associating data IDs and signers.
+message DataSigner {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 3
+    primary_key: {fields: "id,signer"}
+  };
+
+  // id is the compact data ID.
+  bytes id = 1;
+
+  // signer is the account address of the signer.
+  bytes signer = 2;
+
+  // timestamp is the time at which the signer signed this data object.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// ResolverInfo describes a data resolver.
+message ResolverInfo {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 4
+    primary_key: {fields: "id", auto_increment: true}
+    index: {id: 1, fields: "url", unique: true}
+    index: {id: 2, fields: "manager"}
+  };
+
+  // id is the ID of the resolver.
+  uint64 id = 1;
+
+  // url is the unique URL of the resolver.
+  string url = 2;
+
+  // manager is the bytes address of the resolver manager who is allowed
+  // to make calls to Msg/RegisterResolver for this resolver.
+  bytes manager = 3;
+}
+
+// DataResolver is a join table between data objects and resolvers and indicates
+// that a resolver claims to be able to resolve this data object.
+message DataResolver {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 5
+    primary_key: {fields: "id,resolver_id"}
+  };
+
+  // id is the compact data ID.
+  bytes id = 1;
+
+  // resolver_id is the ID of the resolver.
+  uint64 resolver_id = 2;
+}
