@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -23,17 +23,17 @@ import (
 )
 
 type baseSuite struct {
-	t               *testing.T
-	db              ormdb.ModuleDB
-	stateStore      ecocreditv1beta1.StateStore
-	ctx             context.Context
-	k               Keeper
-	ctrl            *gomock.Controller
-	addr            sdk.AccAddress
-	bankKeeper      *mocks.MockBankKeeper
-	paramsKeeper 	*mocks2.MockParamKeeper
-	storeKey        *sdk.KVStoreKey
-	sdkCtx          sdk.Context
+	t            *testing.T
+	db           ormdb.ModuleDB
+	stateStore   ecocreditv1.StateStore
+	ctx          context.Context
+	k            Keeper
+	ctrl         *gomock.Controller
+	addr         sdk.AccAddress
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks2.MockParamKeeper
+	storeKey     *sdk.KVStoreKey
+	sdkCtx       sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -42,7 +42,7 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.stateStore, err = ecocreditv1beta1.NewStateStore(s.db)
+	s.stateStore, err = ecocreditv1.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()

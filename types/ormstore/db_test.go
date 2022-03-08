@@ -3,7 +3,7 @@ package ormstore
 import (
 	"testing"
 
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -32,7 +32,7 @@ func TestStoreKeyDB(t *testing.T) {
 	storeKey := types.NewKVStoreKey("test")
 	db, err := NewStoreKeyDB(
 		ormdb.ModuleSchema{FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-			1: ecocreditv1beta1.File_regen_ecocredit_v1beta1_state_proto,
+			1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
 		}},
 		storeKey,
 		ormdb.ModuleDBOptions{},
@@ -41,17 +41,17 @@ func TestStoreKeyDB(t *testing.T) {
 	sdkCtx := sdkContextForStoreKey(storeKey)
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
-	creditTypeTable := db.GetTable(&ecocreditv1beta1.CreditType{})
+	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
 	require.NotNil(t, creditTypeTable)
 
-	require.NoError(t, creditTypeTable.Save(ctx, &ecocreditv1beta1.CreditType{
+	require.NoError(t, creditTypeTable.Save(ctx, &ecocreditv1.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tons of co2e",
 		Precision:    6,
 	}))
 
-	creditType := &ecocreditv1beta1.CreditType{
+	creditType := &ecocreditv1.CreditType{
 		Abbreviation: "C",
 	}
 	found, err := creditTypeTable.Get(ctx, creditType)
