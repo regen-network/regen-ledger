@@ -100,7 +100,7 @@ message QueryClassesRequest {
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
   // classes are the fetched credit classes.
-  repeated CreditClass classes = 1;
+  repeated ClassInfo classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -117,7 +117,7 @@ message QueryClassInfoRequest {
 message QueryClassInfoResponse {
 
   // info is the ClassInfo for the credit class.
-  CreditClass info = 1;
+  ClassInfo info = 1;
 }
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.

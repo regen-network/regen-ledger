@@ -53,7 +53,7 @@ message MsgCreateClass {
   repeated string issuers = 2;
 
   // metadata is any arbitrary metadata to attached to the credit class.
-  bytes metadata = 3;
+  string metadata = 3;
 
   // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
@@ -76,7 +76,7 @@ message MsgCreateProject {
   string class_id = 2;
 
   // metadata is any arbitrary metadata attached to the project.
-  bytes metadata = 3;
+  string metadata = 3;
 
   // project_location is the location of the project backing the credits in this
   // batch. It is a string of the form
@@ -113,7 +113,7 @@ message MsgCreateBatch {
   repeated BatchIssuance issuance = 3;
 
   // metadata is any arbitrary metadata attached to the credit batch.
-  bytes metadata = 4;
+  string metadata = 4;
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
@@ -300,7 +300,7 @@ message MsgUpdateClassMetadata {
   string class_id = 2;
 
   // metadata is the updated arbitrary metadata to be attached to the credit class.
-  bytes metadata = 3;
+  string metadata = 3;
 }
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.

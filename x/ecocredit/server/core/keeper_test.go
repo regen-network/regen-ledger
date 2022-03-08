@@ -73,7 +73,7 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName,
 	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{

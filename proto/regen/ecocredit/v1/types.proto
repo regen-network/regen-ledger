@@ -28,19 +28,3 @@ message Params {
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 4;
 }
-
-// CreditClass mirrors the ClassInfo structure, and is solely used in queries.
-message CreditClass {
-  // name is the unique name for this credit class formed from its credit type abbreviation
-  // and an auto-generated integer.
-  string name = 1;
-
-  // admin is the admin of the credit class.
-  bytes admin = 2;
-
-  // metadata the decoded metadata from the credit class.
-  string metadata = 3;
-
-  // credit_type is the abbreviation of the credit type.
-  string credit_type = 4;
-}
