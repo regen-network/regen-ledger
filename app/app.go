@@ -579,12 +579,22 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+	resp := app.mm.BeginBlock(ctx, req)
+	events := app.smm.BeginBlock(ctx, req)
+	resp.Events = append(resp.Events, events...)
+	return resp
 }
 
 // EndBlocker application updates every end block
 func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+	resp := app.mm.EndBlock(ctx, req)
+	events, vals := app.smm.EndBlock(ctx, req)
+	if len(resp.ValidatorUpdates) > 0 && len(vals) > 0 {
+		panic("validator EndBlock updates already set by the SDK Module Manager")
+	}
+	resp.ValidatorUpdates = vals
+	resp.Events = append(resp.Events, events...)
+	return resp
 }
 
 // InitChainer application update at chain initialization

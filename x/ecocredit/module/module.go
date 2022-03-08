@@ -35,23 +35,23 @@ type Module struct {
 }
 
 // NewModule returns a new Module object.
-func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) Module {
+func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) *Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
 	}
 
-	return Module{
+	return &Module{
 		paramSpace:    paramSpace,
 		bankKeeper:    bankKeeper,
 		accountKeeper: accountKeeper,
 	}
 }
 
-var _ module.AppModuleBasic = Module{}
-var _ servermodule.Module = Module{}
-var _ restmodule.Module = Module{}
-var _ climodule.Module = Module{}
-var _ module.AppModuleSimulation = Module{}
+var _ module.AppModuleBasic = &Module{}
+var _ servermodule.Module = &Module{}
+var _ restmodule.Module = &Module{}
+var _ climodule.Module = &Module{}
+var _ module.AppModuleSimulation = &Module{}
 
 func (a Module) Name() string {
 	return ecocredit.ModuleName
@@ -61,7 +61,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	ecocredit.RegisterTypes(registry)
 }
 
-func (a Module) RegisterServices(configurator servermodule.Configurator) {
+func (a *Module) RegisterServices(configurator servermodule.Configurator) {
 	a.keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
 }
 

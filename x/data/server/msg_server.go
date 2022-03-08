@@ -1,14 +1,16 @@
 package server
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
-	types2 "github.com/cosmos/cosmos-sdk/types"
+	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
 	sdk "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -98,7 +100,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 	}
 
 	for _, signer := range request.Signers {
-		addr, err := types2.AccAddressFromBech32(signer)
+		addr, err := cosmossdk.AccAddressFromBech32(signer)
 		if err != nil {
 			return nil, err
 		}
@@ -122,4 +124,55 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 	}
 
 	return &data.MsgSignDataResponse{}, nil
+}
+
+func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
+	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := s.stateStore.ResolverInfoStore().InsertReturningID(ctx, &datav1alpha2.ResolverInfo{
+		Url:     msg.ResolverUrl,
+		Manager: manager.Bytes(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.MsgDefineResolverResponse{ResolverId: id}, nil
+}
+
+func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, msg.ResolverId)
+	if err != nil {
+		return nil, err
+	}
+
+	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
+	if err != nil {
+		return nil, err
+	}
+
+	if !bytes.Equal(resolverInfo.Manager, manager.Bytes()) {
+		return nil, data.ErrUnauthorizedResolverManager
+	}
+
+	for _, datum := range msg.Data {
+		_, id, _, err := s.anchorAndGetIRI(sdk.UnwrapSDKContext(ctx), datum)
+		if err != nil {
+			return nil, err
+		}
+		err = s.stateStore.DataResolverStore().Save(
+			ctx,
+			&datav1alpha2.DataResolver{
+				ResolverId: msg.ResolverId,
+				Id:         id,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &data.MsgRegisterResolverResponse{}, nil
 }

@@ -8,6 +8,7 @@ COPY x/ecocredit/go.mod x/ecocredit/go.sum /work/x/ecocredit/
 COPY x/group/go.mod x/group/go.sum /work/x/group/
 COPY x/data/go.mod x/data/go.sum /work/x/data/
 COPY orm/go.mod orm/go.sum /work/orm/
+COPY api/go.mod api/go.sum /work/api/
 
 RUN go mod download
 COPY ./ /work
