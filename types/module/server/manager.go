@@ -19,6 +19,7 @@ import (
 )
 
 // Manager is the server module manager
+// It supports registration for begin and end blockers
 type Manager struct {
 	baseApp                    *baseapp.BaseApp
 	cdc                        *codec.ProtoCodec
@@ -29,6 +30,8 @@ type Manager struct {
 	exportGenesisHandlers      map[string]module.ExportGenesisHandler
 	registerInvariantsHandler  map[string]RegisterInvariantsHandler
 	weightedOperationsHandlers []WeightedOperationsHandler
+	beginBlockers              []BeginBlockerModule
+	endBlockers                []EndBlockerModule
 }
 
 // RegisterInvariants registers all module routes and module querier routes
@@ -136,6 +139,12 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			mm.requiredServices[typ] = true
 		}
 
+		if mod, ok := mod.(BeginBlockerModule); ok {
+			mm.beginBlockers = append(mm.beginBlockers, mod)
+		}
+		if mod, ok := mod.(EndBlockerModule); ok {
+			mm.endBlockers = append(mm.endBlockers, mod)
+		}
 	}
 
 	return nil
@@ -214,6 +223,32 @@ func initGenesis(ctx sdk.Context, cdc codec.Codec,
 	return abci.ResponseInitChain{
 		Validators: validatorUpdates,
 	}, nil
+}
+
+func (mm *Manager) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) []abci.Event {
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+
+	for _, m := range mm.beginBlockers {
+		m.BeginBlock(ctx, req)
+	}
+	return ctx.EventManager().ABCIEvents()
+}
+
+func (mm *Manager) EndBlock(ctx sdk.Context, req abci.RequestEndBlock) ([]abci.Event, []abci.ValidatorUpdate) {
+	ctx = ctx.WithEventManager(sdk.NewEventManager())
+	var vals []abci.ValidatorUpdate
+
+	for _, m := range mm.endBlockers {
+		moduleValUpdates := m.EndBlock(ctx, req)
+		if len(moduleValUpdates) > 0 {
+			if len(vals) > 0 {
+				panic("validator EndBlock updates already set by a previous module")
+			}
+
+			vals = moduleValUpdates
+		}
+	}
+	return ctx.EventManager().ABCIEvents(), vals
 }
 
 // ExportGenesis performs export genesis functionality for modules.
