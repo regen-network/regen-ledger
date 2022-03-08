@@ -2,8 +2,8 @@ package core
 
 import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -13,7 +13,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	s := setupBase(t)
 
 	// insert 1 project
-	err := s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1beta1.ProjectInfo{
+	err := s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
 		Name:            "P01",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
@@ -22,11 +22,11 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	assert.NilError(t, err)
 
 	// valid query
-	res, err := s.k.ProjectInfo(s.ctx, &v1beta1.QueryProjectInfoRequest{ProjectId: "P01"})
+	res, err := s.k.ProjectInfo(s.ctx, &v1.QueryProjectInfoRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
 	assert.Equal(t, "P01", res.Info.Name)
 
 	// invalid query
-	_, err = s.k.ProjectInfo(s.ctx, &v1beta1.QueryProjectInfoRequest{ProjectId: "F01"})
+	_, err = s.k.ProjectInfo(s.ctx, &v1.QueryProjectInfoRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
