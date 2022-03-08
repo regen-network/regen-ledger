@@ -128,19 +128,10 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1.MsgUpdateClassM
 		return nil, err
 	}
 
-	oldMdStr, err := base64Decode(oldMetadata)
-	if err != nil {
-		return nil, err
-	}
-	newMdStr, err := base64Decode(req.Metadata)
-	if err != nil {
-		return nil, err
-	}
-
 	if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventClassMetadataUpdated{
 		ClassName:   req.ClassId,
-		OldMetadata: oldMdStr,
-		NewMetadata: newMdStr,
+		OldMetadata: string(oldMetadata),
+		NewMetadata: string(req.Metadata),
 	}); err != nil {
 		return nil, err
 	}
