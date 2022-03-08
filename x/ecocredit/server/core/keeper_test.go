@@ -70,32 +70,32 @@ func setupBase(t *testing.T) *baseSuite {
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string){
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1beta1.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
 		CreditType: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1beta1.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
 		Metadata:        nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1beta1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
 		Metadata:   nil,
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1beta1.BatchSupply{
+	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1.BatchSupply{
 		BatchId:         1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1beta1.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "10.5",

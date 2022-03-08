@@ -3,14 +3,14 @@ package core
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder
-func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.MsgCancelResponse, error) {
+func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	holder, err := sdk.AccAddressFromBech32(req.Holder)
 	if err != nil {
@@ -53,7 +53,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.Ms
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1beta1.BatchBalance{
+		if err = k.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userBalTradable.String(),
@@ -61,7 +61,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.Ms
 		}); err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1beta1.BatchSupply{
+		if err = k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   batchSupply.RetiredAmount,
@@ -69,7 +69,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.Ms
 		}); err != nil {
 			return nil, err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&v1beta1.EventCancel{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventCancel{
 			Canceller:  holder.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
@@ -78,5 +78,5 @@ func (k Keeper) Cancel(ctx context.Context, req *v1beta1.MsgCancel) (*v1beta1.Ms
 		}
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
 	}
-	return &v1beta1.MsgCancelResponse{}, nil
+	return &v1.MsgCancelResponse{}, nil
 }

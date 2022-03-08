@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -22,9 +22,9 @@ func TestCancel_Valid(t *testing.T) {
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
 
-	_, err := s.k.Cancel(s.ctx, &v1beta1.MsgCancel{
+	_, err := s.k.Cancel(s.ctx, &v1.MsgCancel{
 		Holder: s.addr.String(),
-		Credits: []*v1beta1.MsgCancel_CancelCredits{
+		Credits: []*v1.MsgCancel_CancelCredits{
 			{
 				BatchDenom: batchDenom,
 				Amount:     "10.5",
@@ -56,9 +56,9 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
-	_, err := s.k.Cancel(s.ctx, &v1beta1.MsgCancel{
+	_, err := s.k.Cancel(s.ctx, &v1.MsgCancel{
 		Holder: s.addr.String(),
-		Credits: []*v1beta1.MsgCancel_CancelCredits{
+		Credits: []*v1.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C01-20200101-20210101-01",
 				Amount:     "100000",
@@ -79,9 +79,9 @@ func TestCancel_BadPrecision(t *testing.T) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
-	_, err := s.k.Cancel(s.ctx, &v1beta1.MsgCancel{
+	_, err := s.k.Cancel(s.ctx, &v1.MsgCancel{
 		Holder: s.addr.String(),
-		Credits: []*v1beta1.MsgCancel_CancelCredits{
+		Credits: []*v1.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C01-20200101-20210101-01",
 				Amount:     "10.5290385029385820935",
@@ -96,9 +96,9 @@ func TestCancel_InvalidBatch(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	_, err := s.k.Cancel(s.ctx, &v1beta1.MsgCancel{
+	_, err := s.k.Cancel(s.ctx, &v1.MsgCancel{
 		Holder: s.addr.String(),
-		Credits: []*v1beta1.MsgCancel_CancelCredits{
+		Credits: []*v1.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C00-00000000-00000000-01",
 				Amount:     "100000",
