@@ -12,6 +12,7 @@ import (
 // WARNING: this method will forfeit control of the entire class to the provided address.
 // double check your inputs to ensure you do not lose control of the class.
 func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1.MsgUpdateClassAdmin) (*v1.MsgUpdateClassAdminResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -34,11 +35,21 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1.MsgUpdateClassAdmi
 	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
+
+	if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventClassAdminUpdated{
+		ClassName: req.ClassId,
+		OldAdmin:  reqAddr.String(),
+		NewAdmin:  newAdmin.String(),
+	}); err != nil {
+		return nil, err
+	}
+
 	return &v1.MsgUpdateClassAdminResponse{}, err
 }
 
 // UpdateClassIssuers updates a class's issuers by either adding more issuers, or removing issuers from the class issuer store.
 func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1.MsgUpdateClassIssuers) (*v1.MsgUpdateClassIssuersResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -81,11 +92,21 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1.MsgUpdateClassIs
 			return nil, err
 		}
 	}
+
+	if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventClassIssuersUpdated{
+		ClassName:      req.ClassId,
+		AddedIssuers:   req.AddIssuers,
+		RemovedIssuers: req.RemoveIssuers,
+	}); err != nil {
+		return nil, err
+	}
+
 	return &v1.MsgUpdateClassIssuersResponse{}, nil
 }
 
 // UpdateClassMetadata updates the metadata for the class.
 func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1.MsgUpdateClassMetadata) (*v1.MsgUpdateClassMetadataResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -101,8 +122,26 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1.MsgUpdateClassM
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 
+	oldMetadata := classInfo.Metadata
 	classInfo.Metadata = req.Metadata
 	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
+		return nil, err
+	}
+
+	oldMdStr, err := base64Decode(oldMetadata)
+	if err != nil {
+		return nil, err
+	}
+	newMdStr, err := base64Decode(req.Metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventClassMetadataUpdated{
+		ClassName:   req.ClassId,
+		OldMetadata: oldMdStr,
+		NewMetadata: newMdStr,
+	}); err != nil {
 		return nil, err
 	}
 

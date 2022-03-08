@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"encoding/base64"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -47,4 +48,12 @@ func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
+}
+
+func base64Decode(bz []byte) (string, error) {
+	bz, err := base64.StdEncoding.DecodeString(string(bz))
+	if err != nil {
+		return "", err
+	}
+	return string(bz), nil
 }
