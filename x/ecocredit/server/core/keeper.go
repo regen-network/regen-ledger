@@ -15,17 +15,22 @@ type Keeper struct {
 	stateStore ecocreditv1beta1.StateStore
 	bankKeeper ecocredit.BankKeeper
 	params     ParamKeeper
-	ak         ecocredit.AccountKeeper
+	ak         AccountKeeper
 }
 type ParamKeeper interface {
 	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }
 
-func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params ParamKeeper) Keeper {
+type AccountKeeper interface {
+	GetModuleAddress(string) sdk.AccAddress
+}
+
+func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params ParamKeeper, ak AccountKeeper) Keeper {
 	return Keeper{
 		stateStore: ss,
 		bankKeeper: bk,
 		params:     params,
+		ak:         ak,
 	}
 }
 

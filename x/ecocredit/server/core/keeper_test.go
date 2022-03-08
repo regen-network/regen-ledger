@@ -32,6 +32,7 @@ type baseSuite struct {
 	addr            sdk.AccAddress
 	bankKeeper      *mocks.MockBankKeeper
 	paramsKeeper 	*mocks2.MockParamKeeper
+	accountKeeper 	*mocks2.MockAccountKeeper
 	storeKey        *sdk.KVStoreKey
 	sdkCtx          sdk.Context
 }
@@ -59,7 +60,8 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	s.accountKeeper = mocks2.NewMockAccountKeeper(s.ctrl)
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.accountKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
