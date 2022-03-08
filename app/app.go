@@ -443,7 +443,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			paramstypes.ModuleName,
 			vestingtypes.ModuleName,
 
-			//ibc modules
+			// ibc modules
 			ibchost.ModuleName,
 			ibctransfertypes.ModuleName,
 		}, setCustomOrderBeginBlocker()...)...,
