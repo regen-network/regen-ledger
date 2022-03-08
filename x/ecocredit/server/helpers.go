@@ -75,7 +75,7 @@ func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
+		stop, err := cb(string(ecocredit.ParseSupplyKey(iter.Key())), string(iter.Value()))
 		if err != nil {
 			return err
 		}
@@ -91,7 +91,7 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		addr, denom := ParseBalanceKey(iter.Key())
+		addr, denom := ecocredit.ParseBalanceKey(iter.Key())
 		if cb(addr.String(), string(denom), string(iter.Value())) {
 			break
 		}
@@ -99,9 +99,9 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 }
 
 func verifyCreditBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
-	bd := batchDenomT(batchDenom)
+	bd := ecocredit.BatchDenomT(batchDenom)
 
-	balance, err := getDecimal(store, TradableBalanceKey(ownerAddr, bd))
+	balance, err := getDecimal(store, ecocredit.TradableBalanceKey(ownerAddr, bd))
 	if err != nil {
 		return err
 	}

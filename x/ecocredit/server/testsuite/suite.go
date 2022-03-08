@@ -306,7 +306,7 @@ func (s *IntegrationTestSuite) TestUpdateClassAdmin() {
 	issuer2 := s.signers[2].String()
 	newAdmin := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1, issuer2}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -360,7 +360,7 @@ func (s *IntegrationTestSuite) TestUpdateClassIssuers() {
 	issuer2 := s.signers[2].String()
 	issuer3 := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -413,7 +413,7 @@ func (s *IntegrationTestSuite) TestUpdateClassMetadata() {
 	admin := s.signers[0]
 	issuer1 := s.signers[3].String()
 
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -483,7 +483,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -1099,7 +1099,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the creator account
-			s.Require().NoError(s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens))))
+			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Admin:          tc.creatorAcc.String(),
@@ -1189,7 +1189,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			require.NoError(err)
 
 			// fund the admin account so tx will go through
-			s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens))))
+			s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)
@@ -1268,14 +1268,20 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	require.NoError(err)
 	end, err := time.Parse("2006-04-02", endStr)
 	require.NoError(err)
-	bRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+	pRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
 		Issuer:          admin.String(),
 		ClassId:         classId,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
 		Metadata:        nil,
-		StartDate:       &start,
-		EndDate:         &end,
 		ProjectLocation: "US-NY",
+	})
+	require.NoError(err)
+	bRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:    admin.String(),
+		ProjectId: pRes.ProjectId,
+		Issuance:  []*ecocredit.MsgCreateBatch_BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
+		Metadata:  nil,
+		StartDate: &start,
+		EndDate:   &end,
 	})
 	require.NoError(err)
 	batchDenom := bRes.BatchDenom

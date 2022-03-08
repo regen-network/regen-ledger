@@ -37,6 +37,21 @@ func (m *MockEcocreditKeeper) EXPECT() *MockEcocreditKeeperMockRecorder {
 	return m.recorder
 }
 
+// AllowedAskDenoms mocks base method.
+func (m *MockEcocreditKeeper) AllowedAskDenoms(arg0 context.Context, arg1 *ecocredit.QueryAllowedAskDenomsRequest) (*ecocredit.QueryAllowedAskDenomsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AllowedAskDenoms", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryAllowedAskDenomsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AllowedAskDenoms indicates an expected call of AllowedAskDenoms.
+func (mr *MockEcocreditKeeperMockRecorder) AllowedAskDenoms(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AllowedAskDenoms", reflect.TypeOf((*MockEcocreditKeeper)(nil).AllowedAskDenoms), arg0, arg1)
+}
+
 // Balance mocks base method.
 func (m *MockEcocreditKeeper) Balance(arg0 context.Context, arg1 *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
 	m.ctrl.T.Helper()
@@ -50,6 +65,51 @@ func (m *MockEcocreditKeeper) Balance(arg0 context.Context, arg1 *ecocredit.Quer
 func (mr *MockEcocreditKeeperMockRecorder) Balance(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Balance", reflect.TypeOf((*MockEcocreditKeeper)(nil).Balance), arg0, arg1)
+}
+
+// Basket mocks base method.
+func (m *MockEcocreditKeeper) Basket(arg0 context.Context, arg1 *ecocredit.QueryBasketRequest) (*ecocredit.QueryBasketResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Basket", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBasketResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Basket indicates an expected call of Basket.
+func (mr *MockEcocreditKeeperMockRecorder) Basket(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Basket", reflect.TypeOf((*MockEcocreditKeeper)(nil).Basket), arg0, arg1)
+}
+
+// BasketCredits mocks base method.
+func (m *MockEcocreditKeeper) BasketCredits(arg0 context.Context, arg1 *ecocredit.QueryBasketCreditsRequest) (*ecocredit.QueryBasketCreditsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BasketCredits", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBasketCreditsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BasketCredits indicates an expected call of BasketCredits.
+func (mr *MockEcocreditKeeperMockRecorder) BasketCredits(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BasketCredits", reflect.TypeOf((*MockEcocreditKeeper)(nil).BasketCredits), arg0, arg1)
+}
+
+// Baskets mocks base method.
+func (m *MockEcocreditKeeper) Baskets(arg0 context.Context, arg1 *ecocredit.QueryBasketsRequest) (*ecocredit.QueryBasketsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Baskets", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBasketsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Baskets indicates an expected call of Baskets.
+func (mr *MockEcocreditKeeperMockRecorder) Baskets(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Baskets", reflect.TypeOf((*MockEcocreditKeeper)(nil).Baskets), arg0, arg1)
 }
 
 // BatchInfo mocks base method.
@@ -80,6 +140,51 @@ func (m *MockEcocreditKeeper) Batches(arg0 context.Context, arg1 *ecocredit.Quer
 func (mr *MockEcocreditKeeperMockRecorder) Batches(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Batches", reflect.TypeOf((*MockEcocreditKeeper)(nil).Batches), arg0, arg1)
+}
+
+// BuyOrder mocks base method.
+func (m *MockEcocreditKeeper) BuyOrder(arg0 context.Context, arg1 *ecocredit.QueryBuyOrderRequest) (*ecocredit.QueryBuyOrderResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BuyOrder", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBuyOrderResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BuyOrder indicates an expected call of BuyOrder.
+func (mr *MockEcocreditKeeperMockRecorder) BuyOrder(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyOrder", reflect.TypeOf((*MockEcocreditKeeper)(nil).BuyOrder), arg0, arg1)
+}
+
+// BuyOrders mocks base method.
+func (m *MockEcocreditKeeper) BuyOrders(arg0 context.Context, arg1 *ecocredit.QueryBuyOrdersRequest) (*ecocredit.QueryBuyOrdersResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BuyOrders", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBuyOrdersResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BuyOrders indicates an expected call of BuyOrders.
+func (mr *MockEcocreditKeeperMockRecorder) BuyOrders(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyOrders", reflect.TypeOf((*MockEcocreditKeeper)(nil).BuyOrders), arg0, arg1)
+}
+
+// BuyOrdersByAddress mocks base method.
+func (m *MockEcocreditKeeper) BuyOrdersByAddress(arg0 context.Context, arg1 *ecocredit.QueryBuyOrdersByAddressRequest) (*ecocredit.QueryBuyOrdersByAddressResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BuyOrdersByAddress", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryBuyOrdersByAddressResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BuyOrdersByAddress indicates an expected call of BuyOrdersByAddress.
+func (mr *MockEcocreditKeeperMockRecorder) BuyOrdersByAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuyOrdersByAddress", reflect.TypeOf((*MockEcocreditKeeper)(nil).BuyOrdersByAddress), arg0, arg1)
 }
 
 // ClassInfo mocks base method.
@@ -168,6 +273,96 @@ func (m *MockEcocreditKeeper) Params(arg0 context.Context, arg1 *ecocredit.Query
 func (mr *MockEcocreditKeeperMockRecorder) Params(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Params", reflect.TypeOf((*MockEcocreditKeeper)(nil).Params), arg0, arg1)
+}
+
+// ProjectInfo mocks base method.
+func (m *MockEcocreditKeeper) ProjectInfo(arg0 context.Context, arg1 *ecocredit.QueryProjectInfoRequest) (*ecocredit.QueryProjectInfoResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ProjectInfo", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryProjectInfoResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ProjectInfo indicates an expected call of ProjectInfo.
+func (mr *MockEcocreditKeeperMockRecorder) ProjectInfo(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ProjectInfo", reflect.TypeOf((*MockEcocreditKeeper)(nil).ProjectInfo), arg0, arg1)
+}
+
+// Projects mocks base method.
+func (m *MockEcocreditKeeper) Projects(arg0 context.Context, arg1 *ecocredit.QueryProjectsRequest) (*ecocredit.QueryProjectsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Projects", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QueryProjectsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Projects indicates an expected call of Projects.
+func (mr *MockEcocreditKeeperMockRecorder) Projects(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Projects", reflect.TypeOf((*MockEcocreditKeeper)(nil).Projects), arg0, arg1)
+}
+
+// SellOrder mocks base method.
+func (m *MockEcocreditKeeper) SellOrder(arg0 context.Context, arg1 *ecocredit.QuerySellOrderRequest) (*ecocredit.QuerySellOrderResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SellOrder", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QuerySellOrderResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SellOrder indicates an expected call of SellOrder.
+func (mr *MockEcocreditKeeperMockRecorder) SellOrder(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SellOrder", reflect.TypeOf((*MockEcocreditKeeper)(nil).SellOrder), arg0, arg1)
+}
+
+// SellOrders mocks base method.
+func (m *MockEcocreditKeeper) SellOrders(arg0 context.Context, arg1 *ecocredit.QuerySellOrdersRequest) (*ecocredit.QuerySellOrdersResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SellOrders", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QuerySellOrdersResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SellOrders indicates an expected call of SellOrders.
+func (mr *MockEcocreditKeeperMockRecorder) SellOrders(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SellOrders", reflect.TypeOf((*MockEcocreditKeeper)(nil).SellOrders), arg0, arg1)
+}
+
+// SellOrdersByAddress mocks base method.
+func (m *MockEcocreditKeeper) SellOrdersByAddress(arg0 context.Context, arg1 *ecocredit.QuerySellOrdersByAddressRequest) (*ecocredit.QuerySellOrdersByAddressResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SellOrdersByAddress", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QuerySellOrdersByAddressResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SellOrdersByAddress indicates an expected call of SellOrdersByAddress.
+func (mr *MockEcocreditKeeperMockRecorder) SellOrdersByAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SellOrdersByAddress", reflect.TypeOf((*MockEcocreditKeeper)(nil).SellOrdersByAddress), arg0, arg1)
+}
+
+// SellOrdersByBatchDenom mocks base method.
+func (m *MockEcocreditKeeper) SellOrdersByBatchDenom(arg0 context.Context, arg1 *ecocredit.QuerySellOrdersByBatchDenomRequest) (*ecocredit.QuerySellOrdersByBatchDenomResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SellOrdersByBatchDenom", arg0, arg1)
+	ret0, _ := ret[0].(*ecocredit.QuerySellOrdersByBatchDenomResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SellOrdersByBatchDenom indicates an expected call of SellOrdersByBatchDenom.
+func (mr *MockEcocreditKeeperMockRecorder) SellOrdersByBatchDenom(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SellOrdersByBatchDenom", reflect.TypeOf((*MockEcocreditKeeper)(nil).SellOrdersByBatchDenom), arg0, arg1)
 }
 
 // Supply mocks base method.

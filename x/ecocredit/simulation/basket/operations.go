@@ -263,53 +263,62 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		var credits []*basket.BasketCredit
-		for _, info := range classInfoList {
-			batchesRes, err := qryClient.Batches(ctx, &ecocredit.QueryBatchesRequest{ClassId: info.ClassId})
+		for _, classInfo := range classInfoList {
+
+			resProjects, err := qryClient.Projects(ctx, &ecocredit.QueryProjectsRequest{ClassId: classInfo.ClassId})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 			}
 
-			batches := batchesRes.Batches
-			if len(batches) != 0 {
-				count := 0
-				for _, item := range batches {
-					balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
-						Account: ownerAddr, BatchDenom: item.BatchDenom,
-					})
-					if err != nil {
-						return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
-					}
+			for _, projectInfo := range resProjects.GetProjects() {
 
-					tradableAmount := balanceRes.TradableAmount
-					if tradableAmount != "0" {
-						d, err := math.NewPositiveDecFromString(tradableAmount)
+				batchesRes, err := qryClient.Batches(ctx, &ecocredit.QueryBatchesRequest{ProjectId: projectInfo.ProjectId})
+				if err != nil {
+					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
+				}
+
+				batches := batchesRes.Batches
+				if len(batches) != 0 {
+					count := 0
+					for _, item := range batches {
+						balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
+							Account: ownerAddr, BatchDenom: item.BatchDenom,
+						})
 						if err != nil {
-							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
+							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 						}
 
-						dInt, err := d.Int64()
-						if err != nil {
-							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
+						tradableAmount := balanceRes.TradableAmount
+						if tradableAmount != "0" {
+							d, err := math.NewPositiveDecFromString(tradableAmount)
+							if err != nil {
+								return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
+							}
+
+							dInt, err := d.Int64()
+							if err != nil {
+								return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, nil
+							}
+
+							if dInt == 1 {
+								credits = append(credits, &basket.BasketCredit{
+									BatchDenom: item.BatchDenom,
+									Amount:     "1",
+								})
+								count++
+							} else {
+								amt := simtypes.RandIntBetween(r, 1, int(dInt))
+								credits = append(credits, &basket.BasketCredit{
+									BatchDenom: item.BatchDenom,
+									Amount:     fmt.Sprintf("%d", amt),
+								})
+								count++
+							}
 						}
 
-						if dInt == 1 {
-							credits = append(credits, &basket.BasketCredit{
-								BatchDenom: item.BatchDenom,
-								Amount:     "1",
-							})
-							count++
-						} else {
-							amt := simtypes.RandIntBetween(r, 1, int(dInt))
-							credits = append(credits, &basket.BasketCredit{
-								BatchDenom: item.BatchDenom,
-								Amount:     fmt.Sprintf("%d", amt),
-							})
-							count++
+						if count == 3 {
+							break
 						}
-					}
-
-					if count == 3 {
-						break
 					}
 				}
 			}

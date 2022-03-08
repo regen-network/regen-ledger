@@ -197,6 +197,18 @@ func (mr *MockBankKeeperMockRecorder) SendCoinsFromModuleToAccount(ctx, senderMo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendCoinsFromModuleToAccount", reflect.TypeOf((*MockBankKeeper)(nil).SendCoinsFromModuleToAccount), ctx, senderModule, recipientAddr, amt)
 }
 
+// SetDenomMetaData mocks base method.
+func (m *MockBankKeeper) SetDenomMetaData(ctx types.Context, denomMetaData types1.Metadata) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetDenomMetaData", ctx, denomMetaData)
+}
+
+// SetDenomMetaData indicates an expected call of SetDenomMetaData.
+func (mr *MockBankKeeperMockRecorder) SetDenomMetaData(ctx, denomMetaData interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDenomMetaData", reflect.TypeOf((*MockBankKeeper)(nil).SetDenomMetaData), ctx, denomMetaData)
+}
+
 // SpendableCoins mocks base method.
 func (m *MockBankKeeper) SpendableCoins(ctx types.Context, addr types.AccAddress) types.Coins {
 	m.ctrl.T.Helper()
@@ -209,18 +221,6 @@ func (m *MockBankKeeper) SpendableCoins(ctx types.Context, addr types.AccAddress
 func (mr *MockBankKeeperMockRecorder) SpendableCoins(ctx, addr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SpendableCoins", reflect.TypeOf((*MockBankKeeper)(nil).SpendableCoins), ctx, addr)
-}
-
-// SetDenomMetaData mocks base method.
-func (m *MockBankKeeper) SetDenomMetaData(ctx types.Context, denomMetaData types1.Metadata) {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "SetDenomMetaData", ctx, denomMetaData)
-}
-
-// SetDenomMetaData indicates an expected call of SetDenomMetaData.
-func (mr *MockBankKeeperMockRecorder) SetDenomMetaData(ctx, denomMetaData interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetDenomMetaData", reflect.TypeOf((*MockBankKeeper)(nil).SetDenomMetaData), ctx, denomMetaData)
 }
 
 // MockKeeper is a mock of Keeper interface.
@@ -239,6 +239,25 @@ func NewMockKeeper(ctrl *gomock.Controller) *MockKeeper {
 	mock := &MockKeeper{ctrl: ctrl}
 	mock.recorder = &MockKeeperMockRecorder{mock}
 	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockKeeper) EXPECT() *MockKeeperMockRecorder {
+	return m.recorder
+}
+
+// PruneOrders mocks base method.
+func (m *MockKeeper) PruneOrders(ctx types.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PruneOrders", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// PruneOrders indicates an expected call of PruneOrders.
+func (mr *MockKeeperMockRecorder) PruneOrders(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PruneOrders", reflect.TypeOf((*MockKeeper)(nil).PruneOrders), ctx)
 }
 
 // MockDistributionKeeper is a mock of DistributionKeeper interface.
@@ -260,22 +279,8 @@ func NewMockDistributionKeeper(ctrl *gomock.Controller) *MockDistributionKeeper 
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockKeeper) EXPECT() *MockKeeperMockRecorder {
+func (m *MockDistributionKeeper) EXPECT() *MockDistributionKeeperMockRecorder {
 	return m.recorder
-}
-
-// PruneOrders mocks base method.
-func (m *MockKeeper) PruneOrders(ctx types.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "PruneOrders", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// PruneOrders indicates an expected call of PruneOrders.
-func (mr *MockKeeperMockRecorder) PruneOrders(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PruneOrders", reflect.TypeOf((*MockKeeper)(nil).PruneOrders), ctx)
 }
 
 // FundCommunityPool mocks base method.

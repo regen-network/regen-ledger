@@ -113,18 +113,25 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 
 	}
 
+	projectRes, err := k.ecocreditKeeper.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: batchInfo.ProjectId})
+	if err != nil {
+		return err
+	}
+
+	classId := projectRes.Info.ClassId
+
 	// check credit class match
-	found, err := k.stateStore.BasketClassStore().Has(ctx, basket.Id, batchInfo.ClassId)
+	found, err := k.stateStore.BasketClassStore().Has(ctx, basket.Id, classId)
 	if err != nil {
 		return err
 	}
 	if !found {
-		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", batchInfo.ClassId)
+		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
 	}
 
 	// check credit type match
 	requiredCreditType := basket.CreditTypeAbbrev
-	res, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
+	res, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId})
 	if err != nil {
 		return err
 	}

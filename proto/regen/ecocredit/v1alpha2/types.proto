@@ -1,0 +1,340 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha2;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// ClassInfo represents the high-level on-chain information for a credit class.
+message ClassInfo {
+
+  // class_id is the unique ID of credit class.
+  string class_id = 1;
+
+  // admin is the admin of the credit class.
+  string admin = 2;
+
+  // issuers are the approved issuers of the credit class.
+  repeated string issuers = 3;
+
+  // metadata is any arbitrary metadata to attached to the credit class.
+  bytes metadata = 4;
+
+  // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+  CreditType credit_type = 5;
+
+  // The number of batches issued in this credit class.
+  uint64 num_batches = 6;
+}
+
+// ProjectInfo represents the high-level on-chain information for a project.
+message ProjectInfo {
+
+  // project_id is the unique ID of the project.
+  string project_id = 1;
+
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 2;
+
+  // issuer is the issuer of the credit batches for this project.
+  string issuer = 3;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 4;
+
+  // metadata is any arbitrary metadata attached to the project.
+  bytes metadata = 5;
+}
+
+// BatchInfo represents the high-level on-chain information for a credit batch.
+message BatchInfo {
+
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 1;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2;
+
+  // total_amount is the total number of active credits in the credit batch.
+  // Some of the issued credits may be cancelled and will be removed from
+  // total_amount and tracked in amount_cancelled. total_amount and
+  // amount_cancelled will always sum to the original amount of credits that
+  // were issued.
+  string total_amount = 4;
+
+  // metadata is any arbitrary metadata attached to the credit batch.
+  bytes metadata = 5;
+
+  // amount_cancelled is the number of credits in the batch that have been
+  // cancelled, effectively undoing there issuance. The sum of total_amount and
+  // amount_cancelled will always sum to the original amount of credits that
+  // were issued.
+  string amount_cancelled = 6;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+}
+
+// Params defines the updatable global parameters of the ecocredit module for
+// use with the x/params module.
+message Params {
+  // credit_class_fee is the fixed fee charged on creation of a new credit class
+  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // allowed_class_creators is an allowlist defining the addresses with
+  // the required permissions to create credit classes
+  repeated string allowed_class_creators = 2;
+
+  // allowlist_enabled is a param that enables/disables the allowlist for credit
+  // creation
+  bool allowlist_enabled = 3;
+
+  // credit_types is a list of definitions for credit types
+  repeated CreditType credit_types = 4;
+
+  // basket_creation_fee is the fee to create a new basket denom.
+  repeated cosmos.base.v1beta1.Coin basket_creation_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+// CreditType defines the measurement unit/precision of a certain credit type
+// (e.g. carbon, biodiversity...)
+message CreditType {
+  // the type of credit (e.g. carbon, biodiversity, etc)
+  string name = 1;
+
+  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+  // name, used in batch denominations within the CreditType. It must be unique.
+  string abbreviation = 2;
+
+  // the measurement unit (e.g. kg, ton, etc)
+  string unit = 3;
+
+  // the decimal precision
+  uint32 precision = 4;
+}
+
+// CreditTypeSeq associates a sequence number with a credit type abbreviation.
+// This represents the number of credit classes created with that credit type.
+message CreditTypeSeq {
+  // The credit type abbreviation
+  string abbreviation = 1;
+
+  // The sequence number of classes of the credit type
+  uint64 seq_number = 2;
+}
+
+// SellOrder represents the information for a sell order.
+message SellOrder {
+
+  // order_id is the unique ID of sell order.
+  uint64 order_id = 1;
+
+  // owner is the address of the owner of the credits being sold.
+  string owner = 2;
+
+  // batch_denom is the credit batch being sold.
+  string batch_denom = 3;
+
+  // quantity is the quantity of credits being sold.
+  string quantity = 4;
+
+  // ask_price is the price the seller is asking for each unit of the
+  // batch_denom. Each credit unit of the batch will be sold for at least the
+  // ask_price or more.
+  cosmos.base.v1beta1.Coin ask_price = 5;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 6;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
+}
+
+// BuyOrder represents the information for a buy order.
+message BuyOrder {
+
+  // Selection defines a buy order selection.
+  message Selection {
+
+    // sum defines the type of selection.
+    oneof sum {
+      // sell_order_id is the sell order ID against which the buyer is trying to buy.
+      // When sell_order_id is set, this is known as a direct buy order because it
+      // is placed directly against a specific sell order.
+      uint64 sell_order_id = 1;
+
+      // TODO: once we have filters defined for baskets, we can enable filtered
+      // buy orders which will involve full double-sided batch order matching
+      //
+      // filter selects credits to buy based upon the specified filter criteria.
+      // Filter filter = 2;
+    }
+  }
+
+  // buy_order_id is the unique ID of buy order.
+  uint64 buy_order_id = 1;
+
+  // buyer is the address that created the buy order
+  string buyer = 2;
+
+  // selection is the buy order selection.
+  Selection selection = 3;
+
+  // quantity is the quantity of credits to buy. If the quantity of credits
+  // available is less than this amount the order will be partially filled
+  // unless disable_partial_fill is true.
+  string quantity = 4;
+
+  // bid price is the bid price for this buy order. A credit unit will be
+  // settled at a purchase price that is no more than the bid price. The
+  // buy order will fail if the buyer does not have enough funds available
+  // to complete the purchase.
+  cosmos.base.v1beta1.Coin bid_price = 5;
+
+  // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
+  // the credits will not auto-retire and can be resold assuming that the
+  // corresponding sell order has auto-retirement disabled. If the sell order
+  // hasn't disabled auto-retirement and the buy order tries to disable it,
+  // that buy order will fail.
+  bool disable_auto_retire = 6;
+
+  // disable_partial_fill disables the default behavior of partially filling
+  // buy orders if the requested quantity is not available.
+  bool disable_partial_fill = 7;
+
+  // expiration is the optional timestamp when the buy order expires. When the
+  // expiration time is reached, the buy order is removed from state.
+  google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
+}
+
+// AskDenom represents the information for an ask denom.
+message AskDenom {
+
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  string denom = 1;
+
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
+}
+
+// BasketCredit represents the information for a credit batch inside a basket.
+message BasketCredit {
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // tradable_amount is the number of credits in this transfer that can be
+  // traded by the recipient. Decimal values are acceptable within the
+  // precision returned by Query/Precision.
+  string tradable_amount = 2;
+}
+
+// BasketCriteria defines a criteria by which credits can be added to a basket.
+message BasketCriteria {
+
+  // filter defines condition(s) that credits should satisfy in order to be
+  // added to the basket.
+  Filter filter = 1;
+
+  // multiplier is an integer number which is applied to credit units when
+  // converting to basket units. For example if the multiplier is 2000, then
+  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
+  // amounts left over in this calculation when adding credits to a basket,
+  // those fractional amounts will not get added to the basket.
+  string multiplier = 2;
+}
+
+// Filter defines condition(s) that credits should satisfy in order to be added
+// to the basket. It can handled nested conditions linked with and/or operators.
+message Filter {
+  // sum is the oneof that specifies the type of filter.
+  oneof sum {
+    // and specifies a list of filters where all conditions should be satisfied.
+    And and = 1;
+
+    // or specifies a list of filters where at least one of the conditions should be satisfied.
+    Or or = 2;
+
+    // credit_type_name filters against credits from this credit type name.
+    string credit_type_name = 3;
+
+    // class_id filters against credits from this credit class id.
+    string class_id = 4;
+
+    // project_id filters against credits from this project.
+    string project_id = 5;
+
+    // batch_denom filters against credits from this batch.
+    string batch_denom = 6;
+
+    // class_admin filters against credits issued by this class admin.
+    string class_admin = 7;
+
+    // issuer filters against credits issued by this issuer address.
+    string issuer = 8;
+
+    // owner filters against credits currently owned by this address.
+    string owner = 9;
+
+    // project_location can be specified in three levels of granularity:
+    // country, sub-national-code, or postal code. If just country is given,
+    // for instance "US" then any credits in the "US" will be matched even
+    // their project location is more specific, ex. "US-NY 12345". If
+    // a country, sub-national-code and postal code are all provided then
+    // only projects in that postal code will match.
+    string project_location = 10;
+
+    // date_range filters against credit batch start_date and/or end_date.
+    DateRange date_range = 11;
+
+    // tag specifies a curation tag to match against.
+    string tag = 12;
+  }
+
+  // And specifies an "and" condition between the list of filters.
+  message And {
+    // filters is a list of filters where all conditions should be satisfied.
+    repeated Filter filters = 1;
+  }
+
+  // And specifies an "or" condition between the list of filters.
+  message Or {
+    // filters is a list of filters where at least one of the conditions should be satisfied.
+    repeated Filter filters = 1;
+  }
+
+  // DateRange defines a period for credit batches in a basket.
+  message DateRange {
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified. If it is empty then there is no start date
+    // limit.
+    google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified. If it is empty then there is no end date
+    // limit.
+    google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+  }
+}

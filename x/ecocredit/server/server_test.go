@@ -21,24 +21,25 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
+	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
 	suite.Run(t, s)
 }
 
 func TestGenesis(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
+	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
+func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper, *mocks.MockDistributionKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -82,6 +83,5 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, distKeeper)
-	suite.Run(t, s)
+	return ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper
 }

@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
