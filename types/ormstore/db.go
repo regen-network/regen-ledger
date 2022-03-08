@@ -3,6 +3,9 @@ package ormstore
 import (
 	"context"
 
+	queryv1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/query/v1beta1"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -27,4 +30,21 @@ func NewStoreKeyDB(desc ormdb.ModuleSchema, key storetypes.StoreKey, options orm
 		return getBackend(ctx)
 	}
 	return ormdb.NewModuleDB(desc, options)
+}
+
+func GogoPageReqToPulsarPageReq(request *query.PageRequest) *queryv1beta1.PageRequest {
+	return &queryv1beta1.PageRequest{
+		Key:        request.Key,
+		Offset:     request.Offset,
+		Limit:      request.Limit,
+		CountTotal: request.CountTotal,
+		Reverse:    request.Reverse,
+	}
+}
+
+func PulsarPageResToGogoPageRes(response *queryv1beta1.PageResponse) *query.PageResponse {
+	return &query.PageResponse{
+		NextKey: response.NextKey,
+		Total:   response.Total,
+	}
 }
