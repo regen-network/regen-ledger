@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package regen.ecocredit.orderbook.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+
+// BuyOrderSellOrderMatch defines the data the FIFO/price-time-priority matching
+// algorithm used to actually match buy and sell orders.
+message BuyOrderSellOrderMatch {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1
+
+    // the primary key of the table is simply the buy_order_id,sell_order_id pair as these pairs are unique
+    primary_key: { fields: "buy_order_id,sell_order_id" }
+
+    // Algorithm details:
+    // this index is what does the magic - it basically sorts our orders for us and more or less does the matching.
+    // Basically we iterate over all bid prices within a given denom from high to low. The highest bidding orders always get filled first, and if one bid is the same price as another, the earlier bid wins - since buy order IDs are assigned incrementally we get this for free.
+    // Then within a given buy order, we iterate over all the matching sell orders from the lowest to highest ask price. So the highest bids and lowest asks get filled first. If the ask price is the same, then earlier sell orders get filled first (again we get this from the sell order ID which is assigned incrementally).
+    index: { id: 1; fields: "market_id,bid_price_complement,buy_order_id,ask_price,sell_order_id";
+      //name: "order_book_match"
+    }
+
+    // this index is used to delete matches once sell orders are filled
+    index: { id: 2, fields: "sell_order_id" }
+  };
+
+  // market_id defines the market within which this match exists.
+  uint64 market_id = 1;
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 2;
+
+  // sell_order_id is the sell order ID.
+  uint64 sell_order_id = 3;
+
+  // bid_price_complement is the the complement (^ operator) of the bid price encoded as a uint32 (which should have sufficient precision) - effectively ~price * 10^exponent (usually 10^6). The complement is used so that bids can be sorted high to low.
+  fixed32 bid_price_complement = 4;
+
+  // ask_price is the ask price encoded to a uint32. Ask prices are sorted low to high.
+  fixed32 ask_price = 5;
+}
+
+// BuyOrderClassSelector indexes a buy order with class selector.
+message BuyOrderClassSelector {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: { fields: "buy_order_id,class_id" }
+    index: {id: 1, fields: "class_id"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  // class_id is the class ID.
+  uint64 class_id = 2;
+
+  // project_location is the project location in the selector's criteria.
+  string project_location = 3;
+
+  // min_start_date is the minimum start date in the selector's criteria.
+  google.protobuf.Timestamp min_start_date = 4;
+
+  // max_end_date is the maximum end date in the selector's criteria.
+  google.protobuf.Timestamp max_end_date = 5;
+}
+
+// BuyOrderProjectSelector indexes a buy order with project selector.
+message BuyOrderProjectSelector {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 3
+    primary_key: { fields: "buy_order_id,project_id" }
+    index: {id: 1, fields: "project_id"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  // project_id is the project ID.
+  uint64 project_id = 2;
+
+  // min_start_date is the minimum start date in the selector's criteria.
+  google.protobuf.Timestamp min_start_date = 3;
+
+  // max_end_date is the maximum end date in the selector's criteria.
+  google.protobuf.Timestamp max_end_date = 4;
+}
+
+// BuyOrderBatchSelector indexes a buy order with batch selector.
+message BuyOrderBatchSelector {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 4
+    primary_key: {fields: "buy_order_id,batch_id"}
+    index: {id: 1, fields: "batch_id"}
+  };
+
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 1;
+
+  // batch_id is the batch ID.
+  uint64 batch_id = 2;
+}
