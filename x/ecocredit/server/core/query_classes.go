@@ -3,30 +3,37 @@ package core
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 )
 
 // Classes queries for all credit classes with pagination.
-func (k Keeper) Classes(ctx context.Context, request *v1beta1.QueryClassesRequest) (*v1beta1.QueryClassesResponse, error) {
+func (k Keeper) Classes(ctx context.Context, request *v1.QueryClassesRequest) (*v1.QueryClassesResponse, error) {
 	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ClassInfoStore().List(ctx, &ecocreditv1beta1.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassInfoStore().List(ctx, &ecocreditv1.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	infos := make([]*v1beta1.ClassInfo, 0)
+	infos := make([]*v1.CreditClass, 0)
 	for it.Next() {
 		info, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var ci v1beta1.ClassInfo
-		if err = PulsarToGogoSlow(info, &ci); err != nil {
+		md, err := types.DecodeMetadata(string(info.Metadata))
+		if err != nil {
 			return nil, err
+		}
+		ci := v1.CreditClass{
+			Name:       info.Name,
+			Admin:      info.Admin,
+			Metadata:   string(md),
+			CreditType: info.CreditType,
 		}
 		infos = append(infos, &ci)
 	}
@@ -34,7 +41,7 @@ func (k Keeper) Classes(ctx context.Context, request *v1beta1.QueryClassesReques
 	if err != nil {
 		return nil, err
 	}
-	return &v1beta1.QueryClassesResponse{
+	return &v1.QueryClassesResponse{
 		Classes:    infos,
 		Pagination: pr,
 	}, err
