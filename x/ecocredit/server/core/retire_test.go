@@ -15,10 +15,17 @@ func TestRetire_Valid(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
+	// starting balance
+	// tradable: 10.5
+	// retired: 10.5
+
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
+
+	// starting balance -> 10.5 tradable, 10.5 retired
+	// retire 10.0 -> 0.5 leftover in tradable, retired becomes 20.5
 
 	_, err := s.k.Retire(s.ctx, &v1beta1.MsgRetire{
 		Holder: s.addr.String(),
@@ -28,6 +35,8 @@ func TestRetire_Valid(t *testing.T) {
 		Location: "US-NY",
 	})
 	assert.NilError(t, err)
+
+	// check both balance and supply reflect the change
 
 	bal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
