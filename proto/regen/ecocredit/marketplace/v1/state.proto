@@ -1,0 +1,197 @@
+syntax = "proto3";
+
+package regen.ecocredit.marketplace.v1;
+
+import "google/protobuf/timestamp.proto";
+import "cosmos/orm/v1alpha1/orm.proto";
+import "regen/ecocredit/marketplace/v1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/v1";
+
+// SellOrder represents the information for a sell order.
+message SellOrder {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 1,
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "batch_id"}
+        index: {id: 2 fields: "seller"}
+        index: {id: 3 fields: "expiration"}
+    };
+
+    // id is the unique ID of sell order.
+    uint64 id = 1;
+
+    // seller is the bytes address of the owner of the credits being sold.
+    bytes seller = 2;
+
+    // batch_id is ID of the credit batch being sold.
+    uint64 batch_id = 3;
+
+    // quantity is the decimal quantity of credits being sold.
+    string quantity = 4;
+
+    // market_id is the market in which this sell order exists and specifies
+    // the bank_denom that ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // ask_price is the integer price (encoded as a string) the seller is asking
+    // for each unit of the batch_denom. Each credit unit of the batch will be
+    // sold for at least the ask_price or more.
+    string ask_price = 6;
+
+    // disable_auto_retire disables auto-retirement of credits which allows a
+    // buyer to disable auto-retirement in their buy order enabling them to
+    // resell the credits to another buyer.
+    bool disable_auto_retire = 7;
+
+    // expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp expiration = 9;
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching buy orders.
+    bool maker = 10;
+}
+
+// BuyOrder represents the information for a buy order.
+message BuyOrder {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 2,
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "buyer"}
+        index: {id: 2 fields: "expiration"}
+    };
+
+    // Selection defines a buy order selection.
+    message Selection {
+
+        // sum defines the type of selection.
+        oneof sum {
+            // sell_order_id is the sell order ID against which the buyer is trying to buy.
+            // When sell_order_id is set, this is known as a direct buy order because it
+            // is placed directly against a specific sell order.
+            uint64 sell_order_id = 1;
+
+            // filter selects credits to buy based upon the specified filter criteria.
+            Filter filter = 2;
+        }
+    }
+
+    // id is the unique ID of buy order.
+    uint64 id = 1;
+
+    // buyer is the bytes address of the account that created the buy order
+    bytes buyer = 2;
+
+    // selection is the buy order selection.
+    Selection selection = 3;
+
+    // quantity is the decimal quantity of credits to buy. If the quantity of credits
+    // available is less than this amount the order will be partially filled
+    // unless disable_partial_fill is true.
+    string quantity = 4;
+
+    // market_id is the market in which this sell order exists and specifies
+    // the bank_denom that ask_price corresponds to.
+    uint64 market_id = 5;
+
+    // bid price is the integer bid price for this buy order. A credit unit will be
+    // settled at a purchase price that is no more than the bid price. The
+    // buy order will fail if the buyer does not have enough funds available
+    // to complete the purchase.
+    string bid_price = 6;
+
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
+    // the credits will not auto-retire and can be resold assuming that the
+    // corresponding sell order has auto-retirement disabled. If the sell order
+    // hasn't disabled auto-retirement and the buy order tries to disable it,
+    // that buy order will fail.
+    bool disable_auto_retire = 7;
+
+    // disable_partial_fill disables the default behavior of partially filling
+    // buy orders if the requested quantity is not available.
+    bool disable_partial_fill = 8;
+
+    // expiration is the optional timestamp when the buy order expires. When the
+    // expiration time is reached, the buy order is removed from state.
+    google.protobuf.Timestamp expiration = 9;
+
+
+    // maker indicates that this is a maker order, meaning that when it hit
+    // the order book, there were no matching sell orders.
+    bool maker = 10;
+}
+
+// AllowedDenom represents the information for an allowed ask/bid denom.
+message AllowedDenom {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 3
+        primary_key: {fields: "bank_denom"}
+        index: {id: 1 fields: "display_denom", unique: true}
+    };
+
+    // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+    string bank_denom = 1;
+
+    // display_denom is the denom to display to the user and is informational.
+    // Because the denom is likely an IBC denom, this should be chosen by
+    // governance to represent the consensus trusted name of the denom.
+    string display_denom = 2;
+
+    // exponent is the exponent that relates the denom to the display_denom and is
+    // informational
+    uint32 exponent = 3;
+}
+
+// Market describes a distinctly processed market between a credit type and
+// allowed bank denom. Each market has its own precision in the order book
+// and is processed independently of other markets. Governance must enable
+// markets one by one. Every additional enabled market potentially adds more
+// processing overhead to the blockchain and potentially weakens liquidity in
+// competing markets. For instance, enabling side by side USD/Carbon and
+// EUR/Carbon markets may have the end result that each market individually has
+// less liquidity and longer settlement times. Such decisions should be taken
+// with care.
+message Market {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 4
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "credit_type,bank_denom", unique: true}
+    };
+
+    // id is the unique ID of the market.
+    uint64 id = 1;
+
+    // credit_type is the abbreviation of the credit type.
+    string credit_type = 2;
+
+    // bank_denom is an allowed bank denom.
+    string bank_denom = 3;
+
+    // precision_modifier is an optional modifier used to convert arbitrary
+    // precision integer bank amounts to uint32 values used for sorting in the
+    // order book. Given an arbitrary precision integer x, its uint32 conversion
+    // will be x / 10^precision_modifier using round half away from zero
+    // rounding.
+    //
+    // uint32 values range from 0 to 4,294,967,295.
+    // This allows for a full 9 digits of precision. In most real world markets
+    // this amount of precision is sufficient and most common downside -
+    // that some orders with very miniscule price differences may be ordered
+    // equivalently (because of rounding) - is acceptable.
+    // Note that this rounding will not affect settlement price which will
+    // always be done exactly.
+    //
+    // Given a USD stable coin with 6 decimal digits, a precision_modifier
+    // of 0 is probably acceptable as long as credits are always less than
+    // $4,294/unit. With precision down to $0.001 (a precision_modifier of 3
+    // in this case), prices can rise up to $4,294,000/unit. Either scenario
+    // is probably quite acceptable given that carbon prices are unlikely to
+    // rise above $1000/ton any time in the near future.
+    //
+    // If credit prices, exceed the maximum range of uint32 with this
+    // precision_modifier, orders with high prices will fail and governance
+    // will need to adjust precision_modifier to allow for higher prices in
+    // exchange for less precision at the lower end.
+    uint32 precision_modifier = 4;
+}

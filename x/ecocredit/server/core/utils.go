@@ -8,6 +8,20 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// Returns ErrUnauthorized otherwise.
+func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer string) error {
+	addr, _ := sdk.AccAddressFromBech32(issuer)
+	found, err := k.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
+	if err != nil {
+		return err
+	}
+	if !found {
+		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for the class", issuer)
+	}
+	return nil
+}
+
 // getCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
 func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocredit.CreditType, error) {
 	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
