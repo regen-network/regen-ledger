@@ -6,44 +6,58 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
-	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
 type Module struct {
-	paramSpace    paramtypes.Subspace
-	accountKeeper ecocredit.AccountKeeper
-	bankKeeper    ecocredit.BankKeeper
-	keeper        ecocredit.Keeper
+	paramSpace         paramtypes.Subspace
+	accountKeeper      ecocredit.AccountKeeper
+	bankKeeper         ecocredit.BankKeeper
+	distributionKeeper ecocredit.DistributionKeeper
+	keeper             ecocredit.Keeper
 }
 
 // NewModule returns a new Module object.
-func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) *Module {
+func NewModule(
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distributionKeeper ecocredit.DistributionKeeper,
+) *Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
 	}
 
 	return &Module{
-		paramSpace:    paramSpace,
-		bankKeeper:    bankKeeper,
-		accountKeeper: accountKeeper,
+		paramSpace:         paramSpace,
+		bankKeeper:         bankKeeper,
+		accountKeeper:      accountKeeper,
+		distributionKeeper: distributionKeeper,
 	}
 }
 
@@ -59,24 +73,73 @@ func (a Module) Name() string {
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	ecocredit.RegisterTypes(registry)
+	baskettypes.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
+	a.keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
 }
 
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
-	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
+	ctx := context.Background()
+	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
+	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	bz, err := jsonTarget.JSON()
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		return err
+	}
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	if err != nil {
+		return err
+	}
+
+	err = db.ValidateJSON(jsonSource)
+	if err != nil {
+		return err
+	}
+
 	var data ecocredit.GenesisState
-	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&data)))
+	if err != nil {
+		return err
+	}
+
+	if r == nil {
+		return nil
+	}
+
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
 	}
 
@@ -92,7 +155,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 1 }
+func (Module) ConsensusVersion() uint64 { return 2 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
