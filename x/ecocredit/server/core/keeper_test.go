@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -24,17 +24,17 @@ import (
 )
 
 type baseSuite struct {
-	t               *testing.T
-	db              ormdb.ModuleDB
-	stateStore      ecocreditv1beta1.StateStore
-	ctx             context.Context
-	k               Keeper
-	ctrl            *gomock.Controller
-	addr            sdk.AccAddress
-	bankKeeper      *mocks.MockBankKeeper
-	paramsKeeper 	*mocks2.MockParamKeeper
-	storeKey        *sdk.KVStoreKey
-	sdkCtx          sdk.Context
+	t            *testing.T
+	db           ormdb.ModuleDB
+	stateStore   ecocreditv1.StateStore
+	ctx          context.Context
+	k            Keeper
+	ctrl         *gomock.Controller
+	addr         sdk.AccAddress
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks2.MockParamKeeper
+	storeKey     *sdk.KVStoreKey
+	sdkCtx       sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -43,7 +43,7 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.stateStore, err = ecocreditv1beta1.NewStateStore(s.db)
+	s.stateStore, err = ecocreditv1.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
@@ -70,32 +70,32 @@ func setupBase(t *testing.T) *baseSuite {
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string){
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1beta1.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       className,
 		Admin:      s.addr,
 		Metadata:   nil,
 		CreditType: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1beta1.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
 		Name:           projectName,
 		ClassId:         1,
 		ProjectLocation: "US-OR",
 		Metadata:        nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1beta1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   nil,
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1beta1.BatchSupply{
+	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1.BatchSupply{
 		BatchId:         1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1beta1.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "10.5",
