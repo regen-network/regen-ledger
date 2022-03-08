@@ -1,0 +1,20 @@
+name: Proto-Registry
+# Push updated proto files to https://buf.build/regen/regen-ledger
+# This workflow is only run when a .proto file has been changed
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'proto/**'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bufbuild/buf-setup-action@v0.6.0
+      - uses: bufbuild/buf-push-action@v1
+        with:
+          input: 'proto'
+          buf_token: ${{ secrets.BUF_TOKEN }}
