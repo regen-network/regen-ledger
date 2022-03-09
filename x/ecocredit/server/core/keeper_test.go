@@ -6,6 +6,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 	"github.com/tendermint/tendermint/libs/log"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -63,6 +64,44 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
+}
+
+// setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
+// supply/balance of "10.5" for both retired and tradable.
+func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string){
+	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
+	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+		Name:       "C01",
+		Admin:      s.addr,
+		Metadata:   nil,
+		CreditType: "C",
+	}))
+	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
+		Name:            "PRO",
+		ClassId:         1,
+		ProjectLocation: "US-OR",
+		Metadata:        nil,
+	}))
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+		ProjectId:  1,
+		BatchDenom: "C01-20200101-20210101-01",
+		Metadata:   nil,
+		StartDate:  &timestamppb.Timestamp{Seconds: 2},
+		EndDate:    &timestamppb.Timestamp{Seconds: 2},
+	}))
+	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1.BatchSupply{
+		BatchId:         1,
+		TradableAmount:  "10.5",
+		RetiredAmount:   "10.5",
+		CancelledAmount: "",
+	}))
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
+		Address:  s.addr,
+		BatchId:  1,
+		Tradable: "10.5",
+		Retired:  "10.5",
+	}))
+	return
 }
 
 // this is an example of how we will unit test the basket functionality with mocks
