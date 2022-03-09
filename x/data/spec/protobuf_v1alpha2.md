@@ -4,6 +4,11 @@
 
 ## Table of Contents
 
+- [regen/data/v1alpha2/events.proto](#regen/data/v1alpha2/events.proto)
+    - [EventAnchorData](#regen.data.v1alpha2.EventAnchorData)
+    - [EventSignData](#regen.data.v1alpha2.EventSignData)
+    - [EventStoreRawData](#regen.data.v1alpha2.EventStoreRawData)
+  
 - [regen/data/v1alpha2/types.proto](#regen/data/v1alpha2/types.proto)
     - [ContentHash](#regen.data.v1alpha2.ContentHash)
     - [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph)
@@ -15,11 +20,6 @@
     - [GraphMerkleTree](#regen.data.v1alpha2.GraphMerkleTree)
     - [MediaType](#regen.data.v1alpha2.MediaType)
   
-- [regen/data/v1alpha2/events.proto](#regen/data/v1alpha2/events.proto)
-    - [EventAnchorData](#regen.data.v1alpha2.EventAnchorData)
-    - [EventSignData](#regen.data.v1alpha2.EventSignData)
-    - [EventStoreRawData](#regen.data.v1alpha2.EventStoreRawData)
-  
 - [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
     - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
     - [GenesisState](#regen.data.v1alpha2.GenesisState)
@@ -30,20 +30,97 @@
     - [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse)
     - [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest)
     - [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse)
+    - [QueryResolverInfoRequest](#regen.data.v1alpha2.QueryResolverInfoRequest)
+    - [QueryResolverInfoResponse](#regen.data.v1alpha2.QueryResolverInfoResponse)
+    - [QueryResolversRequest](#regen.data.v1alpha2.QueryResolversRequest)
+    - [QueryResolversResponse](#regen.data.v1alpha2.QueryResolversResponse)
     - [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest)
     - [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse)
   
     - [Query](#regen.data.v1alpha2.Query)
   
+- [regen/data/v1alpha2/state.proto](#regen/data/v1alpha2/state.proto)
+    - [DataAnchor](#regen.data.v1alpha2.DataAnchor)
+    - [DataID](#regen.data.v1alpha2.DataID)
+    - [DataResolver](#regen.data.v1alpha2.DataResolver)
+    - [DataSigner](#regen.data.v1alpha2.DataSigner)
+    - [ResolverInfo](#regen.data.v1alpha2.ResolverInfo)
+  
 - [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
     - [MsgAnchorData](#regen.data.v1alpha2.MsgAnchorData)
     - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
+    - [MsgDefineResolver](#regen.data.v1alpha2.MsgDefineResolver)
+    - [MsgDefineResolverResponse](#regen.data.v1alpha2.MsgDefineResolverResponse)
+    - [MsgRegisterResolver](#regen.data.v1alpha2.MsgRegisterResolver)
+    - [MsgRegisterResolverResponse](#regen.data.v1alpha2.MsgRegisterResolverResponse)
     - [MsgSignData](#regen.data.v1alpha2.MsgSignData)
     - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
   
     - [Msg](#regen.data.v1alpha2.Msg)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="regen/data/v1alpha2/events.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/events.proto
+
+
+
+<a name="regen.data.v1alpha2.EventAnchorData"></a>
+
+### EventAnchorData
+EventAnchorData is an event emitted when data is anchored on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.EventSignData"></a>
+
+### EventSignData
+EventSignData is an event emitted when data is signed on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.EventStoreRawData"></a>
+
+### EventStoreRawData
+EventStoreRawData is an event emitted when data is stored on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
 
 
 
@@ -193,68 +270,6 @@ MediaType defines MIME media types to be used with a ContentHash.Raw hash.
 
 
 
-<a name="regen/data/v1alpha2/events.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha2/events.proto
-
-
-
-<a name="regen.data.v1alpha2.EventAnchorData"></a>
-
-### EventAnchorData
-EventAnchorData is an event emitted when data is anchored on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.EventSignData"></a>
-
-### EventSignData
-EventSignData is an event emitted when data is signed on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.EventStoreRawData"></a>
-
-### EventStoreRawData
-EventStoreRawData is an event emitted when data is stored on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
 <a name="regen/data/v1alpha2/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -389,6 +404,69 @@ QueryBySignerResponse is the Query/BySigner response type.
 
 
 
+<a name="regen.data.v1alpha2.QueryResolverInfoRequest"></a>
+
+### QueryResolverInfoRequest
+QueryResolverInfoRequest is the Query/ResolverInfo request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  | url is the URL of the resolver to query. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryResolverInfoResponse"></a>
+
+### QueryResolverInfoResponse
+QueryResolverInfoResponse is the Query/ResolverInfo response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [uint64](#uint64) |  | id is the id of the resolver which can be used in Msg/RegisterResolver. |
+| manager | [string](#string) |  | manager is the bech32 account address of the resolver manager. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryResolversRequest"></a>
+
+### QueryResolversRequest
+QueryResolversRequest is the Query/Resolvers request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the content IRI |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryResolversResponse"></a>
+
+### QueryResolversResponse
+QueryResolversResponse is the Query/Resolvers response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resolver_urls | [string](#string) | repeated | resolver_urls are the resolver URLs that have been registered for this data object. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the PageResponse to use for pagination. |
+
+
+
+
+
+
 <a name="regen.data.v1alpha2.QuerySignersRequest"></a>
 
 ### QuerySignersRequest
@@ -408,7 +486,7 @@ QuerySignersRequest is the Query/Signers request type.
 <a name="regen.data.v1alpha2.QuerySignersResponse"></a>
 
 ### QuerySignersResponse
-QuerySignersResponse is the Query/QuerySigners response type.
+QuerySignersResponse is the Query/Signers response type.
 
 
 | Field | Type | Label | Description |
@@ -437,6 +515,107 @@ Query is the regen.data.v1alpha2 Query service
 | ByIRI | [QueryByIRIRequest](#regen.data.v1alpha2.QueryByIRIRequest) | [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
 | Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries signers based on IRI. |
+| Resolvers | [QueryResolversRequest](#regen.data.v1alpha2.QueryResolversRequest) | [QueryResolversResponse](#regen.data.v1alpha2.QueryResolversResponse) | Resolvers returns the registered resolver URLs for the data IRI. |
+| ResolverInfo | [QueryResolverInfoRequest](#regen.data.v1alpha2.QueryResolverInfoRequest) | [QueryResolverInfoResponse](#regen.data.v1alpha2.QueryResolverInfoResponse) | ResolverInfo returns information about a resolver. |
+
+ <!-- end services -->
+
+
+
+<a name="regen/data/v1alpha2/state.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/state.proto
+
+
+
+<a name="regen.data.v1alpha2.DataAnchor"></a>
+
+### DataAnchor
+DataAnchor stores the anchor timestamp for a data object.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [bytes](#bytes) |  | id is the compact data ID. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor timestamp for this object - the time at which it was first known to the blockchain. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.DataID"></a>
+
+### DataID
+DataID stores a compact data ID and its full IRI.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [bytes](#bytes) |  | id is the compact automatically-generated data ID. |
+| iri | [string](#string) |  | iri is the IRI of the data which contains its full ContentHash. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.DataResolver"></a>
+
+### DataResolver
+DataResolver is a join table between data objects and resolvers and indicates
+that a resolver claims to be able to resolve this data object.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [bytes](#bytes) |  | id is the compact data ID. |
+| resolver_id | [uint64](#uint64) |  | resolver_id is the ID of the resolver. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.DataSigner"></a>
+
+### DataSigner
+DataSigner is a join table for associating data IDs and signers.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [bytes](#bytes) |  | id is the compact data ID. |
+| signer | [bytes](#bytes) |  | signer is the account address of the signer. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the time at which the signer signed this data object. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.ResolverInfo"></a>
+
+### ResolverInfo
+ResolverInfo describes a data resolver.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [uint64](#uint64) |  | id is the ID of the resolver. |
+| url | [string](#string) |  | url is the unique URL of the resolver. |
+| manager | [bytes](#bytes) |  | manager is the bytes address of the resolver manager who is allowed to make calls to Msg/RegisterResolver for this resolver. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
 
  <!-- end services -->
 
@@ -475,6 +654,64 @@ MsgAnchorData is the Msg/AnchorData response type.
 | ----- | ---- | ----- | ----------- |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
 | iri | [string](#string) |  | iri is the IRI of the data that was anchored. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgDefineResolver"></a>
+
+### MsgDefineResolver
+MsgDefineResolver is the Msg/DefineResolver request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| manager | [string](#string) |  | manager is the address of the resolver manager. The manager is able to make future calls using the ID returned by this operation with Msg/RegisterResolver. To authorize other accounts to register resolvers, the manager should make use of cosmos.authz. |
+| resolver_url | [string](#string) |  | resolver_url is a resolver URL which should refer to an HTTP service which will respond to a GET request with the IRI of a ContentHash and return the content if it exists or a 404. For graph data, resolvers should use the HTTP Accept header to negotiate the RDF serialization format. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgDefineResolverResponse"></a>
+
+### MsgDefineResolverResponse
+MsgDefineResolverResponse is the Msg/DefineResolver response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resolver_id | [uint64](#uint64) |  | resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgRegisterResolver"></a>
+
+### MsgRegisterResolver
+MsgRegisterResolver is the Msg/RegisterResolver request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| manager | [string](#string) |  | manager is the address of the resolver manager who registered this resolver with Msg/DefinedResolver. |
+| resolver_id | [uint64](#uint64) |  | resolver_id is the ID of a resolver defined with Msg/DefineResolver. |
+| data | [ContentHash](#regen.data.v1alpha2.ContentHash) | repeated | data is a list of content hashes which the resolver claims to serve. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgRegisterResolverResponse"></a>
+
+### MsgRegisterResolverResponse
+MsgRegisterResolverResponse is the Msg/RegisterResolver response type.
 
 
 
@@ -530,6 +767,8 @@ On-chain signatures have the following benefits: - on-chain identities can be ma
 SignData implicitly calls AnchorData if the data was not already anchored.
 
 SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
+| DefineResolver | [MsgDefineResolver](#regen.data.v1alpha2.MsgDefineResolver) | [MsgDefineResolverResponse](#regen.data.v1alpha2.MsgDefineResolverResponse) | DefineResolver defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver. |
+| RegisterResolver | [MsgRegisterResolver](#regen.data.v1alpha2.MsgRegisterResolver) | [MsgRegisterResolverResponse](#regen.data.v1alpha2.MsgRegisterResolverResponse) | RegisterResolver registers data content hashes |
 
  <!-- end services -->
 
