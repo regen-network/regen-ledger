@@ -1,0 +1,630 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha2;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "regen/ecocredit/v1alpha2/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// Msg is the regen.ecocredit.v1alpha1 Msg service.
+service Msg {
+
+  // CreateClass creates a new credit class with an approved list of issuers and
+  // optional metadata.
+  rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
+
+  // CreateProject creates a new project within a credit class.
+  rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
+
+  // CreateBatch creates a new batch of credits for an existing project.
+  // This will create a new batch denom with a fixed supply. Issued credits can
+  // be distributed to recipients in either tradable or retired form.
+  rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
+
+  // Send sends tradable credits from one account to another account. Sent
+  // credits can either be tradable or retired on receipt.
+  rpc Send(MsgSend) returns (MsgSendResponse);
+
+  // Retire retires a specified number of credits in the holder's account.
+  rpc Retire(MsgRetire) returns (MsgRetireResponse);
+
+  // Cancel removes a number of credits from the holder's account and also
+  // deducts them from the tradable supply, effectively cancelling their
+  // issuance on Regen Ledger
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  // UpdateClassAdmin updates the credit class admin
+  rpc UpdateClassAdmin(MsgUpdateClassAdmin) returns (MsgUpdateClassAdminResponse);
+
+  // UpdateClassIssuers updates the credit class issuer list
+  rpc UpdateClassIssuers(MsgUpdateClassIssuers) returns (MsgUpdateClassIssuersResponse);
+
+  // UpdateClassMetadata updates the credit class metadata
+  rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
+
+  // Sell creates new sell orders.
+  rpc Sell(MsgSell) returns (MsgSellResponse);
+
+  // UpdateSellOrders updates existing sell orders.
+  rpc UpdateSellOrders(MsgUpdateSellOrders) returns (MsgUpdateSellOrdersResponse);
+
+  // Buy creates credit buy orders.
+  rpc Buy (MsgBuy) returns (MsgBuyResponse);
+
+  // AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+  rpc AllowAskDenom (MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
+
+  // CreateBasket creates a bank denom which wraps credits.
+  rpc CreateBasket(MsgCreateBasket) returns (MsgCreateBasketResponse);
+
+  // AddToBasket adds credits to a basket in return for basket tokens.
+  rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
+
+  // TakeFromBasket takes credits from a basket without regard for which
+  // credits they are. The credits will be auto-retired if disable_auto_retire
+  // is false. Credits will be chosen randomly using the previous block hash
+  // as a consensus source of randomness.
+  // More concretely, the implementation is as follows:
+  // - take the previous block hash and convert it into an uint64,
+  // - given the total number of different credits within the basket `n`, the
+  //   first credits that will get picked correspond to: hash modulo n (in
+  //   terms of order),
+  // - then if we need to take more credits, we get some from the next one and
+  //   so on.
+  rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
+
+  // PickFromBasket picks specific credits from a basket. If allow_picking is
+  // set to false, then only an address which deposited credits in the basket
+  // can pick those credits. All other addresses will be blocked from picking
+  // those credits. The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable. This functionality allows the owner of a credit to have more
+  // control over the credits they are putting in baskets then ordinary users
+  // to deal with the scenario where basket tokens end up being worth
+  // significantly less than the credits on their own.
+  rpc PickFromBasket(MsgPickFromBasket) returns (MsgPickFromBasketResponse);
+}
+
+// MsgCreateClass is the Msg/CreateClass request type.
+message MsgCreateClass {
+  // admin is the address of the account that created the credit class.
+  string admin = 1;
+
+  // issuers are the account addresses of the approved issuers.
+  repeated string issuers = 2;
+
+  // metadata is any arbitrary metadata to attached to the credit class.
+  bytes metadata = 3;
+
+  // credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
+  string credit_type_name = 4;
+}
+
+// MsgCreateClassResponse is the Msg/CreateClass response type.
+message MsgCreateClassResponse {
+  // class_id is the unique ID of the newly created credit class.
+  string class_id = 1;
+}
+
+// MsgCreateProjectResponse is the Msg/CreateProject request type.
+message MsgCreateProject {
+  // issuer is the address of an approved issuer for the credit class through
+  // which batches will be issued. It is not required, however, that this same
+  // issuer issue all batches for a project.
+  string issuer = 1;
+
+  // class_id is the unique ID of the class within which the project is created.
+  string class_id = 2;
+
+  // metadata is any arbitrary metadata attached to the project.
+  bytes metadata = 3;
+
+  // project_location is the location of the project backing the credits in this
+  // batch. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters. country-code is required, while sub-national-code
+  // and postal-code can be added for increasing precision.
+  string project_location = 4;
+
+  // project_id is an optional user-specified project ID which can be used
+  // instead of an auto-generated ID. If project_id is provided, it must be
+  // unique within the credit class and match the regex [A-Za-z0-9]{2,16}
+  // or else the operation will fail. If project_id is omitted an ID will
+  // automatically be generated.
+  string project_id = 5;
+}
+
+// MsgCreateProjectResponse is the Msg/CreateProject response type.
+message MsgCreateProjectResponse {
+
+  // project_id is the ID of the newly created project.
+  string project_id = 1;
+}
+
+// MsgCreateBatch is the Msg/CreateBatch request type.
+message MsgCreateBatch {
+
+  // issuer is the address of the batch issuer.
+  string issuer = 1;
+
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 2;
+
+  // issuance are the credits issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // metadata is any arbitrary metadata attached to the credit batch.
+  bytes metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
+
+  // BatchIssuance represents the issuance of some credits in a batch to a
+  // single recipient.
+  message BatchIssuance {
+
+    // recipient is the account of the recipient.
+    string recipient = 1;
+
+    // tradable_amount is the number of credits in this issuance that can be
+    // traded by this recipient. Decimal values are acceptable.
+    string tradable_amount = 2;
+
+    // retired_amount is the number of credits in this issuance that are
+    // effectively retired by the issuer on receipt. Decimal values are
+    // acceptable.
+    string retired_amount = 3;
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4;
+  }
+}
+
+// MsgCreateBatchResponse is the Msg/CreateBatch response type.
+message MsgCreateBatchResponse {
+
+  // batch_denom is the unique denomination ID of the newly created batch.
+  string batch_denom = 1;
+}
+
+// MsgSend is the Msg/Send request type.
+message MsgSend {
+
+  // sender is the address of the account sending credits.
+  string sender = 1;
+
+  // sender is the address of the account receiving credits.
+  string recipient = 2;
+
+  // credits are the credits being sent.
+  repeated SendCredits credits = 3;
+
+  // SendCredits specifies a batch and the number of credits being transferred.
+  // This is split into tradable credits, which will remain tradable on receipt,
+  // and retired credits, which will be retired on receipt.
+  message SendCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1;
+
+    // tradable_amount is the number of credits in this transfer that can be
+    // traded by the recipient. Decimal values are acceptable within the
+    // precision returned by Query/Precision.
+    string tradable_amount = 2;
+
+    // retired_amount is the number of credits in this transfer that are
+    // effectively retired by the issuer on receipt. Decimal values are
+    // acceptable within the precision returned by Query/Precision.
+    string retired_amount = 3;
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4;
+  }
+}
+
+// MsgSendResponse is the Msg/Send response type.
+message MsgSendResponse {}
+
+// MsgRetire is the Msg/Retire request type.
+message MsgRetire {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being retired.
+  repeated RetireCredits credits = 2;
+
+  // RetireCredits specifies a batch and the number of credits being retired.
+  message RetireCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being retired.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 3;
+}
+
+// MsgRetire is the Msg/Retire response type.
+message MsgRetireResponse {}
+
+// MsgCancel is the Msg/Cancel request type.
+message MsgCancel {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 2;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+}
+
+// MsgCancelResponse is the Msg/Cancel response type.
+message MsgCancelResponse {}
+
+// MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
+message MsgUpdateClassAdmin {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // new_admin is the address of the new admin of the credit class.
+  string new_admin = 3;
+}
+
+// MsgUpdateClassAdminResponse is the MsgUpdateClassAdmin response type.
+message MsgUpdateClassAdminResponse {}
+
+// MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
+message MsgUpdateClassIssuers {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // issuers are the updated account addresses of the approved issuers.
+  repeated string issuers = 3;
+}
+
+// MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
+message MsgUpdateClassIssuersResponse {}
+
+// MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
+message MsgUpdateClassMetadata {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // metadata is the updated arbitrary metadata to be attached to the credit class.
+  bytes metadata = 3;
+}
+
+// MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+message MsgUpdateClassMetadataResponse {}
+
+// MsgSell is the Msg/Sell request type.
+message MsgSell {
+
+  // owner is the address of the owner of the credits being sold.
+  string owner = 1;
+
+  // orders are the sell orders being created.
+  repeated Order orders = 2;
+
+  // Order is the content of a new sell order.
+  message Order {
+
+    // batch_denom is the credit batch being sold.
+    string batch_denom = 1;
+
+    // quantity is the quantity of credits being sold from this batch. If it is
+    // less then the balance of credits the owner has available at the time this
+    // sell order is matched, the quantity will be adjusted downwards to the
+    // owner's balance. However, if the balance of credits is less than this
+    // quantity at the time the sell order is created, the operation will fail.
+    string quantity = 2;
+
+    // ask_price is the price the seller is asking for each unit of the
+    // batch_denom. Each credit unit of the batch will be sold for at least the
+    // ask_price or more.
+    cosmos.base.v1beta1.Coin ask_price = 3;
+
+    // disable_auto_retire disables auto-retirement of credits which allows a
+    // buyer to disable auto-retirement in their buy order enabling them to
+    // resell the credits to another buyer.
+    bool disable_auto_retire = 4;
+
+    // expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp expiration = 5 [ (gogoproto.stdtime) = true ];
+  }
+}
+
+// MsgSellResponse is the Msg/Sell response type.
+message MsgSellResponse {
+
+  // sell_order_ids are the sell order IDs of the newly created sell orders.
+  repeated uint64 sell_order_ids = 1;
+}
+
+// MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
+message MsgUpdateSellOrders {
+
+  // owner is the owner of the sell orders.
+  string owner = 1;
+
+  // updates are updates to existing sell orders.
+  repeated Update updates = 2;
+
+  // Update is an update to an existing sell order.
+  message Update {
+
+    //  sell_order_id is the ID of an existing sell order.
+    uint64 sell_order_id = 1;
+
+    // new_quantity is the updated quantity of credits available to sell, if it
+    // is set to zero then the order is cancelled.
+    string new_quantity = 2;
+
+    // new_ask_price is the new ask price for this sell order
+    cosmos.base.v1beta1.Coin new_ask_price = 3;
+
+    // disable_auto_retire updates the disable_auto_retire field in the sell order.
+    bool disable_auto_retire = 4;
+
+    // new_expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp new_expiration = 5 [ (gogoproto.stdtime) = true ];
+  }
+}
+
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
+message MsgUpdateSellOrdersResponse {}
+
+// MsgBuy is the Msg/Buy request type.
+message MsgBuy {
+
+  // buyer is the address of the credit buyer.
+  string buyer = 1;
+
+  // orders are the new buy orders.
+  repeated Order orders = 2;
+
+  // Order is a buy order.
+  message Order {
+
+    // Selection defines a buy order selection.
+    message Selection {
+
+      // sum defines the type of selection.
+      oneof sum {
+        // sell_order_id is the sell order ID against which the buyer is trying to buy.
+        // When sell_order_id is set, this is known as a direct buy order because it
+        // is placed directly against a specific sell order.
+        uint64 sell_order_id = 1;
+
+        // TODO: once we have filters defined for baskets, we can enable filtered
+        // buy orders which will involve full double-sided batch order matching
+        //
+        // filter selects credits to buy based upon the specified filter criteria.
+        // Filter filter = 2;
+      }
+    }
+
+    // selection is the buy order selection.
+    Selection selection = 1;
+
+    // quantity is the quantity of credits to buy. If the quantity of credits
+    // available is less than this amount the order will be partially filled
+    // unless disable_partial_fill is true.
+    string quantity = 2;
+
+    // bid price is the bid price for this buy order. A credit unit will be
+    // settled at a purchase price that is no more than the bid price. The
+    // buy order will fail if the buyer does not have enough funds available
+    // to complete the purchase.
+    cosmos.base.v1beta1.Coin bid_price = 3;
+
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
+    // the credits will not auto-retire and can be resold assuming that the
+    // corresponding sell order has auto-retirement disabled. If the sell order
+    // hasn't disabled auto-retirement and the buy order tries to disable it,
+    // that buy order will fail.
+    bool disable_auto_retire = 4;
+
+    // disable_partial_fill disables the default behavior of partially filling
+    // buy orders if the requested quantity is not available.
+    bool disable_partial_fill = 5;
+
+    // retirement_location is the optional retirement location for the credits
+    // which will be used only if disable_auto_retire is false.
+    string retirement_location = 6;
+
+    // expiration is the optional timestamp when the buy order expires. When the
+    // expiration time is reached, the buy order is removed from state.
+    google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
+  }
+}
+
+// MsgBuyResponse is the Msg/Buy response type.
+message MsgBuyResponse {
+
+  // buy_order_ids are the buy order IDs of the newly created buy orders. Buy
+  // orders may not settle instantaneously, but rather in batches at specified
+  // batch epoch times.
+  repeated uint64 buy_order_ids = 1;
+}
+
+// MsgAllowAskDenom is the Msg/AllowAskDenom request type.
+message MsgAllowAskDenom {
+  // root_address is the address of the governance account which can authorize ask denoms
+  string root_address = 1;
+
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 3;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
+}
+
+// MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
+message MsgAllowAskDenomResponse {}
+
+// MsgCreateBasket is the Msg/CreateBasket request type.
+message MsgCreateBasket {
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to create a bank denom for this basket token of the form
+  // ecocredit:{curator}:{name}.
+  string name = 2;
+
+  // display_name will be used to create a bank Metadata display name for this
+  // basket token of the form ecocredit:{curator}:{display_name}.
+  string display_name = 3;
+
+  // exponent is the exponent that will be used for denom metadata. An exponent
+  // of 6 will mean that 10^6 units of a basket token should be displayed
+  // as one unit in user interfaces.
+  uint32 exponent = 4;
+
+  // basket_criteria is the criteria by which credits can be added to the
+  // basket. Basket criteria will be applied in order and the first criteria
+  // which applies to a credit will determine its multiplier in the basket.
+  repeated BasketCriteria basket_criteria = 5;
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 6;
+
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not.
+  bool allow_picking = 7;
+}
+
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
+message MsgCreateBasketResponse {
+
+  // basket_denom is the unique denomination ID of the newly created basket.
+  string basket_denom = 1;
+}
+
+// MsgAddToBasket is the Msg/AddToBasket request type.
+message MsgAddToBasket {
+  // owner is the owner of credits being added to the basket.
+  string owner = 1;
+
+  // basket_denom is the basket denom to add credits to.
+  string basket_denom = 2;
+
+  // credits are credits to add to the basket. If they do not match the basket's
+  // admission criteria the operation will fail.
+  repeated BasketCredit credits = 3;
+}
+
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
+message MsgAddToBasketResponse {
+
+  // amount_received is the amount of basket tokens received.
+  string amount_received = 1;
+}
+
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
+message MsgTakeFromBasket {
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket denom to take credits from.
+  string basket_denom = 2;
+
+  // amount is the number of credits to take from the basket.
+  string amount = 3;
+
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if retire_on_take is true for this basket.
+  string retirement_location = 4;
+}
+
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
+message MsgTakeFromBasketResponse {
+
+  // credits are the credits taken out of the basket.
+  repeated BasketCredit credits = 1;
+}
+
+// MsgPickFromBasket is the Msg/PickFromBasket request type.
+message MsgPickFromBasket {
+
+  // owner is the owner of the basket tokens.
+  string owner = 1;
+
+  // basket_denom is the basket denom to pick credits from.
+  string basket_denom = 2;
+
+  // credits are the units of credits being picked from the basket
+  repeated BasketCredit credits = 3;
+
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if retire_on_take is true for this basket.
+  string retirement_location = 4;
+}
+
+// MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
+message MsgPickFromBasketResponse {}
