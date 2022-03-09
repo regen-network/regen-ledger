@@ -8,10 +8,10 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
-	addr1 := s.signers[3].String()
+	addr1 := s.signers[3]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
+	_, batchDenom := s.createClassAndIssueBatch(addr1, addr1, "carbon", "2.0", "2020-01-01", "2022-01-01")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
@@ -30,7 +30,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 	}{
 		{
 			name:  "insufficient credit balance - batch denom",
-			owner: addr1,
+			owner: addr1.String(),
 			orders: []*ecocredit.MsgSell_Order{
 				{
 					BatchDenom:        "A00-00000000-00000000-000",
@@ -52,17 +52,17 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		},
 		{
 			name:  "insufficient credit balance - quantity",
-			owner: addr1,
+			owner: addr1.String(),
 			orders: []*ecocredit.MsgSell_Order{
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "99",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
 					Expiration:        &expiration,
 				},
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "99",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
@@ -74,17 +74,17 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		},
 		{
 			name:  "invalid expiration",
-			owner: addr1,
+			owner: addr1.String(),
 			orders: []*ecocredit.MsgSell_Order{
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
 					Expiration:        &invalidExpiration,
 				},
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
@@ -97,17 +97,17 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 		//{
 		//	name: "denom not allowed",
-		//	owner: addr1,
+		//	owner: addr1.String(),
 		//	orders: []*ecocredit.MsgSell_Order{
 		//		{
-		//			BatchDenom:        createBatchRes.BatchDenom,
+		//			BatchDenom:        batchDenom,
 		//			Quantity:          "1.0",
 		//			AskPrice:          &askPrice2,
 		//			DisableAutoRetire: true,
 		//			Expiration:        &expiration,
 		//		},
 		//		{
-		//			BatchDenom:        createBatchRes.BatchDenom,
+		//			BatchDenom:        batchDenom,
 		//			Quantity:          "1.0",
 		//			AskPrice:          &askPrice2,
 		//			DisableAutoRetire: true,
@@ -119,17 +119,17 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		//},
 		{
 			name:  "valid request",
-			owner: addr1,
+			owner: addr1.String(),
 			orders: []*ecocredit.MsgSell_Order{
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
 					Expiration:        &expiration,
 				},
 				{
-					BatchDenom:        createBatchRes.BatchDenom,
+					BatchDenom:        batchDenom,
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
@@ -177,11 +177,11 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 }
 
 func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
-	addr1 := s.signers[3].String()
-	addr2 := s.signers[4].String()
+	addr1 := s.signers[3]
+	addr2 := s.signers[4]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
+	_, batchDenom := s.createClassAndIssueBatch(addr1, addr1, "carbon", "2.0", "2020-01-01", "2022-01-01")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 2000000)
 	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -192,17 +192,17 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 
 	// create sell order
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-		Owner: addr1,
+		Owner: addr1.String(),
 		Orders: []*ecocredit.MsgSell_Order{
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &askPrice1,
 				DisableAutoRetire: true,
 				Expiration:        &expiration,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &askPrice1,
 				DisableAutoRetire: true,
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	}{
 		{
 			name:  "invalid sell order",
-			owner: addr1,
+			owner: addr1.String(),
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       99,
@@ -244,7 +244,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		},
 		{
 			name:  "unauthorized",
-			owner: addr2,
+			owner: addr2.String(),
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       sellRes.SellOrderIds[0],
@@ -266,7 +266,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		},
 		{
 			name:  "insufficient credit balance",
-			owner: addr1,
+			owner: addr1.String(),
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       sellRes.SellOrderIds[0],
@@ -288,7 +288,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		},
 		{
 			name:  "invalid expiration",
-			owner: addr1,
+			owner: addr1.String(),
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       sellRes.SellOrderIds[0],
@@ -311,7 +311,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 		//{
 		//	name: "denom not allowed",
-		//	owner: addr1,
+		//	owner: addr1.String(),
 		//	updates: []*ecocredit.MsgUpdateSellOrders_Update{
 		//		{
 		//			SellOrderId:       sellRes.SellOrderIds[0],
@@ -333,7 +333,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		//},
 		{
 			name:  "valid request",
-			owner: addr1,
+			owner: addr1.String(),
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
 				{
 					SellOrderId:       sellRes.SellOrderIds[0],
@@ -396,7 +396,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	addr2 := s.signers[4]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "6.0")
+	_, batchDenom := s.createClassAndIssueBatch(addr1, addr1, "carbon", "6.0", "2020-01-01", "2022-01-01")
 
 	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
@@ -407,47 +407,47 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
 
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 5000000))))
+	s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 5000000)))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
 		Owner: addr1.String(),
 		Orders: []*ecocredit.MsgSell_Order{
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
 				Expiration:        &expiration,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
 				Expiration:        &expiration,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: false,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: false,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
 				Expiration:        &expiration,
 			},
 			{
-				BatchDenom:        createBatchRes.BatchDenom,
+				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
@@ -717,7 +717,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			// get buyer credit balance before
 			creditBalanceBefore, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 				Account:    addr2.String(),
-				BatchDenom: createBatchRes.BatchDenom,
+				BatchDenom: batchDenom,
 			})
 
 			// process buy orders
@@ -732,7 +732,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			// get buyer credit balance after
 			creditBalanceAfter, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 				Account:    addr2.String(),
-				BatchDenom: createBatchRes.BatchDenom,
+				BatchDenom: batchDenom,
 			})
 
 			// query first sell order
@@ -832,53 +832,4 @@ func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
 			}
 		})
 	}
-}
-
-func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateBatchResponse) {
-	admin := s.signers[0]
-	issuer1 := s.signers[1].String()
-	issuer2 := s.signers[2].String()
-
-	time1 := time.Now()
-	time2 := time.Now()
-
-	// fund admin account
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", ecocredit.DefaultCreditClassFeeTokens.Int64()))))
-
-	// create credit class
-	createClassRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Admin:          admin.String(),
-		Issuers:        []string{issuer1, issuer2},
-		Metadata:       nil,
-		CreditTypeName: "carbon",
-	})
-	s.Require().NoError(err)
-
-	// create project
-	projectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
-		ClassId:         createClassRes.ClassId,
-		Issuer:          issuer1,
-		Metadata:        []byte("metadata"),
-		ProjectLocation: "AB",
-	})
-	s.Require().NoError(err)
-
-	// create credit batch
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:    issuer1,
-		ProjectId: projectRes.ProjectId,
-		StartDate: &time1,
-		EndDate:   &time2,
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-			{
-				Recipient:          recipient,
-				TradableAmount:     tradableCredits,
-				RetiredAmount:      "0",
-				RetirementLocation: "YZ",
-			},
-		},
-	})
-	s.Require().NoError(err)
-
-	return createClassRes, createBatchRes
 }

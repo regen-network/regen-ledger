@@ -1,16 +1,22 @@
 package server
 
 import (
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"google.golang.org/protobuf/reflect/protoreflect"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 )
 
 const (
@@ -74,6 +80,10 @@ type serverImpl struct {
 	projectInfoSeq          orm.Sequence
 	projectsByClassIDIndex  orm.Index
 	batchesByProjectIDIndex orm.Index
+
+	basketKeeper basket.Keeper
+
+	db ormdb.ModuleDB
 }
 
 var ModuleSchema = ormdb.ModuleSchema{
@@ -82,8 +92,15 @@ var ModuleSchema = ormdb.ModuleSchema{
 	},
 }
 
+var BasketModuleSchema = ormdb.ModuleSchema{
+	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+	},
+	Prefix: []byte{ecocredit.ORMPrefix},
+}
+
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -91,19 +108,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		accountKeeper: accountKeeper,
 	}
 
-	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
+	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(ecocredit.CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.creditTypeSeqTable = creditTypeSeqTable.Build()
 
-	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
+	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
+	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ecocredit.BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -222,14 +239,29 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.projectInfoTable = projectInfoTableBuilder.Build()
 
+	s.db, err = ormutil.NewStoreKeyDB(BasketModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
+
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
-	bankKeeper ecocredit.BankKeeper) ecocredit.Keeper {
-	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
+func RegisterServices(
+	configurator server.Configurator,
+	paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper,
+	distKeeper ecocredit.DistributionKeeper,
+) ecocredit.Keeper {
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
+	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
+
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)

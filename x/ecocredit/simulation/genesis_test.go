@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
@@ -37,12 +39,15 @@ func TestRandomizedGenState(t *testing.T) {
 
 	simulation.RandomizedGenState(&simState)
 
+	var wrapper map[string]json.RawMessage
+	require.NoError(t, json.Unmarshal(simState.GenState[ecocredit.ModuleName], &wrapper))
+
 	var ecocreditGenesis ecocredit.GenesisState
-	simState.Cdc.MustUnmarshalJSON(simState.GenState[ecocredit.ModuleName], &ecocreditGenesis)
+	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&ecocreditGenesis)], &ecocreditGenesis)
 
 	require.Equal(t, ecocreditGenesis.Params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(18))))
+	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
 
 	require.Len(t, ecocreditGenesis.ClassInfo, 3)
