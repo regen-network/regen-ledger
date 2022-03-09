@@ -15,7 +15,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))

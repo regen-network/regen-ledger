@@ -14,14 +14,14 @@ func TestQuery_Classes(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C02",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -52,7 +52,7 @@ func TestQuery_ClassesMetadata(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   []byte("aGVsbG8gcmVnZW4h"), // this is "hello regen!" in base64
+		Metadata:   "aGVsbG8gcmVnZW4h", // this is "hello regen!" in base64
 		CreditType: "C",
 	})
 	assert.NilError(t, err)

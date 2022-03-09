@@ -13,16 +13,16 @@ func (k Keeper) ClassInfo(ctx context.Context, request *v1.QueryClassInfoRequest
 		return nil, err
 	}
 
-	bz, err := types.DecodeMetadata(string(classInfo.Metadata))
+	bz, err := types.DecodeMetadata(classInfo.Metadata)
 	if err != nil {
 		return nil, err
 	}
+	classInfo.Metadata = string(bz)
 
-	ci := v1.CreditClass{
-		Name:       classInfo.Name,
-		Admin:      classInfo.Admin,
-		Metadata:   string(bz),
-		CreditType: classInfo.CreditType,
+	var ci v1.ClassInfo
+	if err = PulsarToGogoSlow(classInfo, &ci); err != nil {
+		return nil, err
 	}
+
 	return &v1.QueryClassInfoResponse{Info: &ci}, nil
 }

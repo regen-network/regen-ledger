@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 )
 
@@ -28,6 +29,13 @@ func (k Keeper) Batches(ctx context.Context, request *v1.QueryBatchesRequest) (*
 		if err != nil {
 			return nil, err
 		}
+
+		bz, err := types.DecodeMetadata(batch.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		batch.Metadata = string(bz)
+
 		var bi v1.BatchInfo
 		if err = PulsarToGogoSlow(batch, &bi); err != nil {
 			return nil, err

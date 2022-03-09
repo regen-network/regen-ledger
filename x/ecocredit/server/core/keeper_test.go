@@ -80,12 +80,12 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName,
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
-		Metadata:        nil,
+		Metadata:        "",
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))

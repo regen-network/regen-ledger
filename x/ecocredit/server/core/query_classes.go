@@ -19,21 +19,22 @@ func (k Keeper) Classes(ctx context.Context, request *v1.QueryClassesRequest) (*
 		return nil, err
 	}
 
-	infos := make([]*v1.CreditClass, 0)
+	infos := make([]*v1.ClassInfo, 0)
 	for it.Next() {
 		info, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		md, err := types.DecodeMetadata(string(info.Metadata))
+
+		md, err := types.DecodeMetadata(info.Metadata)
 		if err != nil {
 			return nil, err
 		}
-		ci := v1.CreditClass{
-			Name:       info.Name,
-			Admin:      info.Admin,
-			Metadata:   string(md),
-			CreditType: info.CreditType,
+		info.Metadata = string(md)
+
+		var ci v1.ClassInfo
+		if err = PulsarToGogoSlow(info, &ci); err != nil {
+			return nil, err
 		}
 		infos = append(infos, &ci)
 	}

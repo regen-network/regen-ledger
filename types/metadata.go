@@ -10,6 +10,5 @@ func DecodeMetadata(metadataStr string) ([]byte, error) {
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
 	}
-
 	return b, nil
 }

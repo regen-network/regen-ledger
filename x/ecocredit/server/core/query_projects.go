@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 )
 
@@ -27,6 +28,13 @@ func (k Keeper) Projects(ctx context.Context, request *v1.QueryProjectsRequest) 
 		if err != nil {
 			return nil, err
 		}
+
+		bz, err := types.DecodeMetadata(info.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		info.Metadata = string(bz)
+
 		var pi v1.ProjectInfo
 		if err = PulsarToGogoSlow(info, &pi); err != nil {
 			return nil, err
