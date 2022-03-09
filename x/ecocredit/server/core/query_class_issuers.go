@@ -4,12 +4,12 @@ import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
 )
 
 // ClassIssuers returns a list of addresses that are allowed to issue batches from the given class.
-func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIssuersRequest) (*v1beta1.QueryClassIssuersResponse, error) {
+func (k Keeper) ClassIssuers(ctx context.Context, request *v1.QueryClassIssuersRequest) (*v1.QueryClassIssuersResponse, error) {
 	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1beta1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassIssuerStore().List(ctx, ecocreditv1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *v1beta1.QueryClassIss
 	if err != nil {
 		return nil, err
 	}
-	return &v1beta1.QueryClassIssuersResponse{
+	return &v1.QueryClassIssuersResponse{
 		Issuers:    issuers,
 		Pagination: pr,
 	}, nil
