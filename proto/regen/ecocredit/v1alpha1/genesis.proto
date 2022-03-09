@@ -4,7 +4,7 @@ package regen.ecocredit.v1alpha1;
 import "regen/ecocredit/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1alpha1";
 
 // GenesisState defines ecocredit module's genesis state.
 message GenesisState {
