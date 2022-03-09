@@ -13,6 +13,7 @@ func (k Keeper) CreditTypes(ctx context.Context, _ *v1beta1.QueryCreditTypesRequ
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 	for it.Next() {
 		ct, err := it.Value()
 		if err != nil {
