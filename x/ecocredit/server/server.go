@@ -32,7 +32,6 @@ const (
 	ProjectInfoTablePrefix    byte = 0x10
 	ProjectInfoTableSeqPrefix byte = 0x11
 	ProjectsByClassIDIndex    byte = 0x12
-	BatchesByProjectIndex     byte = 0x13
 
 	// sell order table
 	SellOrderTablePrefix             byte = 0x20
@@ -47,7 +46,7 @@ const (
 	BuyOrderByExpirationIndexPrefix byte = 0x27
 	BuyOrderByAddressIndexPrefix    byte = 0x28
 
-	AskDenomTablePrefix byte = 0x40
+	AskDenomTablePrefix byte = 0x30
 )
 
 type serverImpl struct {
