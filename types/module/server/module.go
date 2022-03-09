@@ -2,7 +2,9 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/types/module"
 )
@@ -12,6 +14,16 @@ type Module interface {
 	module.TypeModule
 
 	RegisterServices(Configurator)
+}
+
+// BeginBlockerModule is a module exposing begin blocker for server module manager
+type BeginBlockerModule interface {
+	BeginBlock(sdk.Context, abci.RequestBeginBlock)
+}
+
+// EndBlockerModule is a module exposing end blocker for server module manager
+type EndBlockerModule interface {
+	EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorUpdate
 }
 
 type Configurator interface {

@@ -450,13 +450,13 @@ message Basket {
   bool disable_auto_retire = 6;
 
   // allow_picking specifies whether an address which didn't deposit the credits
-  // in the basket can pick those credits or not. 
+  // in the basket can pick those credits or not.
   bool allow_picking = 7;
 }
 
 // QueryBasketRequest is the Query/Basket request type.
 message QueryBasketRequest {
-  // basket_denom represents the denom of the basket to query. 
+  // basket_denom represents the denom of the basket to query.
   string basket_denom = 1;
 }
 

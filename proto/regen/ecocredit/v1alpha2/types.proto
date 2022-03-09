@@ -103,6 +103,12 @@ message Params {
 
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 4;
+
+  // basket_creation_fee is the fee to create a new basket denom.
+  repeated cosmos.base.v1beta1.Coin basket_creation_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
@@ -235,7 +241,7 @@ message AskDenom {
 
 // BasketCredit represents the information for a credit batch inside a basket.
 message BasketCredit {
-  
+
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 1;
 
@@ -247,7 +253,7 @@ message BasketCredit {
 
 // BasketCriteria defines a criteria by which credits can be added to a basket.
 message BasketCriteria {
-  
+
   // filter defines condition(s) that credits should satisfy in order to be
   // added to the basket.
   Filter filter = 1;

@@ -38,6 +38,9 @@ var dec128Context = apd.Context{
 }
 
 func NewDecFromString(s string) (Dec, error) {
+	if s == "" {
+		s = "0"
+	}
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
 		return Dec{}, ErrInvalidDecString.Wrap(err.Error())

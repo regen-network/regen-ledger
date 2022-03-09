@@ -123,3 +123,137 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		})
 	}
 }
+
+func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	type fields struct {
+		Manager     string
+		ResolverUrl string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr string
+	}{
+		{
+			"valid message",
+			fields{
+				Manager:     addr.String(),
+				ResolverUrl: "http://foo.bar",
+			},
+			"",
+		},
+		{
+			"invalid manager",
+			fields{
+				Manager:     "foo",
+				ResolverUrl: "http://foo.bar",
+			},
+			"decoding bech32 failed: invalid bech32 string length 3: invalid address",
+		},
+		{
+			"invalid resolver url",
+			fields{
+				Manager:     addr.String(),
+				ResolverUrl: "foobar",
+			},
+			"invalid resolver url: invalid request",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgDefineResolver{
+				Manager:     tt.fields.Manager,
+				ResolverUrl: tt.fields.ResolverUrl,
+			}
+			err := m.ValidateBasic()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	validData := []*ContentHash{
+		{
+			Sum: &ContentHash_Raw_{
+				Raw: &ContentHash_Raw{
+					Hash:            make([]byte, 32),
+					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
+				},
+			},
+		},
+	}
+
+	type fields struct {
+		Manager string
+		Data    []*ContentHash
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr string
+	}{
+		{
+			"valid message",
+			fields{
+				Manager: addr.String(),
+				Data:    validData,
+			},
+			"",
+		},
+		{
+			"invalid manager",
+			fields{
+				Manager: "foo",
+				Data:    validData,
+			},
+			"decoding bech32 failed: invalid bech32 string length 3: invalid address",
+		},
+		{
+			"data cannot be empty",
+			fields{
+				Manager: addr.String(),
+				Data:    []*ContentHash{},
+			},
+			"data cannot be empty: invalid request",
+		},
+		{
+			"invalid content hash",
+			fields{
+				Manager: addr.String(),
+				Data: []*ContentHash{
+					{
+						Sum: &ContentHash_Raw_{
+							Raw: &ContentHash_Raw{
+								Hash:            make([]byte, 31),
+								DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+								MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
+							},
+						},
+					},
+				},
+			},
+			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: invalid request",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgRegisterResolver{
+				Manager: tt.fields.Manager,
+				Data:    tt.fields.Data,
+			}
+			err := m.ValidateBasic()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}

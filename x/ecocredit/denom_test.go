@@ -20,7 +20,7 @@ func testValidateFormatClassID(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 
-	classId := FormatClassID(*creditType, classSeqNo)
+	classId := FormatClassID(creditType.Abbreviation, classSeqNo)
 
 	err := ValidateClassID(classId)
 	require.NoError(t, err)
@@ -39,7 +39,7 @@ func testValidateFormatDenom(t *rapid.T) {
 	startDate := genTime.Draw(t, "startDate").(*time.Time)
 	endDate := genTime.Draw(t, "endDate").(*time.Time)
 
-	classId := FormatClassID(*creditType, classSeqNo)
+	classId := FormatClassID(creditType.Abbreviation, classSeqNo)
 
 	denom, err := FormatDenom(classId, batchSeqNo, startDate, endDate)
 	require.NoError(t, err)
@@ -84,3 +84,12 @@ var genInvalidBatchDenom = rapid.OneOf(
 	genInvalidClassID,
 	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
 )
+
+func TestGetClassIdFromBatchDenom(t *testing.T) {
+	denom := "BIO01-00000000-00000000-001"
+	expected := "BIO01"
+
+	got := GetClassIdFromBatchDenom(denom)
+
+	require.Equal(t, expected, got)
+}
