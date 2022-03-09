@@ -9,9 +9,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -75,6 +74,10 @@ func (s serverImpl) getProjectInfo(ctx types.Context, projectID string) (*ecocre
 	var projectInfo ecocredit.ProjectInfo
 	err := s.projectInfoTable.GetOne(ctx, orm.RowID(projectID), &projectInfo)
 	return &projectInfo, err
+}
+
+func (s serverImpl) HasClassInfo(ctx types.Context, classID string) bool {
+	return s.classInfoTable.Has(ctx, orm.RowID(classID))
 }
 
 // Batches queries for all batches in the given credit class.
@@ -177,19 +180,19 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 
 	ctx := types.UnwrapSDKContext(goCtx)
 	acc := request.Account
-	denom := batchDenomT(request.BatchDenom)
+	denom := ecocredit.BatchDenomT(request.BatchDenom)
 	store := ctx.KVStore(s.storeKey)
 	accAddr, err := sdk.AccAddressFromBech32(acc)
 	if err != nil {
 		return nil, err
 	}
 
-	tradable, err := getDecimal(store, TradableBalanceKey(accAddr, denom))
+	tradable, err := ecocredit.GetDecimal(store, ecocredit.TradableBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredBalanceKey(accAddr, denom))
+	retired, err := ecocredit.GetDecimal(store, ecocredit.RetiredBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
@@ -212,14 +215,14 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
-	denom := batchDenomT(request.BatchDenom)
+	denom := ecocredit.BatchDenomT(request.BatchDenom)
 
-	tradable, err := getDecimal(store, TradableSupplyKey(denom))
+	tradable, err := ecocredit.GetDecimal(store, ecocredit.TradableSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredSupplyKey(denom))
+	retired, err := ecocredit.GetDecimal(store, ecocredit.RetiredSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
