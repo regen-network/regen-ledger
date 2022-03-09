@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.data.v1alpha2;
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
 
 // ContentHash specifies a hash based content identifier for a piece of data
 message ContentHash {
