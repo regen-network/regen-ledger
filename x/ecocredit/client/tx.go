@@ -19,6 +19,7 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -45,6 +46,9 @@ func TxCmd(name string) *cobra.Command {
 		TxSellCmd(),
 		TxUpdateSellOrdersCmd(),
 		TxBuyCmd(),
+		basketcli.TxCreateBasket(),
+		basketcli.TxPutInBasket(),
+		basketcli.TxTakeFromBasket(),
 	)
 	return cmd
 }

@@ -32,10 +32,11 @@ func TestTradableSupplyInvariants(t *testing.T) {
 	acc2 := sdk.AccAddress([]byte("account2"))
 
 	testCases := []struct {
-		msg       string
-		balances  []*ecocredit.Balance
-		supply    []*ecocredit.Supply
-		expBroken bool
+		msg           string
+		balances      []*ecocredit.Balance
+		supply        []*ecocredit.Supply
+		basketBalance map[string]math.Dec
+		expBroken     bool
 	}{
 		{
 			"valid test case",
@@ -59,10 +60,11 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310",
+					TradableSupply: "320",
 					RetiredSupply:  "210",
 				},
 			},
+			map[string]math.Dec{"1/2": math.NewDecFromInt64(10)},
 			false,
 		},
 		{
@@ -87,15 +89,16 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310.579",
+					TradableSupply: "320.579",
 					RetiredSupply:  "0",
 				},
 				{
 					BatchDenom:     "3/4",
-					TradableSupply: "210.456",
+					TradableSupply: "220.456",
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{"1/2": math.NewDecFromInt64(10), "3/4": math.NewDecFromInt64(10)},
 			false,
 		},
 		{
@@ -124,6 +127,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{},
 			true,
 		},
 		{
@@ -148,7 +152,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 			[]*ecocredit.Supply{
 				{
 					BatchDenom:     "1/2",
-					TradableSupply: "310.57",
+					TradableSupply: "325.57",
 					RetiredSupply:  "0",
 				},
 				{
@@ -157,6 +161,7 @@ func TestTradableSupplyInvariants(t *testing.T) {
 					RetiredSupply:  "0",
 				},
 			},
+			map[string]math.Dec{},
 			true,
 		},
 	}
@@ -166,12 +171,10 @@ func TestTradableSupplyInvariants(t *testing.T) {
 		ctx, storeKey := setupStore(t)
 		store := ctx.KVStore(storeKey)
 		t.Run(tc.msg, func(t *testing.T) {
-
 			initBalances(t, store, tc.balances)
-
 			initSupply(t, store, tc.supply)
 
-			msg, broken := tradableSupplyInvariant(store)
+			msg, broken := tradableSupplyInvariant(store, tc.basketBalance)
 			if tc.expBroken {
 				require.True(t, broken, msg)
 			} else {
@@ -335,34 +338,34 @@ func TestRetiredSupplyInvariants(t *testing.T) {
 
 func initBalances(t *testing.T, store sdk.KVStore, balances []*ecocredit.Balance) {
 	for _, b := range balances {
-		denomT := batchDenomT(b.BatchDenom)
+		denomT := ecocredit.BatchDenomT(b.BatchDenom)
 		addr, err := sdk.AccAddressFromBech32(b.Address)
 		require.NoError(t, err)
 		if b.TradableBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.TradableBalance)
 			require.NoError(t, err)
-			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.TradableBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 		}
 		if b.RetiredBalance != "" {
 			d, err := math.NewNonNegativeDecFromString(b.RetiredBalance)
 			require.NoError(t, err)
-			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.RetiredBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 		}
 	}
 }
 
 func initSupply(t *testing.T, store sdk.KVStore, supply []*ecocredit.Supply) {
 	for _, s := range supply {
-		denomT := batchDenomT(s.BatchDenom)
+		denomT := ecocredit.BatchDenomT(s.BatchDenom)
 		d, err := math.NewNonNegativeDecFromString(s.TradableSupply)
 		require.NoError(t, err)
-		key := TradableSupplyKey(denomT)
-		addAndSetDecimal(store, key, d)
+		key := ecocredit.TradableSupplyKey(denomT)
+		ecocredit.AddAndSetDecimal(store, key, d)
 		d, err = math.NewNonNegativeDecFromString(s.RetiredSupply)
 		require.NoError(t, err)
-		key = RetiredSupplyKey(denomT)
-		addAndSetDecimal(store, key, d)
+		key = ecocredit.RetiredSupplyKey(denomT)
+		ecocredit.AddAndSetDecimal(store, key, d)
 	}
 }

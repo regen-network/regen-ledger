@@ -3,6 +3,9 @@ package server_test
 import (
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -14,12 +17,12 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
@@ -67,6 +70,9 @@ func TestServer(t *testing.T) {
 		cdc, bankKey, accountKeeper, bankSubspace, modAccAddrs,
 	)
 
+	ctrl := gomock.NewController(t)
+	distKeeper := mocks.NewMockDistributionKeeper(ctrl)
+
 	stakingKeeper := stakingkeeper.NewKeeper(
 		cdc, stakingKey, accountKeeper, bankKeeper, stakingSubspace,
 	)
@@ -85,7 +91,7 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
 	ff.SetModules([]module.Module{
 		group.Module{AccountKeeper: accountKeeper},
 		ecocreditModule,
