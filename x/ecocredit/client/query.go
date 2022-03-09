@@ -5,12 +5,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 )
 
 // QueryCmd returns the parent command for all x/ecocredit query commands.
@@ -43,6 +45,10 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBuyOrdersCmd(),
 		QueryBuyOrdersByAddressCmd(),
 		QueryAllowedAskDenomsCmd(),
+		basketcli.QueryBasketCmd(),
+		basketcli.QueryBasketsCmd(),
+		basketcli.QueryBasketBalanceCmd(),
+		basketcli.QueryBasketBalancesCmd(),
 	)
 	return cmd
 }
