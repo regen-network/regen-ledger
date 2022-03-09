@@ -138,6 +138,12 @@ If a user tries to create a project and the project id is NOT a valid project id
 - WHEN - user tries to create a project
 - THEN - transaction fails, project is NOT created
 
+If a user tries to create a project and the project id already exists, then the transaction fails and the project is NOT created.
+
+- GIVEN - project id already exists
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
 If a user tries to create a project and the user provides metadata that is base64 encoded, then the transaction is successful and the project is created.
 
 - GIVEN - user provides metadata that is base64 encoded
