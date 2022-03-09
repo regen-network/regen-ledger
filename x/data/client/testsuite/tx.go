@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -229,6 +230,60 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestDefineResolverCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	require := s.Require()
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+	}
+
+	testCases := []struct {
+		name        string
+		resolverUrl string
+		expErr      bool
+		errMsg      string
+	}{
+		{
+			"empty url",
+			"",
+			true,
+			"empty url",
+		},
+		{
+			"invalid url",
+			"abcd",
+			true,
+			"invalid URI",
+		},
+		{
+			"valid test",
+			"http:foo.bar",
+			false,
+			"",
+		},
+	}
+
+	cmd := client.MsgDefineResolverCmd()
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			args := []string{tc.resolverUrl}
+			args = append(args, commonFlags...)
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg, err.Error())
 			} else {
 				require.NoError(err)
 			}

@@ -1,6 +1,8 @@
 package client
 
 import (
+	"net/url"
+
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -23,6 +25,8 @@ func TxCmd(name string) *cobra.Command {
 	cmd.AddCommand(
 		MsgAnchorDataCmd(),
 		MsgSignDataCmd(),
+		MsgDefineResolverCmd(),
+		MsgRegisterResolverCmd(),
 	)
 
 	return cmd
@@ -100,6 +104,63 @@ func MsgSignDataCmd() *cobra.Command {
 				Hash:    graph,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// MsgDefineResolverCmd creates a CLI command for Msg/DefineResolver.
+func MsgDefineResolverCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "define-resolver [resolver_url]",
+		Short: `Registers data content hashes.`,
+		Long: `RegisterResolver registers data content hashes.
+Parameters:
+  resolver_url: resolver_url is a resolver URL which should refer to an HTTP service which will respond to 
+			  a GET request with the IRI of a ContentHash and return the content if it exists or a 404.
+Flags:
+  --from: from flag is the address of the resolver manager
+		`,
+		Example: "regen tx data define-resolver http://foo.bar --from manager",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			resolverUrl := args[0]
+			if _, err := url.ParseRequestURI(resolverUrl); err != nil {
+				return err
+			}
+
+			msg := data.MsgDefineResolver{
+				Manager:     clientCtx.GetFromAddress().String(),
+				ResolverUrl: resolverUrl,
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// MsgRegisterResolverCmd creates a CLI command for Msg/RegisterResolver.
+func MsgRegisterResolverCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "register-resolver",
+		Short:   ``,
+		Long:    ``,
+		Example: "",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			return nil
 		},
 	}
 
