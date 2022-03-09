@@ -27,11 +27,11 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
-	BatchesByProjectIndex    byte = 0x7
 
 	ProjectInfoTablePrefix    byte = 0x10
 	ProjectInfoTableSeqPrefix byte = 0x11
 	ProjectsByClassIDIndex    byte = 0x12
+	BatchesByProjectIndex     byte = 0x13
 
 	// sell order table
 	SellOrderTablePrefix             byte = 0x20
