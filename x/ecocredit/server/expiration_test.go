@@ -36,7 +36,7 @@ func (s *USuite) SetupSuite() {
 	registry := codectypes.NewInterfaceRegistry()
 	ecocredit.RegisterTypes(registry)
 	s.cdc = codec.NewProtoCodec(registry)
-	s.server = newServer(s.storeKey, paramtypes.Subspace{} /* paramSpace types.Subspace */, nil, nil, s.cdc)
+	s.server = newServer(s.storeKey, paramtypes.Subspace{} /* paramSpace types.Subspace */, nil, nil, nil, s.cdc)
 
 	s.startTime = time.Unix(0, 0)
 	s.owner = sdk.AccAddress([]byte("owner"))

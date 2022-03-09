@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1alpha1";
 
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {

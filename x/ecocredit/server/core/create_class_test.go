@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -22,10 +22,10 @@ func TestCreateClass_Valid(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
 
-	res, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
-		Admin:          s.addr.String(),
-		Issuers:        []string{s.addr.String()},
-		Metadata:       nil,
+	res, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         nil,
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
@@ -35,7 +35,7 @@ func TestCreateClass_Valid(t *testing.T) {
 	ci, err := s.stateStore.ClassInfoStore().GetByName(s.ctx, res.ClassId)
 	assert.NilError(t, err)
 	assert.Equal(t, res.ClassId, ci.Name)
-	
+
 	// check class issuer
 	_, err = s.stateStore.ClassIssuerStore().Get(s.ctx, ci.Id, s.addr)
 	assert.NilError(t, err)
@@ -56,7 +56,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
 	}).Times(1)
-	_, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
+	_, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,
@@ -79,18 +79,18 @@ func TestCreateClass_Sequence(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
 	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
 
-	res, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
-		Admin:          s.addr.String(),
-		Issuers:        []string{s.addr.String()},
-		Metadata:       nil,
+	res, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         nil,
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
-	res2, err := s.k.CreateClass(s.ctx, &v1beta1.MsgCreateClass{
-		Admin:          s.addr.String(),
-		Issuers:        []string{s.addr.String()},
-		Metadata:       nil,
+	res2, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         nil,
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
