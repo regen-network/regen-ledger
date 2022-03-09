@@ -1,17 +1,22 @@
 package testsuite
 
 import (
+	"bytes"
 	"encoding/json"
 	"time"
+
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/stretchr/testify/suite"
 )
 
 func (s *IntegrationTestSuite) TestInitExportGenesis() {
@@ -175,13 +180,22 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
 	require := s.Require()
-	cdc := s.fixture.Codec()
 	exported, err := s.fixture.ExportGenesis(ctx.Context)
 	require.NoError(err)
 
-	var exportedGenesisState ecocredit.GenesisState
-	err = cdc.UnmarshalJSON(exported[ecocredit.ModuleName], &exportedGenesisState)
+	var wrapper map[string]json.RawMessage
+	err = json.Unmarshal(exported[ecocredit.ModuleName], &wrapper)
 	require.NoError(err)
+
+	var exportedGenesisState ecocredit.GenesisState
+	legacyGenesisBz, ok := wrapper[proto.MessageName(&ecocredit.GenesisState{})]
+	if ok {
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
+			bytes.NewReader(legacyGenesisBz),
+			&exportedGenesisState,
+		)
+		require.NoError(err)
+	}
 
 	return exportedGenesisState
 }
@@ -192,7 +206,14 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	require.NoError(err)
 
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
+	wrapper := map[string]json.RawMessage{
+		proto.MessageName(&ecocredit.GenesisState{}): genesisBytes,
+	}
+
+	bz, err := json.Marshal(wrapper)
+	require.NoError(err)
+
+	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: bz}
 	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
 	return err
 }
