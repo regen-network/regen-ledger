@@ -12,3 +12,5 @@ protoc_gen_install
 
 echo "Generating API module"
 (cd proto; buf generate --template buf.gen.pulsar.yaml)
+
+./scripts/protocgen3.sh

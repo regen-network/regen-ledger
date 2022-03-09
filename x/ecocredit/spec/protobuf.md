@@ -235,7 +235,7 @@ EventCreateBatch is an event emitted when a credit batch is created.
 | total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch. |
 | start_date | [string](#string) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [string](#string) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
-| project_location | [string](#string) |  | project_location is the location of the project. Full documentation can be found in MsgCreateProject.project_location. |
+| project_location | [string](#string) |  | project_location is the location of the project backing the credits in this batch. Full documentation can be found in MsgCreateBatch.project_location. |
 | project_id | [string](#string) |  | project_id is the unique ID of the project this batch belongs to. |
 
 
@@ -280,18 +280,20 @@ EventCreateProject is an event emitted when a project is created.
 <a name="regen.ecocredit.v1alpha2.EventReceive"></a>
 
 ### EventReceive
-EventReceive is an event emitted when credits are received either upon
-creation of a new batch or upon transfer. Each batch_denom created or
-transferred will result in a separate EventReceive for easy indexing.
+EventReceive is an event emitted when credits are received either via
+creation of a new batch, transfer of credits, or taking credits from a
+basket. Each batch_denom created, transferred or taken from a basket will
+result in a separate EventReceive for easy indexing.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
-| recipient | [string](#string) |  | recipient is the recipient of the credits |
+| sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance or taken from a basket. |
+| recipient | [string](#string) |  | recipient is the recipient of the credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits received. |
 | retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits received. |
+| basket_denom | [string](#string) |  | basket_denom is the denom of the basket. When the basket_denom field is set, it indicates that this event was triggered by the transfer of credits from a basket. It will not be set if the credits were transferred or received at initial issuance. |
 
 
 
@@ -624,6 +626,7 @@ use with the x/params module.
 | allowed_class_creators | [string](#string) | repeated | allowed_class_creators is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 | credit_types | [CreditType](#regen.ecocredit.v1alpha2.CreditType) | repeated | credit_types is a list of definitions for credit types |
+| basket_creation_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | basket_creation_fee is the fee to create a new basket denom. |
 
 
 
