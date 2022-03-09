@@ -23,7 +23,8 @@ message ClassInfo {
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 4;
 
-  // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+  // credit_type describes the type of credit (e.g. carbon, biodiversity), as
+  // well as unit and precision.
   CreditType credit_type = 5;
 
   // The number of batches issued in this credit class.

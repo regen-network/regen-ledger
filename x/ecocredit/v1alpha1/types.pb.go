@@ -39,7 +39,8 @@ type ClassInfo struct {
 	Issuers []string `protobuf:"bytes,3,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+	// credit_type describes the type of credit (e.g. carbon, biodiversity), as
+	// well as unit and precision.
 	CreditType *CreditType `protobuf:"bytes,5,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
 	// The number of batches issued in this credit class.
 	NumBatches uint64 `protobuf:"varint,6,opt,name=num_batches,json=numBatches,proto3" json:"num_batches,omitempty"`
