@@ -35,6 +35,19 @@ func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditTy
 	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
 }
 
+// getCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
+func (k Keeper) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (ecocredit.CreditType, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	classId := ecocredit.GetClassIdFromBatchDenom(denom)
+	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, classId)
+	if err != nil {
+		return ecocredit.CreditType{}, err
+	}
+	p := &ecocredit.Params{}
+	k.params.GetParamSet(sdkCtx, p)
+	return k.getCreditType(classInfo.CreditType, p.CreditTypes)
+}
+
 // getNonNegativeFixedDecs takes an arbitrary amount of decimal strings, and returns their corresponding fixed decimals
 // in a slice.
 func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, error) {
@@ -47,16 +60,4 @@ func getNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
-}
-
-func (k Keeper) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (ecocredit.CreditType, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, classId)
-	if err != nil {
-		return ecocredit.CreditType{}, err
-	}
-	p := &ecocredit.Params{}
-	k.params.GetParamSet(sdkCtx, p)
-	return k.getCreditType(classInfo.CreditType, p.CreditTypes)
 }

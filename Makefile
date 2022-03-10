@@ -156,10 +156,6 @@ mocks: $(MOCKS_DIR)
 	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
 	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
 	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
-
-	mkdir -p x/ecocredit/server/basket/mocks
-	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
-	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
 .PHONY: mocks
 
 $(MOCKS_DIR):
@@ -419,7 +415,7 @@ localnet-build-nodes:
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 localnet-stop:
-	docker-compose down -v 
+	docker-compose down -v
 
 .PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
 
@@ -427,8 +423,13 @@ localnet-stop:
 include sims.mk
 
 regen-mocks:
-	mkdir -p x/ecocredit/server/core/mocks
 	go install github.com/golang/mock/mockgen@latest
+
+	mkdir -p x/ecocredit/server/core/mocks
 	mockgen -source=x/ecocredit/server/core/keeper.go -package mocks -destination x/ecocredit/server/core/mocks/keeper.go
+	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
+
+	mkdir -p x/ecocredit/server/basket/mocks
+	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
 	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
 .PHONY: regen-mocks
