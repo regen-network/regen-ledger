@@ -1,11 +1,14 @@
 package core
 
 import (
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestQuery_Balance(t *testing.T) {
@@ -17,14 +20,14 @@ func TestQuery_Balance(t *testing.T) {
 	retired := "50.3214"
 
 	// make a batch and give s.addr some balance
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   nil,
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &api.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: tradable,
@@ -32,7 +35,7 @@ func TestQuery_Balance(t *testing.T) {
 	}))
 
 	// valid query
-	res, err := s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
+	res, err := s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: batchDenom,
 	})
@@ -41,7 +44,7 @@ func TestQuery_Balance(t *testing.T) {
 	assert.Equal(t, retired, res.RetiredAmount)
 
 	// random addr should just give 0
-	res, err = s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
+	res, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    noBalanceAddr.String(),
 		BatchDenom: batchDenom,
 	})
@@ -50,7 +53,7 @@ func TestQuery_Balance(t *testing.T) {
 	assert.Equal(t, "0", res.RetiredAmount)
 
 	// query with invalid batch should return not found
-	_, err = s.k.Balance(s.ctx, &v1.QueryBalanceRequest{
+	_, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: "A00-00000000-00000000-001",
 	})

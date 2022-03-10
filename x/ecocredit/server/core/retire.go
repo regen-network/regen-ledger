@@ -2,16 +2,18 @@ package core
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Retire credits to the specified location.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
-func (k Keeper) Retire(ctx context.Context, req *v1.MsgRetire) (*v1.MsgRetireResponse, error) {
+func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
@@ -65,7 +67,7 @@ func (k Keeper) Retire(ctx context.Context, req *v1.MsgRetire) (*v1.MsgRetireRes
 			return nil, err
 		}
 
-		if err = k.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1.BatchBalance{
+		if err = k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userTradableBalance.String(),
@@ -73,13 +75,13 @@ func (k Keeper) Retire(ctx context.Context, req *v1.MsgRetire) (*v1.MsgRetireRes
 		}); err != nil {
 			return nil, err
 		}
-		err = k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1.BatchSupply{
+		err = k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,
 		})
-		if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventRetire{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Retirer:    req.Holder,
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
@@ -89,5 +91,5 @@ func (k Keeper) Retire(ctx context.Context, req *v1.MsgRetire) (*v1.MsgRetireRes
 		}
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
 	}
-	return &v1.MsgRetireResponse{}, nil
+	return &core.MsgRetireResponse{}, nil
 }

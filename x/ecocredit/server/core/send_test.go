@@ -1,12 +1,15 @@
 package core
 
 import (
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestSend_Valid(t *testing.T) {
@@ -21,10 +24,10 @@ func TestSend_Valid(t *testing.T) {
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
-	_, err := s.k.Send(s.ctx, &v1.MsgSend{
+	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*v1.MsgSend_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "2.51"},
 			{BatchDenom: "C01-20200101-20210101-01", RetiredAmount: "1.30", RetirementLocation: "US-OR"},
 		},
@@ -68,20 +71,20 @@ func TestSend_Errors(t *testing.T) {
 	}).Times(2)
 
 	// test sending more than user balance
-	_, err := s.k.Send(s.ctx, &v1.MsgSend{
+	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*v1.MsgSend_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "1000000"},
 		},
 	})
 	assert.ErrorContains(t, err, "insufficient funds")
 
 	// test sending more precise than the credit type
-	_, err = s.k.Send(s.ctx, &v1.MsgSend{
+	_, err = s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
-		Credits: []*v1.MsgSend_SendCredits{
+		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "10.325092385"},
 		},
 	})
