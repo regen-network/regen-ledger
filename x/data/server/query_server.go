@@ -2,20 +2,19 @@ package server
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types/ormstore"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-
-	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
-
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -132,7 +131,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 	}
 
 	it, err := s.stateStore.DataResolverStore().
-		List(ctx, datav1alpha2.DataResolverPrimaryKey{}.WithId(id),
+		List(ctx, api.DataResolverPrimaryKey{}.WithId(id),
 			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
 	if err != nil {
 		return nil, err
