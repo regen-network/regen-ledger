@@ -3,7 +3,8 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -12,11 +13,12 @@ import (
 const gasCostPerIteration = uint64(10)
 
 type Keeper struct {
-	stateStore ecocreditv1beta1.StateStore
+	stateStore api.StateStore
 	bankKeeper ecocredit.BankKeeper
 	params     ParamKeeper
 	ak         AccountKeeper
 }
+
 type ParamKeeper interface {
 	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }
@@ -25,7 +27,7 @@ type AccountKeeper interface {
 	GetModuleAddress(string) sdk.AccAddress
 }
 
-func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params ParamKeeper, ak AccountKeeper) Keeper {
+func NewKeeper(ss api.StateStore, bk ecocredit.BankKeeper, params ParamKeeper, ak AccountKeeper) Keeper {
 	return Keeper{
 		stateStore: ss,
 		bankKeeper: bk,
@@ -35,4 +37,4 @@ func NewKeeper(ss ecocreditv1beta1.StateStore, bk ecocredit.BankKeeper, params P
 }
 
 // TODO: uncomment when impl
-// var _ v1beta1.MsgServer = &Keeper{}
+// var _ v1.MsgServer = &Keeper{}

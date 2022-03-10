@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"sort"
 	"time"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // FormatClassID formats the ID to use for a new credit class, based on the credit type and
@@ -89,4 +92,39 @@ func GetClassIdFromBatchDenom(denom string) string {
 		break
 	}
 	return s.String()
+}
+
+// exponent prefix map https://en.wikipedia.org/wiki/Metric_prefix
+var exponentPrefixMap = map[uint32]string{
+	0:  "",
+	1:  "d",
+	2:  "c",
+	3:  "m",
+	6:  "u",
+	9:  "n",
+	12: "p",
+	15: "f",
+	18: "a",
+	21: "z",
+	24: "y",
+}
+var validExponents string
+
+func init() {
+	var exponents = make([]uint32, 0, len(exponentPrefixMap))
+	for e := range exponentPrefixMap {
+		exponents = append(exponents, e)
+	}
+	sort.Slice(exponents, func(i, j int) bool { return exponents[i] < exponents[j] })
+	validExponents = fmt.Sprint(exponents)
+}
+
+// ExponentToPrefix returns a denom prefix for a given exponent.
+// Returns error if the exponent is not supported.
+func ExponentToPrefix(exponent uint32) (string, error) {
+	e, ok := exponentPrefixMap[exponent]
+	if !ok {
+		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)
+	}
+	return e, nil
 }

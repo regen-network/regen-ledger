@@ -300,6 +300,10 @@ func (g GroupInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
+	if g.TotalWeight == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("weight")
+	}
+
 	if _, err := math.NewNonNegativeDecFromString(g.TotalWeight); err != nil {
 		return sdkerrors.Wrap(err, "total weight")
 	}

@@ -153,7 +153,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenom := batchDenomT(batchDenomStr)
+	batchDenom := ecocredit.BatchDenomT(batchDenomStr)
 	tradableSupply := math.NewDecFromInt64(0)
 	retiredSupply := math.NewDecFromInt64(0)
 
@@ -201,7 +201,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, batchDenom), tradable)
+			err = ecocredit.AddAndSetDecimal(store, ecocredit.TradableBalanceKey(recipientAddr, batchDenom), tradable)
 			if err != nil {
 				return nil, err
 			}
@@ -229,11 +229,11 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCreateBatch iteration")
 	}
 
-	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	ecocredit.SetDecimal(store, ecocredit.TradableSupplyKey(batchDenom), tradableSupply)
+	ecocredit.SetDecimal(store, ecocredit.RetiredSupplyKey(batchDenom), retiredSupply)
 
 	totalSupply, err := tradableSupply.Add(retiredSupply)
 	if err != nil {
@@ -296,7 +296,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgSend iteration")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -313,7 +313,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 	}
 
 	for _, credit := range req.Credits {
-		denom := batchDenomT(credit.BatchDenom)
+		denom := ecocredit.BatchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
@@ -340,12 +340,12 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		}
 
 		//  Add retired supply
-		err = addAndSetDecimal(store, RetiredSupplyKey(denom), toRetire)
+		err = ecocredit.AddAndSetDecimal(store, ecocredit.RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgRetire iteration")
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
@@ -364,7 +364,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 
 		// Check that the batch that were trying to cancel credits from
 		// exists
-		denom := batchDenomT(credit.BatchDenom)
+		denom := ecocredit.BatchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
@@ -434,7 +434,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/MsgCancel iteration")
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
@@ -507,8 +507,8 @@ func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.Cla
 	return nextVal, nil
 }
 
-func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom batchDenomT, retired math.Dec, location string) error {
-	err := addAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
+func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom ecocredit.BatchDenomT, retired math.Dec, location string) error {
+	err := ecocredit.AddAndSetDecimal(store, ecocredit.RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
 	}
@@ -522,15 +522,15 @@ func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batc
 }
 
 // subtracts `amount` from the tradable balance and tradable supply
-func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, batchDenom batchDenomT, amount math.Dec) error {
+func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, batchDenom ecocredit.BatchDenomT, amount math.Dec) error {
 	// subtract tradable balance
-	err := subAndSetDecimal(store, TradableBalanceKey(holder, batchDenom), amount)
+	err := ecocredit.SubAndSetDecimal(store, ecocredit.TradableBalanceKey(holder, batchDenom), amount)
 	if err != nil {
 		return err
 	}
 
 	// subtract tradable supply
-	err = subAndSetDecimal(store, TradableSupplyKey(batchDenom), amount)
+	err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableSupplyKey(batchDenom), amount)
 	if err != nil {
 		return err
 	}
@@ -539,7 +539,7 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, 
 }
 
 // gets the precision of the credit type associated with the batch
-func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uint32, error) {
+func (s serverImpl) getBatchPrecision(ctx types.Context, denom ecocredit.BatchDenomT) (uint32, error) {
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
 	if err != nil {
@@ -557,7 +557,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 // Checks if the given address is in the allowlist of credit class creators
 func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit / credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
@@ -947,7 +947,7 @@ func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllow
 }
 
 func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_SendCredits, store sdk.KVStore, senderAddr sdk.AccAddress, recipientAddr sdk.AccAddress) error {
-	denom := batchDenomT(credit.BatchDenom)
+	denom := ecocredit.BatchDenomT(credit.BatchDenom)
 	if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 	}
@@ -973,20 +973,20 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 	}
 
 	// subtract balance
-	err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
+	err = subAndSetDecimal(store, ecocredit.TradableBalanceKey(senderAddr, denom), sum)
 	if err != nil {
 		return err
 	}
 
 	// Add tradable balance
-	err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
+	err = addAndSetDecimal(store, ecocredit.TradableBalanceKey(recipientAddr, denom), tradable)
 	if err != nil {
 		return err
 	}
 
 	if !retired.IsZero() {
 		// subtract retired from tradable supply
-		err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
+		err = subAndSetDecimal(store, ecocredit.TradableSupplyKey(denom), retired)
 		if err != nil {
 			return err
 		}
@@ -998,7 +998,7 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 		}
 
 		// Add retired supply
-		err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+		err = addAndSetDecimal(store, ecocredit.RetiredSupplyKey(denom), retired)
 		if err != nil {
 			return err
 		}
