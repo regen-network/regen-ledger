@@ -36,7 +36,7 @@ func TestParamChanges(t *testing.T) {
 		simValue    string
 		subspace    string
 	}{
-		{"ecocredit/CreditClassFee", "CreditClassFee", "[{\"denom\":\"stake\",\"amount\":\"24\"}]", "ecocredit"},
+		{"ecocredit/CreditClassFee", "CreditClassFee", "[{\"denom\":\"stake\",\"amount\":\"6\"}]", "ecocredit"},
 		{"ecocredit/AllowlistEnabled", "AllowlistEnabled", "true", "ecocredit"},
 		{"ecocredit/AllowedClassCreators", "AllowedClassCreators", "[\"cosmos10z82e5ztmrm4pujgummvmr7aqjzwlp6ga9ams9\"]", "ecocredit"},
 		{"ecocredit/CreditTypes", "CreditTypes", string(bz), "ecocredit"},

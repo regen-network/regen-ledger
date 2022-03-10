@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/cosmos/cosmos-sdk v0.45.0
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.10
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
@@ -13,12 +14,13 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/regen-network/regen-ledger/api v0.8.0
-	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
+	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.15
 	github.com/tendermint/tm-db v0.6.6
+	github.com/thanhpk/randstr v1.0.4
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
@@ -44,7 +46,6 @@ require (
 	github.com/confio/ics23/go v0.6.6 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
-	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
