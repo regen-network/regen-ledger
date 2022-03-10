@@ -9,7 +9,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -94,7 +94,7 @@ var ModuleSchema = ormdb.ModuleSchema{
 
 var BasketModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: basketv1.File_regen_ecocredit_basket_v2_state_proto,
+		1: api.File_regen_ecocredit_basket_v2_state_proto,
 	},
 	Prefix: []byte{ecocredit.ORMPrefix},
 }
