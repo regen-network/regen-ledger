@@ -56,7 +56,7 @@ Feature: Put In Basket
     Given: a current block timestamp of <x>
     And: a basket with a rolling start date of <y>
     And: a user owns credits from a batch with start date <z>
-    When: the user attempts to put the credit into the basket
+    When: the user attempts to put the credits into the basket
     Then: the credits are NOT put into the basket
 
     Examples:
@@ -69,7 +69,7 @@ Feature: Put In Basket
     Given: a current block timestamp of <x>
     And: a basket with a rolling start date of <y>
     And: a user owns credits from a batch with start date <z>
-    When: the user attempts to put the credit into the basket
+    When: the user attempts to put the credits into the basket
     Then: the credits are put into the basket
 
     Examples:
@@ -82,7 +82,7 @@ Feature: Put In Basket
     Given: a current block timestamp of <x>
     And: a basket with a rolling start date of <y>
     And: a user owns credits from a batch with start date <z>
-    When: the user attempts to put the credit into the basket
+    When: the user attempts to put the credits into the basket
     Then: the credits are put into the basket
 
     Examples:
