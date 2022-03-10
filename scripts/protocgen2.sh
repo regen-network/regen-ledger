@@ -11,4 +11,5 @@ protoc_gen_install() {
 protoc_gen_install
 
 echo "Generating API module"
+(cd api; find ./ -type f \( -iname \*.pulsar.go -o -iname \*.pb.go -o -iname \*.cosmos_orm.go -o -iname \*.pb.gw.go \) -delete; find . -empty -type d -delete; cd ..)
 (cd proto; buf generate --template buf.gen.pulsar.yaml)
