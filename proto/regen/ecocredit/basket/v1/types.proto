@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.basket.v1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";

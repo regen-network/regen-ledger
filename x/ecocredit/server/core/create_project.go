@@ -2,15 +2,17 @@ package core
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // CreateProject creates a new project for a specific credit class.
-func (k Keeper) CreateProject(ctx context.Context, req *v1.MsgCreateProject) (*v1.MsgCreateProjectResponse, error) {
+func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (*core.MsgCreateProjectResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classID := req.ClassId
 	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, classID)
@@ -38,7 +40,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *v1.MsgCreateProject) (*v
 		}
 	}
 
-	if err = k.stateStore.ProjectInfoStore().Insert(ctx, &ecocreditv1.ProjectInfo{
+	if err = k.stateStore.ProjectInfoStore().Insert(ctx, &api.ProjectInfo{
 		Name:            projectID,
 		ClassId:         classInfo.Id,
 		ProjectLocation: req.ProjectLocation,
@@ -47,7 +49,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *v1.MsgCreateProject) (*v
 		return nil, err
 	}
 
-	if err := sdkCtx.EventManager().EmitTypedEvent(&v1.EventCreateProject{
+	if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateProject{
 		ClassId:         classID,
 		ProjectId:       projectID,
 		Issuer:          req.Issuer,
@@ -56,7 +58,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *v1.MsgCreateProject) (*v
 		return nil, err
 	}
 
-	return &v1.MsgCreateProjectResponse{
+	return &core.MsgCreateProjectResponse{
 		ProjectId: projectID,
 	}, nil
 }
@@ -75,7 +77,7 @@ func (k Keeper) genProjectID(ctx context.Context, classRowID uint64, classID str
 		return "", err
 	}
 
-	if err = k.stateStore.ProjectSequenceStore().Save(ctx, &ecocreditv1.ProjectSequence{
+	if err = k.stateStore.ProjectSequenceStore().Save(ctx, &api.ProjectSequence{
 		ClassId:       classRowID,
 		NextProjectId: nextID + 1,
 	}); err != nil {
