@@ -2116,6 +2116,7 @@ type MsgClient interface {
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreatorsRequest, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFeeRequest, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
@@ -2287,6 +2288,7 @@ type MsgServer interface {
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreatorsRequest) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error)
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error)
 }
 

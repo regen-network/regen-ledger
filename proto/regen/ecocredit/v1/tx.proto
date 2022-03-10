@@ -56,6 +56,7 @@ service Msg {
   // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
   rpc UpdateCreditClassFee(MsgUpdateCreditClassFeeRequest) returns (MsgUpdateCreditClassFeeResponse);
 
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
   rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
 }
 
