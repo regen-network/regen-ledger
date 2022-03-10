@@ -1,14 +1,17 @@
 package core
 
 import (
+	"testing"
+
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
-	"testing"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestUpdateClass_UpdateAdmin(t *testing.T) {
@@ -18,7 +21,7 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	addrs := genAddrs(1)
 	newAdmin := addrs[0]
 
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
@@ -26,7 +29,7 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	_, err = s.k.UpdateClassAdmin(s.ctx, &v1.MsgUpdateClassAdmin{
+	_, err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    s.addr.String(),
 		ClassId:  "C01",
 		NewAdmin: newAdmin.String(),
@@ -43,7 +46,7 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
@@ -52,7 +55,7 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 	assert.NilError(t, err)
 
 	// try to update the admin with addr
-	_, err = s.k.UpdateClassAdmin(s.ctx, &v1.MsgUpdateClassAdmin{
+	_, err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    addr.String(),
 		ClassId:  "C01",
 		NewAdmin: addr.String(),
@@ -60,7 +63,7 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 	assert.ErrorContains(t, err, "unauthorized")
 
 	// try to update a non-existent class
-	_, err = s.k.UpdateClassAdmin(s.ctx, &v1.MsgUpdateClassAdmin{
+	_, err = s.k.UpdateClassAdmin(s.ctx, &core.MsgUpdateClassAdmin{
 		Admin:    addr.String(),
 		ClassId:  "FOOBAR",
 		NewAdmin: addr.String(),
@@ -75,7 +78,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	addrs := genAddrs(3)    // addrs to initially populate the class issuer store
 	newAddrs := genAddrs(3) // addrs to add in an update call
 
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
@@ -85,7 +88,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 
 	// insert some addrs
 	for _, addr := range addrs {
-		err := s.stateStore.ClassIssuerStore().Insert(s.ctx, &ecocreditv1.ClassIssuer{
+		err := s.stateStore.ClassIssuerStore().Insert(s.ctx, &api.ClassIssuer{
 			ClassId: 1,
 			Issuer:  addr,
 		})
@@ -97,7 +100,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	for i, newAddr := range newAddrs {
 		addrStrs[i] = newAddr.String()
 	}
-	_, err = s.k.UpdateClassIssuers(s.ctx, &v1.MsgUpdateClassIssuers{
+	_, err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:         s.addr.String(),
 		ClassId:       "C01",
 		AddIssuers:    addrStrs,
@@ -107,7 +110,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 
 	// check that the new addrs were added
 	count := 0
-	it, err := s.stateStore.ClassIssuerStore().List(s.ctx, ecocreditv1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
+	it, err := s.stateStore.ClassIssuerStore().List(s.ctx, api.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
 	assert.NilError(t, err)
 	for it.Next() {
 		count++
@@ -120,7 +123,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	for i, rmAddr := range removeAddrs {
 		removeAddrStrs[i] = rmAddr.String()
 	}
-	_, err = s.k.UpdateClassIssuers(s.ctx, &v1.MsgUpdateClassIssuers{
+	_, err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:         s.addr.String(),
 		ClassId:       "C01",
 		AddIssuers:    nil,
@@ -129,7 +132,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	assert.NilError(t, err)
 
 	// check that the removed addrs no longer exist
-	it, err = s.stateStore.ClassIssuerStore().List(s.ctx, ecocreditv1.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
+	it, err = s.stateStore.ClassIssuerStore().List(s.ctx, api.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
 	assert.NilError(t, err)
 	for it.Next() {
 		val, err := it.Value()
@@ -146,21 +149,21 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	classRowId, err := s.stateStore.ClassInfoStore().InsertReturningID(s.ctx, &ecocreditv1.ClassInfo{
+	classRowId, err := s.stateStore.ClassInfoStore().InsertReturningID(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
-	err = s.stateStore.ClassIssuerStore().Insert(s.ctx, &ecocreditv1.ClassIssuer{
+	err = s.stateStore.ClassIssuerStore().Insert(s.ctx, &api.ClassIssuer{
 		ClassId: classRowId,
 		Issuer:  s.addr,
 	})
 	assert.NilError(t, err)
 
 	// try to update without being admin
-	_, err = s.k.UpdateClassIssuers(s.ctx, &v1.MsgUpdateClassIssuers{
+	_, err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:         addr.String(),
 		ClassId:       "C01",
 		AddIssuers:    nil,
@@ -169,7 +172,7 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	assert.ErrorContains(t, err, sdkerrors.ErrUnauthorized.Error())
 
 	// try to update non-existent class
-	_, err = s.k.UpdateClassIssuers(s.ctx, &v1.MsgUpdateClassIssuers{
+	_, err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:         s.addr.String(),
 		ClassId:       "FOO",
 		AddIssuers:    nil,
@@ -178,7 +181,7 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	assert.ErrorContains(t, err, sdkerrors.ErrNotFound.Error())
 
 	// try to add an issuer that already exists
-	_, err = s.k.UpdateClassIssuers(s.ctx, &v1.MsgUpdateClassIssuers{
+	_, err = s.k.UpdateClassIssuers(s.ctx, &core.MsgUpdateClassIssuers{
 		Admin:         s.addr.String(),
 		ClassId:       "C01",
 		AddIssuers:    []string{s.addr.String()},
@@ -191,7 +194,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   []byte("foobar"),
@@ -199,7 +202,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	_, err = s.k.UpdateClassMetadata(s.ctx, &v1.MsgUpdateClassMetadata{
+	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    s.addr.String(),
 		ClassId:  "C01",
 		Metadata: []byte("barfoo"),
@@ -216,7 +219,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
@@ -225,7 +228,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	assert.NilError(t, err)
 
 	// try to update non-existent class
-	_, err = s.k.UpdateClassMetadata(s.ctx, &v1.MsgUpdateClassMetadata{
+	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    s.addr.String(),
 		ClassId:  "FOO",
 		Metadata: nil,
@@ -233,7 +236,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	assert.ErrorContains(t, err, sdkerrors.ErrNotFound.Error())
 
 	// try to update class you are not the admin of
-	_, err = s.k.UpdateClassMetadata(s.ctx, &v1.MsgUpdateClassMetadata{
+	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    addr.String(),
 		ClassId:  "C01",
 		Metadata: []byte("FOO"),
