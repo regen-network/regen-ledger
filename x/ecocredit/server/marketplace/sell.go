@@ -3,6 +3,7 @@ package marketplace
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -27,11 +28,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, fmt.Errorf("batch denom %v: %v", order.BatchDenom, err)
 		}
-		// TODO: if not found, do we create a market??
-		market, err := k.getMarket(ctx, order.BatchDenom, order.AskPrice.Denom)
+		ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 		if err != nil {
-			return nil, fmt.Errorf("market: batch denom %v, bank denom %v: %v", order.BatchDenom, order.AskPrice.Denom, err)
+			return nil, err
 		}
+		marketId, err := k.getOrCreateMarketId(ctx, ct.Abbreviation, order.AskPrice.Denom)
 		// verify expiration is in the future
 		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
@@ -54,7 +55,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
 			Quantity:          order.Quantity,
-			MarketId:          market.Id,
+			MarketId:          marketId,
 			AskPrice:          order.AskPrice.Amount.String(),
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        timestamppb.New(*order.Expiration),
@@ -69,10 +70,19 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
-func (k Keeper) getMarket(ctx context.Context, batchDenom, bankDenom string) (*marketApi.Market, error) {
-	ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batchDenom)
-	if err != nil {
-		return nil, err
+// getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
+func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
+	market, err := k.stateStore.MarketStore().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
+	switch err {
+	case nil:
+		return market.Id, nil
+	case ormerrors.NotFound:
+		return k.stateStore.MarketStore().InsertReturningID(ctx, &marketApi.Market{
+			CreditType:        creditTypeAbbrev,
+			BankDenom:         bankDenom,
+			PrecisionModifier: 0,
+		})
+	default:
+		return 0, err
 	}
-	return k.stateStore.MarketStore().GetByCreditTypeBankDenom(ctx, ct.Abbreviation, bankDenom)
 }
