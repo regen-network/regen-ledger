@@ -42,7 +42,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 				RetiredAmount:  "3.4",
 			},
 		},
-		Metadata: "",
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -100,7 +100,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 				TradableAmount: "10.1234567891111",
 			},
 		},
-		Metadata: "",
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
