@@ -35,7 +35,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 		return nil, err
 	}
 
-	creditType, err := k.getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}

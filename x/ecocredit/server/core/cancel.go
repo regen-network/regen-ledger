@@ -22,7 +22,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelRes
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := k.getCreditTypeFromBatchDenom(ctx, batch.BatchDenom)
+		creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}

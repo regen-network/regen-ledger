@@ -4,6 +4,7 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -23,7 +24,7 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer 
 }
 
 // getCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
-func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocredit.CreditType, error) {
+func getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocredit.CreditType, error) {
 	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
 		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
@@ -35,17 +36,17 @@ func (k Keeper) getCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditTy
 	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
 }
 
-// getCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func (k Keeper) getCreditTypeFromBatchDenom(ctx context.Context, denom string) (ecocredit.CreditType, error) {
+// GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
+func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ParamKeeper, denom string) (ecocredit.CreditType, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, classId)
+	classInfo, err := store.ClassInfoStore().GetByName(ctx, classId)
 	if err != nil {
 		return ecocredit.CreditType{}, err
 	}
 	p := &ecocredit.Params{}
-	k.params.GetParamSet(sdkCtx, p)
-	return k.getCreditType(classInfo.CreditType, p.CreditTypes)
+	k.GetParamSet(sdkCtx, p)
+	return getCreditType(classInfo.CreditType, p.CreditTypes)
 }
 
 // getNonNegativeFixedDecs takes an arbitrary amount of decimal strings, and returns their corresponding fixed decimals

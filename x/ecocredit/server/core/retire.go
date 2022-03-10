@@ -20,7 +20,7 @@ func (k Keeper) Retire(ctx context.Context, req *v1.MsgRetire) (*v1.MsgRetireRes
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := k.getCreditTypeFromBatchDenom(ctx, batch.BatchDenom)
+		creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
