@@ -52,9 +52,9 @@ Feature: Put In Basket
     And user provides credits from a credit class that is not in the list of allowed credit classes
     Then credits are NOT put into the basket
 
-  Scenario Outline: credits from a batch with a start date year before (block year - rolling start date)
+  Scenario Outline: credits from a batch with a start date year before (block year - years into the past)
     Given: a current block timestamp of <x>
-    And: a basket with a rolling start date of <y>
+    And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
     When: the user attempts to put the credits into the basket
     Then: the credits are NOT put into the basket
@@ -65,9 +65,9 @@ Feature: Put In Basket
       | 2022-04-01 | 10 | 2011-04-01 |
       | 2022-04-01 | 10 | 2011-07-01 |
 
-  Scenario Outline: credits from a batch with a start date year equal to (block year - rolling start date)
+  Scenario Outline: credits from a batch with a start date year equal to (block year - years into the past)
     Given: a current block timestamp of <x>
-    And: a basket with a rolling start date of <y>
+    And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
     When: the user attempts to put the credits into the basket
     Then: the credits are put into the basket
@@ -78,9 +78,9 @@ Feature: Put In Basket
       | 2022-04-01 | 10 | 2012-04-01 |
       | 2022-04-01 | 10 | 2012-07-01 |
 
-  Scenario Outline: credits from a batch with a start date year after (block year - rolling start date)
+  Scenario Outline: credits from a batch with a start date year after (block year - years into the past)
     Given: a current block timestamp of <x>
-    And: a basket with a rolling start date of <y>
+    And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
     When: the user attempts to put the credits into the basket
     Then: the credits are put into the basket
