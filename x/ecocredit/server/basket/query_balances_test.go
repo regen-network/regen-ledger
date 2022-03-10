@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/stretchr/testify/require"
 )

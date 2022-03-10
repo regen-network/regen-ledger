@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )

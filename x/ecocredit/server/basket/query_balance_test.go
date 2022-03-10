@@ -5,7 +5,7 @@ import (
 
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 
 	"github.com/stretchr/testify/require"
 )

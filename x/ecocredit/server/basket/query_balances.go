@@ -3,7 +3,7 @@ package basket
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 

@@ -9,7 +9,7 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
@@ -166,6 +166,7 @@ func TestGoodBasket(t *testing.T) {
 
 	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
+	assert.Equal(t, s.addr.String(), basket.Curator)
 	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
 	assert.Equal(t, "C", basket.CreditTypeAbbrev)
