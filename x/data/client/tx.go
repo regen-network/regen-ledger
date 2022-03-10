@@ -1,8 +1,12 @@
 package client
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/url"
+	"strconv"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -153,18 +157,68 @@ Flags:
 // MsgRegisterResolverCmd creates a CLI command for Msg/RegisterResolver.
 func MsgRegisterResolverCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "register-resolver",
-		Short:   ``,
-		Long:    ``,
-		Example: "",
-		Args:    cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		Use:   "register-resolver [resolver_id] [content_hashes_json]",
+		Short: `registers data content hashes`,
+		Long: `registers data content hashes
+Parameters:
+    resolver_id: resolver id is the ID of a resolver
+	content_hashes_json: contains list of content hashes which the resolver claims to serve
+Flags:
+	--from: manager is the address of the resolver manager
+		`,
+		Example: `
+			regen tx data register-resolver 1 content.json
 
-			return nil
+			where content.json contains
+			// TODO: add example
+		`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			resolverID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid resolver id")
+			}
+
+			contentHashes, err := parseContentHashes(clientCtx, args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := data.MsgRegisterResolver{
+				Manager:    clientCtx.GetFromAddress().String(),
+				ResolverId: resolverID,
+				Data:       contentHashes,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
+}
+
+func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.ContentHash, error) {
+	contentHashes := data.ContentHashes{}
+
+	if filePath == "" {
+		return nil, fmt.Errorf("file path is empty")
+	}
+
+	bz, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := clientCtx.Codec.UnmarshalJSON(bz, &contentHashes); err != nil {
+		return nil, err
+	}
+
+	return contentHashes.data
 }
