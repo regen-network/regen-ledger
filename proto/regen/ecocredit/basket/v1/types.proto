@@ -27,16 +27,23 @@ message BasketCredit {
 message DateCriteria {
   // min_start_date (optional) is the earliest start date for batches of credits allowed
   // into the basket.
-  // At most only one of `start_date_window` and `min_start_date` can be set.
+  // At most only one of `start_date_window`, `min_start_date`, and `rolling_start_date`
+  // can be set for a basket.
   google.protobuf.Timestamp min_start_date = 1;
 
   // start_date_window (optional) is a duration of time measured into the past which sets
   // a cutoff for batch start dates when adding new credits to the basket.
   // Based on the current block timestamp, credits whose start date is before
-  // `block_timestamp - batch_date_window` will not be allowed into the basket.
-  // At most only one of `start_date_window` and `min_start_date` can be set.
+  // `block_timestamp - start_date_window` will not be allowed into the basket.
+  // At most only one of `start_date_window`, `min_start_date`, and `rolling_start_date`
+  // can be set for a basket.
   google.protobuf.Duration start_date_window = 2;
 
-  // fixed_start_date (optional) is a timestamp that is updated on a yearly basis.
-  google.protobuf.Timestamp fixed_start_date = 3;
+  // rolling_start_date (optional) is the number of years into the past which sets a
+  // cutoff for the year of batch start dates when adding new credits to the basket.
+  // Based on the current block timestamp, credits whose start date is before the year
+  // of `block_timestamp_year - rolling_start_date` will not be allowed into the basket.
+  // At most only one of `start_date_window`, `min_start_date`, and `rolling_start_date`
+  // can be set for a basket.
+  uint32 rolling_start_date = 3;
 }

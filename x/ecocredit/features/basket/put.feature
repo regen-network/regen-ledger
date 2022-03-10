@@ -51,3 +51,42 @@ Feature: Put In Basket
     When user tries to put credits into a basket
     And user provides credits from a credit class that is not in the list of allowed credit classes
     Then credits are NOT put into the basket
+
+  Scenario Outline: credits from a batch with a start date year before (block year - rolling start date)
+    Given: a current block timestamp of <x>
+    And: a basket with a rolling start date of <y>
+    And: a user owns credits from a batch with start date <z>
+    When: the user attempts to put the credit into the basket
+    Then: the credits are NOT put into the basket
+
+    Examples:
+      | x          | y  | z          |
+      | 2022-04-01 | 10 | 2011-01-01 |
+      | 2022-04-01 | 10 | 2011-04-01 |
+      | 2022-04-01 | 10 | 2011-07-01 |
+
+  Scenario Outline: credits from a batch with a start date year equal to (block year - rolling start date)
+    Given: a current block timestamp of <x>
+    And: a basket with a rolling start date of <y>
+    And: a user owns credits from a batch with start date <z>
+    When: the user attempts to put the credit into the basket
+    Then: the credits are put into the basket
+
+    Examples:
+      | x          | y  | z          |
+      | 2022-04-01 | 10 | 2012-01-01 |
+      | 2022-04-01 | 10 | 2012-04-01 |
+      | 2022-04-01 | 10 | 2012-07-01 |
+
+  Scenario Outline: credits from a batch with a start date year after (block year - rolling start date)
+    Given: a current block timestamp of <x>
+    And: a basket with a rolling start date of <y>
+    And: a user owns credits from a batch with start date <z>
+    When: the user attempts to put the credit into the basket
+    Then: the credits are put into the basket
+
+    Examples:
+      | x          | y  | z          |
+      | 2022-04-01 | 10 | 2013-01-01 |
+      | 2022-04-01 | 10 | 2013-04-01 |
+      | 2022-04-01 | 10 | 2013-07-01 |
