@@ -36,4 +36,7 @@ message DateCriteria {
   // `block_timestamp - batch_date_window` will not be allowed into the basket.
   // At most only one of `start_date_window` and `min_start_date` can be set.
   google.protobuf.Duration start_date_window = 2;
+
+  // fixed_start_date (optional) is a timestamp that is updated on a yearly basis.
+  google.protobuf.Timestamp fixed_start_date = 3;
 }
