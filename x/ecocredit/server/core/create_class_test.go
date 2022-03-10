@@ -1,12 +1,15 @@
 package core
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
 	"testing"
+
+	"github.com/golang/mock/gomock"
+	"gotest.tools/v3/assert"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestCreateClass_Valid(t *testing.T) {
@@ -22,7 +25,7 @@ func TestCreateClass_Valid(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
 
-	res, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,
@@ -56,7 +59,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
 	}).Times(1)
-	_, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,
@@ -79,7 +82,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
 	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
 
-	res, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,
@@ -87,7 +90,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
-	res2, err := s.k.CreateClass(s.ctx, &v1.MsgCreateClass{
+	res2, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         nil,

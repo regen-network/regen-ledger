@@ -2,15 +2,17 @@ package core
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder
-func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelResponse, error) {
+func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCancelResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	holder, err := sdk.AccAddressFromBech32(req.Holder)
 	if err != nil {
@@ -53,7 +55,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelRes
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1.BatchBalance{
+		if err = k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userBalTradable.String(),
@@ -61,7 +63,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelRes
 		}); err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1.BatchSupply{
+		if err = k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   batchSupply.RetiredAmount,
@@ -69,7 +71,7 @@ func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelRes
 		}); err != nil {
 			return nil, err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventCancel{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCancel{
 			Canceller:  holder.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
@@ -78,5 +80,5 @@ func (k Keeper) Cancel(ctx context.Context, req *v1.MsgCancel) (*v1.MsgCancelRes
 		}
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
 	}
-	return &v1.MsgCancelResponse{}, nil
+	return &core.MsgCancelResponse{}, nil
 }

@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // EventSell is an event emitted when a sell order is created.
 message EventSell {

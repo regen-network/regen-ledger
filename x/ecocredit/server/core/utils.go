@@ -2,9 +2,11 @@ package core
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -12,7 +14,10 @@ import (
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer string) error {
-	addr, _ := sdk.AccAddressFromBech32(issuer)
+	addr, err := sdk.AccAddressFromBech32(issuer)
+	if err != nil {
+		return err
+	}
 	found, err := k.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
 	if err != nil {
 		return err

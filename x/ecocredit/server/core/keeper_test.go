@@ -2,10 +2,10 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
-	"github.com/tendermint/tendermint/libs/log"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -15,18 +15,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-	"testing"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
 type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
-	stateStore   ecocreditv1.StateStore
+	stateStore   api.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
@@ -43,7 +45,7 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.stateStore, err = ecocreditv1.NewStateStore(s.db)
+	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
@@ -68,34 +70,34 @@ func setupBase(t *testing.T) *baseSuite {
 
 // setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
-func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string){
+func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string) {
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   nil,
 		CreditType: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
 		Metadata:        nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
 		Metadata:   nil,
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1.BatchSupply{
+	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &api.BatchSupply{
 		BatchId:         1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &api.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "10.5",

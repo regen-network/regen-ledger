@@ -2,18 +2,21 @@ package core
 
 import (
 	"context"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // CreateBatch creates a new batch of credits.
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
-func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.MsgCreateBatchResponse, error) {
+func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	projectID := req.ProjectId
 
@@ -43,7 +46,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 	}
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
-	rowID, err := k.stateStore.BatchInfoStore().InsertReturningID(ctx, &ecocreditv1.BatchInfo{
+	rowID, err := k.stateStore.BatchInfoStore().InsertReturningID(ctx, &api.BatchInfo{
 		ProjectId:  projectInfo.Id,
 		BatchDenom: batchDenom,
 		Metadata:   req.Metadata,
@@ -82,7 +85,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 			if err != nil {
 				return nil, err
 			}
-			if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventRetire{
+			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 				Retirer:    recipient.String(),
 				BatchDenom: batchDenom,
 				Amount:     retired.String(),
@@ -91,7 +94,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 				return nil, err
 			}
 		}
-		if err = k.stateStore.BatchBalanceStore().Insert(ctx, &ecocreditv1.BatchBalance{
+		if err = k.stateStore.BatchBalanceStore().Insert(ctx, &api.BatchBalance{
 			Address:  recipient,
 			BatchId:  rowID,
 			Tradable: tradable.String(),
@@ -100,7 +103,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 			return nil, err
 		}
 
-		if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
 			Recipient:      recipient.String(),
 			BatchDenom:     batchDenom,
 			RetiredAmount:  retired.String(),
@@ -112,7 +115,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
-	if err = k.stateStore.BatchSupplyStore().Insert(ctx, &ecocreditv1.BatchSupply{
+	if err = k.stateStore.BatchSupplyStore().Insert(ctx, &api.BatchSupply{
 		BatchId:         rowID,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
@@ -126,7 +129,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventCreateBatch{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
 		ClassId:         classInfo.Name,
 		BatchDenom:      batchDenom,
 		Issuer:          req.Issuer,
@@ -139,7 +142,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *v1.MsgCreateBatch) (*v1.Ms
 		return nil, err
 	}
 
-	return &v1.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
+	return &core.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
 }
 
 // getBatchSeqNo gets the batch sequence number
@@ -154,7 +157,7 @@ func (k Keeper) getBatchSeqNo(ctx context.Context, projectID string) (uint64, er
 		seq = batchSeq.NextBatchId
 	}
 
-	if err = k.stateStore.BatchSequenceStore().Save(ctx, &ecocreditv1.BatchSequence{
+	if err = k.stateStore.BatchSequenceStore().Save(ctx, &api.BatchSequence{
 		ProjectId:   projectID,
 		NextBatchId: seq + 1,
 	}); err != nil {
