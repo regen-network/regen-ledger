@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// Sell creates new sell orders for credits
 func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
@@ -59,7 +60,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			AskPrice:          order.AskPrice.Amount.String(),
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        timestamppb.New(*order.Expiration),
-			Maker:             false, // TODO: ?????????
+			Maker:             true, // maker is always true for sell orders
 		})
 		if err != nil {
 			return nil, err
