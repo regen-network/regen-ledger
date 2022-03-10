@@ -57,8 +57,6 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	var p ecocredit.Params
-	k.params.GetParamSet(sdkCtx, &p)
 	creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batchDenom)
 	if err != nil {
 		return nil, err

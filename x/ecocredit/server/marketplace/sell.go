@@ -6,16 +6,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
-	regenCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
@@ -34,7 +33,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, fmt.Errorf("market: batch denom %v, bank denom %v: %v", order.BatchDenom, order.AskPrice.Denom, err)
 		}
 		// verify expiration is in the future
-		if order.Expiration != nil && order.Expiration.Before(regenCtx.BlockTime()) {
+		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 		sellQty, err := math.NewDecFromString(order.Quantity)
@@ -65,7 +64,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 		sellOrderIds[i] = id
-		regenCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
+		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
 	}
 	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }

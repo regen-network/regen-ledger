@@ -2,12 +2,11 @@ package marketplace
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/golang/mock/gomock"
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace/v1"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 	"testing"
@@ -106,17 +105,16 @@ func TestSell_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, ecocredit.ErrInsufficientFunds.Error())
 
 	// order expiration not in the future
-	setTime, err := time.Parse("2006-01-02", "2022-03-09")
-	assert.NilError(t, err)
-	s.sdkCtx.WithBlockTime(setTime)
-	invalidExpirationTime, err := time.Parse("2006-01-02", "2001-01-04")
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+	invalidExpirationTime, err := time.Parse("2006-01-02", "1500-01-01")
 	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
 		Owner:  s.addr.String(),
 		Orders: []*v1.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &invalidExpirationTime},
 		},
 	})
-	assert.ErrorContains(t, err, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future").Error())
+	assert.ErrorContains(t, err, "expiration must be in the future")
 }
 
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
