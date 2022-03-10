@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
+	github.com/regen-network/gocuke v0.6.0
 	github.com/regen-network/regen-ledger/api v0.5.0
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
 	github.com/regen-network/regen-ledger/types v1.0.0
@@ -36,6 +37,7 @@ require (
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/Workiva/go-datastructures v1.0.52 // indirect
+	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
 	github.com/armon/go-metrics v0.3.9 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect

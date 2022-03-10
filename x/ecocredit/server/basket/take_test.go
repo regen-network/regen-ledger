@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aaronc/gocuke"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -224,9 +224,11 @@ func (s takeSuite) expectDec(expected string, actual math.Dec) {
 }
 
 func TestTake(t *testing.T) {
-	gocuke.NewRunner(t, func(t gocuke.TestingT) gocuke.StepDefinitions {
-		return &takeSuite{baseSuite: setupBase(t)}
-	}).Path("../../basket/features/take.feature").Run()
+	gocuke.NewRunner(t, &takeSuite{}).Path("../../basket/features/take.feature").Run()
+}
+
+func (s *takeSuite) Before(t gocuke.TestingT) {
+	s.baseSuite = setupBase(t)
 }
 
 func (s *takeSuite) ABasketFooWithAutoretireEnabled() {

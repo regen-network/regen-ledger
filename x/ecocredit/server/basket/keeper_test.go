@@ -2,7 +2,7 @@ package basket_test
 
 import (
 	"context"
-	"github.com/aaronc/gocuke"
+	"github.com/regen-network/gocuke"
 	"testing"
 
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
