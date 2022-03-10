@@ -116,7 +116,7 @@ func TestCreateBatch_UnauthorizedIssuer(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		ProjectId: "PRO",
-		Issuer:    "FooBarBaz",
+		Issuer:    types.AccAddress("FooBarBaz").String(),
 	})
 	assert.ErrorContains(t, err, "is not an issuer for the class")
 }
