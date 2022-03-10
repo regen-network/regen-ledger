@@ -52,7 +52,7 @@ Feature: Put In Basket
     And user provides credits from a credit class that is not in the list of allowed credit classes
     Then credits are NOT put into the basket
 
-  Scenario Outline: credits where (block time - start date year) is more than years into the past
+  Scenario Outline: credits where (block year - start date year) is more than years into the past
     Given: a current block timestamp of <x>
     And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
@@ -65,7 +65,7 @@ Feature: Put In Basket
       | 2022-04-01 | 10 | 2011-04-01 |
       | 2022-04-01 | 10 | 2011-07-01 |
 
-  Scenario Outline: credits where (block time - start date year) is equal to years into the past
+  Scenario Outline: credits where (block year - start date year) is equal to years into the past
     Given: a current block timestamp of <x>
     And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
@@ -78,7 +78,7 @@ Feature: Put In Basket
       | 2022-04-01 | 10 | 2012-04-01 |
       | 2022-04-01 | 10 | 2012-07-01 |
 
-  Scenario Outline: credits where (block time - start date year) is less than years into the past
+  Scenario Outline: credits where (block year - start date year) is less than years into the past
     Given: a current block timestamp of <x>
     And: a basket with date criteria "years into the past" of <y>
     And: a user owns credits from a batch with start date <z>
