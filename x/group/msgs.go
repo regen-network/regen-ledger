@@ -61,6 +61,11 @@ func (m Member) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrap(err, "address")
 	}
+
+	if m.Weight == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("weight")
+	}
+
 	if _, err := math.NewNonNegativeDecFromString(m.Weight); err != nil {
 		return sdkerrors.Wrap(err, "weight")
 	}
