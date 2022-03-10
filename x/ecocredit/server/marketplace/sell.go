@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -70,7 +70,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 }
 
 func (k Keeper) getMarket(ctx context.Context, batchDenom, bankDenom string) (*marketApi.Market, error) {
-	ct, err := core.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batchDenom)
+	ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batchDenom)
 	if err != nil {
 		return nil, err
 	}

@@ -30,7 +30,7 @@ func TestSell_Valid(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).Times(1)
+	}).Times(2)
 
 	sellTime := time.Now()
 	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
@@ -50,7 +50,7 @@ func TestSell_Valid(t *testing.T) {
 		val, err := it.Value()
 		assert.NilError(t, err)
 		assert.Equal(t, "10", val.Quantity)
-		assert.Equal(t, ask.Denom, val.AskPrice)
+		assert.Equal(t, ask.Amount.String(), val.AskPrice)
 		count++
 	}
 	assert.Equal(t, 2, count)
