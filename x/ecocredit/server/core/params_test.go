@@ -4,8 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 	"testing"
 )
@@ -16,8 +16,8 @@ func TestParams_CreditType(t *testing.T) {
 
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
-	_, err := s.k.NewCreditType(s.ctx, &v1beta1.MsgNewCreditTypeRequest{
-		CreditTypes: []*v1beta1.CreditType{
+	_, err := s.k.NewCreditType(s.ctx, &core.MsgNewCreditTypeRequest{
+		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
 			{Abbreviation: "BIO", Name: "biodiversity", Unit: "acres", Precision: 1},
 		},
@@ -35,8 +35,8 @@ func TestParams_CreditType(t *testing.T) {
 
 
 	// cannot have duplicate abbreviations
-	_, err = s.k.NewCreditType(s.ctx, &v1beta1.MsgNewCreditTypeRequest{
-		CreditTypes: []*v1beta1.CreditType{
+	_, err = s.k.NewCreditType(s.ctx, &core.MsgNewCreditTypeRequest{
+		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
 		},
 		RootAddress: govAddr.String(),
@@ -55,7 +55,7 @@ func TestParams_Allowlist(t *testing.T) {
 	res, err := s.stateStore.AllowlistEnabledStore().Get(s.ctx)
 	assert.NilError(t, err)
 
-	_, err = s.k.ToggleAllowList(s.ctx, &v1beta1.MsgToggleAllowListRequest{
+	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowListRequest{
 		RootAddress: govAddr.String(),
 		Toggle:      !res.Enabled,
 	})
@@ -74,20 +74,20 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
 
 	addr1, addr2 := sdk.AccAddress("bar"), sdk.AccAddress("baz")
-	err := s.stateStore.AllowedClassCreatorsStore().Insert(s.ctx, &ecocreditv1beta1.AllowedClassCreators{Address: addr1})
+	err := s.stateStore.AllowedClassCreatorsStore().Insert(s.ctx, &ecocreditv1.AllowedClassCreators{Address: addr1})
 	assert.NilError(t, err)
-	err = s.stateStore.AllowedClassCreatorsStore().Insert(s.ctx, &ecocreditv1beta1.AllowedClassCreators{Address: addr2})
+	err = s.stateStore.AllowedClassCreatorsStore().Insert(s.ctx, &ecocreditv1.AllowedClassCreators{Address: addr2})
 	assert.NilError(t, err)
 
 	add1, add2 := sdk.AccAddress("add1"), sdk.AccAddress("add2")
-	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &v1beta1.MsgUpdateAllowedCreditClassCreatorsRequest{
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{
 		RootAddress:    govAddr.String(),
 		AddCreators:    []string{add1.String(), add2.String()},
 		RemoveCreators: []string{addr1.String(), addr2.String()},
 	})
 	assert.NilError(t, err)
 
-	it, err := s.stateStore.AllowedClassCreatorsStore().List(s.ctx, ecocreditv1beta1.AllowedClassCreatorsAddressIndexKey{})
+	it, err := s.stateStore.AllowedClassCreatorsStore().List(s.ctx, ecocreditv1.AllowedClassCreatorsAddressIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -101,7 +101,7 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	assert.Equal(t, 2, count)
 
 	// no duplicates
-	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &v1beta1.MsgUpdateAllowedCreditClassCreatorsRequest{
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{
 		RootAddress: govAddr.String(),
 		AddCreators: []string{add1.String()},
 	})
@@ -114,7 +114,7 @@ func TestParams_UpdateClassFee(t *testing.T) {
 
 	fee := sdk.NewInt64Coin("foo", 50)
 
-	err := s.stateStore.CreditClassFeeStore().Insert(s.ctx, &ecocreditv1beta1.CreditClassFee{
+	err := s.stateStore.CreditClassFeeStore().Insert(s.ctx, &ecocreditv1.CreditClassFee{
 		Denom:  fee.Denom,
 		Amount: fee.Amount.String(),
 	})
@@ -125,12 +125,12 @@ func TestParams_UpdateClassFee(t *testing.T) {
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
 
-	_, err = s.k.UpdateCreditClassFee(s.ctx, &v1beta1.MsgUpdateCreditClassFeeRequest{
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees:     []*v1beta1.MsgUpdateCreditClassFeeRequest_Fee{
+		AddFees:     []*core.MsgUpdateCreditClassFeeRequest_Fee{
 			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
 		},
-		RemoveFees:  []*v1beta1.MsgUpdateCreditClassFeeRequest_Fee{
+		RemoveFees:  []*core.MsgUpdateCreditClassFeeRequest_Fee{
 			{Denom: fee.Denom, Amount: fee.Amount.String()},
 		},
 	})
@@ -144,9 +144,9 @@ func TestParams_UpdateClassFee(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// no duplicates
-	_, err = s.k.UpdateCreditClassFee(s.ctx, &v1beta1.MsgUpdateCreditClassFeeRequest{
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees:     []*v1beta1.MsgUpdateCreditClassFeeRequest_Fee{
+		AddFees:     []*core.MsgUpdateCreditClassFeeRequest_Fee{
 			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
 		}})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
@@ -158,7 +158,7 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 
 	fee := sdk.NewInt64Coin("foo", 50)
 
-	err := s.stateStore.BasketFeeStore().Insert(s.ctx, &ecocreditv1beta1.BasketFee{
+	err := s.stateStore.BasketFeeStore().Insert(s.ctx, &ecocreditv1.BasketFee{
 		Denom:  fee.Denom,
 		Amount: fee.Amount.String(),
 	})
@@ -169,12 +169,12 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
 
-	_, err = s.k.UpdateBasketFee(s.ctx, &v1beta1.MsgUpdateBasketFeeRequest{
+	_, err = s.k.UpdateBasketFee(s.ctx, &core.MsgUpdateBasketFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees:     []*v1beta1.MsgUpdateBasketFeeRequest_Fee{
+		AddFees:     []*core.MsgUpdateBasketFeeRequest_Fee{
 			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
 		},
-		RemoveFees:  []*v1beta1.MsgUpdateBasketFeeRequest_Fee{
+		RemoveFees:  []*core.MsgUpdateBasketFeeRequest_Fee{
 			{Denom: fee.Denom, Amount: fee.Amount.String()},
 		},
 	})
@@ -189,9 +189,9 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 
 
 	// no duplicates
-	_, err = s.k.UpdateBasketFee(s.ctx, &v1beta1.MsgUpdateBasketFeeRequest{
+	_, err = s.k.UpdateBasketFee(s.ctx, &core.MsgUpdateBasketFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees:     []*v1beta1.MsgUpdateBasketFeeRequest_Fee{
+		AddFees:     []*core.MsgUpdateBasketFeeRequest_Fee{
 			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
 		}})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())

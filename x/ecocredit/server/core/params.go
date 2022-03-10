@@ -5,11 +5,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ecocreditv1beta1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1beta1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1beta1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func (k Keeper) NewCreditType(ctx context.Context, req *v1beta1.MsgNewCreditTypeRequest) (*v1beta1.MsgNewCreditTypeResponse, error) {
+func (k Keeper) NewCreditType(ctx context.Context, req *core.MsgNewCreditTypeRequest) (*core.MsgNewCreditTypeResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func (k Keeper) NewCreditType(ctx context.Context, req *v1beta1.MsgNewCreditType
 
 	store := k.stateStore.CreditTypeStore()
 	for _, ct := range req.CreditTypes {
-		if err = store.Insert(ctx, &ecocreditv1beta1.CreditType{
+		if err = store.Insert(ctx, &ecocreditv1.CreditType{
 			Abbreviation: ct.Abbreviation,
 			Name:         ct.Name,
 			Unit:         ct.Unit,
@@ -30,10 +30,10 @@ func (k Keeper) NewCreditType(ctx context.Context, req *v1beta1.MsgNewCreditType
 		}
 	}
 
-	return &v1beta1.MsgNewCreditTypeResponse{}, nil
+	return &core.MsgNewCreditTypeResponse{}, nil
 }
 
-func (k Keeper) ToggleAllowList(ctx context.Context, req *v1beta1.MsgToggleAllowListRequest) (*v1beta1.MsgToggleAllowListResponse, error) {
+func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowListRequest) (*core.MsgToggleAllowListResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -41,10 +41,10 @@ func (k Keeper) ToggleAllowList(ctx context.Context, req *v1beta1.MsgToggleAllow
 	if err = k.assertGovernance(govAddr); err != nil {
 		return nil, err
 	}
-	return &v1beta1.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledStore().Save(ctx, &ecocreditv1beta1.AllowlistEnabled{Enabled: req.Toggle})
+	return &core.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledStore().Save(ctx, &ecocreditv1.AllowlistEnabled{Enabled: req.Toggle})
 }
 
-func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *v1beta1.MsgUpdateAllowedCreditClassCreatorsRequest) (*v1beta1.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
+func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.MsgUpdateAllowedCreditClassCreatorsRequest) (*core.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *v1bet
 		if err != nil {
 			return nil, err
 		}
-		if err = store.Insert(ctx, &ecocreditv1beta1.AllowedClassCreators{Address: acc}); err != nil {
+		if err = store.Insert(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
 			return nil, err
 		}
 	}
@@ -69,15 +69,15 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *v1bet
 		if err != nil {
 			return nil, err
 		}
-		if err = store.Delete(ctx, &ecocreditv1beta1.AllowedClassCreators{Address: acc}); err != nil {
+		if err = store.Delete(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
 			return nil, err
 		}
 	}
 
-	return &v1beta1.MsgUpdateAllowedCreditClassCreatorsResponse{}, nil
+	return &core.MsgUpdateAllowedCreditClassCreatorsResponse{}, nil
 }
 
-func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *v1beta1.MsgUpdateCreditClassFeeRequest) (*v1beta1.MsgUpdateCreditClassFeeResponse, error) {
+func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCreditClassFeeRequest) (*core.MsgUpdateCreditClassFeeResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *v1beta1.MsgUpdate
 
 	store := k.stateStore.CreditClassFeeStore()
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &ecocreditv1beta1.CreditClassFee{
+		if err = store.Insert(ctx, &ecocreditv1.CreditClassFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount,
 		}); err != nil {
@@ -97,17 +97,17 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *v1beta1.MsgUpdate
 	}
 
 	for _, fee := range req.RemoveFees {
-		if err = store.Delete(ctx, &ecocreditv1beta1.CreditClassFee{
+		if err = store.Delete(ctx, &ecocreditv1.CreditClassFee{
 			Denom: fee.Denom,
 		}); err != nil {
 			return nil, err
 		}
 	}
 
-	return &v1beta1.MsgUpdateCreditClassFeeResponse{}, nil
+	return &core.MsgUpdateCreditClassFeeResponse{}, nil
 }
 
-func (k Keeper) UpdateBasketFee(ctx context.Context, req *v1beta1.MsgUpdateBasketFeeRequest) (*v1beta1.MsgUpdateBasketFeeResponse, error) {
+func (k Keeper) UpdateBasketFee(ctx context.Context, req *core.MsgUpdateBasketFeeRequest) (*core.MsgUpdateBasketFeeResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *v1beta1.MsgUpdateBaske
 
 	store := k.stateStore.BasketFeeStore()
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &ecocreditv1beta1.BasketFee{
+		if err = store.Insert(ctx, &ecocreditv1.BasketFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount,
 		}); err != nil {
@@ -127,14 +127,14 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *v1beta1.MsgUpdateBaske
 	}
 
 	for _, fee := range req.RemoveFees {
-		if err = store.Delete(ctx, &ecocreditv1beta1.BasketFee{
+		if err = store.Delete(ctx, &ecocreditv1.BasketFee{
 			Denom: fee.Denom,
 		}); err != nil {
 			return nil, err
 		}
 	}
 
-	return &v1beta1.MsgUpdateBasketFeeResponse{}, nil
+	return &core.MsgUpdateBasketFeeResponse{}, nil
 }
 
 func (k Keeper) assertGovernance(addr types.AccAddress) error {
