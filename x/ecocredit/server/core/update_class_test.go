@@ -208,7 +208,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 
 	class, err := s.stateStore.ClassInfoStore().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assert.DeepEqual(t, "barfoo", class.Metadata)
+	assert.Equal(t, "barfoo", class.Metadata)
 }
 
 func TestUpdateClass_MetadataErrs(t *testing.T) {
