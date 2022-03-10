@@ -2,18 +2,20 @@ package core
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Send sends credits to a recipient.
 // Send also retires credits if the amount to retire is specified in the request.
-func (k Keeper) Send(ctx context.Context, req *v1.MsgSend) (*v1.MsgSendResponse, error) {
+func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	sender, _ := sdk.AccAddressFromBech32(req.Sender)
 	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)
@@ -23,7 +25,7 @@ func (k Keeper) Send(ctx context.Context, req *v1.MsgSend) (*v1.MsgSendResponse,
 		if err != nil {
 			return nil, err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
 			Sender:         req.Sender,
 			Recipient:      req.Recipient,
 			BatchDenom:     credit.BatchDenom,
@@ -34,10 +36,10 @@ func (k Keeper) Send(ctx context.Context, req *v1.MsgSend) (*v1.MsgSendResponse,
 		}
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
-	return &v1.MsgSendResponse{}, nil
+	return &core.MsgSendResponse{}, nil
 }
 
-func (k Keeper) sendEcocredits(ctx context.Context, credit *v1.MsgSend_SendCredits, to, from sdk.AccAddress) error {
+func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
 	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
@@ -63,7 +65,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1.MsgSend_SendCredi
 	toBalance, err := k.stateStore.BatchBalanceStore().Get(ctx, to, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
-			toBalance = &ecocreditv1.BatchBalance{
+			toBalance = &api.BatchBalance{
 				Address:  to,
 				BatchId:  batch.Id,
 				Tradable: "0",
@@ -114,7 +116,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1.MsgSend_SendCredi
 		}
 	}
 	// update the "to" balance
-	if err := k.stateStore.BatchBalanceStore().Save(ctx, &ecocreditv1.BatchBalance{
+	if err := k.stateStore.BatchBalanceStore().Save(ctx, &api.BatchBalance{
 		Address:  to,
 		BatchId:  batch.Id,
 		Tradable: toTradableBalance.String(),
@@ -124,7 +126,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1.MsgSend_SendCredi
 	}
 
 	// update the "from" balance
-	if err := k.stateStore.BatchBalanceStore().Update(ctx, &ecocreditv1.BatchBalance{
+	if err := k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
 		Address:  from,
 		BatchId:  batch.Id,
 		Tradable: fromTradableBalance.String(),
@@ -134,7 +136,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *v1.MsgSend_SendCredi
 	}
 	// update the "retired" supply only if credits were retired
 	if didRetire {
-		if err := k.stateStore.BatchSupplyStore().Update(ctx, &ecocreditv1.BatchSupply{
+		if err := k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  batchSupplyTradable.String(),
 			RetiredAmount:   batchSupplyRetired.String(),
