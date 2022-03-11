@@ -138,7 +138,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *core.MsgUpdateBasketFe
 }
 
 func (k Keeper) assertGovernance(addr types.AccAddress) error {
-	if !k.ak.GetModuleAddress(govtypes.ModuleName).Equals(addr) {
+	if !k.accountKeeper.GetModuleAddress(govtypes.ModuleName).Equals(addr) {
 		return sdkerrors.ErrUnauthorized.Wrapf("params can only be updated via governance")
 	}
 	return nil
