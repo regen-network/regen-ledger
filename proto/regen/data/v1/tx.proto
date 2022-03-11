@@ -1,10 +1,12 @@
 syntax = "proto3";
 
-package regen.data.v1alpha2;
+package regen.data.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-import "regen/data/v1alpha2/types.proto";
+import "regen/data/v1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
@@ -38,15 +40,12 @@ service Msg {
   // signers and those signers will be appended to the list of signers.
   rpc SignData(MsgSignData) returns (MsgSignDataResponse);
 
-  // StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-  //
-  // StoreRawData implicitly calls AnchorData if the data was not already anchored.
-  //
-  // The sender in StoreRawData is not attesting to the veracity of the underlying
-  // data. They can simply be a intermediary providing storage services.
-  // SignData should be used to create a digital signature attesting to the
-  // veracity of some piece of data.
-  rpc StoreRawData(MsgStoreRawData) returns (MsgStoreRawDataResponse);
+  // DefineResolver defines a resolver URL and assigns it a new integer ID
+  // that can be used in calls to RegisterResolver.
+  rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
+
+  // RegisterResolver registers data content hashes
+  rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
 }
 
 // MsgAnchorData is the Msg/AnchorData request type.
@@ -64,6 +63,9 @@ message MsgAnchorData {
 message MsgAnchorDataResponse {
   // timestamp is the timestamp of the block at which the data was anchored.
   google.protobuf.Timestamp timestamp = 1;
+
+  // iri is the IRI of the data that was anchored.
+  string iri = 2;
 }
 
 // MsgSignData is the Msg/SignData request type.
@@ -84,19 +86,40 @@ message MsgSignData {
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
 
-// MsgStoreRawData is the Msg/StoreRawData request type.
-message MsgStoreRawData {
-  // sender is the address of the sender of the transaction.
-  // The sender in StoreData is not attesting to the veracity of the underlying
-  // data. They can simply be a intermediary providing services.
-  string sender = 1;
+// MsgDefineResolver is the Msg/DefineResolver request type.
+message MsgDefineResolver {
+  // manager is the address of the resolver manager. The manager is able
+  // to make future calls using the ID returned by this operation with
+  // Msg/RegisterResolver. To authorize other accounts to register resolvers,
+  // the manager should make use of cosmos.authz.
+  string manager = 1;
 
-  // content_hash is the hash-based identifier for the anchored content.
-  ContentHash.Raw content_hash = 2;
-
-  // content is the content of the raw data corresponding to the provided content hash.
-  bytes content = 3;
+  // resolver_url is a resolver URL which should refer to an HTTP service
+  // which will respond to a GET request with the IRI of a ContentHash
+  // and return the content if it exists or a 404. For graph data, resolvers
+  // should use the HTTP Accept header to negotiate the RDF serialization
+  // format.
+  string resolver_url = 2;
 }
 
-// MsgStoreRawData is the Msg/StoreRawData response type.
-message MsgStoreRawDataResponse { }
+// MsgDefineResolverResponse is the Msg/DefineResolver response type.
+message MsgDefineResolverResponse {
+  // resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver.
+  uint64 resolver_id = 1;
+}
+
+// MsgRegisterResolver is the Msg/RegisterResolver request type.
+message MsgRegisterResolver {
+  // manager is the address of the resolver manager who registered this
+  // resolver with Msg/DefinedResolver.
+  string manager = 1;
+
+  // resolver_id is the ID of a resolver defined with Msg/DefineResolver.
+  uint64 resolver_id = 2;
+
+  // data is a list of content hashes which the resolver claims to serve.
+  repeated ContentHash data = 3;
+}
+
+// MsgRegisterResolverResponse is the Msg/RegisterResolver response type.
+message MsgRegisterResolverResponse {}

@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-package regen.data.v1alpha2;
+package regen.data.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // EventAnchorData is an event emitted when data is anchored on-chain.
 message EventAnchorData {
