@@ -1,16 +1,19 @@
 package marketplace
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
-	"testing"
-	"time"
 )
 
 func TestSell_Valid(t *testing.T) {
@@ -56,6 +59,45 @@ func TestSell_Valid(t *testing.T) {
 	assert.Equal(t, 2, count)
 }
 
+func TestSell_CreatesMarket(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	any := gomock.Any()
+	batchDenom := "C01-20200101-20200201-001"
+	start, end := timestamppb.Now(), timestamppb.Now()
+	ask := sdk.NewInt64Coin("ubar", 10)
+	creditType := ecocredit.CreditType{
+		Name:         "carbon",
+		Abbreviation: "C",
+		Unit:         "tonnes",
+		Precision:    6,
+	}
+	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
+	sellTime := time.Now()
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	}).Times(1)
+
+	// market shouldn't exist before sell call
+	has, err := s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	assert.NilError(t, err)
+	assert.Equal(t, false, has)
+
+	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+		Owner:  s.addr.String(),
+		Orders: []*v1.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
+		},
+	})
+	assert.NilError(t, err)
+
+	// market should exist now
+	has, err = s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	assert.NilError(t, err)
+	assert.Equal(t, true, has)
+}
+
+// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
@@ -72,6 +114,10 @@ func TestSell_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	}).Times(2)
+
 	// invalid batch
 	_, err := s.k.Sell(s.ctx, &v1.MsgSell{
 		Owner:  s.addr.String(),
@@ -80,20 +126,6 @@ func TestSell_Invalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "batch denom foo-bar-baz-001")
-
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).Times(3)
-
-	// market not found
-	invalidDenom := sdk.NewInt64Coin("baz", 50)
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
-		Owner:  s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &invalidDenom, DisableAutoRetire: true, Expiration: &sellTime},
-		},
-	})
-	assert.ErrorContains(t, err, "market: batch denom", batchDenom)
 
 	// invalid balance
 	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
@@ -136,11 +168,12 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
-	assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
-		BankDenom:    bankDenom,
-		DisplayDenom: displayDenom,
-		Exponent:     1,
-	}))
+	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
+	//assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
+	//	BankDenom:    bankDenom,
+	//	DisplayDenom: displayDenom,
+	//	Exponent:     1,
+	//}))
 	assert.NilError(t, s.k.coreStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,

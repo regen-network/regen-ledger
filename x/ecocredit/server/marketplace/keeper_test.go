@@ -2,23 +2,27 @@ package marketplace
 
 import (
 	"context"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
+
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"gotest.tools/v3/assert"
-	"testing"
 )
 
 type baseSuite struct {
@@ -66,9 +70,3 @@ func setupBase(t *testing.T) *baseSuite {
 	return s
 }
 
-// this is an example of how we will unit test the basket functionality with mocks
-func TestKeeperExample(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	assert.Check(t, s != nil)
-}

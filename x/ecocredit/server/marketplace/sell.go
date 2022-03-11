@@ -3,15 +3,17 @@ package marketplace
 import (
 	"context"
 	"fmt"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Sell creates new sell orders for credits
@@ -45,13 +47,16 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err := assertHasBalance(ctx, k.coreStore, ownerAcc, batch.Id, sellQty); err != nil {
 			return nil, err
 		}
-		has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
-		if err != nil {
-			return nil, err
-		}
-		if !has {
-			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
-		}
+
+		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
+		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
+		//if err != nil {
+		//	return nil, err
+		//}
+		//if !has {
+		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
+		//}
+
 		id, err := k.stateStore.SellOrderStore().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,

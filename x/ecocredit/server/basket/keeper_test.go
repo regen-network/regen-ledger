@@ -4,33 +4,31 @@ import (
 	"context"
 	"testing"
 
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
-
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
-	"github.com/cosmos/cosmos-sdk/store"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
+	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/stretchr/testify/require"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
 
 type baseSuite struct {
 	t               *testing.T
 	db              ormdb.ModuleDB
-	stateStore      basketv1.StateStore
+	stateStore      api.StateStore
 	ctx             context.Context
 	k               basket.Keeper
 	ctrl            *gomock.Controller
@@ -46,9 +44,9 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(server.BasketModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.stateStore, err = basketv1.NewStateStore(s.db)
+	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
