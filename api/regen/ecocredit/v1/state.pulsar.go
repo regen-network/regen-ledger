@@ -5919,8 +5919,9 @@ type ProjectInfo struct {
 
 	// id is the unique ID of the project
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// name is an unique name of this project formed from its credit class
-	// name and either an auto-generated number or user provided string.
+	// name is the unique name of the project either formed from its credit
+	// class name and an auto-generated number or a custom name provided
+	// upon creation.
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
 	// class_id is the ID of credit class for this project.
 	ClassId uint64 `protobuf:"varint,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
