@@ -3,11 +3,12 @@ package basket_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/stretchr/testify/require"
 )
 
 func TestQueryBaskets(t *testing.T) {
@@ -15,13 +16,13 @@ func TestQueryBaskets(t *testing.T) {
 	s := setupBase(t)
 
 	// add some baskets
-	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: "foo", Name: "foo",
 	}))
-	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: "bar", Name: "bar",
 	}))
-	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: "baz", Name: "baz",
 	}))
 

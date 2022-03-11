@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -90,7 +90,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -143,7 +143,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 }
 
 // transferToBasket updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(k.storeKey)
 
@@ -160,11 +160,11 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	ecocredit.SetDecimal(store, userBalanceKey, newUserBalance)
 
 	// update basket balance with amount sent
-	var bal *basketv1.BasketBalance
+	var bal *api.BasketBalance
 	bal, err = k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, batchInfo.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			bal = &basketv1.BasketBalance{
+			bal = &api.BasketBalance{
 				BasketId:       basket.Id,
 				BatchDenom:     batchInfo.BatchDenom,
 				Balance:        amt.String(),

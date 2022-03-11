@@ -3,17 +3,18 @@ package basket_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 type BasketWithSupply struct {
 	supply int64
-	b      basketv1.Basket
+	b      api.Basket
 }
 
 type BankSupplyMock map[string]sdk.Coin
@@ -30,8 +31,8 @@ func TestBasketSupplyInvarint(t *testing.T) {
 	s := setupBase(t)
 
 	baskets := []BasketWithSupply{
-		{10, basketv1.Basket{BasketDenom: "bb1", Name: "b1"}},
-		{20, basketv1.Basket{BasketDenom: "bb2", Name: "b2"}},
+		{10, api.Basket{BasketDenom: "bb1", Name: "b1"}},
+		{20, api.Basket{BasketDenom: "bb2", Name: "b2"}},
 	}
 	store := s.stateStore.BasketStore()
 	basketBalances := map[uint64]math.Dec{}

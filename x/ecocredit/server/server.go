@@ -10,8 +10,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -89,14 +89,9 @@ type serverImpl struct {
 
 var ModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
-		2: marketApi.File_regen_ecocredit_marketplace_v1_state_proto,
-	},
-}
-
-var BasketModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+		1: api.File_regen_ecocredit_v1_state_proto,
+		2: basketapi.File_regen_ecocredit_basket_v1_state_proto,
+		3: marketApi.File_regen_ecocredit_marketplace_v1_state_proto,
 	},
 	Prefix: []byte{ecocredit.ORMPrefix},
 }
@@ -241,7 +236,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.projectInfoTable = projectInfoTableBuilder.Build()
 
-	s.db, err = ormutil.NewStoreKeyDB(BasketModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormutil.NewStoreKeyDB(ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
