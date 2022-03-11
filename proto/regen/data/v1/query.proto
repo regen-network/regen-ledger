@@ -33,7 +33,7 @@ service Query {
 
   // ResolverInfo returns information about a resolver.
   rpc ResolverInfo(QueryResolverInfoRequest) returns (QueryResolverInfoResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolver/{url}";
+    option (google.api.http).get = "/regen/data/v1/resolver";
   }
 }
 
