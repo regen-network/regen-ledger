@@ -13,7 +13,7 @@ const gasCostPerIteration = uint64(10)
 
 type Keeper struct {
 	stateStore marketplacev1.StateStore
-	coreStore  ecocreditv1.StateStore // TODO: do we want a ref to the core's store? or should we pass it a keeper iface?
+	coreStore  ecocreditv1.StateStore
 	bankKeeper ecocredit.BankKeeper
 	params     server.ParamKeeper
 }

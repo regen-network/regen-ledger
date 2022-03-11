@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder

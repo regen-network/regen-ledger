@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateBatch creates a new batch of credits.

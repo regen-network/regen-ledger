@@ -1,16 +1,19 @@
 package marketplace
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"testing"
+	"time"
+
 	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
-	"testing"
-	"time"
 )
 
 func TestSell_Valid(t *testing.T) {
@@ -56,6 +59,7 @@ func TestSell_Valid(t *testing.T) {
 	assert.Equal(t, 2, count)
 }
 
+// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
@@ -136,11 +140,12 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
-	assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
-		BankDenom:    bankDenom,
-		DisplayDenom: displayDenom,
-		Exponent:     1,
-	}))
+	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
+	//assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
+	//	BankDenom:    bankDenom,
+	//	DisplayDenom: displayDenom,
+	//	Exponent:     1,
+	//}))
 	assert.NilError(t, s.k.coreStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
