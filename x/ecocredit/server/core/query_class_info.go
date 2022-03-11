@@ -2,8 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -13,11 +11,6 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 	if err != nil {
 		return nil, err
 	}
-	bz, err := types.DecodeMetadata(classInfo.Metadata)
-	if err != nil {
-		return nil, err
-	}
-	classInfo.Metadata = string(bz)
 
 	var ci core.ClassInfo
 	if err = PulsarToGogoSlow(classInfo, &ci); err != nil {

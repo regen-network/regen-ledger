@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -18,12 +17,6 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 	if err != nil {
 		return nil, err
 	}
-
-	bz, err := types.DecodeMetadata(batch.Metadata)
-	if err != nil {
-		return nil, err
-	}
-	batch.Metadata = string(bz)
 
 	var bi core.BatchInfo
 	if err = PulsarToGogoSlow(batch, &bi); err != nil {

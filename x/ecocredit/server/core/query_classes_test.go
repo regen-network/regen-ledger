@@ -47,21 +47,3 @@ func TestQuery_Classes(t *testing.T) {
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 	assert.Equal(t, "C02", res.Classes[0].Name)
 }
-
-
-func TestQuery_ClassesMetadata(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "aGVsbG8gcmVnZW4h", // this is "hello regen!" in base64
-		CreditType: "C",
-	})
-	assert.NilError(t, err)
-
-	res, err := s.k.Classes(s.ctx, &core.QueryClassesRequest{})
-	assert.NilError(t, err)
-	assert.Equal(t, 1, len(res.Classes))
-	assert.Equal(t, "hello regen!", res.Classes[0].Metadata)
-}

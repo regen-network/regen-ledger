@@ -32,20 +32,3 @@ func TestQuery_ClassInfo(t *testing.T) {
 	assert.Equal(t, "C01", res.Info.Name)
 	assert.DeepEqual(t, s.addr.Bytes(), res.Info.Admin)
 }
-
-
-func TestQuery_ClassInfoMetadata(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "aGVsbG8gcmVnZW4h", // this is "hello regen!" in base64
-		CreditType: "C",
-	})
-	assert.NilError(t, err)
-
-	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C01"})
-	assert.NilError(t, err)
-	assert.Equal(t, "hello regen!", res.Info.Metadata)
-}

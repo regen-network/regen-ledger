@@ -2,8 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -31,12 +29,6 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		if err != nil {
 			return nil, err
 		}
-
-		bz, err := types.DecodeMetadata(batch.Metadata)
-		if err != nil {
-			return nil, err
-		}
-		batch.Metadata = string(bz)
 
 		var bi core.BatchInfo
 		if err = PulsarToGogoSlow(batch, &bi); err != nil {

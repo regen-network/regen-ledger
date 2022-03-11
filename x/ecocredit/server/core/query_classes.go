@@ -2,8 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -27,12 +25,6 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		if err != nil {
 			return nil, err
 		}
-
-		md, err := types.DecodeMetadata(info.Metadata)
-		if err != nil {
-			return nil, err
-		}
-		info.Metadata = string(md)
 
 		var ci core.ClassInfo
 		if err = PulsarToGogoSlow(info, &ci); err != nil {
