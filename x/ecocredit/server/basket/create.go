@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -37,7 +37,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &api.Basket{
+		Curator:           msg.Curator,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
@@ -113,7 +114,7 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 
 		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
 		err := k.stateStore.BasketClassStore().Insert(wrappedCtx,
-			&basketv1.BasketClass{
+			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,
 			},

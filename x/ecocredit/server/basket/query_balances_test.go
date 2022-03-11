@@ -3,10 +3,12 @@ package basket_test
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/types/query"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/cosmos-sdk/types/query"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 func TestQueryBalances(t *testing.T) {
@@ -16,22 +18,22 @@ func TestQueryBalances(t *testing.T) {
 	// add some baskets
 	basketDenom := "foo"
 	batchDenoms := []string{"bar", "baz", "qux"}
-	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	require.NoError(t, s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[0],
 		Balance:        "100.50",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[1],
 		Balance:        "4.20",
 		BatchStartDate: nil,
 	}))
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       1,
 		BatchDenom:     batchDenoms[2],
 		Balance:        "6.10",

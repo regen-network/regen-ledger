@@ -5,13 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/golang/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -30,7 +31,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	// add some data
 	var err error
-	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
+	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       "foo",
 		Name:              "foo",
 		DisableAutoRetire: false,
@@ -39,7 +40,7 @@ func setupTake(t *testing.T) *takeSuite {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C1",
 		Balance:        "3.0",
@@ -47,7 +48,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C1", "3.0")
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C2",
 		Balance:        "5.0",
@@ -55,7 +56,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C2", "5.0")
 
-	s.barBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
+	s.barBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       "bar",
 		Name:              "bar",
 		DisableAutoRetire: true,
@@ -64,7 +65,7 @@ func setupTake(t *testing.T) *takeSuite {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
 		BatchDenom:     "C3",
 		Balance:        "7.0",
@@ -72,7 +73,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C3", "7.0")
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
 		BatchDenom:     "C4",
 		Balance:        "4.0",
