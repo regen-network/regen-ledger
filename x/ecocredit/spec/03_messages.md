@@ -16,7 +16,7 @@
 
 ## MsgCreateProject
 
-`MsgCreateProject` creates a new project with a credit class ID, issuer, project location, and optional metadata. The party signing this transaction is the credit issuer. 
+`MsgCreateProject` creates a new project with a credit class ID, issuer, project location, and optional metadata. The party signing this transaction must be a valid issuer of the project's credit class.
 
 +++ https://github.com/regen-network/regen-ledger/tree/f2def5cf4e33c85aa4f336bc3430914d9bed791b/proto/regen/ecocredit/v1alpha2/tx.proto#L113-L140
 
