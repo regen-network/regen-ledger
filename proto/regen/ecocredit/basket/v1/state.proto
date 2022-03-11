@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
@@ -44,7 +45,7 @@ message Basket {
     // curator is the address of the basket curator who is able to change certain
     // basket settings.
     //
-    // Since: regen-ledger 4.0
+    // Since Revision 1
     string curator = 8;
 }
 

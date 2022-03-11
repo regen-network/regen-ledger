@@ -1940,6 +1940,8 @@ func (x *fastReflection_BasketBalance) ProtoMethods() *protoiface.Methods {
 // 	protoc        v3.19.1
 // source: regen/ecocredit/basket/v1/state.proto
 
+// Revision 1
+
 const (
 	// Verify that this generated code is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(20 - protoimpl.MinVersion)
@@ -1973,7 +1975,7 @@ type Basket struct {
 	// curator is the address of the basket curator who is able to change certain
 	// basket settings.
 	//
-	// Since: regen-ledger 4.0
+	// Since Revision 1
 	Curator string `protobuf:"bytes,8,opt,name=curator,proto3" json:"curator,omitempty"`
 }
 
