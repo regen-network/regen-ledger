@@ -66,9 +66,3 @@ func setupBase(t *testing.T) *baseSuite {
 	return s
 }
 
-// this is an example of how we will unit test the basket functionality with mocks
-func TestKeeperExample(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	assert.Check(t, s != nil)
-}
