@@ -2,15 +2,18 @@ package core
 
 import (
 	"context"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
 	"testing"
 	"time"
+
+	"github.com/golang/mock/gomock"
+	"gotest.tools/v3/assert"
+
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestCreateBatch_Valid(t *testing.T) {
@@ -27,10 +30,10 @@ func TestCreateBatch_Valid(t *testing.T) {
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()
-	res, err := s.k.CreateBatch(s.ctx, &v1.MsgCreateBatch{
+	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
 		ProjectId: "PRO",
-		Issuance: []*v1.MsgCreateBatch_BatchIssuance{
+		Issuance: []*core.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
 				TradableAmount: "10",
@@ -91,10 +94,10 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()
-	_, err := s.k.CreateBatch(s.ctx, &v1.MsgCreateBatch{
+	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
 		ProjectId: "PRO",
-		Issuance: []*v1.MsgCreateBatch_BatchIssuance{
+		Issuance: []*core.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
 				TradableAmount: "10.1234567891111",
@@ -111,7 +114,7 @@ func TestCreateBatch_UnauthorizedIssuer(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
-	_, err := s.k.CreateBatch(s.ctx, &v1.MsgCreateBatch{
+	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		ProjectId: "PRO",
 		Issuer:    types.AccAddress("FooBarBaz").String(),
 	})
@@ -122,28 +125,28 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	_, err := s.k.CreateBatch(s.ctx, &v1.MsgCreateBatch{
+	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		ProjectId: "none",
 	})
 	assert.ErrorContains(t, err, "not found")
 }
 
 // creates a class "C01", with a single class issuer, and a project "PRO"
-func batchTestSetup(t *testing.T, ctx context.Context, ss ecocreditv1.StateStore, addr types.AccAddress) (className, projectName string) {
+func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (className, projectName string) {
 	className, projectName = "C01", "PRO"
-	cid, err := ss.ClassInfoStore().InsertReturningID(ctx, &ecocreditv1.ClassInfo{
+	cid, err := ss.ClassInfoStore().InsertReturningID(ctx, &api.ClassInfo{
 		Name:       className,
 		Admin:      addr,
 		Metadata:   nil,
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
-	err = ss.ClassIssuerStore().Insert(ctx, &ecocreditv1.ClassIssuer{
+	err = ss.ClassIssuerStore().Insert(ctx, &api.ClassIssuer{
 		ClassId: cid,
 		Issuer:  addr,
 	})
 	assert.NilError(t, err)
-	_, err = ss.ProjectInfoStore().InsertReturningID(ctx, &ecocreditv1.ProjectInfo{
+	_, err = ss.ProjectInfoStore().InsertReturningID(ctx, &api.ProjectInfo{
 		Name:            projectName,
 		ClassId:         1,
 		ProjectLocation: "",

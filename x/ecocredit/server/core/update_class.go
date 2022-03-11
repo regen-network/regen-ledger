@@ -2,16 +2,18 @@ package core
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // UpdateClassAdmin updates the admin address for a class.
 // WARNING: this method will forfeit control of the entire class to the provided address.
 // double check your inputs to ensure you do not lose control of the class.
-func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1.MsgUpdateClassAdmin) (*v1.MsgUpdateClassAdminResponse, error) {
+func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAdmin) (*core.MsgUpdateClassAdminResponse, error) {
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -34,11 +36,11 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *v1.MsgUpdateClassAdmi
 	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
-	return &v1.MsgUpdateClassAdminResponse{}, err
+	return &core.MsgUpdateClassAdminResponse{}, err
 }
 
 // UpdateClassIssuers updates a class's issuers by either adding more issuers, or removing issuers from the class issuer store.
-func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1.MsgUpdateClassIssuers) (*v1.MsgUpdateClassIssuersResponse, error) {
+func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClassIssuers) (*core.MsgUpdateClassIssuersResponse, error) {
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -60,7 +62,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1.MsgUpdateClassIs
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Delete(ctx, &ecocreditv1.ClassIssuer{
+		if err = k.stateStore.ClassIssuerStore().Delete(ctx, &api.ClassIssuer{
 			ClassId: class.Id,
 			Issuer:  issuerAcc,
 		}); err != nil {
@@ -74,18 +76,18 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *v1.MsgUpdateClassIs
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Insert(ctx, &ecocreditv1.ClassIssuer{
+		if err = k.stateStore.ClassIssuerStore().Insert(ctx, &api.ClassIssuer{
 			ClassId: class.Id,
 			Issuer:  issuerAcc,
 		}); err != nil {
 			return nil, err
 		}
 	}
-	return &v1.MsgUpdateClassIssuersResponse{}, nil
+	return &core.MsgUpdateClassIssuersResponse{}, nil
 }
 
 // UpdateClassMetadata updates the metadata for the class.
-func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1.MsgUpdateClassMetadata) (*v1.MsgUpdateClassMetadataResponse, error) {
+func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClassMetadata) (*core.MsgUpdateClassMetadataResponse, error) {
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -106,5 +108,5 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *v1.MsgUpdateClassM
 		return nil, err
 	}
 
-	return &v1.MsgUpdateClassMetadataResponse{}, err
+	return &core.MsgUpdateClassMetadataResponse{}, err
 }
