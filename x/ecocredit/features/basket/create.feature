@@ -108,3 +108,8 @@ Feature: Create Basket
     When user tries to create a basket
     And user provides a minimum start date that is less than 1 day
     Then basket is NOT created
+
+  Scenario: basket years in the past must be a positive integer
+    When user tries to create a basket
+    And user provides years in the past that is less than 1
+    Then basket is NOT created

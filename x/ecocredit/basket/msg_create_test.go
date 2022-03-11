@@ -102,27 +102,72 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 		d   DateCriteria
 		err string
 	}{
-		{"nil-min_start_date",
+		{
+			"nil-min_start_date",
 			DateCriteria{MinStartDate: nil},
-			"unsupported date_criteria value"},
-		{"bad-min_start_date",
-			DateCriteria{MinStartDate: &gogotypes.Timestamp{Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()}},
-			"date_criteria.min_start_date must be after"},
-		{"nil-start_date_window",
+			"unsupported date_criteria value",
+		},
+		{
+			"bad-min_start_date",
+			DateCriteria{MinStartDate: &gogotypes.Timestamp{
+				Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()},
+			},
+			"date_criteria.min_start_date must be after",
+		},
+		{
+			"nil-start_date_window",
 			DateCriteria{StartDateWindow: nil},
-			"unsupported date_criteria value"},
-		{"bad-start_date_window",
+			"unsupported date_criteria value",
+		},
+		{
+			"bad-start_date_window",
 			DateCriteria{StartDateWindow: &gogotypes.Duration{Seconds: 3600}},
-			"date_criteria.start_date_window must be at least 1 day"},
-		{"both-min_start_date-start_date_window-set",
-			DateCriteria{MinStartDate: gogotypes.TimestampNow(), StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2}},
-			"only one of date_criteria.min_start_date or date_criteria.start_date_window must be set"},
-		{"good-min_start_date",
+			"date_criteria.start_date_window must be at least 1 day",
+		},
+		{
+			"zero-years_in_the_past",
+			DateCriteria{YearsInThePast: 0},
+			"unsupported date_criteria value",
+		},
+		{
+			"both-min_start_date-start_date_window-set",
+			DateCriteria{
+				MinStartDate:    gogotypes.TimestampNow(),
+				StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2},
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"both-min_start_date-years_in_the_past-set",
+			DateCriteria{
+				MinStartDate:   gogotypes.TimestampNow(),
+				YearsInThePast: 10,
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"both-start_date_window-years_in_the_past-set",
+			DateCriteria{
+				StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2},
+				YearsInThePast:  10,
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"good-min_start_date",
 			DateCriteria{MinStartDate: gogotypes.TimestampNow()},
-			""},
-		{"good-start_date_window",
+			"",
+		},
+		{
+			"good-start_date_window",
 			DateCriteria{StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2}},
-			""},
+			"",
+		},
+		{
+			"good-years_in_the_past",
+			DateCriteria{YearsInThePast: 10},
+			"",
+		},
 	}
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {

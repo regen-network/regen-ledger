@@ -16,6 +16,8 @@ func (d *DateCriteria) ToApi() *basketv1.DateCriteria {
 		return &basketv1.DateCriteria{MinStartDate: &timestamppb.Timestamp{Seconds: x.Seconds, Nanos: x.Nanos}}
 	} else if x := d.GetStartDateWindow(); x != nil {
 		return &basketv1.DateCriteria{StartDateWindow: &durationpb.Duration{Seconds: x.Seconds, Nanos: x.Nanos}}
+	} else if x := d.GetYearsInThePast(); x != 0 {
+		return &basketv1.DateCriteria{YearsInThePast: x}
 	}
 	return nil
 }

@@ -34,6 +34,7 @@ import (
 func TestPut(t *testing.T) {
 	basketDenom := "BASKET"
 	basketDenom2 := "BASKET2"
+	basketDenom3 := "BASKET3"
 	classId := "C02"
 	projectId := "P01"
 	startDate, err := time.Parse("2006-01-02", "2020-01-01")
@@ -98,7 +99,6 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	basketBalanceTbl := db.GetTable(&basketv1.BasketBalance{})
 	var dur time.Duration = 500000000000000000
 	validStartDateWindow := startDate.Add(-dur)
 	err = basketTbl.Insert(ctx, &basketv1.Basket{
@@ -110,6 +110,17 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
+	validYearsInThePast := uint32(10)
+	err = basketTbl.Insert(ctx, &basketv1.Basket{
+		BasketDenom:       basketDenom3,
+		Name:              basketDenom3,
+		DisableAutoRetire: true,
+		CreditTypeAbbrev:  "C",
+		DateCriteria:      &basketv1.DateCriteria{YearsInThePast: validYearsInThePast},
+		Exponent:          6,
+	})
+	require.NoError(t, err)
+	basketBalanceTbl := db.GetTable(&basketv1.BasketBalance{})
 	basketDenomToId := make(map[string]uint64)
 	basketDenomToId[basketDenom] = 1
 	basketDenomToId[basketDenom2] = 2
@@ -364,7 +375,7 @@ func TestPut(t *testing.T) {
 			errMsg: "cannot put a credit from a batch with start date",
 		},
 		{
-			name:            "batch outside of rolling time window",
+			name:            "batch outside of start date window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
 				Owner:       addr.String(),
@@ -376,6 +387,27 @@ func TestPut(t *testing.T) {
 				badTimeInfo := *batchInfoRes.Info
 				bogusDur := time.Duration(999999999999999)
 				badTime := validStartDateWindow.Add(-bogusDur)
+				badTimeInfo.StartDate = &badTime
+				ecocreditKeeper.EXPECT().
+					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
+
+			},
+			errMsg: "cannot put a credit from a batch with start date",
+		},
+		{
+			name:            "batch outside of years in the past",
+			startingBalance: "100000000",
+			msg: basket2.MsgPut{
+				Owner:       addr.String(),
+				BasketDenom: basketDenom3,
+				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+			},
+			expectedBasketCoins: "2000000", // 2 million
+			expectCalls: func() {
+				badTimeInfo := *batchInfoRes.Info
+				badYear := int(validYearsInThePast + 10)
+				badTime := time.Date(badYear, 1, 1, 0, 0, 0, 0, time.UTC)
 				badTimeInfo.StartDate = &badTime
 				ecocreditKeeper.EXPECT().
 					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).

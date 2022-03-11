@@ -104,6 +104,9 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 		} else if criteria.StartDateWindow != nil {
 			window := criteria.StartDateWindow.AsDuration()
 			minStartDate = blockTime.Add(-window)
+		} else if criteria.YearsInThePast != 0 {
+			year := blockTime.Year() - int(criteria.YearsInThePast)
+			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
 
 		if batchInfo.StartDate.Before(minStartDate) {

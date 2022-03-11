@@ -41,7 +41,7 @@ message DateCriteria {
 
   // years_in_the_past (optional) is the number of years into the past which sets a
   // cutoff for the batch start dates when adding new credits to the basket.
-  // Based on the current block timestamp, credits whose start date is before
+  // Based on the current block timestamp, credits whose start date year is less than
   // `block_timestamp_year - years_in_the_past` will not be allowed into the basket.
   // At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
   // can be set for a basket.
