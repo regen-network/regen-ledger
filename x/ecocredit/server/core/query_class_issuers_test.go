@@ -1,12 +1,15 @@
 package core
 
 import (
+	"testing"
+
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
-	"testing"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestQuery_ClassIssuers(t *testing.T) {
@@ -37,17 +40,17 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	}))
 
 	// base request
-	res, err := s.k.ClassIssuers(s.ctx, &v1.QueryClassIssuersRequest{ClassId: "C01"})
+	res, err := s.k.ClassIssuers(s.ctx, &core.QueryClassIssuersRequest{ClassId: "C01"})
 	assert.NilError(t, err)
 	assert.Equal(t, len(issuers), len(res.Issuers))
 
 	// bad request
-	_, err = s.k.ClassIssuers(s.ctx, &v1.QueryClassIssuersRequest{ClassId: "F01"})
+	_, err = s.k.ClassIssuers(s.ctx, &core.QueryClassIssuersRequest{ClassId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// paginated request
-	res, err = s.k.ClassIssuers(s.ctx, &v1.QueryClassIssuersRequest{
-		ClassId: "C01",
+	res, err = s.k.ClassIssuers(s.ctx, &core.QueryClassIssuersRequest{
+		ClassId:    "C01",
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)

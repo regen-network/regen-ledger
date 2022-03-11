@@ -2,11 +2,11 @@
 // source: regen/ecocredit/marketplace/v1/query.proto
 
 /*
-Package v1 is a reverse proxy.
+Package marketplace is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package v1
+package marketplace
 
 import (
 	"context"

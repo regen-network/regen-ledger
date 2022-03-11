@@ -4,7 +4,7 @@ package regen.ecocredit.basket.v1;
 
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 // EventCreate is an event emitted when a basket is created.
 message EventCreate {
