@@ -1,9 +1,11 @@
 syntax = "proto3";
 
-package regen.data.v1alpha2;
+package regen.data.v1;
 
-import "regen/data/v1alpha2/types.proto";
+import "regen/data/v1/types.proto";
 import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // GenesisState is the genesis state
 message GenesisState {
@@ -21,8 +23,4 @@ message GenesisContentEntry {
 
     // signers are the signers, if any
     repeated SignerEntry signers = 3;
-
-    // content is the actual content if stored on-chain
-    Content content = 4;
-
 }
