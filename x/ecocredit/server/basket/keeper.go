@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"

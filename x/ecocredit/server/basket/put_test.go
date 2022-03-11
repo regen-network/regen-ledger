@@ -22,7 +22,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -81,7 +81,7 @@ func TestPut(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	ctrl := gomock.NewController(t)
 	b := ormtest.NewMemoryBackend()
-	db, err := ormdb.NewModuleDB(server.BasketModuleSchema, ormdb.ModuleDBOptions{
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{
 		GetBackend: func(ctx context.Context) (ormtable.Backend, error) {
 			return b, nil
 		},

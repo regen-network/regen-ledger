@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v2"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
