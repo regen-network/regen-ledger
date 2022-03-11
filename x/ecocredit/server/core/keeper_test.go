@@ -26,18 +26,18 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            Keeper
-	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks2.MockParamKeeper
-	accountKeeper 	*mocks2.MockAccountKeeper
-	storeKey     *sdk.KVStoreKey
-	sdkCtx       sdk.Context
+	t             *testing.T
+	db            ormdb.ModuleDB
+	stateStore    api.StateStore
+	ctx           context.Context
+	k             Keeper
+	ctrl          *gomock.Controller
+	addr          sdk.AccAddress
+	bankKeeper    *mocks.MockBankKeeper
+	paramsKeeper  *mocks2.MockParamKeeper
+	accountKeeper *mocks2.MockAccountKeeper
+	storeKey      *sdk.KVStoreKey
+	sdkCtx        sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
