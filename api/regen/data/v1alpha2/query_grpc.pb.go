@@ -23,15 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
 	// ByHash queries data based on its ContentHash.
-	ByIRI(ctx context.Context, in *QueryByIRIRequest, opts ...grpc.CallOption) (*QueryByIRIResponse, error)
+	ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
-	// Signers queries signers based on IRI.
-	Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error)
-	// Resolvers returns the registered resolver URLs for the data IRI.
-	Resolvers(ctx context.Context, in *QueryResolversRequest, opts ...grpc.CallOption) (*QueryResolversResponse, error)
-	// ResolverInfo returns information about a resolver.
-	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
 type queryClient struct {
@@ -42,9 +36,9 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) ByIRI(ctx context.Context, in *QueryByIRIRequest, opts ...grpc.CallOption) (*QueryByIRIResponse, error) {
-	out := new(QueryByIRIResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ByIRI", in, out, opts...)
+func (c *queryClient) ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error) {
+	out := new(QueryByHashResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ByHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,47 +54,14 @@ func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, op
 	return out, nil
 }
 
-func (c *queryClient) Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error) {
-	out := new(QuerySignersResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/Signers", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) Resolvers(ctx context.Context, in *QueryResolversRequest, opts ...grpc.CallOption) (*QueryResolversResponse, error) {
-	out := new(QueryResolversResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/Resolvers", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error) {
-	out := new(QueryResolverInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ResolverInfo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
 	// ByHash queries data based on its ContentHash.
-	ByIRI(context.Context, *QueryByIRIRequest) (*QueryByIRIResponse, error)
+	ByHash(context.Context, *QueryByHashRequest) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
-	// Signers queries signers based on IRI.
-	Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error)
-	// Resolvers returns the registered resolver URLs for the data IRI.
-	Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error)
-	// ResolverInfo returns information about a resolver.
-	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -108,20 +69,11 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (UnimplementedQueryServer) ByIRI(context.Context, *QueryByIRIRequest) (*QueryByIRIResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ByIRI not implemented")
+func (UnimplementedQueryServer) ByHash(context.Context, *QueryByHashRequest) (*QueryByHashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ByHash not implemented")
 }
 func (UnimplementedQueryServer) BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BySigner not implemented")
-}
-func (UnimplementedQueryServer) Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Signers not implemented")
-}
-func (UnimplementedQueryServer) Resolvers(context.Context, *QueryResolversRequest) (*QueryResolversResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Resolvers not implemented")
-}
-func (UnimplementedQueryServer) ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResolverInfo not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -136,20 +88,20 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
 }
 
-func _Query_ByIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByIRIRequest)
+func _Query_ByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryByHashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ByIRI(ctx, in)
+		return srv.(QueryServer).ByHash(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Query/ByIRI",
+		FullMethod: "/regen.data.v1alpha2.Query/ByHash",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByIRI(ctx, req.(*QueryByIRIRequest))
+		return srv.(QueryServer).ByHash(ctx, req.(*QueryByHashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -172,60 +124,6 @@ func _Query_BySigner_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_Signers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySignersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Signers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Query/Signers",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Signers(ctx, req.(*QuerySignersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Resolvers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryResolversRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Resolvers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Query/Resolvers",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Resolvers(ctx, req.(*QueryResolversRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ResolverInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryResolverInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ResolverInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Query/ResolverInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ResolverInfo(ctx, req.(*QueryResolverInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -234,24 +132,12 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ByIRI",
-			Handler:    _Query_ByIRI_Handler,
+			MethodName: "ByHash",
+			Handler:    _Query_ByHash_Handler,
 		},
 		{
 			MethodName: "BySigner",
 			Handler:    _Query_BySigner_Handler,
-		},
-		{
-			MethodName: "Signers",
-			Handler:    _Query_Signers_Handler,
-		},
-		{
-			MethodName: "Resolvers",
-			Handler:    _Query_Resolvers_Handler,
-		},
-		{
-			MethodName: "ResolverInfo",
-			Handler:    _Query_ResolverInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
