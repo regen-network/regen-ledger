@@ -76,6 +76,10 @@ func TestSell_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	}).Times(2)
+
 	// invalid batch
 	_, err := s.k.Sell(s.ctx, &v1.MsgSell{
 		Owner:  s.addr.String(),
@@ -84,20 +88,6 @@ func TestSell_Invalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "batch denom foo-bar-baz-001")
-
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).Times(3)
-
-	// market not found
-	invalidDenom := sdk.NewInt64Coin("baz", 50)
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
-		Owner:  s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &invalidDenom, DisableAutoRetire: true, Expiration: &sellTime},
-		},
-	})
-	assert.ErrorContains(t, err, "market: batch denom", batchDenom)
 
 	// invalid balance
 	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
