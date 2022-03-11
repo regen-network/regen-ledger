@@ -89,7 +89,9 @@ module.exports = {
           title: 'Migrations',
           collapsable: false,
           children: [
+            '/migrations/upgrade',
             '/migrations/v2.0-upgrade',
+            '/migrations/v3.0-upgrade',
           ]
         },
         {

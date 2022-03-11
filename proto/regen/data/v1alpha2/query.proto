@@ -25,6 +25,16 @@ service Query {
   rpc Signers(QuerySignersRequest) returns (QuerySignersResponse) {
     option (google.api.http).get = "/regen/data/v1alpha2/signers/{iri}";
   }
+
+  // Resolvers returns the registered resolver URLs for the data IRI.
+  rpc Resolvers(QueryResolversRequest) returns (QueryResolversResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/resolvers/{iri}";
+  }
+
+  // ResolverInfo returns information about a resolver.
+  rpc ResolverInfo(QueryResolverInfoRequest) returns (QueryResolverInfoResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/resolver/{url}";
+  }
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
@@ -79,7 +89,7 @@ message QuerySignersRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySignersResponse is the Query/QuerySigners response type.
+// QuerySignersResponse is the Query/Signers response type.
 message QuerySignersResponse {
 
   // signers are the addresses of the signers.
@@ -87,4 +97,38 @@ message QuerySignersResponse {
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryResolversRequest is the Query/Resolvers request type.
+message QueryResolversRequest {
+  // iri is the content IRI
+  string iri = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryResolversResponse is the Query/Resolvers response type.
+message QueryResolversResponse {
+  // resolver_urls are the resolver URLs that have been registered for this
+  // data object.
+  repeated string resolver_urls = 1;
+
+  // pagination is the PageResponse to use for pagination.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryResolverInfoRequest is the Query/ResolverInfo request type.
+message QueryResolverInfoRequest {
+  // url is the URL of the resolver to query.
+  string url = 1;
+}
+
+// QueryResolverInfoResponse is the Query/ResolverInfo response type.
+message QueryResolverInfoResponse {
+  // id is the id of the resolver which can be used in Msg/RegisterResolver.
+  uint64 id = 1;
+
+  // manager is the bech32 account address of the resolver manager.
+  string manager = 2;
 }

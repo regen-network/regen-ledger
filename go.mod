@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v2
+module github.com/regen-network/regen-ledger/v3
 
 go 1.17
 
@@ -9,16 +9,18 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/prometheus/client_golang v1.12.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/group v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/x/ecocredit v1.1.0
+	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.15
 	github.com/tendermint/tm-db v0.6.6
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
+	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf // indirect
 )
 
 require (
@@ -40,6 +42,9 @@ require (
 	github.com/confio/ics23/go v0.6.6 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.10 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
@@ -60,6 +65,7 @@ require (
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/gogo/protobuf v1.3.3 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/btree v1.0.0 // indirect
@@ -100,7 +106,8 @@ require (
 	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
-	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000 // indirect
+	github.com/regen-network/regen-ledger/api v0.8.0 // indirect
+	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
 	github.com/rs/cors v1.8.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/spf13/afero v1.6.0 // indirect
@@ -115,12 +122,10 @@ require (
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 // indirect
 	google.golang.org/grpc v1.44.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
@@ -147,6 +152,8 @@ replace github.com/regen-network/regen-ledger/x/data => ./x/data
 replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
 
 replace github.com/regen-network/regen-ledger/x/group => ./x/group
+
+replace github.com/regen-network/regen-ledger/api => ./api
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14
 
