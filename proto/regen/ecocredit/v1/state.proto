@@ -83,8 +83,9 @@ message ProjectInfo {
     // id is the unique ID of the project
     uint64 id = 1;
 
-    // name is an unique name of this project formed from its credit class
-    // name and either an auto-generated number or user provided string.
+    // name is the unique name of the project either formed from its credit
+    // class name and an auto-generated number or a custom name provided
+    // upon creation.
     string name = 3;
 
     // class_id is the ID of credit class for this project.
