@@ -10,7 +10,7 @@ import (
 	cosmossdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	sdk "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -132,7 +132,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, err
 	}
 
-	id, err := s.stateStore.ResolverInfoStore().InsertReturningID(ctx, &datav1alpha2.ResolverInfo{
+	id, err := s.stateStore.ResolverInfoStore().InsertReturningID(ctx, &api.ResolverInfo{
 		Url:     msg.ResolverUrl,
 		Manager: manager.Bytes(),
 	})
@@ -165,7 +165,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		}
 		err = s.stateStore.DataResolverStore().Save(
 			ctx,
-			&datav1alpha2.DataResolver{
+			&api.DataResolver{
 				ResolverId: msg.ResolverId,
 				Id:         id,
 			},

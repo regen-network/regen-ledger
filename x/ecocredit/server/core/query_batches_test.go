@@ -1,12 +1,15 @@
 package core
 
 import (
+	"testing"
+
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
-	"gotest.tools/v3/assert"
-	"testing"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestQuery_Batches(t *testing.T) {
@@ -14,20 +17,20 @@ func TestQuery_Batches(t *testing.T) {
 	s := setupBase(t)
 
 	// make a project and two batches
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &ecocreditv1.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "P01",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
 		Metadata:        nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-001",
 		Metadata:   nil,
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-002",
 		Metadata:   nil,
@@ -36,18 +39,18 @@ func TestQuery_Batches(t *testing.T) {
 	}))
 
 	// invalid query
-	_, err := s.k.Batches(s.ctx, &v1.QueryBatchesRequest{ProjectId: "F01"})
+	_, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	//  base query
-	res, err := s.k.Batches(s.ctx, &v1.QueryBatchesRequest{ProjectId: "P01"})
+	res, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Batches))
 	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].BatchDenom)
 
 	// paginated query
-	res, err = s.k.Batches(s.ctx, &v1.QueryBatchesRequest{
-		ProjectId: "P01",
+	res, err = s.k.Batches(s.ctx, &core.QueryBatchesRequest{
+		ProjectId:  "P01",
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)

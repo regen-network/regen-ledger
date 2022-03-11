@@ -2,12 +2,13 @@ package core
 
 import (
 	"context"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // BatchInfo queries for information on a credit batch.
-func (k Keeper) BatchInfo(ctx context.Context, request *v1.QueryBatchInfoRequest) (*v1.QueryBatchInfoResponse, error) {
+func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoRequest) (*core.QueryBatchInfoResponse, error) {
 	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
@@ -17,9 +18,9 @@ func (k Keeper) BatchInfo(ctx context.Context, request *v1.QueryBatchInfoRequest
 		return nil, err
 	}
 
-	var bi v1.BatchInfo
+	var bi core.BatchInfo
 	if err = PulsarToGogoSlow(batch, &bi); err != nil {
 		return nil, err
 	}
-	return &v1.QueryBatchInfoResponse{Info: &bi}, nil
+	return &core.QueryBatchInfoResponse{Info: &bi}, nil
 }
