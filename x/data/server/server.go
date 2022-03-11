@@ -1,20 +1,21 @@
 package server
 
 import (
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types/ormstore"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/server/lookup"
 )
 
 var ModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: datav1alpha2.File_regen_data_v1alpha2_state_proto,
+		1: api.File_regen_data_v1_state_proto,
 	},
 	Prefix: []byte{ORMStatePrefix},
 }
@@ -22,7 +23,7 @@ var ModuleSchema = ormdb.ModuleSchema{
 type serverImpl struct {
 	storeKey   sdk.StoreKey
 	iriIDTable lookup.Table
-	stateStore datav1alpha2.StateStore
+	stateStore api.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
@@ -36,7 +37,7 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 		panic(err)
 	}
 
-	stateStore, err := datav1alpha2.NewStateStore(db)
+	stateStore, err := api.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
