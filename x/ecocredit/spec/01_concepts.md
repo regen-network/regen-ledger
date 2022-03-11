@@ -20,7 +20,7 @@ A project describes the high-level on-chain information for an issuer associated
 - **project location**: The location of the project backing the credits issued from this project
 - **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the project.
 
-Each credit batch is associated with a project, backing each issuance with information about the issuer of the credits. A credit class can have multiple projects that issue credits from the credit class. It is not required that the same issuer issue all batches for a project.
+Each credit batch is associated with a project, backing each issuance with information about the issuer of the credits. A credit class can have multiple projects that issue credits from the credit class.
 
 ## Credit Type
 
