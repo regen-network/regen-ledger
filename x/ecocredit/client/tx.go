@@ -2,10 +2,10 @@ package client
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/regen-network/regen-ledger/types"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -107,7 +107,7 @@ Parameters:
 			if args[2] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := types.DecodeMetadata(args[2])
+			b, err := decodeMetadata(args[2])
 			if err != nil {
 				return err
 			}
@@ -192,7 +192,7 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			b, err := types.DecodeMetadata(metadataStr)
+			b, err := decodeMetadata(metadataStr)
 			if err != nil {
 				return err
 			}
@@ -407,7 +407,7 @@ Parameters:
 			if args[1] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := types.DecodeMetadata(args[1])
+			b, err := decodeMetadata(args[1])
 			if err != nil {
 				return err
 			}
@@ -787,7 +787,7 @@ func TxCreateProject() *cobra.Command {
 				return errors.New("metadata is required")
 			}
 
-			b, err := types.DecodeMetadata(args[2])
+			b, err := decodeMetadata(args[2])
 			if err != nil {
 				return err
 			}
@@ -818,4 +818,13 @@ func TxCreateProject() *cobra.Command {
 	cmd.Flags().String(FlagProjectId, "", "id of the project")
 
 	return cmd
+}
+
+func decodeMetadata(metadataStr string) ([]byte, error) {
+	b, err := base64.StdEncoding.DecodeString(metadataStr)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+	}
+
+	return b, nil
 }
