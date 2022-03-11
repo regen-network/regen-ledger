@@ -39,6 +39,13 @@ service Msg {
   // SignData can be called multiple times for the same content hash with different
   // signers and those signers will be appended to the list of signers.
   rpc SignData(MsgSignData) returns (MsgSignDataResponse);
+
+  // DefineResolver defines a resolver URL and assigns it a new integer ID
+  // that can be used in calls to RegisterResolver.
+  rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
+
+  // RegisterResolver registers data content hashes
+  rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
 }
 
 // MsgAnchorData is the Msg/AnchorData request type.
@@ -78,3 +85,44 @@ message MsgSignData {
 
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
+
+// MsgDefineResolver is the Msg/DefineResolver request type.
+message MsgDefineResolver {
+
+  // manager is the address of the resolver manager. The manager is able
+  // to make future calls using the ID returned by this operation with
+  // Msg/RegisterResolver. To authorize other accounts to register resolvers,
+  // the manager should make use of cosmos.authz.
+  string manager = 1;
+
+  // resolver_url is a resolver URL which should refer to an HTTP service
+  // which will respond to a GET request with the IRI of a ContentHash
+  // and return the content if it exists or a 404. For graph data, resolvers
+  // should use the HTTP Accept header to negotiate the RDF serialization
+  // format.
+  string resolver_url = 2;
+}
+
+// MsgDefineResolverResponse is the Msg/DefineResolver response type.
+message MsgDefineResolverResponse {
+
+  // resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver.
+  uint64 resolver_id = 1;
+}
+
+// MsgRegisterResolver is the Msg/RegisterResolver request type.
+message MsgRegisterResolver {
+
+  // manager is the address of the resolver manager who registered this
+  // resolver with Msg/DefinedResolver.
+  string manager = 1;
+
+  // resolver_id is the ID of a resolver defined with Msg/DefineResolver.
+  uint64 resolver_id = 2;
+
+  // data is a list of content hashes which the resolver claims to serve.
+  repeated ContentHash data = 3;
+}
+
+// MsgRegisterResolverResponse is the Msg/RegisterResolver response type.
+message MsgRegisterResolverResponse {}

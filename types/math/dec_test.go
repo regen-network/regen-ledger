@@ -187,7 +187,7 @@ func testDecInt64(t *rapid.T) {
 
 // Property: invalid_number_string(s) => NewDecFromString(s) == err
 func testInvalidNewDecFromString(t *rapid.T) {
-	s := rapid.StringMatching("[[:alpha:]]*").Draw(t, "s").(string)
+	s := rapid.StringMatching("[[:alpha:]]+").Draw(t, "s").(string)
 	_, err := NewDecFromString(s)
 	require.Error(t, err)
 }
@@ -196,7 +196,7 @@ func testInvalidNewDecFromString(t *rapid.T) {
 //             => NewNonNegativeDecFromString(s) == err
 func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
@@ -210,7 +210,7 @@ func testInvalidNewNonNegativeDecFromString(t *rapid.T) {
 func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+$`).Filter(
 			func(s string) bool { return !strings.HasPrefix(s, "-0") && !strings.HasPrefix(s, "-.0") },
 		),
@@ -224,7 +224,7 @@ func testInvalidNewNonNegativeFixedDecFromString(t *rapid.T) {
 //             => NewPositiveDecFromString(s) == err
 func testInvalidNewPositiveDecFromString(t *rapid.T) {
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
 	).Draw(t, "s").(string)
 	_, err := NewPositiveDecFromString(s)
@@ -236,7 +236,7 @@ func testInvalidNewPositiveDecFromString(t *rapid.T) {
 func testInvalidNewPositiveFixedDecFromString(t *rapid.T) {
 	n := rapid.Uint32Range(0, 999).Draw(t, "n").(uint32)
 	s := rapid.OneOf(
-		rapid.StringMatching("[[:alpha:]]*"),
+		rapid.StringMatching("[[:alpha:]]+"),
 		rapid.StringMatching(`^-\d*\.?\d+|0$`),
 		rapid.StringMatching(fmt.Sprintf(`\d*\.\d{%d,}`, n+1)),
 	).Draw(t, "s").(string)

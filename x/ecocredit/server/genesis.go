@@ -1,25 +1,61 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
+	"github.com/pkg/errors"
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/pkg/errors"
-	"github.com/regen-network/regen-ledger/types/math"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
+
+// NOTE: currently we have ORM + non-ORM genesis in parallel. We will remove
+// the non-ORM genesis soon, but for now, we merge both genesis JSON's into
+// the same map.
 
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+	jsonSource, err := ormjson.NewRawMessageSource(data)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.db.ImportJSON(ctx, jsonSource)
+	if err != nil {
+		return nil, err
+	}
+
 	var genesisState ecocredit.GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
+	if err != nil {
+		return nil, err
+	}
+
+	if r == nil { // r is nil when theres no table data, so we can just unmarshal the data given
+		bz := bytes.NewBuffer(data)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &genesisState)
+		if err != nil {
+			return nil, err
+		}
+	} else { // r is not nil, so there is table data and we can just use r.
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
@@ -57,9 +93,9 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
 func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
-	var denomT batchDenomT
+	var denomT ecocredit.BatchDenomT
 	for _, supply := range supplies {
-		denomT = batchDenomT(supply.BatchDenom)
+		denomT = ecocredit.BatchDenomT(supply.BatchDenom)
 		tradableSupply := math.NewDecFromInt64(0)
 		retiredSupply := math.NewDecFromInt64(0)
 		var err error
@@ -70,7 +106,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
+		tradable, err := ecocredit.GetDecimal(store, ecocredit.TradableSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -86,7 +122,7 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			}
 		}
 
-		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
+		retired, err := ecocredit.GetDecimal(store, ecocredit.RetiredSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
@@ -106,7 +142,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 		if err != nil {
 			return err
 		}
-		denomT := batchDenomT(balance.BatchDenom)
+		denomT := ecocredit.BatchDenomT(balance.BatchDenom)
 
 		// set tradable balance and update supply
 		if balance.TradableBalance != "" {
@@ -114,11 +150,11 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			if err != nil {
 				return err
 			}
-			key := TradableBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.TradableBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 
-			key = TradableSupplyKey(denomT)
-			addAndSetDecimal(store, key, d)
+			key = ecocredit.TradableSupplyKey(denomT)
+			ecocredit.AddAndSetDecimal(store, key, d)
 		}
 
 		// set retired balance and update supply
@@ -127,11 +163,11 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			if err != nil {
 				return err
 			}
-			key := RetiredBalanceKey(addr, denomT)
-			setDecimal(store, key, d)
+			key := ecocredit.RetiredBalanceKey(addr, denomT)
+			ecocredit.SetDecimal(store, key, d)
 
-			key = RetiredSupplyKey(denomT)
-			addAndSetDecimal(store, key, d)
+			key = ecocredit.RetiredSupplyKey(denomT)
+			ecocredit.AddAndSetDecimal(store, key, d)
 		}
 	}
 
@@ -166,7 +202,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	}
 
 	suppliesMap := make(map[string]*ecocredit.Supply)
-	iterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
+	ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom, supply string) (bool, error) {
 		suppliesMap[denom] = &ecocredit.Supply{
 			BatchDenom:     denom,
 			TradableSupply: supply,
@@ -175,7 +211,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return false, nil
 	})
 
-	iterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
+	ecocredit.IterateSupplies(store, ecocredit.RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
 		if _, exists := suppliesMap[denom]; exists {
 			suppliesMap[denom].RetiredSupply = supply
 		} else {
@@ -196,7 +232,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	}
 
 	balancesMap := make(map[string]*ecocredit.Balance)
-	iterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) bool {
+	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(address, denom, balance string) bool {
 		balancesMap[fmt.Sprintf("%s%s", address, denom)] = &ecocredit.Balance{
 			Address:         address,
 			BatchDenom:      denom,
@@ -206,7 +242,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return false
 	})
 
-	iterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) bool {
+	ecocredit.IterateBalances(store, ecocredit.RetiredBalancePrefix, func(address, denom, balance string) bool {
 		index := fmt.Sprintf("%s%s", address, denom)
 		if _, exists := balancesMap[index]; exists {
 			balancesMap[index].RetiredBalance = balance
@@ -240,5 +276,37 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 
 	gs.ProjectSeqNum = s.projectInfoSeq.CurVal(ctx)
 
-	return cdc.MustMarshalJSON(gs), nil
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err := s.db.ExportJSON(ctx, jsonTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonTarget.JSON()
+}
+
+// MergeLegacyJSONIntoTarget merges legacy genesis JSON in message into the
+// ormjson.WriteTarget under key which has the name of the legacy message.
+func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
+	if err != nil {
+		return err
+	}
+
+	bz, err := cdc.MarshalJSON(message)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
 }
