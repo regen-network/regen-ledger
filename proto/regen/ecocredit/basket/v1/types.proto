@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+// Revision 1
 package regen.ecocredit.basket.v1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
@@ -45,5 +46,7 @@ message DateCriteria {
   // `block_timestamp_year - years_in_the_past` will not be allowed into the basket.
   // At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
   // can be set for a basket.
+  //
+  // Since Revision 1
   uint32 years_in_the_past = 3;
 }
