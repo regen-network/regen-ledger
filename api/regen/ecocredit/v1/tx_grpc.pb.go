@@ -46,15 +46,15 @@ type MsgClient interface {
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// NewCreditType adds a new credit type - Governance only method
-	NewCreditType(ctx context.Context, in *MsgNewCreditTypeRequest, opts ...grpc.CallOption) (*MsgNewCreditTypeResponse, error)
+	// AddCreditType adds a new credit type - Governance only method
+	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
 	// ToggleAllowList toggles the allow list - Governance only method
 	ToggleAllowList(ctx context.Context, in *MsgToggleAllowListRequest, opts ...grpc.CallOption) (*MsgToggleAllowListResponse, error)
 	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreatorsRequest, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFeeRequest, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
@@ -147,9 +147,9 @@ func (c *msgClient) UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassM
 	return out, nil
 }
 
-func (c *msgClient) NewCreditType(ctx context.Context, in *MsgNewCreditTypeRequest, opts ...grpc.CallOption) (*MsgNewCreditTypeResponse, error) {
-	out := new(MsgNewCreditTypeResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/NewCreditType", in, out, opts...)
+func (c *msgClient) AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error) {
+	out := new(MsgAddCreditTypeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/AddCreditType", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -220,15 +220,15 @@ type MsgServer interface {
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// NewCreditType adds a new credit type - Governance only method
-	NewCreditType(context.Context, *MsgNewCreditTypeRequest) (*MsgNewCreditTypeResponse, error)
+	// AddCreditType adds a new credit type - Governance only method
+	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
 	// ToggleAllowList toggles the allow list - Governance only method
 	ToggleAllowList(context.Context, *MsgToggleAllowListRequest) (*MsgToggleAllowListResponse, error)
 	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreatorsRequest) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
@@ -264,8 +264,8 @@ func (UnimplementedMsgServer) UpdateClassIssuers(context.Context, *MsgUpdateClas
 func (UnimplementedMsgServer) UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassMetadata not implemented")
 }
-func (UnimplementedMsgServer) NewCreditType(context.Context, *MsgNewCreditTypeRequest) (*MsgNewCreditTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewCreditType not implemented")
+func (UnimplementedMsgServer) AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddCreditType not implemented")
 }
 func (UnimplementedMsgServer) ToggleAllowList(context.Context, *MsgToggleAllowListRequest) (*MsgToggleAllowListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ToggleAllowList not implemented")
@@ -454,20 +454,20 @@ func _Msg_UpdateClassMetadata_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_NewCreditType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgNewCreditTypeRequest)
+func _Msg_AddCreditType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddCreditType)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).NewCreditType(ctx, in)
+		return srv.(MsgServer).AddCreditType(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/NewCreditType",
+		FullMethod: "/regen.ecocredit.v1.Msg/AddCreditType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).NewCreditType(ctx, req.(*MsgNewCreditTypeRequest))
+		return srv.(MsgServer).AddCreditType(ctx, req.(*MsgAddCreditType))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -588,8 +588,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_UpdateClassMetadata_Handler,
 		},
 		{
-			MethodName: "NewCreditType",
-			Handler:    _Msg_NewCreditType_Handler,
+			MethodName: "AddCreditType",
+			Handler:    _Msg_AddCreditType_Handler,
 		},
 		{
 			MethodName: "ToggleAllowList",

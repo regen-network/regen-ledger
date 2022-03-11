@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func (k Keeper) NewCreditType(ctx context.Context, req *core.MsgNewCreditTypeRequest) (*core.MsgNewCreditTypeResponse, error) {
+func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (*core.MsgAddCreditTypeResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (k Keeper) NewCreditType(ctx context.Context, req *core.MsgNewCreditTypeReq
 		}
 	}
 
-	return &core.MsgNewCreditTypeResponse{}, nil
+	return &core.MsgAddCreditTypeResponse{}, nil
 }
 
 func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowListRequest) (*core.MsgToggleAllowListResponse, error) {

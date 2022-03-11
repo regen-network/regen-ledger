@@ -16,7 +16,7 @@ func TestParams_CreditType(t *testing.T) {
 
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
-	_, err := s.k.NewCreditType(s.ctx, &core.MsgNewCreditTypeRequest{
+	_, err := s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{
 		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
 			{Abbreviation: "BIO", Name: "biodiversity", Unit: "acres", Precision: 1},
@@ -35,7 +35,7 @@ func TestParams_CreditType(t *testing.T) {
 
 
 	// cannot have duplicate abbreviations
-	_, err = s.k.NewCreditType(s.ctx, &core.MsgNewCreditTypeRequest{
+	_, err = s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{
 		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
 		},

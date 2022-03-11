@@ -44,8 +44,8 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 
-  // NewCreditType adds a new credit type - Governance only method
-  rpc NewCreditType(MsgNewCreditTypeRequest) returns (MsgNewCreditTypeResponse);
+  // AddCreditType adds a new credit type - Governance only method
+  rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
   // ToggleAllowList toggles the allow list - Governance only method
   rpc ToggleAllowList(MsgToggleAllowListRequest) returns (MsgToggleAllowListResponse);
@@ -53,10 +53,10 @@ service Msg {
   // UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
   rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreatorsRequest) returns (MsgUpdateAllowedCreditClassCreatorsResponse);
 
-  // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees.
+  // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
   rpc UpdateCreditClassFee(MsgUpdateCreditClassFeeRequest) returns (MsgUpdateCreditClassFeeResponse);
 
-  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
   rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
 }
 
@@ -327,9 +327,9 @@ message MsgUpdateClassMetadata {
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
 
-// MsgNewCreditTypeRequest is the Msg/NewCreditTypeRequest request type.
-// The credit types are immutable and cannot be deleted. TODO(Tyler): don't think we want to allow updating? that could break stuff??
-message MsgNewCreditTypeRequest {
+// MsgAddCreditType is the Msg/AddCreditType request type.
+// The credit types are immutable and cannot be deleted.
+message MsgAddCreditType {
   // credit_types is a list of new credit types to add
   repeated CreditType credit_types = 1;
 
@@ -338,8 +338,8 @@ message MsgNewCreditTypeRequest {
   string root_address = 2;
 }
 
-// MsgNewCreditTypeRequest is the Msg/NewCreditTypeResponse response type.
-message MsgNewCreditTypeResponse {}
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+message MsgAddCreditTypeResponse {}
 
 
 // MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
