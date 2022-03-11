@@ -1,6 +1,7 @@
 package server
 
 import (
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -89,6 +90,7 @@ type serverImpl struct {
 var ModuleSchema = ormdb.ModuleSchema{
 	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
 		1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
+		2: marketApi.File_regen_ecocredit_marketplace_v1_state_proto,
 	},
 }
 
