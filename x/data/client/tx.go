@@ -170,8 +170,19 @@ Flags:
 			regen tx data register-resolver 1 content.json
 
 			where content.json contains
-			// TODO: add example
-		`,
+			{
+				"data": [
+				  {
+					"graph": {
+					  "hash": "YWJjZA==",
+					  "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+					  "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED",
+					  "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+					}
+				  }
+				]
+			  }
+			`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -220,5 +231,5 @@ func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.Cont
 		return nil, err
 	}
 
-	return contentHashes.data
+	return contentHashes.Data, nil
 }
