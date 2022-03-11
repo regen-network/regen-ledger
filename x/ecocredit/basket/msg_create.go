@@ -102,10 +102,6 @@ func validateDateCriteria(d *DateCriteria) error {
 		if startDateWindow.Seconds < 24*3600 {
 			return errBadReq.Wrap("date_criteria.start_date_window must be at least 1 day")
 		}
-	} else if yearsInThePast != 0 {
-		// continue
-	} else {
-		return errBadReq.Wrapf("unsupported date_criteria value %v", d)
 	}
 	return nil
 }
