@@ -59,6 +59,44 @@ func TestSell_Valid(t *testing.T) {
 	assert.Equal(t, 2, count)
 }
 
+func TestSell_CreatesMarket(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	any := gomock.Any()
+	batchDenom := "C01-20200101-20200201-001"
+	start, end := timestamppb.Now(), timestamppb.Now()
+	ask := sdk.NewInt64Coin("ubar", 10)
+	creditType := ecocredit.CreditType{
+		Name:         "carbon",
+		Abbreviation: "C",
+		Unit:         "tonnes",
+		Precision:    6,
+	}
+	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
+	sellTime := time.Now()
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	}).Times(1)
+
+	// market shouldn't exist before sell call
+	has, err := s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	assert.NilError(t, err)
+	assert.Equal(t, false, has)
+
+	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+		Owner:  s.addr.String(),
+		Orders: []*v1.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
+		},
+	})
+	assert.NilError(t, err)
+
+	// market should exist now
+	has, err = s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	assert.NilError(t, err)
+	assert.Equal(t, true, has)
+}
+
 // TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
