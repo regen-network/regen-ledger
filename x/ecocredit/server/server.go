@@ -91,6 +91,7 @@ var ModuleSchema = ormdb.ModuleSchema{
 		1: api.File_regen_ecocredit_v1_state_proto,
 		2: basketapi.File_regen_ecocredit_basket_v1_state_proto,
 	},
+	Prefix: []byte{ecocredit.ORMPrefix},
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
