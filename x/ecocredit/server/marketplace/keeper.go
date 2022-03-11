@@ -1,9 +1,9 @@
-package core
+package marketplace
 
 import (
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
@@ -11,18 +11,21 @@ import (
 // Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
 const gasCostPerIteration = uint64(10)
 
-var _ core.MsgServer = &Keeper{}
-
 type Keeper struct {
-	stateStore api.StateStore
+	stateStore marketplacev1.StateStore
+	coreStore  ecocreditv1.StateStore
 	bankKeeper ecocredit.BankKeeper
 	params     server.ParamKeeper
 }
 
-func NewKeeper(ss api.StateStore, bk ecocredit.BankKeeper, params server.ParamKeeper) Keeper {
+func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocredit.BankKeeper, params server.ParamKeeper) Keeper {
 	return Keeper{
+		coreStore:  cs,
 		stateStore: ss,
 		bankKeeper: bk,
 		params:     params,
 	}
 }
+
+// TODO: uncomment when impl
+// var _ v1.MsgServer = Keeper{}
