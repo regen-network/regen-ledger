@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.1
-// source: regen/data/v1alpha2/tx.proto
+// source: regen/data/v1/tx.proto
 
-package datav1alpha2
+package datav1
 
 import (
 	context "context"
@@ -50,15 +50,11 @@ type MsgClient interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-	//
-	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreRawData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the
-	// veracity of some piece of data.
-	StoreRawData(ctx context.Context, in *MsgStoreRawData, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error)
+	// DefineResolver defines a resolver URL and assigns it a new integer ID
+	// that can be used in calls to RegisterResolver.
+	DefineResolver(ctx context.Context, in *MsgDefineResolver, opts ...grpc.CallOption) (*MsgDefineResolverResponse, error)
+	// RegisterResolver registers data content hashes
+	RegisterResolver(ctx context.Context, in *MsgRegisterResolver, opts ...grpc.CallOption) (*MsgRegisterResolverResponse, error)
 }
 
 type msgClient struct {
@@ -71,7 +67,7 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 
 func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorData, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
 	out := new(MsgAnchorDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/AnchorData", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/AnchorData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,16 +76,25 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorData, opts ...g
 
 func (c *msgClient) SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
 	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/SignData", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/SignData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StoreRawData(ctx context.Context, in *MsgStoreRawData, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error) {
-	out := new(MsgStoreRawDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/StoreRawData", in, out, opts...)
+func (c *msgClient) DefineResolver(ctx context.Context, in *MsgDefineResolver, opts ...grpc.CallOption) (*MsgDefineResolverResponse, error) {
+	out := new(MsgDefineResolverResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/DefineResolver", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RegisterResolver(ctx context.Context, in *MsgRegisterResolver, opts ...grpc.CallOption) (*MsgRegisterResolverResponse, error) {
+	out := new(MsgRegisterResolverResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/RegisterResolver", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,15 +133,11 @@ type MsgServer interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-	//
-	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreRawData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the
-	// veracity of some piece of data.
-	StoreRawData(context.Context, *MsgStoreRawData) (*MsgStoreRawDataResponse, error)
+	// DefineResolver defines a resolver URL and assigns it a new integer ID
+	// that can be used in calls to RegisterResolver.
+	DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error)
+	// RegisterResolver registers data content hashes
+	RegisterResolver(context.Context, *MsgRegisterResolver) (*MsgRegisterResolverResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -150,8 +151,11 @@ func (UnimplementedMsgServer) AnchorData(context.Context, *MsgAnchorData) (*MsgA
 func (UnimplementedMsgServer) SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
 }
-func (UnimplementedMsgServer) StoreRawData(context.Context, *MsgStoreRawData) (*MsgStoreRawDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreRawData not implemented")
+func (UnimplementedMsgServer) DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DefineResolver not implemented")
+}
+func (UnimplementedMsgServer) RegisterResolver(context.Context, *MsgRegisterResolver) (*MsgRegisterResolverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterResolver not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -176,7 +180,7 @@ func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Msg/AnchorData",
+		FullMethod: "/regen.data.v1.Msg/AnchorData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AnchorData(ctx, req.(*MsgAnchorData))
@@ -194,7 +198,7 @@ func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Msg/SignData",
+		FullMethod: "/regen.data.v1.Msg/SignData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).SignData(ctx, req.(*MsgSignData))
@@ -202,20 +206,38 @@ func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StoreRawData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStoreRawData)
+func _Msg_DefineResolver_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgDefineResolver)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StoreRawData(ctx, in)
+		return srv.(MsgServer).DefineResolver(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha2.Msg/StoreRawData",
+		FullMethod: "/regen.data.v1.Msg/DefineResolver",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StoreRawData(ctx, req.(*MsgStoreRawData))
+		return srv.(MsgServer).DefineResolver(ctx, req.(*MsgDefineResolver))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_RegisterResolver_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterResolver)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterResolver(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1.Msg/RegisterResolver",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterResolver(ctx, req.(*MsgRegisterResolver))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -224,7 +246,7 @@ func _Msg_StoreRawData_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha2.Msg",
+	ServiceName: "regen.data.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -236,10 +258,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_SignData_Handler,
 		},
 		{
-			MethodName: "StoreRawData",
-			Handler:    _Msg_StoreRawData_Handler,
+			MethodName: "DefineResolver",
+			Handler:    _Msg_DefineResolver_Handler,
+		},
+		{
+			MethodName: "RegisterResolver",
+			Handler:    _Msg_RegisterResolver_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/data/v1alpha2/tx.proto",
+	Metadata: "regen/data/v1/tx.proto",
 }
