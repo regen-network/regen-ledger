@@ -16,7 +16,7 @@ Once a new credit class is created, credits can be issued at-will in distinct ba
 A project describes the high-level on-chain information for a project associated with a credit class. A project is defined by:
 - **project ID**: The unique ID of the project
 - **name***: The unique name of the project either formed from its credit class name and an auto-generated number or a custom name provided upon creation.
-- **class ID**: The unique ID of the credit class for this project
+- **class ID**: The unique ID of the credit class corresponding to this project (which determines what ecocredits can be issued to to this project)
 - **project location**: The location of the project backing the credits issued from this project
 - **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the project.
 
