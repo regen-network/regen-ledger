@@ -3,9 +3,11 @@ package marketplace
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -41,8 +43,8 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
 			}
 			if sellOrder.DisableAutoRetire != order.DisableAutoRetire {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %v, buy "+
-					"order set to %s", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
+					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
 			}
 			// get the market
 			market, err := k.stateStore.MarketStore().Get(ctx, sellOrder.MarketId)
@@ -63,16 +65,17 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("bid price too low: got %s, needed at least %s",
 					order.BidPrice.Amount.String(), sellOrder.AskPrice)
 			}
-			if err = k.updateBalances(ctx, sellOrder, buyerAcc, orderAmt); err != nil {
+			if err = k.updateBalances(ctx, sellOrder, buyerAcc, orderAmt, *order.BidPrice); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
+		default:
+			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 		}
 	}
 	return &v1.MsgBuyResponse{}, nil
 }
 
-func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec) error {
-
+func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin) error {
 	// update the sell order
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
@@ -118,7 +121,17 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 	}
 	buyerBal, err := k.coreStore.BatchBalanceStore().Get(ctx, buyerAcc, sellOrder.BatchId)
 	if err != nil {
-		return err
+		if ormerrors.IsNotFound(err) {
+			buyerBal = &ecocreditv1.BatchBalance{
+				Address:  buyerAcc,
+				BatchId:  sellOrder.BatchId,
+				Tradable: "0",
+				Retired:  "0",
+				Escrowed: "0",
+			}
+		} else {
+			return err
+		}
 	}
 	if sellOrder.DisableAutoRetire {
 		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
@@ -171,9 +184,11 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 	if err = k.coreStore.BatchSupplyStore().Update(ctx, supply); err != nil {
 		return err
 	}
-	if err = k.coreStore.BatchBalanceStore().Update(ctx, buyerBal); err != nil {
+	if err = k.coreStore.BatchBalanceStore().Save(ctx, buyerBal); err != nil {
 		return err
 	}
 
-	return nil
+	// send the coins to the seller
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	return k.bankKeeper.SendCoins(sdkCtx, buyerAcc, sellOrder.Seller, sdk.NewCoins(bidCoin))
 }
