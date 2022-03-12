@@ -133,7 +133,7 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	if err != nil {
 		return err
 	}
-	supEscrow, err := math.NewDecFromString(supply.EscrwowedAmount)
+	supEscrow, err := math.NewDecFromString(supply.EscrowedAmount)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	if err != nil {
 		return err
 	}
-	supply.EscrwowedAmount = supEscrow.String()
+	supply.EscrowedAmount = supEscrow.String()
 	supply.TradableAmount = supTradable.String()
 	return k.coreStore.BatchSupplyStore().Save(ctx, supply)
 }
