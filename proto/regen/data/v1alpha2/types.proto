@@ -4,8 +4,6 @@ package regen.data.v1alpha2;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 // ContentHash specifies a hash based content identifier for a piece of data
 message ContentHash {
     // sum selects the type of content hash
@@ -142,6 +140,15 @@ enum DigestAlgorithm {
 
     // BLAKE2b-256
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
+}
+
+// Content is a wrapper for content stored on-chain
+message Content {
+    // sum selects the type of data
+    oneof sum {
+        // raw_data is the oneof field for raw data
+        bytes raw_data = 1;
+    }
 }
 
 // SignerEntry is a signer entry wrapping a signer address and timestamp

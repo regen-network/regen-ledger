@@ -9,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Retire credits to the specified location.
@@ -22,7 +23,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := k.getCreditTypeFromBatchDenom(ctx, batch.BatchDenom)
+		creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -31,7 +32,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		decs, err := getNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
+		decs, err := server.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
 		if err != nil {
 			return nil, err
 		}
@@ -53,7 +54,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		decs, err = getNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
+		decs, err = server.GetNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
