@@ -83,8 +83,9 @@ message ProjectInfo {
     // id is the unique ID of the project
     uint64 id = 1;
 
-    // name is an unique name of this project formed from its credit class
-    // name and either an auto-generated number or user provided string.
+    // name is the unique name of the project either formed from its credit
+    // class name and an auto-generated number or a custom name provided
+    // upon creation.
     string name = 3;
 
     // class_id is the ID of credit class for this project.
@@ -194,6 +195,9 @@ message BatchBalance {
 
     // retired is the retired amount of credits
     string retired = 4;
+
+    // escrowed is the amount of credits locked up in escrow for the marketplace.
+    string escrowed = 5;
 }
 
 // BatchSupply tracks the supply of a credit batch
@@ -219,4 +223,8 @@ message BatchSupply {
     // cancelled, effectively undoing the issuance. The sum of total_amount and
     // amount_cancelled will always equal the original credit issuance amount.
     string cancelled_amount = 4;
+
+    // escrowed_amount is the amount of credits in the batch that have been
+    // locked up in escrow for use in the marketplace.
+    string escrowed_amount = 5;
 }
