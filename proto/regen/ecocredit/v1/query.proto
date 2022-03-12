@@ -31,7 +31,7 @@ service Query {
   }
 
 
-    // Projects queries for all projects within a class with pagination.
+  // Projects queries for all projects within a class with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1/classes/{class_id}/projects";
