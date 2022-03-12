@@ -113,16 +113,16 @@ func TestPut(t *testing.T) {
 	})
 	require.NoError(t, err)
 	validYearsInThePast := uint32(10)
-	err = basketTbl.Insert(ctx, &basketv1.Basket{
+	err = basketTbl.Insert(ctx, &api.Basket{
 		BasketDenom:       basketDenom3,
 		Name:              basketDenom3,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{YearsInThePast: validYearsInThePast},
+		DateCriteria:      &api.DateCriteria{YearsInThePast: validYearsInThePast},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	basketBalanceTbl := db.GetTable(&basketv1.BasketBalance{})
+	basketBalanceTbl := db.GetTable(&api.BasketBalance{})
 	basketDenomToId := make(map[string]uint64)
 	basketDenomToId[basketDenom] = 1
 	basketDenomToId[basketDenom2] = 2
