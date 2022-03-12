@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -34,7 +34,7 @@ type bankSupplyStore interface {
 }
 
 // BasketSupplyInvariant cross check the balance of baskets and bank
-func BasketSupplyInvariant(ctx sdk.Context, store basketv1.BasketStore, bank bankSupplyStore, basketBalances map[uint64]math.Dec) (string, bool) {
+func BasketSupplyInvariant(ctx sdk.Context, store api.BasketStore, bank bankSupplyStore, basketBalances map[uint64]math.Dec) (string, bool) {
 	goCtx := sdk.WrapSDKContext(ctx)
 
 	bids := make([]uint64, len(basketBalances))
@@ -76,7 +76,7 @@ func BasketSupplyInvariant(ctx sdk.Context, store basketv1.BasketStore, bank ban
 
 // computeBasketBalances returns a map from basket id to the total number of eco credits
 func (k Keeper) computeBasketBalances(ctx context.Context) (map[uint64]math.Dec, error) {
-	it, err := k.stateStore.BasketBalanceStore().List(ctx, &basketv1.BasketBalancePrimaryKey{})
+	it, err := k.stateStore.BasketBalanceStore().List(ctx, &api.BasketBalancePrimaryKey{})
 	if err != nil {
 		return nil, fmt.Errorf("can't create basket balance iterator, %w", err)
 	}

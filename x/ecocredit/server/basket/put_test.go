@@ -5,6 +5,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
@@ -13,8 +18,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -23,12 +31,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestPut(t *testing.T) {
@@ -79,7 +81,7 @@ func TestPut(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	ctrl := gomock.NewController(t)
 	b := ormtest.NewMemoryBackend()
-	db, err := ormdb.NewModuleDB(server.BasketModuleSchema, ormdb.ModuleDBOptions{
+	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{
 		GetBackend: func(ctx context.Context) (ormtable.Backend, error) {
 			return b, nil
 		},
@@ -88,38 +90,38 @@ func TestPut(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	basketTbl := db.GetTable(&basketv1.Basket{})
-	err = basketTbl.Insert(ctx, &basketv1.Basket{
+	basketTbl := db.GetTable(&api.Basket{})
+	err = basketTbl.Insert(ctx, &api.Basket{
 		BasketDenom:       basketDenom,
 		Name:              basketDenom,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{MinStartDate: timestamppb.New(startDate)},
+		DateCriteria:      &api.DateCriteria{MinStartDate: timestamppb.New(startDate)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	basketBalanceTbl := db.GetTable(&basketv1.BasketBalance{})
+	basketBalanceTbl := db.GetTable(&api.BasketBalance{})
 	var dur time.Duration = 500000000000000000
 	validStartDateWindow := startDate.Add(-dur)
-	err = basketTbl.Insert(ctx, &basketv1.Basket{
+	err = basketTbl.Insert(ctx, &api.Basket{
 		BasketDenom:       basketDenom2,
 		Name:              basketDenom2,
 		DisableAutoRetire: true,
 		CreditTypeAbbrev:  "C",
-		DateCriteria:      &basketv1.DateCriteria{StartDateWindow: durationpb.New(dur)},
+		DateCriteria:      &api.DateCriteria{StartDateWindow: durationpb.New(dur)},
 		Exponent:          6,
 	})
 	require.NoError(t, err)
 	basketDenomToId := make(map[string]uint64)
 	basketDenomToId[basketDenom] = 1
 	basketDenomToId[basketDenom2] = 2
-	bsktClsTbl := db.GetTable(&basketv1.BasketClass{})
-	err = bsktClsTbl.Insert(ctx, &basketv1.BasketClass{
+	bsktClsTbl := db.GetTable(&api.BasketClass{})
+	err = bsktClsTbl.Insert(ctx, &api.BasketClass{
 		BasketId: 1,
 		ClassId:  classId,
 	})
 	require.NoError(t, err)
-	err = bsktClsTbl.Insert(ctx, &basketv1.BasketClass{
+	err = bsktClsTbl.Insert(ctx, &api.BasketClass{
 		BasketId: 2,
 		ClassId:  classId,
 	})
@@ -413,7 +415,7 @@ func TestPut(t *testing.T) {
 }
 
 func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.BasketCredit, basketID uint64, basketBalTbl ormtable.Table) {
-	basketBal := basketv1.BasketBalance{
+	basketBal := api.BasketBalance{
 		BasketId:       basketID,
 		BatchDenom:     credit.BatchDenom,
 		Balance:        "",
