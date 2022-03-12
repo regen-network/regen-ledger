@@ -39,7 +39,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
-		sellQty, err := math.NewDecFromString(order.Quantity)
+		sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
 			return nil, err
 		}
