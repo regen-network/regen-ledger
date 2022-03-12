@@ -5,19 +5,17 @@ import (
 	"testing"
 	"time"
 
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
 	gogotypes "github.com/gogo/protobuf/types"
-
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/golang/mock/gomock"
+	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"gotest.tools/v3/assert"
 )
 
 func TestFeeToLow(t *testing.T) {
@@ -84,7 +82,7 @@ func TestDuplicateDenom(t *testing.T) {
 	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
-		&basketv1.Basket{BasketDenom: denom},
+		&api.Basket{BasketDenom: denom},
 	))
 
 	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
@@ -166,6 +164,7 @@ func TestGoodBasket(t *testing.T) {
 
 	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
+	assert.Equal(t, s.addr.String(), basket.Curator)
 	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
 	assert.Equal(t, uint32(6), basket.Exponent)
 	assert.Equal(t, "C", basket.CreditTypeAbbrev)

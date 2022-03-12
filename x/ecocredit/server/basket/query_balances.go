@@ -2,11 +2,13 @@ package basket
 
 import (
 	"context"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -25,7 +27,7 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		return nil, err
 	}
 
-	it, err := k.stateStore.BasketBalanceStore().List(ctx, basketv1.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
+	it, err := k.stateStore.BasketBalanceStore().List(ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
 		ormlist.Paginate(pulsarPageReq),
 	)
 	if err != nil {

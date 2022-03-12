@@ -8,7 +8,7 @@ import "gogoproto/gogo.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-// Msg is the regen.ecocredit.basket.v1beta1 Msg service.
+// Msg is the regen.ecocredit.basket.v1 Msg service.
 service Msg {
 
   // Create creates a bank denom which wraps credits.

@@ -3,11 +3,10 @@ package basket_test
 import (
 	"testing"
 
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-
 	"github.com/stretchr/testify/require"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 func TestKeeper_BasketBalance(t *testing.T) {
@@ -18,13 +17,13 @@ func TestKeeper_BasketBalance(t *testing.T) {
 	basketDenom := "foo"
 	batchDenom := "bar"
 	balance := "5.3"
-	id, err := s.stateStore.BasketStore().InsertReturningID(s.ctx, &basketv1.Basket{
+	id, err := s.stateStore.BasketStore().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
 
 	// add a balance
-	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &basketv1.BasketBalance{
+	require.NoError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
 		BasketId:   id,
 		BatchDenom: batchDenom,
 		Balance:    balance,

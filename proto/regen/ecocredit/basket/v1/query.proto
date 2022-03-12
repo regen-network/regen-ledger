@@ -8,7 +8,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
-// Msg is the regen.ecocredit.basket.v1beta1 Query service.
+// Msg is the regen.ecocredit.basket.v1 Query service.
 service Query {
 
     // Basket queries one basket by denom.

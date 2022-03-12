@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -16,7 +16,7 @@ func TestKeeper_Basket(t *testing.T) {
 	// add a basket
 	basketDenom := "foo"
 	batchDenom := "bar"
-	err := s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	err := s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
@@ -41,14 +41,14 @@ func TestKeeper_BasketClasses(t *testing.T) {
 
 	// add a basket
 	basketDenom := "foo"
-	err := s.stateStore.BasketStore().Insert(s.ctx, &basketv1.Basket{
+	err := s.stateStore.BasketStore().Insert(s.ctx, &api.Basket{
 		BasketDenom: basketDenom,
 	})
 	require.NoError(t, err)
 
 	// add a basket class
 	classId := "C01"
-	err = s.stateStore.BasketClassStore().Insert(s.ctx, &basketv1.BasketClass{
+	err = s.stateStore.BasketClassStore().Insert(s.ctx, &api.BasketClass{
 		BasketId: 1,
 		ClassId:  classId,
 	})
