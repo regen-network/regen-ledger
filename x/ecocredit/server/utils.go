@@ -2,17 +2,14 @@ package server
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/params/types"
+
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
-
-type ParamKeeper interface {
-	GetParamSet(ctx sdk.Context, ps types.ParamSet)
-}
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
 func GetCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocredit.CreditType, error) {
@@ -28,7 +25,7 @@ func GetCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocre
 }
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ParamKeeper, denom string) (ecocredit.CreditType, error) {
+func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (ecocredit.CreditType, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassInfoStore().GetByName(ctx, classId)

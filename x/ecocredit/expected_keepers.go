@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
@@ -34,11 +35,15 @@ type BankKeeper interface {
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }
 
-// Keeper defines the expected interface needed to prune expired buy and sell orders.
-type Keeper interface {
+// OrderKeeper defines the expected interface needed to prune expired buy and sell orders.
+type OrderKeeper interface {
 	PruneOrders(ctx sdk.Context) error
 }
 
 type DistributionKeeper interface {
 	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+}
+
+type ParamKeeper interface {
+	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }

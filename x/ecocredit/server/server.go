@@ -252,7 +252,7 @@ func RegisterServices(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
+) ecocredit.OrderKeeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
