@@ -269,7 +269,7 @@ func TestPut(t *testing.T) {
 					Return(&classInfoRes, nil)
 
 			},
-			errMsg: "insufficient funds",
+			errMsg: basket.ErrInsufficientCredits.Error(),
 		},
 		{
 			name:            "basket not found",
