@@ -70,6 +70,16 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		}
 		sellOrderIds[i] = id
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
+			OrderId:           id,
+			BatchDenom:        batch.BatchDenom,
+			Quantity:          order.Quantity,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        order.Expiration,
+		}); err != nil {
+			return nil, err
+		}
 	}
 	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
