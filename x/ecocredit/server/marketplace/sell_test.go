@@ -35,7 +35,7 @@ func TestSell_Valid(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
