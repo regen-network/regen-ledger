@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	clientCtx := val1.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	result, err := cli.ExecTestCLICmd(clientCtx, client.QueryResolverInfoCmd(), []string{"abcd"})
+	result, err := cli.ExecTestCLICmd(clientCtx, client.QueryResolverInfoCmd(), []string{urls[0]})
 	s.Require().NoError(err)
 	fmt.Println(result.String())
 	s.Require().True(false)
