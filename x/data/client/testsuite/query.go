@@ -1,8 +1,6 @@
 package testsuite
 
 import (
-	"fmt"
-
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -292,7 +290,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			expErrMsg: "can't find",
 		},
 		{
-			name:   "valid",
+			name:   "valid test",
 			args:   []string{s.iri},
 			expErr: false,
 		},
@@ -308,10 +306,8 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				fmt.Println(out.String())
-				var res data.QueryResolverInfoResponse
+				var res data.QueryResolversResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(res.Manager, val.Address.String())
 			}
 		})
 	}
