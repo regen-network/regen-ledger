@@ -1,12 +1,13 @@
 syntax = "proto3";
 
+// Revision 1
 package regen.ecocredit.basket.v1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket/v1";
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
 // Basket represents a basket in state.
 message Basket {
@@ -40,6 +41,12 @@ message Basket {
 
     // exponent is the exponent for converting credits to/from basket tokens.
     uint32 exponent = 7;
+
+    // curator is the address of the basket curator who is able to change certain
+    // basket settings.
+    //
+    // Since Revision 1
+    string curator = 8;
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.

@@ -6,8 +6,6 @@ import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/v1alpha1";
-
 // ClassInfo represents the high-level on-chain information for a credit class.
 message ClassInfo {
 
@@ -23,7 +21,8 @@ message ClassInfo {
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 4;
 
-  // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+  // credit_type describes the type of credit (e.g. carbon, biodiversity), as
+  // well as unit and precision.
   CreditType credit_type = 5;
 
   // The number of batches issued in this credit class.

@@ -19,6 +19,7 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -45,6 +46,9 @@ func TxCmd(name string) *cobra.Command {
 		TxSellCmd(),
 		TxUpdateSellOrdersCmd(),
 		TxBuyCmd(),
+		basketcli.TxCreateBasket(),
+		basketcli.TxPutInBasket(),
+		basketcli.TxTakeFromBasket(),
 	)
 	return cmd
 }
@@ -133,18 +137,18 @@ const (
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
+		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --metadata [metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
 Required Flags:
+  project_id: id of the project
   issuances:  the amount of issuances to generate
   start-date: The beginning of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   metadata:   base64 encoded issuance metadata
-  project_id:   id of the project
   `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -2,12 +2,15 @@ package core
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -15,7 +18,7 @@ import (
 // The admin is charged a fee for creating the class. This is controlled by
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
-func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.MsgCreateClassResponse, error) {
+func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*core.MsgCreateClassResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
 	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
@@ -35,7 +38,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 		return nil, err
 	}
 
-	creditType, err := k.getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := server.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +54,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 	} else {
 		seq = classSeq.NextClassId
 	}
-	if err = k.stateStore.ClassSequenceStore().Save(goCtx, &ecocreditv1.ClassSequence{
+	if err = k.stateStore.ClassSequenceStore().Save(goCtx, &api.ClassSequence{
 		CreditType:  creditType.Abbreviation,
 		NextClassId: seq + 1,
 	}); err != nil {
@@ -60,7 +63,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, seq)
 
-	rowId, err := k.stateStore.ClassInfoStore().InsertReturningID(goCtx, &ecocreditv1.ClassInfo{
+	rowId, err := k.stateStore.ClassInfoStore().InsertReturningID(goCtx, &api.ClassInfo{
 		Name:       classID,
 		Admin:      adminAddress,
 		Metadata:   req.Metadata,
@@ -75,7 +78,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Insert(goCtx, &ecocreditv1.ClassIssuer{
+		if err = k.stateStore.ClassIssuerStore().Insert(goCtx, &api.ClassIssuer{
 			ClassId: rowId,
 			Issuer:  issuer,
 		}); err != nil {
@@ -83,7 +86,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 		}
 	}
 
-	err = sdkCtx.EventManager().EmitTypedEvent(&v1.EventCreateClass{
+	err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateClass{
 		ClassId: classID,
 		Admin:   req.Admin,
 	})
@@ -91,7 +94,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *v1.MsgCreateClass) (*v1.
 		return nil, err
 	}
 
-	return &v1.MsgCreateClassResponse{ClassId: classID}, nil
+	return &core.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
 func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {
