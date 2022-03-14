@@ -15,7 +15,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	batchDenom := "C01-20200101-20220101-001"
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   "",

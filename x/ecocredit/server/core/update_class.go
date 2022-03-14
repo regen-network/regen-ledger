@@ -23,7 +23,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -33,7 +33,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 	classInfo.Admin = newAdmin
-	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
+	if err = k.stateStore.ClassInfoTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 	return &core.MsgUpdateClassAdminResponse{}, err
@@ -46,7 +46,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		return nil, err
 	}
 
-	class, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
+	class, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -62,7 +62,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Delete(ctx, &api.ClassIssuer{
+		if err = k.stateStore.ClassIssuerTable().Delete(ctx, &api.ClassIssuer{
 			ClassId: class.Id,
 			Issuer:  issuerAcc,
 		}); err != nil {
@@ -76,7 +76,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Insert(ctx, &api.ClassIssuer{
+		if err = k.stateStore.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
 			ClassId: class.Id,
 			Issuer:  issuerAcc,
 		}); err != nil {
@@ -93,7 +93,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoStore().GetByName(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -104,7 +104,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 	}
 
 	classInfo.Metadata = req.Metadata
-	if err = k.stateStore.ClassInfoStore().Update(ctx, classInfo); err != nil {
+	if err = k.stateStore.ClassInfoTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 

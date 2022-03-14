@@ -14,7 +14,7 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ClassInfoStore().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassInfoTable().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
