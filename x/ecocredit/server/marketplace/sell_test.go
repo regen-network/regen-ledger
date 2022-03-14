@@ -153,14 +153,14 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	assert.NilError(t, s.coreStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
 	assert.NilError(t, s.coreStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       classId,
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: creditType.Abbreviation,
 	}))
 	assert.NilError(t, s.marketStore.MarketStore().Insert(s.ctx, &marketApi.Market{

@@ -20,7 +20,7 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:          s.addr.String(),
 		ClassId:         "C01",
-		Metadata:        nil,
+		Metadata:        "",
 		ProjectLocation: "US-NY",
 		ProjectId:       "FOO",
 	})
@@ -39,7 +39,7 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:          s.addr.String(),
 		ClassId:         "C01",
-		Metadata:        nil,
+		Metadata:        "",
 		ProjectLocation: "US-NY",
 		ProjectId:       "",
 	})
@@ -49,7 +49,7 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 	res, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:          s.addr.String(),
 		ClassId:         "C01",
-		Metadata:        nil,
+		Metadata:        "",
 		ProjectLocation: "US-NY",
 		ProjectId:       "",
 	})
@@ -94,7 +94,7 @@ func makeClass(t *testing.T, ctx context.Context, ss api.StateStore, addr types.
 	assert.NilError(t, ss.ClassInfoStore().Insert(ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	}))
 	assert.NilError(t, ss.ClassIssuerStore().Insert(ctx, &api.ClassIssuer{

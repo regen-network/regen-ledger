@@ -20,7 +20,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 		Name:            "P01",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
-		Metadata:        nil,
+		Metadata:        "",
 	})
 	assert.NilError(t, err)
 

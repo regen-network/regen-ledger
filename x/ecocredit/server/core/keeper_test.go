@@ -75,19 +75,19 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName,
 	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
-		Metadata:        nil,
+		Metadata:        "",
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))

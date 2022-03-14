@@ -11,6 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/orm"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -27,6 +28,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// get the basket
 	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
+		if orm.ErrNotFound.Is(err) {
+			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
+		}
 		return nil, err
 	}
 
@@ -38,6 +42,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		// get credit batch info
 		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
+			if orm.ErrNotFound.Is(err) {
+				return nil, sdkerrors.ErrNotFound.Wrapf("%s batch not found", credit.BatchDenom)
+			}
 			return nil, err
 		}
 		batchInfo := res.Info
@@ -53,6 +60,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		}
 		// update the user and basket balances
 		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
+			if sdkerrors.ErrInsufficientFunds.Is(err) {
+				return nil, ErrInsufficientCredits
+			}
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
