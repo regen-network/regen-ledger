@@ -382,7 +382,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		{
 			"invalid resolver id",
 			[]string{fmt.Sprintf("%d", 12345), filePath},
-			true,
+			false,
 			true,
 			"not found",
 		},
@@ -405,7 +405,6 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 				require.Contains(err.Error(), tc.errMsg, err.Error())
 			} else {
 				if tc.errInRes {
-					fmt.Println(res.String())
 					require.Contains(res.String(), tc.errMsg)
 				} else {
 					require.NoError(err)

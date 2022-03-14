@@ -1,8 +1,6 @@
 package testsuite
 
 import (
-	"fmt"
-
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -251,15 +249,12 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
-				fmt.Println(err.Error())
 				s.Require().Contains(out.String(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
 
-				fmt.Println(out.String())
 				var res data.QueryResolverInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(res.Manager, val.Address.String())
 			}
 		})
 	}
@@ -292,11 +287,11 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			name:      "invalid resolver id",
 			args:      []string{"abcd"},
 			expErr:    true,
-			expErrMsg: "invalid resolver id",
+			expErrMsg: "can't find",
 		},
 		{
 			name:   "valid",
-			args:   []string{fmt.Sprintf("%d", s.resolverID)},
+			args:   []string{s.iri},
 			expErr: false,
 		},
 	}
@@ -307,11 +302,10 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err, out.String())
-				fmt.Println(err.Error())
 				s.Require().Contains(out.String(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				fmt.Println(out.String())
+
 				var res data.QueryResolverInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Manager, val.Address.String())
