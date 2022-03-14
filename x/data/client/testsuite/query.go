@@ -1,6 +1,8 @@
 package testsuite
 
 import (
+	"fmt"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -202,6 +204,114 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 				for _, signer := range tc.expSigners {
 					s.Require().Contains(res.Signers, signer)
 				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid url",
+			args:      []string{"abcd"},
+			expErr:    true,
+			expErrMsg: "invalid url",
+		},
+		{
+			name:   "valid",
+			args:   []string{"http://foo.bar"},
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolverInfoCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryResolverInfoResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(res.Manager, val.Address.String())
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid resolver id",
+			args:      []string{"abcd"},
+			expErr:    true,
+			expErrMsg: "invalid resolver id",
+		},
+		{
+			name:   "valid",
+			args:   []string{fmt.Sprintf("%d", s.resolverID)},
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolversCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err, out.String())
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryResolverInfoResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(res.Manager, val.Address.String())
 			}
 		})
 	}
