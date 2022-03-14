@@ -62,6 +62,7 @@ message ClassIssuer {
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
         primary_key: {fields: "class_id,issuer"}
+        index: {id: 1 fields: "issuer"}
     };
 
     // class_id is the row ID of a credit class.

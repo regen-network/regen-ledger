@@ -34,6 +34,8 @@ type QueryClient interface {
 	ProjectInfo(ctx context.Context, in *QueryProjectInfoRequest, opts ...grpc.CallOption) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries for all batches issued from the given issuer address.
+	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
@@ -110,6 +112,15 @@ func (c *queryClient) Batches(ctx context.Context, in *QueryBatchesRequest, opts
 	return out, nil
 }
 
+func (c *queryClient) BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error) {
+	out := new(QueryBatchesByIssuerResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByIssuer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error) {
 	out := new(QueryBatchInfoResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchInfo", in, out, opts...)
@@ -171,6 +182,8 @@ type QueryServer interface {
 	ProjectInfo(context.Context, *QueryProjectInfoRequest) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries for all batches issued from the given issuer address.
+	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
@@ -207,6 +220,9 @@ func (UnimplementedQueryServer) ProjectInfo(context.Context, *QueryProjectInfoRe
 }
 func (UnimplementedQueryServer) Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batches not implemented")
+}
+func (UnimplementedQueryServer) BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchesByIssuer not implemented")
 }
 func (UnimplementedQueryServer) BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchInfo not implemented")
@@ -344,6 +360,24 @@ func _Query_Batches_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BatchesByIssuer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchesByIssuerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BatchesByIssuer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BatchesByIssuer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BatchesByIssuer(ctx, req.(*QueryBatchesByIssuerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_BatchInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryBatchInfoRequest)
 	if err := dec(in); err != nil {
@@ -464,6 +498,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Batches",
 			Handler:    _Query_Batches_Handler,
+		},
+		{
+			MethodName: "BatchesByIssuer",
+			Handler:    _Query_BatchesByIssuer_Handler,
 		},
 		{
 			MethodName: "BatchInfo",

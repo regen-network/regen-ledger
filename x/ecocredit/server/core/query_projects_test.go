@@ -17,7 +17,7 @@ func TestQuery_Projects(t *testing.T) {
 	s := setupBase(t)
 
 	// create a class and 2 projects from it
-	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   "",
