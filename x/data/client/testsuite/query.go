@@ -251,10 +251,12 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
+				fmt.Println(err.Error())
 				s.Require().Contains(out.String(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
 
+				fmt.Println(out.String())
 				var res data.QueryResolverInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Manager, val.Address.String())
@@ -305,10 +307,11 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err, out.String())
+				fmt.Println(err.Error())
 				s.Require().Contains(out.String(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-
+				fmt.Println(out.String())
 				var res data.QueryResolverInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Manager, val.Address.String())

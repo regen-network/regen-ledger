@@ -405,6 +405,7 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 				require.Contains(err.Error(), tc.errMsg, err.Error())
 			} else {
 				if tc.errInRes {
+					fmt.Println(res.String())
 					require.Contains(res.String(), tc.errMsg)
 				} else {
 					require.NoError(err)
