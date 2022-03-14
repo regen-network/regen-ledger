@@ -1,6 +1,8 @@
 package testsuite
 
 import (
+	"fmt"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -234,7 +236,7 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 			name:      "invalid url",
 			args:      []string{"abcd"},
 			expErr:    true,
-			expErrMsg: "invalid url",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid",
@@ -284,7 +286,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid resolver id",
+			name:      "invalid iri",
 			args:      []string{"abcd"},
 			expErr:    true,
 			expErrMsg: "can't find",
@@ -306,6 +308,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
+				fmt.Println(out.String())
 				var res data.QueryResolverInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Manager, val.Address.String())
