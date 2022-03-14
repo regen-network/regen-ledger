@@ -144,7 +144,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.iri, err = chs.Data[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
-	bz, err := val1.ClientCtx.Codec.Marshal(chs)
+	bz, err := val1.ClientCtx.Codec.MarshalJSON(chs)
 	s.Require().NoError(err)
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 	cmd = client.MsgRegisterResolverCmd()
