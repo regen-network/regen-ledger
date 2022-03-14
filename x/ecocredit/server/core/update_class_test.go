@@ -24,7 +24,7 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -49,7 +49,7 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -81,7 +81,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -152,7 +152,7 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	classRowId, err := s.stateStore.ClassInfoStore().InsertReturningID(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -197,7 +197,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   []byte("foobar"),
+		Metadata:   "foobar",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -205,13 +205,13 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    s.addr.String(),
 		ClassId:  "C01",
-		Metadata: []byte("barfoo"),
+		Metadata: "barfoo",
 	})
 	assert.NilError(t, err)
 
 	class, err := s.stateStore.ClassInfoStore().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assert.DeepEqual(t, []byte("barfoo"), class.Metadata)
+	assert.Equal(t, "barfoo", class.Metadata)
 }
 
 func TestUpdateClass_MetadataErrs(t *testing.T) {
@@ -222,7 +222,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -231,7 +231,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    s.addr.String(),
 		ClassId:  "FOO",
-		Metadata: nil,
+		Metadata: "",
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrNotFound.Error())
 
@@ -239,7 +239,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	_, err = s.k.UpdateClassMetadata(s.ctx, &core.MsgUpdateClassMetadata{
 		Admin:    addr.String(),
 		ClassId:  "C01",
-		Metadata: []byte("FOO"),
+		Metadata: "FOO",
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrUnauthorized.Error())
 
