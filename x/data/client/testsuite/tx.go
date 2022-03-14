@@ -354,37 +354,42 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	content := []byte("xyzabc123")
 	_, chs := s.createDataContent(content)
 
-	bz, err := val.ClientCtx.Codec.Marshal(chs)
+	bz, err := val.ClientCtx.Codec.MarshalJSON(chs)
 	require.NoError(err)
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
 	testCases := []struct {
-		name   string
-		args   []string
-		expErr bool
-		errMsg string
+		name     string
+		args     []string
+		expErr   bool
+		errInRes bool
+		errMsg   string
 	}{
 		{
 			"empty args",
 			[]string{},
 			true,
+			false,
 			"accepts 2 arg(s), received 0",
 		},
 		{
 			"invalid file path",
 			[]string{fmt.Sprintf("%d", s.resolverID), "test.json"},
 			true,
+			false,
 			"no such file or directory",
 		},
 		{
 			"invalid resolver id",
-			[]string{fmt.Sprintf("%d", 12345), "test.json"},
+			[]string{fmt.Sprintf("%d", 12345), filePath},
+			true,
 			true,
 			"not found",
 		},
 		{
 			"valid test",
 			[]string{fmt.Sprintf("%d", s.resolverID), filePath},
+			false,
 			false,
 			"",
 		},
@@ -394,12 +399,16 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			args := append(tc.args, commonFlags...)
-			_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+			res, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg, err.Error())
 			} else {
-				require.NoError(err)
+				if tc.errInRes {
+					require.Contains(res.String(), tc.errMsg)
+				} else {
+					require.NoError(err)
+				}
 			}
 		})
 	}
