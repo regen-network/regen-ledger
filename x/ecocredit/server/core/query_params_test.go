@@ -18,7 +18,7 @@ func TestQuery_Params(t *testing.T) {
 	s := setupBase(t)
 	any := gomock.Any()
 
-	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &api.CreditType{
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "a ton",

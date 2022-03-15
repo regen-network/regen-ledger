@@ -5,32 +5,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basket2 "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
 
 func TestPut(t *testing.T) {
@@ -77,21 +64,9 @@ func TestPut(t *testing.T) {
 	}
 	batchInfoRes := ecocredit.QueryBatchInfoResponse{Info: &testBatchInfo}
 
-	ctx := context.Background()
-	_, _, addr := testdata.KeyTestPubAddr()
-	ctrl := gomock.NewController(t)
-	b := ormtest.NewMemoryBackend()
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{
-		GetBackend: func(ctx context.Context) (ormtable.Backend, error) {
-			return b, nil
-		},
-		GetReadBackend: func(ctx context.Context) (ormtable.ReadBackend, error) {
-			return b, nil
-		},
-	})
-	require.NoError(t, err)
-	basketTbl := db.GetTable(&api.Basket{})
-	err = basketTbl.Insert(ctx, &api.Basket{
+	s := setupBase(t)
+
+	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom:       basketDenom,
 		Name:              basketDenom,
 		DisableAutoRetire: true,
@@ -100,10 +75,10 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	basketBalanceTbl := db.GetTable(&api.BasketBalance{})
+
 	var dur time.Duration = 500000000000000000
 	validStartDateWindow := startDate.Add(-dur)
-	err = basketTbl.Insert(ctx, &api.Basket{
+	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom:       basketDenom2,
 		Name:              basketDenom2,
 		DisableAutoRetire: true,
@@ -115,28 +90,19 @@ func TestPut(t *testing.T) {
 	basketDenomToId := make(map[string]uint64)
 	basketDenomToId[basketDenom] = 1
 	basketDenomToId[basketDenom2] = 2
-	bsktClsTbl := db.GetTable(&api.BasketClass{})
-	err = bsktClsTbl.Insert(ctx, &api.BasketClass{
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
 		BasketId: 1,
 		ClassId:  classId,
 	})
 	require.NoError(t, err)
-	err = bsktClsTbl.Insert(ctx, &api.BasketClass{
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
 		BasketId: 2,
 		ClassId:  classId,
 	})
 	require.NoError(t, err)
 
-	bankKeeper := mocks2.NewMockBankKeeper(ctrl)
-	ecocreditKeeper := mocks.NewMockEcocreditKeeper(ctrl)
-	distKeeper := mocks2.NewMockDistributionKeeper(ctrl)
-	sk := sdk.NewKVStoreKey("test")
-	k := basket.NewKeeper(db, ecocreditKeeper, bankKeeper, distKeeper, sk)
-	require.NotNil(t, k)
-
-	sdkCtx := sdkContextForStoreKey(sk).WithContext(ctx).WithBlockTime(startDate)
-	ctx = sdk.WrapSDKContext(sdkCtx)
-	sdkCtx = ctx.Value(sdk.SdkContextKey).(sdk.Context)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(startDate)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	testCases := []struct {
 		name                string
@@ -151,32 +117,32 @@ func TestPut(t *testing.T) {
 			name:            "valid case",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&batchInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
+				s.ecocreditKeeper.EXPECT().
+					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
 					Return(&projectInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+				s.ecocreditKeeper.EXPECT().
+					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&classInfoRes, nil)
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(2_000_000)))
-				bankKeeper.EXPECT().
-					MintCoins(sdkCtx, basket2.BasketSubModuleName, coinAward).
+				s.bankKeeper.EXPECT().
+					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
 					Return(nil)
 
-				bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketSubModuleName, addr, coinAward).
+				s.bankKeeper.EXPECT().
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
@@ -184,32 +150,32 @@ func TestPut(t *testing.T) {
 			name:            "valid case - basket with existing balance",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "1"}},
 			},
 			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "3"}},
 			expectedBasketCoins: "1000000", // 1 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&batchInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
+				s.ecocreditKeeper.EXPECT().
+					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
 					Return(&projectInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+				s.ecocreditKeeper.EXPECT().
+					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&classInfoRes, nil)
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(1_000_000)))
-				bankKeeper.EXPECT().
-					MintCoins(sdkCtx, basket2.BasketSubModuleName, coinAward).
+				s.bankKeeper.EXPECT().
+					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
 					Return(nil)
 
-				bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketSubModuleName, addr, coinAward).
+				s.bankKeeper.EXPECT().
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
@@ -217,32 +183,32 @@ func TestPut(t *testing.T) {
 			name:            "valid case - basket 2 with rolling window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom2,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&batchInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
+				s.ecocreditKeeper.EXPECT().
+					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
 					Return(&projectInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+				s.ecocreditKeeper.EXPECT().
+					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&classInfoRes, nil)
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom2, sdk.NewInt(2_000_000)))
-				bankKeeper.EXPECT().
-					MintCoins(sdkCtx, basket2.BasketSubModuleName, coinAward).
+				s.bankKeeper.EXPECT().
+					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
 					Return(nil)
 
-				bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(sdkCtx, basket2.BasketSubModuleName, addr, coinAward).
+				s.bankKeeper.EXPECT().
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
@@ -250,22 +216,22 @@ func TestPut(t *testing.T) {
 			name:            "insufficient funds",
 			startingBalance: "1",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&batchInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
+				s.ecocreditKeeper.EXPECT().
+					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
 					Return(&projectInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+				s.ecocreditKeeper.EXPECT().
+					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&classInfoRes, nil)
 
 			},
@@ -275,7 +241,7 @@ func TestPut(t *testing.T) {
 			name:            "basket not found",
 			startingBalance: "1",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: "FooBar",
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
@@ -288,14 +254,14 @@ func TestPut(t *testing.T) {
 			name:            "batch not found",
 			startingBalance: "20",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: "FooBarBaz", Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "FooBarBaz"}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "FooBarBaz"}).
 					Return(nil, orm.ErrNotFound)
 			},
 			errMsg: orm.ErrNotFound.Error(),
@@ -304,7 +270,7 @@ func TestPut(t *testing.T) {
 		//	name:            "class not allowed",
 		//	startingBalance: "100000000",
 		//	msg: basket2.MsgPut{
-		//		Owner:       addr.String(),
+		//		Owner:       s.addr.String(),
 		//		BasketDenom: basketDenom,
 		//		Credits:     []*basket2.BasketCredit{{BatchDenom: "blah", Amount: "2"}},
 		//	},
@@ -313,7 +279,7 @@ func TestPut(t *testing.T) {
 		//		badInfo := *batchInfoRes.Info
 		//		badInfo.ClassId = "blah01"
 		//		ecocreditKeeper.EXPECT().
-		//			BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "blah"}).
+		//			BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "blah"}).
 		//			Return(&ecocredit.QueryBatchInfoResponse{Info: &badInfo}, nil)
 		//	},
 		//	errMsg: "credit class blah01 is not allowed in this basket",
@@ -322,24 +288,24 @@ func TestPut(t *testing.T) {
 			name:            "wrong credit type",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&batchInfoRes, nil)
 
-				ecocreditKeeper.EXPECT().
-					ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
+				s.ecocreditKeeper.EXPECT().
+					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
 					Return(&projectInfoRes, nil)
 
 				badClass := *classInfoRes.Info
 				badClass.CreditType.Abbreviation = "FOO"
-				ecocreditKeeper.EXPECT().
-					ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
+				s.ecocreditKeeper.EXPECT().
+					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
 					Return(&ecocredit.QueryClassInfoResponse{Info: &badClass}, nil)
 			},
 			errMsg: "cannot use credit of type FOO in a basket that requires credit type C",
@@ -348,7 +314,7 @@ func TestPut(t *testing.T) {
 			name:            "batch out of time window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
@@ -358,8 +324,8 @@ func TestPut(t *testing.T) {
 				require.NoError(t, err)
 				badTimeInfo := *batchInfoRes.Info
 				badTimeInfo.StartDate = &badTime
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
 
 			},
@@ -369,7 +335,7 @@ func TestPut(t *testing.T) {
 			name:            "batch outside of rolling time window",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom2,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
@@ -379,8 +345,8 @@ func TestPut(t *testing.T) {
 				bogusDur := time.Duration(999999999999999)
 				badTime := validStartDateWindow.Add(-bogusDur)
 				badTimeInfo.StartDate = &badTime
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
 
 			},
@@ -391,12 +357,12 @@ func TestPut(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			tc.expectCalls()
-			legacyStore := sdkCtx.KVStore(sk)
-			tradKey := ecocredit.TradableBalanceKey(addr, ecocredit.BatchDenomT(denom))
+			legacyStore := s.sdkCtx.KVStore(s.storeKey)
+			tradKey := ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(denom))
 			userFunds, err := math.NewDecFromString(tc.startingBalance)
 			require.NoError(t, err)
 			ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
-			res, err := k.Put(ctx, &tc.msg)
+			res, err := s.k.Put(s.ctx, &tc.msg)
 			if tc.errMsg == "" { //  no error!
 				require.NoError(t, err)
 				require.Equal(t, res.AmountReceived, tc.expectedBasketCoins)
@@ -404,7 +370,7 @@ func TestPut(t *testing.T) {
 					assertUserSentCredits(t, userFunds, credit.Amount, tradKey, legacyStore)
 				}
 				for _, credit := range tc.expectedCredits {
-					assertBasketHasCredits(t, ctx, credit, basketDenomToId[tc.msg.BasketDenom], basketBalanceTbl)
+					assertBasketHasCredits(t, s.ctx, credit, basketDenomToId[tc.msg.BasketDenom], s.stateStore.BasketBalanceTable())
 				}
 			} else {
 				require.Error(t, err)
@@ -414,17 +380,10 @@ func TestPut(t *testing.T) {
 	}
 }
 
-func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.BasketCredit, basketID uint64, basketBalTbl ormtable.Table) {
-	basketBal := api.BasketBalance{
-		BasketId:       basketID,
-		BatchDenom:     credit.BatchDenom,
-		Balance:        "",
-		BatchStartDate: nil,
-	}
-	found, err := basketBalTbl.Get(ctx, &basketBal)
+func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.BasketCredit, basketID uint64, balanceTable api.BasketBalanceTable) {
+	bal, err := balanceTable.Get(ctx, basketID, credit.BatchDenom)
 	require.NoError(t, err)
-	require.True(t, found)
-	require.Equal(t, basketBal.Balance, credit.Amount)
+	require.Equal(t, bal.Balance, credit.Amount)
 }
 
 func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string, balanceKey []byte, store types.KVStore) {
@@ -437,15 +396,4 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 	require.NoError(t, err)
 
 	require.True(t, checkBalance.Equal(oldBalance))
-}
-
-func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
-	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
-	err := cms.LoadLatestVersion()
-	if err != nil {
-		panic(err)
-	}
-	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 }

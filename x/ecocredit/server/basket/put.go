@@ -26,7 +26,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	}
 
 	// get the basket
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
 		if orm.ErrNotFound.Is(err) {
 			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
@@ -131,7 +131,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	classId := projectRes.Info.ClassId
 
 	// check credit class match
-	found, err := k.stateStore.BasketClassStore().Has(ctx, basket.Id, classId)
+	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 
 	// update basket balance with amount sent
 	var bal *api.BasketBalance
-	bal, err = k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, batchInfo.BatchDenom)
+	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batchInfo.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
@@ -194,7 +194,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		}
 		bal.Balance = newBalance.String()
 	}
-	if err = k.stateStore.BasketBalanceStore().Save(ctx, bal); err != nil {
+	if err = k.stateStore.BasketBalanceTable().Save(ctx, bal); err != nil {
 		return err
 	}
 	return nil

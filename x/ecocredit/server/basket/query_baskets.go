@@ -21,7 +21,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.BasketStore().List(ctx, api.BasketPrimaryKey{},
+	it, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{},
 		ormlist.Paginate(pulsarPageReq),
 	)
 

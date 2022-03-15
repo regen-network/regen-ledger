@@ -46,7 +46,7 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.SellOrderIds))
 
-	it, err := s.marketStore.SellOrderStore().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
+	it, err := s.marketStore.SellOrderTable().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -79,7 +79,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	}).Times(1)
 
 	// market shouldn't exist before sell call
-	has, err := s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
@@ -92,7 +92,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 
 	// market should exist now
-	has, err = s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, true, has)
 }
@@ -150,31 +150,31 @@ func TestSell_Invalid(t *testing.T) {
 }
 
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       classId,
 		Admin:      s.addr,
 		Metadata:   "",
 		CreditType: creditType.Abbreviation,
 	}))
-	assert.NilError(t, s.marketStore.MarketStore().Insert(s.ctx, &marketApi.Market{
+	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &marketApi.Market{
 		CreditType:        creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
 	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
+	//assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
 	//	BankDenom:    bankDenom,
 	//	DisplayDenom: displayDenom,
 	//	Exponent:     1,
 	//}))
-	assert.NilError(t, s.k.coreStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "100",

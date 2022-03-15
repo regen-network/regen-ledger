@@ -27,7 +27,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		batch, err := k.coreStore.BatchInfoStore().GetByBatchDenom(ctx, order.BatchDenom)
+		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, fmt.Errorf("batch denom %v: %v", order.BatchDenom, err)
 		}
@@ -57,7 +57,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
 		//}
 
-		id, err := k.stateStore.SellOrderStore().InsertReturningID(ctx, &marketApi.SellOrder{
+		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
 			Quantity:          order.Quantity,
@@ -78,12 +78,12 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
 func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
-	market, err := k.stateStore.MarketStore().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
+	market, err := k.stateStore.MarketTable().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
 	switch err {
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
-		return k.stateStore.MarketStore().InsertReturningID(ctx, &marketApi.Market{
+		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
 			PrecisionModifier: 0,
