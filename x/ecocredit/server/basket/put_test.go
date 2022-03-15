@@ -89,7 +89,7 @@ func TestPut(t *testing.T) {
 	})
 	require.NoError(t, err)
 	validYearsInThePast := uint32(10)
-	err = basketTbl.Insert(ctx, &api.Basket{
+	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom:       basketDenom3,
 		Name:              basketDenom3,
 		DisableAutoRetire: true,
@@ -98,7 +98,6 @@ func TestPut(t *testing.T) {
 		Exponent:          6,
 	})
 	require.NoError(t, err)
-	basketBalanceTbl := db.GetTable(&api.BasketBalance{})
 	basketDenomToId := make(map[string]uint64)
 	basketDenomToId[basketDenom] = 1
 	basketDenomToId[basketDenom2] = 2
@@ -368,7 +367,7 @@ func TestPut(t *testing.T) {
 			name:            "batch outside of years in the past",
 			startingBalance: "100000000",
 			msg: basket2.MsgPut{
-				Owner:       addr.String(),
+				Owner:       s.addr.String(),
 				BasketDenom: basketDenom3,
 				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
@@ -378,8 +377,8 @@ func TestPut(t *testing.T) {
 				badYear := int(validYearsInThePast + 10)
 				badTime := time.Date(badYear, 1, 1, 0, 0, 0, 0, time.UTC)
 				badTimeInfo.StartDate = &badTime
-				ecocreditKeeper.EXPECT().
-					BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
+				s.ecocreditKeeper.EXPECT().
+					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
 					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
 
 			},
