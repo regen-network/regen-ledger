@@ -21,12 +21,12 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	projectID := req.ProjectId
 
-	projectInfo, err := k.stateStore.ProjectInfoStore().GetByName(ctx, projectID)
+	projectInfo, err := k.stateStore.ProjectInfoTable().GetByName(ctx, projectID)
 	if err != nil {
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoStore().Get(ctx, projectInfo.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
-	rowID, err := k.stateStore.BatchInfoStore().InsertReturningID(ctx, &api.BatchInfo{
+	rowID, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
 		ProjectId:  projectInfo.Id,
 		BatchDenom: batchDenom,
 		Metadata:   req.Metadata,
@@ -93,7 +93,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 		}
-		if err = k.stateStore.BatchBalanceStore().Insert(ctx, &api.BatchBalance{
+		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 			Address:  recipient,
 			BatchId:  rowID,
 			Tradable: tradable.String(),
@@ -114,7 +114,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
-	if err = k.stateStore.BatchSupplyStore().Insert(ctx, &api.BatchSupply{
+	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 		BatchId:         rowID,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
@@ -147,7 +147,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 // getBatchSeqNo gets the batch sequence number
 func (k Keeper) getBatchSeqNo(ctx context.Context, projectID string) (uint64, error) {
 	var seq uint64 = 1
-	batchSeq, err := k.stateStore.BatchSequenceStore().Get(ctx, projectID)
+	batchSeq, err := k.stateStore.BatchSequenceTable().Get(ctx, projectID)
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
 			return 0, err
@@ -156,7 +156,7 @@ func (k Keeper) getBatchSeqNo(ctx context.Context, projectID string) (uint64, er
 		seq = batchSeq.NextBatchId
 	}
 
-	if err = k.stateStore.BatchSequenceStore().Save(ctx, &api.BatchSequence{
+	if err = k.stateStore.BatchSequenceTable().Save(ctx, &api.BatchSequence{
 		ProjectId:   projectID,
 		NextBatchId: seq + 1,
 	}); err != nil {
