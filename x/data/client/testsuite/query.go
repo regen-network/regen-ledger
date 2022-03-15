@@ -206,3 +206,109 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid url",
+			args:      []string{"abcd"},
+			expErr:    true,
+			expErrMsg: "not found",
+		},
+		{
+			name:   "valid",
+			args:   []string{"http://foo.bar"},
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolverInfoCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryResolverInfoResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid iri",
+			args:      []string{"abcd"},
+			expErr:    true,
+			expErrMsg: "can't find",
+		},
+		{
+			name:   "valid test",
+			args:   []string{s.iri},
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolversCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err, out.String())
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryResolversResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+			}
+		})
+	}
+}

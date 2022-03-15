@@ -38,9 +38,9 @@ func TestSell_Valid(t *testing.T) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 
-	balanceBefore, err := s.coreStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	supplyBefore, err := s.coreStore.BatchSupplyStore().Get(s.ctx, 1)
+	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
 	sellTime := time.Now()
@@ -54,7 +54,7 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.SellOrderIds))
 
-	it, err := s.marketStore.SellOrderStore().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
+	it, err := s.marketStore.SellOrderTable().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -66,41 +66,12 @@ func TestSell_Valid(t *testing.T) {
 	}
 	assert.Equal(t, 2, count)
 
-	balanceAfter, err := s.coreStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	balanceAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	supplyAfter, err := s.coreStore.BatchSupplyStore().Get(s.ctx, 1)
+	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
 	assertCoinsEscrowed(t, balanceBefore, balanceAfter, supplyBefore, supplyAfter, math.NewDecFromInt64(20))
-}
-
-func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.BatchBalance, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, orderAmt math.Dec) {
-	decs, err := server.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
-		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
-		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
-	assert.NilError(t, err)
-	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed, supBeforeTradable, supAfterTradable,
-	supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
-
-	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
-	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedTradable.Equal(balAfterTradable))
-
-	// check the resulting escrow balance -> escrowedBefore + orderAmt = escrowedAfter
-	calculatedEscrow, err := balBeforeEscrowed.Add(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedEscrow.Equal(balAfterEscrowed), "calculated: %s, actual: %s", calculatedEscrow.String(), balAfterEscrowed.String())
-
-	// check the resulting tradable supply -> tradableBefore - orderAmt = tradableAfter
-	calculatedTSupply, err := supBeforeTradable.Sub(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedTSupply.Equal(supAfterTradable))
-
-	// check the resulting escrowed supply -> escrowedBefore + orderAmt = escrowedAfter
-	calculatedESupply, err := supBeforeEscrowed.Add(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
 func TestSell_CreatesMarket(t *testing.T) {
@@ -123,7 +94,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	}).Times(1)
 
 	// market shouldn't exist before sell call
-	has, err := s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
@@ -136,7 +107,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 
 	// market should exist now
-	has, err = s.k.stateStore.MarketStore().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, true, has)
 }
@@ -178,7 +149,7 @@ func TestSell_Invalid(t *testing.T) {
 			{BatchDenom: batchDenom, Quantity: "10000000000", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
 	})
-	assert.ErrorContains(t, err, ecocredit.ErrInsufficientFunds.Error())
+	assert.ErrorContains(t, err, "insufficient funds")
 
 	// order expiration not in the future
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
@@ -231,54 +202,98 @@ func TestSell_Prune(t *testing.T) {
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
+	// get the balance before pruning
+	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	assert.NilError(t, err)
+	supBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
 	// prune the orders
 	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)
+
+	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	assert.NilError(t, err)
+	supAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
+	// we can reuse this function and pass the negated amount to get our desired behavior.
+	assertCoinsEscrowed(t, balBefore, balAfter, supBefore, supAfter, math.NewDecFromInt64(-10))
 
 	assert.Equal(t, 2, len(res.SellOrderIds))
 	shouldBeExpired := res.SellOrderIds[0]
 	shouldBeValid := res.SellOrderIds[1]
 
-	_, err = s.marketStore.SellOrderStore().Get(s.ctx, shouldBeExpired)
+	_, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldBeExpired)
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
-	_, err = s.marketStore.SellOrderStore().Get(s.ctx, shouldBeValid)
+	_, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldBeValid)
 	assert.NilError(t, err)
+}
+
+// assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
+func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.BatchBalance, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, orderAmt math.Dec) {
+	decs, err := server.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
+		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
+		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
+	assert.NilError(t, err)
+	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed, supBeforeTradable, supAfterTradable,
+	supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
+
+	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
+	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
+	assert.NilError(t, err)
+	assert.Check(t, calculatedTradable.Equal(balAfterTradable))
+
+	// check the resulting escrow balance -> escrowedBefore + orderAmt = escrowedAfter
+	calculatedEscrow, err := balBeforeEscrowed.Add(orderAmt)
+	assert.NilError(t, err)
+	assert.Check(t, calculatedEscrow.Equal(balAfterEscrowed), "calculated: %s, actual: %s", calculatedEscrow.String(), balAfterEscrowed.String())
+
+	// check the resulting tradable supply -> tradableBefore - orderAmt = tradableAfter
+	calculatedTSupply, err := supBeforeTradable.Sub(orderAmt)
+	assert.NilError(t, err)
+	assert.Check(t, calculatedTSupply.Equal(supAfterTradable))
+
+	// check the resulting escrowed supply -> escrowedBefore + orderAmt = escrowedAfter
+	calculatedESupply, err := supBeforeEscrowed.Add(orderAmt)
+	assert.NilError(t, err)
+	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
 
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoStore().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       classId,
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: creditType.Abbreviation,
 	}))
-	assert.NilError(t, s.marketStore.MarketStore().Insert(s.ctx, &marketApi.Market{
+	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &marketApi.Market{
 		CreditType:        creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
 	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(t, s.marketStore.AllowedDenomStore().Insert(s.ctx, &marketApi.AllowedDenom{
+	//assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
 	//	BankDenom:    bankDenom,
 	//	DisplayDenom: displayDenom,
 	//	Exponent:     1,
 	//}))
-	assert.NilError(t, s.k.coreStore.BatchBalanceStore().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditv1.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
 	}))
-	assert.NilError(t, s.k.coreStore.BatchSupplyStore().Insert(s.ctx, &ecocreditv1.BatchSupply{
+	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
 		BatchId:  1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",

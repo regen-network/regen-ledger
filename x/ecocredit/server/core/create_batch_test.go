@@ -45,7 +45,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 				RetiredAmount:  "3.4",
 			},
 		},
-		Metadata:  nil,
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -53,30 +53,30 @@ func TestCreateBatch_Valid(t *testing.T) {
 	totalRetired := "8.7"
 
 	// check the batch
-	batch, err := s.stateStore.BatchInfoStore().Get(s.ctx, 1)
+	batch, err := s.stateStore.BatchInfoTable().Get(s.ctx, 1)
 	assert.NilError(t, err, "unexpected error: %w", err)
 	assert.Equal(t, res.BatchDenom, batch.BatchDenom)
 
 	// check the supply was set
-	sup, err := s.stateStore.BatchSupplyStore().Get(s.ctx, 1)
+	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, totalTradable, sup.TradableAmount, "got %s", sup.TradableAmount)
 	assert.Equal(t, totalRetired, sup.RetiredAmount, "got %s", sup.RetiredAmount)
 	assert.Equal(t, "0", sup.CancelledAmount, "got %s", sup.CancelledAmount)
 
 	// check balances were allocated
-	bal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, "10", bal.Tradable)
 	assert.Equal(t, "5.3", bal.Retired)
 
-	bal2, err := s.stateStore.BatchBalanceStore().Get(s.ctx, addr2, 1)
+	bal2, err := s.stateStore.BatchBalanceTable().Get(s.ctx, addr2, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, "2.4", bal2.Tradable)
 	assert.Equal(t, "3.4", bal2.Retired)
 
 	// check sequence number
-	seq, err := s.stateStore.BatchSequenceStore().Get(s.ctx, projectName)
+	seq, err := s.stateStore.BatchSequenceTable().Get(s.ctx, projectName)
 	assert.NilError(t, err)
 	assert.Equal(t, uint64(2), seq.NextBatchId)
 }
@@ -103,7 +103,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 				TradableAmount: "10.1234567891111",
 			},
 		},
-		Metadata:  nil,
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -134,23 +134,23 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 // creates a class "C01", with a single class issuer, and a project "PRO"
 func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (className, projectName string) {
 	className, projectName = "C01", "PRO"
-	cid, err := ss.ClassInfoStore().InsertReturningID(ctx, &api.ClassInfo{
+	cid, err := ss.ClassInfoTable().InsertReturningID(ctx, &api.ClassInfo{
 		Name:       className,
 		Admin:      addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
-	err = ss.ClassIssuerStore().Insert(ctx, &api.ClassIssuer{
+	err = ss.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
 		ClassId: cid,
 		Issuer:  addr,
 	})
 	assert.NilError(t, err)
-	_, err = ss.ProjectInfoStore().InsertReturningID(ctx, &api.ProjectInfo{
+	_, err = ss.ProjectInfoTable().InsertReturningID(ctx, &api.ProjectInfo{
 		Name:            projectName,
 		ClassId:         1,
 		ProjectLocation: "",
-		Metadata:        nil,
+		Metadata:        "",
 	})
 	assert.NilError(t, err)
 	return

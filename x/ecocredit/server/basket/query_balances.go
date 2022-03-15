@@ -17,7 +17,7 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, request.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		return nil, err
 	}
 
-	it, err := k.stateStore.BasketBalanceStore().List(ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
+	it, err := k.stateStore.BasketBalanceTable().List(ctx, api.BasketBalancePrimaryKey{}.WithBasketId(basket.Id),
 		ormlist.Paginate(pulsarPageReq),
 	)
 	if err != nil {

@@ -25,9 +25,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		batch, err := k.coreStore.BatchInfoStore().GetByBatchDenom(ctx, order.BatchDenom)
+		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %w", order.BatchDenom, err)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
 		ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 		if err != nil {
@@ -54,7 +54,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
 		//}
 
-		id, err := k.stateStore.SellOrderStore().InsertReturningID(ctx, &marketApi.SellOrder{
+		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
 			Quantity:          order.Quantity,
@@ -85,12 +85,12 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
 func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
-	market, err := k.stateStore.MarketStore().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
+	market, err := k.stateStore.MarketTable().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
 	switch err {
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
-		return k.stateStore.MarketStore().InsertReturningID(ctx, &marketApi.Market{
+		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
 			PrecisionModifier: 0,
@@ -101,7 +101,7 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 }
 
 func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batchId uint64, sellQty math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceStore().Get(ctx, ownerAcc, batchId)
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, ownerAcc, batchId)
 	if err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	}
 	newTradable, err := math.SafeSubBalance(tradable, sellQty)
 	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("tradable balance: %v, sell order request: %v - %w", tradable, sellQty, err)
+		return sdkerrors.ErrInvalidRequest.Wrapf("tradable balance: %v, sell order request: %v - %s", tradable, sellQty, err.Error())
 	}
 
 	escrowed, err := math.NewDecFromString(bal.Escrowed)
@@ -120,16 +120,16 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	}
 	newEscrowed, err := math.SafeAddBalance(escrowed, sellQty)
 	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("escrowed balance: %v, sell order request: %v - %w", escrowed, sellQty, err)
+		return sdkerrors.ErrInvalidRequest.Wrapf("escrowed balance: %v, sell order request: %v - %s", escrowed, sellQty, err.Error())
 	}
 	bal.Tradable = newTradable.String()
 	bal.Escrowed = newEscrowed.String()
 
-	if err = k.coreStore.BatchBalanceStore().Update(ctx, bal); err != nil {
+	if err = k.coreStore.BatchBalanceTable().Update(ctx, bal); err != nil {
 		return err
 	}
 
-	supply, err := k.coreStore.BatchSupplyStore().Get(ctx, batchId)
+	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, batchId)
 	if err != nil {
 		return err
 	}
@@ -151,5 +151,5 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	}
 	supply.EscrowedAmount = supEscrow.String()
 	supply.TradableAmount = supTradable.String()
-	return k.coreStore.BatchSupplyStore().Save(ctx, supply)
+	return k.coreStore.BatchSupplyTable().Save(ctx, supply)
 }

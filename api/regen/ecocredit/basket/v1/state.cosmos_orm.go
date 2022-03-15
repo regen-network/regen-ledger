@@ -10,7 +10,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type BasketStore interface {
+type BasketTable interface {
 	Insert(ctx context.Context, basket *Basket) error
 	InsertReturningID(ctx context.Context, basket *Basket) (uint64, error)
 	Update(ctx context.Context, basket *Basket) error
@@ -91,35 +91,35 @@ func (this BasketNameIndexKey) WithName(name string) BasketNameIndexKey {
 	return this
 }
 
-type basketStore struct {
+type basketTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this basketStore) Insert(ctx context.Context, basket *Basket) error {
+func (this basketTable) Insert(ctx context.Context, basket *Basket) error {
 	return this.table.Insert(ctx, basket)
 }
 
-func (this basketStore) Update(ctx context.Context, basket *Basket) error {
+func (this basketTable) Update(ctx context.Context, basket *Basket) error {
 	return this.table.Update(ctx, basket)
 }
 
-func (this basketStore) Save(ctx context.Context, basket *Basket) error {
+func (this basketTable) Save(ctx context.Context, basket *Basket) error {
 	return this.table.Save(ctx, basket)
 }
 
-func (this basketStore) Delete(ctx context.Context, basket *Basket) error {
+func (this basketTable) Delete(ctx context.Context, basket *Basket) error {
 	return this.table.Delete(ctx, basket)
 }
 
-func (this basketStore) InsertReturningID(ctx context.Context, basket *Basket) (uint64, error) {
+func (this basketTable) InsertReturningID(ctx context.Context, basket *Basket) (uint64, error) {
 	return this.table.InsertReturningID(ctx, basket)
 }
 
-func (this basketStore) Has(ctx context.Context, id uint64) (found bool, err error) {
+func (this basketTable) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this basketStore) Get(ctx context.Context, id uint64) (*Basket, error) {
+func (this basketTable) Get(ctx context.Context, id uint64) (*Basket, error) {
 	var basket Basket
 	found, err := this.table.PrimaryKey().Get(ctx, &basket, id)
 	if err != nil {
@@ -131,13 +131,13 @@ func (this basketStore) Get(ctx context.Context, id uint64) (*Basket, error) {
 	return &basket, nil
 }
 
-func (this basketStore) HasByBasketDenom(ctx context.Context, basket_denom string) (found bool, err error) {
+func (this basketTable) HasByBasketDenom(ctx context.Context, basket_denom string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		basket_denom,
 	)
 }
 
-func (this basketStore) GetByBasketDenom(ctx context.Context, basket_denom string) (*Basket, error) {
+func (this basketTable) GetByBasketDenom(ctx context.Context, basket_denom string) (*Basket, error) {
 	var basket Basket
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &basket,
 		basket_denom,
@@ -151,13 +151,13 @@ func (this basketStore) GetByBasketDenom(ctx context.Context, basket_denom strin
 	return &basket, nil
 }
 
-func (this basketStore) HasByName(ctx context.Context, name string) (found bool, err error) {
+func (this basketTable) HasByName(ctx context.Context, name string) (found bool, err error) {
 	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
 		name,
 	)
 }
 
-func (this basketStore) GetByName(ctx context.Context, name string) (*Basket, error) {
+func (this basketTable) GetByName(ctx context.Context, name string) (*Basket, error) {
 	var basket Basket
 	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &basket,
 		name,
@@ -171,37 +171,37 @@ func (this basketStore) GetByName(ctx context.Context, name string) (*Basket, er
 	return &basket, nil
 }
 
-func (this basketStore) List(ctx context.Context, prefixKey BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error) {
+func (this basketTable) List(ctx context.Context, prefixKey BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BasketIterator{it}, err
 }
 
-func (this basketStore) ListRange(ctx context.Context, from, to BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error) {
+func (this basketTable) ListRange(ctx context.Context, from, to BasketIndexKey, opts ...ormlist.Option) (BasketIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BasketIterator{it}, err
 }
 
-func (this basketStore) DeleteBy(ctx context.Context, prefixKey BasketIndexKey) error {
+func (this basketTable) DeleteBy(ctx context.Context, prefixKey BasketIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this basketStore) DeleteRange(ctx context.Context, from, to BasketIndexKey) error {
+func (this basketTable) DeleteRange(ctx context.Context, from, to BasketIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this basketStore) doNotImplement() {}
+func (this basketTable) doNotImplement() {}
 
-var _ BasketStore = basketStore{}
+var _ BasketTable = basketTable{}
 
-func NewBasketStore(db ormtable.Schema) (BasketStore, error) {
+func NewBasketTable(db ormtable.Schema) (BasketTable, error) {
 	table := db.GetTable(&Basket{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Basket{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return basketStore{table.(ormtable.AutoIncrementTable)}, nil
+	return basketTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
-type BasketClassStore interface {
+type BasketClassTable interface {
 	Insert(ctx context.Context, basketClass *BasketClass) error
 	Update(ctx context.Context, basketClass *BasketClass) error
 	Save(ctx context.Context, basketClass *BasketClass) error
@@ -254,31 +254,31 @@ func (this BasketClassBasketIdClassIdIndexKey) WithBasketIdClassId(basket_id uin
 	return this
 }
 
-type basketClassStore struct {
+type basketClassTable struct {
 	table ormtable.Table
 }
 
-func (this basketClassStore) Insert(ctx context.Context, basketClass *BasketClass) error {
+func (this basketClassTable) Insert(ctx context.Context, basketClass *BasketClass) error {
 	return this.table.Insert(ctx, basketClass)
 }
 
-func (this basketClassStore) Update(ctx context.Context, basketClass *BasketClass) error {
+func (this basketClassTable) Update(ctx context.Context, basketClass *BasketClass) error {
 	return this.table.Update(ctx, basketClass)
 }
 
-func (this basketClassStore) Save(ctx context.Context, basketClass *BasketClass) error {
+func (this basketClassTable) Save(ctx context.Context, basketClass *BasketClass) error {
 	return this.table.Save(ctx, basketClass)
 }
 
-func (this basketClassStore) Delete(ctx context.Context, basketClass *BasketClass) error {
+func (this basketClassTable) Delete(ctx context.Context, basketClass *BasketClass) error {
 	return this.table.Delete(ctx, basketClass)
 }
 
-func (this basketClassStore) Has(ctx context.Context, basket_id uint64, class_id string) (found bool, err error) {
+func (this basketClassTable) Has(ctx context.Context, basket_id uint64, class_id string) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, basket_id, class_id)
 }
 
-func (this basketClassStore) Get(ctx context.Context, basket_id uint64, class_id string) (*BasketClass, error) {
+func (this basketClassTable) Get(ctx context.Context, basket_id uint64, class_id string) (*BasketClass, error) {
 	var basketClass BasketClass
 	found, err := this.table.PrimaryKey().Get(ctx, &basketClass, basket_id, class_id)
 	if err != nil {
@@ -290,37 +290,37 @@ func (this basketClassStore) Get(ctx context.Context, basket_id uint64, class_id
 	return &basketClass, nil
 }
 
-func (this basketClassStore) List(ctx context.Context, prefixKey BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error) {
+func (this basketClassTable) List(ctx context.Context, prefixKey BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BasketClassIterator{it}, err
 }
 
-func (this basketClassStore) ListRange(ctx context.Context, from, to BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error) {
+func (this basketClassTable) ListRange(ctx context.Context, from, to BasketClassIndexKey, opts ...ormlist.Option) (BasketClassIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BasketClassIterator{it}, err
 }
 
-func (this basketClassStore) DeleteBy(ctx context.Context, prefixKey BasketClassIndexKey) error {
+func (this basketClassTable) DeleteBy(ctx context.Context, prefixKey BasketClassIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this basketClassStore) DeleteRange(ctx context.Context, from, to BasketClassIndexKey) error {
+func (this basketClassTable) DeleteRange(ctx context.Context, from, to BasketClassIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this basketClassStore) doNotImplement() {}
+func (this basketClassTable) doNotImplement() {}
 
-var _ BasketClassStore = basketClassStore{}
+var _ BasketClassTable = basketClassTable{}
 
-func NewBasketClassStore(db ormtable.Schema) (BasketClassStore, error) {
+func NewBasketClassTable(db ormtable.Schema) (BasketClassTable, error) {
 	table := db.GetTable(&BasketClass{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BasketClass{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return basketClassStore{table}, nil
+	return basketClassTable{table}, nil
 }
 
-type BasketBalanceStore interface {
+type BasketBalanceTable interface {
 	Insert(ctx context.Context, basketBalance *BasketBalance) error
 	Update(ctx context.Context, basketBalance *BasketBalance) error
 	Save(ctx context.Context, basketBalance *BasketBalance) error
@@ -391,31 +391,31 @@ func (this BasketBalanceBasketIdBatchStartDateIndexKey) WithBasketIdBatchStartDa
 	return this
 }
 
-type basketBalanceStore struct {
+type basketBalanceTable struct {
 	table ormtable.Table
 }
 
-func (this basketBalanceStore) Insert(ctx context.Context, basketBalance *BasketBalance) error {
+func (this basketBalanceTable) Insert(ctx context.Context, basketBalance *BasketBalance) error {
 	return this.table.Insert(ctx, basketBalance)
 }
 
-func (this basketBalanceStore) Update(ctx context.Context, basketBalance *BasketBalance) error {
+func (this basketBalanceTable) Update(ctx context.Context, basketBalance *BasketBalance) error {
 	return this.table.Update(ctx, basketBalance)
 }
 
-func (this basketBalanceStore) Save(ctx context.Context, basketBalance *BasketBalance) error {
+func (this basketBalanceTable) Save(ctx context.Context, basketBalance *BasketBalance) error {
 	return this.table.Save(ctx, basketBalance)
 }
 
-func (this basketBalanceStore) Delete(ctx context.Context, basketBalance *BasketBalance) error {
+func (this basketBalanceTable) Delete(ctx context.Context, basketBalance *BasketBalance) error {
 	return this.table.Delete(ctx, basketBalance)
 }
 
-func (this basketBalanceStore) Has(ctx context.Context, basket_id uint64, batch_denom string) (found bool, err error) {
+func (this basketBalanceTable) Has(ctx context.Context, basket_id uint64, batch_denom string) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, basket_id, batch_denom)
 }
 
-func (this basketBalanceStore) Get(ctx context.Context, basket_id uint64, batch_denom string) (*BasketBalance, error) {
+func (this basketBalanceTable) Get(ctx context.Context, basket_id uint64, batch_denom string) (*BasketBalance, error) {
 	var basketBalance BasketBalance
 	found, err := this.table.PrimaryKey().Get(ctx, &basketBalance, basket_id, batch_denom)
 	if err != nil {
@@ -427,59 +427,59 @@ func (this basketBalanceStore) Get(ctx context.Context, basket_id uint64, batch_
 	return &basketBalance, nil
 }
 
-func (this basketBalanceStore) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
+func (this basketBalanceTable) List(ctx context.Context, prefixKey BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
 	return BasketBalanceIterator{it}, err
 }
 
-func (this basketBalanceStore) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
+func (this basketBalanceTable) ListRange(ctx context.Context, from, to BasketBalanceIndexKey, opts ...ormlist.Option) (BasketBalanceIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
 	return BasketBalanceIterator{it}, err
 }
 
-func (this basketBalanceStore) DeleteBy(ctx context.Context, prefixKey BasketBalanceIndexKey) error {
+func (this basketBalanceTable) DeleteBy(ctx context.Context, prefixKey BasketBalanceIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this basketBalanceStore) DeleteRange(ctx context.Context, from, to BasketBalanceIndexKey) error {
+func (this basketBalanceTable) DeleteRange(ctx context.Context, from, to BasketBalanceIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this basketBalanceStore) doNotImplement() {}
+func (this basketBalanceTable) doNotImplement() {}
 
-var _ BasketBalanceStore = basketBalanceStore{}
+var _ BasketBalanceTable = basketBalanceTable{}
 
-func NewBasketBalanceStore(db ormtable.Schema) (BasketBalanceStore, error) {
+func NewBasketBalanceTable(db ormtable.Schema) (BasketBalanceTable, error) {
 	table := db.GetTable(&BasketBalance{})
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&BasketBalance{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return basketBalanceStore{table}, nil
+	return basketBalanceTable{table}, nil
 }
 
 type StateStore interface {
-	BasketStore() BasketStore
-	BasketClassStore() BasketClassStore
-	BasketBalanceStore() BasketBalanceStore
+	BasketTable() BasketTable
+	BasketClassTable() BasketClassTable
+	BasketBalanceTable() BasketBalanceTable
 
 	doNotImplement()
 }
 
 type stateStore struct {
-	basket        BasketStore
-	basketClass   BasketClassStore
-	basketBalance BasketBalanceStore
+	basket        BasketTable
+	basketClass   BasketClassTable
+	basketBalance BasketBalanceTable
 }
 
-func (x stateStore) BasketStore() BasketStore {
+func (x stateStore) BasketTable() BasketTable {
 	return x.basket
 }
 
-func (x stateStore) BasketClassStore() BasketClassStore {
+func (x stateStore) BasketClassTable() BasketClassTable {
 	return x.basketClass
 }
 
-func (x stateStore) BasketBalanceStore() BasketBalanceStore {
+func (x stateStore) BasketBalanceTable() BasketBalanceTable {
 	return x.basketBalance
 }
 
@@ -488,24 +488,24 @@ func (stateStore) doNotImplement() {}
 var _ StateStore = stateStore{}
 
 func NewStateStore(db ormtable.Schema) (StateStore, error) {
-	basketStore, err := NewBasketStore(db)
+	basketTable, err := NewBasketTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	basketClassStore, err := NewBasketClassStore(db)
+	basketClassTable, err := NewBasketClassTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	basketBalanceStore, err := NewBasketBalanceStore(db)
+	basketBalanceTable, err := NewBasketBalanceTable(db)
 	if err != nil {
 		return nil, err
 	}
 
 	return stateStore{
-		basketStore,
-		basketClassStore,
-		basketBalanceStore,
+		basketTable,
+		basketClassTable,
+		basketBalanceTable,
 	}, nil
 }

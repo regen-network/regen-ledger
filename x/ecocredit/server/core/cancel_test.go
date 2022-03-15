@@ -38,12 +38,12 @@ func TestCancel_Valid(t *testing.T) {
 
 	// we cancel 10.5 credits, removing them from the s.addr balance, as well as supply, resulting in 0 to both.
 
-	sup, err := s.stateStore.BatchSupplyStore().Get(s.ctx, 1)
+	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, sup.TradableAmount, "0.0")
 	assert.Equal(t, sup.RetiredAmount, "10.5")
 
-	bal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, bal.Tradable, "0.0")
 	assert.Equal(t, bal.Retired, "10.5")
