@@ -21,7 +21,12 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
-	err = k.assertClassIssuer(ctx, classInfo.Id, req.Issuer)
+	adminAddress, err := sdk.AccAddressFromBech32(req.Issuer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = k.assertClassIssuer(ctx, classInfo.Id, adminAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +44,6 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 				return nil, err
 			}
 		}
-	}
-
-	adminAddress, err := sdk.AccAddressFromBech32(req.Issuer)
-	if err != nil {
-		return nil, err
 	}
 
 	if err = k.stateStore.ProjectInfoTable().Insert(ctx, &api.ProjectInfo{
