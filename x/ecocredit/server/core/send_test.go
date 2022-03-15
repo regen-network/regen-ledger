@@ -34,10 +34,10 @@ func TestSend_Valid(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	senderBal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	senderBal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 
-	recipientBal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, recipient, 1)
+	recipientBal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, recipient, 1)
 	assert.NilError(t, err)
 
 	// sender tradable -> 10.5 - 2.51 = 7.99
@@ -50,7 +50,7 @@ func TestSend_Valid(t *testing.T) {
 	assert.Equal(t, "1.30", recipientBal.Retired)
 	assert.Equal(t, "10.5", senderBal.Retired) // retired credits should be untouched
 
-	sup, err := s.stateStore.BatchSupplyStore().Get(s.ctx, 1)
+	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
 	// retired -> 10.5 + 1.30(retired) = 11.80
