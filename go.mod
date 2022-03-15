@@ -18,7 +18,7 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.15
-	github.com/tendermint/tm-db v0.6.6
+	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf // indirect
 )
@@ -43,9 +43,10 @@ require (
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7 // indirect
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5 // indirect
-	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.10 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.3 // indirect
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
+	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
@@ -116,7 +117,6 @@ require (
 	github.com/spf13/viper v1.10.1 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20200815110645-5c35d600f0ca // indirect
-	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
@@ -138,8 +138,6 @@ require (
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-replace github.com/tecbot/gorocksdb => github.com/cosmos/gorocksdb v1.2.0
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 

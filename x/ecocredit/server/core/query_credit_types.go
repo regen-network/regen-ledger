@@ -10,7 +10,7 @@ import (
 // CreditTypes queries the list of allowed types that credit classes can have.
 func (k Keeper) CreditTypes(ctx context.Context, _ *core.QueryCreditTypesRequest) (*core.QueryCreditTypesResponse, error) {
 	creditTypes := make([]*core.CreditType, 0)
-	it, err := k.stateStore.CreditTypeStore().List(ctx, api.CreditTypePrimaryKey{})
+	it, err := k.stateStore.CreditTypeTable().List(ctx, api.CreditTypePrimaryKey{})
 	if err != nil {
 		return nil, err
 	}

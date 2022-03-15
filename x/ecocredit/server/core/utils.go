@@ -14,7 +14,7 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, issuer 
 	if err != nil {
 		return err
 	}
-	found, err := k.stateStore.ClassIssuerStore().Has(goCtx, classID, addr)
+	found, err := k.stateStore.ClassIssuerTable().Has(goCtx, classID, addr)
 	if err != nil {
 		return err
 	}
