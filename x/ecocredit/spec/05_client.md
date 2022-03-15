@@ -53,28 +53,25 @@ Example Output:
 info:
   amount_cancelled: "10"
   batch_denom: C01-20200101-20210101-001
-  class_id: C01
   end_date: "2021-01-01T00:00:00Z"
-  issuer: regen1..
   metadata: cmVnZW4=
-  project_location: AA-BB 12345
+  project_id: P01
   start_date: "2020-01-01T00:00:00Z"
-  total_amount: "50"
-
+  total_amount: "3.0"
 ```
 
 #### batches
 
-The `batches` command allows users to query all credit batches for a given credit class.
+The `batches` command allows users to query all credit batches for a given project.
 
 ```bash
-regen query ecocredit batches [class_id] [flags]
+regen query ecocredit batches [project_id] [flags]
 ```
 
 Example:
 
 ```bash
-regen query ecocredit batches C01
+regen query ecocredit batches P01
 ```
 
 Example Output:
@@ -83,13 +80,11 @@ Example Output:
 batches:
 - amount_cancelled: "10"
   batch_denom: C01-20200101-20210101-001
-  class_id: C01
   end_date: "2021-01-01T00:00:00Z"
-  issuer: regen1..
   metadata: cmVnZW4=
-  project_location: AA-BB 12345
+  project_id: P01
   start_date: "2020-01-01T00:00:00Z"
-  total_amount: "50"
+  total_amount: "3.0"
 pagination:
   next_key: null
   total: "0"
@@ -100,7 +95,7 @@ pagination:
 The `class-info` command allows users to query information for a given credit class.
 
 ```bash
-regen query ecocredit class-info
+regen query ecocredit class-info [flags]
 ```
 
 Example:
@@ -171,6 +166,59 @@ pagination:
   total: "0"
 ```
 
+#### project-info
+
+The `project-info` command allows users to query information for a given project.
+
+```bash
+regen query ecocredit project-info [project_id] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit project-info P01
+```
+
+Example Output:
+
+```bash
+info:
+  class_id: C01
+  issuer: regen1..
+  metadata: cmVnZW4=
+  project_id: P01
+  project_location: YZ
+```
+
+#### projects
+
+The `projects` command allows users to query all projects for a given credit class.
+
+```bash
+regen query ecocredit projects [class_id] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit projects C01
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "0"
+projects:
+- class_id: C01
+  issuer: regen1..
+  metadata: cmVnZW4=
+  project_id: P01
+  project_location: YZ
+```
+
 #### supply
 
 The `supply` command allows users to query the tradable and retired supply of a given credit batch.
@@ -214,6 +262,207 @@ credit_types:
   name: carbon
   precision: 6
   unit: metric ton CO2 equivalent
+```
+
+#### sell-order
+
+The `sell-order` command allows users to query information for a given sell order.
+
+```bash
+regen query ecocredit sell-order [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-order 1
+```
+
+Example Output:
+
+```bash
+sell_order:
+  ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### sell-orders
+
+The `sell-orders` command allows users to query all sell orders.
+
+```bash
+regen query ecocredit sell-orders [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### sell-orders-by-address
+
+The `sell-orders-by-address` command allows users to query sell orders by owner address.
+
+```bash
+regen query ecocredit sell-orders-by-address [address] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders-by-address regen1..
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### sell-orders-by-batch-denom
+
+The `sell-orders-by-batch-denom` command allows users to query sell orders by credit batch denom.
+
+```bash
+regen query ecocredit sell-orders-by-batch-denom [batch_denom] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders-by-batch-denom C01-20200101-20210101-001
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### buy-order
+
+The `buy-order` command allows users to query information for a given buy order.
+
+```bash
+regen query ecocredit buy-order [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-order 1
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+#### buy-orders
+
+The `buy-orders` command allows users to query all buy orders.
+
+```bash
+regen query ecocredit buy-orders [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-orders
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+#### buy-orders-by-address
+
+The `buy-orders-by-address` command allows users to query buy orders by buyer address.
+
+```bash
+regen query ecocredit buy-orders-by-address [address] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-orders-by-address regen1..
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+#### ask-denoms
+
+The `ask-denoms` command allows users to query the list of allowed ask denoms.
+
+```bash
+regen query ecocredit ask-denoms [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit ask-denoms
+```
+
+Example Output:
+
+```bash
+# not yet implemented
 ```
 
 ### Transactions
@@ -266,6 +515,20 @@ Example:
 regen tx ecocredit create-class regen1.. carbon cmVnZW4= --from regen1..
 ```
 
+#### create-project
+
+The `create-project` command allows users to create a new project.
+
+```bash
+regen tx ecocredit create-project [class-id] [project-location] [metadata] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit create-project C01 YZ cmVnZW4= --project-id P01 --from regen1..
+```
+
 #### gen-batch-json
 
 The `gen-batch-json` command allows users to generate JSON to represent a new credit batch for use with the `create-batch` command.
@@ -277,7 +540,7 @@ regen tx ecocredit gen-batch-json [flags]
 Example:
 
 ```bash
-regen tx ecocredit gen-batch-json --class-id C01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --project-location 'AA-BB 12345' --metadata cmVnZW4=
+regen tx ecocredit gen-batch-json --project-id P01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --metadata cmVnZW4=
 ```
 
 Example Output:
@@ -296,8 +559,7 @@ Example Output:
     ],
     "metadata": "cmVnZW4=",
     "start_date": "2020-01-01T00:00:00Z",
-    "end_date": "2021-01-01T00:00:00Z",
-    "project_location": "AA-BB 12345"
+    "end_date": "2021-01-01T00:00:00Z"
 }
 ```
 
@@ -369,6 +631,48 @@ Example:
 
 ```bash
 regen tx ecocredit update-class-metadata C01 cmVnZW4= --from regen1..
+```
+
+#### sell
+
+The `sell` command allows users to create new sell orders.
+
+```bash
+regen tx ecocredit sell [orders] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit sell '[{batch_denom: "C01-20200101-20210101-001", quantity: "2", ask_price: "100stake", disable_auto_retire: false}]' --from regen1
+```
+
+#### update-sell-order
+
+The `update-sell-order` command allows users to update a given sell order.
+
+```bash
+regen tx ecocredit update-sell-order [updates] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit update-sell-orders '[{sell_order_id: 1, new_quantity: "2", new_ask_price: "200stake", disable_auto_retire: false}]' --from regen1
+```
+
+#### buy
+
+The `buy` command allows users to create new buy orders.
+
+```bash
+regen tx ecocredit buy [orders] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit buy '[{sell_order_id: "1", quantity: "2", bid_price: "100regen", disable_auto_retire: false}]' --from regen1..
 ```
 
 ## gRPC
@@ -614,10 +918,249 @@ Example Output:
 }
 ```
 
+### SellOrder
+
+The `SellOrder` endpoint allows users to query for information on a sell order.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrder
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"sell_order_id": "1"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrder
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrder": {
+    "orderId": "1",
+    "owner": "regen1..",
+    "batchDenom": "C01-20200101-20210101-001",
+    "quantity": "2",
+    "askPrice": {
+      "denom": "stake",
+      "amount": "100"
+    }
+  }
+}
+```
+
+### SellOrders
+
+The `SellOrders` endpoint allows users to query all sell orders.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrders
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrders
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
+```
+
+### SellOrdersByAddress
+
+The `SellOrdersByAddress` endpoint allows users to query sell orders by owner address.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"address": "regen1.."}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
+```
+
+### SellOrdersByBatchDenom
+
+The `SellOrdersByBatchDenom` endpoint allows users to query sell orders by credit batch denom.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
+```
+
+### BuyOrder
+
+The `BuyOrder` endpoint allows users to query for information on a buy order.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrder
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"buy_order_id": "1"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrder
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### BuyOrders
+
+The `BuyOrders` endpoint allows users to query all buy orders.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrders
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrders
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### BuyOrdersByAddress
+
+The `BuyOrdersByAddress` endpoint allows users to query buy orders by buyer address.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"address": "regen1.."}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### AllowedAskDenoms
+
+The `AllowedAskDenoms` endpoint allows users to query all allowed ask denoms.
+
+```bash
+regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
 ## REST
 
 A user can query the `ecocredit` module using REST endpoints.
-
 
 ### classes
 
@@ -840,4 +1383,236 @@ Example Output:
     }
   ]
 }
+```
+
+### sell-orders
+
+The `sell-orders` endpoint allows users to query all sell orders.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders
+```
+
+Example Output:
+
+```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
+### sell-orders/address
+
+The `sell-orders/address` endpoint allows users to query for all sell orders by owner address.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/address/{address}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/address/regen1..
+```
+
+Example Output:
+
+```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
+### sell-orders/batch-denom
+
+The `sell-orders/batch-denom` endpoint allows users to query for all sell orders by credit batch denom.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/batch-denom/{batch-denom}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/batch-denom/C01-20200101-20210101-001
+```
+
+Example Output:
+
+```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
+### sell-orders/id
+
+The `sell-orders/id` endpoint allows users to query for information on a sell order by sell order id.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/id/{sell_order_id}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/id/1
+```
+
+Example Output:
+
+```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
+### buy-orders
+
+The `buy-orders` endpoint allows users to query all buy orders.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### buy-orders/address
+
+The `buy-orders/address` endpoint allows users to query for all buy orders by buyer address.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders/address/{address}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/address/regen1..
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### buy-orders/id
+
+The `buy-orders/id` endpoint allows users to query for information on a buy order by buy order id.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders/id/{buy_order_id}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/id/1
+```
+
+Example Output:
+
+```bash
+# not yet implemented
+```
+
+### ask-denoms
+
+The `ask-denoms` endpoint allows users to query all allowed ask denoms.
+
+```bash
+/regen/ecocredit/v1alpha1/ask-denoms
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/ask-denoms
+```
+
+Example Output:
+
+```bash
+# not yet implemented
 ```

@@ -103,6 +103,12 @@ message Params {
 
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 4;
+
+  // basket_creation_fee is the fee to create a new basket denom.
+  repeated cosmos.base.v1beta1.Coin basket_creation_fee = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
@@ -156,6 +162,10 @@ message SellOrder {
   // buyer to disable auto-retirement in their buy order enabling them to
   // resell the credits to another buyer.
   bool disable_auto_retire = 6;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
 }
 
 // BuyOrder represents the information for a buy order.
@@ -209,6 +219,10 @@ message BuyOrder {
   // disable_partial_fill disables the default behavior of partially filling
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 7;
+
+  // expiration is the optional timestamp when the buy order expires. When the
+  // expiration time is reached, the buy order is removed from state.
+  google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
 }
 
 // AskDenom represents the information for an ask denom.
@@ -227,7 +241,7 @@ message AskDenom {
 
 // BasketCredit represents the information for a credit batch inside a basket.
 message BasketCredit {
-  
+
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 1;
 
@@ -239,7 +253,7 @@ message BasketCredit {
 
 // BasketCriteria defines a criteria by which credits can be added to a basket.
 message BasketCriteria {
-  
+
   // filter defines condition(s) that credits should satisfy in order to be
   // added to the basket.
   Filter filter = 1;

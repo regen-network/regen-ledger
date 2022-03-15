@@ -11,6 +11,17 @@ A credit class is the primary abstraction for ecosystem service credits and is d
 
 Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
 
+## Project
+
+A project describes the high-level on-chain information for a project associated with a credit class. A project is defined by:
+- **project ID**: The unique ID of the project
+- **name***: The unique name of the project either formed from its credit class name and an auto-generated number or a custom name provided upon creation.
+- **class ID**: The unique ID of the credit class corresponding to this project (which determines what ecocredits can be issued to to this project)
+- **project location**: The location of the project backing the credits issued from this project
+- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the project.
+
+Each credit batch is associated with a project, backing each issuance with information about the project implementing the methodologies defined within the credit class. Over a project's lifecycle, it's expected that there may be many credit batches issued at different points in time (e.g. at the conclusion of each monitoring period). To ensure that only legitimate projects are registered on-chain, projects can only be created by an issuer for the given credit class.
+
 ## Credit Type
 
 A credit type is the primary indicator used by the methodology to measure the change or impact resulting from an ecosystem service. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
@@ -39,7 +50,7 @@ Credits are issued in batches by credit issuers granted the authority to issue c
 
 Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the reduction of carbon emissions was measured between `20190101` and `20200101`.
 
-A credit batch also includes information about the issuer of the credit batch and the project location, and any additional information can be attached to the metadata field. The credit batch tracks the total number of active credits and the total number of cancelled credits.
+Each credit batch is associated with an on-chain project, linking information about the on-the-ground project implementing the methodologies defined within the credit class. Additional information about a specific batch can be attached to the batch's metadata field. When credits are issued, they can be issued in a tradable or retired state. The credit batch also tracks the total number of active credits (tradable and retired credits) and the total number of cancelled credits.
 
 ## Credits
 
@@ -52,6 +63,22 @@ Tradable credits are credits that can be transferred by the owner to another acc
 ## Retired Credits
 
 Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
+
+## Simple Order Book
+
+The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution. In the current implementation of the order book, there is no automatic matching and users have to manually take the orders.
+
+### Sell Order
+
+A sell order is an order to sell ecosystem service credits. Each sell order has a unique ID that is auto-generated using a sequence table. A sell order stores the address of the owner of the credits being sold, the credit batch ID (denomination) of the credits being sold, the quantity of credits being sold, the asking price for each unit of the credit batch, and an option to enable/disable auto-retirement. Each credit unit of the credit batch will be sold for at least the asking price.
+
+### Buy Order
+
+A buy order is an order to buy ecosystem service credits. Like the sell order, each buy order has a unique ID that is auto-generated using a sequence table. A buy order can either be a direct buy order (an order against a specific sell order) or an indirect buy order (an order that can be filled by multiple sell orders that match a filter criteria). A buy order stores the selection (either the sell order id or the filter criteria), the quantity of credits to buy, the bid price for each unit of the credit batch(es), an option to enable/disable auto-retirement, and an option to enable/disable partial fills. A buy order can only successfully disable auto-retirement if the sell-order has disabled auto-retirement.
+
+## Ask Denom
+
+An "ask denom" is a denom that has been approved through a governance process as an accepted denom for listing ecosystem service credits. The "ask denom" includes the denom to allow (the base denom), the denom to display to the user, and an exponent that relates the denom to the display denom.
 
 ---
 

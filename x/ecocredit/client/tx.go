@@ -19,6 +19,7 @@ import (
 	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -45,6 +46,9 @@ func TxCmd(name string) *cobra.Command {
 		TxSellCmd(),
 		TxUpdateSellOrdersCmd(),
 		TxBuyCmd(),
+		basketcli.TxCreateBasket(),
+		basketcli.TxPutInBasket(),
+		basketcli.TxTakeFromBasket(),
 	)
 	return cmd
 }
@@ -133,18 +137,18 @@ const (
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
+		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --metadata [metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
 Required Flags:
+  project_id: id of the project
   issuances:  the amount of issuances to generate
   start-date: The beginning of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   metadata:   base64 encoded issuance metadata
-  project_id:   id of the project
   `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -514,7 +518,8 @@ func TxSellCmd() *cobra.Command {
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'`,
+           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'
+           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -523,7 +528,6 @@ Parameters:
 				return err
 			}
 
-			// get the order owner from the --from flag
 			owner := clientCtx.GetFromAddress()
 
 			// declare orders array with ask price as string
@@ -532,6 +536,7 @@ Parameters:
 				Quantity          string `json:"quantity"`
 				AskPrice          string `json:"ask_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				Expiration        string `json:"expiration"`
 			}
 
 			// unmarshal YAML encoded orders with ask price as string
@@ -539,24 +544,28 @@ Parameters:
 				return err
 			}
 
-			// declare orders array with ask price as sdk.Coin
 			orders := make([]*ecocredit.MsgSell_Order, len(strOrders))
 
 			// loop through orders with ask price as string
-			for i, order := range strOrders {
+			for i, o := range strOrders {
 
-				// parse and normalize ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(order.AskPrice)
+				askPrice, err := sdk.ParseCoinNormalized(o.AskPrice)
 				if err != nil {
 					return err
 				}
 
 				// set order with ask price as sdk.Coin
 				orders[i] = &ecocredit.MsgSell_Order{
-					BatchDenom:        order.BatchDenom,
+					BatchDenom:        o.BatchDenom,
 					AskPrice:          &askPrice,
-					Quantity:          order.Quantity,
-					DisableAutoRetire: order.DisableAutoRetire,
+					Quantity:          o.Quantity,
+					DisableAutoRetire: o.DisableAutoRetire,
+				}
+
+				if o.Expiration != "" {
+					if err := parseAndSetDate(&orders[i].Expiration, "expiration", o.Expiration); err != nil {
+						return err
+					}
 				}
 			}
 
@@ -582,7 +591,8 @@ func TxUpdateSellOrdersCmd() *cobra.Command {
 
 Parameters:
   updates:  YAML encoded update list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'`,
+           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'
+           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false, new_expiration: "2026-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -600,6 +610,7 @@ Parameters:
 				NewQuantity       string `json:"new_quantity"`
 				NewAskPrice       string `json:"new_ask_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				NewExpiration     string `json:"new_expiration"`
 			}
 
 			// unmarshal YAML encoded updates with new ask price as string
@@ -611,16 +622,16 @@ Parameters:
 			updates := make([]*ecocredit.MsgUpdateSellOrders_Update, len(strUpdates))
 
 			// loop through updates with new ask price as string
-			for i, update := range strUpdates {
+			for i, u := range strUpdates {
 
 				// parse sell order id
-				sellOrderId, err := strconv.ParseUint(update.SellOrderId, 10, 64)
+				sellOrderId, err := strconv.ParseUint(u.SellOrderId, 10, 64)
 				if err != nil {
 					return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
 				}
 
 				// parse and normalize new ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(update.NewAskPrice)
+				askPrice, err := sdk.ParseCoinNormalized(u.NewAskPrice)
 				if err != nil {
 					return err
 				}
@@ -629,8 +640,14 @@ Parameters:
 				updates[i] = &ecocredit.MsgUpdateSellOrders_Update{
 					SellOrderId:       sellOrderId,
 					NewAskPrice:       &askPrice,
-					NewQuantity:       update.NewQuantity,
-					DisableAutoRetire: update.DisableAutoRetire,
+					NewQuantity:       u.NewQuantity,
+					DisableAutoRetire: u.DisableAutoRetire,
+				}
+
+				if u.NewExpiration != "" {
+					if err := parseAndSetDate(&updates[i].NewExpiration, "expiration", u.NewExpiration); err != nil {
+						return err
+					}
 				}
 			}
 
@@ -656,7 +673,8 @@ func TxBuyCmd() *cobra.Command {
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false}]'`,
+           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false}]'
+           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -674,6 +692,7 @@ Parameters:
 				Quantity          string `json:"quantity"`
 				BidPrice          string `json:"bid_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				Expiration        string `json:"expiration"`
 			}
 
 			// unmarshal YAML encoded orders with new bid price as string
@@ -710,6 +729,15 @@ Parameters:
 					BidPrice:          &bidPrice,
 					Quantity:          order.Quantity,
 					DisableAutoRetire: order.DisableAutoRetire,
+				}
+
+				// parse and set expiration
+				if order.Expiration != "" {
+					expiration, err := ParseDate("expiration", order.Expiration)
+					if err != nil {
+						return err
+					}
+					orders[i].Expiration = &expiration
 				}
 			}
 

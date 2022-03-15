@@ -110,7 +110,7 @@ message MsgCreateClassResponse {
   string class_id = 1;
 }
 
-// MsgCreateProjectResponse is the Msg/CreateProject request type.
+// MsgCreateProject is the Msg/CreateProject request type.
 message MsgCreateProject {
   // issuer is the address of an approved issuer for the credit class through
   // which batches will be issued. It is not required, however, that this same
@@ -123,8 +123,7 @@ message MsgCreateProject {
   // metadata is any arbitrary metadata attached to the project.
   bytes metadata = 3;
 
-  // project_location is the location of the project backing the credits in this
-  // batch. It is a string of the form
+  // project_location is the location of the project. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
@@ -381,6 +380,10 @@ message MsgSell {
     // buyer to disable auto-retirement in their buy order enabling them to
     // resell the credits to another buyer.
     bool disable_auto_retire = 4;
+
+    // expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp expiration = 5 [ (gogoproto.stdtime) = true ];
   }
 }
 
@@ -415,6 +418,10 @@ message MsgUpdateSellOrders {
 
     // disable_auto_retire updates the disable_auto_retire field in the sell order.
     bool disable_auto_retire = 4;
+
+    // new_expiration is an optional timestamp when the sell order expires. When the
+    // expiration time is reached, the sell order is removed from state.
+    google.protobuf.Timestamp new_expiration = 5 [ (gogoproto.stdtime) = true ];
   }
 }
 
@@ -479,6 +486,10 @@ message MsgBuy {
     // retirement_location is the optional retirement location for the credits
     // which will be used only if disable_auto_retire is false.
     string retirement_location = 6;
+
+    // expiration is the optional timestamp when the buy order expires. When the
+    // expiration time is reached, the buy order is removed from state.
+    google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
   }
 }
 
@@ -542,7 +553,7 @@ message MsgCreateBasket {
   bool disable_auto_retire = 6;
 
   // allow_picking specifies whether an address which didn't deposit the credits
-  // in the basket can pick those credits or not. 
+  // in the basket can pick those credits or not.
   bool allow_picking = 7;
 }
 
@@ -616,4 +627,3 @@ message MsgPickFromBasket {
 
 // MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 message MsgPickFromBasketResponse {}
-

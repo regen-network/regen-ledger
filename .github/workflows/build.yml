@@ -9,6 +9,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        envs: ["stable-build", "experimental-build"]
     steps:
       - name: Install Go
         uses: actions/setup-go@v2.1.3
@@ -18,7 +21,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Display go version
         run: go version
-      - name: make build
-        run: make build
-      - name: make experimental build
+      - name: experimental build
+        if: matrix.envs == 'experimental-build'
         run: EXPERIMENTAL=true make build
+      - name: stable build
+        if: matrix.envs == 'stable-build'
+        run: make build
