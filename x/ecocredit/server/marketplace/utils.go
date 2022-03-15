@@ -11,7 +11,7 @@ import (
 
 // assertHasBalance checks that the account has `qty` credits from the given batch id.
 func assertHasBalance(ctx context.Context, store ecocreditv1.StateStore, acc sdk.AccAddress, batchId uint64, qty math.Dec) error {
-	res, err := store.BatchBalanceStore().Get(ctx, acc, batchId)
+	res, err := store.BatchBalanceTable().Get(ctx, acc, batchId)
 	if err != nil {
 		return err
 	}
@@ -27,5 +27,5 @@ func assertHasBalance(ctx context.Context, store ecocreditv1.StateStore, acc sdk
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
 func isDenomAllowed(ctx context.Context, store marketplacev1.StateStore, denom string) (bool, error) {
-	return store.AllowedDenomStore().Has(ctx, denom)
+	return store.AllowedDenomTable().Has(ctx, denom)
 }

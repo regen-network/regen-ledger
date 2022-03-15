@@ -31,7 +31,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	// add some data
 	var err error
-	s.fooBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &api.Basket{
+	s.fooBasketId, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       "foo",
 		Name:              "foo",
 		DisableAutoRetire: false,
@@ -40,7 +40,7 @@ func setupTake(t *testing.T) *takeSuite {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C1",
 		Balance:        "3.0",
@@ -48,7 +48,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C1", "3.0")
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
 		BatchDenom:     "C2",
 		Balance:        "5.0",
@@ -56,7 +56,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C2", "5.0")
 
-	s.barBasketId, err = s.stateStore.BasketStore().InsertReturningID(s.ctx, &api.Basket{
+	s.barBasketId, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       "bar",
 		Name:              "bar",
 		DisableAutoRetire: true,
@@ -65,7 +65,7 @@ func setupTake(t *testing.T) *takeSuite {
 	})
 	assert.NilError(t, err)
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
 		BatchDenom:     "C3",
 		Balance:        "7.0",
@@ -73,7 +73,7 @@ func setupTake(t *testing.T) *takeSuite {
 	}))
 	s.setTradableSupply("C3", "7.0")
 
-	assert.NilError(t, s.stateStore.BasketBalanceStore().Insert(s.ctx, &api.BasketBalance{
+	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
 		BatchDenom:     "C4",
 		Balance:        "4.0",
@@ -120,10 +120,10 @@ func TestTakeRetire(t *testing.T) {
 	assertDecStringEqual(t, "5.0", res.Credits[0].Amount)
 	assert.Equal(t, "C1", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "1.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.fooBasketId, "C2")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.fooBasketId, "C2")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceStore().Get(s.ctx, s.fooBasketId, "C1")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.fooBasketId, "C1")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "2.0", balance.Balance)
 
@@ -157,10 +157,10 @@ func TestTakeTradable(t *testing.T) {
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
 	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "3.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.barBasketId, "C3")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceStore().Get(s.ctx, s.barBasketId, "C4")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "1.0", balance.Balance)
 
@@ -215,10 +215,10 @@ func TestTakeAllTradable(t *testing.T) {
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
 	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "4.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceStore().Has(s.ctx, s.barBasketId, "C3")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	_, err = s.stateStore.BasketBalanceStore().Get(s.ctx, s.barBasketId, "C4")
+	_, err = s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4")
 	assert.ErrorIs(t, err, ormerrors.NotFound)
 
 	s.expectTradableBalance("C3", "7")

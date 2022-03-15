@@ -34,7 +34,7 @@ func TestBasketSupplyInvarint(t *testing.T) {
 		{10, api.Basket{BasketDenom: "bb1", Name: "b1"}},
 		{20, api.Basket{BasketDenom: "bb2", Name: "b2"}},
 	}
-	store := s.stateStore.BasketStore()
+	store := s.stateStore.BasketTable()
 	basketBalances := map[uint64]math.Dec{}
 	correctBalances := BankSupplyMock{}
 	for _, b := range baskets {

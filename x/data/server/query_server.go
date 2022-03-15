@@ -130,7 +130,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		request.Pagination = &query.PageRequest{}
 	}
 
-	it, err := s.stateStore.DataResolverStore().
+	it, err := s.stateStore.DataResolverTable().
 		List(ctx, api.DataResolverPrimaryKey{}.WithId(id),
 			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
 	if err != nil {
@@ -144,7 +144,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 			return nil, err
 		}
 
-		resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, item.ResolverId)
+		resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, item.ResolverId)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +160,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 }
 
 func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolverInfoRequest) (*data.QueryResolverInfoResponse, error) {
-	res, err := s.stateStore.ResolverInfoStore().GetByUrl(ctx, request.Url)
+	res, err := s.stateStore.ResolverInfoTable().GetByUrl(ctx, request.Url)
 	if err != nil {
 		return nil, err
 	}
