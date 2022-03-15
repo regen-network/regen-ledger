@@ -57,10 +57,9 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateProject{
-		ClassId:         classID,
-		Admin:           adminAddress.String(),
 		ProjectId:       projectID,
-		Issuer:          req.Issuer,
+		Admin:           adminAddress.String(),
+		ClassId:         classID,
 		ProjectLocation: req.ProjectLocation,
 	}); err != nil {
 		return nil, err
