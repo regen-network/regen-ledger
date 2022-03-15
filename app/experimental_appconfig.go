@@ -30,7 +30,6 @@ import (
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	data "github.com/regen-network/regen-ledger/x/data/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
@@ -44,7 +43,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			)...,
 		),
 		wasm.AppModuleBasic{},
-		data.Module{},
 		group.Module{},
 	}
 }
@@ -105,7 +103,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
-		data.Module{},
 		groupModule,
 	}
 	err := newModuleManager.RegisterModules(newModules)
