@@ -41,7 +41,15 @@ func TestQuery_BatchesByClass(t *testing.T) {
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	// put in a class that should NOT show up in queries under C01
+
+	// Classes that SHOULD NOT show up from a query for "C01"
+	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+		ProjectId:  1,
+		BatchDenom: "C011-20500404-20900102-003",
+		Metadata:   "",
+		StartDate:  nil,
+		EndDate:    nil,
+	}))
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "BIO1-20500404-20900102-003",
