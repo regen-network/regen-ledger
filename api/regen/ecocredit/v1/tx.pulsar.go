@@ -154,8 +154,8 @@ func (x *fastReflection_MsgCreateClass) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
-	if len(x.Metadata) != 0 {
-		value := protoreflect.ValueOfBytes(x.Metadata)
+	if x.Metadata != "" {
+		value := protoreflect.ValueOfString(x.Metadata)
 		if !f(fd_MsgCreateClass_metadata, value) {
 			return
 		}
@@ -186,7 +186,7 @@ func (x *fastReflection_MsgCreateClass) Has(fd protoreflect.FieldDescriptor) boo
 	case "regen.ecocredit.v1.MsgCreateClass.issuers":
 		return len(x.Issuers) != 0
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
-		return len(x.Metadata) != 0
+		return x.Metadata != ""
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		return x.CreditTypeAbbrev != ""
 	default:
@@ -210,7 +210,7 @@ func (x *fastReflection_MsgCreateClass) Clear(fd protoreflect.FieldDescriptor) {
 	case "regen.ecocredit.v1.MsgCreateClass.issuers":
 		x.Issuers = nil
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
-		x.Metadata = nil
+		x.Metadata = ""
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		x.CreditTypeAbbrev = ""
 	default:
@@ -240,7 +240,7 @@ func (x *fastReflection_MsgCreateClass) Get(descriptor protoreflect.FieldDescrip
 		return protoreflect.ValueOfList(listValue)
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
 		value := x.Metadata
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		value := x.CreditTypeAbbrev
 		return protoreflect.ValueOfString(value)
@@ -271,7 +271,7 @@ func (x *fastReflection_MsgCreateClass) Set(fd protoreflect.FieldDescriptor, val
 		clv := lv.(*_MsgCreateClass_2_list)
 		x.Issuers = *clv.list
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
-		x.Metadata = value.Bytes()
+		x.Metadata = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		x.CreditTypeAbbrev = value.Interface().(string)
 	default:
@@ -325,7 +325,7 @@ func (x *fastReflection_MsgCreateClass) NewField(fd protoreflect.FieldDescriptor
 		list := []string{}
 		return protoreflect.ValueOfList(&_MsgCreateClass_2_list{list: &list})
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		return protoreflect.ValueOfString("")
 	default:
@@ -591,7 +591,7 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -601,25 +601,23 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Metadata = append(x.Metadata[:0], dAtA[iNdEx:postIndex]...)
-				if x.Metadata == nil {
-					x.Metadata = []byte{}
-				}
+				x.Metadata = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -1204,8 +1202,8 @@ func (x *fastReflection_MsgCreateProject) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if len(x.Metadata) != 0 {
-		value := protoreflect.ValueOfBytes(x.Metadata)
+	if x.Metadata != "" {
+		value := protoreflect.ValueOfString(x.Metadata)
 		if !f(fd_MsgCreateProject_metadata, value) {
 			return
 		}
@@ -1242,7 +1240,7 @@ func (x *fastReflection_MsgCreateProject) Has(fd protoreflect.FieldDescriptor) b
 	case "regen.ecocredit.v1.MsgCreateProject.class_id":
 		return x.ClassId != ""
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
-		return len(x.Metadata) != 0
+		return x.Metadata != ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_location":
 		return x.ProjectLocation != ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
@@ -1268,7 +1266,7 @@ func (x *fastReflection_MsgCreateProject) Clear(fd protoreflect.FieldDescriptor)
 	case "regen.ecocredit.v1.MsgCreateProject.class_id":
 		x.ClassId = ""
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
-		x.Metadata = nil
+		x.Metadata = ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_location":
 		x.ProjectLocation = ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
@@ -1297,7 +1295,7 @@ func (x *fastReflection_MsgCreateProject) Get(descriptor protoreflect.FieldDescr
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		value := x.Metadata
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgCreateProject.project_location":
 		value := x.ProjectLocation
 		return protoreflect.ValueOfString(value)
@@ -1329,7 +1327,7 @@ func (x *fastReflection_MsgCreateProject) Set(fd protoreflect.FieldDescriptor, v
 	case "regen.ecocredit.v1.MsgCreateProject.class_id":
 		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
-		x.Metadata = value.Bytes()
+		x.Metadata = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateProject.project_location":
 		x.ProjectLocation = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
@@ -1382,7 +1380,7 @@ func (x *fastReflection_MsgCreateProject) NewField(fd protoreflect.FieldDescript
 	case "regen.ecocredit.v1.MsgCreateProject.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateProject.project_location":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
@@ -1657,7 +1655,7 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1667,25 +1665,23 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Metadata = append(x.Metadata[:0], dAtA[iNdEx:postIndex]...)
-				if x.Metadata == nil {
-					x.Metadata = []byte{}
-				}
+				x.Metadata = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
@@ -2361,8 +2357,8 @@ func (x *fastReflection_MsgCreateBatch) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
-	if len(x.Metadata) != 0 {
-		value := protoreflect.ValueOfBytes(x.Metadata)
+	if x.Metadata != "" {
+		value := protoreflect.ValueOfString(x.Metadata)
 		if !f(fd_MsgCreateBatch_metadata, value) {
 			return
 		}
@@ -2401,7 +2397,7 @@ func (x *fastReflection_MsgCreateBatch) Has(fd protoreflect.FieldDescriptor) boo
 	case "regen.ecocredit.v1.MsgCreateBatch.issuance":
 		return len(x.Issuance) != 0
 	case "regen.ecocredit.v1.MsgCreateBatch.metadata":
-		return len(x.Metadata) != 0
+		return x.Metadata != ""
 	case "regen.ecocredit.v1.MsgCreateBatch.start_date":
 		return x.StartDate != nil
 	case "regen.ecocredit.v1.MsgCreateBatch.end_date":
@@ -2429,7 +2425,7 @@ func (x *fastReflection_MsgCreateBatch) Clear(fd protoreflect.FieldDescriptor) {
 	case "regen.ecocredit.v1.MsgCreateBatch.issuance":
 		x.Issuance = nil
 	case "regen.ecocredit.v1.MsgCreateBatch.metadata":
-		x.Metadata = nil
+		x.Metadata = ""
 	case "regen.ecocredit.v1.MsgCreateBatch.start_date":
 		x.StartDate = nil
 	case "regen.ecocredit.v1.MsgCreateBatch.end_date":
@@ -2464,7 +2460,7 @@ func (x *fastReflection_MsgCreateBatch) Get(descriptor protoreflect.FieldDescrip
 		return protoreflect.ValueOfList(listValue)
 	case "regen.ecocredit.v1.MsgCreateBatch.metadata":
 		value := x.Metadata
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgCreateBatch.start_date":
 		value := x.StartDate
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -2500,7 +2496,7 @@ func (x *fastReflection_MsgCreateBatch) Set(fd protoreflect.FieldDescriptor, val
 		clv := lv.(*_MsgCreateBatch_3_list)
 		x.Issuance = *clv.list
 	case "regen.ecocredit.v1.MsgCreateBatch.metadata":
-		x.Metadata = value.Bytes()
+		x.Metadata = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateBatch.start_date":
 		x.StartDate = value.Message().Interface().(*timestamppb.Timestamp)
 	case "regen.ecocredit.v1.MsgCreateBatch.end_date":
@@ -2568,7 +2564,7 @@ func (x *fastReflection_MsgCreateBatch) NewField(fd protoreflect.FieldDescriptor
 		list := []*MsgCreateBatch_BatchIssuance{}
 		return protoreflect.ValueOfList(&_MsgCreateBatch_3_list{list: &list})
 	case "regen.ecocredit.v1.MsgCreateBatch.metadata":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateBatch.start_date":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -2915,7 +2911,7 @@ func (x *fastReflection_MsgCreateBatch) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -2925,25 +2921,23 @@ func (x *fastReflection_MsgCreateBatch) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Metadata = append(x.Metadata[:0], dAtA[iNdEx:postIndex]...)
-				if x.Metadata == nil {
-					x.Metadata = []byte{}
-				}
+				x.Metadata = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
@@ -10618,8 +10612,8 @@ func (x *fastReflection_MsgUpdateClassMetadata) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
-	if len(x.Metadata) != 0 {
-		value := protoreflect.ValueOfBytes(x.Metadata)
+	if x.Metadata != "" {
+		value := protoreflect.ValueOfString(x.Metadata)
 		if !f(fd_MsgUpdateClassMetadata_metadata, value) {
 			return
 		}
@@ -10644,7 +10638,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) Has(fd protoreflect.FieldDescrip
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.class_id":
 		return x.ClassId != ""
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.metadata":
-		return len(x.Metadata) != 0
+		return x.Metadata != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateClassMetadata"))
@@ -10666,7 +10660,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) Clear(fd protoreflect.FieldDescr
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.class_id":
 		x.ClassId = ""
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.metadata":
-		x.Metadata = nil
+		x.Metadata = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateClassMetadata"))
@@ -10691,7 +10685,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) Get(descriptor protoreflect.Fiel
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.metadata":
 		value := x.Metadata
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateClassMetadata"))
@@ -10717,7 +10711,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) Set(fd protoreflect.FieldDescrip
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.class_id":
 		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.metadata":
-		x.Metadata = value.Bytes()
+		x.Metadata = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateClassMetadata"))
@@ -10762,7 +10756,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) NewField(fd protoreflect.FieldDe
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgUpdateClassMetadata.metadata":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateClassMetadata"))
@@ -11011,7 +11005,7 @@ func (x *fastReflection_MsgUpdateClassMetadata) ProtoMethods() *protoiface.Metho
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -11021,25 +11015,23 @@ func (x *fastReflection_MsgUpdateClassMetadata) ProtoMethods() *protoiface.Metho
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Metadata = append(x.Metadata[:0], dAtA[iNdEx:postIndex]...)
-				if x.Metadata == nil {
-					x.Metadata = []byte{}
-				}
+				x.Metadata = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -11456,7 +11448,7 @@ type MsgCreateClass struct {
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
-	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 }
@@ -11495,11 +11487,11 @@ func (x *MsgCreateClass) GetIssuers() []string {
 	return nil
 }
 
-func (x *MsgCreateClass) GetMetadata() []byte {
+func (x *MsgCreateClass) GetMetadata() string {
 	if x != nil {
 		return x.Metadata
 	}
-	return nil
+	return ""
 }
 
 func (x *MsgCreateClass) GetCreditTypeAbbrev() string {
@@ -11559,7 +11551,7 @@ type MsgCreateProject struct {
 	// class_id is the unique ID of the class within which the project is created.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
-	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// project_location is the location of the project backing the credits in this
 	// batch. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
@@ -11609,11 +11601,11 @@ func (x *MsgCreateProject) GetClassId() string {
 	return ""
 }
 
-func (x *MsgCreateProject) GetMetadata() []byte {
+func (x *MsgCreateProject) GetMetadata() string {
 	if x != nil {
 		return x.Metadata
 	}
-	return nil
+	return ""
 }
 
 func (x *MsgCreateProject) GetProjectLocation() string {
@@ -11680,7 +11672,7 @@ type MsgCreateBatch struct {
 	// issuance are the credits issued in the batch.
 	Issuance []*MsgCreateBatch_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
 	// metadata is any arbitrary metadata attached to the credit batch.
-	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.
 	StartDate *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
@@ -11730,11 +11722,11 @@ func (x *MsgCreateBatch) GetIssuance() []*MsgCreateBatch_BatchIssuance {
 	return nil
 }
 
-func (x *MsgCreateBatch) GetMetadata() []byte {
+func (x *MsgCreateBatch) GetMetadata() string {
 	if x != nil {
 		return x.Metadata
 	}
-	return nil
+	return ""
 }
 
 func (x *MsgCreateBatch) GetStartDate() *timestamppb.Timestamp {
@@ -12213,7 +12205,7 @@ type MsgUpdateClassMetadata struct {
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is the updated arbitrary metadata to be attached to the credit class.
-	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
 func (x *MsgUpdateClassMetadata) Reset() {
@@ -12250,11 +12242,11 @@ func (x *MsgUpdateClassMetadata) GetClassId() string {
 	return ""
 }
 
-func (x *MsgUpdateClassMetadata) GetMetadata() []byte {
+func (x *MsgUpdateClassMetadata) GetMetadata() string {
 	if x != nil {
 		return x.Metadata
 	}
-	return nil
+	return ""
 }
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
@@ -12542,7 +12534,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x64, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69,
 	0x6e, 0x12, 0x18, 0x0a, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03,
 	0x28, 0x09, 0x52, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x6d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d,
 	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2c, 0x0a, 0x12, 0x63, 0x72, 0x65, 0x64, 0x69,
 	0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x41,
@@ -12555,7 +12547,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73,
 	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73,
 	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x29,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x29,
 	0x0a, 0x10, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
 	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f,
@@ -12574,7 +12566,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61,
 	0x74, 0x63, 0x68, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63,
 	0x65, 0x52, 0x08, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d,
 	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x3f, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74,
 	0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
@@ -12671,7 +12663,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x52, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73,
 	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73,
 	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0x20,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x22, 0x20,
 	0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
 	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
 	0x32, 0xeb, 0x06, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61,

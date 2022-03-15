@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -61,7 +61,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	var credits []*baskettypes.BasketCredit
 	for {
 		it, err := k.stateStore.BasketBalanceStore().List(ctx,
-			basketv1.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
+			api.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
 		)
 		if err != nil {
 			return nil, err

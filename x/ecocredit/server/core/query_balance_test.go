@@ -23,7 +23,7 @@ func TestQuery_Balance(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))

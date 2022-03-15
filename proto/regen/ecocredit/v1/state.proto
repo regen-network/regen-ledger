@@ -51,7 +51,7 @@ message ClassInfo {
     bytes admin = 3;
 
     // metadata is any arbitrary metadata to attached to the credit class.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // credit_type is the abbreviation of the credit type.
     string credit_type = 5;
@@ -83,8 +83,9 @@ message ProjectInfo {
     // id is the unique ID of the project
     uint64 id = 1;
 
-    // name is an unique name of this project formed from its credit class
-    // name and either an auto-generated number or user provided string.
+    // name is the unique name of the project either formed from its credit
+    // class name and an auto-generated number or a custom name provided
+    // upon creation.
     string name = 3;
 
     // class_id is the ID of credit class for this project.
@@ -95,7 +96,7 @@ message ProjectInfo {
     string project_location = 4;
 
     // metadata is any arbitrary metadata attached to the project.
-    bytes metadata = 5;
+    string metadata = 5;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -119,7 +120,7 @@ message BatchInfo {
     string batch_denom = 3;
 
     // metadata is any arbitrary metadata attached to the credit batch.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified.

@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -30,6 +29,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		if err != nil {
 			return nil, err
 		}
+
 		var bi core.BatchInfo
 		if err = PulsarToGogoSlow(batch, &bi); err != nil {
 			return nil, err

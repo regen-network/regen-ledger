@@ -22,7 +22,7 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &ecocreditv1.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)

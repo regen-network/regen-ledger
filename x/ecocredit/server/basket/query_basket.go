@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -25,7 +25,7 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, err
 	}
 
-	it, err := k.stateStore.BasketClassStore().List(ctx, basketv1.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
+	it, err := k.stateStore.BasketClassStore().List(ctx, api.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
 	if err != nil {
 		return nil, err
 	}

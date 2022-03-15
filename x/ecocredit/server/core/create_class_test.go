@@ -28,7 +28,7 @@ func TestCreateClass_Valid(t *testing.T) {
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
-		Metadata:         nil,
+		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
@@ -62,7 +62,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
-		Metadata:         nil,
+		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.ErrorContains(t, err, "is not allowed to create credit classes")
@@ -85,7 +85,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
-		Metadata:         nil,
+		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
@@ -93,7 +93,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 	res2, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
-		Metadata:         nil,
+		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)

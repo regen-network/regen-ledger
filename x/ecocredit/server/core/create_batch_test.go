@@ -45,7 +45,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 				RetiredAmount:  "3.4",
 			},
 		},
-		Metadata:  nil,
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -103,7 +103,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 				TradableAmount: "10.1234567891111",
 			},
 		},
-		Metadata:  nil,
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
@@ -137,7 +137,7 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 	cid, err := ss.ClassInfoStore().InsertReturningID(ctx, &api.ClassInfo{
 		Name:       className,
 		Admin:      addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -150,7 +150,7 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 		Name:            projectName,
 		ClassId:         1,
 		ProjectLocation: "",
-		Metadata:        nil,
+		Metadata:        "",
 	})
 	assert.NilError(t, err)
 	return

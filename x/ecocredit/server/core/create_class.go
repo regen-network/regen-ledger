@@ -10,6 +10,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -37,7 +38,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := k.getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := server.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
