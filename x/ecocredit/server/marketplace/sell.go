@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -28,7 +27,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	for i, order := range req.Orders {
 		batch, err := k.coreStore.BatchInfoStore().GetByBatchDenom(ctx, order.BatchDenom)
 		if err != nil {
-			return nil, fmt.Errorf("batch denom %v: %v", order.BatchDenom, err)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %w", order.BatchDenom, err)
 		}
 		ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 		if err != nil {
@@ -102,7 +101,6 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 }
 
 func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batchId uint64, sellQty math.Dec) error {
-	// get the seller's balance
 	bal, err := k.coreStore.BatchBalanceStore().Get(ctx, ownerAcc, batchId)
 	if err != nil {
 		return err
@@ -111,10 +109,9 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	if err != nil {
 		return err
 	}
-	// subtract the desired sell amount from tradable balance
 	newTradable, err := math.SafeSubBalance(tradable, sellQty)
 	if err != nil {
-		return fmt.Errorf("tradable balance: %s, sell order request: %s - %w", tradable.String(), sellQty.String(), err)
+		return sdkerrors.ErrInvalidRequest.Wrapf("tradable balance: %v, sell order request: %v - %w", tradable, sellQty, err)
 	}
 
 	escrowed, err := math.NewDecFromString(bal.Escrowed)
@@ -123,18 +120,15 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	}
 	newEscrowed, err := math.SafeAddBalance(escrowed, sellQty)
 	if err != nil {
-		return fmt.Errorf("escrowed balance: %s, sell order request: %s - %w", escrowed.String(), sellQty.String(), err)
+		return sdkerrors.ErrInvalidRequest.Wrapf("escrowed balance: %v, sell order request: %v - %w", escrowed, sellQty, err)
 	}
-	// set the new balance
 	bal.Tradable = newTradable.String()
 	bal.Escrowed = newEscrowed.String()
 
-	// save
 	if err = k.coreStore.BatchBalanceStore().Update(ctx, bal); err != nil {
 		return err
 	}
 
-	// update the batch supply
 	supply, err := k.coreStore.BatchSupplyStore().Get(ctx, batchId)
 	if err != nil {
 		return err
