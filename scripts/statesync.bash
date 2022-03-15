@@ -1,6 +1,5 @@
 #!/bin/bash
-# microtick and bitcanna contributed significantly here.
-# This is the Regen Network State sync file, which is based on the Gaia State sync file, which is based on scripts written bgy Bitcanna and Microtick.  The key difference is that this approach uses environment variables to override convifugration files.
+# This is the Regen Network State sync file, which is based on the Gaia State sync file, which is based on scripts written by Bitcanna and Microtick. The key difference is that this approach uses environment variables to override configuration files.
 # http://public-rpc.regen.vitwit.com:26657
 # https://regen.stakesystems.io:2053
 # http://rpc.regen.forbole.com:80
