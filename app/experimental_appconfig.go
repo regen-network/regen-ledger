@@ -30,7 +30,6 @@ import (
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	data "github.com/regen-network/regen-ledger/x/data/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
