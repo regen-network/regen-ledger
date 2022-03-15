@@ -111,7 +111,7 @@ Update the genesis file using a node endpoint.
 *For Regen Mainnet:*
 
 ```bash
-curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl http://regen.rpc.vitwit.com:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Redwood Testnet:*
@@ -135,14 +135,14 @@ Add a seed node for initial peer discovery.
 *For Regen Mainnet:*
 
 ```bash
-PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
+PERSISTENT_PEERS="aebb8431609cb126a977592446f5de252d8b7fa1@regen.rpc.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
 *For Redwood Testnet:*
 
 ```bash
-PERSISTENT_PEERS="a5528d8f5fabd3d50e91e8d6a97e355403c5b842@redwood.regen.network:26656"
+PERSISTENT_PEERS="d5ceac343e48c7522c3a5a8c0cf5cb896d1f8a60@redwood.regen.network:26656,61f53f226a4a71968a87583f58902405e289b4b9@redwood-sentry.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
@@ -163,7 +163,7 @@ To install `cosmovisor`, run the following command:
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
 ```
 
-Check to ensure the install was successful:
+Check to ensure the installation was successful:
 
 ```bash
 cosmovisor version
@@ -193,6 +193,7 @@ Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="UNSAFE_SKIP_BACKUP=false"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
 Restart=always

@@ -20,9 +20,9 @@ For more information, see [Go](https://golang.org/).
 
 We recommend the following hardware specifications:
 
-- 8GB RAM
+- 16G RAM
 - 4vCPUs
-- 200GB Disk space
+- 500GB Disk space
 
 ### Software
 
@@ -33,6 +33,12 @@ The prerequisites listed above for developers are also required for node operato
 :::tip NOTE
 These commands are included in the [quickstart script](./running-a-validator.md#quickstart).
 :::
+
+Update packages:
+
+```bash
+sudo apt update
+```
 
 Install tools:
 

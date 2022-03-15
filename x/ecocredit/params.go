@@ -11,11 +11,17 @@ import (
 var (
 	// This is a value of 20 REGEN
 	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
+	DefaultBasketCreationFee    = sdk.NewInt(2e7)
 	KeyCreditClassFee           = []byte("CreditClassFee")
 	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
+	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
+
+// TODO: Revisit this once we have proper gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const GasCostPerIteration = uint64(10)
 
 // TODO: remove after we open governance changes for precision
 const (
@@ -34,6 +40,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
+		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
 	}
 }
 
@@ -52,6 +59,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
+	if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
 		return err
 	}
 
@@ -119,7 +130,7 @@ func validateCreditTypes(i interface{}) error {
 
 		// Validate abbreviation
 		abbr := creditType.Abbreviation
-		err := validateCreditTypeAbbreviation(abbr)
+		err := ValidateCreditTypeAbbreviation(abbr)
 		if err != nil {
 			return err
 		}
@@ -148,22 +159,36 @@ func validateCreditTypes(i interface{}) error {
 
 // Check that CreditType abbreviation is valid, i.e. it consists of 1-3
 // uppercase letters
-func validateCreditTypeAbbreviation(abbr string) error {
+func ValidateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
 	matches := reAbbr.FindStringSubmatch(abbr)
 	if matches == nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase letters: got %s", abbr)
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase latin letters: got %s", abbr)
 	}
 	return nil
 }
 
+func validateBasketCreationFee(i interface{}) error {
+	v, ok := i.(sdk.Coins)
+	if !ok {
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
+	}
+
+	if err := v.Validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NewParams creates a new Params object.
-func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
+func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType, basketCreationFee sdk.Coins) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		CreditTypes:          creditTypes,
+		BasketCreationFee:    basketCreationFee,
 	}
 }
 
@@ -181,5 +206,6 @@ func DefaultParams() Params {
 				Precision:    PRECISION,
 			},
 		},
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	)
 }

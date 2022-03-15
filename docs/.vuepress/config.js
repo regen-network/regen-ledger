@@ -89,7 +89,9 @@ module.exports = {
           title: 'Migrations',
           collapsable: false,
           children: [
+            '/migrations/upgrade',
             '/migrations/v2.0-upgrade',
+            '/migrations/v3.0-upgrade',
           ]
         },
         {
@@ -118,8 +120,16 @@ module.exports = {
                 '/modules/ecocredit/04_events',
                 '/modules/ecocredit/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/ecocredit/protobuf'
+                  title: 'Protobuf - Core',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1'
+                },
+                {
+                  title: 'Protobuf - Basket',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1'
+                },
+                {
+                  title: 'Protobuf - Marketplace',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1'
                 }
               ]
             },
@@ -137,8 +147,8 @@ module.exports = {
                 '/modules/data/04_events',
                 '/modules/data/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/data/protobuf'
+                  title: 'Protobuf',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.data.v1'
                 }
               ]
             },
@@ -156,8 +166,8 @@ module.exports = {
                 '/modules/group/04_events',
                 // '/modules/group/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/group/protobuf'
+                  title: 'Protobuf',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.group.v1alpha1'
                 }
               ]
             },
