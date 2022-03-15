@@ -13,28 +13,28 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	s := setupBase(t)
 
 	// make a class
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   "foo",
 		CreditType: "C",
 	}))
 	// make some batches under it
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20200102-001",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20190203-20200102-002",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20500404-20900102-003",
 		Metadata:   "",
@@ -43,14 +43,14 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	}))
 
 	// Classes that SHOULD NOT show up from a query for "C01"
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C011-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "BIO1-20500404-20900102-003",
 		Metadata:   "",
