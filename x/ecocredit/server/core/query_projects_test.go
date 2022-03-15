@@ -20,7 +20,7 @@ func TestQuery_Projects(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
@@ -28,14 +28,14 @@ func TestQuery_Projects(t *testing.T) {
 		Name:            "P01",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
-		Metadata:        nil,
+		Metadata:        "",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "P02",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
-		Metadata:        nil,
+		Metadata:        "",
 	})
 	assert.NilError(t, err)
 

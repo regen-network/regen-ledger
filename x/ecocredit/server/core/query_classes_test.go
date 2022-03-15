@@ -17,14 +17,14 @@ func TestQuery_Classes(t *testing.T) {
 	err := s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C02",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	})
 	assert.NilError(t, err)

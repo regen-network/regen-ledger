@@ -21,19 +21,19 @@ func TestQuery_Batches(t *testing.T) {
 		Name:            "P01",
 		ClassId:         1,
 		ProjectLocation: "US-CA",
-		Metadata:        nil,
+		Metadata:        "",
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-001",
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-002",
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
