@@ -172,16 +172,16 @@ Flags:
 			where content.json contains
 			{
 				"data": [
-				  {
-					"graph": {
-					  "hash": "YWJjZA==",
-					  "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-					  "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED",
-					  "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+					{
+						"graph": {
+							"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+							"digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+							"canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+							"merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+						}
 					}
-				  }
 				]
-			  }
+			}
 			`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
