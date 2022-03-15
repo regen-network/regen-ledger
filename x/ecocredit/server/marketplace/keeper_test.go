@@ -43,7 +43,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.coreStore, err = ecocreditv1.NewStateStore(s.db)
 	assert.NilError(t, err)

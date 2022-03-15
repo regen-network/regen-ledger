@@ -51,7 +51,7 @@ message ClassInfo {
     bytes admin = 3;
 
     // metadata is any arbitrary metadata to attached to the credit class.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // credit_type is the abbreviation of the credit type.
     string credit_type = 5;
@@ -96,7 +96,7 @@ message ProjectInfo {
     string project_location = 4;
 
     // metadata is any arbitrary metadata attached to the project.
-    bytes metadata = 5;
+    string metadata = 5;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -120,7 +120,7 @@ message BatchInfo {
     string batch_denom = 3;
 
     // metadata is any arbitrary metadata attached to the credit batch.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified.

@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -15,7 +14,7 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ClassInfoStore().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassInfoTable().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -26,6 +25,7 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		if err != nil {
 			return nil, err
 		}
+
 		var ci core.ClassInfo
 		if err = PulsarToGogoSlow(info, &ci); err != nil {
 			return nil, err

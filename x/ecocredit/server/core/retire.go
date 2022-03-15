@@ -20,7 +20,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
 	for _, credit := range req.Credits {
-		batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -28,7 +28,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceStore().Get(ctx, holder, batch.Id)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +51,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := k.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
+		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +69,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		if err = k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
+		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userTradableBalance.String(),
@@ -77,7 +77,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}); err != nil {
 			return nil, err
 		}
-		err = k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
+		err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),

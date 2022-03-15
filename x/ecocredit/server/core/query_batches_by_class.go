@@ -3,27 +3,26 @@ package core
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Batches queries for all batches in the given credit class.
-func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) (*core.QueryBatchesResponse, error) {
+// BatchesByClass queries all batches issued under a given credit class.
+func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesByClassRequest) (*core.QueryBatchesByClassResponse, error) {
 	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
-	project, err := k.stateStore.ProjectInfoTable().GetByName(ctx, request.ProjectId)
+	class, err := k.stateStore.ClassInfoTable().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(pg))
+	// we put a "-" after the class name to avoid including class names outside of the query (i.e. a query for C01 could technically include C011 otherwise).
+	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoBatchDenomIndexKey{}.WithBatchDenom(class.Name+"-"), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
-
-	batches := make([]*core.BatchInfo, 0)
+	batches := make([]*core.BatchInfo, 0, 10)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
@@ -40,7 +39,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 	if err != nil {
 		return nil, err
 	}
-	return &core.QueryBatchesResponse{
+	return &core.QueryBatchesByClassResponse{
 		Batches:    batches,
 		Pagination: pr,
 	}, nil

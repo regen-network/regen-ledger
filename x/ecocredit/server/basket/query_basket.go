@@ -14,7 +14,7 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, request.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, err
 	}
 
-	it, err := k.stateStore.BasketClassStore().List(ctx, api.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
+	it, err := k.stateStore.BasketClassTable().List(ctx, api.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
 	if err != nil {
 		return nil, err
 	}

@@ -14,13 +14,13 @@ func TestQuery_CreditTypes(t *testing.T) {
 	s := setupBase(t)
 
 	// insert a few credit types
-	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &api.CreditType{
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "a ton",
 		Precision:    6,
 	}))
-	assert.NilError(t, s.stateStore.CreditTypeStore().Insert(s.ctx, &api.CreditType{
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "F",
 		Name:         "foobar",
 		Unit:         "foo per inch",

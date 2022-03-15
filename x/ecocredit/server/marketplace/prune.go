@@ -14,9 +14,9 @@ import (
 func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	min, blockTime := timestamppb.New(time.Now()), timestamppb.New(sdkCtx.BlockTime())
+	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
 	fromKey, toKey := marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
-	it, err := k.stateStore.SellOrderStore().ListRange(ctx, fromKey, toKey)
+	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 			return err
 		}
 	}
-	return k.stateStore.SellOrderStore().DeleteRange(ctx, fromKey, toKey)
+	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
 }
 
 // unescrowCredits moves `amount` of credits from the sellerAddr's escrowed balance, into their tradable balance
@@ -52,12 +52,10 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 			return "", "", err
 		}
 
-		// subtract from escrow
 		escrowedDec, err = math.SafeSubBalance(escrowedDec, creditAmt)
 		if err != nil {
 			return "", "", err
 		}
-		// add to tradable
 		tradableDec, err = math.SafeAddBalance(tradableDec, creditAmt)
 		if err != nil {
 			return "", "", err
@@ -65,7 +63,7 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 		return escrowedDec.String(), tradableDec.String(), nil
 	}
 
-	bal, err := k.coreStore.BatchBalanceStore().Get(ctx, sellerAddr, batchId)
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellerAddr, batchId)
 	if err != nil {
 		return err
 	}
@@ -73,12 +71,11 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 	if err != nil {
 		return err
 	}
-	if err = k.coreStore.BatchBalanceStore().Update(ctx, bal); err != nil {
+	if err = k.coreStore.BatchBalanceTable().Update(ctx, bal); err != nil {
 		return err
 	}
 
-	// update supply
-	sup, err := k.coreStore.BatchSupplyStore().Get(ctx, batchId)
+	sup, err := k.coreStore.BatchSupplyTable().Get(ctx, batchId)
 	if err != nil {
 		return err
 	}
@@ -86,5 +83,5 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 	if err != nil {
 		return err
 	}
-	return k.coreStore.BatchSupplyStore().Update(ctx, sup)
+	return k.coreStore.BatchSupplyTable().Update(ctx, sup)
 }
