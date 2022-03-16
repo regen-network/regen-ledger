@@ -17,7 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -437,10 +437,7 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 
 type putSuite struct {
 	*baseSuite
-	blockTimestamp  time.Time
-	yearsInThePast  uint32
 	basketDenom     string
-	basketId        uint64
 	batchDenom      string
 	tradableCredits string
 	err             error
@@ -452,26 +449,24 @@ func TestPutDate(t *testing.T) {
 
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
-	s.tradableCredits = "5"
+	s.tradableCredits = "50"
+	s.basketDenom = "basket"
 }
 
 func (s *putSuite) ACurrentBlockTimestampOf(a string) {
-	var err error
-
-	s.blockTimestamp, err = time.Parse("2006-01-02", a)
+	blockTime, err := time.Parse("2006-01-02", a)
 	assert.NilError(s.t, err)
+
+	s.baseSuite.sdkCtx = s.baseSuite.sdkCtx.WithBlockTime(blockTime)
 }
 
 func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
 	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
 	assert.NilError(s.t, err)
 
-	s.basketDenom = "foo"
-	s.yearsInThePast = uint32(yearsInThePast)
-
-	s.basketId, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	_, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:  s.basketDenom,
-		DateCriteria: &api.DateCriteria{YearsInThePast: s.yearsInThePast},
+		DateCriteria: &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
 	})
 	assert.NilError(s.t, err)
 }
@@ -482,7 +477,7 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 
 	s.batchDenom = "batch-" + a
 
-	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditapi.BatchInfo{
 		BatchDenom: s.batchDenom,
 		StartDate:  timestamppb.New(startDate),
 	})
@@ -490,7 +485,7 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 
 	batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
 
-	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
 		Address:  s.addr,
 		BatchId:  batch.Id,
 		Tradable: s.tradableCredits,
