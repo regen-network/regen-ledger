@@ -31,7 +31,12 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	err = k.assertClassIssuer(ctx, projectInfo.ClassId, req.Issuer)
+	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = k.assertClassIssuer(ctx, classInfo.Id, issuer)
 	if err != nil {
 		return nil, err
 	}
