@@ -29,6 +29,7 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 
 	project, err := s.stateStore.ProjectInfoTable().GetByName(s.ctx, "FOO")
 	assert.NilError(t, err)
+	assert.DeepEqual(t, project.Admin, s.addr.Bytes())
 	assert.Equal(t, project.ProjectLocation, "US-NY")
 }
 
