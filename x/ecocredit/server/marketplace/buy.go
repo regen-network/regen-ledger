@@ -9,12 +9,12 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, error) {
-	// setup
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
 	if err != nil {
@@ -68,7 +68,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			// check that bid price is at least equal to ask price
 			askAmount, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 			if !ok {
-				return nil, fmt.Errorf("could not convert ask price to sdk.Int: %s", sellOrder.AskPrice)
+				return nil, fmt.Errorf("could not convert sell order's ask price to %T: %s", sdk.Int{}, sellOrder.AskPrice)
 			}
 			if order.BidPrice.Amount.LT(askAmount) {
 				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("bid price too low: got %s, needed at least %s",
@@ -78,6 +78,27 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			if err = k.updateBalances(ctx, sellOrder, buyerAcc, orderAmt, *order.BidPrice); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
+			if !sellOrder.DisableAutoRetire {
+				if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
+					Retirer:    buyerAcc.String(),
+					BatchDenom: batch.BatchDenom,
+					Amount:     order.Quantity,
+					Location:   order.RetirementLocation,
+				}); err != nil {
+					return nil, err
+				}
+			} else {
+				if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+					Sender:         sdk.AccAddress(sellOrder.Seller).String(),
+					Recipient:      buyerAcc.String(),
+					BatchDenom:     batch.BatchDenom,
+					TradableAmount: order.Quantity,
+					RetiredAmount:  "",
+					BasketDenom:    "",
+				}); err != nil {
+					return nil, err
+				}
+			}
 		default:
 			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 		}
@@ -85,14 +106,14 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 	return &v1.MsgBuyResponse{}, nil
 }
 
-// updateBalances moves credits according to the orders. it will:
+// updateBalances moves credits according to the order. it will:
 // - update a sell order, removing it if quantity becomes 0 as a result of this purchase.
 // - remove the purchaseQty from the seller's escrowed balance.
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
 func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin) error {
-	// update the sell order
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
 		return err
@@ -107,7 +128,7 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 		if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 			return err
 		}
-	} else {
+	} else { // update the sell order with the new value otherwise
 		sellOrder.Quantity = sellOrderQty.String()
 		if err = k.stateStore.SellOrderTable().Update(ctx, sellOrder); err != nil {
 			return err
@@ -132,7 +153,7 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 		return err
 	}
 
-	// update the buyers balance and supply
+	// update the buyers balance and the batch supply
 	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchId)
 	if err != nil {
 		return err
@@ -192,8 +213,7 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 		}
 		supply.RetiredAmount = supplyRetired.String()
 	}
-	// move subtract the purchased credits from the escrowed supply
-	// we can update the escrowed supply outside the condition since its the same either way
+
 	supplyEscrowed, err := math.NewDecFromString(supply.EscrowedAmount)
 	if err != nil {
 		return err
@@ -210,7 +230,5 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 		return err
 	}
 
-	// send the coins to the seller
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	return k.bankKeeper.SendCoins(sdkCtx, buyerAcc, sellOrder.Seller, sdk.NewCoins(bidCoin))
 }

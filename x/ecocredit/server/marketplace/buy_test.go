@@ -35,7 +35,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
@@ -47,7 +47,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
 				Quantity: "3", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
@@ -89,7 +89,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -101,7 +101,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
 				Quantity: "3", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
@@ -143,7 +143,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -155,7 +155,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
 				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
@@ -194,7 +194,7 @@ func TestBuy_Invalid(t *testing.T) {
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -206,7 +206,7 @@ func TestBuy_Invalid(t *testing.T) {
 
 	// sell order not found
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 532}},
 				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
@@ -214,10 +214,9 @@ func TestBuy_Invalid(t *testing.T) {
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
-
 	// exceeds decimal precision
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
 				Quantity: "10.23958230958", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
@@ -227,7 +226,7 @@ func TestBuy_Invalid(t *testing.T) {
 
 	// mismatch auto retire settings
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer:  buyerAddr.String(),
+		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
 				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
