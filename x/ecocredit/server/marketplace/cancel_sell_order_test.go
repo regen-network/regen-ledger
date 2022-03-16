@@ -1,18 +1,21 @@
 package marketplace
 
 import (
+	"testing"
+	"time"
+
+	"github.com/golang/mock/gomock"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/golang/mock/gomock"
-	"github.com/google/go-cmp/cmp/cmpopts"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
-	"testing"
-	"time"
 )
 
 func TestSell_CancelOrder(t *testing.T) {
@@ -41,7 +44,7 @@ func TestSell_CancelOrder(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
@@ -80,10 +83,10 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(1)
 
-	_,_,otherAddr := testdata.KeyTestPubAddr()
+	_, _, otherAddr := testdata.KeyTestPubAddr()
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
