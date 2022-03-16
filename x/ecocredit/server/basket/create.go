@@ -61,7 +61,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if msg.Exponent != 0 {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom:    denom,
-			Exponent: 0, // convertion from base denom to this denom
+			Exponent: 0, // conversion from base denom to this denom
 			Aliases:  nil,
 		})
 	}
