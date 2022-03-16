@@ -16,8 +16,8 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	basket2 "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	basketserver "github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 func TestPut(t *testing.T) {
@@ -118,8 +118,8 @@ func TestPut(t *testing.T) {
 	testCases := []struct {
 		name                string
 		startingBalance     string
-		msg                 basket2.MsgPut
-		expectedCredits     []*basket2.BasketCredit
+		msg                 basket.MsgPut
+		expectedCredits     []*basket.BasketCredit
 		expectedBasketCoins string
 		expectCalls         func()
 		errMsg              string
@@ -127,12 +127,12 @@ func TestPut(t *testing.T) {
 		{
 			name:            "valid case",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
-			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
 				s.ecocreditKeeper.EXPECT().
@@ -149,23 +149,23 @@ func TestPut(t *testing.T) {
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(2_000_000)))
 				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
+					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
 					Return(nil)
 
 				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
 		{
 			name:            "valid case - basket with existing balance",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "1"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "1"}},
 			},
-			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "3"}},
+			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "3"}},
 			expectedBasketCoins: "1000000", // 1 million
 			expectCalls: func() {
 				s.ecocreditKeeper.EXPECT().
@@ -182,23 +182,23 @@ func TestPut(t *testing.T) {
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(1_000_000)))
 				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
+					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
 					Return(nil)
 
 				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
 		{
 			name:            "valid case - basket 2 with rolling window",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom2,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
-			expectedCredits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
 				s.ecocreditKeeper.EXPECT().
@@ -215,21 +215,21 @@ func TestPut(t *testing.T) {
 
 				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom2, sdk.NewInt(2_000_000)))
 				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket2.BasketSubModuleName, coinAward).
+					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
 					Return(nil)
 
 				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket2.BasketSubModuleName, s.addr, coinAward).
+					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
 					Return(nil)
 			},
 		},
 		{
 			name:            "insufficient funds",
 			startingBalance: "1",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -246,15 +246,15 @@ func TestPut(t *testing.T) {
 					Return(&classInfoRes, nil)
 
 			},
-			errMsg: basket.ErrInsufficientCredits.Error(),
+			errMsg: basketserver.ErrInsufficientCredits.Error(),
 		},
 		{
 			name:            "basket not found",
 			startingBalance: "1",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: "FooBar",
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -264,10 +264,10 @@ func TestPut(t *testing.T) {
 		{
 			name:            "batch not found",
 			startingBalance: "20",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: "FooBarBaz", Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: "FooBarBaz", Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -280,10 +280,10 @@ func TestPut(t *testing.T) {
 		//{
 		//	name:            "class not allowed",
 		//	startingBalance: "100000000",
-		//	msg: basket2.MsgPut{
+		//	msg: basket.MsgPut{
 		//		Owner:       s.addr.String(),
 		//		BasketDenom: basketDenom,
-		//		Credits:     []*basket2.BasketCredit{{BatchDenom: "blah", Amount: "2"}},
+		//		Credits:     []*basket.BasketCredit{{BatchDenom: "blah", Amount: "2"}},
 		//	},
 		//	expectedBasketCoins: "2000000", // 2 million
 		//	expectCalls: func() {
@@ -298,10 +298,10 @@ func TestPut(t *testing.T) {
 		{
 			name:            "wrong credit type",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -324,10 +324,10 @@ func TestPut(t *testing.T) {
 		{
 			name:            "batch out of time window",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -345,10 +345,10 @@ func TestPut(t *testing.T) {
 		{
 			name:            "batch outside of start date window",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom2,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -366,10 +366,10 @@ func TestPut(t *testing.T) {
 		{
 			name:            "batch outside of years in the past",
 			startingBalance: "100000000",
-			msg: basket2.MsgPut{
+			msg: basket.MsgPut{
 				Owner:       s.addr.String(),
 				BasketDenom: basketDenom3,
-				Credits:     []*basket2.BasketCredit{{BatchDenom: denom, Amount: "2"}},
+				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
 			},
 			expectedBasketCoins: "2000000", // 2 million
 			expectCalls: func() {
@@ -412,7 +412,7 @@ func TestPut(t *testing.T) {
 	}
 }
 
-func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket2.BasketCredit, basketID uint64, balanceTable api.BasketBalanceTable) {
+func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket.BasketCredit, basketID uint64, balanceTable api.BasketBalanceTable) {
 	bal, err := balanceTable.Get(ctx, basketID, credit.BatchDenom)
 	require.NoError(t, err)
 	require.Equal(t, bal.Balance, credit.Amount)
