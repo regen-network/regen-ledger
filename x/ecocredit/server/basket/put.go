@@ -47,10 +47,6 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			}
 			return nil, err
 		}
-		// TODO: remove
-		if res == nil {
-			panic("response is nil")
-		}
 		batchInfo := res.Info
 
 		// validate that the credit batch adheres to the basket's specifications

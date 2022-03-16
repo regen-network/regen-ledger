@@ -438,7 +438,10 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 type putSuite struct {
 	*baseSuite
 	basketDenom     string
+	classId         string
+	creditType      string
 	batchDenom      string
+	batchStartDate  *timestamppb.Timestamp
 	tradableCredits string
 	err             error
 }
@@ -450,6 +453,8 @@ func TestPutDate(t *testing.T) {
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.tradableCredits = "5"
+	s.classId = "C01"
+	s.creditType = "C"
 }
 
 func (s *putSuite) ACurrentBlockTimestampOf(a string) {
@@ -465,9 +470,17 @@ func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
 
 	s.basketDenom = "basket-" + a
 
-	_, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:  s.basketDenom,
-		DateCriteria: &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:      s.basketDenom,
+		CreditTypeAbbrev: s.creditType,
+		DateCriteria:     &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
+		Exponent:         1,
+	})
+	assert.NilError(s.t, err)
+
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
+		BasketId: basketId,
+		ClassId:  s.classId,
 	})
 	assert.NilError(s.t, err)
 }
@@ -477,10 +490,11 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 	assert.NilError(s.t, err)
 
 	s.batchDenom = "batch-" + a
+	s.batchStartDate = timestamppb.New(startDate)
 
 	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditapi.BatchInfo{
 		BatchDenom: s.batchDenom,
-		StartDate:  timestamppb.New(startDate),
+		StartDate:  s.batchStartDate,
 	})
 	assert.NilError(s.t, err)
 
@@ -496,7 +510,26 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 }
 
 func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
-	s.ecocreditKeeper.EXPECT().BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: s.batchDenom})
+	startDate := time.Unix(s.batchStartDate.Seconds, int64(s.batchStartDate.Nanos))
+
+	s.ecocreditKeeper.EXPECT().
+		BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: s.batchDenom}).
+		Return(&ecocredit.QueryBatchInfoResponse{Info: &ecocredit.BatchInfo{
+			BatchDenom: s.batchDenom,
+			StartDate:  &startDate,
+		}}, nil)
+
+	s.ecocreditKeeper.EXPECT().
+		ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{}).
+		Return(&ecocredit.QueryProjectInfoResponse{Info: &ecocredit.ProjectInfo{
+			ClassId: s.classId,
+		}}, nil)
+
+	s.ecocreditKeeper.EXPECT().
+		ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: s.classId}).
+		Return(&ecocredit.QueryClassInfoResponse{Info: &ecocredit.ClassInfo{
+			CreditType: &ecocredit.CreditType{Abbreviation: s.creditType},
+		}}, nil)
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addr.String(),
