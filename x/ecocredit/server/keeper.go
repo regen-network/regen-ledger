@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// In this keeper.go files we expose methods the basket.OrderKeeper needs.
+// In this keeper.go files we expose methods the basket.Keeper needs.
 
 func (s serverImpl) GetCreateBasketFee(ctx context.Context) sdk.Coins {
 	sdkCtx := types.UnwrapSDKContext(ctx).Context

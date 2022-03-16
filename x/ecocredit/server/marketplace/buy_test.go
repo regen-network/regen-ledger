@@ -1,17 +1,20 @@
 package marketplace
 
 import (
+	"testing"
+	"time"
+
+	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
-	"testing"
-	"time"
 )
 
 func TestBuy_ValidTradable(t *testing.T) {
@@ -27,7 +30,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
@@ -81,7 +84,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
@@ -135,7 +138,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
@@ -186,7 +189,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {

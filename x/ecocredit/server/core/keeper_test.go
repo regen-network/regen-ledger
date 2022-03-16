@@ -22,7 +22,6 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
 type baseSuite struct {
@@ -34,7 +33,7 @@ type baseSuite struct {
 	ctrl         *gomock.Controller
 	addr         sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks2.MockParamKeeper
+	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
@@ -61,7 +60,7 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 

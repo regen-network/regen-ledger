@@ -39,7 +39,7 @@ type Module struct {
 	accountKeeper      ecocredit.AccountKeeper
 	bankKeeper         ecocredit.BankKeeper
 	distributionKeeper ecocredit.DistributionKeeper
-	keeper             ecocredit.OrderKeeper
+	keeper             ecocredit.Keeper
 }
 
 // NewModule returns a new Module object.

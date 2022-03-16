@@ -26,7 +26,7 @@ func TestSell_Prune(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)

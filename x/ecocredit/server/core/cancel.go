@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 

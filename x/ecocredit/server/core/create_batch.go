@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 

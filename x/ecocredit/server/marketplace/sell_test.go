@@ -30,7 +30,7 @@ func TestSell_Valid(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
@@ -86,7 +86,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
@@ -125,7 +125,7 @@ func TestSell_Invalid(t *testing.T) {
 		Unit:         "tonnes",
 		Precision:    6,
 	}
-	marketTestSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
@@ -193,9 +193,9 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
-// marketTestSetup creates a batch with retired/tradable supply of 100 each, class, market, and issues a balance of 100
+// testSellSetup creates a batch with retired/tradable supply of 100 each, class, market, and issues a balance of 100
 // retired and tradable credits to s.addr
-func marketTestSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
+func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
