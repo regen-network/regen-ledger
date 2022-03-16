@@ -43,7 +43,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -72,32 +72,32 @@ func setupBase(t *testing.T) *baseSuite {
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string) {
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
 		Metadata:   "",
 		CreditType: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
 		Metadata:        "",
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
 		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &api.BatchSupply{
+	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchId:         1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &api.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "10.5",

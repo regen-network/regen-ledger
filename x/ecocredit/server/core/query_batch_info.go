@@ -13,7 +13,7 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		return nil, err
 	}
 
-	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

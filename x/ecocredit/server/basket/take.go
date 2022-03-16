@@ -15,7 +15,7 @@ import (
 )
 
 func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettypes.MsgTakeResponse, error) {
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, msg.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, msg.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	var credits []*baskettypes.BasketCredit
 	for {
-		it, err := k.stateStore.BasketBalanceStore().List(ctx,
+		it, err := k.stateStore.BasketBalanceTable().List(ctx,
 			api.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
 		)
 		if err != nil {
@@ -109,7 +109,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 			}
 
 			basketBalance.Balance = newBalance.String()
-			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
+			err = k.stateStore.BasketBalanceTable().Update(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}
@@ -134,7 +134,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				return nil, err
 			}
 
-			err = k.stateStore.BasketBalanceStore().Delete(ctx, basketBalance)
+			err = k.stateStore.BasketBalanceTable().Delete(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}

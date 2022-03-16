@@ -153,3 +153,8 @@ message SignerEntry {
     google.protobuf.Timestamp timestamp = 2;
 }
 
+// ContentHashes contains list of content ContentHash.
+message ContentHashes {
+    // data is a list of content hashes which the resolver claims to serve.
+    repeated ContentHash data = 1;
+}

@@ -81,7 +81,7 @@ func TestDuplicateDenom(t *testing.T) {
 	}
 	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
-	assert.NilError(t, s.stateStore.BasketStore().Insert(s.ctx,
+	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx,
 		&api.Basket{BasketDenom: denom},
 	))
 
@@ -162,7 +162,7 @@ func TestGoodBasket(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	basket, err := s.stateStore.BasketStore().GetByBasketDenom(s.ctx, "eco.uC.foo")
+	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
 	assert.Equal(t, s.addr.String(), basket.Curator)
 	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)

@@ -93,6 +93,7 @@ import (
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
+	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
@@ -135,6 +136,7 @@ var (
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
 			ecocreditmodule.Module{},
+			data.Module{},
 		}, setCustomModuleBasics()...)...,
 	)
 
@@ -388,7 +390,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.BankKeeper,
 		app.DistrKeeper,
 	)
-	newModules := []moduletypes.Module{ecocreditModule}
+	newModules := []moduletypes.Module{ecocreditModule, data.Module{}}
 	err := app.smm.RegisterModules(newModules)
 	if err != nil {
 		panic(err)

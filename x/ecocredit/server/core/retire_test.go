@@ -41,12 +41,12 @@ func TestRetire_Valid(t *testing.T) {
 
 	// check both balance and supply reflect the change
 
-	bal, err := s.stateStore.BatchBalanceStore().Get(s.ctx, s.addr, 1)
+	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, bal.Tradable, "0.5")
 	assert.Equal(t, bal.Retired, "20.5")
 
-	sup, err := s.stateStore.BatchSupplyStore().Get(s.ctx, 1)
+	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, sup.TradableAmount, "0.5")
 	assert.Equal(t, sup.RetiredAmount, "20.5")
