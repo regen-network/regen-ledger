@@ -7,6 +7,7 @@ import (
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
+// CancelSellOrder cancels a sell order and returns the escrowed credits to the seller.
 func (k Keeper) CancelSellOrder(ctx context.Context, req *v1.MsgCancelSellOrder) (*v1.MsgCancelSellOrderResponse, error) {
 	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
