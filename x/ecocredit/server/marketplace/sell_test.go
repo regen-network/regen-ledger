@@ -231,9 +231,4 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		RetiredAmount:  "100",
 		EscrowedAmount: "0",
 	}))
-	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
-		BatchId:        1,
-		TradableAmount: "100",
-		RetiredAmount:  "100",
-	}))
 }
