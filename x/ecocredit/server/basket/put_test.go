@@ -449,8 +449,7 @@ func TestPutDate(t *testing.T) {
 
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
-	s.tradableCredits = "50"
-	s.basketDenom = "basket"
+	s.tradableCredits = "5"
 }
 
 func (s *putSuite) ACurrentBlockTimestampOf(a string) {
@@ -463,6 +462,8 @@ func (s *putSuite) ACurrentBlockTimestampOf(a string) {
 func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
 	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
 	assert.NilError(s.t, err)
+
+	s.basketDenom = "basket-" + a
 
 	_, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:  s.basketDenom,
@@ -484,6 +485,7 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 	assert.NilError(s.t, err)
 
 	batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
+	assert.NilError(s.t, err)
 
 	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
 		Address:  s.addr,
