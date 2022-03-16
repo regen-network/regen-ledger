@@ -4,7 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/utils"
 )
 
 var (
@@ -19,7 +20,7 @@ func (m MsgTake) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements LegacyMsg.
 func (m MsgTake) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
+	return sdk.MustSortJSON(core.ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a stateless sanity check on the provided data.
@@ -38,7 +39,7 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s must be positive", m.Amount)
 	}
 	if m.RetireOnTake {
-		if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
+		if err := utils.ValidateLocation(m.RetirementLocation); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}

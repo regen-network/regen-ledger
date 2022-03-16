@@ -1,4 +1,4 @@
-package ecocredit
+package utils
 
 import (
 	"regexp"

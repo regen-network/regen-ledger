@@ -1,10 +1,10 @@
-package ecocredit
+package core
 
 import (
 	"fmt"
 	"regexp"
-	"strings"
 	"sort"
+	"strings"
 	"time"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

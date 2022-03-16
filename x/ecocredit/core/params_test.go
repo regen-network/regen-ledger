@@ -1,4 +1,4 @@
-package ecocredit
+package core
 
 import (
 	"fmt"

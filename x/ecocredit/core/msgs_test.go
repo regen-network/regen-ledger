@@ -1,4 +1,4 @@
-package ecocredit
+package core
 
 import (
 	"math/rand"
@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 )
@@ -25,18 +24,18 @@ func TestMsgCreateClass(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateClass{
-				Admin:          addr1.String(),
-				Issuers:        []string{addr1.String(), addr2.String()},
-				CreditTypeName: "carbon",
-				Metadata:       []byte("hello"),
+				Admin:            addr1.String(),
+				Issuers:          []string{addr1.String(), addr2.String()},
+				CreditTypeAbbrev: "C",
+				Metadata:         "hello",
 			},
 			expErr: false,
 		},
 		"valid msg without metadata": {
 			src: MsgCreateClass{
-				Admin:          addr1.String(),
-				CreditTypeName: "carbon",
-				Issuers:        []string{addr1.String(), addr2.String()},
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{addr1.String(), addr2.String()},
 			},
 			expErr: false,
 		},
@@ -46,24 +45,24 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid without issuers": {
 			src: MsgCreateClass{
-				Admin:          addr1.String(),
-				CreditTypeName: "carbon",
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
-				Admin:          addr1.String(),
-				CreditTypeName: "carbon",
-				Issuers:        []string{"xyz", "xyz1"},
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{"xyz", "xyz1"},
 			},
 			expErr: true,
 		},
 		"invalid with wrong admin": {
 			src: MsgCreateClass{
-				Admin:          "wrongAdmin",
-				CreditTypeName: "carbon",
-				Issuers:        []string{addr1.String(), addr2.String()},
+				Admin:            "wrongAdmin",
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{addr1.String(), addr2.String()},
 			},
 			expErr: true,
 		},
@@ -76,10 +75,10 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateClass{
-				Admin:          addr1.String(),
-				CreditTypeName: "carbon",
-				Issuers:        []string{addr1.String(), addr2.String()},
-				Metadata:       []byte(simtypes.RandStringOfLength(r, 288)),
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{addr1.String(), addr2.String()},
+				Metadata:         simtypes.RandStringOfLength(r, 288),
 			},
 			expErr: true,
 		},
@@ -110,7 +109,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "A00",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "A0",
 			},
@@ -121,7 +120,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "A00",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
 			},
 			false,
@@ -131,7 +130,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          "invalid address",
 				ClassId:         "A00",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "A0",
 			},
@@ -142,7 +141,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "A00",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "A",
 			},
@@ -153,7 +152,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "ABCD",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "AB",
 			},
@@ -164,7 +163,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "A01",
-				Metadata:        []byte("hello"),
+				Metadata:        "hello",
 				ProjectLocation: "abcd",
 				ProjectId:       "AB",
 			},
@@ -175,7 +174,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          addr1.String(),
 				ClassId:         "A01",
-				Metadata:        []byte(simtypes.RandStringOfLength(r, 288)),
+				Metadata:        simtypes.RandStringOfLength(r, 288),
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "AB",
 			},
@@ -220,7 +219,7 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "ST-UVW XY Z12",
 					},
 				},
-				Metadata: []byte("hello"),
+				Metadata: "hello",
 			},
 			expErr: false,
 		},
@@ -338,7 +337,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Metadata:  []byte("hello"),
+				Metadata:  "hello",
 			},
 			expErr: true,
 		},
@@ -347,7 +346,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				Issuer:    addr1.String(),
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Metadata:  []byte("hello"),
+				Metadata:  "hello",
 			},
 			expErr: true,
 		},
@@ -356,7 +355,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				Issuer:    addr1.String(),
 				ProjectId: "C01",
 				EndDate:   &endDate,
-				Metadata:  []byte("hello"),
+				Metadata:  "hello",
 			},
 			expErr: true,
 		},
@@ -365,7 +364,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				Issuer:    addr1.String(),
 				ProjectId: "C01",
 				StartDate: &startDate,
-				Metadata:  []byte("hello"),
+				Metadata:  "hello",
 			},
 			expErr: true,
 		},
@@ -375,7 +374,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &endDate,
 				EndDate:   &startDate,
-				Metadata:  []byte("hello"),
+				Metadata:  "hello",
 			},
 			expErr: true,
 		},
@@ -416,7 +415,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Metadata:  []byte(simtypes.RandStringOfLength(r, 288)),
+				Metadata:  simtypes.RandStringOfLength(r, 288),
 			},
 			expErr: true,
 		},
@@ -893,23 +892,34 @@ func TestMsgUpdateClassIssuers(t *testing.T) {
 		expErr bool
 	}{
 		"valid": {
-			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{a1.String()}},
+			src: MsgUpdateClassIssuers{
+				Admin: a2.String(), ClassId: "C01",
+				AddIssuers: []string{a1.String()},
+			},
+			expErr: false,
+		},
+		"valid add and remove": {
+			src: MsgUpdateClassIssuers{
+				Admin: a2.String(), ClassId: "C01",
+				AddIssuers:    []string{a1.String()},
+				RemoveIssuers: []string{a2.String()},
+			},
 			expErr: false,
 		},
 		"invalid: no issuers": {
-			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{}},
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01"},
 			expErr: true,
 		},
 		"invalid: no class ID": {
-			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "", Issuers: []string{a1.String()}},
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "", AddIssuers: []string{a1.String()}},
 			expErr: true,
 		},
 		"invalid: bad admin address": {
-			src:    MsgUpdateClassIssuers{Admin: "//????.!", ClassId: "C01", Issuers: []string{a1.String()}},
+			src:    MsgUpdateClassIssuers{Admin: "//????.!", ClassId: "C01", AddIssuers: []string{a1.String()}},
 			expErr: true,
 		},
 		"invalid: bad class ID": {
-			src:    MsgUpdateClassIssuers{Admin: a1.String(), ClassId: "s.1%?#%", Issuers: []string{a1.String()}},
+			src:    MsgUpdateClassIssuers{Admin: a1.String(), ClassId: "s.1%?#%", AddIssuers: []string{a1.String()}},
 			expErr: true,
 		},
 	}
@@ -934,15 +944,15 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 		expErr bool
 	}{
 		"valid": {
-			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte("hello world")},
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: "hello world"},
 			expErr: false,
 		},
 		"invalid: bad admin address": {
-			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", Metadata: []byte("hello world")},
+			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", Metadata: "hello world"},
 			expErr: true,
 		},
 		"invalid: bad class ID": {
-			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "6012949", Metadata: []byte("hello world")},
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "6012949", Metadata: "hello world"},
 			expErr: true,
 		},
 		"invalid: no class ID": {
@@ -950,353 +960,7 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			expErr: true,
 		},
 		"invalid: metadata too large": {
-			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte(simtypes.RandStringOfLength(r, 288))},
-			expErr: true,
-		},
-	}
-
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestMsgSell(t *testing.T) {
-	_, _, a1 := testdata.KeyTestPubAddr()
-
-	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-
-	tests := map[string]struct {
-		src    MsgSell
-		expErr bool
-	}{
-		"valid": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-						Expiration:        &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid: bad owner address": {
-			src: MsgSell{
-				Owner: "foobar",
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad batch denom": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "foobar",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad quantity": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "-1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad ask price": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
-
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestMsgUpdateSellOrders(t *testing.T) {
-	_, _, a1 := testdata.KeyTestPubAddr()
-
-	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-
-	tests := map[string]struct {
-		src    MsgUpdateSellOrders
-		expErr bool
-	}{
-		"valid": {
-			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-						NewExpiration:     &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid: bad owner address": {
-			src: MsgUpdateSellOrders{
-				Owner: "foobar",
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad quantity": {
-			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "-1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad ask price": {
-			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
-
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestMsgBuy(t *testing.T) {
-	_, _, a1 := testdata.KeyTestPubAddr()
-
-	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-
-	tests := map[string]struct {
-		src    MsgBuy
-		expErr bool
-	}{
-		"valid": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-						Expiration:         &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid: bad owner address": {
-			src: MsgBuy{
-				Buyer: "foobar",
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad quantity": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "-1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad bid price": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad retirement location": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-						RetirementLocation: "foo",
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
-
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestMsgAllowAskDenom(t *testing.T) {
-	_, _, a1 := testdata.KeyTestPubAddr()
-
-	tests := map[string]struct {
-		src    MsgAllowAskDenom
-		expErr bool
-	}{
-		"valid": {
-			src: MsgAllowAskDenom{
-				RootAddress:  a1.String(),
-				Denom:        "uregen",
-				DisplayDenom: "regen",
-				Exponent:     6,
-			},
-			expErr: false,
-		},
-		"invalid address": {
-			src: MsgAllowAskDenom{
-				RootAddress:  "foobar",
-				Denom:        "uregen",
-				DisplayDenom: "regen",
-				Exponent:     6,
-			},
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: simtypes.RandStringOfLength(r, 288)},
 			expErr: true,
 		},
 	}

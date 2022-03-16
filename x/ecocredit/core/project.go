@@ -1,4 +1,4 @@
-package ecocredit
+package core
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// reProjectID defines regular expression to check if the string contains only alphanumeric characters 
+// reProjectID defines regular expression to check if the string contains only alphanumeric characters
 // and is between 2 ~ 16 characters long.
 //
 // e.g. P01, C01P01, 123
@@ -32,3 +32,4 @@ func ValidateProjectID(projectID string) error {
 func FormatProjectID(classID string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
 }
+
