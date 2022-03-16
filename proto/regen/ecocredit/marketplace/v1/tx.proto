@@ -104,7 +104,7 @@ message MsgUpdateSellOrders {
   }
 }
 
-// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders request type.
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
 message MsgUpdateSellOrdersResponse {}
 
 // MsgCancelSellOrder is the Msg/CancelSellOrder request type.

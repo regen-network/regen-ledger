@@ -7778,7 +7778,7 @@ func (x *MsgUpdateSellOrders) GetUpdates() []*MsgUpdateSellOrders_Update {
 	return nil
 }
 
-// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders request type.
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
 type MsgUpdateSellOrdersResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

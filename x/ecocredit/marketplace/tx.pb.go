@@ -364,7 +364,7 @@ func (m *MsgUpdateSellOrders_Update) GetNewExpiration() *time.Time {
 	return nil
 }
 
-// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders request type.
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
 type MsgUpdateSellOrdersResponse struct {
 }
 
