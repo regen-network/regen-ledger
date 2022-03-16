@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-// PruneSellOrders is an EndBlock function that moves escrowed credits back into their tradable balance and deletes orders
+// PruneSellOrders is a BeginBlock function that moves escrowed credits back into their tradable balance and deletes orders
 // that have expired.
 func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
