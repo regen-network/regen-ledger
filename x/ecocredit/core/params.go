@@ -2,6 +2,8 @@ package core
 
 import (
 	"regexp"
+	"strings"
+	"unicode"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -208,4 +210,20 @@ func DefaultParams() Params {
 		},
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	)
+}
+
+// Normalize credit type name by removing whitespace and converting to lowercase
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }
