@@ -14,6 +14,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
+// Buy allows users to purchase credits by either directly specifying a sell order, or
+// defining a set of filters with attributes to match against.
+//
+// Currently, only the former is supported. Calls to this function with anything other than
+// MsgBuy_Order_Selection_SellOrderId will fail.
 func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
