@@ -5,14 +5,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -396,4 +400,268 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 	require.NoError(t, err)
 
 	require.True(t, checkBalance.Equal(oldBalance))
+}
+
+type putSuite struct {
+	*baseSuite
+	blockTimestamp  time.Time
+	basketDenom     string
+	basketId        uint64
+	batch20110101   *ecocreditApi.BatchInfo
+	batch20110401   *ecocreditApi.BatchInfo
+	batch20110701   *ecocreditApi.BatchInfo
+	batch20120101   *ecocreditApi.BatchInfo
+	batch20120401   *ecocreditApi.BatchInfo
+	batch20120701   *ecocreditApi.BatchInfo
+	batch20130101   *ecocreditApi.BatchInfo
+	batch20130401   *ecocreditApi.BatchInfo
+	batch20130701   *ecocreditApi.BatchInfo
+	tradableCredits string
+	err             error
+}
+
+func TestPutDate(t *testing.T) {
+	gocuke.NewRunner(t, &putSuite{}).Path("../../features/basket/put_date.feature").Run()
+}
+
+func (s *putSuite) Before(t gocuke.TestingT) {
+	s.baseSuite = setupBase(t)
+	s.tradableCredits = "10"
+}
+
+func (s *putSuite) ACurrentBlockTimestampOf20220401() {
+	s.blockTimestamp = time.Date(2022, 04, 01, 0, 0, 0, 0, time.UTC)
+}
+
+func (s *putSuite) ABasketWithDateCriteriaYearsinthepastOf(a int64) {
+	var err error
+
+	s.basketDenom = "foo"
+
+	s.basketId, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:  s.basketDenom,
+		DateCriteria: &api.DateCriteria{YearsInThePast: 10},
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20110101() {
+	var err error
+
+	batchDenom := "batch20110101"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20110101, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20110101.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20110401() {
+	var err error
+
+	batchDenom := "batch20110401"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20110401, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20110401.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20110701() {
+	var err error
+
+	batchDenom := "batch20110701"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20110701, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20110701.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20120101() {
+	var err error
+
+	batchDenom := "batch20120101"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20120101, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20120101.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20120401() {
+	var err error
+
+	batchDenom := "batch20120401"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20120401, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20120401.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20120701() {
+	var err error
+
+	batchDenom := "batch20120701"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20120701, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20120701.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20130101() {
+	var err error
+
+	batchDenom := "batch20130101"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20130101, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20130101.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20130701() {
+	var err error
+
+	batchDenom := "batch20130701"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20130701, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20130701.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate20130401() {
+	var err error
+
+	batchDenom := "batch20130401"
+	startDate := timestamppb.New(time.Date(2011, 01, 01, 0, 0, 0, 0, time.UTC))
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
+		BatchDenom: batchDenom,
+		StartDate:  startDate,
+	})
+	assert.NilError(s.t, err)
+
+	s.batch20130401, err = s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, batchDenom)
+
+	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditApi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  s.batch20130401.Id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
+	s.ecocreditKeeper.EXPECT().BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "batch20110101"})
+
+	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: s.basketDenom,
+		Credits: []*basket.BasketCredit{
+			{
+				BatchDenom: "batch20110101",
+				Amount:     s.tradableCredits,
+			},
+		},
+	})
+}
+
+func (s *putSuite) TheCreditsArePutIntoTheBasket() {
+	assert.ErrorIs(s.t, s.err, nil)
+}
+
+func (s *putSuite) TheCreditsAreNotPutIntoTheBasket() {
+	assert.ErrorIs(s.t, s.err, sdkerrors.ErrInvalidRequest) // TODO: start date error
 }
