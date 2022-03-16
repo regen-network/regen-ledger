@@ -90,8 +90,9 @@ func validateDateCriteria(d *DateCriteria) error {
 	}
 	minStartDate := d.GetMinStartDate()
 	startDateWindow := d.GetStartDateWindow()
-	if minStartDate != nil && startDateWindow != nil {
-		return errBadReq.Wrap("only one of date_criteria.min_start_date or date_criteria.start_date_window must be set")
+	yearsInThePast := d.GetYearsInThePast()
+	if (minStartDate != nil && startDateWindow != nil) || (startDateWindow != nil && yearsInThePast != 0) || (minStartDate != nil && yearsInThePast != 0) {
+		return errBadReq.Wrap("only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set")
 	}
 	if minStartDate != nil {
 		if minStartDate.Seconds < -2208992400 { // batch older than 1900-01-01 is an obvious error
@@ -101,8 +102,6 @@ func validateDateCriteria(d *DateCriteria) error {
 		if startDateWindow.Seconds < 24*3600 {
 			return errBadReq.Wrap("date_criteria.start_date_window must be at least 1 day")
 		}
-	} else {
-		return errBadReq.Wrapf("unsupported date_criteria value %v", d)
 	}
 	return nil
 }
