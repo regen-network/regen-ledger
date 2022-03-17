@@ -223,6 +223,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	middle := time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local)
 	past := time.Date(1970, 1, 1, 1, 1, 1, 1, time.Local)
 
+	// create a sell order - expiration does not matter at this point, as the block time has not been set yet.
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{

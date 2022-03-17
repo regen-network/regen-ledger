@@ -11,7 +11,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
@@ -19,7 +19,7 @@ import (
 // Note: only the DisableAutoRetire lacks field presence, so if the existing value
 // is true and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
-func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrders) (*v1.MsgUpdateSellOrdersResponse, error) {
+func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdateSellOrders) (*marketplace.MsgUpdateSellOrdersResponse, error) {
 	seller, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
@@ -38,14 +38,14 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrder
 			return nil, err
 		}
 	}
-	return &v1.MsgUpdateSellOrdersResponse{}, nil
+	return &marketplace.MsgUpdateSellOrdersResponse{}, nil
 }
 
 // applySellOrderUpdates applies the updates to the order.
-func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *v1.MsgUpdateSellOrders_Update) error {
+func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *ecocredit.CreditType
-	event := v1.EventUpdateSellOrder{}
+	event := marketplace.EventUpdateSellOrder{}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
 	event.DisableAutoRetire = update.DisableAutoRetire
