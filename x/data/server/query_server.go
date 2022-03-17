@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types/ormutil"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
@@ -15,6 +14,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
