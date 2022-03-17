@@ -28,7 +28,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrder
 	for _, update := range req.Updates {
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get sell order with id %d: %s", update.SellOrderId, err.Error())
 		}
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
 		if !seller.Equals(sellOrderAddr) {

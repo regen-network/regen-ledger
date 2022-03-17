@@ -9,6 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -101,6 +102,15 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 		},
 	})
 	assert.NilError(t, err)
+
+	// cannot update sell order that does not exist
+	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+		Owner: s.addr.String(),
+		Updates: []*marketplace.MsgUpdateSellOrders_Update{
+			{SellOrderId: 25, NewQuantity: "3"},
+		},
+	})
+	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// cannot increase sell order with more credits than in balance
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
