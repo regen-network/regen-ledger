@@ -31,7 +31,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 		// assert they have the balance they're  bidding with
 		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 		if bal.IsLT(*order.BidPrice) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v coins with a balance of %v", bal, *order.BidPrice)
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v with a balance of %v", bal, *order.BidPrice)
 		}
 
 		switch selection := order.Selection.Sum.(type) {
