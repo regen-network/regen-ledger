@@ -2,8 +2,6 @@ package marketplace
 
 import (
 	"context"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"testing"
 	"time"
 
@@ -14,7 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -51,8 +51,6 @@ func TestBuy_ValidTradable(t *testing.T) {
 
 	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
-
-
 
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -267,7 +265,6 @@ func TestBuy_Invalid(t *testing.T) {
 	})
 	assert.ErrorContains(t, err, "auto-retire mismatch")
 
-
 	// cannot buy more credits than available
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
@@ -277,7 +274,6 @@ func TestBuy_Invalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "cannot purchase")
-
 
 	// insufficient bank funds
 	bidTooLow := sdk.NewInt64Coin("ufoo", 5)
