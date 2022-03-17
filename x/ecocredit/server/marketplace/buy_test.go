@@ -100,7 +100,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -162,7 +162,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -221,7 +221,7 @@ func TestBuy_Invalid(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(6)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
