@@ -128,6 +128,20 @@ func (mr *MockBankKeeperMockRecorder) BurnCoins(ctx, moduleName, amt interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BurnCoins", reflect.TypeOf((*MockBankKeeper)(nil).BurnCoins), ctx, moduleName, amt)
 }
 
+// GetBalance mocks base method.
+func (m *MockBankKeeper) GetBalance(ctx types.Context, addr types.AccAddress, denom string) types.Coin {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBalance", ctx, addr, denom)
+	ret0, _ := ret[0].(types.Coin)
+	return ret0
+}
+
+// GetBalance indicates an expected call of GetBalance.
+func (mr *MockBankKeeperMockRecorder) GetBalance(ctx, addr, denom interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBalance", reflect.TypeOf((*MockBankKeeper)(nil).GetBalance), ctx, addr, denom)
+}
+
 // GetSupply mocks base method.
 func (m *MockBankKeeper) GetSupply(ctx types.Context, denom string) types.Coin {
 	m.ctrl.T.Helper()
@@ -238,31 +252,31 @@ func (mr *MockBankKeeperMockRecorder) SpendableCoins(ctx, addr interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SpendableCoins", reflect.TypeOf((*MockBankKeeper)(nil).SpendableCoins), ctx, addr)
 }
 
-// MockOrderKeeper is a mock of OrderKeeper interface.
-type MockOrderKeeper struct {
+// MockKeeper is a mock of Keeper interface.
+type MockKeeper struct {
 	ctrl     *gomock.Controller
-	recorder *MockOrderKeeperMockRecorder
+	recorder *MockKeeperMockRecorder
 }
 
-// MockOrderKeeperMockRecorder is the mock recorder for MockOrderKeeper.
-type MockOrderKeeperMockRecorder struct {
-	mock *MockOrderKeeper
+// MockKeeperMockRecorder is the mock recorder for MockKeeper.
+type MockKeeperMockRecorder struct {
+	mock *MockKeeper
 }
 
-// NewMockOrderKeeper creates a new mock instance.
-func NewMockOrderKeeper(ctrl *gomock.Controller) *MockOrderKeeper {
-	mock := &MockOrderKeeper{ctrl: ctrl}
-	mock.recorder = &MockOrderKeeperMockRecorder{mock}
+// NewMockKeeper creates a new mock instance.
+func NewMockKeeper(ctrl *gomock.Controller) *MockKeeper {
+	mock := &MockKeeper{ctrl: ctrl}
+	mock.recorder = &MockKeeperMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOrderKeeper) EXPECT() *MockOrderKeeperMockRecorder {
+func (m *MockKeeper) EXPECT() *MockKeeperMockRecorder {
 	return m.recorder
 }
 
 // PruneOrders mocks base method.
-func (m *MockOrderKeeper) PruneOrders(ctx types.Context) error {
+func (m *MockKeeper) PruneOrders(ctx types.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PruneOrders", ctx)
 	ret0, _ := ret[0].(error)
@@ -270,9 +284,9 @@ func (m *MockOrderKeeper) PruneOrders(ctx types.Context) error {
 }
 
 // PruneOrders indicates an expected call of PruneOrders.
-func (mr *MockOrderKeeperMockRecorder) PruneOrders(ctx interface{}) *gomock.Call {
+func (mr *MockKeeperMockRecorder) PruneOrders(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PruneOrders", reflect.TypeOf((*MockOrderKeeper)(nil).PruneOrders), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PruneOrders", reflect.TypeOf((*MockKeeper)(nil).PruneOrders), ctx)
 }
 
 // MockDistributionKeeper is a mock of DistributionKeeper interface.

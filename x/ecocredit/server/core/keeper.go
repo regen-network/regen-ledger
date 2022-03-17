@@ -14,15 +14,15 @@ var _ core.MsgServer = &Keeper{}
 var _ core.QueryServer = &Keeper{}
 
 type Keeper struct {
-	stateStore api.StateStore
-	bankKeeper ecocredit.BankKeeper
-	params     ecocredit.ParamKeeper
+	stateStore   api.StateStore
+	bankKeeper   ecocredit.BankKeeper
+	paramsKeeper ecocredit.ParamKeeper
 }
 
 func NewKeeper(ss api.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
 	return Keeper{
-		stateStore: ss,
-		bankKeeper: bk,
-		params:     params,
+		stateStore:   ss,
+		bankKeeper:   bk,
+		paramsKeeper: params,
 	}
 }

@@ -11,18 +11,18 @@ import (
 const gasCostPerIteration = uint64(10)
 
 type Keeper struct {
-	stateStore marketplacev1.StateStore
-	coreStore  ecocreditv1.StateStore
-	bankKeeper ecocredit.BankKeeper
-	params     ecocredit.ParamKeeper
+	stateStore   marketplacev1.StateStore
+	coreStore    ecocreditv1.StateStore
+	bankKeeper   ecocredit.BankKeeper
+	paramsKeeper ecocredit.ParamKeeper
 }
 
 func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
 	return Keeper{
-		coreStore:  cs,
-		stateStore: ss,
-		bankKeeper: bk,
-		params:     params,
+		coreStore:    cs,
+		stateStore:   ss,
+		bankKeeper:   bk,
+		paramsKeeper: params,
 	}
 }
 

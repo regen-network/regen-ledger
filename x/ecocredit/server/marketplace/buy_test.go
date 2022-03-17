@@ -1,6 +1,9 @@
 package marketplace
 
 import (
+	"context"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"testing"
 	"time"
 
@@ -35,7 +38,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -46,17 +49,28 @@ func TestBuy_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().HasBalance(any, any, any).Return(true).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
+
+
+	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
+	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "3", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})
 	assert.NilError(t, err)
+
+	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
+	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, false)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -68,7 +82,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 	tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
 	assert.NilError(t, err)
-	assert.Check(t, tradableBalance.Equal(math.NewDecFromInt64(3)))
+	assert.Check(t, tradableBalance.Equal(purchaseAmt))
 }
 
 func TestBuy_ValidRetired(t *testing.T) {
@@ -100,17 +114,25 @@ func TestBuy_ValidRetired(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().HasBalance(any, any, any).Return(true).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
+	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
+	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "3", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
+				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.NilError(t, err)
+
+	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -154,17 +176,25 @@ func TestBuy_OrderFilled(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().HasBalance(any, any, any).Return(true).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
 
+	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+
+	purchaseAmt := math.NewDecFromInt64(10)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
+				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.NilError(t, err)
+
+	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	assert.NilError(t, err)
+	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// order was filled, so sell order should no longer exist
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, sellOrderId)
@@ -205,7 +235,7 @@ func TestBuy_Invalid(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().HasBalance(any, any, any).Return(true).Times(3)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(5)
 
 	// sell order not found
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
@@ -237,4 +267,71 @@ func TestBuy_Invalid(t *testing.T) {
 	})
 	assert.ErrorContains(t, err, "auto-retire mismatch")
 
+
+	// cannot buy more credits than available
+	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
+		Buyer: buyerAddr.String(),
+		Orders: []*marketplace.MsgBuy_Order{
+			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
+				Quantity: "100000000000", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
+		},
+	})
+	assert.ErrorContains(t, err, "cannot purchase")
+
+
+	// insufficient bank funds
+	bidTooLow := sdk.NewInt64Coin("ufoo", 5)
+	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
+		Buyer: buyerAddr.String(),
+		Orders: []*marketplace.MsgBuy_Order{
+			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
+				Quantity: "10", BidPrice: &bidTooLow, DisableAutoRetire: false, Expiration: &sellExp},
+		},
+	})
+	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+
+	// mismatchDenom
+	wrongDenom := sdk.NewInt64Coin("ubar", 10)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(wrongDenom).Times(1)
+	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
+		Buyer: buyerAddr.String(),
+		Orders: []*marketplace.MsgBuy_Order{
+			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
+				Quantity: "10", BidPrice: &wrongDenom, DisableAutoRetire: false, Expiration: &sellExp},
+		},
+	})
+	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
+}
+
+func assertSupplyEscrowedAmounts(t *testing.T, ctx context.Context, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
+	var beforeSupply, beforeSupplyEscrowed math.Dec
+	var afterSupply, afterSupplyEscrowed math.Dec
+	if didRetire {
+		_, beforeSupply, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
+		_, afterSupply, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
+	} else {
+		beforeSupply, _, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
+		afterSupply, _, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
+	}
+
+	expectedAmt, err := beforeSupply.Add(amount)
+	assert.NilError(t, err)
+	expectedEscrowed, err := beforeSupplyEscrowed.Sub(amount)
+	assert.NilError(t, err)
+
+	assert.Check(t, afterSupply.Equal(expectedAmt))
+	assert.Check(t, afterSupplyEscrowed.Equal(expectedEscrowed))
+
+}
+
+// getSupplyDecimals extracts the decimal form for the supplies
+func getSupplyDecimals(t *testing.T, supply *ecocreditv1.BatchSupply) (tradable, retired, escrowed math.Dec) {
+	var err error
+	tradable, err = math.NewDecFromString(supply.TradableAmount)
+	assert.NilError(t, err)
+	retired, err = math.NewDecFromString(supply.RetiredAmount)
+	assert.NilError(t, err)
+	escrowed, err = math.NewDecFromString(supply.EscrowedAmount)
+	assert.NilError(t, err)
+	return
 }

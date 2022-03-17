@@ -31,6 +31,7 @@ type BankKeeper interface {
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	HasBalance(ctx sdk.Context, addr sdk.AccAddress, amt sdk.Coin) bool
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 }

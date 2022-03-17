@@ -3,14 +3,13 @@ package marketplace
 import (
 	"context"
 	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
@@ -29,14 +28,10 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 	}
 
 	for _, order := range req.Orders {
-		// verify expiration is in the future
-		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
-		}
-
 		// assert they have the balance they're  bidding with
-		if !k.bankKeeper.HasBalance(sdkCtx, buyerAcc, *order.BidPrice) {
-			return nil, sdkerrors.ErrInsufficientFunds
+		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
+		if bal.IsLT(*order.BidPrice) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v coins with a balance of %v", bal, *order.BidPrice)
 		}
 
 		switch selection := order.Selection.Sum.(type) {
@@ -47,13 +42,13 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			}
 			batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
 			if err != nil {
-				return nil, err
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 			}
-			ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+			ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
 			if err != nil {
 				return nil, err
 			}
-			orderAmt, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
+			creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 			if err != nil {
 				return nil, err
 			}
@@ -82,7 +77,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 					order.BidPrice.Amount.String(), sellOrder.AskPrice)
 			}
 
-			if err = k.updateBalances(ctx, sellOrder, buyerAcc, orderAmt, *order.BidPrice); err != nil {
+			if err = k.updateBalances(ctx, sellOrder, buyerAcc, creditOrderQty, *order.BidPrice, false); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
 			if !sellOrder.DisableAutoRetire {
@@ -106,6 +101,12 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 					return nil, err
 				}
 			}
+		case *v1.MsgBuy_Order_Selection_Filter:
+			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
+			// verify expiration is in the future
+			//if order.Expiration.Before(sdkCtx.BlockTime()) {
+			//	return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+			//}
 		default:
 			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 		}
@@ -119,7 +120,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin) error {
+func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin, canPartialFill bool) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
@@ -127,16 +128,28 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 	}
 	// since we only support direct buy orders at this time, we fail when the requested purchase amount is more than
 	// the available credits for sale, rather than partial filling the buy order.
-	sellOrderQty, err = math.SafeSubBalance(sellOrderQty, purchaseQty)
+	newSellOrderQty, err := sellOrderQty.Sub(purchaseQty)
 	if err != nil {
 		return err
 	}
-	if sellOrderQty.IsZero() { // remove the sell order if no credits are left
+	if newSellOrderQty.IsNegative() {
+		if !canPartialFill {
+			return ecocredit.ErrInsufficientFunds.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
+		} else {
+			// if we can partial fill, we just delete the sellOrder and take whatever
+			// credits are left from that order.
+			if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
+				return err
+			}
+			purchaseQty = sellOrderQty
+		}
+	}
+	if newSellOrderQty.IsZero() { // remove the sell order if no credits are left
 		if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 			return err
 		}
 	} else { // update the sell order with the new value otherwise
-		sellOrder.Quantity = sellOrderQty.String()
+		sellOrder.Quantity = newSellOrderQty.String()
 		if err = k.stateStore.SellOrderTable().Update(ctx, sellOrder); err != nil {
 			return err
 		}
