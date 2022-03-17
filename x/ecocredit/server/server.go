@@ -2,8 +2,6 @@ package server
 
 import (
 	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,13 +9,14 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 )
 
 const (
@@ -228,7 +227,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.projectInfoTable = projectInfoTableBuilder.Build()
 
-	s.db, err = ormutil.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}

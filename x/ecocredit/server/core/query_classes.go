@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -10,7 +11,7 @@ import (
 
 // Classes queries for all credit classes with pagination.
 func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) (*core.QueryClassesResponse, error) {
-	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -27,12 +28,12 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		}
 
 		var ci core.ClassInfo
-		if err = PulsarToGogoSlow(info, &ci); err != nil {
+		if err = ormutil.PulsarToGogoSlow(info, &ci); err != nil {
 			return nil, err
 		}
 		infos = append(infos, &ci)
 	}
-	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}

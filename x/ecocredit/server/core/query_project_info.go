@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -13,7 +14,7 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 	}
 
 	var pi core.ProjectInfo
-	if err = PulsarToGogoSlow(info, &pi); err != nil {
+	if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
 		return nil, err
 	}
 	return &core.QueryProjectInfoResponse{Info: &pi}, nil

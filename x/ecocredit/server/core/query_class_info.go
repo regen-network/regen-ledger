@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -13,7 +14,7 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 	}
 
 	var ci core.ClassInfo
-	if err = PulsarToGogoSlow(classInfo, &ci); err != nil {
+	if err = ormutil.PulsarToGogoSlow(classInfo, &ci); err != nil {
 		return nil, err
 	}
 	return &core.QueryClassInfoResponse{Info: &ci}, nil

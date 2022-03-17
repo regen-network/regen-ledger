@@ -2,6 +2,7 @@ package basket
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,7 +18,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	pulsarPageReq, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +38,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 		}
 
 		basketGogo := &baskettypes.Basket{}
-		err = PulsarToGogoSlow(basket, basketGogo)
+		err = ormutil.PulsarToGogoSlow(basket, basketGogo)
 		if err != nil {
 			return nil, err
 		}
@@ -47,6 +48,6 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 
 	it.Close()
 
-	res.Pagination, err = PulsarPageResToGogoPageRes(it.PageResponse())
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	return res, err
 }
