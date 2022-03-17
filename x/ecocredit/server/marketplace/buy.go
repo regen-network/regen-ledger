@@ -31,7 +31,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 		// assert they have the balance they're  bidding with
 		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 		if bal.IsLT(*order.BidPrice) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v coins with a balance of %v", bal, *order.BidPrice)
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v with a balance of %v", bal, *order.BidPrice)
 		}
 
 		switch selection := order.Selection.Sum.(type) {
@@ -135,7 +135,7 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 	}
 	if newSellOrderQty.IsNegative() {
 		if !canPartialFill {
-			return ecocredit.ErrInsufficientFunds.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
+			return ecocredit.ErrInsufficientCredits.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
 		} else {
 			// if we can partial fill, we just delete the sellOrder and take whatever
 			// credits are left from that order.
