@@ -301,6 +301,19 @@ func TestBuy_Invalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
+
+	// bidding more than in the bank
+	inBank := sdk.NewInt64Coin("ubar", 50)
+	biddingWith := sdk.NewInt64Coin("ubar", 100)
+	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(inBank).Times(1)
+	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
+		Buyer: buyerAddr.String(),
+		Orders: []*marketplace.MsgBuy_Order{
+			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
+				Quantity: "10", BidPrice: &biddingWith, DisableAutoRetire: false, Expiration: &sellExp},
+		},
+	})
+	assert.ErrorContains(t, err, "cannot bid")
 }
 
 func assertSupplyEscrowedAmounts(t *testing.T, ctx context.Context, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
