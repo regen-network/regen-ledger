@@ -194,6 +194,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	orderBefore, err = s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
+	// can update price with new denom
 	askUpdate = sdk.NewInt64Coin("ubar", 18)
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
