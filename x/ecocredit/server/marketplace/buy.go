@@ -135,7 +135,7 @@ func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, bu
 	}
 	if newSellOrderQty.IsNegative() {
 		if !canPartialFill {
-			return ecocredit.ErrInsufficientFunds.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
+			return ecocredit.ErrInsufficientCredits.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
 		} else {
 			// if we can partial fill, we just delete the sellOrder and take whatever
 			// credits are left from that order.
