@@ -2,8 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -11,10 +9,16 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
+// UpdateSellOrders updates the sellOrder with the provided values.
+// Note: only the DisableAutoRetire lacks field presence, so if the existing value
+// is true and you do not want to change that, you MUST provide a value of true in the update.
+// Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrders) (*v1.MsgUpdateSellOrdersResponse, error) {
 	seller, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
@@ -37,27 +41,34 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrder
 	return &v1.MsgUpdateSellOrdersResponse{}, nil
 }
 
+// applySellOrderUpdates applies the updates to the order.
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *v1.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var ct *ecocredit.CreditType
+	var creditType *ecocredit.CreditType
 	event := v1.EventUpdateSellOrder{}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
 	event.DisableAutoRetire = update.DisableAutoRetire
 
 	if update.NewAskPrice != nil {
-		// TODO: this should probably be updated to check that the denom is allowed
-		// once https://github.com/regen-network/regen-ledger/issues/624 is resolved.
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
 			return err
 		}
+		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
+		//has, err := isDenomAllowed(ctx, k.stateStore, update.AskPrice.Denom)
+		//if err != nil {
+		//	return nil, err
+		//}
+		//if !has {
+		//	return nil, ecocredit.ErrInvalidRequest.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
+		//}
 		if market.BankDenom != update.NewAskPrice.Denom {
-			ct, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
+			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {
 				return err
 			}
-			marketId, err := k.getOrCreateMarketId(ctx, ct.Abbreviation, update.NewAskPrice.Denom)
+			marketId, err := k.getOrCreateMarketId(ctx, creditType.Abbreviation, update.NewAskPrice.Denom)
 			if err != nil {
 				return err
 			}
@@ -75,14 +86,14 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
-		if ct == nil {
+		if creditType == nil {
 			var err error
-			ct, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
+			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {
 				return err
 			}
 		}
-		newQty, err := math.NewPositiveFixedDecFromString(update.NewQuantity, ct.Precision)
+		newQty, err := math.NewPositiveFixedDecFromString(update.NewQuantity, creditType.Precision)
 		if err != nil {
 			return err
 		}
@@ -91,8 +102,8 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			return err
 		}
 		// compare newQty and the existingQty
-		// if newQty > existingQty, we need to increase our amount escrowed by the difference of new(more) - existing(less).
-		// if newQty < existingQty we need to decrease our amount escrowed by the difference of existing(more) - new(less).
+		// if newQty > existingQty, we need to increase our amount escrowed by the difference of new - existing.
+		// if newQty < existingQty we need to decrease our amount escrowed by the difference of existing - new.
 		switch newQty.Cmp(existingQty) {
 		case math.GreaterThan:
 			amtToEscrow, err := newQty.Sub(existingQty)

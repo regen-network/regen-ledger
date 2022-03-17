@@ -37,7 +37,7 @@ func TestUpdateSellOrders_Quantity(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(4)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner:  s.addr.String(),
@@ -88,7 +88,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(4)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner:  s.addr.String(),
@@ -107,6 +107,15 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+
+	// cannot increase sell order with higher precision than credit type
+	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+		Owner:   s.addr.String(),
+		Updates: []*marketplace.MsgUpdateSellOrders_Update{
+			{SellOrderId: 1, NewQuantity: "10.329083409234908234"},
+		},
+	})
+	assert.ErrorContains(t, err, "exceeds maximum decimal places")
 }
 
 func TestUpdateSellOrders_Unauthorized(t *testing.T) {
@@ -116,7 +125,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	_,_,unauthorized := testdata.KeyTestPubAddr()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner:  s.addr.String(),
@@ -144,7 +153,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner:  s.addr.String(),
@@ -195,7 +204,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-	}).AnyTimes()
+	}).Times(1)
 
 	future := time.Date(2077, 1,1,1,1,1,1, time.Local)
 	middle := time.Date(2022,1,1,1,1,1,1,time.Local)
