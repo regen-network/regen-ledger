@@ -1,6 +1,6 @@
 Feature: Put Date
 
-  Scenario Outline: batch start date is more than rolling start date
+  Scenario Outline: batch start date is more than basket start date calculated from years into the past
     Given a current block timestamp of <x>
     And a basket with date criteria years into the past of <y>
     And a user owns credits from a batch with start date <z>
@@ -13,7 +13,7 @@ Feature: Put Date
       | "2022-04-01" | "10" | "2011-04-01" |
       | "2022-04-01" | "10" | "2011-07-01" |
 
-  Scenario Outline: batch start date is less than or equal to rolling start date
+  Scenario Outline: batch start date is equal to or less than basket start date calculated from years into the past
     Given a current block timestamp of <x>
     And a basket with date criteria years into the past of <y>
     And a user owns credits from a batch with start date <z>

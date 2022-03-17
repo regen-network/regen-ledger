@@ -16,7 +16,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
@@ -463,6 +462,7 @@ func (s *putSuite) ACurrentBlockTimestampOf(a string) {
 	assert.NilError(s.t, err)
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 }
 
 func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
@@ -526,19 +526,19 @@ func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
 		Return(&ecocredit.QueryBatchInfoResponse{Info: &ecocredit.BatchInfo{
 			BatchDenom: s.batchDenom,
 			StartDate:  &startDate,
-		}}, nil)
+		}}, nil).AnyTimes() // only called if valid start date
 
 	s.ecocreditKeeper.EXPECT().
 		ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{}).
 		Return(&ecocredit.QueryProjectInfoResponse{Info: &ecocredit.ProjectInfo{
 			ClassId: s.classId,
-		}}, nil)
+		}}, nil).AnyTimes() // only called if valid start date
 
 	s.ecocreditKeeper.EXPECT().
 		ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: s.classId}).
 		Return(&ecocredit.QueryClassInfoResponse{Info: &ecocredit.ClassInfo{
 			CreditType: &ecocredit.CreditType{Abbreviation: s.creditType},
-		}}, nil)
+		}}, nil).AnyTimes() // only called if valid start date
 
 	any := gomock.Any()
 	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
@@ -546,13 +546,12 @@ func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
 
 	s.bankKeeper.EXPECT().
 		MintCoins(any, basket.BasketSubModuleName, tokenAmount).
-		Return(nil)
+		Return(nil).AnyTimes() // only called if valid start date
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(any, basket.BasketSubModuleName, s.addr, tokenAmount).
-		Return(nil)
+		Return(nil).AnyTimes() // only called if valid start date
 
-	// TODO: fix block time with year 1
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addr.String(),
 		BasketDenom: s.basketDenom,
@@ -570,5 +569,5 @@ func (s *putSuite) TheCreditsArePutIntoTheBasket() {
 }
 
 func (s *putSuite) TheCreditsAreNotPutIntoTheBasket() {
-	assert.ErrorIs(s.t, s.err, sdkerrors.ErrInvalidRequest) // TODO: start date error
+	assert.ErrorContains(s.t, s.err, "cannot put a credit from a batch with start date")
 }
