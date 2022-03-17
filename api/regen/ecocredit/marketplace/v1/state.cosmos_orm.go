@@ -116,6 +116,24 @@ func (this SellOrderBatchIdSellerIndexKey) WithBatchIdSeller(batch_id uint64, se
 	return this
 }
 
+type SellOrderSellerBatchIdIndexKey struct {
+	vs []interface{}
+}
+
+func (x SellOrderSellerBatchIdIndexKey) id() uint32            { return 5 }
+func (x SellOrderSellerBatchIdIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderSellerBatchIdIndexKey) sellOrderIndexKey()    {}
+
+func (this SellOrderSellerBatchIdIndexKey) WithSeller(seller []byte) SellOrderSellerBatchIdIndexKey {
+	this.vs = []interface{}{seller}
+	return this
+}
+
+func (this SellOrderSellerBatchIdIndexKey) WithSellerBatchId(seller []byte, batch_id uint64) SellOrderSellerBatchIdIndexKey {
+	this.vs = []interface{}{seller, batch_id}
+	return this
+}
+
 type sellOrderTable struct {
 	table ormtable.AutoIncrementTable
 }
