@@ -34,7 +34,7 @@ var (
 	}
 )
 
-func TestUpdateSellOrders_Quantity(t *testing.T) {
+func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
