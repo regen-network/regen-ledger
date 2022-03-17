@@ -2,6 +2,7 @@ package basket_test
 
 import (
 	"context"
+	"github.com/golang/mock/gomock"
 	"strconv"
 	"testing"
 	"time"
@@ -461,7 +462,7 @@ func (s *putSuite) ACurrentBlockTimestampOf(a string) {
 	blockTime, err := time.Parse("2006-01-02", a)
 	assert.NilError(s.t, err)
 
-	s.baseSuite.sdkCtx = s.baseSuite.sdkCtx.WithBlockTime(blockTime)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
 }
 
 func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
@@ -474,7 +475,6 @@ func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditType,
 		DateCriteria:     &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
-		Exponent:         1,
 	})
 	assert.NilError(s.t, err)
 
@@ -498,15 +498,24 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
 	})
 	assert.NilError(s.t, err)
 
-	batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
-	assert.NilError(s.t, err)
+	// TODO: migrate from legacy tradable balance store to batch balance table
 
-	err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
-		Address:  s.addr,
-		BatchId:  batch.Id,
-		Tradable: s.tradableCredits,
-	})
-	assert.NilError(s.t, err)
+	//batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
+	//assert.NilError(s.t, err)
+	//
+	//err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
+	//	Address:  s.addr,
+	//	BatchId:  batch.Id,
+	//	Tradable: s.tradableCredits,
+	//})
+	//assert.NilError(s.t, err)
+
+	legacyStore := s.sdkCtx.KVStore(s.storeKey)
+	tradKey := ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(s.batchDenom))
+	userFunds, err := math.NewDecFromString(s.tradableCredits)
+	require.NoError(s.t, err)
+
+	ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
 }
 
 func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
@@ -531,6 +540,19 @@ func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
 			CreditType: &ecocredit.CreditType{Abbreviation: s.creditType},
 		}}, nil)
 
+	any := gomock.Any()
+	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
+	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
+
+	s.bankKeeper.EXPECT().
+		MintCoins(any, basket.BasketSubModuleName, tokenAmount).
+		Return(nil)
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(any, basket.BasketSubModuleName, s.addr, tokenAmount).
+		Return(nil)
+
+	// TODO: fix block time with year 1
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addr.String(),
 		BasketDenom: s.basketDenom,
