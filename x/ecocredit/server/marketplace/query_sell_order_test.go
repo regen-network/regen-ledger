@@ -15,7 +15,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
-func TestQuery_SelOrder(t *testing.T) {
+func TestQuery_SellOrder(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	batchDenom := "C01-20200101-20200201-001"
