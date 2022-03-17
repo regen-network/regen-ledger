@@ -2,6 +2,8 @@ package marketplace
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -20,25 +22,26 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *v1.MsgUpdateSellOrder
 	}
 
 	for _, update := range req.Updates {
-		// verify expiration is in the future
-		if update.NewExpiration != nil && update.NewExpiration.Before(ctx.BlockTime()) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
-		}
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
 			return nil, err
 		}
-		if err = k.applyOrderUpdates(ctx, sellOrder, update); err != nil {
+		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
+		if !seller.Equals(sellOrderAddr) {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Owner, sellOrderAddr.String())
+		}
+		if err = k.applySellOrderUpdates(ctx, sellOrder, update); err != nil {
 			return nil, err
 		}
 	}
 	return &v1.MsgUpdateSellOrdersResponse{}, nil
 }
 
-func (k Keeper) applyOrderUpdates(ctx context.Context, order *api.SellOrder, update *v1.MsgUpdateSellOrders_Update) error {
+func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *v1.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
+	var ct *ecocredit.CreditType
 	event := v1.EventUpdateSellOrder{}
+
 	order.DisableAutoRetire = update.DisableAutoRetire
 	event.DisableAutoRetire = update.DisableAutoRetire
 
@@ -50,11 +53,7 @@ func (k Keeper) applyOrderUpdates(ctx context.Context, order *api.SellOrder, upd
 			return err
 		}
 		if market.BankDenom != update.NewAskPrice.Denom {
-			batch, err := k.coreStore.BatchInfoTable().Get(ctx, order.BatchId)
-			if err != nil {
-				return err
-			}
-			ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+			ct, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {
 				return err
 			}
@@ -68,11 +67,66 @@ func (k Keeper) applyOrderUpdates(ctx context.Context, order *api.SellOrder, upd
 		event.NewAskPrice = update.NewAskPrice
 	}
 	if update.NewExpiration != nil {
+		// verify expiration is in the future
+		if update.NewExpiration != nil && update.NewExpiration.Before(sdkCtx.BlockTime()) {
+			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
+		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
 		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
+		if ct == nil {
+			var err error
+			ct, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
+			if err != nil {
+				return err
+			}
+		}
+		newQty, err := math.NewPositiveFixedDecFromString(update.NewQuantity, ct.Precision)
+		if err != nil {
+			return err
+		}
+		existingQty, err := math.NewDecFromString(order.Quantity)
+		if err != nil {
+			return err
+		}
+		switch newQty.Cmp(existingQty) {
+		case math.GreaterThan:
+			amtToEscrow, err := newQty.Sub(existingQty)
+			if err != nil {
+				return err
+			}
+			if err = k.escrowCredits(ctx, order.Seller, order.BatchId, amtToEscrow); err != nil {
+				return err
+			}
+		case math.LessThan:
+			amtToUnescrow, err := existingQty.Sub(newQty)
+			if err != nil {
+				return err
+			}
+			if err = k.unescrowCredits(ctx, order.Seller, order.BatchId, amtToUnescrow.String()); err != nil {
+				return err
+			}
+		}
 		order.Quantity = update.NewQuantity
 		event.NewQuantity = update.NewQuantity
 	}
+
+	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
+		return err
+	}
+
+	return sdkCtx.EventManager().EmitTypedEvent(&event)
+}
+
+func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocredit.CreditType, error) {
+	batch, err := k.coreStore.BatchInfoTable().Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+	if err != nil {
+		return nil, err
+	}
+	return &creditType, nil
 }
