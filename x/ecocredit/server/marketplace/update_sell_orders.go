@@ -68,7 +68,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
-		if update.NewExpiration != nil && update.NewExpiration.Before(sdkCtx.BlockTime()) {
+		if update.NewExpiration.Before(sdkCtx.BlockTime()) {
 			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
@@ -90,6 +90,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		if err != nil {
 			return err
 		}
+		// compare newQty and the existingQty
+		// if newQty > existingQty, we need to increase our amount escrowed by the difference of new(more) - existing(less).
+		// if newQty < existingQty we need to decrease our amount escrowed by the difference of existing(more) - new(less).
 		switch newQty.Cmp(existingQty) {
 		case math.GreaterThan:
 			amtToEscrow, err := newQty.Sub(existingQty)
@@ -99,6 +102,8 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			if err = k.escrowCredits(ctx, order.Seller, order.BatchId, amtToEscrow); err != nil {
 				return err
 			}
+			order.Quantity = update.NewQuantity
+			event.NewQuantity = update.NewQuantity
 		case math.LessThan:
 			amtToUnescrow, err := existingQty.Sub(newQty)
 			if err != nil {
@@ -107,9 +112,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			if err = k.unescrowCredits(ctx, order.Seller, order.BatchId, amtToUnescrow.String()); err != nil {
 				return err
 			}
+			order.Quantity = update.NewQuantity
+			event.NewQuantity = update.NewQuantity
 		}
-		order.Quantity = update.NewQuantity
-		event.NewQuantity = update.NewQuantity
 	}
 
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
@@ -119,6 +124,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 	return sdkCtx.EventManager().EmitTypedEvent(&event)
 }
 
+// getCreditTypeFromBatchId gets the credit type given a batch id.
 func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocredit.CreditType, error) {
 	batch, err := k.coreStore.BatchInfoTable().Get(ctx, id)
 	if err != nil {
