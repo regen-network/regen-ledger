@@ -56,6 +56,7 @@ service Query {
 message QuerySellOrderRequest {
   // sell_order_id is the id of the requested sell order.
   uint64 sell_order_id = 1;
+
 }
 
 // QuerySellOrderResponse is the Query/SellOrder response type.
@@ -66,8 +67,15 @@ message QuerySellOrderResponse {
 
 // QuerySellOrdersRequest is the Query/SellOrders request type.
 message QuerySellOrdersRequest {
+
+  // batch_denom is an ecocredit denom
+  string batch_denom = 1;
+
+  // address is the creator of the sell order
+  string address = 2;
+
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 // QuerySellOrdersResponse is the Query/SellOrders response type.

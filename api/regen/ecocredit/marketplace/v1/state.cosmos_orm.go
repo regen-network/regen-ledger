@@ -98,6 +98,24 @@ func (this SellOrderExpirationIndexKey) WithExpiration(expiration *timestamppb.T
 	return this
 }
 
+type SellOrderBatchIdSellerIndexKey struct {
+	vs []interface{}
+}
+
+func (x SellOrderBatchIdSellerIndexKey) id() uint32            { return 4 }
+func (x SellOrderBatchIdSellerIndexKey) values() []interface{} { return x.vs }
+func (x SellOrderBatchIdSellerIndexKey) sellOrderIndexKey()    {}
+
+func (this SellOrderBatchIdSellerIndexKey) WithBatchId(batch_id uint64) SellOrderBatchIdSellerIndexKey {
+	this.vs = []interface{}{batch_id}
+	return this
+}
+
+func (this SellOrderBatchIdSellerIndexKey) WithBatchIdSeller(batch_id uint64, seller []byte) SellOrderBatchIdSellerIndexKey {
+	this.vs = []interface{}{batch_id, seller}
+	return this
+}
+
 type sellOrderTable struct {
 	table ormtable.AutoIncrementTable
 }

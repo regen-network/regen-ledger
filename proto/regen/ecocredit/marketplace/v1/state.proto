@@ -16,6 +16,7 @@ message SellOrder {
         index: {id: 1 fields: "batch_id"}
         index: {id: 2 fields: "seller"}
         index: {id: 3 fields: "expiration"}
+        index: {id: 4 fields: "batch_id,seller"}
     };
 
     // id is the unique ID of sell order.
