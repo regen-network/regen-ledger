@@ -12,6 +12,7 @@ import (
 const gasCostPerIteration = uint64(10)
 
 var _ core.MsgServer = &Keeper{}
+var _ core.QueryServer = &Keeper{}
 
 type Keeper struct {
 	stateStore api.StateStore

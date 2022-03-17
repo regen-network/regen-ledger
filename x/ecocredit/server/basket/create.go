@@ -37,7 +37,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &api.Basket{
+	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
 		Curator:           msg.Curator,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
@@ -61,7 +61,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if msg.Exponent != 0 {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom:    denom,
-			Exponent: 0, // convertion from base denom to this denom
+			Exponent: 0, // conversion from base denom to this denom
 			Aliases:  nil,
 		})
 	}
@@ -113,7 +113,7 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 		}
 
 		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
-		err := k.stateStore.BasketClassStore().Insert(wrappedCtx,
+		err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
 			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,

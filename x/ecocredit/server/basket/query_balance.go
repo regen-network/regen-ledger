@@ -14,12 +14,12 @@ func (k Keeper) BasketBalance(ctx context.Context, request *baskettypes.QueryBas
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, request.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, request.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	balance, err := k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, request.BatchDenom)
+	balance, err := k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

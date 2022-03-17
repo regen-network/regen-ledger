@@ -132,7 +132,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, err
 	}
 
-	id, err := s.stateStore.ResolverInfoStore().InsertReturningID(ctx, &api.ResolverInfo{
+	id, err := s.stateStore.ResolverInfoTable().InsertReturningID(ctx, &api.ResolverInfo{
 		Url:     msg.ResolverUrl,
 		Manager: manager.Bytes(),
 	})
@@ -144,7 +144,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 }
 
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
-	resolverInfo, err := s.stateStore.ResolverInfoStore().Get(ctx, msg.ResolverId)
+	resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		if err != nil {
 			return nil, err
 		}
-		err = s.stateStore.DataResolverStore().Save(
+		err = s.stateStore.DataResolverTable().Save(
 			ctx,
 			&api.DataResolver{
 				ResolverId: msg.ResolverId,

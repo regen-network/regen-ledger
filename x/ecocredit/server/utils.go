@@ -31,7 +31,7 @@ func GetCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocre
 func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ParamKeeper, denom string) (ecocredit.CreditType, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := store.ClassInfoStore().GetByName(ctx, classId)
+	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
 	if err != nil {
 		return ecocredit.CreditType{}, err
 	}

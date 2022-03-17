@@ -20,11 +20,11 @@ message EventCreateProject {
   // project_id is the unique ID of the project.
   string project_id = 1;
 
-  // class_id is the unique ID of credit class for this project.
-  string class_id = 2;
+  // admin is the admin of the project.
+  string admin = 2;
 
-  // issuer is the issuer of the credit batches for this project.
-  string issuer = 3;
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 3;
 
   // project_location is the location of the project.
   // Full documentation can be found in MsgCreateProject.project_location.
