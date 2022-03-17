@@ -781,7 +781,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 				// error if partial fill disabled
 				if order.DisablePartialFill {
-					return nil, ecocredit.ErrInsufficientFunds.Wrap("sell order does not have sufficient credits to fill the buy order")
+					return nil, ecocredit.ErrInsufficientCredits.Wrap("sell order does not have sufficient credits to fill the buy order")
 				}
 
 				creditsToReceive = creditsAvailable

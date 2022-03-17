@@ -1,7 +1,6 @@
 package marketplace
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -68,7 +67,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
-	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, false)
+	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, false)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -130,7 +129,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, true)
+	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -192,7 +191,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, s.ctx, supplyBefore, supplyAfter, purchaseAmt, true)
+	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// order was filled, so sell order should no longer exist
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, sellOrderId)
@@ -312,7 +311,7 @@ func TestBuy_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "cannot bid")
 }
 
-func assertSupplyEscrowedAmounts(t *testing.T, ctx context.Context, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
+func assertSupplyEscrowedAmounts(t *testing.T, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
 	var beforeSupply, beforeSupplyEscrowed math.Dec
 	var afterSupply, afterSupplyEscrowed math.Dec
 	if didRetire {
