@@ -7,7 +7,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -84,5 +83,5 @@ func (k Keeper) genProjectID(ctx context.Context, classRowID uint64, classID str
 		return "", err
 	}
 
-	return ecocredit.FormatProjectID(classID, nextID), nil
+	return core.FormatProjectID(classID, nextID), nil
 }

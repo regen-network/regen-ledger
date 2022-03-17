@@ -42,7 +42,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
-		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
+		// paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
 	}
 }
 
@@ -64,9 +64,9 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
-		return err
-	}
+	// if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
@@ -190,7 +190,7 @@ func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bo
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		CreditTypes:          creditTypes,
-		BasketCreationFee:    basketCreationFee,
+		// BasketCreationFee:    basketCreationFee,
 	}
 }
 

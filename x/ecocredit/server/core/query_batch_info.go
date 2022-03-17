@@ -3,13 +3,12 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // BatchInfo queries for information on a credit batch.
 func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoRequest) (*core.QueryBatchInfoResponse, error) {
-	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+	if err := core.ValidateDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 

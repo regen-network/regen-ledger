@@ -9,7 +9,6 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
@@ -58,7 +57,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
-			return ecocredit.ErrInsufficientFunds.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
+			return core.ErrInsufficientFunds.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
 		}
 		return err
 	}
@@ -145,7 +144,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}); err != nil {
 			return err
 		}
-		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&ecocredit.EventRetire{
+		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&api.EventRetire{
 			Retirer:    to.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     sendAmtRetired.String(),

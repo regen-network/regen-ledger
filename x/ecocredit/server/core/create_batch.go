@@ -10,7 +10,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
@@ -41,7 +40,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	batchDenom, err := ecocredit.FormatDenom(classInfo.Name, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := core.FormatDenom(classInfo.Name, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
