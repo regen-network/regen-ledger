@@ -58,6 +58,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
 			}
 
+			// check that bid price and ask price denoms match
 			market, err := k.stateStore.MarketTable().Get(ctx, sellOrder.MarketId)
 			if err != nil {
 				return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
