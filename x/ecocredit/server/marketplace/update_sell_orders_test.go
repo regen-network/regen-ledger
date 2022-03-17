@@ -245,6 +245,15 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
+	// should work with the same time as blockTime
+	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+		Owner: s.addr.String(),
+		Updates: []*marketplace.MsgUpdateSellOrders_Update{
+			{SellOrderId: 1, NewExpiration: &middle},
+		},
+	})
+	assert.NilError(t, err)
+
 	// should not work with past time
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
