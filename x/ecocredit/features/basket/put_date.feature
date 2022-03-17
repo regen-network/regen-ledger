@@ -3,7 +3,7 @@ Feature: Put Date
   Scenario Outline: batch start date is more than basket start date calculated from years into the past
     Given a current block timestamp of <x>
     And a basket with date criteria years into the past of <y>
-    And a user owns credits from a batch with start date <z>
+    And a user owns credits from a batch with start date of <z>
     When the user attempts to put the credits into the basket
     Then the credits are NOT put into the basket
 
@@ -16,7 +16,7 @@ Feature: Put Date
   Scenario Outline: batch start date is equal to or less than basket start date calculated from years into the past
     Given a current block timestamp of <x>
     And a basket with date criteria years into the past of <y>
-    And a user owns credits from a batch with start date <z>
+    And a user owns credits from a batch with start date of <z>
     When the user attempts to put the credits into the basket
     Then the credits are put into the basket
 

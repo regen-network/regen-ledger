@@ -2,11 +2,11 @@ package basket_test
 
 import (
 	"context"
-	"github.com/golang/mock/gomock"
 	"strconv"
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -485,7 +485,7 @@ func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
 	assert.NilError(s.t, err)
 }
 
-func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDate(a string) {
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	startDate, err := time.Parse("2006-01-02", a)
 	assert.NilError(s.t, err)
 
