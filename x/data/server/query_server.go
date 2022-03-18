@@ -14,7 +14,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormstore"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -130,9 +130,13 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		request.Pagination = &query.PageRequest{}
 	}
 
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
+	}
 	it, err := s.stateStore.DataResolverTable().
 		List(ctx, api.DataResolverPrimaryKey{}.WithId(id),
-			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
+			ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +156,9 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
 	}
 
-	if it.PageResponse() != nil {
-		res.Pagination = ormstore.PulsarPageResToGogoPageRes(it.PageResponse())
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
 	}
 
 	return res, nil
