@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types/ormutil"
 
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
