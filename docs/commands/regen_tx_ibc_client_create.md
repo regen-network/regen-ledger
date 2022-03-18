@@ -15,7 +15,7 @@ regen tx ibc client create [path/to/client_state.json] [path/to/consensus_state.
 ### Examples
 
 ```
-regen tx ibc client create [path/to/client_state.json] [path/to/consensus_state.json] --from node0 --home ../node0/<app>cli --chain-id $CID
+<appd> tx ibc client create [path/to/client_state.json] [path/to/consensus_state.json] --from node0 --home ../node0/<app>cli --chain-id $CID
 ```
 
 ### Options

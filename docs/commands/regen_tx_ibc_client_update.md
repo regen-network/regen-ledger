@@ -13,7 +13,7 @@ regen tx ibc client update [client-id] [path/to/header.json] [flags]
 ### Examples
 
 ```
-regen tx ibc client update [client-id] [path/to/header.json] --from node0 --home ../node0/<app>cli --chain-id $CID
+<appd> tx ibc client update [client-id] [path/to/header.json] --from node0 --home ../node0/<app>cli --chain-id $CID
 ```
 
 ### Options

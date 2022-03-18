@@ -7,7 +7,7 @@ Query all unbonding-delegations records for one delegator
 Query unbonding delegations for an individual delegator.
 
 Example:
-$ regen query staking unbonding-delegations regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
+$ <appd> query staking unbonding-delegations regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
 
 ```
 regen query staking unbonding-delegations [delegator-addr] [flags]

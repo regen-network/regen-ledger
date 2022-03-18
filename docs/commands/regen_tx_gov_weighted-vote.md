@@ -5,10 +5,10 @@ Vote for an active proposal, options: yes/no/no_with_veto/abstain
 ### Synopsis
 
 Submit a vote for an active proposal. You can
-find the proposal-id by running "regen query gov proposals".
+find the proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen tx gov weighted-vote 1 yes=0.6,no=0.3,abstain=0.05,no_with_veto=0.05 --from mykey
+$ <appd> tx gov weighted-vote 1 yes=0.6,no=0.3,abstain=0.05,no_with_veto=0.05 --from mykey
 
 ```
 regen tx gov weighted-vote [proposal-id] [weighted-options] [flags]

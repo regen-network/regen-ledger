@@ -5,10 +5,10 @@ Get the tally of a proposal vote
 ### Synopsis
 
 Query tally of votes on a proposal. You can find
-the proposal-id by running "regen query gov proposals".
+the proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen query gov tally 1
+$ <appd> query gov tally 1
 
 ```
 regen query gov tally [proposal-id] [flags]

@@ -18,7 +18,7 @@ regen tx ibc-transfer transfer [src-port] [src-channel] [receiver] [amount] [fla
 ### Examples
 
 ```
-regen tx ibc-transfer transfer [src-port] [src-channel] [receiver] [amount]
+<appd> tx ibc-transfer transfer [src-port] [src-channel] [receiver] [amount]
 ```
 
 ### Options

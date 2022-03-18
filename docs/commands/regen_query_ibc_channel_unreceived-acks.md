@@ -17,7 +17,7 @@ regen query ibc channel unreceived-acks [port-id] [channel-id] [flags]
 ### Examples
 
 ```
-regen query ibc channel unreceived-acks [port-id] [channel-id] --sequences=1,2,3
+<appd> query ibc channel unreceived-acks [port-id] [channel-id] --sequences=1,2,3
 ```
 
 ### Options

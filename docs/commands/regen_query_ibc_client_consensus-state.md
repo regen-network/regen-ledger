@@ -14,7 +14,7 @@ regen query ibc client consensus-state [client-id] [height] [flags]
 ### Examples
 
 ```
-regen query ibc client  consensus-state [client-id] [height]
+<appd> query ibc client  consensus-state [client-id] [height]
 ```
 
 ### Options

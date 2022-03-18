@@ -7,9 +7,9 @@ Query the parameters (voting|tallying|deposit) of the governance process
 Query the all the parameters for the governance process.
 
 Example:
-$ regen query gov param voting
-$ regen query gov param tallying
-$ regen query gov param deposit
+$ <appd> query gov param voting
+$ <appd> query gov param tallying
+$ <appd> query gov param deposit
 
 ```
 regen query gov param [param-type] [flags]

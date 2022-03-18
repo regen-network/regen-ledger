@@ -8,7 +8,7 @@ Withdraw all rewards for a single delegator.
 Note that if you use this command with --broadcast-mode=sync or --broadcast-mode=async, the max-msgs flag will automatically be set to 0.
 
 Example:
-$ regen tx distribution withdraw-all-rewards --from mykey
+$ <appd> tx distribution withdraw-all-rewards --from mykey
 
 ```
 regen tx distribution withdraw-all-rewards [flags]

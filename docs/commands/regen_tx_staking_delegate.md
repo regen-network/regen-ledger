@@ -7,7 +7,7 @@ Delegate liquid tokens to a validator
 Delegate an amount of liquid coins to a validator from your wallet.
 
 Example:
-$ regen tx staking delegate regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake --from mykey
+$ <appd> tx staking delegate regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake --from mykey
 
 ```
 regen tx staking delegate [validator-addr] [amount] [flags]

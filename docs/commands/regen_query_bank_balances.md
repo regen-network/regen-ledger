@@ -7,8 +7,8 @@ Query for account balances by address
 Query the total balance of an account or of a specific denomination.
 
 Example:
-  $ regen query bank balances [address]
-  $ regen query bank balances [address] --denom=[denom]
+  $ <appd> query bank balances [address]
+  $ <appd> query bank balances [address] --denom=[denom]
 
 ```
 regen query bank balances [address] [flags]

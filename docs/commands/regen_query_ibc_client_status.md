@@ -13,7 +13,7 @@ regen query ibc client status [client-id] [flags]
 ### Examples
 
 ```
-regen query ibc client status [client-id]
+<appd> query ibc client status [client-id]
 ```
 
 ### Options

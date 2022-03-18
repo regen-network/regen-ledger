@@ -7,7 +7,7 @@ Query a delegation based on address and validator address
 Query delegations for an individual delegator on an individual validator.
 
 Example:
-$ regen query staking delegation regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query staking delegation regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query staking delegation [delegator-addr] [validator-addr] [flags]

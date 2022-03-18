@@ -15,7 +15,7 @@ regen tx ibc client upgrade [client-identifier] [path/to/client_state.json] [pat
 ### Examples
 
 ```
-regen tx ibc client upgrade [client-identifier] [path/to/client_state.json] [path/to/consensus_state.json] [client-state-proof] [consensus-state-proof] --from node0 --home ../node0/<app>cli --chain-id $CID
+<appd> tx ibc client upgrade [client-identifier] [path/to/client_state.json] [path/to/consensus_state.json] [client-state-proof] [consensus-state-proof] --from node0 --home ../node0/<app>cli --chain-id $CID
 ```
 
 ### Options

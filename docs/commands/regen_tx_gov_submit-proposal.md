@@ -8,7 +8,7 @@ Submit a proposal along with an initial deposit.
 Proposal title, description, type and deposit can be given directly or through a proposal JSON file.
 
 Example:
-$ regen tx gov submit-proposal --proposal="path/to/proposal.json" --from mykey
+$ <appd> tx gov submit-proposal --proposal="path/to/proposal.json" --from mykey
 
 Where proposal.json contains:
 
@@ -21,7 +21,7 @@ Where proposal.json contains:
 
 Which is equivalent to:
 
-$ regen tx gov submit-proposal --title="Test Proposal" --description="My awesome proposal" --type="Text" --deposit="10test" --from mykey
+$ <appd> tx gov submit-proposal --title="Test Proposal" --description="My awesome proposal" --type="Text" --deposit="10test" --from mykey
 
 ```
 regen tx gov submit-proposal [flags]

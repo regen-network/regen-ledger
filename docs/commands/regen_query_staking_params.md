@@ -7,7 +7,7 @@ Query the current staking parameters information
 Query values set as staking parameters.
 
 Example:
-$ regen query staking params
+$ <appd> query staking params
 
 ```
 regen query staking params [flags]

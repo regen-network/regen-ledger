@@ -6,7 +6,7 @@ revoke authorization
 
 revoke authorization from a granter to a grantee:
 Example:
- $ regen tx authz revoke cosmos1skj.. /cosmos.bank.v1beta1.MsgSend --from=cosmos1skj..
+ $ <appd> tx authz revoke cosmos1skj.. /cosmos.bank.v1beta1.MsgSend --from=cosmos1skj..
 
 ```
 regen tx authz revoke [grantee] [msg_type] --from=[granter] [flags]

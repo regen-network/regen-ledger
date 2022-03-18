@@ -7,7 +7,7 @@ Query distribution validator slashes
 Query all slashes of a validator for a given block range.
 
 Example:
-$ regen query distribution slashes regenvalopervaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 0 100
+$ <appd> query distribution slashes regenvalopervaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 0 100
 
 ```
 regen query distribution slashes [validator] [start-height] [end-height] [flags]

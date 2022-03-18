@@ -13,7 +13,7 @@ regen query ibc client params [flags]
 ### Examples
 
 ```
-regen query ibc client params
+<appd> query ibc client params
 ```
 
 ### Options

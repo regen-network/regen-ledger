@@ -7,7 +7,7 @@ Query the parameters of the governance process
 Query the all the parameters for the governance process.
 
 Example:
-$ regen query gov params
+$ <appd> query gov params
 
 ```
 regen query gov params [flags]

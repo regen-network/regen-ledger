@@ -17,7 +17,7 @@ Proper vetting of a parameter change proposal should prevent this from happening
 regardless.
 
 Example:
-$ regen tx gov submit-proposal param-change <path/to/proposal.json> --from=<key_or_address>
+$ <appd> tx gov submit-proposal param-change <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 

@@ -7,7 +7,7 @@ Query for all validators
 Query details about all validators on a network.
 
 Example:
-$ regen query staking validators
+$ <appd> query staking validators
 
 ```
 regen query staking validators [flags]

@@ -22,6 +22,7 @@ regen tx [flags]
 * [regen tx bank](regen_tx_bank.md)	 - Bank transaction subcommands
 * [regen tx broadcast](regen_tx_broadcast.md)	 - Broadcast transactions generated offline
 * [regen tx crisis](regen_tx_crisis.md)	 - Crisis transactions subcommands
+* [regen tx data](regen_tx_data.md)	 - Data transaction subcommands
 * [regen tx decode](regen_tx_decode.md)	 - Decode a binary encoded transaction string
 * [regen tx distribution](regen_tx_distribution.md)	 - Distribution transactions subcommands
 * [regen tx ecocredit](regen_tx_ecocredit.md)	 - Ecocredit module transactions

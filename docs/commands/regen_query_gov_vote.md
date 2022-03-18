@@ -7,7 +7,7 @@ Query details of a single vote
 Query details for a single vote on a proposal given its identifier.
 
 Example:
-$ regen query gov vote 1 cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
+$ <appd> query gov vote 1 cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
 
 ```
 regen query gov vote [proposal-id] [voter-addr] [flags]

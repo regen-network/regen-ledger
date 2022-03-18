@@ -7,7 +7,7 @@ Query a validator
 Query details about an individual validator.
 
 Example:
-$ regen query staking validator regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query staking validator regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query staking validator [validator-addr] [flags]

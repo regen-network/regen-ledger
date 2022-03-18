@@ -7,7 +7,7 @@ Query historical info at given height
 Query historical info at given height.
 
 Example:
-$ regen query staking historical-info 5
+$ <appd> query staking historical-info 5
 
 ```
 regen query staking historical-info [height] [flags]

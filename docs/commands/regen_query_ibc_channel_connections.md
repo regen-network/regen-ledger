@@ -13,7 +13,7 @@ regen query ibc channel connections [connection-id] [flags]
 ### Examples
 
 ```
-regen query ibc channel connections [connection-id]
+<appd> query ibc channel connections [connection-id]
 ```
 
 ### Options

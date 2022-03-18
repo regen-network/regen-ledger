@@ -13,7 +13,7 @@ regen query ibc connection path [client-id] [flags]
 ### Examples
 
 ```
-regen query  ibc connection path [client-id]
+<appd> query  ibc connection path [client-id]
 ```
 
 ### Options

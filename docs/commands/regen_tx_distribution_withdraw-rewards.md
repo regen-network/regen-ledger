@@ -8,8 +8,8 @@ Withdraw rewards from a given delegation address,
 and optionally withdraw validator commission if the delegation address given is a validator operator.
 
 Example:
-$ regen tx distribution withdraw-rewards regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey
-$ regen tx distribution withdraw-rewards regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey --commission
+$ <appd> tx distribution withdraw-rewards regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey
+$ <appd> tx distribution withdraw-rewards regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj --from mykey --commission
 
 ```
 regen tx distribution withdraw-rewards [validator-addr] [flags]

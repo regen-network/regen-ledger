@@ -7,7 +7,7 @@ Query all unbonding delegatations from a validator
 Query delegations that are unbonding _from_ a validator.
 
 Example:
-$ regen query staking unbonding-delegations-from regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query staking unbonding-delegations-from regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query staking unbonding-delegations-from [validator-addr] [flags]

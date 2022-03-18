@@ -5,10 +5,10 @@ Query deposits on a proposal
 ### Synopsis
 
 Query details for all deposits on a proposal.
-You can find the proposal-id by running "regen query gov proposals".
+You can find the proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen query gov deposits 1
+$ <appd> query gov deposits 1
 
 ```
 regen query gov deposits [proposal-id] [flags]

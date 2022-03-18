@@ -7,7 +7,7 @@ Redelegate illiquid tokens from one validator to another
 Redelegate an amount of illiquid staking tokens from one validator to another.
 
 Example:
-$ regen tx staking redelegate regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 100stake --from mykey
+$ <appd> tx staking redelegate regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 100stake --from mykey
 
 ```
 regen tx staking redelegate [src-validator-addr] [dst-validator-addr] [amount] [flags]

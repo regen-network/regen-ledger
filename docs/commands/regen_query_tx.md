@@ -5,9 +5,9 @@ Query for a transaction by hash, "<addr>/<seq>" combination or comma-separated s
 ### Synopsis
 
 Example:
-$ regen query tx <hash>
-$ regen query tx --type=acc_seq <addr>/<sequence>
-$ regen query tx --type=signature <sig1_base64>,<sig2_base64...>
+$ <appd> query tx <hash>
+$ <appd> query tx --type=acc_seq <addr>/<sequence>
+$ <appd> query tx --type=signature <sig1_base64>,<sig2_base64...>
 
 ```
 regen query tx --type=[hash|acc_seq|signature] [hash|acc_seq|signature] [flags]

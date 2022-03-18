@@ -7,10 +7,10 @@ Query the total supply of coins of the chain
 Query total supply of coins that are held by accounts in the chain.
 
 Example:
-  $ regen query bank total
+  $ <appd> query bank total
 
 To query for the total supply of a specific coin denomination use:
-  $ regen query bank total --denom=[denom]
+  $ <appd> query bank total --denom=[denom]
 
 ```
 regen query bank total [flags]

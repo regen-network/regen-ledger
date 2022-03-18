@@ -13,7 +13,7 @@ regen query ibc channel channels [flags]
 ### Examples
 
 ```
-regen query ibc channel channels
+<appd> query ibc channel channels
 ```
 
 ### Options

@@ -13,7 +13,7 @@ regen query ibc connection end [connection-id] [flags]
 ### Examples
 
 ```
-regen query ibc connection end [connection-id]
+<appd> query ibc connection end [connection-id]
 ```
 
 ### Options

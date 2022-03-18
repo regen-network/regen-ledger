@@ -8,7 +8,7 @@ revoke fee grant from a granter to a grantee. Note, the'--from' flag is
 			ignored as it is implied from [granter].
 
 Example:
- $ regen tx feegrant revoke cosmos1skj.. cosmos1skj..
+ $ <appd> tx feegrant revoke cosmos1skj.. cosmos1skj..
 
 ```
 regen tx feegrant revoke [granter] [grantee] [flags]

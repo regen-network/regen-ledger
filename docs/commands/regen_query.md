@@ -21,6 +21,7 @@ regen query [flags]
 * [regen query authz](regen_query_authz.md)	 - Querying commands for the authz module
 * [regen query bank](regen_query_bank.md)	 - Querying commands for the bank module
 * [regen query block](regen_query_block.md)	 - Get verified data for a the block at given height
+* [regen query data](regen_query_data.md)	 - Querying commands for the data module
 * [regen query distribution](regen_query_distribution.md)	 - Querying commands for the distribution module
 * [regen query ecocredit](regen_query_ecocredit.md)	 - Query commands for the ecocredit module
 * [regen query evidence](regen_query_evidence.md)	 - Query for evidence by hash or for all (paginated) submitted evidence

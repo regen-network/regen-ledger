@@ -7,7 +7,7 @@ Query details of a deposit
 Query details for a single proposal deposit on a proposal by its identifier.
 
 Example:
-$ regen query gov deposit 1 cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
+$ <appd> query gov deposit 1 cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
 
 ```
 regen query gov deposit [proposal-id] [depositer-addr] [flags]

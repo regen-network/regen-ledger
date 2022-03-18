@@ -7,8 +7,8 @@ Query for evidence by hash or for all (paginated) submitted evidence
 Query for specific submitted evidence by hash or query for all (paginated) evidence:
 
 Example:
-$ regen query evidence DF0C23E8634E480F84B9D5674A7CDC9816466DEC28A3358F73260F68D28D7660
-$ regen query evidence --page=2 --limit=50
+$ <appd> query evidence DF0C23E8634E480F84B9D5674A7CDC9816466DEC28A3358F73260F68D28D7660
+$ <appd> query evidence --page=2 --limit=50
 
 ```
 regen query evidence [flags]

@@ -13,7 +13,7 @@ regen query ibc-transfer escrow-address [flags]
 ### Examples
 
 ```
-regen query ibc-transfer escrow-address [port] [channel-id]
+<appd> query ibc-transfer escrow-address [port] [channel-id]
 ```
 
 ### Options

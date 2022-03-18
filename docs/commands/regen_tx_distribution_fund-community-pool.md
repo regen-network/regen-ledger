@@ -7,7 +7,7 @@ Funds the community pool with the specified amount
 Funds the community pool with the specified amount
 
 Example:
-$ regen tx distribution fund-community-pool 100uatom --from mykey
+$ <appd> tx distribution fund-community-pool 100uatom --from mykey
 
 ```
 regen tx distribution fund-community-pool [amount] [flags]

@@ -7,7 +7,7 @@ Query distribution validator commission
 Query validator commission rewards from delegators to that validator.
 
 Example:
-$ regen query distribution commission regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query distribution commission regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query distribution commission [validator] [flags]

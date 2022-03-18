@@ -13,7 +13,7 @@ regen query ibc-transfer denom-trace [hash] [flags]
 ### Examples
 
 ```
-regen query ibc-transfer denom-trace [hash]
+<appd> query ibc-transfer denom-trace [hash]
 ```
 
 ### Options

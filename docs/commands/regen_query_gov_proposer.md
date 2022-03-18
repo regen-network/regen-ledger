@@ -7,7 +7,7 @@ Query the proposer of a governance proposal
 Query which address proposed a proposal with a given ID.
 
 Example:
-$ regen query gov proposer 1
+$ <appd> query gov proposer 1
 
 ```
 regen query gov proposer [proposal-id] [flags]

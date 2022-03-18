@@ -7,10 +7,10 @@ Query proposals with optional filters
 Query for a all paginated proposals that match optional filters:
 
 Example:
-$ regen query gov proposals --depositor cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
-$ regen query gov proposals --voter cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
-$ regen query gov proposals --status (DepositPeriod|VotingPeriod|Passed|Rejected)
-$ regen query gov proposals --page=2 --limit=100
+$ <appd> query gov proposals --depositor cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
+$ <appd> query gov proposals --voter cosmos1skjwj5whet0lpe65qaq4rpq03hjxlwd9nf39lk
+$ <appd> query gov proposals --status (DepositPeriod|VotingPeriod|Passed|Rejected)
+$ <appd> query gov proposals --page=2 --limit=100
 
 ```
 regen query gov proposals [flags]

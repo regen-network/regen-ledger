@@ -7,8 +7,8 @@ query grants for a granter-grantee pair and optionally a msg-type-url
 Query authorization grants for a granter-grantee pair. If msg-type-url
 is set, it will select grants only for that msg type.
 Examples:
-$ regen query authz grants cosmos1skj.. cosmos1skjwj..
-$ regen query authz grants cosmos1skjw.. cosmos1skjwj.. /cosmos.bank.v1beta1.MsgSend
+$ <appd> query authz grants cosmos1skj.. cosmos1skjwj..
+$ <appd> query authz grants cosmos1skjw.. cosmos1skjwj.. /cosmos.bank.v1beta1.MsgSend
 
 ```
 regen query authz grants [granter-addr] [grantee-addr] [msg-type-url]? [flags]

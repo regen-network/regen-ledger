@@ -7,7 +7,7 @@ Query the current staking pool values
 Query values for amounts stored in the staking pool.
 
 Example:
-$ regen query staking pool
+$ <appd> query staking pool
 
 ```
 regen query staking pool [flags]

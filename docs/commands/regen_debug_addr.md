@@ -7,7 +7,7 @@ Convert an address between hex and bech32
 Convert an address between hex encoding and bech32.
 
 Example:
-$ regen debug addr cosmos1e0jnq2sun3dzjh8p2xq95kk0expwmd7shwjpfg
+$ <appd> debug addr cosmos1e0jnq2sun3dzjh8p2xq95kk0expwmd7shwjpfg
 			
 
 ```

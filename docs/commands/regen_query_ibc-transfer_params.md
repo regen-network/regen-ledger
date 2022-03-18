@@ -13,7 +13,7 @@ regen query ibc-transfer params [flags]
 ### Examples
 
 ```
-regen query ibc-transfer params
+<appd> query ibc-transfer params
 ```
 
 ### Options

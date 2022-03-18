@@ -7,7 +7,7 @@ change the default withdraw address for rewards associated with an address
 Set the withdraw address for rewards associated with a delegator address.
 
 Example:
-$ regen tx distribution set-withdraw-addr regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p --from mykey
+$ <appd> tx distribution set-withdraw-addr regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p --from mykey
 
 ```
 regen tx distribution set-withdraw-addr [withdraw-addr] [flags]

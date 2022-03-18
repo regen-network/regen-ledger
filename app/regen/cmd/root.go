@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -12,7 +11,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	"github.com/spf13/cobra/doc"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -89,11 +87,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 
 	initRootCmd(rootCmd, encodingConfig)
 	rootCmd.AddCommand(server.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
-
-	err := doc.GenMarkdownTree(rootCmd, "./docs/cli")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	return rootCmd, encodingConfig
 }

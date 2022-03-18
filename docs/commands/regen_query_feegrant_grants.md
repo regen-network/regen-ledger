@@ -7,7 +7,7 @@ Query all grants of a grantee
 Queries all the grants for a grantee address.
 
 Example:
-$ regen query feegrant grants [grantee]
+$ <appd> query feegrant grants [grantee]
 
 ```
 regen query feegrant grants [grantee] [flags]

@@ -13,7 +13,7 @@ regen query ibc channel next-sequence-receive [port-id] [channel-id] [flags]
 ### Examples
 
 ```
-regen query ibc channel next-sequence-receive [port-id] [channel-id]
+<appd> query ibc channel next-sequence-receive [port-id] [channel-id]
 ```
 
 ### Options

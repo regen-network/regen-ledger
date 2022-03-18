@@ -13,7 +13,7 @@ regen query ibc channel packet-commitment [port-id] [channel-id] [sequence] [fla
 ### Examples
 
 ```
-regen query ibc channel packet-commitment [port-id] [channel-id] [sequence]
+<appd> query ibc channel packet-commitment [port-id] [channel-id] [sequence]
 ```
 
 ### Options

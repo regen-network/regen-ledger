@@ -7,8 +7,8 @@ Query all distribution delegator rewards or rewards from a particular validator
 Query all rewards earned by a delegator, optionally restrict to rewards from a single validator.
 
 Example:
-$ regen query distribution rewards regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
-$ regen query distribution rewards regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query distribution rewards regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
+$ <appd> query distribution rewards regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query distribution rewards [delegator-addr] [validator-addr] [flags]

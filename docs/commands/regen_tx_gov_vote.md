@@ -5,10 +5,10 @@ Vote for an active proposal, options: yes/no/no_with_veto/abstain
 ### Synopsis
 
 Submit a vote for an active proposal. You can
-find the proposal-id by running "regen query gov proposals".
+find the proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen tx gov vote 1 yes --from mykey
+$ <appd> tx gov vote 1 yes --from mykey
 
 ```
 regen tx gov vote [proposal-id] [option] [flags]

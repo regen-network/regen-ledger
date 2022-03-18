@@ -13,7 +13,7 @@ regen query ibc connection connections [flags]
 ### Examples
 
 ```
-regen query ibc connection connections
+<appd> query ibc connection connections
 ```
 
 ### Options

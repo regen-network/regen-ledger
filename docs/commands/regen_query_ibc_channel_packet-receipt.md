@@ -13,7 +13,7 @@ regen query ibc channel packet-receipt [port-id] [channel-id] [sequence] [flags]
 ### Examples
 
 ```
-regen query ibc channel packet-receipt [port-id] [channel-id] [sequence]
+<appd> query ibc channel packet-receipt [port-id] [channel-id] [sequence]
 ```
 
 ### Options

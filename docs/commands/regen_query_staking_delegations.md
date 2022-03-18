@@ -7,7 +7,7 @@ Query all delegations made by one delegator
 Query delegations for an individual delegator on all validators.
 
 Example:
-$ regen query staking delegations regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
+$ <appd> query staking delegations regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p
 
 ```
 regen query staking delegations [delegator-addr] [flags]

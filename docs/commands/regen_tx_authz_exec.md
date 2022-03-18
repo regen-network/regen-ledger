@@ -6,8 +6,8 @@ execute tx on behalf of granter account
 
 execute tx on behalf of granter account:
 Example:
- $ regen tx authz exec tx.json --from grantee
- $ regen tx bank send <granter> <recipient> --from <granter> --chain-id <chain-id> --generate-only > tx.json && regen tx authz exec tx.json --from grantee
+ $ <appd> tx authz exec tx.json --from grantee
+ $ <appd> tx bank send <granter> <recipient> --from <granter> --chain-id <chain-id> --generate-only > tx.json && <appd> tx authz exec tx.json --from grantee
 
 ```
 regen tx authz exec [msg_tx_json_file] --from [grantee] [flags]

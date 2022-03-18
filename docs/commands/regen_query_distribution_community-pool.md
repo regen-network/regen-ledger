@@ -7,7 +7,7 @@ Query the amount of coins in the community pool
 Query all coins in the community pool which is under Governance control.
 
 Example:
-$ regen query distribution community-pool
+$ <appd> query distribution community-pool
 
 ```
 regen query distribution community-pool [flags]

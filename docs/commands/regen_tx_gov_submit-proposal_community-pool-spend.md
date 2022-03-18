@@ -8,7 +8,7 @@ Submit a community pool spend proposal along with an initial deposit.
 The proposal details must be supplied via a JSON file.
 
 Example:
-$ regen tx gov submit-proposal community-pool-spend <path/to/proposal.json> --from=<key_or_address>
+$ <appd> tx gov submit-proposal community-pool-spend <path/to/proposal.json> --from=<key_or_address>
 
 Where proposal.json contains:
 

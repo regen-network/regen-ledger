@@ -13,7 +13,7 @@ regen query ibc client self-consensus-state [flags]
 ### Examples
 
 ```
-regen query ibc client self-consensus-state
+<appd> query ibc client self-consensus-state
 ```
 
 ### Options

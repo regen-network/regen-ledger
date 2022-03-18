@@ -5,10 +5,10 @@ Query details of a single proposal
 ### Synopsis
 
 Query details for a proposal. You can find the
-proposal-id by running "regen query gov proposals".
+proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen query gov proposal 1
+$ <appd> query gov proposal 1
 
 ```
 regen query gov proposal [proposal-id] [flags]

@@ -7,7 +7,7 @@ Query a redelegation record based on delegator and a source and destination vali
 Query a redelegation record for an individual delegator between a source and destination validator.
 
 Example:
-$ regen query staking redelegation regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
+$ <appd> query staking redelegation regen1gghjut3ccd8ay0zduzj64hwre2fxs9ld75ru9p regenvaloper1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm regenvaloper1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj
 
 ```
 regen query staking redelegation [delegator-addr] [src-validator-addr] [dst-validator-addr] [flags]

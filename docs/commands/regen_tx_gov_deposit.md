@@ -5,10 +5,10 @@ Deposit tokens for an active proposal
 ### Synopsis
 
 Submit a deposit for an active proposal. You can
-find the proposal-id by running "regen query gov proposals".
+find the proposal-id by running "<appd> query gov proposals".
 
 Example:
-$ regen tx gov deposit 1 10stake --from mykey
+$ <appd> tx gov deposit 1 10stake --from mykey
 
 ```
 regen tx gov deposit [proposal-id] [deposit] [flags]

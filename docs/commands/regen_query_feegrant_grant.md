@@ -8,7 +8,7 @@ Query details for a grant.
 You can find the fee-grant of a granter and grantee.
 
 Example:
-$ regen query feegrant grant [granter] [grantee]
+$ <appd> query feegrant grant [granter] [grantee]
 
 ```
 regen query feegrant grant [granter] [grantee] [flags]

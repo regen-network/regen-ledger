@@ -7,8 +7,8 @@ Query the current ecocredit module parameters
 Query the current ecocredit module parameters
 			
 Examples:
-$regen query ecocredit params
-$regen q ecocredit params
+$<appd> query ecocredit params
+$<appd> q ecocredit params
 
 ```
 regen query ecocredit params [flags]
