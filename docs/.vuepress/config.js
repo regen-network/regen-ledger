@@ -186,6 +186,7 @@ module.exports = {
         {
           title: 'Commands',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
               '/commands/regen',
               '/commands/regen_add-genesis-account',
