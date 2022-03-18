@@ -33,7 +33,7 @@ cd regen-ledger
 Check out the latest stable version:
 
 ```bash
-git checkout v2.0.0
+git checkout v3.0.0
 ```
 
 Install the `regen` binary:
@@ -48,7 +48,7 @@ Check to make sure the install was successful:
 regen version
 ```
 
-You should see `v2.0.0` printed to the console. Now that you have successfully installed the `regen` binary, the next step will be to add a couple test accounts.
+You should see `v3.0.0` printed to the console. Now that you have successfully installed the `regen` binary, the next step will be to add a couple test accounts.
 
 ## Quickstart
 
