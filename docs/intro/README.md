@@ -34,6 +34,7 @@ The following block explorers currently support Regen Ledger:
 - [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
 - [Mintscan - Regen Mainnet](https://mintscan.io/regen)
 - [Ping - Regen Mainnet](https://ping.pub/regen)
+- [SkyNet - Regen Mainnet](https://skynetexplorers.com/regen-network)
 
 ## Wallets
 
