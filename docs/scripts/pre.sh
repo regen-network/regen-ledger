@@ -15,4 +15,4 @@ done
 
 rm -rf commands
 mkdir -p commands
-go run scripts/cobra.go
+go run ../scripts/generate-cli-docs.go
