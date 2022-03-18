@@ -39,7 +39,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*v1.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
