@@ -2,6 +2,10 @@ require('dotenv').config()
 
 const { description } = require('../package')
 const webpack = require('webpack')
+const glob = require('glob');
+const path = require('path');
+
+let commands= glob.sync('commands/*.md').map(f => '/' + f);
 
 module.exports = {
   configureWebpack: (config) => {
@@ -182,6 +186,11 @@ module.exports = {
             // '/tutorials/data-grpc',
             '/tutorials/ibc-transfers'
           ]
+        },
+        {
+          title: 'Commands',
+          collapsable: false,
+          children: commands
         },
       ],
     }

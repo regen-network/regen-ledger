@@ -20,5 +20,8 @@
   "devDependencies": {
     "dotenv": "^10.0.0",
     "vuepress": "^1.7.1"
+  },
+  "dependencies": {
+    "directory-tree": "^3.2.2"
   }
 }
