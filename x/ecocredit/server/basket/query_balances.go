@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -22,7 +23,7 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		return nil, err
 	}
 
-	pulsarPageReq, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +42,13 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 			return nil, err
 		}
 		balanceGogo := &baskettypes.BasketBalance{}
-		if err = PulsarToGogoSlow(bal, balanceGogo); err != nil {
+		if err = ormutil.PulsarToGogoSlow(bal, balanceGogo); err != nil {
 			return nil, err
 		}
 		res.Balances = append(res.Balances, balanceGogo)
 	}
 	it.Close()
 
-	res.Pagination, err = PulsarPageResToGogoPageRes(it.PageResponse())
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	return res, err
 }

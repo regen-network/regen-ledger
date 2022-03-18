@@ -7,12 +7,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // ClassIssuers returns a list of addresses that are allowed to issue batches from the given class.
 func (k Keeper) ClassIssuers(ctx context.Context, request *core.QueryClassIssuersRequest) (*core.QueryClassIssuersResponse, error) {
-	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +36,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *core.QueryClassIssuer
 		}
 		issuers = append(issuers, sdk.AccAddress(val.Issuer).String())
 	}
-	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
