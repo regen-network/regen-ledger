@@ -2,10 +2,6 @@ require('dotenv').config()
 
 const { description } = require('../package')
 const webpack = require('webpack')
-const glob = require('glob');
-const path = require('path');
-
-let commands= glob.sync('commands/*.md').map(f => '/' + f);
 
 module.exports = {
   configureWebpack: (config) => {
@@ -190,7 +186,28 @@ module.exports = {
         {
           title: 'Commands',
           collapsable: false,
-          children: commands
+          children: [
+              '/commands/regen',
+              '/commands/regen_add-genesis-account',
+              '/commands/regen_collect-gentxs',
+              '/commands/regen_config',
+              '/commands/regen_debug',
+              '/commands/regen_export',
+              '/commands/regen_gentx',
+              '/commands/regen_init',
+              '/commands/regen_keys',
+              '/commands/regen_migrate',
+              '/commands/regen_query',
+              '/commands/regen_rosetta',
+              '/commands/regen_start',
+              '/commands/regen_status',
+              '/commands/regen_tendermint',
+              '/commands/regen_testnet',
+              '/commands/regen_tx',
+              '/commands/regen_unsafe-reset-all',
+              '/commands/regen_validate-genesis',
+              '/commands/regen_version',
+          ]
         },
       ],
     }
