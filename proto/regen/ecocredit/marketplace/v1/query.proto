@@ -21,16 +21,6 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
-  }
-
-  // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest) returns (QuerySellOrdersByAddressResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
-  }
-
   // BuyOrder queries a buy order by its id
   rpc BuyOrder(QueryBuyOrderRequest) returns (QueryBuyOrderResponse) {
     option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders/id/{buy_order_id}";
@@ -85,46 +75,6 @@ message QuerySellOrdersResponse {
   repeated SellOrder sell_orders = 1;
 
   // pagination defines the pagination in the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
-message QuerySellOrdersByBatchDenomRequest {
-
-  // batch_denom is an ecocredit denom
-  string batch_denom = 1;
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
-message QuerySellOrdersByBatchDenomResponse {
-
-  // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
-message QuerySellOrdersByAddressRequest {
-
-  // address is the creator of the sell order
-  string address = 1;
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
-message QuerySellOrdersByAddressResponse {
-
-  // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
-
-  // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

@@ -26,10 +26,6 @@ type QueryClient interface {
 	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders
 	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
 	// BuyOrder queries a buy order by its id
 	BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error)
 	// BuyOrders queries a paginated list of all buy orders
@@ -60,24 +56,6 @@ func (c *queryClient) SellOrder(ctx context.Context, in *QuerySellOrderRequest, 
 func (c *queryClient) SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error) {
 	out := new(QuerySellOrdersResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrders", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error) {
-	out := new(QuerySellOrdersByBatchDenomResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error) {
-	out := new(QuerySellOrdersByAddressResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,10 +106,6 @@ type QueryServer interface {
 	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders
 	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
 	// BuyOrder queries a buy order by its id
 	BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error)
 	// BuyOrders queries a paginated list of all buy orders
@@ -152,12 +126,6 @@ func (UnimplementedQueryServer) SellOrder(context.Context, *QuerySellOrderReques
 }
 func (UnimplementedQueryServer) SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrders not implemented")
-}
-func (UnimplementedQueryServer) SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatchDenom not implemented")
-}
-func (UnimplementedQueryServer) SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByAddress not implemented")
 }
 func (UnimplementedQueryServer) BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyOrder not implemented")
@@ -216,42 +184,6 @@ func _Query_SellOrders_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).SellOrders(ctx, req.(*QuerySellOrdersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_SellOrdersByBatchDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByBatchDenomRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByBatchDenom",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, req.(*QuerySellOrdersByBatchDenomRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_SellOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, req.(*QuerySellOrdersByAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -342,14 +274,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SellOrders",
 			Handler:    _Query_SellOrders_Handler,
-		},
-		{
-			MethodName: "SellOrdersByBatchDenom",
-			Handler:    _Query_SellOrdersByBatchDenom_Handler,
-		},
-		{
-			MethodName: "SellOrdersByAddress",
-			Handler:    _Query_SellOrdersByAddress_Handler,
 		},
 		{
 			MethodName: "BuyOrder",
