@@ -170,7 +170,7 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
 	assert.NilError(t, err)
 	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed, supBeforeTradable, supAfterTradable,
-	supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
+		supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
 
 	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
 	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
@@ -192,7 +192,6 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 	assert.NilError(t, err)
 	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
-
 
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
@@ -226,7 +225,7 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		Retired:  "100",
 	}))
 	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
-		BatchId:  1,
+		BatchId:        1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 	}))

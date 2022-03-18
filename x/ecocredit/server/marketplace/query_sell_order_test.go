@@ -10,9 +10,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 func TestQuery_SellOrder(t *testing.T) {
@@ -44,7 +44,7 @@ func TestQuery_SellOrder(t *testing.T) {
 	assert.NilError(t, err)
 
 	var gogoOrder marketplace.SellOrder
-	assert.NilError(t, core.PulsarToGogoSlow(&order, &gogoOrder))
+	assert.NilError(t, ormutil.PulsarToGogoSlow(&order, &gogoOrder))
 
 	res, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id})
 	assert.NilError(t, err)
