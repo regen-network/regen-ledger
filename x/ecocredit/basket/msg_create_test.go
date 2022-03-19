@@ -21,7 +21,7 @@ func errorMatches(t *testing.T, err error, expect string) {
 }
 
 func TestMsgCreateValidateBasic(t *testing.T) {
-    t.Parallel()
+	t.Parallel()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
@@ -89,7 +89,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
-		    t.Parallel()
+			t.Parallel()
 
 			err := tc.msg.ValidateBasic()
 			errorMatches(t, err, tc.err)
@@ -98,7 +98,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateValidateDateCriteria(t *testing.T) {
-    t.Parallel()
+	t.Parallel()
 
 	tcs := []struct {
 		id  string
@@ -159,7 +159,7 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
-		    t.Parallel()
+			t.Parallel()
 
 			err := validateDateCriteria(&tc.d)
 			errorMatches(t, err, tc.err)
@@ -168,7 +168,7 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 }
 
 func TestMsgCreateGetSigners(t *testing.T) {
-    t.Parallel()
+	t.Parallel()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
@@ -176,7 +176,7 @@ func TestMsgCreateGetSigners(t *testing.T) {
 }
 
 func TestMsgCreateSignBytes(t *testing.T) {
-    t.Parallel()
+	t.Parallel()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
@@ -185,7 +185,7 @@ func TestMsgCreateSignBytes(t *testing.T) {
 }
 
 func TestBasketDenom(t *testing.T) {
-    t.Parallel()
+	t.Parallel()
 
 	tcs := []struct {
 		tname        string
