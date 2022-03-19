@@ -11,6 +11,8 @@ import (
 )
 
 func TestMsgCreateBatch(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
@@ -239,6 +241,8 @@ func TestMsgCreateBatch(t *testing.T) {
 
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)

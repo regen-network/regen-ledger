@@ -9,6 +9,8 @@ import (
 )
 
 func TestMsgUpdateClassAdmin(t *testing.T) {
+	t.Parallel()
+
 	_, _, admin := testdata.KeyTestPubAddr()
 	_, _, newAdmin := testdata.KeyTestPubAddr()
 
@@ -40,6 +42,8 @@ func TestMsgUpdateClassAdmin(t *testing.T) {
 
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)
