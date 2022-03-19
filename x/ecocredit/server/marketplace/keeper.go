@@ -29,3 +29,4 @@ func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocre
 
 // TODO: uncomment when impl
 // var _ v1.MsgServer = Keeper{}
+// var _ v1.QueryServer = Keeper{}
