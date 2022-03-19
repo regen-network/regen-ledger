@@ -7,24 +7,24 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
-
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+)
+
+const (
+	nameMinLen           = 3
+	nameMaxLen           = 8
+	descrMaxLen          = 256
+	creditTypeAbbrMaxLen = 3
 )
 
 var (
 	_ legacytx.LegacyMsg = &MsgCreate{}
+
+	// first character must be alphabetic, the rest can be alphanumeric. We reduce length
+	// constraints by one to account for the first character being forced to alphabetic.
+	reName    = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
+	errBadReq = sdkerrors.ErrInvalidRequest
 )
-
-const nameMinLen = 3
-const nameMaxLen = 8
-const descrMaxLen = 256
-const creditTypeAbbrMaxLen = 3
-
-var errBadReq = sdkerrors.ErrInvalidRequest
-
-// first character must be alphabetic, the rest can be alphanumeric. We reduce length
-// constraints by one to account for the first character being forced to alphabetic.
-var reName = regexp.MustCompile(fmt.Sprintf("^[[:alpha:]][[:alnum:]]{%d,%d}$", nameMinLen-1, nameMaxLen-1))
 
 // ValidateBasic does a stateless sanity check on the provided data.
 func (m MsgCreate) ValidateBasic() error {
