@@ -16,6 +16,8 @@ var (
 )
 
 func TestMsgCreateClass(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
@@ -32,7 +34,7 @@ func TestMsgCreateClass(t *testing.T) {
 			src: MsgCreateClass{
 				Admin:            addr1.String(),
 				Issuers:          []string{addr1.String(), addr2.String()},
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 				Metadata:         "hello",
 				Fee:              validFee,
 			},
@@ -41,7 +43,7 @@ func TestMsgCreateClass(t *testing.T) {
 		"valid msg without metadata": {
 			src: MsgCreateClass{
 				Admin:            addr1.String(),
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String(), addr2.String()},
 				Fee:              validFee,
 			},
@@ -54,14 +56,14 @@ func TestMsgCreateClass(t *testing.T) {
 		"invalid without issuers": {
 			src: MsgCreateClass{
 				Admin:            addr1.String(),
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
 				Admin:            addr1.String(),
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 				Issuers:          []string{"xyz", "xyz1"},
 			},
 			expErr: true,
@@ -69,7 +71,7 @@ func TestMsgCreateClass(t *testing.T) {
 		"invalid with wrong admin": {
 			src: MsgCreateClass{
 				Admin:            "wrongAdmin",
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String(), addr2.String()},
 			},
 			expErr: true,
@@ -84,7 +86,7 @@ func TestMsgCreateClass(t *testing.T) {
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateClass{
 				Admin:            addr1.String(),
-				CreditTypeAbbrev: "carbon",
+				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String(), addr2.String()},
 				Metadata:         simtypes.RandStringOfLength(r, 288),
 			},
@@ -114,6 +116,8 @@ func TestMsgCreateClass(t *testing.T) {
 
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)

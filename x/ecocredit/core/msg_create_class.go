@@ -37,7 +37,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.CreditTypeAbbrev) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
+		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
 	}
 	for _, issuer := range m.Issuers {
 

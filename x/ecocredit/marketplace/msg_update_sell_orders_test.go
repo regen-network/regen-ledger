@@ -11,6 +11,8 @@ import (
 )
 
 func TestMsgUpdateSellOrders(t *testing.T) {
+	t.Parallel()
+
 	_, _, a1 := testdata.KeyTestPubAddr()
 
 	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
@@ -88,6 +90,8 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)

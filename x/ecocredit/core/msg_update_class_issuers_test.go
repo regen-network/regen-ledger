@@ -9,6 +9,8 @@ import (
 )
 
 func TestMsgUpdateClassIssuers(t *testing.T) {
+	t.Parallel()
+
 	_, _, a1 := testdata.KeyTestPubAddr()
 	_, _, a2 := testdata.KeyTestPubAddr()
 
@@ -40,6 +42,8 @@ func TestMsgUpdateClassIssuers(t *testing.T) {
 
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
+			t.Parallel()
+
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)
