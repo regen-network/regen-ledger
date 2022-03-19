@@ -45,7 +45,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	// Charge the admin a fee to create the credit class
-	err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{sdk.Coin{Denom: req.Fee.Denom, Amount: reqFeeAmt}})
+	err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{sdk.Coin{Denom: req.Fee.Denom, Amount: feeAmt}})
 	if err != nil {
 		return nil, err
 	}
