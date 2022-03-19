@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"

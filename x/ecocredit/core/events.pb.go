@@ -510,6 +510,198 @@ func (m *EventCancel) GetAmount() string {
 	return ""
 }
 
+// EventClassAdminUpdated is emitted when the admin address of a credit class is changed.
+type EventClassAdminUpdated struct {
+	// class_name is the name of the class that was updated.
+	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// old_admin is the admin of the credit class before the update.
+	OldAdmin string `protobuf:"bytes,2,opt,name=old_admin,json=oldAdmin,proto3" json:"old_admin,omitempty"`
+	// new_admin is the admin of the credit class after the update.
+	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
+}
+
+func (m *EventClassAdminUpdated) Reset()         { *m = EventClassAdminUpdated{} }
+func (m *EventClassAdminUpdated) String() string { return proto.CompactTextString(m) }
+func (*EventClassAdminUpdated) ProtoMessage()    {}
+func (*EventClassAdminUpdated) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{6}
+}
+func (m *EventClassAdminUpdated) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventClassAdminUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventClassAdminUpdated.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventClassAdminUpdated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventClassAdminUpdated.Merge(m, src)
+}
+func (m *EventClassAdminUpdated) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventClassAdminUpdated) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventClassAdminUpdated.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventClassAdminUpdated proto.InternalMessageInfo
+
+func (m *EventClassAdminUpdated) GetClassName() string {
+	if m != nil {
+		return m.ClassName
+	}
+	return ""
+}
+
+func (m *EventClassAdminUpdated) GetOldAdmin() string {
+	if m != nil {
+		return m.OldAdmin
+	}
+	return ""
+}
+
+func (m *EventClassAdminUpdated) GetNewAdmin() string {
+	if m != nil {
+		return m.NewAdmin
+	}
+	return ""
+}
+
+// EventClassIssuersUpdated is emitted when the issuer list for a credit class is updated.
+type EventClassIssuersUpdated struct {
+	// class_name is the name of the class that was updated.
+	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// added_issuers contains all the addresses added to the class issuer list.
+	AddedIssuers []string `protobuf:"bytes,2,rep,name=added_issuers,json=addedIssuers,proto3" json:"added_issuers,omitempty"`
+	// removed_issuers contains all the addresses removed from the class issuer list.
+	RemovedIssuers []string `protobuf:"bytes,3,rep,name=removed_issuers,json=removedIssuers,proto3" json:"removed_issuers,omitempty"`
+}
+
+func (m *EventClassIssuersUpdated) Reset()         { *m = EventClassIssuersUpdated{} }
+func (m *EventClassIssuersUpdated) String() string { return proto.CompactTextString(m) }
+func (*EventClassIssuersUpdated) ProtoMessage()    {}
+func (*EventClassIssuersUpdated) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{7}
+}
+func (m *EventClassIssuersUpdated) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventClassIssuersUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventClassIssuersUpdated.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventClassIssuersUpdated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventClassIssuersUpdated.Merge(m, src)
+}
+func (m *EventClassIssuersUpdated) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventClassIssuersUpdated) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventClassIssuersUpdated.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventClassIssuersUpdated proto.InternalMessageInfo
+
+func (m *EventClassIssuersUpdated) GetClassName() string {
+	if m != nil {
+		return m.ClassName
+	}
+	return ""
+}
+
+func (m *EventClassIssuersUpdated) GetAddedIssuers() []string {
+	if m != nil {
+		return m.AddedIssuers
+	}
+	return nil
+}
+
+func (m *EventClassIssuersUpdated) GetRemovedIssuers() []string {
+	if m != nil {
+		return m.RemovedIssuers
+	}
+	return nil
+}
+
+// EventClassMetadataUpdated is emitted when the credit class metadata is changed.
+type EventClassMetadataUpdated struct {
+	// class_name is the name of the class that was updated.
+	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// old_metadata is the metadata before the update.
+	OldMetadata string `protobuf:"bytes,2,opt,name=old_metadata,json=oldMetadata,proto3" json:"old_metadata,omitempty"`
+	// new_metadata is the metadata after the update.
+	NewMetadata string `protobuf:"bytes,3,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
+}
+
+func (m *EventClassMetadataUpdated) Reset()         { *m = EventClassMetadataUpdated{} }
+func (m *EventClassMetadataUpdated) String() string { return proto.CompactTextString(m) }
+func (*EventClassMetadataUpdated) ProtoMessage()    {}
+func (*EventClassMetadataUpdated) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{8}
+}
+func (m *EventClassMetadataUpdated) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventClassMetadataUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventClassMetadataUpdated.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventClassMetadataUpdated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventClassMetadataUpdated.Merge(m, src)
+}
+func (m *EventClassMetadataUpdated) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventClassMetadataUpdated) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventClassMetadataUpdated.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventClassMetadataUpdated proto.InternalMessageInfo
+
+func (m *EventClassMetadataUpdated) GetClassName() string {
+	if m != nil {
+		return m.ClassName
+	}
+	return ""
+}
+
+func (m *EventClassMetadataUpdated) GetOldMetadata() string {
+	if m != nil {
+		return m.OldMetadata
+	}
+	return ""
+}
+
+func (m *EventClassMetadataUpdated) GetNewMetadata() string {
+	if m != nil {
+		return m.NewMetadata
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*EventCreateClass)(nil), "regen.ecocredit.v1.EventCreateClass")
 	proto.RegisterType((*EventCreateProject)(nil), "regen.ecocredit.v1.EventCreateProject")
@@ -517,43 +709,55 @@ func init() {
 	proto.RegisterType((*EventReceive)(nil), "regen.ecocredit.v1.EventReceive")
 	proto.RegisterType((*EventRetire)(nil), "regen.ecocredit.v1.EventRetire")
 	proto.RegisterType((*EventCancel)(nil), "regen.ecocredit.v1.EventCancel")
+	proto.RegisterType((*EventClassAdminUpdated)(nil), "regen.ecocredit.v1.EventClassAdminUpdated")
+	proto.RegisterType((*EventClassIssuersUpdated)(nil), "regen.ecocredit.v1.EventClassIssuersUpdated")
+	proto.RegisterType((*EventClassMetadataUpdated)(nil), "regen.ecocredit.v1.EventClassMetadataUpdated")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/events.proto", fileDescriptor_e32415575ff8b4b2) }
 
 var fileDescriptor_e32415575ff8b4b2 = []byte{
-	// 495 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
-	0x10, 0xc6, 0xe3, 0x96, 0xe6, 0xcf, 0x24, 0xb4, 0xd5, 0x0a, 0x21, 0x83, 0xc0, 0xa5, 0x96, 0x10,
-	0x70, 0x20, 0x56, 0x85, 0xc4, 0x9d, 0xa6, 0x1c, 0x90, 0x38, 0x54, 0x3d, 0x72, 0x89, 0xd6, 0xbb,
-	0xa3, 0x74, 0xa9, 0xb3, 0x1b, 0xad, 0x27, 0x81, 0x03, 0xaf, 0x80, 0xe0, 0xb1, 0x38, 0xf6, 0xd8,
-	0x23, 0x4a, 0x5e, 0x04, 0x79, 0x77, 0x9d, 0x34, 0x21, 0x20, 0xc4, 0x6d, 0xbf, 0xcf, 0x93, 0x99,
-	0xf9, 0x7e, 0x8e, 0x17, 0x8e, 0x2c, 0x8e, 0x50, 0x67, 0x28, 0x8c, 0xb0, 0x28, 0x15, 0x65, 0xb3,
-	0x93, 0x0c, 0x67, 0xa8, 0xa9, 0xec, 0x4f, 0xac, 0x21, 0xc3, 0x98, 0x2b, 0xe8, 0x2f, 0x0b, 0xfa,
-	0xb3, 0x93, 0x74, 0x00, 0x87, 0x6f, 0xab, 0x9a, 0x81, 0x45, 0x4e, 0x38, 0x28, 0x78, 0x59, 0xb2,
-	0x07, 0xd0, 0x16, 0xd5, 0x61, 0xa8, 0x64, 0x1c, 0x3d, 0x89, 0x9e, 0x77, 0x2e, 0x5a, 0x4e, 0xbf,
-	0x93, 0xec, 0x1e, 0xec, 0x71, 0x39, 0x56, 0x3a, 0xde, 0x71, 0xbe, 0x17, 0xe9, 0xb7, 0x08, 0xd8,
-	0xad, 0x2e, 0xe7, 0xd6, 0x7c, 0x44, 0x41, 0xec, 0x31, 0xc0, 0xc4, 0x1f, 0x57, 0x9d, 0x3a, 0xc1,
-	0xf9, 0x53, 0xaf, 0xb5, 0xe1, 0xbb, 0xeb, 0xc3, 0x5f, 0xc0, 0x61, 0xdd, 0xaf, 0x30, 0x82, 0x93,
-	0x32, 0x3a, 0xbe, 0xe3, 0x4a, 0x0e, 0x82, 0xff, 0x3e, 0xd8, 0xe9, 0xd7, 0x9d, 0xb5, 0x5c, 0xa7,
-	0x9c, 0xc4, 0xe5, 0xdf, 0x72, 0x1d, 0x41, 0x37, 0xaf, 0x6a, 0x86, 0x12, 0xb5, 0x19, 0x87, 0x8d,
-	0xc0, 0x59, 0x67, 0x95, 0xc3, 0xee, 0x43, 0x53, 0x95, 0xe5, 0x14, 0x6d, 0x58, 0x2a, 0x28, 0x76,
-	0x0c, 0x3d, 0x32, 0xc4, 0x8b, 0x21, 0x1f, 0x9b, 0xa9, 0xa6, 0xb0, 0x4f, 0xd7, 0x79, 0x6f, 0x9c,
-	0x55, 0x61, 0x28, 0x89, 0x5b, 0x1a, 0x4a, 0x4e, 0x18, 0xef, 0x79, 0x0c, 0xce, 0x39, 0xe3, 0x84,
-	0xd5, 0x56, 0xa8, 0xa5, 0x7f, 0xd8, 0xf4, 0x5b, 0xa1, 0x96, 0xee, 0xd1, 0xb6, 0xc0, 0xad, 0xad,
-	0x81, 0x37, 0x58, 0xb7, 0x37, 0x58, 0xa7, 0x37, 0x11, 0xf4, 0x1c, 0x8f, 0x0b, 0x14, 0xa8, 0x66,
-	0x58, 0xe5, 0x29, 0x51, 0x4b, 0xb4, 0x81, 0x44, 0x50, 0xec, 0x11, 0x74, 0x2c, 0x0a, 0x35, 0x51,
-	0xa8, 0x29, 0x60, 0x58, 0x19, 0x9b, 0x98, 0x76, 0x7f, 0xc3, 0xf4, 0x0c, 0x0e, 0xc8, 0x72, 0xc9,
-	0xf3, 0x02, 0xd7, 0x89, 0xec, 0xd7, 0x76, 0x80, 0xf2, 0x14, 0xf6, 0x2d, 0x92, 0xb2, 0x28, 0xeb,
-	0x3a, 0x0f, 0xe6, 0x6e, 0x70, 0x43, 0xd9, 0x31, 0xf4, 0x72, 0x5e, 0x5e, 0x21, 0x85, 0x89, 0x1e,
-	0x50, 0xd7, 0x7b, 0x6e, 0x64, 0xfa, 0x05, 0xba, 0x21, 0x59, 0xf5, 0x43, 0x16, 0x43, 0xcb, 0xb7,
-	0xa8, 0x93, 0xd5, 0xf2, 0x9f, 0xde, 0x71, 0xd8, 0x25, 0xbc, 0x63, 0xaf, 0xd8, 0x43, 0x68, 0x6f,
-	0xfc, 0xdf, 0x96, 0x3a, 0x95, 0x61, 0xfa, 0x80, 0x6b, 0x81, 0x45, 0x85, 0x4f, 0xb8, 0x53, 0xb1,
-	0x9c, 0xbf, 0x32, 0xfe, 0x7b, 0x83, 0xd3, 0xf3, 0x1f, 0xf3, 0x24, 0xba, 0x9e, 0x27, 0xd1, 0xcf,
-	0x79, 0x12, 0x7d, 0x5f, 0x24, 0x8d, 0xeb, 0x45, 0xd2, 0xb8, 0x59, 0x24, 0x8d, 0x0f, 0xaf, 0x47,
-	0x8a, 0x2e, 0xa7, 0x79, 0x5f, 0x98, 0x71, 0xe6, 0x3e, 0xef, 0x97, 0x1a, 0xe9, 0x93, 0xb1, 0x57,
-	0x41, 0x15, 0x28, 0x47, 0x68, 0xb3, 0xcf, 0xb7, 0xae, 0x05, 0x61, 0x2c, 0xe6, 0x4d, 0x77, 0x25,
-	0xbc, 0xfa, 0x15, 0x00, 0x00, 0xff, 0xff, 0x69, 0xf4, 0x3c, 0x12, 0x35, 0x04, 0x00, 0x00,
+	// 639 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xcd, 0x6f, 0x13, 0x3f,
+	0x10, 0xed, 0x36, 0xbf, 0xb6, 0xc9, 0x24, 0xfd, 0x90, 0xf5, 0x53, 0xb5, 0xe5, 0x23, 0x6d, 0x17,
+	0x21, 0xca, 0x81, 0x44, 0x15, 0x12, 0xf7, 0x36, 0xe5, 0x50, 0x09, 0x50, 0x55, 0x89, 0x0b, 0x97,
+	0xc8, 0xb1, 0x47, 0xed, 0xd2, 0x5d, 0x3b, 0x78, 0xdd, 0x84, 0x03, 0x07, 0x6e, 0x9c, 0x10, 0xfc,
+	0x59, 0x1c, 0x7b, 0xec, 0x11, 0xb5, 0xff, 0x08, 0xb2, 0x3d, 0x9b, 0x2f, 0x0a, 0x8a, 0xb8, 0xed,
+	0xbc, 0x79, 0x3b, 0x6f, 0xe6, 0x79, 0x6c, 0xd8, 0x36, 0x78, 0x86, 0xaa, 0x8d, 0x42, 0x0b, 0x83,
+	0x32, 0xb5, 0xed, 0xc1, 0x7e, 0x1b, 0x07, 0xa8, 0x6c, 0xd1, 0xea, 0x1b, 0x6d, 0x35, 0x63, 0x9e,
+	0xd0, 0x1a, 0x11, 0x5a, 0x83, 0xfd, 0xa4, 0x03, 0x1b, 0x2f, 0x1d, 0xa7, 0x63, 0x90, 0x5b, 0xec,
+	0x64, 0xbc, 0x28, 0xd8, 0x16, 0x54, 0x85, 0xfb, 0xe8, 0xa6, 0x32, 0x8e, 0x76, 0xa2, 0xbd, 0xda,
+	0xe9, 0x8a, 0x8f, 0x8f, 0x25, 0xfb, 0x1f, 0x96, 0xb8, 0xcc, 0x53, 0x15, 0x2f, 0x7a, 0x3c, 0x04,
+	0xc9, 0xb7, 0x08, 0xd8, 0x44, 0x95, 0x13, 0xa3, 0xdf, 0xa3, 0xb0, 0xec, 0x21, 0x40, 0x3f, 0x7c,
+	0x8e, 0x2b, 0xd5, 0x08, 0xf9, 0x53, 0xad, 0x29, 0xf1, 0xca, 0xb4, 0xf8, 0x53, 0xd8, 0x28, 0xeb,
+	0x65, 0x5a, 0x70, 0x9b, 0x6a, 0x15, 0xff, 0xe7, 0x29, 0xeb, 0x84, 0xbf, 0x22, 0x38, 0xf9, 0xba,
+	0x38, 0x35, 0xd7, 0x21, 0xb7, 0xe2, 0xfc, 0x6f, 0x73, 0x6d, 0x43, 0xbd, 0xe7, 0x38, 0x5d, 0x89,
+	0x4a, 0xe7, 0xd4, 0x11, 0x78, 0xe8, 0xc8, 0x21, 0x6c, 0x13, 0x96, 0xd3, 0xa2, 0xb8, 0x44, 0x43,
+	0x4d, 0x51, 0xc4, 0x76, 0xa1, 0x61, 0xb5, 0xe5, 0x59, 0x97, 0xe7, 0xfa, 0x52, 0x59, 0xea, 0xa7,
+	0xee, 0xb1, 0x03, 0x0f, 0x39, 0x1b, 0x0a, 0xcb, 0x8d, 0xed, 0x4a, 0x6e, 0x31, 0x5e, 0x0a, 0x36,
+	0x78, 0xe4, 0x88, 0x5b, 0x74, 0x5d, 0xa1, 0x92, 0x21, 0xb9, 0x1c, 0xba, 0x42, 0x25, 0x7d, 0xea,
+	0xae, 0x81, 0x57, 0xee, 0x1c, 0x78, 0xc6, 0xeb, 0xea, 0x8c, 0xd7, 0xc9, 0x75, 0x04, 0x0d, 0xef,
+	0xc7, 0x29, 0x0a, 0x4c, 0x07, 0xe8, 0xe6, 0x29, 0x50, 0x49, 0x34, 0xe4, 0x04, 0x45, 0xec, 0x01,
+	0xd4, 0x0c, 0x8a, 0xb4, 0x9f, 0xa2, 0xb2, 0x64, 0xc3, 0x18, 0x98, 0xb5, 0xa9, 0xf2, 0x9b, 0x4d,
+	0x4f, 0x60, 0xdd, 0x1a, 0x2e, 0x79, 0x2f, 0xc3, 0x69, 0x47, 0xd6, 0x4a, 0x98, 0x4c, 0x79, 0x0c,
+	0x6b, 0x06, 0x6d, 0x6a, 0x50, 0x96, 0xbc, 0x60, 0xcc, 0x2a, 0xa1, 0x44, 0xdb, 0x85, 0x46, 0x8f,
+	0x17, 0x17, 0x68, 0x49, 0x31, 0x18, 0x54, 0x0f, 0x98, 0x97, 0x4c, 0x3e, 0x41, 0x9d, 0x26, 0x73,
+	0x3f, 0xb2, 0x18, 0x56, 0x42, 0x89, 0x72, 0xb2, 0x32, 0x9c, 0xeb, 0x8c, 0xa9, 0x17, 0x3a, 0xe3,
+	0x10, 0xb1, 0x7b, 0x50, 0x9d, 0xd9, 0xb7, 0x51, 0x9c, 0x48, 0x52, 0xef, 0x70, 0x25, 0x30, 0x73,
+	0xf6, 0x09, 0xff, 0x95, 0x8d, 0xf4, 0xc7, 0xc0, 0x3f, 0x77, 0x90, 0x7c, 0x80, 0xcd, 0xa0, 0xe2,
+	0xd6, 0xf5, 0xc0, 0xdd, 0x93, 0xb7, 0x7d, 0xb7, 0x30, 0xd2, 0x9d, 0x7b, 0xd8, 0x69, 0xc5, 0x73,
+	0x1c, 0x29, 0x3a, 0xe4, 0x0d, 0xcf, 0x91, 0xdd, 0x87, 0x9a, 0xce, 0x64, 0x77, 0xf2, 0x9e, 0x55,
+	0x75, 0x26, 0x7d, 0x09, 0x97, 0x54, 0x38, 0xa4, 0x64, 0x10, 0xac, 0x2a, 0x1c, 0xfa, 0x64, 0xf2,
+	0x25, 0x82, 0x78, 0xac, 0x79, 0xec, 0xb7, 0xbd, 0x98, 0x53, 0xf5, 0x11, 0xac, 0x72, 0x29, 0x51,
+	0x76, 0xc3, 0x25, 0x29, 0xe2, 0xc5, 0x9d, 0xca, 0x5e, 0xed, 0xb4, 0xe1, 0x41, 0x2a, 0xe5, 0x56,
+	0xc5, 0x60, 0xae, 0x07, 0x13, 0xb4, 0x8a, 0xa7, 0xad, 0x11, 0x4c, 0xc4, 0xe4, 0x73, 0x04, 0x5b,
+	0xe3, 0x4e, 0x5e, 0xa3, 0xe5, 0x92, 0x5b, 0x3e, 0x67, 0x2b, 0xbb, 0xd0, 0x70, 0x06, 0xe4, 0xf4,
+	0x17, 0x79, 0x50, 0xd7, 0x99, 0x2c, 0x0b, 0x39, 0x8a, 0xb3, 0x61, 0x44, 0x09, 0x4e, 0xd4, 0x15,
+	0x0e, 0x4b, 0xca, 0xe1, 0xc9, 0x8f, 0x9b, 0x66, 0x74, 0x75, 0xd3, 0x8c, 0x7e, 0xde, 0x34, 0xa3,
+	0xef, 0xb7, 0xcd, 0x85, 0xab, 0xdb, 0xe6, 0xc2, 0xf5, 0x6d, 0x73, 0xe1, 0xdd, 0x8b, 0xb3, 0xd4,
+	0x9e, 0x5f, 0xf6, 0x5a, 0x42, 0xe7, 0x6d, 0xff, 0xbc, 0x3e, 0x53, 0x68, 0x87, 0xda, 0x5c, 0x50,
+	0x94, 0xa1, 0x3c, 0x43, 0xd3, 0xfe, 0x38, 0xf1, 0x2c, 0x0b, 0x6d, 0xb0, 0xb7, 0xec, 0x9f, 0xe4,
+	0xe7, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x9b, 0xc4, 0xce, 0x91, 0xb5, 0x05, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -883,6 +1087,142 @@ func (m *EventCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *EventClassAdminUpdated) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventClassAdminUpdated) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventClassAdminUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NewAdmin) > 0 {
+		i -= len(m.NewAdmin)
+		copy(dAtA[i:], m.NewAdmin)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewAdmin)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.OldAdmin) > 0 {
+		i -= len(m.OldAdmin)
+		copy(dAtA[i:], m.OldAdmin)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.OldAdmin)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassName) > 0 {
+		i -= len(m.ClassName)
+		copy(dAtA[i:], m.ClassName)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassName)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventClassIssuersUpdated) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventClassIssuersUpdated) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventClassIssuersUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RemovedIssuers) > 0 {
+		for iNdEx := len(m.RemovedIssuers) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.RemovedIssuers[iNdEx])
+			copy(dAtA[i:], m.RemovedIssuers[iNdEx])
+			i = encodeVarintEvents(dAtA, i, uint64(len(m.RemovedIssuers[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.AddedIssuers) > 0 {
+		for iNdEx := len(m.AddedIssuers) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.AddedIssuers[iNdEx])
+			copy(dAtA[i:], m.AddedIssuers[iNdEx])
+			i = encodeVarintEvents(dAtA, i, uint64(len(m.AddedIssuers[iNdEx])))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.ClassName) > 0 {
+		i -= len(m.ClassName)
+		copy(dAtA[i:], m.ClassName)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassName)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventClassMetadataUpdated) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventClassMetadataUpdated) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventClassMetadataUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.NewMetadata) > 0 {
+		i -= len(m.NewMetadata)
+		copy(dAtA[i:], m.NewMetadata)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewMetadata)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.OldMetadata) > 0 {
+		i -= len(m.OldMetadata)
+		copy(dAtA[i:], m.OldMetadata)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.OldMetadata)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ClassName) > 0 {
+		i -= len(m.ClassName)
+		copy(dAtA[i:], m.ClassName)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.ClassName)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	offset -= sovEvents(v)
 	base := offset
@@ -1050,6 +1390,73 @@ func (m *EventCancel) Size() (n int) {
 		n += 1 + l + sovEvents(uint64(l))
 	}
 	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventClassAdminUpdated) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassName)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.OldAdmin)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.NewAdmin)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventClassIssuersUpdated) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassName)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if len(m.AddedIssuers) > 0 {
+		for _, s := range m.AddedIssuers {
+			l = len(s)
+			n += 1 + l + sovEvents(uint64(l))
+		}
+	}
+	if len(m.RemovedIssuers) > 0 {
+		for _, s := range m.RemovedIssuers {
+			l = len(s)
+			n += 1 + l + sovEvents(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *EventClassMetadataUpdated) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ClassName)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.OldMetadata)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.NewMetadata)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -2204,6 +2611,444 @@ func (m *EventCancel) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventClassAdminUpdated) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventClassAdminUpdated: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventClassAdminUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OldAdmin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.OldAdmin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewAdmin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewAdmin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventClassIssuersUpdated) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventClassIssuersUpdated: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventClassIssuersUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AddedIssuers", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AddedIssuers = append(m.AddedIssuers, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemovedIssuers", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemovedIssuers = append(m.RemovedIssuers, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventClassMetadataUpdated) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventClassMetadataUpdated: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventClassMetadataUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OldMetadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.OldMetadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewMetadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewMetadata = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

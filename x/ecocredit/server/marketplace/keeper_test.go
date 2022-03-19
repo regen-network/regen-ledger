@@ -28,7 +28,7 @@ type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
 	coreStore    ecocreditv1.StateStore
-	marketStore marketApi.StateStore
+	marketStore  marketApi.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
@@ -68,4 +68,3 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	return s
 }
-
