@@ -208,13 +208,16 @@ func TestBasketDenom(t *testing.T) {
 	}
 	require := require.New(t)
 	for _, tc := range tcs {
-		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
-		if tc.err {
-			require.Error(err, tc.tname)
-		} else {
-			require.NoError(err, tc.tname)
-			require.Equal(tc.denom, d, tc.tname)
-			require.Equal(tc.displayDenom, displayD, tc.tname)
-		}
+		t.Run(tc.tname, func(t *testing.T) {
+			t.Parallel()
+			d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+			if tc.err {
+				require.Error(err, tc.tname)
+			} else {
+				require.NoError(err, tc.tname)
+				require.Equal(tc.denom, d, tc.tname)
+				require.Equal(tc.displayDenom, displayD, tc.tname)
+			}
+		})
 	}
 }
