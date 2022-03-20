@@ -2,11 +2,14 @@ package marketplace
 
 import (
 	"context"
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 // PruneSellOrders is a BeginBlock function that moves escrowed credits back into their tradable balance and deletes orders

@@ -17,6 +17,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
+
 )
 
 const (
@@ -74,6 +80,8 @@ type serverImpl struct {
 	batchesByProjectIDIndex orm.Index
 
 	basketKeeper basket.Keeper
+	coreKeeper   core.Keeper
+	marketplaceKeeper marketplace.Keeper
 
 	db ormdb.ModuleDB
 }
@@ -234,6 +242,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
 
+	ss, err := api.NewStateStore(s.db)
+	if err != nil {
+		panic(err)
+	}
+	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
+
 	return s
 }
 
@@ -245,10 +259,15 @@ func RegisterServices(
 	distKeeper ecocredit.DistributionKeeper,
 ) ecocredit.Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
+	
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	
 	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
 	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
+
+	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
+	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)

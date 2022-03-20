@@ -12,7 +12,7 @@ import (
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 // Sell creates new sell orders for credits
@@ -30,7 +30,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+		ct, err := core.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}

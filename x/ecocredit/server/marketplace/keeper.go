@@ -4,7 +4,6 @@ import (
 	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // TODO: Revisit this once we have proper gas fee framework.
@@ -15,10 +14,10 @@ type Keeper struct {
 	stateStore marketplacev1.StateStore
 	coreStore  ecocreditv1.StateStore
 	bankKeeper ecocredit.BankKeeper
-	params     server.ParamKeeper
+	params     ecocredit.ParamKeeper
 }
 
-func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocredit.BankKeeper, params server.ParamKeeper) Keeper {
+func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
 	return Keeper{
 		coreStore:  cs,
 		stateStore: ss,
