@@ -49,6 +49,12 @@ service Query {
         "/regen/ecocredit/v1/projects/{project_id}/batches";
   }
 
+  // BatchesByClass queries all batches issued from a given class.
+  rpc BatchesByClass(QueryBatchesByClassRequest) returns (QueryBatchesByClassResponse) {
+    option (google.api.http).get =
+      "/regen/ecocredit/v1/classes/{class_id}/batches";
+  }
+
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
     option (google.api.http).get =
@@ -184,6 +190,26 @@ message QueryBatchesRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
+
+  // batches are the fetched credit batches within the project.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBatchesByClassRequest is the Query/BatchesByClass request type.
+message QueryBatchesByClassRequest {
+
+  // class_id is the unique ID of the class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByClassResponse is the Query/BatchesByClass response type.
+message QueryBatchesByClassResponse {
 
   // batches are the fetched credit batches within the project.
   repeated BatchInfo batches = 1;

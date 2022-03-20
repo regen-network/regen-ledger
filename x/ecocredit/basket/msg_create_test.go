@@ -21,6 +21,8 @@ func errorMatches(t *testing.T, err error, expect string) {
 }
 
 func TestMsgCreateValidateBasic(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
 	name := randstr.String((nameMaxLen+nameMinLen)/2, "ABCDEFGHIJKL")
@@ -47,7 +49,7 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"name-short",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen - 1)},
 			"name must start with an alphabetic character"},
-		{"name-no-alpahnum",
+		{"name-no-alphanum",
 			MsgCreate{Curator: a, Name: randstr.String(nameMinLen) + "*"},
 			"name must start with an alphabetic character"},
 		{"name-no-alpah-prefix",
@@ -59,15 +61,12 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 		{"exponent-2",
 			MsgCreate{Curator: a, Name: name, Exponent: 17},
 			"exponent must be one of [0 1 2 3 6 9 12 15 18 21 24]"},
-		{"credity_type-1",
+		{"credit_type-1",
 			MsgCreate{Curator: a, Name: name, Exponent: 3},
 			"credit type abbreviation must be 1-3"},
-		{"credity_type-2",
+		{"credit_type-2",
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: randstr.String(creditTypeAbbrMaxLen + 1)},
 			"credit type abbreviation must be 1-3"},
-		{"date_criteria-1",
-			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: &DateCriteria{}},
-			"unsupported date_criteria value"},
 		{"description",
 			MsgCreate{Curator: a, Name: name, Exponent: 3, CreditTypeAbbrev: creditAbbr, DateCriteria: start, Description: randstr.String(descrMaxLen + 1)},
 			"description can't be longer"},
@@ -90,6 +89,8 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
+			t.Parallel()
+
 			err := tc.msg.ValidateBasic()
 			errorMatches(t, err, tc.err)
 		})
@@ -97,35 +98,69 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateValidateDateCriteria(t *testing.T) {
+	t.Parallel()
+
 	tcs := []struct {
 		id  string
 		d   DateCriteria
 		err string
 	}{
-		{"nil-min_start_date",
-			DateCriteria{MinStartDate: nil},
-			"unsupported date_criteria value"},
-		{"bad-min_start_date",
-			DateCriteria{MinStartDate: &gogotypes.Timestamp{Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()}},
-			"date_criteria.min_start_date must be after"},
-		{"nil-start_date_window",
-			DateCriteria{StartDateWindow: nil},
-			"unsupported date_criteria value"},
-		{"bad-start_date_window",
+		{
+			"bad-min_start_date",
+			DateCriteria{MinStartDate: &gogotypes.Timestamp{
+				Seconds: time.Date(1400, 1, 1, 0, 0, 0, 0, time.UTC).Unix()},
+			},
+			"date_criteria.min_start_date must be after",
+		},
+		{
+			"bad-start_date_window",
 			DateCriteria{StartDateWindow: &gogotypes.Duration{Seconds: 3600}},
-			"date_criteria.start_date_window must be at least 1 day"},
-		{"both-min_start_date-start_date_window-set",
-			DateCriteria{MinStartDate: gogotypes.TimestampNow(), StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2}},
-			"only one of date_criteria.min_start_date or date_criteria.start_date_window must be set"},
-		{"good-min_start_date",
+			"date_criteria.start_date_window must be at least 1 day",
+		},
+		{
+			"both-min_start_date-start_date_window-set",
+			DateCriteria{
+				MinStartDate:    gogotypes.TimestampNow(),
+				StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2},
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"both-min_start_date-years_in_the_past-set",
+			DateCriteria{
+				MinStartDate:   gogotypes.TimestampNow(),
+				YearsInThePast: 10,
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"both-start_date_window-years_in_the_past-set",
+			DateCriteria{
+				StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2},
+				YearsInThePast:  10,
+			},
+			"only one of date_criteria.min_start_date, date_criteria.start_date_window, or date_criteria.years_in_the_past must be set",
+		},
+		{
+			"good-min_start_date",
 			DateCriteria{MinStartDate: gogotypes.TimestampNow()},
-			""},
-		{"good-start_date_window",
+			"",
+		},
+		{
+			"good-start_date_window",
 			DateCriteria{StartDateWindow: &gogotypes.Duration{Seconds: 3600 * 24 * 2}},
-			""},
+			"",
+		},
+		{
+			"good-years_in_the_past",
+			DateCriteria{YearsInThePast: 10},
+			"",
+		},
 	}
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
+			t.Parallel()
+
 			err := validateDateCriteria(&tc.d)
 			errorMatches(t, err, tc.err)
 		})
@@ -133,12 +168,16 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 }
 
 func TestMsgCreateGetSigners(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	require.Equal(t, []sdk.AccAddress{addr1}, m.GetSigners())
 }
 
 func TestMsgCreateSignBytes(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	bz := m.GetSignBytes()
@@ -146,6 +185,8 @@ func TestMsgCreateSignBytes(t *testing.T) {
 }
 
 func TestBasketDenom(t *testing.T) {
+	t.Parallel()
+
 	tcs := []struct {
 		tname        string
 		abbrev       string
@@ -167,13 +208,16 @@ func TestBasketDenom(t *testing.T) {
 	}
 	require := require.New(t)
 	for _, tc := range tcs {
-		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
-		if tc.err {
-			require.Error(err, tc.tname)
-		} else {
-			require.NoError(err, tc.tname)
-			require.Equal(tc.denom, d, tc.tname)
-			require.Equal(tc.displayDenom, displayD, tc.tname)
-		}
+		t.Run(tc.tname, func(t *testing.T) {
+			t.Parallel()
+			d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+			if tc.err {
+				require.Error(err, tc.tname)
+			} else {
+				require.NoError(err, tc.tname)
+				require.Equal(tc.denom, d, tc.tname)
+				require.Equal(tc.displayDenom, displayD, tc.tname)
+			}
+		})
 	}
 }
