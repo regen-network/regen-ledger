@@ -21,6 +21,8 @@ func errorMatches(t *testing.T, err error, expect string) {
 }
 
 func TestMsgCreateValidateBasic(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	a := addr1.String()
 	name := randstr.String((nameMaxLen+nameMinLen)/2, "ABCDEFGHIJKL")
@@ -87,6 +89,8 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
+			t.Parallel()
+
 			err := tc.msg.ValidateBasic()
 			errorMatches(t, err, tc.err)
 		})
@@ -94,6 +98,8 @@ func TestMsgCreateValidateBasic(t *testing.T) {
 }
 
 func TestMsgCreateValidateDateCriteria(t *testing.T) {
+	t.Parallel()
+
 	tcs := []struct {
 		id  string
 		d   DateCriteria
@@ -153,6 +159,8 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 	}
 	for _, tc := range tcs {
 		t.Run(tc.id, func(t *testing.T) {
+			t.Parallel()
+
 			err := validateDateCriteria(&tc.d)
 			errorMatches(t, err, tc.err)
 		})
@@ -160,12 +168,16 @@ func TestMsgCreateValidateDateCriteria(t *testing.T) {
 }
 
 func TestMsgCreateGetSigners(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	require.Equal(t, []sdk.AccAddress{addr1}, m.GetSigners())
 }
 
 func TestMsgCreateSignBytes(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	m := MsgCreate{Curator: addr1.String(), Name: "name", Exponent: 2}
 	bz := m.GetSignBytes()
@@ -173,6 +185,8 @@ func TestMsgCreateSignBytes(t *testing.T) {
 }
 
 func TestBasketDenom(t *testing.T) {
+	t.Parallel()
+
 	tcs := []struct {
 		tname        string
 		abbrev       string
@@ -194,13 +208,16 @@ func TestBasketDenom(t *testing.T) {
 	}
 	require := require.New(t)
 	for _, tc := range tcs {
-		d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
-		if tc.err {
-			require.Error(err, tc.tname)
-		} else {
-			require.NoError(err, tc.tname)
-			require.Equal(tc.denom, d, tc.tname)
-			require.Equal(tc.displayDenom, displayD, tc.tname)
-		}
+		t.Run(tc.tname, func(t *testing.T) {
+			t.Parallel()
+			d, displayD, err := BasketDenom("foo", tc.abbrev, tc.exponent)
+			if tc.err {
+				require.Error(err, tc.tname)
+			} else {
+				require.NoError(err, tc.tname)
+				require.Equal(tc.denom, d, tc.tname)
+				require.Equal(tc.displayDenom, displayD, tc.tname)
+			}
+		})
 	}
 }
