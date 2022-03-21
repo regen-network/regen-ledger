@@ -31,9 +31,10 @@ func TestMsgBuy(t *testing.T) {
 							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire:  true,
+						DisableAutoRetire:  false,
 						DisablePartialFill: true,
 						Expiration:         &validExpiration,
+						RetirementLocation: "US-WA",
 					},
 				},
 			},
@@ -100,9 +101,27 @@ func TestMsgBuy(t *testing.T) {
 							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire:  true,
+						DisableAutoRetire:  false,
 						DisablePartialFill: true,
 						RetirementLocation: "foo",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: retirement location required when DisableAutoRetire is false": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom:  "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire:  false,
+						DisablePartialFill: true,
+						RetirementLocation: "",
 					},
 				},
 			},
@@ -113,7 +132,6 @@ func TestMsgBuy(t *testing.T) {
 	for msg, test := range tests {
 		t.Run(msg, func(t *testing.T) {
 			t.Parallel()
-
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)

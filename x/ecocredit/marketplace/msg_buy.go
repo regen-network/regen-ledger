@@ -47,9 +47,10 @@ func (m *MsgBuy) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
 		}
 
-		if order.RetirementLocation != "" {
+		if !order.DisableAutoRetire {
 			if err := core.ValidateLocation(order.RetirementLocation); err != nil {
-				return err
+				// ValidateLocation returns an sdkerrors.ErrInvalidRequest, so we can just wrap it here
+				return sdkerrors.Wrap(err, "a valid retirement location is required when DisableAutoRetire is false")
 			}
 		}
 	}
