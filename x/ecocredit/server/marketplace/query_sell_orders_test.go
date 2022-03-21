@@ -3,11 +3,12 @@ package marketplace
 import (
 	"testing"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
