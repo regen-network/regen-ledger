@@ -1,4 +1,4 @@
-# Overview
+# Regen Ledger
 
 Regen Ledger is a public Proof-of-Stake (PoS) blockchain application built with [Cosmos SDK](https://docs.cosmos.network/). Regen Ledger provides the infrastructure for a public ecological accounting system for verification of claims, agreements, and data related to ecological state.
 

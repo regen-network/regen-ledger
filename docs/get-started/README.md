@@ -1,4 +1,4 @@
-# Get Started
+# Local Testnet
 
 This document provides instructions for running a single node network on your local machine and then submitting your first few transactions to that network using the command line. Running a single node network is a great way to get familiar with Regen Ledger and its functionality.
 
@@ -11,8 +11,6 @@ In order to install the `regen` binary, you'll need the following:
 - Go `>=1.17`
 
 For more information, see [Prerequisites](prerequisites.md). 
-
-*Note: The `regen` binary is installed into `$(go env GOPATH)/bin`, so make sure `$(go env GOPATH)/bin` is in your PATH (e.g. `export PATH=$(go env GOPATH)/bin:$PATH`).*
 
 ## Install Regen
 

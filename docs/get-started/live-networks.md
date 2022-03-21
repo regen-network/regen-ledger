@@ -12,7 +12,7 @@ By default, the `regen` binary will connect to a local node. In order to connect
 
 Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../../migrations/v2.0-upgrade.md).
 
 <!-- TODO: update to include dedicated full node operated by RND -->
 
@@ -28,7 +28,7 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../../migrations/v2.0-upgrade.md).
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
@@ -54,7 +54,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 ## Interacting With A Node
 
-First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./README.md#install-regen).
+First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](README.md#install-regen).
 
 In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address to your commands. Before submitting any queries or transactions, you should first check the status of the node using the `status` command.
 
@@ -88,7 +88,7 @@ You can check the configuration by running the following command:
 regen config
 ```
 
-For more information about using the CLI, see [Command-Line Interface](../regen-ledger/interfaces.md#command-line-interface).
+For more information about using the CLI, see [Command-Line Interface](../../regen-ledger/interfaces.md#command-line-interface).
 
 ## Testnet Tokens
 
