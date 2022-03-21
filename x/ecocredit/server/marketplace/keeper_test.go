@@ -19,8 +19,8 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
@@ -43,7 +43,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.coreStore, err = ecocreditv1.NewStateStore(s.db)
 	assert.NilError(t, err)

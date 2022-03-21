@@ -1,15 +1,12 @@
 package server
 
 import (
-	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -21,8 +18,8 @@ import (
 
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
-
 )
 
 const (
@@ -79,20 +76,11 @@ type serverImpl struct {
 	projectsByClassIDIndex  orm.Index
 	batchesByProjectIDIndex orm.Index
 
-	basketKeeper basket.Keeper
-	coreKeeper   core.Keeper
+	basketKeeper      basket.Keeper
+	coreKeeper        core.Keeper
 	marketplaceKeeper marketplace.Keeper
 
 	db ormdb.ModuleDB
-}
-
-var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
-	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
-		{Id: 1, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
-		{Id: 2, ProtoFileName: basketapi.File_regen_ecocredit_basket_v1_state_proto.Path()},
-		{Id: 3, ProtoFileName: marketApi.File_regen_ecocredit_marketplace_v1_state_proto.Path()},
-	},
-	Prefix: []byte{ecocredit.ORMPrefix},
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -235,7 +223,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.projectInfoTable = projectInfoTableBuilder.Build()
 
-	s.db, err = ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormstore.NewStoreKeyDB(&ecocredit.ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -259,15 +247,18 @@ func RegisterServices(
 	distKeeper ecocredit.DistributionKeeper,
 ) ecocredit.Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
-	
+
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
-	
+
 	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
 	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)
+
+	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.marketplaceKeeper)
+	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)

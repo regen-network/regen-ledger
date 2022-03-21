@@ -4,6 +4,7 @@ import (
 	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // TODO: Revisit this once we have proper gas fee framework.
@@ -27,5 +28,5 @@ func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocre
 }
 
 // TODO: uncomment when impl
-// var _ v1.MsgServer = Keeper{}
-// var _ v1.QueryServer = Keeper{}
+var _ v1.MsgServer = Keeper{}
+var _ v1.QueryServer = Keeper{}
