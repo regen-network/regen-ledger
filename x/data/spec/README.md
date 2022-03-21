@@ -14,7 +14,7 @@ The data module enables content hashes for different types of data to be anchore
 
 Anchoring data is done using a secure content hash for either raw data (non-canonical) or graph data (conforms to the RDF data model) and provides a tamper-proof timestamp, effectively saying that the data exists at a certain point in time (also known as "secure timestamping"). When anchoring data, the sender of the transaction is not attesting to the veracity of the data.
 
-Once data is anchored, verifies can attest to the veracity of the data. Attesting to data is like signing a legal document, meaning that the attestor agrees to all conditions and to the best of their knowledge everything is true. Data can be attested to by multiple attestors and each attestation is secured with a tamper-proof timestamp indicating the date and time when the data was verified.
+Once data is anchored, verifiers can attest to the veracity of the data. Attesting to data is like signing a legal document, meaning that the attestor agrees to all conditions and to the best of their knowledge everything is true. Data can be attested to by multiple attestors and each attestation is secured with a tamper-proof timestamp indicating the date and time when the data was verified.
 
 The data module also enables the creation and management of data resolvers. When a data resolver is created, the creator of the resolver becomes the admin. The admin can then register anchored data to the resolver, providing a list of content hashes that the data resolver claims to serve.
 
