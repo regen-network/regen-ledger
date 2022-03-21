@@ -402,7 +402,7 @@ func (s *IntegrationTestSuite) TestSellOrdersByAddressQuery() {
 		{
 			"valid request",
 			&ecocredit.QuerySellOrdersByAddressRequest{
-				Address:    s.signers[3].String(),
+				Address: s.signers[3].String(),
 			},
 			false,
 			"",
@@ -579,7 +579,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersByAddressQuery() {
 		{
 			"valid request",
 			&ecocredit.QueryBuyOrdersByAddressRequest{
-				Address:    s.signers[3].String(),
+				Address: s.signers[3].String(),
 			},
 			false,
 			"",

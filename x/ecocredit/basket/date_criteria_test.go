@@ -8,6 +8,8 @@ import (
 )
 
 func TestDateCriteriaToApi(t *testing.T) {
+	t.Parallel()
+
 	require := require.New(t)
 
 	var dc *DateCriteria
