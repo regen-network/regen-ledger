@@ -25,7 +25,7 @@ For more information, see [GNU Make](https://www.gnu.org/software/make/).
 For more information, see [Go](https://golang.org/).
 
 :::tip NOTE
-These commands are included in the [quickstart script](../../validators/getting-started/running-a-validator.md#quickstart).
+These commands are included in the [quickstart script](../get-started/running-a-validator.md#quickstart).
 :::
 
 Update packages:
@@ -80,4 +80,4 @@ Source profile file:
 . ~/.profile
 ```
 
-You're now ready to set up a [full node](../../validators/getting-started/running-a-full-node.md) or a [validator node](../../validators/getting-started/running-a-validator.md).
+You're now ready to set up a [full node](running-a-full-node.md) or a [validator node](running-a-validator.md).

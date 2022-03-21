@@ -1,8 +1,14 @@
 require('dotenv').config()
 
 const { description } = require('../package')
+const webpack = require('webpack')
 
 module.exports = {
+  configureWebpack: (config) => {
+    return { plugins: [
+      new webpack.EnvironmentPlugin({ ...process.env })
+    ]}
+  },
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
@@ -199,6 +205,33 @@ module.exports = {
             '/infrastructure/interfaces',
           ],
         },
+        {
+          title: 'Commands',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+              '/commands/regen',
+              '/commands/regen_add-genesis-account',
+              '/commands/regen_collect-gentxs',
+              '/commands/regen_config',
+              '/commands/regen_debug',
+              '/commands/regen_export',
+              '/commands/regen_gentx',
+              '/commands/regen_init',
+              '/commands/regen_keys',
+              '/commands/regen_migrate',
+              '/commands/regen_query',
+              '/commands/regen_rosetta',
+              '/commands/regen_start',
+              '/commands/regen_status',
+              '/commands/regen_tendermint',
+              '/commands/regen_testnet',
+              '/commands/regen_tx',
+              '/commands/regen_unsafe-reset-all',
+              '/commands/regen_validate-genesis',
+              '/commands/regen_version',
+          ]
+        },
       ],
     },
   },
@@ -209,4 +242,9 @@ module.exports = {
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
   ],
+  markdown: {
+    extendMarkdown: md => {
+      md.use(require('./markdown-it-gh'))
+    }
+  }
 }
