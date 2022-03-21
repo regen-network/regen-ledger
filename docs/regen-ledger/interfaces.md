@@ -15,17 +15,20 @@ The most straightforward way to interact with a node is using the command-line i
 The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Quick Start](../getting-started/README.md), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/README.md).
 
 To learn more about the available commands, [install regen](../getting-started/README.md#install-regen) and run the following:
-```
+
+```bash
 regen --help
 ```
 
 For transaction commands:
-```
+
+```bash
 regen tx --help
 ```
 
 For query commands:
-```
+
+```bash
 regen query --help
 ```
 
@@ -36,12 +39,14 @@ For more information about the CLI, check out the [Cosmos SDK Documentation](htt
 [gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. Regen Ledger uses gRPC primarily for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means you can query Regen Ledger state directly by using a gRPC library in your programming language of choice, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
 
 In addition to using a gRPC library, you can also use [grpcurl](https://github.com/fullstorydev/grpcurl) - a command-line tool that lets you interact with gRPC servers. If you have a local node running, you can list the protobuf services available using the following command:
-```
+
+```bash
 grpcurl -plaintext localhost:9090 list
 ```
 
 To execute a call, you can use the following format:
-```
+
+```bash
 grpcurl \
     -plaintext \
     -d '{"address":"<address>"}' \
@@ -62,7 +67,8 @@ For more information about the gRPC interface, check out the [Cosmos SDK Documen
 All gRPC services and methods on Regen Ledger are available for more convenient REST based queries through [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway).
 
 For example, you can query the balance of an address using the following `curl` command:
-```
+
+```bash
 curl \
     -X GET \
     -H "Content-Type: application/json" \
