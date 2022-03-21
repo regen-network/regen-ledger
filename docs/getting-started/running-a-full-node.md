@@ -111,7 +111,7 @@ Update the genesis file.
 *For Regen Mainnet:*
 
 ```bash
-curl http://regen.rpc.vitwit.com:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl http://mainnet.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Redwood Testnet:*
@@ -135,7 +135,7 @@ Add a seed node for initial peer discovery.
 *For Regen Mainnet:*
 
 ```bash
-PERSISTENT_PEERS="aebb8431609cb126a977592446f5de252d8b7fa1@regen.rpc.vitwit.com:26656"
+PERSISTENT_PEERS="c4460b52c34ad4f12168d05807e998bb8e8b4812@mainnet.regen.network:26656,aebb8431609cb126a977592446f5de252d8b7fa1@regen.rpc.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
@@ -149,7 +149,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 *For Hambach Testnet:*
 
 ```bash
-PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656"
+PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656,578b74c81f08a812b5f1a76a53b00a8ad3cfec57@hambach-sentry.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
@@ -233,6 +233,12 @@ Check the status of the `cosmovisor` service:
 sudo systemctl status cosmovisor
 ```
 
+Enable cosmovisor to start automatically when the machine reboots:
+
+```bash
+sudo systemctl enable cosmovisor.service
+```
+
 ## Prepare Upgrade
 
-The next step will be to prepare your node for the upgrade process. See [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md) for more information.
+The next step will be to prepare your node for the upgrade process. See [Upgrade Overview](../migrations/upgrade.md) for more information.
