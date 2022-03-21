@@ -40,7 +40,7 @@ The basket submodule enables the creation and management of baskets. Ecosystem s
 The marketplace submodule will be made available in Regen Ledger v4.0.
 :::
 
-The marketplace submodule enables the creation and management of sell orders for ecosystem service credits and the purchasing of those credits through direct buy orders. Credits can only be listed for approved token denoms that are managed through an on-chain governance process. The credits for each sell order are held in escrow until the sell order either expires or is cancelled by the owner. The owner of a sell order can update or cancel the sell order at any time.
+The marketplace submodule enables the creation and management of sell orders for ecosystem service credits and the purchasing of those credits through direct buy orders. Credits can only be listed for approved token denoms that are managed through an on-chain governance process. The credits for each sell order are held in escrow until the sell order either expires, is cancelled by the owner, or purchased via a direct buy order. The owner of a sell order can update or cancel the sell order at any time.
 
 ## Contents
 
