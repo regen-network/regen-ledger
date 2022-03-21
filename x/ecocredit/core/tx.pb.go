@@ -42,8 +42,8 @@ type MsgCreateClass struct {
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
-	// fee specifies the fee to pay for the class creation.
-	// acceptable fees for creating a class can be found in the governance parameters for the ecocredit module.
+	// fee specifies the fee to pay for the creation of the credit class.
+	// acceptable fees for creating a credit class can be found in the governance parameters for the ecocredit module.
 	Fee *Fee `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 

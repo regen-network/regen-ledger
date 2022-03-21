@@ -31,7 +31,7 @@ func TestCreateClass_Valid(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee: ccFee,
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 	assert.Equal(t, res.ClassId, "C01")
@@ -89,7 +89,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee: ccFee,
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
@@ -98,7 +98,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee: ccFee,
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
@@ -122,7 +122,7 @@ func TestCreateClass_Fees(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee: &core.Fee{Denom: "bar", Amount: "10"},
+		Fee:              &core.Fee{Denom: "bar", Amount: "10"},
 	})
 	assert.ErrorContains(t, err, "bar is not allowed to be used in credit class fees")
 
@@ -132,7 +132,7 @@ func TestCreateClass_Fees(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee: &core.Fee{Denom: "foo", Amount: "10"},
+		Fee:              &core.Fee{Denom: "foo", Amount: "10"},
 	})
-	assert.ErrorContains(t, err, "expected 20 for fee, got 10")
+	assert.ErrorContains(t, err, "expected 20foo for fee, got 10foo")
 }
