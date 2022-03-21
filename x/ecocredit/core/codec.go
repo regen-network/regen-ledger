@@ -12,6 +12,7 @@ func RegisterTypes(registry codectypes.InterfaceRegistry) {
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateClass{}, "regen.core/MsgCreateClass", nil)
+	cdc.RegisterConcrete(&MsgCreateProject{}, "regen.core/MsgCreateProject", nil)
 	cdc.RegisterConcrete(&MsgCancel{}, "regen.core/MsgCancel", nil)
 	cdc.RegisterConcrete(&MsgCreateBatch{}, "regen.core/MsgCreateBatch", nil)
 	cdc.RegisterConcrete(&MsgRetire{}, "regen.core/MsgRetire", nil)
