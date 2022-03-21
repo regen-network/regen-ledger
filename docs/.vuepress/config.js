@@ -183,6 +183,33 @@ module.exports = {
             '/tutorials/ibc-transfers'
           ]
         },
+        {
+          title: 'Commands',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+              '/commands/regen',
+              '/commands/regen_add-genesis-account',
+              '/commands/regen_collect-gentxs',
+              '/commands/regen_config',
+              '/commands/regen_debug',
+              '/commands/regen_export',
+              '/commands/regen_gentx',
+              '/commands/regen_init',
+              '/commands/regen_keys',
+              '/commands/regen_migrate',
+              '/commands/regen_query',
+              '/commands/regen_rosetta',
+              '/commands/regen_start',
+              '/commands/regen_status',
+              '/commands/regen_tendermint',
+              '/commands/regen_testnet',
+              '/commands/regen_tx',
+              '/commands/regen_unsafe-reset-all',
+              '/commands/regen_validate-genesis',
+              '/commands/regen_version',
+          ]
+        },
       ],
     }
   },

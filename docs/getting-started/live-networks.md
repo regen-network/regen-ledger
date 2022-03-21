@@ -12,13 +12,12 @@ By default, the `regen` binary will connect to a local node. In order to connect
 
 Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
-
-<!-- TODO: update to include dedicated full node operated by RND -->
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../migrations/upgrade.md).
 
 The following URL is the node address for a full node operated by VitWit:
 
-[http://regen.rpc.vitwit.com:26657/](http://regen.rpc.vitwit.com:26657/)
+- [http://mainnet.regen.network:26657/](http://mainnet.regen.network:26657/)
+- [http://regen.rpc.vitwit.com:26657/](http://regen.rpc.vitwit.com:26657/)
 
 For more information, see [regen-network/mainnet](https://github.com/regen-network/mainnet).
 
@@ -28,12 +27,12 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the `v2.0.0` version, see [Upgrade Guide v2.0](../migrations/v2.0-upgrade.md).
+When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../migrations/upgrade.md).
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
-[http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
-[http://redwood-sentry.vitwit.com:26657/](http://redwood-sentry.vitwit.com:26657/)
+- [http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
+- [http://redwood-sentry.vitwit.com:26657/](http://redwood-sentry.vitwit.com:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
@@ -47,8 +46,8 @@ When the time comes to introduce new experimental features, Hambach Testnet will
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
-[http://hambach.regen.network:26657/](http://hambach.regen.network:26657/)
-[http://hambach-sentry.vitwit.com:26657/](http://hambach-sentry.vitwit.com:26657/)
+- [http://hambach.regen.network:26657/](http://hambach.regen.network:26657/)
+- [http://hambach-sentry.vitwit.com:26657/](http://hambach-sentry.vitwit.com:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
@@ -61,7 +60,7 @@ In order to interact with a node from a live network, you'll need to provide a `
 To check the status of the Regen Mainnet node, run the following command:
 
 ```bash
-regen status --node http://regen.rpc.vitwit.com:26657
+regen status --node http://mainnet.regen.network:26657
 ```
 
 To check the status of the Redwood Testnet node, run the following command:
@@ -79,7 +78,7 @@ regen status --node http://hambach.regen.network:26657
 If you are using `v2.0.0` or later, you can set the node address once using the `config` command rather than adding the `--node` flag to each command.
 
 ```bash
-regen config node http://regen.rpc.vitwit.com:26657
+regen config node http://mainnet.regen.network:26657
 ```
 
 You can check the configuration by running the following command:
