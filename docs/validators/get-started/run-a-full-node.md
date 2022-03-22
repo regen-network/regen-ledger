@@ -241,4 +241,4 @@ sudo systemctl enable cosmovisor.service
 
 ## Prepare Upgrade
 
-The next step will be to prepare your node for the upgrade process. See [Upgrade Overview](../migrations/upgrade.md) for more information.
+The next step will be to [create a validator](create-a-validator.md) and prepare your node for the [upgrade process](../migrations/upgrade.md).
