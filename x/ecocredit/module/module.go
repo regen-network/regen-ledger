@@ -32,7 +32,7 @@ import (
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
@@ -78,7 +78,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
-	marketplace.RegisterTypes(registry)
+	marketplacetypes.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
@@ -90,7 +90,7 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 	ctx := context.Background()
 	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
-	marketplace.RegisterQueryHandlerClient(ctx, mux, marketplace.NewQueryClient(clientCtx))
+	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
 }
 
@@ -170,7 +170,7 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	ecocredit.RegisterLegacyAminoCodec(cdc)
 	basket.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
-	marketplace.RegisterLegacyAminoCodec(cdc)
+	marketplacetypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions
