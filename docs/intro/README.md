@@ -28,22 +28,25 @@ For more information, check out [Getting Started: Live Networks](../getting-star
 
 The following block explorers currently support Regen Ledger:
 
-- [Aneka - Regen Mainnet](https://regen.aneka.io/)
-- [Aneka - Redwood Testnet](https://redwood.regen.aneka.io/)
-- [Aneka - Hambach Testnet](https://hambach.regen.aneka.io/)
-- [Big Dipper - Regen Mainnet](https://regen.bigdipper.live/)
+- [Aneka - Regen Mainnet](https://regen.aneka.io)
+- [Aneka - Redwood Testnet](https://redwood.regen.aneka.io)
+- [Aneka - Hambach Testnet](https://hambach.regen.aneka.io)
+- [Big Dipper - Regen Mainnet](https://regen.bigdipper.live)
 - [Mintscan - Regen Mainnet](https://mintscan.io/regen)
-- [Ping - Regen Mainnet](https://ping.pub/regen/)
+- [Ping - Regen Mainnet](https://ping.pub/regen)
+- [SkyNet - Regen Mainnet](https://skynetexplorers.com/regen-network)
 
 ## Wallets
 
 The following wallets currently support Regen Ledger:
 
-- [Keplr - Regen Mainnet](https://wallet.keplr.app/)
+- [Keplr - Regen Mainnet](https://wallet.keplr.app)
+- [Cosmostation - Regen Mainnet](https://wallet.cosmostation.io/regen)
+- [Forbole - Regen Mainnet](https://x.forbole.com/wallets)
 
 ## Community
 
 Have any questions, comments, or new ideas? The following community channels are the best place to start for technical topics related to Regen Ledger:
 
 - [Regen Network Discord](https://discord.gg/BDcBJu3)
-- [Regen Network Forum](https://forum.regen.network/)
+- [Regen Network Forum](https://commonwealth.im/regen)
