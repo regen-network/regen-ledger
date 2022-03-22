@@ -61,7 +61,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	// prune the orders
-	err = s.k.PruneSellOrders(s.sdkCtx)
+	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)
 
 	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)

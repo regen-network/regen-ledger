@@ -14,8 +14,9 @@ import (
 
 // PruneSellOrders is a BeginBlock function that moves escrowed credits back into their tradable balance and deletes orders
 // that have expired.
-func (k Keeper) PruneSellOrders(sdkCtx sdk.Context) error {
-	ctx := sdk.WrapSDKContext(sdkCtx)
+func (k Keeper) PruneSellOrders(ctx context.Context) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
 	fromKey, toKey := marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
