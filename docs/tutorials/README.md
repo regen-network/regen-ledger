@@ -1,11 +1,11 @@
-# List of Tutorials
+# Tutorials
 
 Tutorials for interacting and building with Regen Ledger.
 
-## Basic Users
+## User Tutorials
 
 - [IBC Transfers](./ibc-transfers.md)
 
-## Developers
+## Developer Tutorials
 
 (coming soon)

@@ -18,3 +18,5 @@ cp MODULES.md modules/README.md
 rm -rf commands
 mkdir -p commands
 go run ../scripts/generate-cli-docs.go
+
+cp COMMANDS.md commands/README.md

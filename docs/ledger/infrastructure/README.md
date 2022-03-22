@@ -22,7 +22,7 @@ The **Ecocredit Module** is our module for managing the issuance, trading, and r
 
 Initially, this module will be used for Regen Network's own [CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf) credit, but we've designed this module first and foremost to be an open platform for all credit designers - something like an [EIP721](https://eips.ethereum.org/EIPS/eip-721) token standard for ecosystem service credits.
 
-Check out [Ecocredit Module Overview](../modules/ecocredit/README.md) for more information about the ecocredit module.
+Check out [Ecocredit Module Overview](../../modules/ecocredit/README.md) for more information about the ecocredit module.
 
 ### Data Module
 
@@ -34,7 +34,7 @@ High quality and verifiable ecological data is an essential component in any mod
 
 The basic functionality of the data module includes storing, timestamping, and digitally signing data on Regen Ledger.
 
-Check out [Data Module Overview](../modules/data/README.md) for more information about the data module.
+Check out [Data Module Overview](../../modules/data/README.md) for more information about the data module.
 
 ## Additional Functionality
 
@@ -46,11 +46,11 @@ Supplemental to the core feature set described, Regen Ledger has out-of-the-box 
 ### Groups Module
 
 ::: tip COMING SOON
-A beta version of the group module is currently available using the experimental build of Regen Ledger and on [Hambach Testnet](/get-started/live-networks.md#hambach-testnet).
+A beta version of the group module is currently available using the experimental build of Regen Ledger and on [Hambach Testnet](../get-started/live-networks.md#hambach-testnet).
 :::
 
 ### CosmWasm
 
 ::: tip COMING SOON
-CosmWasm support will soon be made available using the experimental build of Regen Ledger and on [Hambach Testnet](/get-started/live-networks.md#hambach-testnet).
+CosmWasm support will soon be made available using the experimental build of Regen Ledger and on [Hambach Testnet](../get-started/live-networks.md#hambach-testnet).
 :::

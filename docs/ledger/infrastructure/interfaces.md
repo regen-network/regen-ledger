@@ -12,7 +12,7 @@ Each interface can be used to query the state. The command-line interface can be
 
 The most straightforward way to interact with a node is using the command-line interface.
 
-The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Get Started](../get-started/README.md), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/README.md).
+The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Get Started](../get-started/README.md), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../../tutorials/README.md).
 
 To learn more about the available commands, [install regen](../get-started/README.md#install-regen) and run the following:
 

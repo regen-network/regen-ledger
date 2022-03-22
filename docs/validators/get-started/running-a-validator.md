@@ -1,6 +1,6 @@
 # Running a Validator
 
-This document provides instructions for running a validator node for a [live network](../../get-started/live-networks.md). With Regen Mainnet, Redwood Testnet, and Hambach Testnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
+This document provides instructions for running a validator node for a [live network](../../ledger/get-started/live-networks.md). With Regen Mainnet, Redwood Testnet, and Hambach Testnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
 
 ## Prerequisites
 

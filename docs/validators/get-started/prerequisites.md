@@ -8,9 +8,11 @@ We recommend the following hardware specifications:
 - 4vCPUs
 - 500GB Disk space
 
-## Software
+## Image
 
 We recommend using Ubuntu 18.04 or 20.04.
+
+## Software
 
 ### Git
 
@@ -23,6 +25,8 @@ For more information, see [GNU Make](https://www.gnu.org/software/make/).
 ### Go
 
 For more information, see [Go](https://golang.org/).
+
+## Initial Setup
 
 :::tip NOTE
 These commands are included in the [quickstart script](../get-started/running-a-validator.md#quickstart).

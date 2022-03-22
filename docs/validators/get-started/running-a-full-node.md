@@ -1,6 +1,6 @@
 # Running a Full Node
 
-This document provides instructions for running a full node for a [live network](../../get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
+This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 

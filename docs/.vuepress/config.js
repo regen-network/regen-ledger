@@ -59,7 +59,7 @@ module.exports = {
     nav: [
       {
         text: 'Regen Ledger',
-        link: '/introduction/',
+        link: '/ledger/',
       },
       {
         text: 'Modules',
@@ -70,18 +70,51 @@ module.exports = {
         link: '/validators/',
       },
       {
+        text: 'Commands',
+        link: '/commands/',
+      },
+      {
         text: 'Tutorials',
         link: '/tutorials/',
       },
     ],
     sidebar: {
+      '/ledger/': [
+        {
+          title: 'Introduction',
+          collapsable: false,
+          children: [
+            '/ledger/',
+          ],
+        },
+        {
+          title: 'Get Started',
+          collapsable: false,
+          children: [
+            '/ledger/get-started/',
+            '/ledger/get-started/live-networks',
+            '/ledger/get-started/prerequisites',
+          ],
+        },
+        {
+          title: 'Infrastructure',
+          collapsable: false,
+          children: [
+            '/ledger/infrastructure/',
+            '/ledger/infrastructure/interfaces',
+          ],
+        },
+      ],
       '/modules/': [
         {
-          title: 'Overview',
+          title: 'Modules',
           collapsable: false,
           sidebarDepth: 0,
           children: [
-            '/modules/',
+            {
+              title: 'List of Modules',
+              path: '/modules/',
+            },
           ],
         },
         {
@@ -133,10 +166,13 @@ module.exports = {
       ],
       '/validators/': [
         {
-          title: 'Welcome',
+          title: 'Validators',
           collapsable: false,
           children: [
-            '/validators/',
+            {
+              title: 'Overview',
+              path: '/validators/',
+            },
           ],
         },
         {
@@ -158,55 +194,19 @@ module.exports = {
           ],
         },
       ],
-      '/tutorials/': [
-        {
-          title: 'Tutorials',
-          collapsable: false,
-          sidebarDepth: 0,
-          children: [
-            '/tutorials/',
-          ],
-        },
-        {
-          title: 'Basic Users',
-          collapsable: false,
-          children: [
-            '/tutorials/ibc-transfers',
-          ],
-        },
-        {
-          title: 'Developers',
-          collapsable: false,
-          children: [],
-        },
-      ],
-      '/': [
-        {
-          title: 'Introduction',
-          collapsable: false,
-          children: [
-            '/introduction/',
-          ],
-        },
-        {
-          title: 'Get Started',
-          collapsable: false,
-          children: [
-            '/get-started/',
-            '/get-started/live-networks',
-            '/get-started/prerequisites',
-          ],
-        },
-        {
-          title: 'Infrastructure',
-          collapsable: false,
-          children: [
-            '/infrastructure/',
-            '/infrastructure/interfaces',
-          ],
-        },
+      '/commands/': [
         {
           title: 'Commands',
+          collapsable: false,
+          children: [
+            {
+              title: 'List of Commands',
+              path: '/commands/',
+            },
+          ],
+        },
+        {
+          title: 'Regen App',
           collapsable: false,
           sidebarDepth: 0,
           children: [
@@ -231,6 +231,31 @@ module.exports = {
               '/commands/regen_validate-genesis',
               '/commands/regen_version',
           ]
+        },
+      ],
+      '/tutorials/': [
+        {
+          title: 'Tutorials',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            {
+              title: 'List of Tutorials',
+              path: '/tutorials/',
+            },
+          ],
+        },
+        {
+          title: 'User Tutorials',
+          collapsable: false,
+          children: [
+            '/tutorials/ibc-transfers',
+          ],
+        },
+        {
+          title: 'Developer Tutorials',
+          collapsable: false,
+          children: [],
         },
       ],
     },
