@@ -6,41 +6,47 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // BuyOrders queries all buy orders with optional pagination
-func (k Keeper) BuyOrders(ctx context.Context, request *v1.QueryBuyOrdersRequest) (*v1.QueryBuyOrdersResponse, error) {
+func (k Keeper) BuyOrders(ctx context.Context, request *marketplace.QueryBuyOrdersRequest) (*marketplace.QueryBuyOrdersResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.BuyOrderTable().List(ctx, marketplacev1.BuyOrderPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.BuyOrderTable().List(ctx, api.BuyOrderPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 	defer it.Close()
 
-	orders := make([]*v1.BuyOrder, 0, 10)
+	orders := make([]*marketplace.BuyOrder, 0, 10)
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var order v1.BuyOrder
+		var order marketplace.BuyOrder
 		if err = ormutil.PulsarToGogoSlow(v, &order); err != nil {
 			return nil, err
 		}
 		orders = append(orders, &order)
 	}
-	return &v1.QueryBuyOrdersResponse{BuyOrders: orders}, nil
+
+	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
+
+	return &marketplace.QueryBuyOrdersResponse{BuyOrders: orders, Pagination: pr}, nil
 }
 
 // BuyOrdersByAddress queries all buy orders created by the given address with optional pagination
-func (k Keeper) BuyOrdersByAddress(ctx context.Context, request *v1.QueryBuyOrdersByAddressRequest) (*v1.QueryBuyOrdersByAddressResponse, error) {
+func (k Keeper) BuyOrdersByAddress(ctx context.Context, request *marketplace.QueryBuyOrdersByAddressRequest) (*marketplace.QueryBuyOrdersByAddressResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
@@ -51,23 +57,29 @@ func (k Keeper) BuyOrdersByAddress(ctx context.Context, request *v1.QueryBuyOrde
 		return nil, err
 	}
 
-	it, err := k.stateStore.BuyOrderTable().List(ctx, marketplacev1.BuyOrderBuyerIndexKey{}.WithBuyer(buyer), ormlist.Paginate(pg))
+	it, err := k.stateStore.BuyOrderTable().List(ctx, api.BuyOrderBuyerIndexKey{}.WithBuyer(buyer), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 	defer it.Close()
 
-	orders := make([]*v1.BuyOrder, 0, 10)
+	orders := make([]*marketplace.BuyOrder, 0, 10)
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var order v1.BuyOrder
+		var order marketplace.BuyOrder
 		if err = ormutil.PulsarToGogoSlow(v, &order); err != nil {
 			return nil, err
 		}
 		orders = append(orders, &order)
 	}
-	return &v1.QueryBuyOrdersByAddressResponse{BuyOrders: orders}, nil
+
+	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
+
+	return &marketplace.QueryBuyOrdersByAddressResponse{BuyOrders: orders, Pagination: pr}, nil
 }
