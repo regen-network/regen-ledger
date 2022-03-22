@@ -4,14 +4,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/stretchr/testify/suite"
 )
 
 func TestUSuite(t *testing.T) {

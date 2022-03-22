@@ -271,18 +271,3 @@ message CreditClassFee {
     // amount is the fee amount
     string amount = 2;
 }
-
-// BasketFee stores the valid coin denoms and amounts that may be used as the fee for creating a basket.
-// This is controlled via governance.
-message BasketFee {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 14,
-        primary_key: {fields: "denom"}
-    };
-
-    // denom is the denom of the coin allowed to be used for basket creation fees
-    string denom = 1;
-
-    // amount is the fee amount
-    string amount = 2;
-}

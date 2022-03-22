@@ -9,7 +9,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
@@ -50,12 +49,4 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
-}
-
-// AssertGovernance asserts the address is equal to the governance module address
-func AssertGovernance(addr sdk.AccAddress, k ecocredit.AccountKeeper) error {
-	if !k.GetModuleAddress(govtypes.ModuleName).Equals(addr) {
-		return sdkerrors.ErrUnauthorized.Wrapf("params can only be updated via governance")
-	}
-	return nil
 }

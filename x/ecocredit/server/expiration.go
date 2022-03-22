@@ -3,9 +3,10 @@ package server
 import (
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // PruneOrders checks if there are any expired sell or buy orders and removes them from state.

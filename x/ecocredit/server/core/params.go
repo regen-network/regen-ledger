@@ -4,8 +4,8 @@ import (
 	"context"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	"github.com/cosmos/cosmos-sdk/types"
 )
@@ -16,7 +16,7 @@ func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (
 	if err != nil {
 		return nil, err
 	}
-	if err = server.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
@@ -44,7 +44,7 @@ func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowLis
 	if err != nil {
 		return nil, err
 	}
-	if err = server.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
 		return nil, err
 	}
 	return &core.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledTable().Save(ctx, &ecocreditv1.AllowlistEnabled{Enabled: req.Toggle})
@@ -58,20 +58,11 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 	if err != nil {
 		return nil, err
 	}
-	if err = server.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
 	store := k.stateStore.AllowedClassCreatorsTable()
-	for _, addr := range req.AddCreators {
-		acc, err := types.AccAddressFromBech32(addr)
-		if err != nil {
-			return nil, err
-		}
-		if err = store.Insert(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
-			return nil, err
-		}
-	}
 
 	for _, addr := range req.RemoveCreators {
 		acc, err := types.AccAddressFromBech32(addr)
@@ -79,6 +70,16 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 			return nil, err
 		}
 		if err = store.Delete(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
+			return nil, err
+		}
+	}
+
+	for _, addr := range req.AddCreators {
+		acc, err := types.AccAddressFromBech32(addr)
+		if err != nil {
+			return nil, err
+		}
+		if err = store.Insert(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
 			return nil, err
 		}
 	}
@@ -92,19 +93,11 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 	if err != nil {
 		return nil, err
 	}
-	if err = server.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
 	store := k.stateStore.CreditClassFeeTable()
-	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &ecocreditv1.CreditClassFee{
-			Denom:  fee.Denom,
-			Amount: fee.Amount,
-		}); err != nil {
-			return nil, err
-		}
-	}
 
 	for _, fee := range req.RemoveFees {
 		if err = store.Delete(ctx, &ecocreditv1.CreditClassFee{
@@ -114,22 +107,8 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 		}
 	}
 
-	return &core.MsgUpdateCreditClassFeeResponse{}, nil
-}
-
-// UpdateBasketFee is a governance only function that allows for the removal and addition of fees one can pay to create a basket
-func (k Keeper) UpdateBasketFee(ctx context.Context, req *core.MsgUpdateBasketFeeRequest) (*core.MsgUpdateBasketFeeResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
-		return nil, err
-	}
-	if err = server.AssertGovernance(govAddr, k.accountKeeper); err != nil {
-		return nil, err
-	}
-
-	store := k.stateStore.BasketFeeTable()
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &ecocreditv1.BasketFee{
+		if err = store.Insert(ctx, &ecocreditv1.CreditClassFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount,
 		}); err != nil {
@@ -137,13 +116,5 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *core.MsgUpdateBasketFe
 		}
 	}
 
-	for _, fee := range req.RemoveFees {
-		if err = store.Delete(ctx, &ecocreditv1.BasketFee{
-			Denom: fee.Denom,
-		}); err != nil {
-			return nil, err
-		}
-	}
-
-	return &core.MsgUpdateBasketFeeResponse{}, nil
+	return &core.MsgUpdateCreditClassFeeResponse{}, nil
 }

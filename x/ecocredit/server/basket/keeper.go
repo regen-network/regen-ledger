@@ -19,6 +19,7 @@ type Keeper struct {
 	ecocreditKeeper EcocreditKeeper
 	storeKey        sdk.StoreKey
 	distKeeper      ecocredit.DistributionKeeper
+	accountKeeper   ecocredit.AccountKeeper
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -31,6 +32,7 @@ func NewKeeper(
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
 	storeKey sdk.StoreKey,
+	accountKeeper ecocredit.AccountKeeper,
 ) Keeper {
 	basketStore, err := api.NewStateStore(db)
 	if err != nil {
@@ -42,6 +44,7 @@ func NewKeeper(
 		distKeeper:      distKeeper,
 		stateStore:      basketStore,
 		storeKey:        storeKey,
+		accountKeeper:   accountKeeper,
 	}
 }
 

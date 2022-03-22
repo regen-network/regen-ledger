@@ -5,8 +5,13 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
+
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -14,13 +19,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
@@ -38,13 +39,14 @@ type baseSuite struct {
 	storeKey        *sdk.KVStoreKey
 	sdkCtx          sdk.Context
 	distKeeper      *mocks2.MockDistributionKeeper
+	accountKeeper   *mocks2.MockAccountKeeper
 }
 
 func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -64,7 +66,8 @@ func setupBase(t *testing.T) *baseSuite {
 	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
 	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
 	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.distKeeper, s.storeKey)
+	s.accountKeeper = mocks2.NewMockAccountKeeper(s.ctrl)
+	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.distKeeper, s.storeKey, s.accountKeeper)
 
 	_, _, s.addr = testdata.KeyTestPubAddr()
 

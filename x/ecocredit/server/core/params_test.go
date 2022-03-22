@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 
@@ -17,7 +17,7 @@ func TestParams_CreditType(t *testing.T) {
 	s := setupBase(t)
 
 	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
+	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 	_, err := s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{
 		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
@@ -43,6 +43,10 @@ func TestParams_CreditType(t *testing.T) {
 		RootAddress: govAddr.String(),
 	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
+
+	// only gov
+	_, err = s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{RootAddress: s.addr.String()})
+	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
 
 func TestParams_Allowlist(t *testing.T) {
@@ -50,7 +54,7 @@ func TestParams_Allowlist(t *testing.T) {
 	s := setupBase(t)
 
 	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(1)
+	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
 
 	res, err := s.stateStore.AllowlistEnabledTable().Get(s.ctx)
 	assert.NilError(t, err)
@@ -64,6 +68,13 @@ func TestParams_Allowlist(t *testing.T) {
 	res2, err := s.stateStore.AllowlistEnabledTable().Get(s.ctx)
 	assert.NilError(t, err)
 	assert.Equal(t, !res.Enabled, res2.Enabled)
+
+	// only gov
+	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowListRequest{
+		RootAddress: s.addr.String(),
+		Toggle:      false,
+	})
+	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
 
 func TestParams_UpdateAllowedClassCreators(t *testing.T) {
@@ -71,12 +82,12 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	s := setupBase(t)
 
 	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
+	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 
 	addr1, addr2 := sdk.AccAddress("bar"), sdk.AccAddress("baz")
-	err := s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreators{Address: addr1})
+	err := s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &api.AllowedClassCreators{Address: addr1})
 	assert.NilError(t, err)
-	err = s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &ecocreditv1.AllowedClassCreators{Address: addr2})
+	err = s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &api.AllowedClassCreators{Address: addr2})
 	assert.NilError(t, err)
 
 	add1, add2 := sdk.AccAddress("add1"), sdk.AccAddress("add2")
@@ -87,7 +98,7 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	it, err := s.stateStore.AllowedClassCreatorsTable().List(s.ctx, ecocreditv1.AllowedClassCreatorsAddressIndexKey{})
+	it, err := s.stateStore.AllowedClassCreatorsTable().List(s.ctx, api.AllowedClassCreatorsAddressIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -106,6 +117,10 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 		AddCreators: []string{add1.String()},
 	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
+
+	// only gov
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{RootAddress: s.addr.String()})
+	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
 
 func TestParams_UpdateClassFee(t *testing.T) {
@@ -114,7 +129,7 @@ func TestParams_UpdateClassFee(t *testing.T) {
 
 	fee := sdk.NewInt64Coin("foo", 50)
 
-	err := s.stateStore.CreditClassFeeTable().Insert(s.ctx, &ecocreditv1.CreditClassFee{
+	err := s.stateStore.CreditClassFeeTable().Insert(s.ctx, &api.CreditClassFee{
 		Denom:  fee.Denom,
 		Amount: fee.Amount.String(),
 	})
@@ -123,7 +138,7 @@ func TestParams_UpdateClassFee(t *testing.T) {
 	addFee := sdk.NewInt64Coin("bar", 20)
 
 	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
+	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 
 	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{
 		RootAddress: govAddr.String(),
@@ -150,48 +165,8 @@ func TestParams_UpdateClassFee(t *testing.T) {
 			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
 		}})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
-}
 
-func TestParams_UpdateBasketFee(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-
-	fee := sdk.NewInt64Coin("foo", 50)
-
-	err := s.stateStore.BasketFeeTable().Insert(s.ctx, &ecocreditv1.BasketFee{
-		Denom:  fee.Denom,
-		Amount: fee.Amount.String(),
-	})
-	assert.NilError(t, err)
-
-	addFee := sdk.NewInt64Coin("bar", 20)
-
-	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(2)
-
-	_, err = s.k.UpdateBasketFee(s.ctx, &core.MsgUpdateBasketFeeRequest{
-		RootAddress: govAddr.String(),
-		AddFees: []*core.MsgUpdateBasketFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		},
-		RemoveFees: []*core.MsgUpdateBasketFeeRequest_Fee{
-			{Denom: fee.Denom, Amount: fee.Amount.String()},
-		},
-	})
-	assert.NilError(t, err)
-
-	res, err := s.stateStore.BasketFeeTable().Get(s.ctx, addFee.Denom)
-	assert.NilError(t, err)
-	assert.Equal(t, res.Amount, addFee.Amount.String())
-
-	_, err = s.stateStore.BasketFeeTable().Get(s.ctx, fee.Denom)
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-
-	// no duplicates
-	_, err = s.k.UpdateBasketFee(s.ctx, &core.MsgUpdateBasketFeeRequest{
-		RootAddress: govAddr.String(),
-		AddFees: []*core.MsgUpdateBasketFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		}})
-	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
+	// only gov
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{RootAddress: s.addr.String()})
+	assert.ErrorContains(t, err, "params can only be updated via governance")
 }

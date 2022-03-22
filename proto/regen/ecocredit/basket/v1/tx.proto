@@ -20,6 +20,10 @@ service Msg {
   // Take takes credits from a basket starting from the oldest
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
+
+
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
+  rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
@@ -154,3 +158,27 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
+
+// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFee request type.
+message MsgUpdateBasketFeeRequest {
+  // root_address is the address of the caller.
+  // this MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // add_fees are the coin denoms and amounts to be added to the allowed basket creation fees.
+  repeated Fee add_fees = 2;
+
+  // remove_denoms are the coin denoms to be removed from the allowed basket creation fees.
+  repeated string remove_denoms = 3;
+
+  // Fee represents a fee to be used in the basket creation fee.
+  message Fee {
+    // denom is the coin denom
+    string denom = 1;
+    // amount is the amount of the coin needed to create the basket.
+    string amount = 2;
+  }
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+message MsgUpdateBasketFeeResponse {}

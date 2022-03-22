@@ -479,6 +479,163 @@ func (m *MsgTakeResponse) GetCredits() []*BasketCredit {
 	return nil
 }
 
+// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFee request type.
+type MsgUpdateBasketFeeRequest struct {
+	// root_address is the address of the caller.
+	// this MUST equal the address of the gov module for the tx to succeed.
+	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
+	// add_fees are the coin denoms and amounts to be added to the allowed basket creation fees.
+	AddFees []*MsgUpdateBasketFeeRequest_Fee `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
+	// remove_denoms are the coin denoms to be removed from the allowed basket creation fees.
+	RemoveDenoms []string `protobuf:"bytes,3,rep,name=remove_denoms,json=removeDenoms,proto3" json:"remove_denoms,omitempty"`
+}
+
+func (m *MsgUpdateBasketFeeRequest) Reset()         { *m = MsgUpdateBasketFeeRequest{} }
+func (m *MsgUpdateBasketFeeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeRequest) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a60f962a3c61f018, []int{6}
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeRequest proto.InternalMessageInfo
+
+func (m *MsgUpdateBasketFeeRequest) GetRootAddress() string {
+	if m != nil {
+		return m.RootAddress
+	}
+	return ""
+}
+
+func (m *MsgUpdateBasketFeeRequest) GetAddFees() []*MsgUpdateBasketFeeRequest_Fee {
+	if m != nil {
+		return m.AddFees
+	}
+	return nil
+}
+
+func (m *MsgUpdateBasketFeeRequest) GetRemoveDenoms() []string {
+	if m != nil {
+		return m.RemoveDenoms
+	}
+	return nil
+}
+
+// Fee represents a fee to be used in the basket creation fee.
+type MsgUpdateBasketFeeRequest_Fee struct {
+	// denom is the coin denom
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// amount is the amount of the coin needed to create the basket.
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Reset()         { *m = MsgUpdateBasketFeeRequest_Fee{} }
+func (m *MsgUpdateBasketFeeRequest_Fee) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeRequest_Fee) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeRequest_Fee) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a60f962a3c61f018, []int{6, 0}
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeRequest_Fee proto.InternalMessageInfo
+
+func (m *MsgUpdateBasketFeeRequest_Fee) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+type MsgUpdateBasketFeeResponse struct {
+}
+
+func (m *MsgUpdateBasketFeeResponse) Reset()         { *m = MsgUpdateBasketFeeResponse{} }
+func (m *MsgUpdateBasketFeeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateBasketFeeResponse) ProtoMessage()    {}
+func (*MsgUpdateBasketFeeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_a60f962a3c61f018, []int{7}
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpdateBasketFeeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateBasketFeeResponse.Merge(m, src)
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpdateBasketFeeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateBasketFeeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpdateBasketFeeResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreate)(nil), "regen.ecocredit.basket.v1.MsgCreate")
 	proto.RegisterType((*MsgCreateResponse)(nil), "regen.ecocredit.basket.v1.MsgCreateResponse")
@@ -486,6 +643,9 @@ func init() {
 	proto.RegisterType((*MsgPutResponse)(nil), "regen.ecocredit.basket.v1.MsgPutResponse")
 	proto.RegisterType((*MsgTake)(nil), "regen.ecocredit.basket.v1.MsgTake")
 	proto.RegisterType((*MsgTakeResponse)(nil), "regen.ecocredit.basket.v1.MsgTakeResponse")
+	proto.RegisterType((*MsgUpdateBasketFeeRequest)(nil), "regen.ecocredit.basket.v1.MsgUpdateBasketFeeRequest")
+	proto.RegisterType((*MsgUpdateBasketFeeRequest_Fee)(nil), "regen.ecocredit.basket.v1.MsgUpdateBasketFeeRequest.Fee")
+	proto.RegisterType((*MsgUpdateBasketFeeResponse)(nil), "regen.ecocredit.basket.v1.MsgUpdateBasketFeeResponse")
 }
 
 func init() {
@@ -493,50 +653,58 @@ func init() {
 }
 
 var fileDescriptor_a60f962a3c61f018 = []byte{
-	// 683 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xcd, 0x4e, 0xdb, 0x4a,
-	0x14, 0x8e, 0x71, 0x48, 0xc8, 0x04, 0xc2, 0x65, 0x40, 0x57, 0x26, 0x8b, 0x10, 0x2c, 0xae, 0xc8,
-	0xad, 0xc0, 0x6e, 0xa8, 0x54, 0xb5, 0x4b, 0x08, 0x4b, 0xa2, 0x22, 0x17, 0x75, 0x51, 0xb5, 0xb2,
-	0x26, 0xf6, 0xa9, 0x6b, 0x25, 0x99, 0x89, 0x66, 0x26, 0x01, 0xf6, 0x7d, 0x00, 0x9e, 0xa3, 0x5d,
-	0xf5, 0x2d, 0x58, 0xb2, 0xec, 0xaa, 0xad, 0xe0, 0x45, 0x2a, 0xcf, 0x4c, 0xdc, 0x48, 0xa8, 0xa1,
-	0x62, 0xe5, 0x39, 0xdf, 0xf9, 0xce, 0xe7, 0xf3, 0x37, 0x83, 0x5c, 0x0e, 0x09, 0x50, 0x1f, 0x22,
-	0x16, 0x71, 0x88, 0x53, 0xe9, 0xf7, 0x88, 0xe8, 0x83, 0xf4, 0x27, 0x6d, 0x5f, 0x5e, 0x78, 0x23,
-	0xce, 0x24, 0xc3, 0x9b, 0x8a, 0xe3, 0xe5, 0x1c, 0x4f, 0x73, 0xbc, 0x49, 0xbb, 0xbe, 0x91, 0xb0,
-	0x84, 0x29, 0x96, 0x9f, 0x9d, 0x74, 0x40, 0xfd, 0xbf, 0x39, 0xa2, 0x97, 0x23, 0x10, 0x86, 0xd6,
-	0x88, 0x98, 0x18, 0x32, 0x91, 0x79, 0xc1, 0x9f, 0xb4, 0x7b, 0x20, 0x49, 0xdb, 0x8f, 0x58, 0x4a,
-	0xb5, 0xdf, 0xfd, 0x62, 0xa3, 0x4a, 0x57, 0x24, 0x1d, 0x0e, 0x44, 0x02, 0x76, 0x50, 0x39, 0x1a,
-	0x73, 0x22, 0x19, 0x77, 0xac, 0xa6, 0xd5, 0xaa, 0x04, 0x53, 0x13, 0x63, 0x54, 0xa4, 0x64, 0x08,
-	0xce, 0x82, 0x82, 0xd5, 0x19, 0x37, 0x51, 0x35, 0x06, 0x11, 0xf1, 0x74, 0x24, 0x53, 0x46, 0x1d,
-	0x5b, 0xb9, 0x66, 0x21, 0x5c, 0x47, 0x4b, 0x70, 0x31, 0x62, 0x14, 0xa8, 0x74, 0x8a, 0x4d, 0xab,
-	0xb5, 0x12, 0xe4, 0x36, 0xf6, 0xd0, 0x7a, 0x9c, 0x0a, 0xd2, 0x1b, 0x40, 0x48, 0xc6, 0x92, 0x85,
-	0x1c, 0x64, 0xca, 0xc1, 0x59, 0x6c, 0x5a, 0xad, 0xa5, 0x60, 0xcd, 0xb8, 0x0e, 0xc7, 0x92, 0x05,
-	0xca, 0x81, 0xf7, 0x10, 0xd6, 0x95, 0x86, 0x59, 0x7d, 0x21, 0xe9, 0xf5, 0x38, 0x4c, 0x9c, 0x92,
-	0xfa, 0xe9, 0x3f, 0xda, 0x73, 0x76, 0x39, 0x82, 0x43, 0x85, 0xe3, 0x5d, 0xb4, 0x4a, 0x06, 0x03,
-	0x76, 0x0e, 0x71, 0x18, 0x0d, 0x88, 0x10, 0x20, 0x9c, 0x72, 0xd3, 0x6e, 0x55, 0x82, 0x9a, 0x81,
-	0x3b, 0x1a, 0xc5, 0x27, 0x68, 0x25, 0x26, 0x12, 0xc2, 0x88, 0xa7, 0x12, 0x78, 0x4a, 0x9c, 0xa5,
-	0xa6, 0xd5, 0xaa, 0x1e, 0xec, 0x7a, 0x7f, 0x1c, 0x88, 0x77, 0x4c, 0x24, 0x74, 0x0c, 0x3d, 0x58,
-	0x8e, 0x67, 0x2c, 0xfc, 0x1e, 0xd9, 0x1f, 0x00, 0x9c, 0x4a, 0xd3, 0x6e, 0x55, 0x0f, 0x36, 0x3d,
-	0xdd, 0xfc, 0x2c, 0x14, 0x3c, 0xd3, 0x7c, 0xaf, 0xc3, 0x52, 0x7a, 0xf4, 0xf4, 0xfa, 0xfb, 0x56,
-	0xe1, 0xf3, 0x8f, 0xad, 0x56, 0x92, 0xca, 0x8f, 0xe3, 0x9e, 0x17, 0xb1, 0xa1, 0x6f, 0x26, 0xa5,
-	0x3f, 0xfb, 0x22, 0xee, 0x9b, 0x41, 0x66, 0x01, 0x22, 0xc8, 0x74, 0xdd, 0xe7, 0x68, 0x2d, 0x1f,
-	0x56, 0x00, 0x62, 0xc4, 0xa8, 0x00, 0xbc, 0x8d, 0x96, 0x75, 0x6e, 0x61, 0x0c, 0x94, 0x0d, 0xcd,
-	0xe4, 0xaa, 0x1a, 0x3b, 0xce, 0x20, 0xf7, 0x93, 0x85, 0x4a, 0x5d, 0x91, 0x9c, 0x8e, 0x25, 0xde,
-	0x40, 0x8b, 0xec, 0x9c, 0xc2, 0x74, 0xc0, 0xda, 0xb8, 0xa7, 0xb1, 0x70, 0x4f, 0x03, 0x1f, 0xa2,
-	0xb2, 0xee, 0x84, 0x70, 0x6c, 0x55, 0xde, 0xbc, 0x16, 0x1d, 0xa9, 0x53, 0x47, 0xc1, 0xc1, 0x34,
-	0xce, 0x7d, 0x89, 0x6a, 0x3a, 0x8b, 0x3c, 0xf7, 0x6c, 0x4c, 0x43, 0x36, 0xa6, 0x32, 0xe4, 0x10,
-	0x41, 0x3a, 0x81, 0xd8, 0xe4, 0x55, 0xd3, 0x70, 0x60, 0x50, 0xf7, 0xab, 0x85, 0xca, 0x5d, 0x91,
-	0x9c, 0x91, 0x3e, 0x3c, 0xbe, 0x84, 0x7f, 0x51, 0x49, 0xcb, 0x9a, 0x5d, 0x35, 0x16, 0xf6, 0xd1,
-	0xba, 0xde, 0xbe, 0x21, 0x50, 0x19, 0x0e, 0x58, 0x44, 0xd4, 0x42, 0x17, 0x15, 0x09, 0xff, 0x76,
-	0x9d, 0x18, 0x0f, 0xde, 0x41, 0x35, 0x8d, 0x86, 0x8c, 0x86, 0x92, 0xf4, 0xa7, 0x6b, 0xbb, 0xac,
-	0xd1, 0x57, 0x34, 0xcb, 0xd3, 0x3d, 0x43, 0xab, 0x26, 0xe5, 0xbc, 0xde, 0x99, 0x26, 0x5a, 0x8f,
-	0x6b, 0xe2, 0xc1, 0xd5, 0x02, 0xb2, 0xbb, 0x22, 0xc1, 0xef, 0x50, 0xc9, 0xdc, 0xda, 0x9d, 0x39,
-	0x1a, 0xf9, 0xba, 0xd4, 0xf7, 0xfe, 0x86, 0x95, 0x27, 0xfa, 0x1a, 0xd9, 0xd9, 0xb6, 0x6c, 0xcf,
-	0x0f, 0x3a, 0x1d, 0xcb, 0xfa, 0xff, 0x0f, 0x52, 0x72, 0xd1, 0x37, 0xa8, 0xa8, 0x06, 0xe8, 0xce,
-	0x0f, 0xc9, 0x38, 0xf5, 0x27, 0x0f, 0x73, 0xa6, 0xba, 0x47, 0xc1, 0xf5, 0x6d, 0xc3, 0xba, 0xb9,
-	0x6d, 0x58, 0x3f, 0x6f, 0x1b, 0xd6, 0xd5, 0x5d, 0xa3, 0x70, 0x73, 0xd7, 0x28, 0x7c, 0xbb, 0x6b,
-	0x14, 0xde, 0xbe, 0x98, 0xb9, 0x5f, 0x4a, 0x6f, 0x9f, 0x82, 0x3c, 0x67, 0xbc, 0x6f, 0xac, 0x01,
-	0xc4, 0x09, 0x70, 0xff, 0xe2, 0xde, 0x3b, 0xda, 0x2b, 0xa9, 0xf7, 0xf1, 0xd9, 0xaf, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0x2d, 0x07, 0xf3, 0xba, 0xbd, 0x05, 0x00, 0x00,
+	// 812 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x55, 0xcd, 0x72, 0x1b, 0x45,
+	0x10, 0xf6, 0x7a, 0x1d, 0xc9, 0x6a, 0xff, 0x91, 0x49, 0x8a, 0x5a, 0x6f, 0x51, 0x8a, 0xb2, 0x84,
+	0x8a, 0xa0, 0x92, 0x5d, 0xec, 0x00, 0x15, 0x8e, 0xb2, 0x52, 0x3e, 0x45, 0x45, 0x6a, 0x63, 0x38,
+	0x50, 0x50, 0x5b, 0xa3, 0x9d, 0xce, 0xb2, 0x25, 0x69, 0x47, 0xcc, 0x8c, 0x64, 0xe7, 0xc2, 0x89,
+	0x07, 0xc8, 0x73, 0xc0, 0x89, 0xb7, 0xc8, 0x31, 0x47, 0x4e, 0x40, 0xd9, 0x67, 0xde, 0x81, 0x9a,
+	0x1f, 0x2d, 0x2a, 0x4c, 0x64, 0xf0, 0x49, 0xd3, 0x5f, 0x7f, 0xdd, 0xdb, 0xf3, 0x7d, 0xad, 0x5d,
+	0x88, 0x04, 0x16, 0x58, 0x25, 0x98, 0xf3, 0x5c, 0x20, 0x2b, 0x55, 0x32, 0xa4, 0x72, 0x84, 0x2a,
+	0x99, 0x1f, 0x24, 0xea, 0x2c, 0x9e, 0x0a, 0xae, 0x38, 0xd9, 0x37, 0x9c, 0xb8, 0xe6, 0xc4, 0x96,
+	0x13, 0xcf, 0x0f, 0xc2, 0xdb, 0x05, 0x2f, 0xb8, 0x61, 0x25, 0xfa, 0x64, 0x0b, 0xc2, 0x0f, 0x56,
+	0x34, 0x7d, 0x39, 0x45, 0xe9, 0x68, 0xed, 0x9c, 0xcb, 0x09, 0x97, 0x3a, 0x8b, 0xc9, 0xfc, 0x60,
+	0x88, 0x8a, 0x1e, 0x24, 0x39, 0x2f, 0x2b, 0x9b, 0x8f, 0x7e, 0xf6, 0xa1, 0x35, 0x90, 0x45, 0x5f,
+	0x20, 0x55, 0x48, 0x02, 0x68, 0xe6, 0x33, 0x41, 0x15, 0x17, 0x81, 0xd7, 0xf1, 0xba, 0xad, 0x74,
+	0x11, 0x12, 0x02, 0x1b, 0x15, 0x9d, 0x60, 0xb0, 0x6e, 0x60, 0x73, 0x26, 0x1d, 0xd8, 0x62, 0x28,
+	0x73, 0x51, 0x4e, 0x55, 0xc9, 0xab, 0xc0, 0x37, 0xa9, 0x65, 0x88, 0x84, 0xb0, 0x89, 0x67, 0x53,
+	0x5e, 0x61, 0xa5, 0x82, 0x8d, 0x8e, 0xd7, 0xdd, 0x49, 0xeb, 0x98, 0xc4, 0x70, 0x8b, 0x95, 0x92,
+	0x0e, 0xc7, 0x98, 0xd1, 0x99, 0xe2, 0x99, 0x40, 0x55, 0x0a, 0x0c, 0x6e, 0x74, 0xbc, 0xee, 0x66,
+	0x7a, 0xd3, 0xa5, 0x7a, 0x33, 0xc5, 0x53, 0x93, 0x20, 0x0f, 0x80, 0xd8, 0x9b, 0x66, 0xfa, 0x7e,
+	0x19, 0x1d, 0x0e, 0x05, 0xce, 0x83, 0x86, 0x79, 0xe8, 0x3b, 0x36, 0x73, 0xf2, 0x72, 0x8a, 0x3d,
+	0x83, 0x93, 0xfb, 0xb0, 0x47, 0xc7, 0x63, 0x7e, 0x8a, 0x2c, 0xcb, 0xc7, 0x54, 0x4a, 0x94, 0x41,
+	0xb3, 0xe3, 0x77, 0x5b, 0xe9, 0xae, 0x83, 0xfb, 0x16, 0x25, 0x4f, 0x61, 0x87, 0x51, 0x85, 0x59,
+	0x2e, 0x4a, 0x85, 0xa2, 0xa4, 0xc1, 0x66, 0xc7, 0xeb, 0x6e, 0x1d, 0xde, 0x8f, 0xdf, 0x6a, 0x48,
+	0xfc, 0x84, 0x2a, 0xec, 0x3b, 0x7a, 0xba, 0xcd, 0x96, 0x22, 0xf2, 0x2d, 0xf8, 0x2f, 0x10, 0x83,
+	0x56, 0xc7, 0xef, 0x6e, 0x1d, 0xee, 0xc7, 0x56, 0x7c, 0x5d, 0x8a, 0xb1, 0x13, 0x3f, 0xee, 0xf3,
+	0xb2, 0x3a, 0xfa, 0xf8, 0xf5, 0x6f, 0x77, 0xd6, 0x7e, 0xfa, 0xfd, 0x4e, 0xb7, 0x28, 0xd5, 0x77,
+	0xb3, 0x61, 0x9c, 0xf3, 0x49, 0xe2, 0x9c, 0xb2, 0x3f, 0x0f, 0x25, 0x1b, 0x39, 0x23, 0x75, 0x81,
+	0x4c, 0x75, 0xdf, 0xe8, 0x33, 0xb8, 0x59, 0x9b, 0x95, 0xa2, 0x9c, 0xf2, 0x4a, 0x22, 0xb9, 0x0b,
+	0xdb, 0x76, 0xb6, 0x8c, 0x61, 0xc5, 0x27, 0xce, 0xb9, 0x2d, 0x8b, 0x3d, 0xd1, 0x50, 0xf4, 0xa3,
+	0x07, 0x8d, 0x81, 0x2c, 0x9e, 0xcd, 0x14, 0xb9, 0x0d, 0x37, 0xf8, 0x69, 0x85, 0x0b, 0x83, 0x6d,
+	0x70, 0xa9, 0xc7, 0xfa, 0xa5, 0x1e, 0xa4, 0x07, 0x4d, 0xab, 0x84, 0x0c, 0x7c, 0x73, 0xbd, 0x55,
+	0x12, 0x1d, 0x99, 0x53, 0xdf, 0xc0, 0xe9, 0xa2, 0x2e, 0xfa, 0x1c, 0x76, 0xed, 0x14, 0xf5, 0xec,
+	0xda, 0xa6, 0x09, 0x9f, 0x55, 0x2a, 0x13, 0x98, 0x63, 0x39, 0x47, 0xe6, 0xe6, 0xda, 0xb5, 0x70,
+	0xea, 0xd0, 0xe8, 0x17, 0x0f, 0x9a, 0x03, 0x59, 0x9c, 0xd0, 0x11, 0x5e, 0xff, 0x0a, 0xef, 0x42,
+	0xc3, 0xb6, 0x75, 0xbb, 0xea, 0x22, 0x92, 0xc0, 0x2d, 0xbb, 0x7d, 0x13, 0xac, 0x54, 0x36, 0xe6,
+	0x39, 0x35, 0x0b, 0xbd, 0x61, 0x48, 0xe4, 0xef, 0xd4, 0x53, 0x97, 0x21, 0xf7, 0x60, 0xd7, 0xa2,
+	0x19, 0xaf, 0x32, 0x45, 0x47, 0x8b, 0xb5, 0xdd, 0xb6, 0xe8, 0x17, 0x95, 0x9e, 0x33, 0x3a, 0x81,
+	0x3d, 0x37, 0x72, 0x7d, 0xdf, 0x25, 0x11, 0xbd, 0x6b, 0x8a, 0xf8, 0xa7, 0x07, 0xfb, 0x03, 0x59,
+	0x7c, 0x39, 0xd5, 0x8b, 0x67, 0x29, 0xc7, 0x88, 0x29, 0x7e, 0x3f, 0x43, 0xa9, 0xb4, 0x0a, 0x82,
+	0x73, 0x95, 0x51, 0xc6, 0x04, 0x4a, 0xb9, 0x58, 0x06, 0x8d, 0xf5, 0x2c, 0x44, 0x9e, 0xc3, 0x26,
+	0x65, 0x2c, 0x7b, 0x81, 0x28, 0x83, 0x75, 0x33, 0xc4, 0xe3, 0x15, 0x43, 0xbc, 0xf5, 0x51, 0xb1,
+	0x3e, 0x36, 0x29, 0x63, 0xc7, 0x88, 0x92, 0xbc, 0x0f, 0x3b, 0x02, 0x27, 0x7c, 0x8e, 0x56, 0x7d,
+	0xbb, 0x23, 0x2d, 0x2d, 0x88, 0x06, 0x8d, 0xfc, 0x32, 0x7c, 0x04, 0xfe, 0x31, 0x1a, 0xff, 0x96,
+	0x37, 0xd5, 0x06, 0x4b, 0xe6, 0xac, 0x2f, 0x9b, 0x13, 0xbd, 0x07, 0xe1, 0xbf, 0xcd, 0x60, 0x05,
+	0x3d, 0x7c, 0xe5, 0x83, 0x3f, 0x90, 0x05, 0xf9, 0x06, 0x1a, 0xee, 0x1d, 0x76, 0x6f, 0xf5, 0x65,
+	0x2c, 0x2b, 0x7c, 0xf0, 0x5f, 0x58, 0xb5, 0x6d, 0xcf, 0xc1, 0xd7, 0xff, 0x9d, 0xbb, 0xab, 0x8b,
+	0x9e, 0xcd, 0x54, 0xf8, 0xe1, 0x95, 0x94, 0xba, 0xe9, 0x57, 0xb0, 0x61, 0xd6, 0x39, 0x5a, 0x5d,
+	0xa2, 0x39, 0xe1, 0x47, 0x57, 0x73, 0xea, 0xbe, 0x3f, 0xc0, 0xde, 0x3f, 0xd4, 0x22, 0x9f, 0x5c,
+	0xc7, 0xe0, 0xf0, 0xd3, 0xff, 0x59, 0x65, 0x9f, 0x7f, 0x94, 0xbe, 0x3e, 0x6f, 0x7b, 0x6f, 0xce,
+	0xdb, 0xde, 0x1f, 0xe7, 0x6d, 0xef, 0xd5, 0x45, 0x7b, 0xed, 0xcd, 0x45, 0x7b, 0xed, 0xd7, 0x8b,
+	0xf6, 0xda, 0xd7, 0x8f, 0x97, 0xde, 0x76, 0xa6, 0xf5, 0xc3, 0x0a, 0xd5, 0x29, 0x17, 0x23, 0x17,
+	0x8d, 0x91, 0x15, 0x28, 0x92, 0xb3, 0x4b, 0x5f, 0xb5, 0x61, 0xc3, 0x7c, 0xad, 0x1e, 0xfd, 0x15,
+	0x00, 0x00, 0xff, 0xff, 0xec, 0x46, 0x61, 0xd0, 0x4b, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -558,6 +726,8 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
+	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
 type msgClient struct {
@@ -595,6 +765,15 @@ func (c *msgClient) Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOpti
 	return out, nil
 }
 
+func (c *msgClient) UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error) {
+	out := new(MsgUpdateBasketFeeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.basket.v1.Msg/UpdateBasketFee", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// Create creates a bank denom which wraps credits.
@@ -604,6 +783,8 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
+	UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -618,6 +799,9 @@ func (*UnimplementedMsgServer) Put(ctx context.Context, req *MsgPut) (*MsgPutRes
 }
 func (*UnimplementedMsgServer) Take(ctx context.Context, req *MsgTake) (*MsgTakeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Take not implemented")
+}
+func (*UnimplementedMsgServer) UpdateBasketFee(ctx context.Context, req *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFee not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -678,6 +862,24 @@ func _Msg_Take_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpdateBasketFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateBasketFeeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateBasketFee(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.basket.v1.Msg/UpdateBasketFee",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateBasketFee(ctx, req.(*MsgUpdateBasketFeeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.basket.v1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -693,6 +895,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Take",
 			Handler:    _Msg_Take_Handler,
+		},
+		{
+			MethodName: "UpdateBasketFee",
+			Handler:    _Msg_UpdateBasketFee_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1009,6 +1215,119 @@ func (m *MsgTakeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpdateBasketFeeRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RemoveDenoms) > 0 {
+		for iNdEx := len(m.RemoveDenoms) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.RemoveDenoms[iNdEx])
+			copy(dAtA[i:], m.RemoveDenoms[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.RemoveDenoms[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.AddFees) > 0 {
+		for iNdEx := len(m.AddFees) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AddFees[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.RootAddress) > 0 {
+		i -= len(m.RootAddress)
+		copy(dAtA[i:], m.RootAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RootAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateBasketFeeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateBasketFeeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateBasketFeeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1156,6 +1475,57 @@ func (m *MsgTakeResponse) Size() (n int) {
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
+	return n
+}
+
+func (m *MsgUpdateBasketFeeRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RootAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.AddFees) > 0 {
+		for _, e := range m.AddFees {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	if len(m.RemoveDenoms) > 0 {
+		for _, s := range m.RemoveDenoms {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgUpdateBasketFeeRequest_Fee) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Amount)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpdateBasketFeeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -2057,6 +2427,318 @@ func (m *MsgTakeResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RootAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RootAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AddFees", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AddFees = append(m.AddFees, &MsgUpdateBasketFeeRequest_Fee{})
+			if err := m.AddFees[len(m.AddFees)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RemoveDenoms", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RemoveDenoms = append(m.RemoveDenoms, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeRequest_Fee) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Fee: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Fee: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateBasketFeeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateBasketFeeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])

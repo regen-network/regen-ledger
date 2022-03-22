@@ -9,14 +9,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Sell creates new sell orders for credits
-func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
+func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
@@ -55,7 +55,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
 		//}
 
-		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
+		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &api.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
 			Quantity:          order.Quantity,
@@ -70,7 +70,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		}
 		sellOrderIds[i] = id
 		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
-		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			OrderId:           id,
 			BatchDenom:        batch.BatchDenom,
 			Quantity:          order.Quantity,
@@ -81,7 +81,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 	}
-	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
@@ -91,7 +91,7 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
-		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
+		return k.stateStore.MarketTable().InsertReturningID(ctx, &api.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
 			PrecisionModifier: 0,

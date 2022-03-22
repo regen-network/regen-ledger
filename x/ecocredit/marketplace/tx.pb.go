@@ -706,7 +706,8 @@ func (m *MsgBuyResponse) GetBuyOrderIds() []uint64 {
 
 // MsgAllowAskDenom is the Msg/AllowAskDenom request type.
 type MsgAllowAskDenom struct {
-	// root_address is the address of the governance account which can authorize ask denoms
+	// root_address is the address of the caller.
+	// this MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_denoms specifies denoms to add to the allowed denom list
 	AddDenoms []*MsgAllowAskDenom_DenomInfo `protobuf:"bytes,2,rep,name=add_denoms,json=addDenoms,proto3" json:"add_denoms,omitempty"`

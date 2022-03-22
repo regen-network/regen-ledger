@@ -54,8 +54,6 @@ type MsgClient interface {
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreatorsRequest, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFeeRequest, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
-	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
 type msgClient struct {
@@ -183,15 +181,6 @@ func (c *msgClient) UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCredi
 	return out, nil
 }
 
-func (c *msgClient) UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFeeRequest, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error) {
-	out := new(MsgUpdateBasketFeeResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateBasketFee", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -228,8 +217,6 @@ type MsgServer interface {
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreatorsRequest) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
 	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
-	UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -275,9 +262,6 @@ func (UnimplementedMsgServer) UpdateAllowedCreditClassCreators(context.Context, 
 }
 func (UnimplementedMsgServer) UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCreditClassFee not implemented")
-}
-func (UnimplementedMsgServer) UpdateBasketFee(context.Context, *MsgUpdateBasketFeeRequest) (*MsgUpdateBasketFeeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateBasketFee not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -526,24 +510,6 @@ func _Msg_UpdateCreditClassFee_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateBasketFee_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateBasketFeeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).UpdateBasketFee(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/UpdateBasketFee",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateBasketFee(ctx, req.(*MsgUpdateBasketFeeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -602,10 +568,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateCreditClassFee",
 			Handler:    _Msg_UpdateCreditClassFee_Handler,
-		},
-		{
-			MethodName: "UpdateBasketFee",
-			Handler:    _Msg_UpdateBasketFee_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

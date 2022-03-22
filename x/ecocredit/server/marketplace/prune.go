@@ -2,11 +2,13 @@ package marketplace
 
 import (
 	"context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"time"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // PruneSellOrders is a BeginBlock function that moves escrowed credits back into their tradable balance and deletes orders
@@ -15,7 +17,7 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
-	fromKey, toKey := marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
+	fromKey, toKey := api.SellOrderExpirationIndexKey{}.WithExpiration(min), api.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {
 		return err
