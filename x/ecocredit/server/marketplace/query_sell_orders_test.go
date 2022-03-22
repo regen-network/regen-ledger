@@ -9,9 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -34,10 +35,11 @@ func TestSellOrders(t *testing.T) {
 	insertSellOrder(t, s, addr2, 1)
 
 	res, err := s.k.SellOrders(s.ctx, &marketplace.QuerySellOrdersRequest{
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.SellOrders))
+	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
 
 func TestSellOrdersByDenom(t *testing.T) {
@@ -47,7 +49,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 
 	// make another batch
 	otherDenom := "C01-19990101-20290101-001"
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: otherDenom,
 		Metadata:   "",
@@ -61,18 +63,20 @@ func TestSellOrdersByDenom(t *testing.T) {
 	// query the first denom
 	res, err := s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
 		BatchDenom: batchDenom,
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
+	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// query the second denom
 	res, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
 		BatchDenom: otherDenom,
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
+	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// bad denom should error
 	res, err = s.k.SellOrdersByBatchDenom(s.ctx, &marketplace.QuerySellOrdersByBatchDenomRequest{
@@ -95,25 +99,28 @@ func TestSellOrdersByAddress(t *testing.T) {
 
 	res, err := s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
 		Address:    s.addr.String(),
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
+	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
 		Address:    otherAddr.String(),
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
+	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// addr with no sell orders should just return empty slice
 	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
 		Address:    noOrdersAddr.String(),
-		Pagination: nil,
+		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.SellOrders))
+	assert.Equal(t, uint64(0), res.Pagination.Total)
 
 	// bad address should fail
 	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
