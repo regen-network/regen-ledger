@@ -1,6 +1,6 @@
-# Running a Validator
+# Run a Full Node
 
-This document provides instructions for running a validator node for a [live network](../../ledger/get-started/live-networks.md). With Regen Mainnet, Redwood Testnet, and Hambach Testnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
+This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ For more information (including hardware recommendations), see [Prerequisites](p
 
 ## Quickstart
 
-If you would like to manually set up a validator node, skip to the [next section](#install-regen). Alternatively, you can run the following quickstart script:
+If you would like to manually set up a full node, skip to the [next section](#install-regen). Alternatively, you can run the following quickstart script:
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/regen-network/mainnet/blob/main/scripts/mainnet-val-setup.sh)
@@ -104,7 +104,7 @@ regen init [moniker] --chain-id regen-hambach-1
 
 ## Update Genesis
 
-Update the genesis file using a node endpoint.
+Update the genesis file.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
@@ -151,6 +151,16 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 ```bash
 PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656,578b74c81f08a812b5f1a76a53b00a8ad3cfec57@hambach-sentry.vitwit.com:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
+```
+
+## Start Node
+
+At this point, the node is ready. If you do not need to run a dedicated full node in a separate process, you can start the node using the `regen` binary.
+
+Start node:
+
+```bash
+regen start
 ```
 
 ## Install Cosmovisor
@@ -227,44 +237,6 @@ Enable cosmovisor to start automatically when the machine reboots:
 
 ```bash
 sudo systemctl enable cosmovisor.service
-```
-
-## Add Validator Key
-
-As a validator who signs blocks, your node must have a public/private key pair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
-
-```bash
-regen keys add [name]
-```
-
-::: warning
-If you create a new key, make sure you store the mnemonic phrase in a safe place. You will not be able to recover your new key without the mnemonic phrase.
-:::
-
-If you'd like to use an existing key or a custom keyring backend, you can find more information about adding keys and keyring backends in the Cosmos SDK [Keyring](https://docs.cosmos.network/master/run-node/keyring.html) documentation.
-
-## Create Validator
-
-The next step will be to create a validator. You will need to have enough REGEN tokens to stake and to submit the transaction. For more information about the REGEN token, see the [token page](https://www.regen.network/token/). 
-
-::: warning
-You'll want to carefully consider the options you set when creating a validator.
-:::
-
-Submit a transaction to create a validator:
-
-```bash
-regen tx staking create-validator \
-  --amount=<stake_amount> \
-  --pubkey=$(regen tendermint show-validator) \
-  --moniker="<node_moniker>" \
-  --chain-id=<chain_id> \
-  --commission-rate="0.10" \
-  --commission-max-rate="0.20" \
-  --commission-max-change-rate="0.01" \
-  --min-self-delegation="1" \
-  --gas="auto" \
-  --from=<key_name>
 ```
 
 ## Prepare Upgrade

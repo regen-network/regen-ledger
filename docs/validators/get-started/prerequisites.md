@@ -29,7 +29,7 @@ For more information, see [Go](https://golang.org/).
 ## Initial Setup
 
 :::tip NOTE
-These commands are included in the [quickstart script](../get-started/running-a-validator.md#quickstart).
+These commands are included in the [quickstart script](../get-started/run-a-full-node.md#quickstart).
 :::
 
 Update packages:
@@ -84,4 +84,4 @@ Source profile file:
 . ~/.profile
 ```
 
-You're now ready to set up a [full node](running-a-full-node.md) or a [validator node](running-a-validator.md).
+You're now ready to [run a full node](run-a-full-node.md).

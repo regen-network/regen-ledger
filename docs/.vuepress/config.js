@@ -179,8 +179,8 @@ module.exports = {
           title: 'Get Started',
           collapsable: false,
           children: [
-            '/validators/get-started/running-a-full-node',
-            '/validators/get-started/running-a-validator',
+            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/create-a-validator',
             '/validators/get-started/prerequisites',
           ]
         },
