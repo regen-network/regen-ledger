@@ -98,6 +98,7 @@ func TestMsgCreateProject(t *testing.T) {
 
 	for _, test := range testCases {
 		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 			err := test.src.ValidateBasic()
 			if test.expErr {
 				require.Error(t, err)
