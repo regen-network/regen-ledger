@@ -28,7 +28,19 @@ func (m *MsgAllowAskDenom) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	return sdk.ValidateDenom(m.Denom)
+	for _, denomInfo := range m.AddDenoms {
+		if err := sdk.ValidateDenom(denomInfo.Denom); err != nil {
+			return err
+		}
+	}
+
+	for _, denom := range m.RemoveDenoms {
+		if err := sdk.ValidateDenom(denom); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgAllowAskDenom.

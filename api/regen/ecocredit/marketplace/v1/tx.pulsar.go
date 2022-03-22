@@ -5860,21 +5860,116 @@ func (x *fastReflection_MsgBuyResponse) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_MsgAllowAskDenom_2_list)(nil)
+
+type _MsgAllowAskDenom_2_list struct {
+	list *[]*MsgAllowAskDenom_DenomInfo
+}
+
+func (x *_MsgAllowAskDenom_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_MsgAllowAskDenom_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_MsgAllowAskDenom_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*MsgAllowAskDenom_DenomInfo)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_MsgAllowAskDenom_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*MsgAllowAskDenom_DenomInfo)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_MsgAllowAskDenom_2_list) AppendMutable() protoreflect.Value {
+	v := new(MsgAllowAskDenom_DenomInfo)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_MsgAllowAskDenom_2_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_MsgAllowAskDenom_2_list) NewElement() protoreflect.Value {
+	v := new(MsgAllowAskDenom_DenomInfo)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_MsgAllowAskDenom_2_list) IsValid() bool {
+	return x.list != nil
+}
+
+var _ protoreflect.List = (*_MsgAllowAskDenom_3_list)(nil)
+
+type _MsgAllowAskDenom_3_list struct {
+	list *[]string
+}
+
+func (x *_MsgAllowAskDenom_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_MsgAllowAskDenom_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_MsgAllowAskDenom_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_MsgAllowAskDenom_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_MsgAllowAskDenom_3_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgAllowAskDenom at list field RemoveDenoms as it is not of Message kind"))
+}
+
+func (x *_MsgAllowAskDenom_3_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_MsgAllowAskDenom_3_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_MsgAllowAskDenom_3_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_MsgAllowAskDenom               protoreflect.MessageDescriptor
 	fd_MsgAllowAskDenom_root_address  protoreflect.FieldDescriptor
-	fd_MsgAllowAskDenom_denom         protoreflect.FieldDescriptor
-	fd_MsgAllowAskDenom_display_denom protoreflect.FieldDescriptor
-	fd_MsgAllowAskDenom_exponent      protoreflect.FieldDescriptor
+	fd_MsgAllowAskDenom_add_denoms    protoreflect.FieldDescriptor
+	fd_MsgAllowAskDenom_remove_denoms protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_tx_proto_init()
 	md_MsgAllowAskDenom = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgAllowAskDenom")
 	fd_MsgAllowAskDenom_root_address = md_MsgAllowAskDenom.Fields().ByName("root_address")
-	fd_MsgAllowAskDenom_denom = md_MsgAllowAskDenom.Fields().ByName("denom")
-	fd_MsgAllowAskDenom_display_denom = md_MsgAllowAskDenom.Fields().ByName("display_denom")
-	fd_MsgAllowAskDenom_exponent = md_MsgAllowAskDenom.Fields().ByName("exponent")
+	fd_MsgAllowAskDenom_add_denoms = md_MsgAllowAskDenom.Fields().ByName("add_denoms")
+	fd_MsgAllowAskDenom_remove_denoms = md_MsgAllowAskDenom.Fields().ByName("remove_denoms")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgAllowAskDenom)(nil)
@@ -5948,21 +6043,15 @@ func (x *fastReflection_MsgAllowAskDenom) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.Denom != "" {
-		value := protoreflect.ValueOfString(x.Denom)
-		if !f(fd_MsgAllowAskDenom_denom, value) {
+	if len(x.AddDenoms) != 0 {
+		value := protoreflect.ValueOfList(&_MsgAllowAskDenom_2_list{list: &x.AddDenoms})
+		if !f(fd_MsgAllowAskDenom_add_denoms, value) {
 			return
 		}
 	}
-	if x.DisplayDenom != "" {
-		value := protoreflect.ValueOfString(x.DisplayDenom)
-		if !f(fd_MsgAllowAskDenom_display_denom, value) {
-			return
-		}
-	}
-	if x.Exponent != uint32(0) {
-		value := protoreflect.ValueOfUint32(x.Exponent)
-		if !f(fd_MsgAllowAskDenom_exponent, value) {
+	if len(x.RemoveDenoms) != 0 {
+		value := protoreflect.ValueOfList(&_MsgAllowAskDenom_3_list{list: &x.RemoveDenoms})
+		if !f(fd_MsgAllowAskDenom_remove_denoms, value) {
 			return
 		}
 	}
@@ -5983,12 +6072,10 @@ func (x *fastReflection_MsgAllowAskDenom) Has(fd protoreflect.FieldDescriptor) b
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		return x.RootAddress != ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		return x.Denom != ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		return x.DisplayDenom != ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		return x.Exponent != uint32(0)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		return len(x.AddDenoms) != 0
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		return len(x.RemoveDenoms) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6007,12 +6094,10 @@ func (x *fastReflection_MsgAllowAskDenom) Clear(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		x.RootAddress = ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		x.Denom = ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		x.DisplayDenom = ""
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		x.Exponent = uint32(0)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		x.AddDenoms = nil
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		x.RemoveDenoms = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6032,15 +6117,18 @@ func (x *fastReflection_MsgAllowAskDenom) Get(descriptor protoreflect.FieldDescr
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		value := x.RootAddress
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		value := x.Denom
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		value := x.DisplayDenom
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		value := x.Exponent
-		return protoreflect.ValueOfUint32(value)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		if len(x.AddDenoms) == 0 {
+			return protoreflect.ValueOfList(&_MsgAllowAskDenom_2_list{})
+		}
+		listValue := &_MsgAllowAskDenom_2_list{list: &x.AddDenoms}
+		return protoreflect.ValueOfList(listValue)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		if len(x.RemoveDenoms) == 0 {
+			return protoreflect.ValueOfList(&_MsgAllowAskDenom_3_list{})
+		}
+		listValue := &_MsgAllowAskDenom_3_list{list: &x.RemoveDenoms}
+		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6063,12 +6151,14 @@ func (x *fastReflection_MsgAllowAskDenom) Set(fd protoreflect.FieldDescriptor, v
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		x.RootAddress = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		x.Denom = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		x.DisplayDenom = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		x.Exponent = uint32(value.Uint())
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		lv := value.List()
+		clv := lv.(*_MsgAllowAskDenom_2_list)
+		x.AddDenoms = *clv.list
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		lv := value.List()
+		clv := lv.(*_MsgAllowAskDenom_3_list)
+		x.RemoveDenoms = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6089,14 +6179,20 @@ func (x *fastReflection_MsgAllowAskDenom) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllowAskDenom) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		if x.AddDenoms == nil {
+			x.AddDenoms = []*MsgAllowAskDenom_DenomInfo{}
+		}
+		value := &_MsgAllowAskDenom_2_list{list: &x.AddDenoms}
+		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		if x.RemoveDenoms == nil {
+			x.RemoveDenoms = []string{}
+		}
+		value := &_MsgAllowAskDenom_3_list{list: &x.RemoveDenoms}
+		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		panic(fmt.Errorf("field root_address of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		panic(fmt.Errorf("field denom of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		panic(fmt.Errorf("field display_denom of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		panic(fmt.Errorf("field exponent of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6112,12 +6208,12 @@ func (x *fastReflection_MsgAllowAskDenom) NewField(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.root_address":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.denom":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.display_denom":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.exponent":
-		return protoreflect.ValueOfUint32(uint32(0))
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms":
+		list := []*MsgAllowAskDenom_DenomInfo{}
+		return protoreflect.ValueOfList(&_MsgAllowAskDenom_2_list{list: &list})
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.remove_denoms":
+		list := []string{}
+		return protoreflect.ValueOfList(&_MsgAllowAskDenom_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom"))
@@ -6191,16 +6287,17 @@ func (x *fastReflection_MsgAllowAskDenom) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Denom)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if len(x.AddDenoms) > 0 {
+			for _, e := range x.AddDenoms {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
 		}
-		l = len(x.DisplayDenom)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Exponent != 0 {
-			n += 1 + runtime.Sov(uint64(x.Exponent))
+		if len(x.RemoveDenoms) > 0 {
+			for _, s := range x.RemoveDenoms {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -6231,24 +6328,30 @@ func (x *fastReflection_MsgAllowAskDenom) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Exponent != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Exponent))
-			i--
-			dAtA[i] = 0x20
+		if len(x.RemoveDenoms) > 0 {
+			for iNdEx := len(x.RemoveDenoms) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.RemoveDenoms[iNdEx])
+				copy(dAtA[i:], x.RemoveDenoms[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RemoveDenoms[iNdEx])))
+				i--
+				dAtA[i] = 0x1a
+			}
 		}
-		if len(x.DisplayDenom) > 0 {
-			i -= len(x.DisplayDenom)
-			copy(dAtA[i:], x.DisplayDenom)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DisplayDenom)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if len(x.Denom) > 0 {
-			i -= len(x.Denom)
-			copy(dAtA[i:], x.Denom)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Denom)))
-			i--
-			dAtA[i] = 0x12
+		if len(x.AddDenoms) > 0 {
+			for iNdEx := len(x.AddDenoms) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.AddDenoms[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x12
+			}
 		}
 		if len(x.RootAddress) > 0 {
 			i -= len(x.RootAddress)
@@ -6340,6 +6443,521 @@ func (x *fastReflection_MsgAllowAskDenom) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AddDenoms", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AddDenoms = append(x.AddDenoms, &MsgAllowAskDenom_DenomInfo{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AddDenoms[len(x.AddDenoms)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RemoveDenoms", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.RemoveDenoms = append(x.RemoveDenoms, string(dAtA[iNdEx:postIndex]))
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgAllowAskDenom_DenomInfo               protoreflect.MessageDescriptor
+	fd_MsgAllowAskDenom_DenomInfo_denom         protoreflect.FieldDescriptor
+	fd_MsgAllowAskDenom_DenomInfo_display_denom protoreflect.FieldDescriptor
+	fd_MsgAllowAskDenom_DenomInfo_exponent      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_tx_proto_init()
+	md_MsgAllowAskDenom_DenomInfo = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgAllowAskDenom").Messages().ByName("DenomInfo")
+	fd_MsgAllowAskDenom_DenomInfo_denom = md_MsgAllowAskDenom_DenomInfo.Fields().ByName("denom")
+	fd_MsgAllowAskDenom_DenomInfo_display_denom = md_MsgAllowAskDenom_DenomInfo.Fields().ByName("display_denom")
+	fd_MsgAllowAskDenom_DenomInfo_exponent = md_MsgAllowAskDenom_DenomInfo.Fields().ByName("exponent")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgAllowAskDenom_DenomInfo)(nil)
+
+type fastReflection_MsgAllowAskDenom_DenomInfo MsgAllowAskDenom_DenomInfo
+
+func (x *MsgAllowAskDenom_DenomInfo) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgAllowAskDenom_DenomInfo)(x)
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgAllowAskDenom_DenomInfo_messageType fastReflection_MsgAllowAskDenom_DenomInfo_messageType
+var _ protoreflect.MessageType = fastReflection_MsgAllowAskDenom_DenomInfo_messageType{}
+
+type fastReflection_MsgAllowAskDenom_DenomInfo_messageType struct{}
+
+func (x fastReflection_MsgAllowAskDenom_DenomInfo_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgAllowAskDenom_DenomInfo)(nil)
+}
+func (x fastReflection_MsgAllowAskDenom_DenomInfo_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgAllowAskDenom_DenomInfo)
+}
+func (x fastReflection_MsgAllowAskDenom_DenomInfo_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAllowAskDenom_DenomInfo
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgAllowAskDenom_DenomInfo
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Type() protoreflect.MessageType {
+	return _fastReflection_MsgAllowAskDenom_DenomInfo_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) New() protoreflect.Message {
+	return new(fastReflection_MsgAllowAskDenom_DenomInfo)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Interface() protoreflect.ProtoMessage {
+	return (*MsgAllowAskDenom_DenomInfo)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Denom != "" {
+		value := protoreflect.ValueOfString(x.Denom)
+		if !f(fd_MsgAllowAskDenom_DenomInfo_denom, value) {
+			return
+		}
+	}
+	if x.DisplayDenom != "" {
+		value := protoreflect.ValueOfString(x.DisplayDenom)
+		if !f(fd_MsgAllowAskDenom_DenomInfo_display_denom, value) {
+			return
+		}
+	}
+	if x.Exponent != uint32(0) {
+		value := protoreflect.ValueOfUint32(x.Exponent)
+		if !f(fd_MsgAllowAskDenom_DenomInfo_exponent, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		return x.Denom != ""
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		return x.DisplayDenom != ""
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		return x.Exponent != uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		x.Denom = ""
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		x.DisplayDenom = ""
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		x.Exponent = uint32(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		value := x.Denom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		value := x.DisplayDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		value := x.Exponent
+		return protoreflect.ValueOfUint32(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		x.Denom = value.Interface().(string)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		x.DisplayDenom = value.Interface().(string)
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		x.Exponent = uint32(value.Uint())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		panic(fmt.Errorf("field denom of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		panic(fmt.Errorf("field display_denom of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		panic(fmt.Errorf("field exponent of message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.display_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo.exponent":
+		return protoreflect.ValueOfUint32(uint32(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgAllowAskDenom_DenomInfo) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgAllowAskDenom_DenomInfo)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Denom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.DisplayDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Exponent != 0 {
+			n += 1 + runtime.Sov(uint64(x.Exponent))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAllowAskDenom_DenomInfo)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Exponent != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Exponent))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.DisplayDenom) > 0 {
+			i -= len(x.DisplayDenom)
+			copy(dAtA[i:], x.DisplayDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DisplayDenom)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Denom) > 0 {
+			i -= len(x.Denom)
+			copy(dAtA[i:], x.Denom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Denom)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgAllowAskDenom_DenomInfo)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowAskDenom_DenomInfo: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgAllowAskDenom_DenomInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 				}
 				var stringLen uint64
@@ -6370,7 +6988,7 @@ func (x *fastReflection_MsgAllowAskDenom) ProtoMethods() *protoiface.Methods {
 				}
 				x.Denom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 3:
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DisplayDenom", wireType)
 				}
@@ -6402,7 +7020,7 @@ func (x *fastReflection_MsgAllowAskDenom) ProtoMethods() *protoiface.Methods {
 				}
 				x.DisplayDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 4:
+			case 3:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
 				}
@@ -7074,13 +7692,10 @@ type MsgAllowAskDenom struct {
 
 	// root_address is the address of the governance account which can authorize ask denoms
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
-	// display_denom is the denom to display to the user and is informational
-	DisplayDenom string `protobuf:"bytes,3,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
-	// exponent is the exponent that relates the denom to the display_denom and is
-	// informational
-	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"`
+	// add_denoms specifies denoms to add to the allowed denom list
+	AddDenoms []*MsgAllowAskDenom_DenomInfo `protobuf:"bytes,2,rep,name=add_denoms,json=addDenoms,proto3" json:"add_denoms,omitempty"`
+	// remove_denoms specifies denoms to remove from the allowed denom list
+	RemoveDenoms []string `protobuf:"bytes,3,rep,name=remove_denoms,json=removeDenoms,proto3" json:"remove_denoms,omitempty"`
 }
 
 func (x *MsgAllowAskDenom) Reset() {
@@ -7110,25 +7725,18 @@ func (x *MsgAllowAskDenom) GetRootAddress() string {
 	return ""
 }
 
-func (x *MsgAllowAskDenom) GetDenom() string {
+func (x *MsgAllowAskDenom) GetAddDenoms() []*MsgAllowAskDenom_DenomInfo {
 	if x != nil {
-		return x.Denom
+		return x.AddDenoms
 	}
-	return ""
+	return nil
 }
 
-func (x *MsgAllowAskDenom) GetDisplayDenom() string {
+func (x *MsgAllowAskDenom) GetRemoveDenoms() []string {
 	if x != nil {
-		return x.DisplayDenom
+		return x.RemoveDenoms
 	}
-	return ""
-}
-
-func (x *MsgAllowAskDenom) GetExponent() uint32 {
-	if x != nil {
-		return x.Exponent
-	}
-	return 0
+	return nil
 }
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
@@ -7493,6 +8101,61 @@ func (*MsgBuy_Order_Selection_SellOrderId) isMsgBuy_Order_Selection_Sum() {}
 
 func (*MsgBuy_Order_Selection_Filter) isMsgBuy_Order_Selection_Sum() {}
 
+type MsgAllowAskDenom_DenomInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// display_denom is the denom to display to the user and is informational
+	DisplayDenom string `protobuf:"bytes,2,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
+	// exponent is the exponent that relates the denom to the display_denom and is
+	// informational
+	Exponent uint32 `protobuf:"varint,3,opt,name=exponent,proto3" json:"exponent,omitempty"`
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) Reset() {
+	*x = MsgAllowAskDenom_DenomInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgAllowAskDenom_DenomInfo) ProtoMessage() {}
+
+// Deprecated: Use MsgAllowAskDenom_DenomInfo.ProtoReflect.Descriptor instead.
+func (*MsgAllowAskDenom_DenomInfo) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) GetDenom() string {
+	if x != nil {
+		return x.Denom
+	}
+	return ""
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) GetDisplayDenom() string {
+	if x != nil {
+		return x.DisplayDenom
+	}
+	return ""
+}
+
+func (x *MsgAllowAskDenom_DenomInfo) GetExponent() uint32 {
+	if x != nil {
+		return x.Exponent
+	}
+	return 0
+}
+
 var File_regen_ecocredit_marketplace_v1_tx_proto protoreflect.FileDescriptor
 
 var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
@@ -7602,66 +8265,74 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x42, 0x05, 0x0a, 0x03, 0x73, 0x75, 0x6d, 0x22, 0x34, 0x0a, 0x0e, 0x4d, 0x73, 0x67, 0x42,
 	0x75, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x0d, 0x62, 0x75,
 	0x79, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x04, 0x52, 0x0b, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x73, 0x22, 0x8c,
-	0x01, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65,
+	0x04, 0x52, 0x0b, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x73, 0x22, 0x99,
+	0x02, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65,
 	0x6e, 0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x23, 0x0a, 0x0d,
-	0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0c, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x44, 0x65, 0x6e, 0x6f,
-	0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x22, 0x1a, 0x0a,
-	0x18, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f,
-	0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xca, 0x03, 0x0a, 0x03, 0x4d, 0x73,
-	0x67, 0x12, 0x60, 0x0a, 0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65,
-	0x6c, 0x6c, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
-	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65,
-	0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x12, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x1a, 0x3b, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65,
-	0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x03, 0x42, 0x75,
-	0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75,
-	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x0d, 0x41, 0x6c, 0x6c,
-	0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x59, 0x0a, 0x0a, 0x61, 0x64, 0x64, 0x5f, 0x64, 0x65,
+	0x6e, 0x6f, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3a, 0x2e, 0x72, 0x65, 0x67,
 	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
 	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41,
-	0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x38, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x2e, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x61, 0x64, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x73, 0x12, 0x23, 0x0a, 0x0d, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x5f, 0x64, 0x65, 0x6e, 0x6f,
+	0x6d, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65,
+	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x73, 0x1a, 0x62, 0x0a, 0x09, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x49,
+	0x6e, 0x66, 0x6f, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x23, 0x0a, 0x0d, 0x64, 0x69, 0x73,
+	0x70, 0x6c, 0x61, 0x79, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0c, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1a,
+	0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0d,
+	0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x22, 0x1a, 0x0a, 0x18, 0x4d, 0x73,
 	0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54,
-	0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f,
-	0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31,
-	0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xca, 0x03, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x60,
+	0x0a, 0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
+	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x1a,
+	0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x84, 0x01, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f,
+	0x72, 0x64, 0x65, 0x72, 0x73, 0x12, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x1a, 0x3b, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x03, 0x42, 0x75, 0x79, 0x12, 0x26,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
+	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x0d, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41,
+	0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f,
+	0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x38, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03,
+	0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7676,7 +8347,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescData
 }
 
-var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgSell)(nil),                     // 0: regen.ecocredit.marketplace.v1.MsgSell
 	(*MsgSellResponse)(nil),             // 1: regen.ecocredit.marketplace.v1.MsgSellResponse
@@ -7690,35 +8361,37 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgUpdateSellOrders_Update)(nil),  // 9: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	(*MsgBuy_Order)(nil),                // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order
 	(*MsgBuy_Order_Selection)(nil),      // 11: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
-	(*v1beta1.Coin)(nil),                // 12: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil),       // 13: google.protobuf.Timestamp
-	(*Filter)(nil),                      // 14: regen.ecocredit.marketplace.v1.Filter
+	(*MsgAllowAskDenom_DenomInfo)(nil),  // 12: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo
+	(*v1beta1.Coin)(nil),                // 13: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),       // 14: google.protobuf.Timestamp
+	(*Filter)(nil),                      // 15: regen.ecocredit.marketplace.v1.Filter
 }
 var file_regen_ecocredit_marketplace_v1_tx_proto_depIdxs = []int32{
 	8,  // 0: regen.ecocredit.marketplace.v1.MsgSell.orders:type_name -> regen.ecocredit.marketplace.v1.MsgSell.Order
 	9,  // 1: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.updates:type_name -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	10, // 2: regen.ecocredit.marketplace.v1.MsgBuy.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order
-	12, // 3: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
-	12, // 5: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
-	11, // 7: regen.ecocredit.marketplace.v1.MsgBuy.Order.selection:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
-	12, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
-	14, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
-	0,  // 11: regen.ecocredit.marketplace.v1.Msg.Sell:input_type -> regen.ecocredit.marketplace.v1.MsgSell
-	2,  // 12: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:input_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
-	4,  // 13: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
-	6,  // 14: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
-	1,  // 15: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
-	3,  // 16: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
-	5,  // 17: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
-	7,  // 18: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
-	15, // [15:19] is the sub-list for method output_type
-	11, // [11:15] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	12, // 3: regen.ecocredit.marketplace.v1.MsgAllowAskDenom.add_denoms:type_name -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom.DenomInfo
+	13, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
+	14, // 5: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
+	13, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
+	14, // 7: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
+	11, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.selection:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
+	13, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
+	14, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
+	15, // 11: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
+	0,  // 12: regen.ecocredit.marketplace.v1.Msg.Sell:input_type -> regen.ecocredit.marketplace.v1.MsgSell
+	2,  // 13: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:input_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
+	4,  // 14: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
+	6,  // 15: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
+	1,  // 16: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
+	3,  // 17: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
+	5,  // 18: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
+	7,  // 19: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
+	16, // [16:20] is the sub-list for method output_type
+	12, // [12:16] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_marketplace_v1_tx_proto_init() }
@@ -7872,6 +8545,18 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 				return nil
 			}
 		}
+		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgAllowAskDenom_DenomInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11].OneofWrappers = []interface{}{
 		(*MsgBuy_Order_Selection_SellOrderId)(nil),
@@ -7883,7 +8568,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

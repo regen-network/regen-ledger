@@ -180,15 +180,24 @@ message MsgAllowAskDenom {
   // root_address is the address of the governance account which can authorize ask denoms
   string root_address = 1;
 
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-  string denom = 2;
+  // add_denoms specifies denoms to add to the allowed denom list
+  repeated DenomInfo add_denoms = 2;
 
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 3;
+  // remove_denoms specifies denoms to remove from the allowed denom list
+  repeated string remove_denoms = 3;
 
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 4;
+  message DenomInfo {
+    // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+    string denom = 1;
+
+    // display_denom is the denom to display to the user and is informational
+    string display_denom = 2;
+
+    // exponent is the exponent that relates the denom to the display_denom and is
+    // informational
+    uint32 exponent = 3;
+  }
+
 }
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
