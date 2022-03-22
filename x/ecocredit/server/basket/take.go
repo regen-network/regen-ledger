@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -15,7 +15,7 @@ import (
 )
 
 func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettypes.MsgTakeResponse, error) {
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, msg.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, msg.BasketDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +60,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	var credits []*baskettypes.BasketCredit
 	for {
-		it, err := k.stateStore.BasketBalanceStore().List(ctx,
-			basketv1.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
+		it, err := k.stateStore.BasketBalanceTable().List(ctx,
+			api.BasketBalanceBasketIdBatchStartDateIndexKey{}.WithBasketId(basket.Id),
 		)
 		if err != nil {
 			return nil, err
@@ -109,7 +109,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 			}
 
 			basketBalance.Balance = newBalance.String()
-			err = k.stateStore.BasketBalanceStore().Update(ctx, basketBalance)
+			err = k.stateStore.BasketBalanceTable().Update(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}
@@ -134,7 +134,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				return nil, err
 			}
 
-			err = k.stateStore.BasketBalanceStore().Delete(ctx, basketBalance)
+			err = k.stateStore.BasketBalanceTable().Delete(ctx, basketBalance)
 			if err != nil {
 				return nil, err
 			}

@@ -10,6 +10,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -37,7 +38,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := k.getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := server.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	// default the sequence to 1 for the `not found` case.
 	// will get overwritten by the actual sequence if it exists.
 	var seq uint64 = 1
-	classSeq, err := k.stateStore.ClassSequenceStore().Get(goCtx, creditType.Abbreviation)
+	classSeq, err := k.stateStore.ClassSequenceTable().Get(goCtx, creditType.Abbreviation)
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
 			return nil, err
@@ -53,7 +54,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	} else {
 		seq = classSeq.NextClassId
 	}
-	if err = k.stateStore.ClassSequenceStore().Save(goCtx, &api.ClassSequence{
+	if err = k.stateStore.ClassSequenceTable().Save(goCtx, &api.ClassSequence{
 		CreditType:  creditType.Abbreviation,
 		NextClassId: seq + 1,
 	}); err != nil {
@@ -62,7 +63,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, seq)
 
-	rowId, err := k.stateStore.ClassInfoStore().InsertReturningID(goCtx, &api.ClassInfo{
+	rowId, err := k.stateStore.ClassInfoTable().InsertReturningID(goCtx, &api.ClassInfo{
 		Name:       classID,
 		Admin:      adminAddress,
 		Metadata:   req.Metadata,
@@ -77,7 +78,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.ClassIssuerStore().Insert(goCtx, &api.ClassIssuer{
+		if err = k.stateStore.ClassIssuerTable().Insert(goCtx, &api.ClassIssuer{
 			ClassId: rowId,
 			Issuer:  issuer,
 		}); err != nil {

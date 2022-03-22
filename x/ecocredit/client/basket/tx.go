@@ -25,7 +25,7 @@ const (
 	FlagMinimumStartDate       = "minimum-start-date"
 	FlagStartDateWindow        = "start-date-window"
 	FlagBasketFee              = "basket-fee"
-	FlagDenomDescription       = "description-description"
+	FlagDenomDescription       = "description"
 )
 
 func TxCreateBasket() *cobra.Command {
@@ -179,7 +179,7 @@ Flags:
 	// command flags
 	cmd.Flags().String(FlagExponent, "", "the exponent used for converting credits to basket tokens")
 	cmd.Flags().Bool(FlagDisableAutoRetire, false, "dictates whether credits will be auto-retired upon taking")
-	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type name (e.g. \"carbon\")")
+	cmd.Flags().String(FlagCreditTypeAbbreviation, "", "filters against credits from this credit type abbreviation (e.g. \"C\")")
 	cmd.Flags().StringSlice(FlagAllowedClasses, []string{}, "comma separated (no spaces) list of credit classes allowed to be put in the basket (e.g. \"C01,C02\")")
 	cmd.Flags().String(FlagMinimumStartDate, "", "the earliest start date for batches of credits allowed into the basket (e.g. \"2012-01-01\")")
 	cmd.Flags().Uint64(FlagStartDateWindow, 0, "sets a cutoff for batch start dates when adding new credits to the basket (e.g. 1325404800)")

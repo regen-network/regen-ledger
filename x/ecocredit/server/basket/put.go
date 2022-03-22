@@ -4,16 +4,17 @@ import (
 	"context"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/orm"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -25,8 +26,11 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	}
 
 	// get the basket
-	basket, err := k.stateStore.BasketStore().GetByBasketDenom(ctx, req.BasketDenom)
+	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
+		if orm.ErrNotFound.Is(err) {
+			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
+		}
 		return nil, err
 	}
 
@@ -38,6 +42,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		// get credit batch info
 		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
+			if orm.ErrNotFound.Is(err) {
+				return nil, sdkerrors.ErrNotFound.Wrapf("%s batch not found", credit.BatchDenom)
+			}
 			return nil, err
 		}
 		batchInfo := res.Info
@@ -53,6 +60,9 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		}
 		// update the user and basket balances
 		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
+			if sdkerrors.ErrInsufficientFunds.Is(err) {
+				return nil, ErrInsufficientCredits
+			}
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
@@ -90,7 +100,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -104,6 +114,9 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 		} else if criteria.StartDateWindow != nil {
 			window := criteria.StartDateWindow.AsDuration()
 			minStartDate = blockTime.Add(-window)
+		} else if criteria.YearsInThePast != 0 {
+			year := blockTime.Year() - int(criteria.YearsInThePast)
+			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
 
 		if batchInfo.StartDate.Before(minStartDate) {
@@ -121,7 +134,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 	classId := projectRes.Info.ClassId
 
 	// check credit class match
-	found, err := k.stateStore.BasketClassStore().Has(ctx, basket.Id, classId)
+	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
 	if err != nil {
 		return err
 	}
@@ -143,7 +156,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *basketv1.Bask
 }
 
 // transferToBasket updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *basketv1.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	store := sdkCtx.KVStore(k.storeKey)
 
@@ -160,11 +173,11 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	ecocredit.SetDecimal(store, userBalanceKey, newUserBalance)
 
 	// update basket balance with amount sent
-	var bal *basketv1.BasketBalance
-	bal, err = k.stateStore.BasketBalanceStore().Get(ctx, basket.Id, batchInfo.BatchDenom)
+	var bal *api.BasketBalance
+	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batchInfo.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			bal = &basketv1.BasketBalance{
+			bal = &api.BasketBalance{
 				BasketId:       basket.Id,
 				BatchDenom:     batchInfo.BatchDenom,
 				Balance:        amt.String(),
@@ -184,7 +197,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		}
 		bal.Balance = newBalance.String()
 	}
-	if err = k.stateStore.BasketBalanceStore().Save(ctx, bal); err != nil {
+	if err = k.stateStore.BasketBalanceTable().Save(ctx, bal); err != nil {
 		return err
 	}
 	return nil

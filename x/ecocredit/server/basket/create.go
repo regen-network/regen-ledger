@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -37,7 +37,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	id, err := k.stateStore.BasketStore().InsertReturningID(ctx, &basketv1.Basket{
+	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
+		Curator:           msg.Curator,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
@@ -60,7 +61,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if msg.Exponent != 0 {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom:    denom,
-			Exponent: 0, // convertion from base denom to this denom
+			Exponent: 0, // conversion from base denom to this denom
 			Aliases:  nil,
 		})
 	}
@@ -112,8 +113,8 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 		}
 
 		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
-		err := k.stateStore.BasketClassStore().Insert(wrappedCtx,
-			&basketv1.BasketClass{
+		err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
+			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,
 			},

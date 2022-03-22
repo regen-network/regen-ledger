@@ -88,7 +88,7 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +113,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
-	db, err := ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
 	}

@@ -120,8 +120,16 @@ module.exports = {
                 '/modules/ecocredit/04_events',
                 '/modules/ecocredit/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/ecocredit/protobuf'
+                  title: 'Protobuf - Core',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1'
+                },
+                {
+                  title: 'Protobuf - Basket',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1'
+                },
+                {
+                  title: 'Protobuf - Marketplace',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1'
                 }
               ]
             },
@@ -139,8 +147,8 @@ module.exports = {
                 '/modules/data/04_events',
                 '/modules/data/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/data/protobuf'
+                  title: 'Protobuf',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.data.v1'
                 }
               ]
             },
@@ -158,8 +166,8 @@ module.exports = {
                 '/modules/group/04_events',
                 // '/modules/group/05_client',
                 {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/group/protobuf'
+                  title: 'Protobuf',
+                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.group.v1alpha1'
                 }
               ]
             },
@@ -173,6 +181,33 @@ module.exports = {
             // '/tutorials/data-cli',
             // '/tutorials/data-grpc',
             '/tutorials/ibc-transfers'
+          ]
+        },
+        {
+          title: 'Commands',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+              '/commands/regen',
+              '/commands/regen_add-genesis-account',
+              '/commands/regen_collect-gentxs',
+              '/commands/regen_config',
+              '/commands/regen_debug',
+              '/commands/regen_export',
+              '/commands/regen_gentx',
+              '/commands/regen_init',
+              '/commands/regen_keys',
+              '/commands/regen_migrate',
+              '/commands/regen_query',
+              '/commands/regen_rosetta',
+              '/commands/regen_start',
+              '/commands/regen_status',
+              '/commands/regen_tendermint',
+              '/commands/regen_testnet',
+              '/commands/regen_tx',
+              '/commands/regen_unsafe-reset-all',
+              '/commands/regen_validate-genesis',
+              '/commands/regen_version',
           ]
         },
       ],

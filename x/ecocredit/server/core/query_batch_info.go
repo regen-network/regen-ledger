@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -13,13 +14,13 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		return nil, err
 	}
 
-	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
 	var bi core.BatchInfo
-	if err = PulsarToGogoSlow(batch, &bi); err != nil {
+	if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
 		return nil, err
 	}
 	return &core.QueryBatchInfoResponse{Info: &bi}, nil

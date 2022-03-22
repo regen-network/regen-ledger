@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+// Revision 1
 package regen.ecocredit.basket.v1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
@@ -27,13 +28,25 @@ message BasketCredit {
 message DateCriteria {
   // min_start_date (optional) is the earliest start date for batches of credits allowed
   // into the basket.
-  // At most only one of `start_date_window` and `min_start_date` can be set.
+  // At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
+  // can be set for a basket.
   google.protobuf.Timestamp min_start_date = 1;
 
   // start_date_window (optional) is a duration of time measured into the past which sets
   // a cutoff for batch start dates when adding new credits to the basket.
   // Based on the current block timestamp, credits whose start date is before
-  // `block_timestamp - batch_date_window` will not be allowed into the basket.
-  // At most only one of `start_date_window` and `min_start_date` can be set.
+  // `block_timestamp - start_date_window` will not be allowed into the basket.
+  // At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
+  // can be set for a basket.
   google.protobuf.Duration start_date_window = 2;
+
+  // years_in_the_past (optional) is the number of years into the past which sets a
+  // cutoff for the batch start dates when adding new credits to the basket.
+  // Based on the current block timestamp, credits whose start date year is less than
+  // `block_timestamp_year - years_in_the_past` will not be allowed into the basket.
+  // At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
+  // can be set for a basket.
+  //
+  // Since Revision 1
+  uint32 years_in_the_past = 3;
 }

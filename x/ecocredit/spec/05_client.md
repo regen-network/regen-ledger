@@ -53,28 +53,25 @@ Example Output:
 info:
   amount_cancelled: "10"
   batch_denom: C01-20200101-20210101-001
-  class_id: C01
   end_date: "2021-01-01T00:00:00Z"
-  issuer: regen1..
   metadata: cmVnZW4=
-  project_location: AA-BB 12345
+  project_id: P01
   start_date: "2020-01-01T00:00:00Z"
-  total_amount: "50"
-
+  total_amount: "3.0"
 ```
 
 #### batches
 
-The `batches` command allows users to query all credit batches for a given credit class.
+The `batches` command allows users to query all credit batches for a given project.
 
 ```bash
-regen query ecocredit batches [class_id] [flags]
+regen query ecocredit batches [project_id] [flags]
 ```
 
 Example:
 
 ```bash
-regen query ecocredit batches C01
+regen query ecocredit batches P01
 ```
 
 Example Output:
@@ -83,13 +80,11 @@ Example Output:
 batches:
 - amount_cancelled: "10"
   batch_denom: C01-20200101-20210101-001
-  class_id: C01
   end_date: "2021-01-01T00:00:00Z"
-  issuer: regen1..
   metadata: cmVnZW4=
-  project_location: AA-BB 12345
+  project_id: P01
   start_date: "2020-01-01T00:00:00Z"
-  total_amount: "50"
+  total_amount: "3.0"
 pagination:
   next_key: null
   total: "0"
@@ -169,6 +164,59 @@ classes:
 pagination:
   next_key: null
   total: "0"
+```
+
+#### project-info
+
+The `project-info` command allows users to query information for a given project.
+
+```bash
+regen query ecocredit project-info [project_id] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit project-info P01
+```
+
+Example Output:
+
+```bash
+info:
+  class_id: C01
+  issuer: regen1..
+  metadata: cmVnZW4=
+  project_id: P01
+  project_location: YZ
+```
+
+#### projects
+
+The `projects` command allows users to query all projects for a given credit class.
+
+```bash
+regen query ecocredit projects [class_id] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit projects C01
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "0"
+projects:
+- class_id: C01
+  issuer: regen1..
+  metadata: cmVnZW4=
+  project_id: P01
+  project_location: YZ
 ```
 
 #### supply
@@ -467,6 +515,20 @@ Example:
 regen tx ecocredit create-class regen1.. carbon cmVnZW4= --from regen1..
 ```
 
+#### create-project
+
+The `create-project` command allows users to create a new project.
+
+```bash
+regen tx ecocredit create-project [class-id] [project-location] [metadata] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit create-project C01 YZ cmVnZW4= --project-id P01 --from regen1..
+```
+
 #### gen-batch-json
 
 The `gen-batch-json` command allows users to generate JSON to represent a new credit batch for use with the `create-batch` command.
@@ -478,7 +540,7 @@ regen tx ecocredit gen-batch-json [flags]
 Example:
 
 ```bash
-regen tx ecocredit gen-batch-json --class-id C01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --project-location 'AA-BB 12345' --metadata cmVnZW4=
+regen tx ecocredit gen-batch-json --project-id P01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --metadata cmVnZW4=
 ```
 
 Example Output:
@@ -497,8 +559,7 @@ Example Output:
     ],
     "metadata": "cmVnZW4=",
     "start_date": "2020-01-01T00:00:00Z",
-    "end_date": "2021-01-01T00:00:00Z",
-    "project_location": "AA-BB 12345"
+    "end_date": "2021-01-01T00:00:00Z"
 }
 ```
 

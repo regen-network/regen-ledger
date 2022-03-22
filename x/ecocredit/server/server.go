@@ -1,33 +1,25 @@
 package server
 
 import (
-	"google.golang.org/protobuf/reflect/protoreflect"
-
+	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/ormutil"
 )
 
 const (
-	TradableBalancePrefix    byte = 0x0
-	TradableSupplyPrefix     byte = 0x1
-	RetiredBalancePrefix     byte = 0x2
-	RetiredSupplyPrefix      byte = 0x3
-	CreditTypeSeqTablePrefix byte = 0x4
-	ClassInfoTablePrefix     byte = 0x5
-	BatchInfoTablePrefix     byte = 0x6
-
 	ProjectInfoTablePrefix    byte = 0x10
 	ProjectInfoTableSeqPrefix byte = 0x11
 	ProjectsByClassIDIndex    byte = 0x12
@@ -86,15 +78,11 @@ type serverImpl struct {
 	db ormdb.ModuleDB
 }
 
-var ModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
-	},
-}
-
-var BasketModuleSchema = ormdb.ModuleSchema{
-	FileDescriptors: map[uint32]protoreflect.FileDescriptor{
-		1: basketv1.File_regen_ecocredit_basket_v1_state_proto,
+var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
+	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
+		{Id: 1, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
+		{Id: 2, ProtoFileName: basketapi.File_regen_ecocredit_basket_v1_state_proto.Path()},
+		{Id: 3, ProtoFileName: marketApi.File_regen_ecocredit_marketplace_v1_state_proto.Path()},
 	},
 	Prefix: []byte{ecocredit.ORMPrefix},
 }
@@ -239,7 +227,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 
 	s.projectInfoTable = projectInfoTableBuilder.Build()
 
-	s.db, err = ormutil.NewStoreKeyDB(BasketModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	s.db, err = ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}

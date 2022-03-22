@@ -45,6 +45,8 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 		queryByIRICmd,
 		QueryBySignerCmd(),
 		QuerySignersCmd(),
+		QueryResolverInfoCmd(),
+		QueryResolversCmd(),
 	)
 
 	flags.AddQueryFlagsToCmd(cmd)
@@ -135,6 +137,63 @@ func QuerySignersCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryResolverInfoCmd creates a CLI command for Query/ResolverInfo.
+func QueryResolverInfoCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolver-info [url]",
+		Short: "Query for resolver information",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ResolverInfo(cmd.Context(), &data.QueryResolverInfoRequest{
+				Url: args[0],
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryResolversCmd creates a CLI command for Query/Resolvers.
+func QueryResolversCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolvers [iri]",
+		Short: "Query for registered resolver URLs for the data IRI",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Resolvers(cmd.Context(), &data.QueryResolversRequest{
+				Iri:        args[0],
+				Pagination: pagination,
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers")
 
 	return cmd
 }

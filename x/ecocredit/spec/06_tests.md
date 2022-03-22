@@ -88,6 +88,92 @@ If a user tries to create a credit class and the user account balance is less th
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
+### Create Project
+
+If a user tries to create a project and the issuer is on the list of approved credit issuers for the given credit class, then the transaction is successful and the project is created.
+
+- GIVEN - issuer is on the list of approved credit issuers for the given credit class
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the issuer is NOT on the list of approved credit issuers for the given credit class, then the transaction fails and the project is NOT created.
+
+- GIVEN - issuer is NOT on the list of approved credit issuers for the given credit class
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the credit class is a valid credit class, then the transaction is successful and the project is created.
+
+- GIVEN - credit class is a valid credit class
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the credit class is NOT a valid credit class, then the transaction fails and the project is NOT created.
+
+- GIVEN - credit class is NOT a valid credit class
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the project location is a valid location, then the transaction is successful and the project is created.
+
+- GIVEN - project location is a valid location
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the project location is NOT a valid location, then the transaction fails and the project is NOT created.
+
+- GIVEN - project location is NOT a valid location
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the project id is a valid project id, then the transaction is successful and the project is created.
+
+- GIVEN - project id is a valid project id
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the project id is NOT a valid project id, then the transaction fails and the project is NOT created.
+
+- GIVEN - project id is NOT a valid project id
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the project id already exists, then the transaction fails and the project is NOT created.
+
+- GIVEN - project id already exists
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the user provides metadata that is base64 encoded, then the transaction is successful and the project is created.
+
+- GIVEN - user provides metadata that is base64 encoded
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the user provides metadata that is NOT base64 encoded, then the transaction fails and the project is NOT created.
+
+- GIVEN - user provides metadata that is NOT base64 encoded
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
+If a user tries to create a project and the user provides metadata that is less than 256 bytes, then the transaction is successful and the project is created.
+
+- GIVEN - user provides metadata that is less than 256 bytes
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the user provides metadata that is equal to 256 bytes, then the transaction is successful and the project is created.
+
+- GIVEN - user provides metadata that is equal to 256 bytes
+- WHEN - user tries to create a project
+- THEN - transaction is successful, project is created
+
+If a user tries to create a project and the user provides metadata that is more than 256 bytes, then the transaction fails and the project is NOT created.
+
+- GIVEN - user provides metadata that is more than 256 bytes
+- WHEN - user tries to create a project
+- THEN - transaction fails, project is NOT created
+
 ### Create Credit Batch
 
 If a user tries to create a credit batch and their account address is on the list of approved credit issuers for a credit class, then the transaction is successful and the credit batch is created.
@@ -132,15 +218,15 @@ If a user tries to create a credit batch and the user provides metadata that is 
 - WHEN - user tries to create a credit batch
 - THEN - transaction fails, credit batch is NOT created
 
-If a user tries to create a credit batch and the user provides a valid project location, then the transaction is successful and the credit batch is created.
+If a user tries to create a credit batch and the user provides a valid project, then the transaction is successful and the credit batch is created.
 
-- GIVEN - user provides a valid project location
+- GIVEN - user provides a valid project
 - WHEN - user tries to create a credit batch
 - THEN - transaction successful, credit batch is created
 
-If a user tries to create a credit batch and the user provides an invalid project location, then the transaction fails and the credit batch is NOT created.
+If a user tries to create a credit batch and the user provides an invalid project, then the transaction fails and the credit batch is NOT created.
 
-- GIVEN - user provides an invalid project location
+- GIVEN - user provides an invalid project
 - WHEN - user tries to create a credit batch
 - THEN - transaction fails, credit batch is NOT created
 

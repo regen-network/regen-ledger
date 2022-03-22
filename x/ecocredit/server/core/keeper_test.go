@@ -9,20 +9,20 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
 type baseSuite struct {
@@ -34,8 +34,8 @@ type baseSuite struct {
 	ctrl          *gomock.Controller
 	addr          sdk.AccAddress
 	bankKeeper    *mocks.MockBankKeeper
-	paramsKeeper  *mocks2.MockParamKeeper
-	accountKeeper *mocks2.MockAccountKeeper
+	paramsKeeper  *mocks.MockParamKeeper
+	accountKeeper *mocks.MockAccountKeeper
 	storeKey      *sdk.KVStoreKey
 	sdkCtx        sdk.Context
 }
@@ -44,7 +44,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -62,8 +62,8 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
-	s.accountKeeper = mocks2.NewMockAccountKeeper(s.ctrl)
+	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
+	s.accountKeeper = mocks.NewMockAccountKeeper(s.ctrl)
 	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.accountKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
@@ -74,32 +74,32 @@ func setupBase(t *testing.T) *baseSuite {
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string) {
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoStore().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
 		Name:       "C01",
 		Admin:      s.addr,
-		Metadata:   nil,
+		Metadata:   "",
 		CreditType: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoStore().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "PRO",
 		ClassId:         1,
 		ProjectLocation: "US-OR",
-		Metadata:        nil,
+		Metadata:        "",
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoStore().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20210101-01",
-		Metadata:   nil,
+		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
-	assert.NilError(t, s.stateStore.BatchSupplyStore().Insert(s.ctx, &api.BatchSupply{
+	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
 		BatchId:         1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
-	assert.NilError(t, s.stateStore.BatchBalanceStore().Insert(s.ctx, &api.BatchBalance{
+	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "10.5",

@@ -9,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder
@@ -20,25 +21,25 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 	}
 
 	for _, credit := range req.Credits {
-		batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := k.getCreditTypeFromBatchDenom(ctx, batch.BatchDenom)
+		creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
 		precision := creditType.Precision
 
-		userBalance, err := k.stateStore.BatchBalanceStore().Get(ctx, holder, batch.Id)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := k.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
+		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
 		if err != nil {
 			return nil, err
 		}
-		decs, err := getNonNegativeFixedDecs(precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
+		decs, err := server.GetNonNegativeFixedDecs(precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +56,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
+		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
 			Tradable: userBalTradable.String(),
@@ -63,7 +64,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
-		if err = k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
+		if err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   batchSupply.RetiredAmount,

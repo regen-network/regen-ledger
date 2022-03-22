@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -14,7 +14,7 @@ import (
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	stateStore      basketv1.StateStore
+	stateStore      api.StateStore
 	bankKeeper      ecocredit.BankKeeper
 	ecocreditKeeper EcocreditKeeper
 	storeKey        sdk.StoreKey
@@ -32,7 +32,7 @@ func NewKeeper(
 	distKeeper ecocredit.DistributionKeeper,
 	storeKey sdk.StoreKey,
 ) Keeper {
-	basketStore, err := basketv1.NewStateStore(db)
+	basketStore, err := api.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}

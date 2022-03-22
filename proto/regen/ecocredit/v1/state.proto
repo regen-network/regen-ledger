@@ -52,7 +52,7 @@ message ClassInfo {
     bytes admin = 3;
 
     // metadata is any arbitrary metadata to attached to the credit class.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // credit_type is the abbreviation of the credit type.
     string credit_type = 5;
@@ -81,22 +81,26 @@ message ProjectInfo {
         index: {id: 2, fields: "class_id,name", unique: true}
     };
 
-    // id is the unique ID of the project
+    // id is the unique ID of the project.
     uint64 id = 1;
 
-    // name is an unique name of this project formed from its credit class
-    // name and either an auto-generated number or user provided string.
-    string name = 3;
+    // name is the unique name of the project either formed from its credit
+    // class name and an auto-generated number or a custom name provided
+    // upon creation.
+    string name = 2;
+
+    // admin is the admin of the project.
+    bytes admin = 3;
 
     // class_id is the ID of credit class for this project.
-    uint64 class_id = 2;
+    uint64 class_id = 4;
 
     // project_location is the location of the project.
     // Full documentation can be found in MsgCreateProject.project_location.
-    string project_location = 4;
+    string project_location = 5;
 
     // metadata is any arbitrary metadata attached to the project.
-    bytes metadata = 5;
+    string metadata = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -120,7 +124,7 @@ message BatchInfo {
     string batch_denom = 3;
 
     // metadata is any arbitrary metadata attached to the credit batch.
-    bytes metadata = 4;
+    string metadata = 4;
 
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified.
@@ -195,6 +199,9 @@ message BatchBalance {
 
     // retired is the retired amount of credits
     string retired = 4;
+
+    // escrowed is the amount of credits locked up in escrow for the marketplace.
+    string escrowed = 5;
 }
 
 // BatchSupply tracks the supply of a credit batch
@@ -220,6 +227,10 @@ message BatchSupply {
     // cancelled, effectively undoing the issuance. The sum of total_amount and
     // amount_cancelled will always equal the original credit issuance amount.
     string cancelled_amount = 4;
+
+    // escrowed_amount is the amount of credits in the batch that have been
+    // locked up in escrow for use in the marketplace.
+    string escrowed_amount = 5;
 }
 
 // AllowedClassCreators tracks the allowed credit class creators.

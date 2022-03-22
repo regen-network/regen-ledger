@@ -21,13 +21,13 @@ func (s *IntegrationTestSuite) TestQueryByIRI() {
 	}{
 		{
 			"invalid IRI",
-			fmt.Sprintf("%s/regen/data/v1alpha2/by-iri/%s", val.APIAddress, "foo"),
+			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, "foo"),
 			true,
 			"key not found",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1alpha2/by-iri/%s", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, iri),
 			false,
 			"",
 		},
@@ -70,21 +70,21 @@ func (s *IntegrationTestSuite) TestQueryBySigner() {
 	}{
 		{
 			"invalid signer",
-			fmt.Sprintf("%s/regen/data/v1alpha2/by-signer/%s", val.APIAddress, "foo"),
+			fmt.Sprintf("%s/regen/data/v1/by-signer/%s", val.APIAddress, "foo"),
 			true,
 			"invalid bech32 string",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1alpha2/by-signer/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/data/v1/by-signer/%s", val.APIAddress, addr),
 			false,
 			"",
 			2,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1alpha2/by-signer/%s?pagination.limit=1", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/data/v1/by-signer/%s?pagination.limit=1", val.APIAddress, addr),
 			false,
 			"",
 			1,
@@ -127,21 +127,21 @@ func (s *IntegrationTestSuite) TestQuerySigners() {
 	}{
 		{
 			"invalid signer",
-			fmt.Sprintf("%s/regen/data/v1alpha2/signers/%s", val.APIAddress, "foo"),
+			fmt.Sprintf("%s/regen/data/v1/signers/%s", val.APIAddress, "foo"),
 			true,
 			"key not found",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1alpha2/signers/%s", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/signers/%s", val.APIAddress, iri),
 			false,
 			"",
 			2,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1alpha2/signers/%s?pagination.limit=1", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/signers/%s?pagination.limit=1", val.APIAddress, iri),
 			false,
 			"",
 			1,

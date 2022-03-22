@@ -18,11 +18,11 @@ message EventCreateProject {
   // project_id is the unique ID of the project.
   string project_id = 1;
 
-  // class_id is the unique ID of credit class for this project.
-  string class_id = 2;
+  // admin is the admin of the project.
+  string admin = 2;
 
-  // issuer is the issuer of the credit batches for this project.
-  string issuer = 3;
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 3;
 
   // project_location is the location of the project.
   // Full documentation can be found in MsgCreateProject.project_location.
@@ -126,4 +126,41 @@ message EventCancel {
 
   // amount is the decimal number of credits that have been cancelled.
   string amount = 3;
+}
+
+// EventClassAdminUpdated is emitted when the admin address of a credit class is changed.
+message EventClassAdminUpdated {
+
+  // class_name is the name of the class that was updated.
+  string class_name = 1;
+
+  // old_admin is the admin of the credit class before the update.
+  string old_admin = 2;
+
+  // new_admin is the admin of the credit class after the update.
+  string new_admin = 3;
+}
+
+// EventClassIssuersUpdated is emitted when the issuer list for a credit class is updated.
+message EventClassIssuersUpdated {
+  // class_name is the name of the class that was updated.
+  string class_name = 1;
+
+  // added_issuers contains all the addresses added to the class issuer list.
+  repeated string added_issuers = 2;
+
+  // removed_issuers contains all the addresses removed from the class issuer list.
+  repeated string removed_issuers = 3;
+}
+
+// EventClassMetadataUpdated is emitted when the credit class metadata is changed.
+message EventClassMetadataUpdated {
+  // class_name is the name of the class that was updated.
+  string class_name = 1;
+
+  // old_metadata is the metadata before the update.
+  string old_metadata = 2;
+
+  // new_metadata is the metadata after the update.
+  string new_metadata = 3;
 }

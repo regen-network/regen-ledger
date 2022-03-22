@@ -3,11 +3,13 @@ package basket
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	basketv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -16,11 +18,11 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	pulsarPageReq, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.BasketStore().List(ctx, basketv1.BasketPrimaryKey{},
+	it, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{},
 		ormlist.Paginate(pulsarPageReq),
 	)
 
@@ -36,7 +38,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 		}
 
 		basketGogo := &baskettypes.Basket{}
-		err = PulsarToGogoSlow(basket, basketGogo)
+		err = ormutil.PulsarToGogoSlow(basket, basketGogo)
 		if err != nil {
 			return nil, err
 		}
@@ -46,6 +48,6 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 
 	it.Close()
 
-	res.Pagination, err = PulsarPageResToGogoPageRes(it.PageResponse())
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	return res, err
 }

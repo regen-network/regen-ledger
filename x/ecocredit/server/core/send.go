@@ -11,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Send sends credits to a recipient.
@@ -40,21 +41,21 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 }
 
 func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
-	batch, err := k.stateStore.BatchInfoStore().GetByBatchDenom(ctx, credit.BatchDenom)
+	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
 	}
-	creditType, err := k.getCreditTypeFromBatchDenom(ctx, batch.BatchDenom)
+	creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
 	if err != nil {
 		return err
 	}
 	precision := creditType.Precision
 
-	batchSupply, err := k.stateStore.BatchSupplyStore().Get(ctx, batch.Id)
+	batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
 	if err != nil {
 		return err
 	}
-	fromBalance, err := k.stateStore.BatchBalanceStore().Get(ctx, from, batch.Id)
+	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			return ecocredit.ErrInsufficientFunds.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
@@ -62,7 +63,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		return err
 	}
 
-	toBalance, err := k.stateStore.BatchBalanceStore().Get(ctx, to, batch.Id)
+	toBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, to, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &api.BatchBalance{
@@ -75,7 +76,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 			return err
 		}
 	}
-	decs, err := getNonNegativeFixedDecs(precision, toBalance.Tradable, toBalance.Retired, fromBalance.Tradable, fromBalance.Retired, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
+	decs, err := server.GetNonNegativeFixedDecs(precision, toBalance.Tradable, toBalance.Retired, fromBalance.Tradable, fromBalance.Retired, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
 	if err != nil {
 		return err
 	}
@@ -116,7 +117,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}
 	}
 	// update the "to" balance
-	if err := k.stateStore.BatchBalanceStore().Save(ctx, &api.BatchBalance{
+	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 		Address:  to,
 		BatchId:  batch.Id,
 		Tradable: toTradableBalance.String(),
@@ -126,7 +127,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 
 	// update the "from" balance
-	if err := k.stateStore.BatchBalanceStore().Update(ctx, &api.BatchBalance{
+	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 		Address:  from,
 		BatchId:  batch.Id,
 		Tradable: fromTradableBalance.String(),
@@ -136,7 +137,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	// update the "retired" supply only if credits were retired
 	if didRetire {
-		if err := k.stateStore.BatchSupplyStore().Update(ctx, &api.BatchSupply{
+		if err := k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  batchSupplyTradable.String(),
 			RetiredAmount:   batchSupplyRetired.String(),
