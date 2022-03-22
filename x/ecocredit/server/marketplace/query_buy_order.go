@@ -7,5 +7,5 @@ import (
 )
 
 func (k Keeper) BuyOrder(context.Context, *marketplace.QueryBuyOrderRequest) (*marketplace.QueryBuyOrderResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }

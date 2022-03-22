@@ -7,5 +7,5 @@ import (
 )
 
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplacev1.MsgUpdateSellOrders) (*marketplacev1.MsgUpdateSellOrdersResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }

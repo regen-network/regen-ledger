@@ -7,13 +7,13 @@ import (
 )
 
 func (k Keeper) SellOrders(context.Context, *marketplace.QuerySellOrdersRequest) (*marketplace.QuerySellOrdersResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }
 
 func (k Keeper) SellOrdersByAddress(context.Context, *marketplace.QuerySellOrdersByAddressRequest) (*marketplace.QuerySellOrdersByAddressResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }
 
 func (k Keeper) SellOrdersByBatchDenom(context.Context, *marketplace.QuerySellOrdersByBatchDenomRequest) (*marketplace.QuerySellOrdersByBatchDenomResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }

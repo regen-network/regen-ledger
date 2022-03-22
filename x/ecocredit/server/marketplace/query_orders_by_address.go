@@ -7,5 +7,5 @@ import (
 )
 
 func (k Keeper) BuyOrdersByAddress(context.Context, *marketplace.QueryBuyOrdersByAddressRequest) (*marketplace.QueryBuyOrdersByAddressResponse, error) {
-	panic("implement me")
+	panic("not implemented")
 }
