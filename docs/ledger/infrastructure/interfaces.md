@@ -32,7 +32,7 @@ For query commands:
 regen query --help
 ```
 
-For more information about the CLI, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/master/run-node/interact-node.html).
+For a full list of the available commands, see [Commands](../../commands.md).
 
 ## gRPC Interface
 
