@@ -28,13 +28,3 @@ message Params {
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 4;
 }
-
-// Fee represents a bank coin fee.
-message Fee {
-
-  // denom is the denom of the coin (i.e. uregen)
-  string denom = 1;
-
-  // amount is the amount of fees to pay in the specified denom.
-  string amount = 2;
-}

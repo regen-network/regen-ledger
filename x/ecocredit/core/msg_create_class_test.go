@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
@@ -21,9 +22,9 @@ func TestMsgCreateClass(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	validFee := &Fee{
-		Denom:  "uregen",
-		Amount: "10",
+	validFee := &sdk.Coin{
+		Denom:  "regen",
+		Amount: sdk.NewInt(10),
 	}
 
 	tests := map[string]struct {
@@ -98,7 +99,7 @@ func TestMsgCreateClass(t *testing.T) {
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String()},
 				Metadata:         "foo",
-				Fee:              &Fee{Denom: "k,vm.zkx,cvzxk", Amount: "10"},
+				Fee:              &sdk.Coin{Denom: "k,vm.zkx,cvzxk", Amount: sdk.NewInt(10)},
 			},
 			expErr: true,
 		},
@@ -108,7 +109,7 @@ func TestMsgCreateClass(t *testing.T) {
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String()},
 				Metadata:         "foo",
-				Fee:              &Fee{Denom: "uregen", Amount: "19.foo"},
+				Fee:              &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(0)},
 			},
 			expErr: true,
 		},

@@ -36,12 +36,8 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	if feeAmt.IsZero() {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
 	}
-	reqFeeAmt, ok := sdk.NewIntFromString(req.Fee.Amount)
-	if !ok {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not convert %s to %T", req.Fee.Amount, sdk.Int{})
-	}
-	if reqFeeAmt.LT(feeAmt) {
-		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v%s", feeAmt, req.Fee.Denom, reqFeeAmt, req.Fee.Denom)
+	if req.Fee.Amount.LT(feeAmt) {
+		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v", feeAmt, req.Fee.Denom, req.Fee)
 	}
 
 	// Charge the admin a fee to create the credit class

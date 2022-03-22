@@ -47,8 +47,8 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if m.Fee != nil {
-		if _, ok := sdk.NewIntFromString(m.Fee.Amount); !ok {
-			return sdkerrors.ErrInvalidRequest.Wrapf("could not convert %s to %T", m.Fee.Amount, sdk.Int{})
+		if m.Fee.Amount.IsZero() {
+			return sdkerrors.ErrInsufficientFee.Wrap("must specify nonzero fee")
 		}
 		if err := sdk.ValidateDenom(m.Fee.Denom); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s", err.Error())

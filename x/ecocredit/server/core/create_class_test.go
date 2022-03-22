@@ -16,7 +16,7 @@ func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	any := gomock.Any()
-	ccFee := &core.Fee{Denom: "foo", Amount: "20"}
+	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin(ccFee.Denom, 20))
@@ -73,7 +73,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 func TestCreateClass_Sequence(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	ccFee := &core.Fee{Denom: "foo", Amount: "20"}
+	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
@@ -122,7 +122,7 @@ func TestCreateClass_Fees(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              &core.Fee{Denom: "bar", Amount: "10"},
+		Fee:              &sdk.Coin{Denom: "bar", Amount: sdk.NewInt(10)},
 	})
 	assert.ErrorContains(t, err, "bar is not allowed to be used in credit class fees")
 
@@ -132,7 +132,7 @@ func TestCreateClass_Fees(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              &core.Fee{Denom: "foo", Amount: "10"},
+		Fee:              &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)},
 	})
 	assert.ErrorContains(t, err, "expected 20foo for fee, got 10foo")
 }
