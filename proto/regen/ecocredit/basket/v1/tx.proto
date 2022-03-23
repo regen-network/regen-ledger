@@ -166,18 +166,10 @@ message MsgUpdateBasketFeeRequest {
   string root_address = 1;
 
   // add_fees are the coin denoms and amounts to be added to the allowed basket creation fees.
-  repeated Fee add_fees = 2;
+  repeated cosmos.base.v1beta1.Coin add_fees = 2;
 
   // remove_denoms are the coin denoms to be removed from the allowed basket creation fees.
   repeated string remove_denoms = 3;
-
-  // Fee represents a fee to be used in the basket creation fee.
-  message Fee {
-    // denom is the coin denom
-    string denom = 1;
-    // amount is the amount of the coin needed to create the basket.
-    string amount = 2;
-  }
 }
 
 // MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.

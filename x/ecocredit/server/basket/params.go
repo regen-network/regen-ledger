@@ -34,7 +34,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *basket.MsgUpdateBasket
 	for _, fee := range req.AddFees {
 		if err = store.Insert(ctx, &api.BasketFee{
 			Denom:  fee.Denom,
-			Amount: fee.Amount,
+			Amount: fee.Amount.String(),
 		}); err != nil {
 			return nil, err
 		}

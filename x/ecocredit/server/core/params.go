@@ -99,9 +99,9 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 
 	store := k.stateStore.CreditClassFeeTable()
 
-	for _, fee := range req.RemoveFees {
+	for _, denom := range req.RemoveDenoms {
 		if err = store.Delete(ctx, &ecocreditv1.CreditClassFee{
-			Denom: fee.Denom,
+			Denom: denom,
 		}); err != nil {
 			return nil, err
 		}
@@ -110,7 +110,7 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 	for _, fee := range req.AddFees {
 		if err = store.Insert(ctx, &ecocreditv1.CreditClassFee{
 			Denom:  fee.Denom,
-			Amount: fee.Amount,
+			Amount: fee.Amount.String(),
 		}); err != nil {
 			return nil, err
 		}

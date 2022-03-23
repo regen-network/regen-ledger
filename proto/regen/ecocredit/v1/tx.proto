@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/v1/state.proto";
 
@@ -375,18 +376,10 @@ message MsgUpdateCreditClassFeeRequest {
   string root_address = 1;
 
   // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
-  repeated Fee add_fees = 2;
+  repeated cosmos.base.v1beta1.Coin add_fees = 2;
 
   // remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
-  repeated Fee remove_fees = 3;
-
-  // Fee represents a fee to be used in the credit class creation fee.
-  message Fee {
-    // denom is the coin denom
-    string denom = 1;
-    // amount is the amount of the coin needed to create the credit class.
-    string amount = 2;
-  }
+  repeated string remove_denoms = 3;
 }
 
 // MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFee response type
