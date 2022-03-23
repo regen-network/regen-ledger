@@ -7,7 +7,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -235,11 +234,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
 
-	marketplaceSS, err := marketplaceapi.NewStateStore(s.db)
-	if err != nil {
-		panic(err)
-	}
-	s.marketplaceKeeper = marketplace.NewKeeper(marketplaceSS, ss, bankKeeper, s.paramSpace)
+	s.marketplaceKeeper = marketplace.NewKeeper(s.db, ss, bankKeeper, s.paramSpace)
 
 	return s
 }

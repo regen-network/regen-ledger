@@ -1,6 +1,7 @@
 package marketplace
 
 import (
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 
@@ -19,10 +20,15 @@ type Keeper struct {
 	params     ecocredit.ParamKeeper
 }
 
-func NewKeeper(ss marketplaceapi.StateStore, cs ecocreditapi.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
+func NewKeeper(db ormdb.ModuleDB, cs ecocreditapi.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
+	marketplaceStore, err := marketplaceapi.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+
 	return Keeper{
 		coreStore:  cs,
-		stateStore: ss,
+		stateStore: marketplaceStore,
 		bankKeeper: bk,
 		params:     params,
 	}
