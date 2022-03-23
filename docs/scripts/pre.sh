@@ -11,8 +11,12 @@ for D in ../x/*; do
   fi
 done
 
+cp MODULES.md modules/README.md
+
 # regen app command-line documentation
 
 rm -rf commands
 mkdir -p commands
 go run ../scripts/generate-cli-docs.go
+
+cp COMMANDS.md commands/README.md

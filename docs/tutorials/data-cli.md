@@ -3,7 +3,7 @@
 We will interact with Regen's [Data module](./modules/data/), also called `x/data`, in the example. The Data module allows a user to anchor any piece of data on the blockchain, by storing its hash on-chain. `x/data` uses the [CID](https://github.com/multiformats/cid) specification for addressing the hash of this data.
 
 ::: tip
-All the commands below work if you're connecting to a [remote node](./getting-started/live-networks) (with the `--node` flag) or to a [local node](./getting-started).
+All the commands below work if you're connecting to a [remote node](../getting-started/live-networks) (with the `--node` flag) or to a [local node](../getting-started).
 :::
 
 ### Create a KeyPair
