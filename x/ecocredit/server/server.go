@@ -7,19 +7,17 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
-
-	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-
-	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
 )
 
@@ -237,7 +235,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
 
-	marketplaceSS, err := marketplacev1.NewStateStore(s.db)
+	marketplaceSS, err := marketplaceapi.NewStateStore(s.db)
 	if err != nil {
 		panic(err)
 	}

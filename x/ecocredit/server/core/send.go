@@ -44,7 +44,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if err != nil {
 		return err
 	}
-	creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
+	creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
 	if err != nil {
 		return err
 	}

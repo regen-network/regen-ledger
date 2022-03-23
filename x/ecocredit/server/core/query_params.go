@@ -16,7 +16,7 @@ import (
 func (k Keeper) Params(ctx context.Context, _ *core.QueryParamsRequest) (*core.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params ecocredit.Params
-	k.params.GetParamSet(sdkCtx, &params)
+	k.paramsKeeper.GetParamSet(sdkCtx, &params)
 	v1beta1types := make([]*core.CreditType, len(params.CreditTypes))
 	for i, typ := range params.CreditTypes {
 		v1beta1types[i] = &core.CreditType{

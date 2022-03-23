@@ -5,7 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -37,7 +38,7 @@ func GetCreditType(ctAbbrev string, creditTypes []*ecocredit.CreditType) (ecocre
 }
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (ecocredit.CreditType, error) {
+func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, k ecocredit.ParamKeeper, denom string) (ecocredit.CreditType, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)

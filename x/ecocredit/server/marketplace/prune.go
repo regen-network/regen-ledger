@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
@@ -18,7 +18,7 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
-	fromKey, toKey := marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplacev1.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
+	fromKey, toKey := marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {
 		return err

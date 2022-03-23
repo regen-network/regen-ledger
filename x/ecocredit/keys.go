@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
+	ormapi "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
@@ -171,8 +171,8 @@ func IterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 	}
 }
 
-var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
-	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
+var ModuleSchema = ormapi.ModuleSchemaDescriptor{
+	SchemaFile: []*ormapi.ModuleSchemaDescriptor_FileEntry{
 		{Id: 1, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
 		{Id: 2, ProtoFileName: basketapi.File_regen_ecocredit_basket_v1_state_proto.Path()},
 		{Id: 3, ProtoFileName: marketApi.File_regen_ecocredit_marketplace_v1_state_proto.Path()},
