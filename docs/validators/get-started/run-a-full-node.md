@@ -1,6 +1,6 @@
-# Running a Full Node
+# Run a Full Node
 
-This document provides instructions for running a full node for a [live network](./live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
+This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.17`
 
-For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
+For more information (including hardware recommendations), see [Prerequisites](prerequisites.md). 
 
 ## Quickstart
 
@@ -241,4 +241,4 @@ sudo systemctl enable cosmovisor.service
 
 ## Prepare Upgrade
 
-The next step will be to prepare your node for the upgrade process. See [Upgrade Overview](../migrations/upgrade.md) for more information.
+The next step will be to [create a validator](create-a-validator.md) and prepare your node for the [upgrade process](../migrations/upgrade.md).
