@@ -779,7 +779,7 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			projectLocation := args[1]
-			if err := utils.ValidateLocation(projectLocation); err != nil {
+			if err := ecocredit.ValidateLocation(projectLocation); err != nil {
 				return err
 			}
 

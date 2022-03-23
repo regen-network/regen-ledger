@@ -10,6 +10,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -25,7 +26,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var params core.Params
+	var params ecocredit.Params
 	k.params.GetParamSet(sdkCtx, &params)
 	if params.AllowlistEnabled && !k.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
@@ -37,7 +38,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := getCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := server.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +61,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	classID := core.FormatClassID(creditType.Abbreviation, seq)
+	classID := ecocredit.FormatClassID(creditType.Abbreviation, seq)
 
 	rowId, err := k.stateStore.ClassInfoTable().InsertReturningID(goCtx, &api.ClassInfo{
 		Name:       classID,
@@ -94,19 +95,6 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	return &core.MsgCreateClassResponse{ClassId: classID}, nil
-}
-
-// getCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
-func getCreditType(ctAbbrev string, creditTypes []*core.CreditType) (core.CreditType, error) {
-	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
-	for _, creditType := range creditTypes {
-		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
-		// be normalized here.
-		if creditType.Abbreviation == ctAbbrev {
-			return *creditType, nil
-		}
-	}
-	return core.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
 }
 
 func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {

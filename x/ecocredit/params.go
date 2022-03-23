@@ -1,9 +1,7 @@
-package core
+package ecocredit
 
 import (
 	"regexp"
-	"strings"
-	"unicode"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -42,7 +40,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
-		// paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
+		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketCreationFee, validateBasketCreationFee),
 	}
 }
 
@@ -64,9 +62,9 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	// if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
-	// 	return err
-	// }
+	if err := validateBasketCreationFee(p.BasketCreationFee); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -190,7 +188,7 @@ func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bo
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		CreditTypes:          creditTypes,
-		// BasketCreationFee:    basketCreationFee,
+		BasketCreationFee:    basketCreationFee,
 	}
 }
 
@@ -210,20 +208,4 @@ func DefaultParams() Params {
 		},
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	)
-}
-
-// Normalize credit type name by removing whitespace and converting to lowercase
-func NormalizeCreditTypeName(name string) string {
-	return fastRemoveWhitespace(strings.ToLower(name))
-}
-
-func fastRemoveWhitespace(str string) string {
-	var b strings.Builder
-	b.Grow(len(str))
-	for _, ch := range str {
-		if !unicode.IsSpace(ch) {
-			b.WriteRune(ch)
-		}
-	}
-	return b.String()
 }

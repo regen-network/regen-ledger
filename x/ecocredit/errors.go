@@ -1,8 +1,6 @@
-package core
+package ecocredit
 
 import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
-const ModuleName = "ecocredit"
 
 var (
 	ErrParseFailure      = sdkerrors.Register(ModuleName, 2, "parse error")

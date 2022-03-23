@@ -8,7 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	v1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -16,10 +16,10 @@ func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *v1.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*v1.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
@@ -55,7 +55,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 	any := gomock.Any()
 
 	// allowlist = true and sender is not in allowlist
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *v1.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
 	}).Times(1)
@@ -73,10 +73,10 @@ func TestCreateClass_Sequence(t *testing.T) {
 	s := setupBase(t)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *v1.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*v1.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)

@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/address"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 const (
@@ -126,7 +125,7 @@ func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	}
 
 	if value.Cmp(x) == -1 {
-		return core.ErrInsufficientFunds
+		return ErrInsufficientFunds
 	}
 
 	value, err = math.SafeSubBalance(value, x)

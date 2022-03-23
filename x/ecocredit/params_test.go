@@ -1,4 +1,4 @@
-package core
+package ecocredit
 
 import (
 	"fmt"
@@ -21,6 +21,7 @@ func TestDefaultParams(t *testing.T) {
 				Precision:    PRECISION,
 			},
 		},
+		BasketCreationFee: sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	}
 	df := DefaultParams()
 
@@ -160,10 +161,11 @@ func Test_validateCreditTypes(t *testing.T) {
 			name: "wrong type",
 			args: []*ClassInfo{
 				{
-					Id:         1,
-					Admin:      []byte("0xdeadbeef"),
-					Metadata:   "",
-					CreditType: "BIO",
+					ClassId:    "foo",
+					Admin:      "0xdeadbeef",
+					Issuers:    []string{"not", "an", "address"},
+					Metadata:   nil,
+					CreditType: nil,
 				},
 			},
 			wantErr: true,

@@ -1,4 +1,4 @@
-package core
+package ecocredit
 
 import (
 	"fmt"
@@ -32,4 +32,3 @@ func ValidateProjectID(projectID string) error {
 func FormatProjectID(classID string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
 }
-

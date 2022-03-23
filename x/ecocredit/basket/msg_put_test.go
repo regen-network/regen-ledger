@@ -8,13 +8,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func TestMsgPut_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	t1, t2 := time.Now(), time.Now()
-	denom, err := core.FormatDenom("C02", 1, &t1, &t2)
+	denom, err := ecocredit.FormatDenom("C02", 1, &t1, &t2)
 	require.NoError(t, err)
 
 	type fields struct {

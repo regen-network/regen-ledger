@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -14,7 +15,7 @@ import (
 // will be gone with #729.
 func (k Keeper) Params(ctx context.Context, _ *core.QueryParamsRequest) (*core.QueryParamsResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var params core.Params
+	var params ecocredit.Params
 	k.params.GetParamSet(sdkCtx, &params)
 	v1beta1types := make([]*core.CreditType, len(params.CreditTypes))
 	for i, typ := range params.CreditTypes {

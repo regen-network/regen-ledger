@@ -1,4 +1,4 @@
-package core
+package ecocredit
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -6,15 +6,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/utils"
 )
 
 var (
-	_, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}, &MsgCreateProject{}
+	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}, &MsgCreateBasket{}, &MsgPickFromBasket{},
+		&MsgAddToBasket{}, &MsgTakeFromBasket{}
 
-	_, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}, &MsgCreateProject{}
+	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{},
+		&MsgCreateBasket{}, &MsgPickFromBasket{}, &MsgAddToBasket{}, &MsgTakeFromBasket{}
 )
 
 // MaxMetadataLength defines the max length of the metadata bytes field
@@ -48,8 +51,8 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
-	if len(m.CreditTypeAbbrev) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type abbreviation")
+	if len(m.CreditTypeName) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
 
@@ -122,7 +125,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 			}
 
 			if !retiredAmount.IsZero() {
-				if err = utils.ValidateLocation(iss.RetirementLocation); err != nil {
+				if err = ValidateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -179,7 +182,7 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = utils.ValidateLocation(credit.RetirementLocation); err != nil {
+			if err = ValidateLocation(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -224,7 +227,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if err := utils.ValidateLocation(m.Location); err != nil {
+	if err := ValidateLocation(m.Location); err != nil {
 		return err
 	}
 
@@ -327,17 +330,11 @@ func (m *MsgUpdateClassIssuers) ValidateBasic() error {
 		return err
 	}
 
-	if len(m.AddIssuers) == 0 && len(m.RemoveIssuers) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("add issuers and remove issuers cannot be empty")
+	if len(m.Issuers) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
-	for _, addr := range m.AddIssuers {
-		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
-			return sdkerrors.ErrInvalidAddress
-		}
-	}
-
-	for _, addr := range m.RemoveIssuers {
+	for _, addr := range m.Issuers {
 		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
 			return sdkerrors.ErrInvalidAddress
 		}
@@ -381,6 +378,181 @@ func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
 }
 
 // Route implements the LegacyMsg interface.
+func (m MsgSell) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgSell) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgSell) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgSell) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for _, order := range m.Orders {
+		if err := ValidateDenom(order.BatchDenom); err != nil {
+			return err
+		}
+
+		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
+		}
+
+		if order.AskPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price cannot be empty")
+		}
+
+		if err := order.AskPrice.Validate(); err != nil {
+			return err
+		}
+
+		if !order.AskPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgSell.
+func (m *MsgSell) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgUpdateSellOrders) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgUpdateSellOrders) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgUpdateSellOrders) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgUpdateSellOrders) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for _, update := range m.Updates {
+
+		if _, err := math.NewPositiveDecFromString(update.NewQuantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", update.NewQuantity)
+		}
+
+		if update.NewAskPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("new ask price cannot be empty")
+		}
+
+		if err := update.NewAskPrice.Validate(); err != nil {
+			return err
+		}
+
+		if !update.NewAskPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgUpdateSellOrders.
+func (m *MsgUpdateSellOrders) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgBuy) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgBuy) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgBuy) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgBuy) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for _, order := range m.Orders {
+
+		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
+		}
+
+		if order.BidPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("bid price cannot be empty")
+		}
+
+		if err := order.BidPrice.Validate(); err != nil {
+			return err
+		}
+
+		if !order.BidPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
+		}
+
+		if order.RetirementLocation != "" {
+			if err := ValidateLocation(order.RetirementLocation); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgBuy.
+func (m *MsgBuy) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Buyer)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgAllowAskDenom) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgAllowAskDenom) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgAllowAskDenom) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgAllowAskDenom) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := sdk.ValidateDenom(m.Denom); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgAllowAskDenom.
+func (m *MsgAllowAskDenom) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
 func (m MsgCreateProject) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
@@ -406,7 +578,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return ErrMaxLimit.Wrap("create project metadata")
 	}
 
-	if err := utils.ValidateLocation(m.ProjectLocation); err != nil {
+	if err := ValidateLocation(m.ProjectLocation); err != nil {
 		return err
 	}
 
@@ -422,5 +594,97 @@ func (m *MsgCreateProject) ValidateBasic() error {
 // GetSigners returns the expected signers for MsgCreateProject.
 func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgCreateBasket) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgCreateBasket) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgCreateBasket) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgCreateBasket) ValidateBasic() error {
+	// TODO: add MsgCreateBasket validation
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgCreateBasket.
+func (m *MsgCreateBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Curator)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgAddToBasket) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgAddToBasket) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgAddToBasket) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgAddToBasket) ValidateBasic() error {
+	// TODO: add MsgAddToBasket validation
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgAddToBasket.
+func (m *MsgAddToBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgPickFromBasket) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgPickFromBasket) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgPickFromBasket) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgPickFromBasket) ValidateBasic() error {
+	// TODO: add MsgPickFromBasket validation
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgPickFromBasket.
+func (m *MsgPickFromBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgTakeFromBasket) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgTakeFromBasket) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgTakeFromBasket) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgTakeFromBasket) ValidateBasic() error {
+	// TODO: add MsgTakeFromBasket validation
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgTakeFromBasket.
+func (m *MsgTakeFromBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
 }

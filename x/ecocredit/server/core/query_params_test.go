@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -24,11 +25,11 @@ func TestQuery_Params(t *testing.T) {
 		Precision:    6,
 	}))
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).SetArg(1, core.Params{
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).SetArg(1, ecocredit.Params{
 		CreditClassFee:       types.NewCoins(types.NewInt64Coin("foo", 30)),
 		AllowedClassCreators: []string{s.addr.String()},
 		AllowlistEnabled:     false,
-		CreditTypes: []*core.CreditType{{
+		CreditTypes: []*ecocredit.CreditType{{
 			Abbreviation: "C",
 			Name:         "carbon",
 			Unit:         "a ton",
