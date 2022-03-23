@@ -1,6 +1,6 @@
 # Regen Ledger
 
-![banner](docs/regen_ledger.png)
+![banner](docs/.vuepress/public/regen-ledger.png)
 
 [![Build status](https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
 [![Tests status](https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)

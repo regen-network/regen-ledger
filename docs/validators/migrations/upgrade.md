@@ -1,9 +1,9 @@
 # Upgrade Overview
 
-This document provides an overview of the upgrade process for software upgrades on [Regen Mainnet](../getting-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../getting-started/live-networks.md#redwood-testnet). Instructions for each upgrade can be found at the following links:
+This document provides an overview of the upgrade process for software upgrades on [Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) and [Redwood Testnet](../../ledger/get-started/live-networks.md#redwood-testnet). Instructions for each upgrade can be found at the following links:
 
-- [Upgrade Guide v2.0](./v2.0-upgrade.md)
-- [Upgrade Guide v3.0](./v3.0-upgrade.md)
+- [Upgrade Guide v2.0](v2.0-upgrade.md)
+- [Upgrade Guide v3.0](v3.0-upgrade.md)
 
 ## Software Upgrade
 
