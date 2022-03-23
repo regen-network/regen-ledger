@@ -2,15 +2,17 @@ package core
 
 import (
 	"context"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Projects queries all projects from a given credit class.
 func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest) (*core.QueryProjectsResponse, error) {
-	pg, err := GogoPageReqToPulsarPageReq(request.Pagination)
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -30,12 +32,12 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 		}
 
 		var pi core.ProjectInfo
-		if err = PulsarToGogoSlow(info, &pi); err != nil {
+		if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
 			return nil, err
 		}
 		projectInfos = append(projectInfos, &pi)
 	}
-	pr, err := PulsarPageResToGogoPageRes(it.PageResponse())
+	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}

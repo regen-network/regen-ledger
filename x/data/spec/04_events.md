@@ -1,3 +1,5 @@
 # Events
 
-The `data` module emits events defined in [the Protobuf reference](./protobuf.html#regen-data-v1alpha2-events-proto).
+The data module emits events defined in the Protobuf definitions:
+
+- [regen.data.v1](https://buf.build/regen/regen-ledger/docs/main/regen.data.v1)
