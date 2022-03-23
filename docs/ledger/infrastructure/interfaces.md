@@ -12,9 +12,9 @@ Each interface can be used to query the state. The command-line interface can be
 
 The most straightforward way to interact with a node is using the command-line interface.
 
-The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Quick Start](../getting-started/README.md), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/README.md).
+The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Get Started](../get-started/README.md), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../../tutorials/README.md).
 
-To learn more about the available commands, [install regen](../getting-started/README.md#install-regen) and run the following:
+To learn more about the available commands, [install regen](../get-started/README.md#install-regen) and run the following:
 
 ```bash
 regen --help
@@ -32,11 +32,11 @@ For query commands:
 regen query --help
 ```
 
-For more information about the CLI, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/master/run-node/interact-node.html).
+For a full list of the available commands, see [Commands](../../commands.md).
 
 ## gRPC Interface
 
-[gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. Regen Ledger uses gRPC primarily for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means you can query Regen Ledger state directly by using a gRPC library in your programming language of choice, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
+[gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. Regen Ledger uses gRPC primarily for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means you can query Regen Ledger state directly by using a gRPC library in your programming language of choice, in combination with Regen Ledger's protobuf definitions defined [here](https://buf.build/regen/regen-ledger).
 
 In addition to using a gRPC library, you can also use [grpcurl](https://github.com/fullstorydev/grpcurl) - a command-line tool that lets you interact with gRPC servers. If you have a local node running, you can list the protobuf services available using the following command:
 
