@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
@@ -40,4 +41,8 @@ type Keeper interface {
 
 type DistributionKeeper interface {
 	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+}
+
+type ParamKeeper interface {
+	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }

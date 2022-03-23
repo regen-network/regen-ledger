@@ -12,7 +12,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateBatch creates a new batch of credits.
@@ -63,7 +62,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batchDenom)
+	creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batchDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +70,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 	for _, issuance := range req.Issuance {
-		decs, err := server.GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
+		decs, err := GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}

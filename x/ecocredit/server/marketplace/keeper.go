@@ -1,10 +1,12 @@
 package marketplace
 
 import (
-	marketplacev1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // TODO: Revisit this once we have proper gas fee framework.
@@ -12,21 +14,25 @@ import (
 const gasCostPerIteration = uint64(10)
 
 type Keeper struct {
-	stateStore marketplacev1.StateStore
-	coreStore  ecocreditv1.StateStore
+	stateStore marketplaceapi.StateStore
+	coreStore  ecocreditapi.StateStore
 	bankKeeper ecocredit.BankKeeper
-	params     server.ParamKeeper
+	params     ecocredit.ParamKeeper
 }
 
-func NewKeeper(ss marketplacev1.StateStore, cs ecocreditv1.StateStore, bk ecocredit.BankKeeper, params server.ParamKeeper) Keeper {
+func NewKeeper(db ormdb.ModuleDB, cs ecocreditapi.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper) Keeper {
+	marketplaceStore, err := marketplaceapi.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
+
 	return Keeper{
 		coreStore:  cs,
-		stateStore: ss,
+		stateStore: marketplaceStore,
 		bankKeeper: bk,
 		params:     params,
 	}
 }
 
-// TODO: uncomment when impl
-// var _ v1.MsgServer = Keeper{}
-// var _ v1.QueryServer = Keeper{}
+var _ marketplace.MsgServer = Keeper{}
+var _ marketplace.QueryServer = Keeper{}
