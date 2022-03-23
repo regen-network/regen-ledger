@@ -17,7 +17,6 @@ module.exports = {
    * Ref：https://v1.vuepress.vuejs.org/config/#description
    */
   description: description,
-
   /**
    * Extra tags to be injected to the page HTML `<head>`
    *
@@ -38,7 +37,7 @@ module.exports = {
       {
         async: true,
         src: 'https://www.googletagmanager.com/gtag/js?id=' + process.env.GOOGLE_ANALYTICS_ID,
-      }
+      },
     ],
     [
       'script',
@@ -56,135 +55,158 @@ module.exports = {
    */
   themeConfig: {
     repo: 'regen-network/regen-ledger',
-    editLinks: false,
     docsDir: 'docs',
-    lastUpdated: false,
     nav: [
       {
-        text: 'Getting Started',
-        link: '/getting-started/',
-      }
+        text: 'Regen Ledger',
+        link: '/ledger/',
+      },
+      {
+        text: 'Modules',
+        link: '/modules/',
+      },
+      {
+        text: 'Validators',
+        link: '/validators/',
+      },
+      {
+        text: 'Commands',
+        link: '/commands/',
+      },
+      {
+        text: 'Tutorials',
+        link: '/tutorials/',
+      },
     ],
     sidebar: {
-      '/': [
+      '/ledger/': [
         {
           title: 'Introduction',
           collapsable: false,
           children: [
-            '/intro/',
-          ]
+            '/ledger/',
+          ],
         },
         {
-          title: 'Getting Started',
+          title: 'Get Started',
           collapsable: false,
           children: [
-            '/getting-started/',
-            '/getting-started/live-networks',
-            '/getting-started/running-a-full-node',
-            '/getting-started/running-a-validator',
-            '/getting-started/prerequisites'
+            '/ledger/get-started/',
+            '/ledger/get-started/live-networks',
+            '/ledger/get-started/prerequisites',
+          ],
+        },
+        {
+          title: 'Infrastructure',
+          collapsable: false,
+          children: [
+            '/ledger/infrastructure/',
+            '/ledger/infrastructure/interfaces',
+          ],
+        },
+      ],
+      '/modules/': [
+        {
+          title: 'Modules',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            {
+              title: 'List of Modules',
+              path: '/modules/',
+            },
+          ],
+        },
+        {
+          title: 'Ecocredit Module',
+          collapsable: false,
+          children: [
+            {
+              title: 'Overview',
+              path: '/modules/ecocredit/',
+            },
+            '/modules/ecocredit/01_concepts',
+            '/modules/ecocredit/02_state',
+            '/modules/ecocredit/03_messages',
+            '/modules/ecocredit/04_events',
+            '/modules/ecocredit/05_client',
+            {
+              title: 'Protobuf - Core',
+              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1',
+            },
+            {
+              title: 'Protobuf - Basket',
+              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1',
+            },
+            {
+              title: 'Protobuf - Marketplace',
+              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1',
+            },
+          ],
+        },
+        {
+          title: 'Data Module',
+          collapsable: false,
+          children: [
+            {
+              title: 'Overview',
+              path: '/modules/data/',
+            },
+            '/modules/data/01_concepts',
+            '/modules/data/02_state',
+            '/modules/data/03_messages',
+            '/modules/data/04_events',
+            '/modules/data/05_client',
+            {
+              title: 'Protobuf',
+              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.data.v1',
+            },
+          ],
+        },
+      ],
+      '/validators/': [
+        {
+          title: 'Validators',
+          collapsable: false,
+          children: [
+            {
+              title: 'Overview',
+              path: '/validators/',
+            },
+          ],
+        },
+        {
+          title: 'Get Started',
+          collapsable: false,
+          children: [
+            '/validators/get-started/run-a-full-node',
+            '/validators/get-started/create-a-validator',
+            '/validators/get-started/prerequisites',
           ]
         },
         {
           title: 'Migrations',
           collapsable: false,
           children: [
-            '/migrations/upgrade',
-            '/migrations/v2.0-upgrade',
-            '/migrations/v3.0-upgrade',
-          ]
+            '/validators/migrations/upgrade',
+            '/validators/migrations/v2.0-upgrade',
+            '/validators/migrations/v3.0-upgrade',
+          ],
         },
-        {
-          title: 'Regen Ledger',
-          collapsable: false,
-          children: [
-            '/regen-ledger/',
-            '/regen-ledger/interfaces',
-          ]
-        },
-        {
-          title: 'Modules',
-          collapsable: false,
-          children: [
-            {
-              title: 'Ecocredit Module',
-              collapsable: false,
-              children: [
-                {
-                  title: 'Overview',
-                  path: '/modules/ecocredit/'
-                },
-                '/modules/ecocredit/01_concepts',
-                '/modules/ecocredit/02_state',
-                '/modules/ecocredit/03_messages',
-                '/modules/ecocredit/04_events',
-                '/modules/ecocredit/05_client',
-                {
-                  title: 'Protobuf - Core',
-                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1'
-                },
-                {
-                  title: 'Protobuf - Basket',
-                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1'
-                },
-                {
-                  title: 'Protobuf - Marketplace',
-                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1'
-                }
-              ]
-            },
-            {
-              title: 'Data Module',
-              collapsable: false,
-              children: [
-                {
-                  title: 'Overview',
-                  path: '/modules/data/'
-                },
-                '/modules/data/01_concepts',
-                '/modules/data/02_state',
-                '/modules/data/03_messages',
-                '/modules/data/04_events',
-                '/modules/data/05_client',
-                {
-                  title: 'Protobuf',
-                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.data.v1'
-                }
-              ]
-            },
-            {
-              title: 'Group Module',
-              collapsable: false,
-              children: [
-                {
-                  title: 'Overview',
-                  path: '/modules/group/'
-                },
-                '/modules/group/01_concepts',
-                '/modules/group/02_state',
-                '/modules/group/03_messages',
-                '/modules/group/04_events',
-                // '/modules/group/05_client',
-                {
-                  title: 'Protobuf',
-                  path: 'https://buf.build/regen/regen-ledger/docs/main/regen.group.v1alpha1'
-                }
-              ]
-            },
-          ]
-        },
-        {
-          title: 'Tutorials',
-          collapsable: false,
-          children: [
-            '/tutorials/',
-            // '/tutorials/data-cli',
-            // '/tutorials/data-grpc',
-            '/tutorials/ibc-transfers'
-          ]
-        },
+      ],
+      '/commands/': [
         {
           title: 'Commands',
+          collapsable: false,
+          children: [
+            {
+              title: 'List of Commands',
+              path: '/commands/',
+            },
+          ],
+        },
+        {
+          title: 'Regen App',
           collapsable: false,
           sidebarDepth: 0,
           children: [
@@ -211,7 +233,32 @@ module.exports = {
           ]
         },
       ],
-    }
+      '/tutorials/': [
+        {
+          title: 'Tutorials',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            {
+              title: 'List of Tutorials',
+              path: '/tutorials/',
+            },
+          ],
+        },
+        {
+          title: 'User Tutorials',
+          collapsable: false,
+          children: [
+            '/tutorials/ibc-transfers',
+          ],
+        },
+        {
+          title: 'Developer Tutorials',
+          collapsable: false,
+          children: [],
+        },
+      ],
+    },
   },
   /**
    * Apply plugins，ref：https://v1.vuepress.vuejs.org/plugin/
