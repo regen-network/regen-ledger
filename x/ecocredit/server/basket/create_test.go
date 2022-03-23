@@ -7,30 +7,33 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
 func TestFeeToLow(t *testing.T) {
 	t.Parallel()
-
 	s := setupBase(t)
 	minFee := sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(100)))
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(minFee)
+	// no fee specified should fail
+	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{BasketCreationFee: minFee}})
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Fee: nil,
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(minFee)
+	// fee too low
+	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
+		BasketCreationFee: minFee,
+	}})
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Fee: sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(20))),
 	})
@@ -40,31 +43,26 @@ func TestFeeToLow(t *testing.T) {
 func TestBadCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
-	s.ecocreditKeeper.EXPECT().CreditTypes(gomock.Any(), gomock.Any()).Return(
-		&ecocredit.QueryCreditTypesResponse{CreditTypes: []*ecocredit.CreditType{
-			{Abbreviation: "B"}, {Abbreviation: "C"},
-		}}, nil,
-	)
+	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
+		BasketCreationFee: sdk.Coins{basketFee},
+		CreditTypes:       []*core.CreditType{{Abbreviation: "A", Precision: 6}},
+	}}).Times(2)
+	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).Times(2)
+
+	// non-existent credit type should fail
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "F",
 	})
 	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
-	s.ecocreditKeeper.EXPECT().CreditTypes(gomock.Any(), gomock.Any()).Return(
-		&ecocredit.QueryCreditTypesResponse{CreditTypes: []*ecocredit.CreditType{
-			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
-		}}, nil,
-	)
+	// exponent < precision should fail
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
-		Exponent:         3,
+		Exponent:         2,
 	})
 	assert.ErrorContains(t, err, "exponent")
 }
@@ -72,12 +70,13 @@ func TestBadCreditType(t *testing.T) {
 func TestDuplicateDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-
+	fee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 	mc := baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "foo",
+		Fee:              sdk.Coins{fee},
 	}
 	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
@@ -85,29 +84,31 @@ func TestDuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
+	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{
+		Params: &core.Params{BasketCreationFee: sdk.Coins{fee},
+			CreditTypes: []*core.CreditType{{Precision: 6, Abbreviation: "C"}},
+		},
+	}).Times(1)
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
-	s.ecocreditKeeper.EXPECT().CreditTypes(gomock.Any(), gomock.Any()).Return(
-		&ecocredit.QueryCreditTypesResponse{CreditTypes: []*ecocredit.CreditType{
-			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
-		}}, nil,
-	)
+
 	_, err = s.k.Create(s.ctx, &mc)
 	assert.ErrorContains(t, err, "unique")
 }
 
-func TestMissingClass(t *testing.T) {
+func TestBadClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	mockAny := gomock.Any()
+	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
+	s.ecocreditKeeper.EXPECT().Params(mockAny, mockAny).Return(&core.QueryParamsResponse{Params: &core.Params{
+		BasketCreationFee: basketFee,
+		CreditTypes:       []*core.CreditType{{Abbreviation: "C", Precision: 6}},
+	},
+	})
+	s.ecocreditKeeper.EXPECT().ClassInfo(mockAny, mockAny).Return(nil, fmt.Errorf("not found"))
+	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny)
 
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
-	s.ecocreditKeeper.EXPECT().CreditTypes(gomock.Any(), gomock.Any()).Return(
-		&ecocredit.QueryCreditTypesResponse{CreditTypes: []*ecocredit.CreditType{
-			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
-		}}, nil,
-	)
-	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), gomock.Any()).Return(false)
+	// class doesn't exist
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
@@ -115,21 +116,25 @@ func TestMissingClass(t *testing.T) {
 		Name:             "foo",
 		AllowedClasses:   []string{"bar"},
 	})
-	assert.ErrorContains(t, err, "doesn't exist")
+	assert.ErrorContains(t, err, "could not get credit class")
+
+	// mismatch credit type and class's credit type
+	s.ecocreditKeeper.EXPECT().ClassInfo(mockAny, mockAny).Return(&core.QueryClassInfoResponse{Info: &core.ClassInfo{CreditType: "B"}}, nil)
+	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
+		Curator:          s.addr.String(),
+		CreditTypeAbbrev: "C",
+		Exponent:         6,
+		Name:             "foo",
+		AllowedClasses:   []string{"bar"},
+	})
+	assert.ErrorContains(t, err, "basket specified credit type C but class bar is of type B")
 }
 
 func TestGoodBasket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-
-	s.ecocreditKeeper.EXPECT().GetCreateBasketFee(gomock.Any()).Return(nil) // nil fee
+	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
-	s.ecocreditKeeper.EXPECT().CreditTypes(gomock.Any(), gomock.Any()).Return(
-		&ecocredit.QueryCreditTypesResponse{CreditTypes: []*ecocredit.CreditType{
-			{Abbreviation: "B", Precision: 3}, {Abbreviation: "C", Precision: 6},
-		}}, nil,
-	)
-	s.ecocreditKeeper.EXPECT().HasClassInfo(gomock.Any(), "bar").Return(true)
 	seconds := time.Hour * 24 * 356 * 5
 	dateCriteria := &baskettypes.DateCriteria{
 		StartDateWindow: gogotypes.DurationProto(seconds),
@@ -150,6 +155,13 @@ func TestGoodBasket(t *testing.T) {
 			}},
 		},
 	)
+	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
+		BasketCreationFee: fee,
+		CreditTypes:       []*core.CreditType{{Abbreviation: "C", Precision: 6}},
+	}})
+	s.ecocreditKeeper.EXPECT().ClassInfo(gomock.Any(), gomock.Any()).Return(&core.QueryClassInfoResponse{Info: &core.ClassInfo{
+		CreditType: "C",
+	}}, nil)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),

@@ -10,6 +10,7 @@ import (
 	types "github.com/cosmos/cosmos-sdk/types"
 	types0 "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	types2 "github.com/cosmos/cosmos-sdk/x/params/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -295,4 +296,39 @@ func (m *MockDistributionKeeper) FundCommunityPool(ctx types.Context, amount typ
 func (mr *MockDistributionKeeperMockRecorder) FundCommunityPool(ctx, amount, sender interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FundCommunityPool", reflect.TypeOf((*MockDistributionKeeper)(nil).FundCommunityPool), ctx, amount, sender)
+}
+
+// MockParamKeeper is a mock of ParamKeeper interface.
+type MockParamKeeper struct {
+	ctrl     *gomock.Controller
+	recorder *MockParamKeeperMockRecorder
+}
+
+// MockParamKeeperMockRecorder is the mock recorder for MockParamKeeper.
+type MockParamKeeperMockRecorder struct {
+	mock *MockParamKeeper
+}
+
+// NewMockParamKeeper creates a new mock instance.
+func NewMockParamKeeper(ctrl *gomock.Controller) *MockParamKeeper {
+	mock := &MockParamKeeper{ctrl: ctrl}
+	mock.recorder = &MockParamKeeperMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockParamKeeper) EXPECT() *MockParamKeeperMockRecorder {
+	return m.recorder
+}
+
+// GetParamSet mocks base method.
+func (m *MockParamKeeper) GetParamSet(ctx types.Context, ps types2.ParamSet) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "GetParamSet", ctx, ps)
+}
+
+// GetParamSet indicates an expected call of GetParamSet.
+func (mr *MockParamKeeperMockRecorder) GetParamSet(ctx, ps interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParamSet", reflect.TypeOf((*MockParamKeeper)(nil).GetParamSet), ctx, ps)
 }

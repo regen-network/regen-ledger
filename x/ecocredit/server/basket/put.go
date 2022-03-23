@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -40,7 +41,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	for _, credit := range req.Credits {
 		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut iteration")
 		// get credit batch info
-		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
+		res, err := k.ecocreditKeeper.BatchInfo(ctx, &core.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
 			if orm.ErrNotFound.Is(err) {
 				return nil, sdkerrors.ErrNotFound.Wrapf("%s batch not found", credit.BatchDenom)
@@ -100,7 +101,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *core.BatchInfo) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -119,21 +120,23 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
 
-		if batchInfo.StartDate.Before(minStartDate) {
+		timestamp := timestamppb.Timestamp{
+			Seconds: batchInfo.StartDate.Seconds,
+			Nanos:   batchInfo.StartDate.Nanos,
+		}
+		startDate := timestamp.AsTime()
+		if startDate.Before(minStartDate) {
 			return errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
 				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.String(), minStartDate.String())
 		}
 
 	}
 
-	projectRes, err := k.ecocreditKeeper.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: batchInfo.ProjectId})
-	if err != nil {
-		return err
-	}
-
-	classId := projectRes.Info.ClassId
+	classId := ecocredit.GetClassIdFromBatchDenom(batchInfo.BatchDenom)
 
 	// check credit class match
+	// TODO: do we even need to check the credit type at this point? theres no way the class
+	// 		would be accepted otherwise
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
 	if err != nil {
 		return err
@@ -141,47 +144,42 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	if !found {
 		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
 	}
-
-	// check credit type match
-	requiredCreditType := basket.CreditTypeAbbrev
-	res, err := k.ecocreditKeeper.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId})
-	if err != nil {
-		return err
-	}
-	gotCreditType := res.Info.CreditType.Abbreviation
-	if requiredCreditType != gotCreditType {
-		return errInvalidReq.Wrapf("cannot use credit of type %s in a basket that requires credit type %s", gotCreditType, requiredCreditType)
-	}
 	return nil
 }
 
 // transferToBasket updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecocredit.BatchInfo) error {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	store := sdkCtx.KVStore(k.storeKey)
-
-	// update the user balance
-	userBalanceKey := ecocredit.TradableBalanceKey(sender, ecocredit.BatchDenomT(batchInfo.BatchDenom))
-	userBalance, err := ecocredit.GetDecimal(store, userBalanceKey)
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *core.BatchInfo) error {
+	// update user balance, subtracting from their tradable balance
+	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Id)
+	if err != nil {
+		return ecocredit.ErrInsufficientFunds.Wrapf("could not get batch %s balance for %s", batchInfo.BatchDenom, sender.String())
+	}
+	tradable, err := regenmath.NewPositiveDecFromString(userBal.Tradable)
 	if err != nil {
 		return err
 	}
-	newUserBalance, err := regenmath.SafeSubBalance(userBalance, amt)
+	newTradable, err := regenmath.SafeSubBalance(tradable, amt)
 	if err != nil {
+		return ecocredit.ErrInsufficientFunds.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
+	}
+	userBal.Tradable = newTradable.String()
+	if err = k.coreStore.BatchBalanceTable().Save(ctx, userBal); err != nil {
 		return err
 	}
-	ecocredit.SetDecimal(store, userBalanceKey, newUserBalance)
 
-	// update basket balance with amount sent
+	// update basket balance with amount sent, adding to the basket's balance.
 	var bal *api.BasketBalance
 	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batchInfo.BatchDenom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
-				BasketId:       basket.Id,
-				BatchDenom:     batchInfo.BatchDenom,
-				Balance:        amt.String(),
-				BatchStartDate: timestamppb.New(*batchInfo.StartDate),
+				BasketId:   basket.Id,
+				BatchDenom: batchInfo.BatchDenom,
+				Balance:    amt.String(),
+				BatchStartDate: &timestamppb.Timestamp{
+					Seconds: batchInfo.StartDate.Seconds,
+					Nanos:   batchInfo.StartDate.Nanos,
+				},
 			}
 		} else {
 			return err

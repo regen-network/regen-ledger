@@ -9,14 +9,19 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	rgCtx := types.UnwrapSDKContext(ctx)
-	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
+	res, err := k.ecocreditKeeper.Params(ctx, &core.QueryParamsRequest{})
+	if err != nil {
+		return nil, err
+	}
+	params := res.Params
+	fee := params.BasketCreationFee
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 	}
@@ -29,7 +34,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
+	if err = validateCreditType(params.CreditTypes, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
 	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
@@ -49,7 +54,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = k.indexAllowedClasses(rgCtx, id, msg.AllowedClasses); err != nil {
+	if err = k.indexAllowedClasses(rgCtx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err
 	}
 
@@ -85,13 +90,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
 // it's precision is bigger then the requested exponent.
-func validateCreditType(ctx context.Context, k EcocreditKeeper, creditTypeAbbr string, exponent uint32) error {
-	res, err := k.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
-	if err != nil {
-		return err
-	}
-
-	for _, c := range res.CreditTypes {
+func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, exponent uint32) error {
+	for _, c := range creditTypes {
 		if c.Abbreviation == creditTypeAbbr {
 			if c.Precision > exponent {
 				return sdkerrors.ErrInvalidRequest.Wrapf(
@@ -106,20 +106,27 @@ func validateCreditType(ctx context.Context, k EcocreditKeeper, creditTypeAbbr s
 	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", creditTypeAbbr)
 }
 
-func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedClasses []string) error {
+// indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
+// the class into the BasketClass table.
+func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
 	for _, class := range allowedClasses {
-		if !k.ecocreditKeeper.HasClassInfo(ctx, class) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
+		res, err := k.ecocreditKeeper.ClassInfo(ctx, &core.QueryClassInfoRequest{ClassId: class})
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
+		}
+
+		if res.Info.CreditType != creditTypeAbbr {
+			return sdkerrors.ErrInvalidRequest.Wrapf("basket specified credit type %s, but class %s is of type %s",
+				creditTypeAbbr, class, res.Info.CreditType)
 		}
 
 		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
-		err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
+		if err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
 			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,
 			},
-		)
-		if err != nil {
+		); err != nil {
 			return err
 		}
 	}
