@@ -1,70 +1,82 @@
 # Concepts
 
-## Credit Class
+## Ecocredit Core
 
-A credit class is the primary abstraction for ecosystem service credits and is defined by 5 attributes:
-- **credit class ID**: auto-generated, and auto incrementing
-- **admin**: The regen address who can update fields/attributes of this credit class
-- **issuer list**: The list of regen addresses who are allowed to issue credit batches under this credit class
-- **credit type**: The primary indicator for this credit class (e.g. Carbon measured in Tons Equiv. CO2 sequestered)
-- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the credit class's acceptable methodologies for monitoring changes in ecological state.
+### Credit Class
 
-Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
+A credit class is the primary abstraction for an ecosystem service credit. A credit class is associated with a credit type that represents the primary unit of measurement for the accepted methodologies included within the credit class. Information about the approved methodologies are typically stored off-chain, securely hashed, timestamped, and then included in the metadata field.
 
-## Project
+A credit class also defines an admin, an address with permission to update the credit class, and a list of approved issuers, addresses with permission to issue credit batches under the credit class.
 
-A project describes the high-level on-chain information for a project associated with a credit class. A project is defined by:
-- **project ID**: The unique ID of the project
-- **name***: The unique name of the project either formed from its credit class name and an auto-generated number or a custom name provided upon creation.
-- **class ID**: The unique ID of the credit class corresponding to this project (which determines what ecocredits can be issued to to this project)
-- **project location**: The location of the project backing the credits issued from this project
-- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the project.
+For more information about the properties of a credit class, see [ClassInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.ClassInfo).
 
-Each credit batch is associated with a project, backing each issuance with information about the project implementing the methodologies defined within the credit class. Over a project's lifecycle, it's expected that there may be many credit batches issued at different points in time (e.g. at the conclusion of each monitoring period). To ensure that only legitimate projects are registered on-chain, projects can only be created by an issuer for the given credit class.
+### Project
 
-## Credit Type
+A project describes the high-level on-chain information for a project implementing the approved methodologies defined within a credit class. Each credit batch is associated with a project, backing each issuance with information about the project.
 
-A credit type is the primary indicator used by the methodology to measure the change or impact resulting from an ecosystem service. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
+Over a project's lifecycle, it's expected that many credit batches will be issued at different points in time (e.g. at the conclusion of each monitoring period). To ensure that only legitimate projects are registered on-chain, projects can only be created by an issuer for the given credit class.
 
-The credit type abbreviation is used to construct the credit class ID. For example, "C1" is the ID for the first credit class that uses the "carbon" credit type where "C" is the credit type abbreviation and "1" is the sequence number of the credit class for the given credit type.
+For more information about the properties of a project, see [ProjectInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.ProjectInfo).
 
-Credit types are listed as an on-chain parameter. Adding a new credit type to the list of approved credit types requires a parameter change proposal.
+### Credit Type
 
-## Credit Class Creator Allowlist
+A credit type is the primary unit of measurement used by the approved methodologies defined within a credit class. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
 
-The ecocredit module supports the option of restricting credit class creation to a permissionned set of addresses. When enabled, this list of approved credit class creators is stored as an on-chain parameter that can only be updated through the governance process. Regen Ledger 2.0 is intended to launch with this allowlist enabled.
+The credit type abbreviation is used to construct the credit class ID. For example, `C01` is the ID for the first credit class that uses the `carbon` credit type where `C` is the credit type abbreviation and `01` is the sequence number (i.e. the first credit class for the given credit type).
 
-For users wanting to experiment with creating their own credit classes on testnets, the Hambach Testnet will support permissionless credit class creation so any user can create new credit classes and test out the ecocredit module's functionality.
+Credit types are listed as an on-chain parameter. Adding a new credit type to the list of allowed credit types requires a parameter change proposal.
 
-## Credit Class Admin
+For more information about the properties of a credit type, see [CreditType](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.CreditType).
 
-The credit class admin is defined within a credit class as the address with the authority to manage and update the credit class. When a new credit class is created, the admin is always initially set to the address that created the credit class. The credit class admin will have the ability to transfer the admin role to another address, manage the list of credit class issuers, and change credit class metadata.
+### Credit Class Creator Allowlist
 
-## Credit Issuers
+The ecocredit module supports the option of restricting credit class creation to a set of addresses. The option to enable the credit class creator allowlist and the list of allowed credit class creators are both on-chain parameters that can only be updated through parameter change proposals.
 
-The credit issuers are defined within a credit class as a list of addresses with the authority to mint new credits and issue credit batches of the corresponding credit class. The list of credit issuers are defined at the time the credit class is created. The credit class admin will be able to manage the list of credit issuers for the credit class that they administer.
+### Credit Class Admin
 
-## Credit Batch
+The credit class admin is defined within a credit class as the address with the authority to update the credit class (i.e. to update the admin, the list of approved issuers, and the metadata). When a credit class is created, the admin is initially set to the address that created the credit class.
+
+### Credit Class Issuers
+
+The credit class issuers are defined within a credit class as the addresses with the authority to issue credit batches from the credit class. The list of credit class issuers is defined at the time the credit class is created and only the admin can update the list after the credit class is created.
+
+### Credit Batch
 
 Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time.
 
-Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the reduction of carbon emissions was measured between `20190101` and `20200101`.
+Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the amount of carbon sequestered was measured between `20190101` and `20200101`.
 
-Each credit batch is associated with an on-chain project, linking information about the on-the-ground project implementing the methodologies defined within the credit class. Additional information about a specific batch can be attached to the batch's metadata field. When credits are issued, they can be issued in a tradable or retired state. The credit batch also tracks the total number of active credits (tradable and retired credits) and the total number of cancelled credits.
+Each credit batch is associated with an on-chain project, linking information about the on-the-ground project implementing the methodologies defined within the credit class. Additional information about a credit batch can be attached to the metadata field. When credits are issued, they can be issued in a tradable or retired state. The credit batch also tracks the total number of active credits (tradable and retired credits) and the total number of cancelled credits.
 
-## Credits
+For more information about the properties of a credit batch, see [BatchInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.BatchInfo).
 
-Credits are a loose term that refers to any fractional amount of a credit batch. Credits are either tradable or retired and each credit batch tracks the number of tradable and retired credits.
+### Credits
 
-## Tradable Credits
+Credits are issued in credit batches in either a tradable or retired state. The owner of tradable credits can send, retire, or cancel the credits at any time. Tradable credits are only fungible with credits from the same credit batch. Retiring a credit is permanent.
 
-Tradable credits are credits that can be transferred by the owner to another account.
+### Tradable Credits
 
-## Retired Credits
+Tradable credits are credits that the owner has full control over. Tradable credits can be transferred by the owner to another account, put into a basket in return for basket tokens (see [basket](#basket-submodule) for more information), or listed for sale in the marketplace, placing the credits in escrow until the sell order is either processed or cancelled (or the amount is updated).
 
-Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
+### Retired Credits
 
-## Simple Order Book
+Retiring a credit is equivalent to burning a token with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the owner of the credit is claiming it as an offset. Credits can be retired upon issuance, retired upon transfer, or retired directly by the owner. Credits can also be set to automatically retire when taken from a [basket](#basket-submodule) or sold in the marketplace. Retiring a credit is permanent.
+
+### Cancelled Credits
+
+Cancelled credits are credit that cannot be traded or retired. Credits are cancelled in the event that the credit has moved to another registry.
+
+## Basket Submodule
+
+### Basket
+
+...
+
+### Basket Tokens
+
+...
+
+## Marketplace Submodule
 
 The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution. In the current implementation of the order book, there is no automatic matching and users have to manually take the orders.
 
@@ -76,7 +88,7 @@ A sell order is an order to sell ecosystem service credits. Each sell order has 
 
 A buy order is an order to buy ecosystem service credits. Like the sell order, each buy order has a unique ID that is auto-generated using a sequence table. A buy order can either be a direct buy order (an order against a specific sell order) or an indirect buy order (an order that can be filled by multiple sell orders that match a filter criteria). A buy order stores the selection (either the sell order id or the filter criteria), the quantity of credits to buy, the bid price for each unit of the credit batch(es), an option to enable/disable auto-retirement, and an option to enable/disable partial fills. A buy order can only successfully disable auto-retirement if the sell-order has disabled auto-retirement.
 
-## Ask Denom
+### Ask Denom
 
 An "ask denom" is a denom that has been approved through a governance process as an accepted denom for listing ecosystem service credits. The "ask denom" includes the denom to allow (the base denom), the denom to display to the user, and an exponent that relates the denom to the display denom.
 
