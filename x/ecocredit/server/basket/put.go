@@ -139,6 +139,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
 	}
 
+	// check credit type match
 	class, err := k.coreStore.ClassInfoTable().GetByName(ctx, classId)
 	if err != nil {
 		return err
