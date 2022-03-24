@@ -16,7 +16,7 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) Anchor(goCtx context.Context, request *data.MsgAnchor) (*data.MsgAnchorResponse, error) {
+func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.MsgAnchorResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	iri, _, timestamp, err := s.anchorAndGetIRI(sdkCtx, request.Hash)
 	if err != nil {
@@ -119,9 +119,9 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
 	}
 
-	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventSignData{
-		Iri:     iri,
-		Signers: request.Attestors,
+	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
+		Iri:       iri,
+		Attestors: request.Attestors,
 	})
 	if err != nil {
 		return nil, err
