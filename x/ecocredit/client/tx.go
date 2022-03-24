@@ -534,7 +534,7 @@ func TxCreateProject() *cobra.Command {
 		Parameters:
 		class-id: id of the class
 		project-location: the location of the project (see documentation for proper project-location formats).
-		metadata: base64 encoded metadata - any arbitrary metadata attached to the project.
+		metadata: any arbitrary metadata attached to the project.
 		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
 		`,
 		Args: cobra.ExactArgs(3),
@@ -558,11 +558,6 @@ func TxCreateProject() *cobra.Command {
 				return errors.New("metadata is required")
 			}
 
-			b, err := decodeMetadata(args[2])
-			if err != nil {
-				return err
-			}
-
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -573,11 +568,11 @@ func TxCreateProject() *cobra.Command {
 				return err
 			}
 
-			msg := ecocredit.MsgCreateProject{
+			msg := core.MsgCreateProject{
 				Issuer:          clientCtx.GetFromAddress().String(),
 				ClassId:         classID,
 				ProjectLocation: projectLocation,
-				Metadata:        b,
+				Metadata:        args[2],
 				ProjectId:       projectId,
 			}
 
