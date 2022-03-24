@@ -180,7 +180,7 @@ func validateBasketCreationFee(i interface{}) error {
 }
 
 // NewParams creates a new Params object.
-func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType, basketCreationFee sdk.Coins) Params {
+func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
@@ -194,6 +194,7 @@ func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bo
 func DefaultParams() Params {
 	return NewParams(
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 		[]string{},
 		false,
 		[]*CreditType{
@@ -204,6 +205,5 @@ func DefaultParams() Params {
 				Precision:    PRECISION,
 			},
 		},
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 	)
 }
