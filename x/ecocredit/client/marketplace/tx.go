@@ -1,6 +1,7 @@
 package marketplace
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -140,6 +141,8 @@ Parameters:
 			if err := yaml.Unmarshal([]byte(args[0]), &strOrders); err != nil {
 				return err
 			}
+
+			fmt.Println(strOrders)
 
 			orders := make([]*marketplace.MsgSell_Order, len(strOrders))
 

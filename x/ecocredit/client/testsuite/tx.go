@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -40,7 +42,7 @@ type IntegrationTestSuite struct {
 }
 
 const (
-	validCreditType = "carbon"
+	validCreditType = "C"
 	classId         = "C01"
 	batchDenom      = "C01-20210101-20210201-001"
 )
@@ -117,7 +119,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			append(
 				[]string{
 					val.Address.String(),
-					"C",
+					validCreditType,
 					validMetadata,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				},
@@ -135,8 +137,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.classInfo = &core.ClassInfo{
 		Id:         1,
 		Admin:      val.Address,
-		Name:       "C01",
-		CreditType: "C",
+		Name:       classId,
+		CreditType: validCreditType,
 		Metadata:   validMetadata,
 	}
 
@@ -197,19 +199,18 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().Equal(uint32(0), txResp.Code, out.String())
 	}
 
-	
-	res, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.QueryBatchesCmd(), []string{"C01"})
+	res, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.QueryBatchesCmd(), []string{s.projectID})
 	s.Require().NoError(err)
 	fmt.Println(res)
 
 	// Store the first one in the test suite
-	// s.batchInfo = &core.BatchInfo{
-	// 	ProjectId:  1,
-	// 	BatchDenom: batchDenom,
-	// 	Metadata:   "abcd",
-	// 	StartDate:  startDate,
-	// 	EndDate:    &endDate,
-	// }
+	s.batchInfo = &core.BatchInfo{
+		ProjectId:  1,
+		BatchDenom: batchDenom,
+		Metadata:   "abcd",
+		StartDate:  &gogotypes.Timestamp{Seconds: startDate.Unix()},
+		EndDate:    &gogotypes.Timestamp{Seconds: endDate.Unix()},
+	}
 
 	// Create a few sell orders
 	out, err = cli.ExecTestCLICmd(val.ClientCtx, marketplaceclient.TxSellCmd(),
