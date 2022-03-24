@@ -16,14 +16,14 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(ctx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
+func (s serverImpl) Anchor(goCtx context.Context, request *data.MsgAnchor) (*data.MsgAnchorResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	iri, _, timestamp, err := s.anchorAndGetIRI(sdkCtx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgAnchorDataResponse{
+	return &data.MsgAnchorResponse{
 		Timestamp: timestamp,
 		Iri:       iri,
 	}, nil
@@ -74,7 +74,7 @@ func (s serverImpl) anchorAndGetTimestamp(sdkCtx sdk.Context, id []byte, iri str
 
 	store.Set(key, bz)
 
-	return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
+	return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{Iri: iri})
 }
 
 func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
@@ -88,7 +88,7 @@ func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
 
 var trueBz = []byte{1}
 
-func (s serverImpl) SignData(ctx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
+func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.MsgAttestResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	iri, id, timestamp, err := s.anchorAndGetIRI(sdkCtx, request.Hash)
 	if err != nil {
@@ -101,33 +101,33 @@ func (s serverImpl) SignData(ctx context.Context, request *data.MsgSignData) (*d
 		return nil, err
 	}
 
-	for _, signer := range request.Signers {
-		addr, err := cosmossdk.AccAddressFromBech32(signer)
+	for _, attestor := range request.Attestors {
+		addr, err := cosmossdk.AccAddressFromBech32(attestor)
 		if err != nil {
 			return nil, err
 		}
 
-		key := IDSignerTimestampKey(id, addr)
+		key := IDAttestorTimestampKey(id, addr)
 		if store.Has(key) {
 			continue
 		}
 
 		store.Set(key, timestampBz)
 		// set reverse lookup key
-		store.Set(SignerIDKey(addr, id), trueBz)
+		store.Set(AttestorIDKey(addr, id), trueBz)
 
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventSignData{
 		Iri:     iri,
-		Signers: request.Signers,
+		Signers: request.Attestors,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgSignDataResponse{}, nil
+	return &data.MsgAttestResponse{}, nil
 }
 
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
