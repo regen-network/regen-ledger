@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require := s.Require()
 
 	// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   s.hash,
 	})
@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   s.hash,
 	})
@@ -87,22 +87,22 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	ts := queryRes.Entry.Timestamp
 	require.NotNil(ts)
 
-	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
+	attestorsRes, err := s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
 	require.NoError(err)
-	require.Empty(signerRes.Signers)
+	require.Empty(attestorsRes.Attestors)
 	graphHash := s.hash.GetGraph()
 	iri, err = graphHash.ToIRI()
 	require.NoError(err)
 	require.Equal(iri, queryRes.Entry.Iri)
 
-	// can sign data
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
-		Signers: []string{s.addr1.String()},
-		Hash:    graphHash,
+	// can attest to data
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestors: []string{s.addr1.String()},
+		Hash:      graphHash,
 	})
 	require.NoError(err)
 
-	// can retrieve signature, same timestamp
+	// can retrieve attestor, same timestamp
 	// can query data and get timestamp
 	iri, err = s.hash.ToIRI()
 	require.NoError(err)
@@ -110,37 +110,37 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
-	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri, Pagination: nil})
+	attestorsRes, err = s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: iri, Pagination: nil})
 	require.NoError(err)
-	require.Len(signerRes.Signers, 1)
-	require.Equal(s.addr1.String(), signerRes.Signers[0])
+	require.Len(attestorsRes.Attestors, 1)
+	require.Equal(s.addr1.String(), attestorsRes.Attestors[0])
 
-	// query data by signer
-	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
-		Signer: s.addr1.String(),
+	// query data by attestor
+	byAttestorsRes, err := s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
+		Attestor: s.addr1.String(),
 	})
 	require.NoError(err)
-	require.NotNil(bySignerRes)
-	require.Len(bySignerRes.Entries, 1)
-	require.Equal(queryRes.Entry, bySignerRes.Entries[0])
+	require.NotNil(byAttestorsRes)
+	require.Len(byAttestorsRes.Entries, 1)
+	require.Equal(queryRes.Entry, byAttestorsRes.Entries[0])
 
-	// another signer can sign
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
-		Signers: []string{s.addr2.String()},
-		Hash:    graphHash,
+	// another attestor can attest
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestors: []string{s.addr2.String()},
+		Hash:      graphHash,
 	})
 	require.NoError(err)
 
-	// query data by signer
-	bySignerRes, err = s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
-		Signer: s.addr2.String(),
+	// query data by attestor
+	byAttestorsRes, err = s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
+		Attestor: s.addr2.String(),
 	})
 	require.NoError(err)
-	require.NotNil(bySignerRes)
-	require.Len(bySignerRes.Entries, 1)
-	require.Equal(s.hash, bySignerRes.Entries[0].Hash)
+	require.NotNil(byAttestorsRes)
+	require.Len(byAttestorsRes.Entries, 1)
+	require.Equal(s.hash, byAttestorsRes.Entries[0].Hash)
 
-	// query and get both signatures
+	// query and get both attestations
 	iri, err = s.hash.ToIRI()
 	require.NoError(err)
 	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
@@ -150,15 +150,15 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	iri2, err := s.hash.ToIRI()
 	require.NoError(err)
-	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri2, Pagination: nil})
+	attestorsRes, err = s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: iri2, Pagination: nil})
 	require.NoError(err)
-	require.Len(signerRes.Signers, 2)
-	signers := make([]string, len(signerRes.Signers))
-	for _, signer := range signerRes.Signers {
-		signers = append(signers, signer)
+	require.Len(attestorsRes.Attestors, 2)
+	attestors := make([]string, len(attestorsRes.Attestors))
+	for _, attestor := range attestorsRes.Attestors {
+		attestors = append(attestors, attestor)
 	}
-	require.Contains(signers, s.addr1.String())
-	require.Contains(signers, s.addr2.String())
+	require.Contains(attestors, s.addr1.String())
+	require.Contains(attestors, s.addr2.String())
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 
 	// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -202,8 +202,8 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	ts := queryRes.Entry.Timestamp
 	require.NotNil(ts)
 
-	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
-	require.Empty(signerRes.Signers)
+	attestorsRes, err := s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
+	require.Empty(attestorsRes.Attestors)
 
 	// can retrieve same timestamp, and data
 	iri, err = contentHash.ToIRI()
