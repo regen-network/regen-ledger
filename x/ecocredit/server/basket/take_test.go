@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -14,7 +15,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
@@ -23,6 +23,7 @@ type takeSuite struct {
 	*baseSuite
 	fooBasketId uint64
 	barBasketId uint64
+	denomToId   map[string]uint64
 }
 
 func setupTake(t *testing.T) *takeSuite {
@@ -42,19 +43,19 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
-		BatchDenom:     "C1",
+		BatchDenom:     "C1-",
 		Balance:        "3.0",
 		BatchStartDate: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
-	s.setTradableSupply("C1", "3.0")
+	s.setTradableSupply(1, "3.0")
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
-		BatchDenom:     "C2",
+		BatchDenom:     "C2-",
 		Balance:        "5.0",
 		BatchStartDate: timestamppb.New(time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
-	s.setTradableSupply("C2", "5.0")
+	s.setTradableSupply(2, "5.0")
 
 	s.barBasketId, err = s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       "bar",
@@ -67,20 +68,31 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
-		BatchDenom:     "C3",
+		BatchDenom:     "C3-",
 		Balance:        "7.0",
 		BatchStartDate: timestamppb.New(time.Date(2018, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
-	s.setTradableSupply("C3", "7.0")
+	s.setTradableSupply(3, "7.0")
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
-		BatchDenom:     "C4",
+		BatchDenom:     "C4-",
 		Balance:        "4.0",
 		BatchStartDate: timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
-	s.setTradableSupply("C4", "4.0")
+	s.setTradableSupply(4, "4.0")
 
+	batchDenoms := []string{"C1-", "C2-", "C3-", "C4-"}
+	for _, denom := range batchDenoms {
+		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
+			ProjectId:  1,
+			BatchDenom: denom,
+			Metadata:   "",
+			StartDate:  nil,
+			EndDate:    nil,
+		}))
+	}
+	s.denomToId = map[string]uint64{"C1-": 1, "C2-": 2, "C3-": 3, "C4-": 4}
 	return s
 }
 
@@ -116,25 +128,25 @@ func TestTakeRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C2", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C2-", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "5.0", res.Credits[0].Amount)
-	assert.Equal(t, "C1", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C1-", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "1.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.fooBasketId, "C2")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.fooBasketId, "C2-")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.fooBasketId, "C1")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.fooBasketId, "C1-")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "2.0", balance.Balance)
 
-	s.expectTradableBalance("C1", "0")
-	s.expectTradableBalance("C2", "0")
-	s.expectRetiredBalance("C1", "1")
-	s.expectRetiredBalance("C2", "5")
-	s.expectTradableSupply("C1", "2")
-	s.expectTradableSupply("C2", "0")
-	s.expectRetiredSupply("C1", "1")
-	s.expectRetiredSupply("C2", "5")
+	s.expectTradableBalance("C1-", "0")
+	s.expectTradableBalance("C2-", "0")
+	s.expectRetiredBalance("C1-", "1")
+	s.expectRetiredBalance("C2-", "5")
+	s.expectTradableSupply("C1-", "2")
+	s.expectTradableSupply("C2-", "0")
+	s.expectRetiredSupply("C1-", "1")
+	s.expectRetiredSupply("C2-", "5")
 }
 
 func TestTakeTradable(t *testing.T) {
@@ -153,25 +165,25 @@ func TestTakeTradable(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C3", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C3-", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
-	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C4-", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "3.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "1.0", balance.Balance)
 
-	s.expectTradableBalance("C3", "7")
-	s.expectTradableBalance("C4", "3")
-	s.expectRetiredBalance("C3", "0")
-	s.expectRetiredBalance("C4", "0")
-	s.expectTradableSupply("C3", "7")
-	s.expectTradableSupply("C4", "4")
-	s.expectRetiredSupply("C3", "0")
-	s.expectRetiredSupply("C4", "0")
+	s.expectTradableBalance("C3-", "7")
+	s.expectTradableBalance("C4-", "3")
+	s.expectRetiredBalance("C3-", "0")
+	s.expectRetiredBalance("C4-", "0")
+	s.expectTradableSupply("C3-", "7")
+	s.expectTradableSupply("C4-", "4")
+	s.expectRetiredSupply("C3-", "0")
+	s.expectRetiredSupply("C4-", "0")
 }
 
 func TestTakeTooMuchTradable(t *testing.T) {
@@ -211,24 +223,24 @@ func TestTakeAllTradable(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C3", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C3-", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
-	assert.Equal(t, "C4", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C4-", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "4.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	_, err = s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4")
+	_, err = s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-")
 	assert.ErrorIs(t, err, ormerrors.NotFound)
 
-	s.expectTradableBalance("C3", "7")
-	s.expectTradableBalance("C4", "4")
-	s.expectRetiredBalance("C3", "0")
-	s.expectRetiredBalance("C4", "0")
-	s.expectTradableSupply("C3", "7")
-	s.expectTradableSupply("C4", "4")
-	s.expectRetiredSupply("C3", "0")
-	s.expectRetiredSupply("C4", "0")
+	s.expectTradableBalance("C3-", "7")
+	s.expectTradableBalance("C4-", "4")
+	s.expectRetiredBalance("C3-", "0")
+	s.expectRetiredBalance("C4-", "0")
+	s.expectTradableSupply("C3-", "7")
+	s.expectTradableSupply("C4-", "4")
+	s.expectRetiredSupply("C3-", "0")
+	s.expectRetiredSupply("C4-", "0")
 }
 
 func assertDecStringEqual(t *testing.T, expected, actual string) {
@@ -240,42 +252,75 @@ func assertDecStringEqual(t *testing.T, expected, actual string) {
 }
 
 func (s takeSuite) expectTradableBalance(batchDenom string, expected string) {
-	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(batchDenom)))
-	assert.NilError(s.t, err)
-	s.expectDec(expected, bal)
+	bal := s.getUserBalance(batchDenom)
+	s.expectDec(expected, bal.Tradable)
 }
 
 func (s takeSuite) expectRetiredBalance(batchDenom string, expected string) {
-	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.RetiredBalanceKey(s.addr, ecocredit.BatchDenomT(batchDenom)))
-	assert.NilError(s.t, err)
-	s.expectDec(expected, bal)
+	bal := s.getUserBalance(batchDenom)
+	s.expectDec(expected, bal.Retired)
 }
 
 func (s takeSuite) expectTradableSupply(batchDenom string, expected string) {
-	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)))
-	assert.NilError(s.t, err)
-	s.expectDec(expected, bal)
+	supply := s.getSupply(batchDenom)
+	s.expectDec(expected, supply.TradableAmount)
 }
 
 func (s takeSuite) expectRetiredSupply(batchDenom string, expected string) {
-	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	bal, err := ecocredit.GetDecimal(kvStore, ecocredit.RetiredSupplyKey(ecocredit.BatchDenomT(batchDenom)))
-	assert.NilError(s.t, err)
-	s.expectDec(expected, bal)
+	supply := s.getSupply(batchDenom)
+	s.expectDec(expected, supply.RetiredAmount)
 }
 
-func (s takeSuite) setTradableSupply(batchDenom string, amount string) {
-	kvStore := s.sdkCtx.KVStore(s.storeKey)
-	dec, err := math.NewDecFromString(amount)
-	assert.NilError(s.t, err)
-	ecocredit.SetDecimal(kvStore, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)), dec)
+func (s takeSuite) getSupply(batchDenom string) *ecocreditv1.BatchSupply {
+	id := s.denomToId[batchDenom]
+	supply, err := s.coreStore.BatchSupplyTable().Get(s.ctx, id)
+	if ormerrors.IsNotFound(err) {
+		supply = &ecocreditv1.BatchSupply{
+			BatchId:         id,
+			TradableAmount:  "0",
+			RetiredAmount:   "0",
+			CancelledAmount: "0",
+			EscrowedAmount:  "0",
+		}
+	} else {
+		assert.NilError(s.t, err)
+	}
+	return supply
 }
 
-func (s takeSuite) expectDec(expected string, actual math.Dec) {
-	dec, err := math.NewDecFromString(expected)
+func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
+	assert.NilError(s.t, s.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
+		BatchId:         batchId,
+		TradableAmount:  amount,
+		RetiredAmount:   "0",
+		CancelledAmount: "0",
+		EscrowedAmount:  "0",
+	}))
+}
+
+func (s takeSuite) getUserBalance(batchDenom string) *ecocreditv1.BatchBalance {
+	id := s.denomToId[batchDenom]
+	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, id)
+	if ormerrors.IsNotFound(err) {
+		bal = &ecocreditv1.BatchBalance{
+			Address:  s.addr,
+			BatchId:  id,
+			Tradable: "0",
+			Retired:  "0",
+			Escrowed: "0",
+		}
+	} else {
+		assert.NilError(s.t, err)
+	}
+	return bal
+}
+
+func (s takeSuite) expectDec(expected, actual string) {
+	actualDec, err := math.NewDecFromString(actual)
 	assert.NilError(s.t, err)
-	assert.Assert(s.t, actual.Cmp(dec) == 0)
+
+	expectedDec, err := math.NewDecFromString(expected)
+	assert.NilError(s.t, err)
+
+	assert.Assert(s.t, actualDec.Cmp(expectedDec) == 0)
 }

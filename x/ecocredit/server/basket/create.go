@@ -8,19 +8,15 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
-	rgCtx := types.UnwrapSDKContext(ctx)
-	res, err := k.ecocreditKeeper.Params(ctx, &core.QueryParamsRequest{})
-	if err != nil {
-		return nil, err
-	}
-	params := res.Params
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	var params core.Params
+	k.paramsKeeper.GetParamSet(sdkCtx, &params)
 	fee := params.BasketCreationFee
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
@@ -30,7 +26,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err = k.distKeeper.FundCommunityPool(rgCtx.Context, fee, sender)
+	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, sender)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +50,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = k.indexAllowedClasses(rgCtx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
+	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +67,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		})
 	}
 
-	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
+	k.bankKeeper.SetDenomMetaData(sdkCtx, banktypes.Metadata{
 		DenomUnits:  denomUnits,
 		Description: msg.Description,
 		Base:        denom,
@@ -80,7 +76,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Symbol:      msg.Name,
 	})
 
-	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
+	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{
 		BasketDenom: denom,
 		Curator:     msg.Curator,
 	})
@@ -108,20 +104,19 @@ func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, e
 
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
 // the class into the BasketClass table.
-func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
+func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
 	for _, class := range allowedClasses {
-		res, err := k.ecocreditKeeper.ClassInfo(ctx, &core.QueryClassInfoRequest{ClassId: class})
+		classInfo, err := k.coreStore.ClassInfoTable().GetByName(ctx, class)
 		if err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}
 
-		if res.Info.CreditType != creditTypeAbbr {
+		if classInfo.CreditType != creditTypeAbbr {
 			return sdkerrors.ErrInvalidRequest.Wrapf("basket specified credit type %s, but class %s is of type %s",
-				creditTypeAbbr, class, res.Info.CreditType)
+				creditTypeAbbr, class, classInfo.CreditType)
 		}
 
-		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
-		if err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
+		if err := k.stateStore.BasketClassTable().Insert(ctx,
 			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,

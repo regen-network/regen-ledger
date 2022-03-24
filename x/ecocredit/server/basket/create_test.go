@@ -7,6 +7,7 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/golang/mock/gomock"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 
@@ -24,16 +25,18 @@ func TestFeeToLow(t *testing.T) {
 	minFee := sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(100)))
 
 	// no fee specified should fail
-	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{BasketCreationFee: minFee}})
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.BasketCreationFee = minFee
+	}).Times(2)
+
+	// no fee
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Fee: nil,
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
 
 	// fee too low
-	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
-		BasketCreationFee: minFee,
-	}})
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Fee: sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(20))),
 	})
@@ -44,17 +47,17 @@ func TestBadCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
-
-	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
-		BasketCreationFee: sdk.Coins{basketFee},
-		CreditTypes:       []*core.CreditType{{Abbreviation: "A", Precision: 6}},
-	}}).Times(2)
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+		p.BasketCreationFee = sdk.Coins{basketFee}
+		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).Times(2)
 
 	// non-existent credit type should fail
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "F",
+		Fee:              sdk.Coins{basketFee},
 	})
 	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
@@ -63,6 +66,7 @@ func TestBadCreditType(t *testing.T) {
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         2,
+		Fee:              sdk.Coins{basketFee},
 	})
 	assert.ErrorContains(t, err, "exponent")
 }
@@ -84,10 +88,9 @@ func TestDuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{
-		Params: &core.Params{BasketCreationFee: sdk.Coins{fee},
-			CreditTypes: []*core.CreditType{{Precision: 6, Abbreviation: "C"}},
-		},
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+		p.BasketCreationFee = sdk.Coins{fee}
+		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
 	}).Times(1)
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
 
@@ -98,15 +101,19 @@ func TestDuplicateDenom(t *testing.T) {
 func TestBadClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+		Name:       "bar",
+		Admin:      nil,
+		Metadata:   "",
+		CreditType: "BIO",
+	}))
 	mockAny := gomock.Any()
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
-	s.ecocreditKeeper.EXPECT().Params(mockAny, mockAny).Return(&core.QueryParamsResponse{Params: &core.Params{
-		BasketCreationFee: basketFee,
-		CreditTypes:       []*core.CreditType{{Abbreviation: "C", Precision: 6}},
-	},
-	})
-	s.ecocreditKeeper.EXPECT().ClassInfo(mockAny, mockAny).Return(nil, fmt.Errorf("not found"))
-	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny)
+	s.paramsKeeper.EXPECT().GetParamSet(mockAny, mockAny).Do(func(any interface{}, p *core.Params) {
+		p.BasketCreationFee = basketFee
+		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(2)
+	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
 
 	// class doesn't exist
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -114,20 +121,21 @@ func TestBadClass(t *testing.T) {
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "foo",
-		AllowedClasses:   []string{"bar"},
+		AllowedClasses:   []string{"foo"},
+		Fee:              basketFee,
 	})
 	assert.ErrorContains(t, err, "could not get credit class")
 
 	// mismatch credit type and class's credit type
-	s.ecocreditKeeper.EXPECT().ClassInfo(mockAny, mockAny).Return(&core.QueryClassInfoResponse{Info: &core.ClassInfo{CreditType: "B"}}, nil)
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
-		Name:             "foo",
+		Name:             "bar",
 		AllowedClasses:   []string{"bar"},
+		Fee:              basketFee,
 	})
-	assert.ErrorContains(t, err, "basket specified credit type C but class bar is of type B")
+	assert.ErrorContains(t, err, "basket specified credit type C, but class bar is of type BIO")
 }
 
 func TestGoodBasket(t *testing.T) {
@@ -155,13 +163,16 @@ func TestGoodBasket(t *testing.T) {
 			}},
 		},
 	)
-	s.ecocreditKeeper.EXPECT().Params(gomock.Any(), gomock.Any()).Return(&core.QueryParamsResponse{Params: &core.Params{
-		BasketCreationFee: fee,
-		CreditTypes:       []*core.CreditType{{Abbreviation: "C", Precision: 6}},
-	}})
-	s.ecocreditKeeper.EXPECT().ClassInfo(gomock.Any(), gomock.Any()).Return(&core.QueryClassInfoResponse{Info: &core.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+		Name:       "bar",
+		Admin:      nil,
+		Metadata:   "",
 		CreditType: "C",
-	}}, nil)
+	}))
+	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+		p.BasketCreationFee = fee
+		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(1)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
@@ -171,14 +182,15 @@ func TestGoodBasket(t *testing.T) {
 		Exponent:         6,
 		AllowedClasses:   []string{"bar"},
 		DateCriteria:     dateCriteria,
+		Fee:              fee,
 	})
 	assert.NilError(t, err)
 
-	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
+	bskt, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
-	assert.Equal(t, s.addr.String(), basket.Curator)
-	assert.Equal(t, "eco.uC.foo", basket.BasketDenom)
-	assert.Equal(t, uint32(6), basket.Exponent)
-	assert.Equal(t, "C", basket.CreditTypeAbbrev)
-	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), basket.DateCriteria.StartDateWindow.String())
+	assert.Equal(t, s.addr.String(), bskt.Curator)
+	assert.Equal(t, "eco.uC.foo", bskt.BasketDenom)
+	assert.Equal(t, uint32(6), bskt.Exponent)
+	assert.Equal(t, "C", bskt.CreditTypeAbbrev)
+	assert.Equal(t, fmt.Sprintf("seconds:%.0f", seconds.Seconds()), bskt.DateCriteria.StartDateWindow.String())
 }

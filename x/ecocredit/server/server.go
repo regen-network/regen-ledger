@@ -226,7 +226,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err)
 	}
 
-	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
+	s.basketKeeper = basket.NewKeeper(s.db, bankKeeper, distKeeper, s.paramSpace)
 
 	ss, err := api.NewStateStore(s.db)
 	if err != nil {

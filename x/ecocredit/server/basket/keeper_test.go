@@ -24,23 +24,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
 
 type baseSuite struct {
-	t               *testing.T
-	db              ormdb.ModuleDB
-	stateStore      api.StateStore
-	coreStore       ecoApi.StateStore
-	ctx             context.Context
-	k               basket.Keeper
-	ctrl            *gomock.Controller
-	addr            sdk.AccAddress
-	bankKeeper      *mocks2.MockBankKeeper
-	ecocreditKeeper *mocks.MockEcocreditKeeper
-	storeKey        *sdk.KVStoreKey
-	sdkCtx          sdk.Context
-	distKeeper      *mocks2.MockDistributionKeeper
+	t            *testing.T
+	db           ormdb.ModuleDB
+	stateStore   api.StateStore
+	coreStore    ecoApi.StateStore
+	ctx          context.Context
+	k            basket.Keeper
+	ctrl         *gomock.Controller
+	addr         sdk.AccAddress
+	bankKeeper   *mocks2.MockBankKeeper
+	paramsKeeper *mocks2.MockParamKeeper
+	sdkCtx       sdk.Context
+	distKeeper   *mocks2.MockDistributionKeeper
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -57,8 +55,8 @@ func setupBase(t *testing.T) *baseSuite {
 
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
-	s.storeKey = sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
+	storeKey := sdk.NewKVStoreKey("test")
+	cms.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
@@ -68,9 +66,9 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
-	s.ecocreditKeeper = mocks.NewMockEcocreditKeeper(s.ctrl)
 	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.ecocreditKeeper, s.bankKeeper, s.distKeeper, s.storeKey)
+	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	s.k = basket.NewKeeper(s.db, s.bankKeeper, s.distKeeper, s.paramsKeeper)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	_, _, s.addr = testdata.KeyTestPubAddr()

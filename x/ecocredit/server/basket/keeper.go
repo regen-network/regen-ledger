@@ -1,24 +1,21 @@
 package basket
 
 import (
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 )
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	stateStore      api.StateStore
-	bankKeeper      ecocredit.BankKeeper
-	ecocreditKeeper EcocreditKeeper
-	coreStore       ecoApi.StateStore
-	storeKey        sdk.StoreKey
-	distKeeper      ecocredit.DistributionKeeper
+	stateStore   api.StateStore
+	coreStore    ecoApi.StateStore
+	bankKeeper   ecocredit.BankKeeper
+	distKeeper   ecocredit.DistributionKeeper
+	paramsKeeper ecocredit.ParamKeeper
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -27,10 +24,9 @@ var _ baskettypes.QueryServer = Keeper{}
 // NewKeeper returns a new keeper instance.
 func NewKeeper(
 	db ormdb.ModuleDB,
-	ecocreditKeeper EcocreditKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-	storeKey sdk.StoreKey,
+	pk ecocredit.ParamKeeper,
 ) Keeper {
 	basketStore, err := api.NewStateStore(db)
 	if err != nil {
@@ -41,21 +37,10 @@ func NewKeeper(
 		panic(err)
 	}
 	return Keeper{
-		bankKeeper:      bankKeeper,
-		ecocreditKeeper: ecocreditKeeper,
-		distKeeper:      distKeeper,
-		stateStore:      basketStore,
-		storeKey:        storeKey,
-		coreStore:       coreStore,
+		bankKeeper:   bankKeeper,
+		distKeeper:   distKeeper,
+		stateStore:   basketStore,
+		coreStore:    coreStore,
+		paramsKeeper: pk,
 	}
-}
-
-// EcocreditKeeper abstracts over methods that the main ecocredit keeper
-// needs to expose to the basket keeper.
-//
-// NOTE: run `make mocks` whenever you add methods here
-type EcocreditKeeper interface {
-	// QueryServer is embedded directly here rather than trying to go through
-	// ADR 033 for simplicity
-	core.QueryServer
 }
