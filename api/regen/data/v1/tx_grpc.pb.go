@@ -48,7 +48,9 @@ type MsgClient interface {
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
 	// Attest can be called multiple times for the same content hash with different
-	// attestors and those attestors will be appended to the list of attestors.
+	// attestors and those attestors will be appended to the list of attestors. If
+	// the same attestor attempts to attest to the same piece of data, the attestor
+	// will be ignored and a new attestation with a new timestamp will not be added.
 	Attest(ctx context.Context, in *MsgAttest, opts ...grpc.CallOption) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
@@ -131,7 +133,9 @@ type MsgServer interface {
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
 	// Attest can be called multiple times for the same content hash with different
-	// attestors and those attestors will be appended to the list of attestors.
+	// attestors and those attestors will be appended to the list of attestors. If
+	// the same attestor attempts to attest to the same piece of data, the attestor
+	// will be ignored and a new attestation with a new timestamp will not be added.
 	Attest(context.Context, *MsgAttest) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
