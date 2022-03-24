@@ -39,6 +39,9 @@ func (s serverImpl) anchorAndGetIRI(sdkCtx sdk.Context, toIRI ToIRI) (iri string
 		return "", nil, nil, err
 	}
 
+	// consume additional gas whenever we verify the provided hash with ToIRI
+	sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data hash verification")
+
 	store := sdkCtx.KVStore(s.storeKey)
 	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
 	timestamp, err = s.anchorAndGetTimestamp(sdkCtx, id, iri)
