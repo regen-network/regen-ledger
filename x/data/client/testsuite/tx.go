@@ -86,7 +86,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	for _, iri := range iris {
-		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorDataCmd(),
+		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorCmd(),
 			append(
 				[]string{
 					iri,
@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
 					iri,
@@ -108,7 +108,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
 					iris[0],
@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.network.Cleanup()
 }
 
-func (s *IntegrationTestSuite) TestTxAnchorData() {
+func (s *IntegrationTestSuite) TestTxAnchor() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
@@ -201,7 +201,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 		},
 	}
 
-	cmd := client.MsgAnchorDataCmd()
+	cmd := client.MsgAnchorCmd()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			args := []string{tc.iri}
@@ -217,7 +217,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxSignData() {
+func (s *IntegrationTestSuite) TestTxAttest() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
@@ -231,13 +231,13 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 	}
 	// first we anchor some data
 	iri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
-	cmd := client.MsgAnchorDataCmd()
+	cmd := client.MsgAnchorCmd()
 	args := []string{iri}
 	args = append(args, commonFlags...)
 	_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
-	cmd = client.MsgSignDataCmd()
+	cmd = client.MsgAttestCmd()
 
 	testCases := []struct {
 		name   string
