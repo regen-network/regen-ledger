@@ -70,7 +70,7 @@ Cancelled credits are credit that cannot be transferred or retired. Credits are 
 
 ### Basket
 
-A basket is an abstraction for different types of credits that meet a defined criteria. Credits can be put into a basket in exchange for an equivalent amount of basket tokens. The basket criteria can be set to only accept specific credit types, credit classes, and credit batches that meet a specific date criteria (e.g. credit batches with a minimum start date, credit batches with a start date within a duration of time, or credit batches with a start date year within a number of years into the past). Basket tokens can be returned to the basket at any time in exchange for the equivalent amount of credits.
+A basket is an abstraction for different types of credits that meet a defined criteria. Credits can be put into a basket in exchange for an equivalent amount of basket tokens. The basket criteria can be set to only accept a specific credit type, credit classes, and credit batches that meet a specific date criteria (e.g. credit batches with a minimum start date, credit batches with a start date within a duration of time, or credit batches with a start date year within a number of years into the past). Basket tokens can be returned to the basket at any time in exchange for the equivalent amount of credits.
 
 For more information about the properties of a basket, see [Basket](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Basket).
 
