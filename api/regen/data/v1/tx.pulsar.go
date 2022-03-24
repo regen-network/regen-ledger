@@ -3797,8 +3797,8 @@ type MsgAnchor struct {
 	unknownFields protoimpl.UnknownFields
 
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing services.
+	// The sender in Anchor is not attesting to the veracity of the underlying
+	// data. They can simply be an intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// hash is the hash-based identifier for the anchored content.
 	Hash *ContentHash `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`

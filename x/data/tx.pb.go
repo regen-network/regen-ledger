@@ -32,8 +32,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgAnchor is the Msg/Anchor request type.
 type MsgAnchor struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing services.
+	// The sender in Anchor is not attesting to the veracity of the underlying
+	// data. They can simply be an intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// hash is the hash-based identifier for the anchored content.
 	Hash *ContentHash `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
@@ -499,13 +499,13 @@ type MsgClient interface {
 	// hash, effectively providing a tamper resistant timestamp.
 	//
 	// The sender in Anchor is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing timestamp services.
+	// data. They can simply be an intermediary providing timestamp services.
 	// Attest should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	Anchor(ctx context.Context, in *MsgAnchor, opts ...grpc.CallOption) (*MsgAnchorResponse, error)
-	// Attest allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the attestors are making a statement about the
-	// veracity of the data itself. It is like signing a legal document, meaning
+	// Attest allows for digital signing of an arbitrary piece of data on the
+	// blockchain. By attesting to data, the attestor is making a statement about
+	// the veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
 	// of the data, they are simply communicating that it exists.
@@ -580,13 +580,13 @@ type MsgServer interface {
 	// hash, effectively providing a tamper resistant timestamp.
 	//
 	// The sender in Anchor is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing timestamp services.
+	// data. They can simply be an intermediary providing timestamp services.
 	// Attest should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	Anchor(context.Context, *MsgAnchor) (*MsgAnchorResponse, error)
-	// Attest allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the attestors are making a statement about the
-	// veracity of the data itself. It is like signing a legal document, meaning
+	// Attest allows for digital signing of an arbitrary piece of data on the
+	// blockchain. By attesting to data, the attestor is making a statement about
+	// the veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
 	// of the data, they are simply communicating that it exists.
