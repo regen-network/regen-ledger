@@ -28,8 +28,11 @@ import (
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
@@ -74,6 +77,8 @@ func (a Module) Name() string {
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
+	coretypes.RegisterTypes(registry)
+	marketplacetypes.RegisterTypes(registry)
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
@@ -85,10 +90,12 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 	ctx := context.Background()
 	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
+	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
+	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
 	}
@@ -113,7 +120,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 }
 
 func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
-	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	db, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
 	}
@@ -161,6 +168,9 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	ecocredit.RegisterLegacyAminoCodec(cdc)
+	basket.RegisterLegacyAminoCodec(cdc)
+	coretypes.RegisterLegacyAminoCodec(cdc)
+	marketplacetypes.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions
