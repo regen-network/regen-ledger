@@ -86,7 +86,7 @@ func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
 
 var trueBz = []byte{1}
 
-func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
+func (s serverImpl) AttestData(goCtx context.Context, request *data.MsgAttestData) (*data.MsgAttestDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	iri, id, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
 	if err != nil {
@@ -99,31 +99,31 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 		return nil, err
 	}
 
-	for _, signer := range request.Signers {
-		addr, err := cosmossdk.AccAddressFromBech32(signer)
+	for _, attestor := range request.Attestors {
+		addr, err := cosmossdk.AccAddressFromBech32(attestor)
 		if err != nil {
 			return nil, err
 		}
 
-		key := IDSignerTimestampKey(id, addr)
+		key := IDAttestorTimestampKey(id, addr)
 		if store.Has(key) {
 			continue
 		}
 
 		store.Set(key, timestampBz)
 		// set reverse lookup key
-		store.Set(SignerIDKey(addr, id), trueBz)
+		store.Set(AttestorIDKey(addr, id), trueBz)
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
-		Iri:     iri,
-		Signers: request.Signers,
+	err = ctx.EventManager().EmitTypedEvent(&data.EventAttestData{
+		Iri:       iri,
+		Attestors: request.Attestors,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgSignDataResponse{}, nil
+	return &data.MsgAttestDataResponse{}, nil
 }
 
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {

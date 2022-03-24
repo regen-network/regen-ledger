@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) TestQueryByIRI() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBySigner() {
+func (s *IntegrationTestSuite) TestQueryByAttestor() {
 	val := s.network.Validators[0]
 
 	acc1, err := val.ClientCtx.Keyring.Key("acc1")
@@ -69,22 +69,22 @@ func (s *IntegrationTestSuite) TestQueryBySigner() {
 		expItems int
 	}{
 		{
-			"invalid signer",
-			fmt.Sprintf("%s/regen/data/v1/by-signer/%s", val.APIAddress, "foo"),
+			"invalid attestor",
+			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, "foo"),
 			true,
 			"invalid bech32 string",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/by-signer/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s", val.APIAddress, addr),
 			false,
 			"",
 			2,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/by-signer/%s?pagination.limit=1", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/data/v1/by-attestor/%s?pagination.limit=1", val.APIAddress, addr),
 			false,
 			"",
 			1,
@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) TestQueryBySigner() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var entries data.QueryBySignerResponse
+			var entries data.QueryByAttestorResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &entries)
 
 			if tc.expErr {
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestQueryBySigner() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySigners() {
+func (s *IntegrationTestSuite) TestQueryAttestors() {
 	val := s.network.Validators[0]
 
 	iri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
@@ -126,22 +126,22 @@ func (s *IntegrationTestSuite) TestQuerySigners() {
 		expItems int
 	}{
 		{
-			"invalid signer",
-			fmt.Sprintf("%s/regen/data/v1/signers/%s", val.APIAddress, "foo"),
+			"invalid attestor",
+			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, "foo"),
 			true,
 			"key not found",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/signers/%s", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, iri),
 			false,
 			"",
 			2,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/signers/%s?pagination.limit=1", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/attestors/%s?pagination.limit=1", val.APIAddress, iri),
 			false,
 			"",
 			1,
@@ -155,16 +155,16 @@ func (s *IntegrationTestSuite) TestQuerySigners() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var signers data.QuerySignersResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &signers)
+			var attestors data.QueryAttestorsResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &attestors)
 
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(string(resp), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(signers.Signers)
-				require.Len(signers.Signers, tc.expItems)
+				require.NotNil(attestors.Attestors)
+				require.Len(attestors.Attestors, tc.expItems)
 			}
 		})
 	}

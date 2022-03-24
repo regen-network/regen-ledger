@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	_, _, _, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
+	_, _, _, _ sdk.Msg = &MsgAnchorData{}, &MsgAttestData{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
 )
 
 func (m *MsgAnchorData) ValidateBasic() error {
@@ -25,8 +25,8 @@ func (m *MsgAnchorData) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSignData) ValidateBasic() error {
-	for _, addr := range m.Signers {
+func (m *MsgAttestData) ValidateBasic() error {
+	for _, addr := range m.Attestors {
 		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
 			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 		}
@@ -37,11 +37,11 @@ func (m *MsgSignData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgSignData) GetSigners() []sdk.AccAddress {
-	addrs := make([]sdk.AccAddress, len(m.Signers))
+func (m *MsgAttestData) GetSigners() []sdk.AccAddress {
+	addrs := make([]sdk.AccAddress, len(m.Attestors))
 
-	for i, signer := range m.Signers {
-		addr, _ := sdk.AccAddressFromBech32(signer)
+	for i, attestor := range m.Attestors {
+		addr, _ := sdk.AccAddressFromBech32(attestor)
 		addrs[i] = addr
 	}
 

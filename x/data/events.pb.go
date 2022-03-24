@@ -68,26 +68,26 @@ func (m *EventAnchorData) GetIri() string {
 	return ""
 }
 
-// EventSignData is an event emitted when data is signed on-chain.
-type EventSignData struct {
+// EventAttestData is an event emitted when data is signed on-chain.
+type EventAttestData struct {
 	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// signers are the addresses of the accounts which have signed the data.
-	Signers []string `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
+	// attestors are the addresses of the accounts which have signed the data.
+	Attestors []string `protobuf:"bytes,2,rep,name=attestors,proto3" json:"attestors,omitempty"`
 }
 
-func (m *EventSignData) Reset()         { *m = EventSignData{} }
-func (m *EventSignData) String() string { return proto.CompactTextString(m) }
-func (*EventSignData) ProtoMessage()    {}
-func (*EventSignData) Descriptor() ([]byte, []int) {
+func (m *EventAttestData) Reset()         { *m = EventAttestData{} }
+func (m *EventAttestData) String() string { return proto.CompactTextString(m) }
+func (*EventAttestData) ProtoMessage()    {}
+func (*EventAttestData) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3e110e0930a307df, []int{1}
 }
-func (m *EventSignData) XXX_Unmarshal(b []byte) error {
+func (m *EventAttestData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventSignData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventAttestData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventSignData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventAttestData.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -97,102 +97,53 @@ func (m *EventSignData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *EventSignData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventSignData.Merge(m, src)
+func (m *EventAttestData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAttestData.Merge(m, src)
 }
-func (m *EventSignData) XXX_Size() int {
+func (m *EventAttestData) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventSignData) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventSignData.DiscardUnknown(m)
+func (m *EventAttestData) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAttestData.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventSignData proto.InternalMessageInfo
+var xxx_messageInfo_EventAttestData proto.InternalMessageInfo
 
-func (m *EventSignData) GetIri() string {
+func (m *EventAttestData) GetIri() string {
 	if m != nil {
 		return m.Iri
 	}
 	return ""
 }
 
-func (m *EventSignData) GetSigners() []string {
+func (m *EventAttestData) GetAttestors() []string {
 	if m != nil {
-		return m.Signers
+		return m.Attestors
 	}
 	return nil
 }
 
-// EventStoreRawData is an event emitted when data is stored on-chain.
-type EventStoreRawData struct {
-	// iri is the data IRI
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-}
-
-func (m *EventStoreRawData) Reset()         { *m = EventStoreRawData{} }
-func (m *EventStoreRawData) String() string { return proto.CompactTextString(m) }
-func (*EventStoreRawData) ProtoMessage()    {}
-func (*EventStoreRawData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3e110e0930a307df, []int{2}
-}
-func (m *EventStoreRawData) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventStoreRawData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventStoreRawData.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventStoreRawData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventStoreRawData.Merge(m, src)
-}
-func (m *EventStoreRawData) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventStoreRawData) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventStoreRawData.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventStoreRawData proto.InternalMessageInfo
-
-func (m *EventStoreRawData) GetIri() string {
-	if m != nil {
-		return m.Iri
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*EventAnchorData)(nil), "regen.data.v1.EventAnchorData")
-	proto.RegisterType((*EventSignData)(nil), "regen.data.v1.EventSignData")
-	proto.RegisterType((*EventStoreRawData)(nil), "regen.data.v1.EventStoreRawData")
+	proto.RegisterType((*EventAttestData)(nil), "regen.data.v1.EventAttestData")
 }
 
 func init() { proto.RegisterFile("regen/data/v1/events.proto", fileDescriptor_3e110e0930a307df) }
 
 var fileDescriptor_3e110e0930a307df = []byte{
-	// 210 bytes of a gzipped FileDescriptorProto
+	// 192 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2a, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x49, 0x2c, 0x49, 0xd4, 0x2f, 0x33, 0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29,
 	0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x05, 0xcb, 0xe9, 0x81, 0xe4, 0xf4, 0xca, 0x0c,
 	0x95, 0x94, 0xb9, 0xf8, 0x5d, 0x41, 0xd2, 0x8e, 0x79, 0xc9, 0x19, 0xf9, 0x45, 0x2e, 0x89, 0x25,
 	0x89, 0x42, 0x02, 0x5c, 0xcc, 0x99, 0x45, 0x99, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x20,
-	0xa6, 0x92, 0x35, 0x17, 0x2f, 0x58, 0x51, 0x70, 0x66, 0x7a, 0x1e, 0x76, 0x25, 0x42, 0x12, 0x5c,
-	0xec, 0xc5, 0x99, 0xe9, 0x79, 0xa9, 0x45, 0xc5, 0x12, 0x4c, 0x0a, 0xcc, 0x1a, 0x9c, 0x41, 0x30,
-	0xae, 0x92, 0x2a, 0x97, 0x20, 0x44, 0x73, 0x49, 0x7e, 0x51, 0x6a, 0x50, 0x62, 0x39, 0x76, 0x03,
-	0x9c, 0xdc, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09,
-	0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0x27, 0x3d, 0xb3,
-	0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x1f, 0xec, 0x78, 0xdd, 0xbc, 0xd4, 0x92, 0xf2,
-	0xfc, 0xa2, 0x6c, 0x28, 0x2f, 0x27, 0x35, 0x25, 0x3d, 0xb5, 0x48, 0xbf, 0x02, 0xec, 0xdf, 0x24,
-	0x36, 0xb0, 0x37, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x94, 0xba, 0xde, 0xd4, 0x04, 0x01,
-	0x00, 0x00,
+	0xa6, 0x92, 0x23, 0x4c, 0x51, 0x49, 0x49, 0x6a, 0x71, 0x09, 0x76, 0x45, 0x42, 0x32, 0x5c, 0x9c,
+	0x89, 0x60, 0xf9, 0xfc, 0xa2, 0x62, 0x09, 0x26, 0x05, 0x66, 0x0d, 0xce, 0x20, 0x84, 0x80, 0x93,
+	0xdb, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1,
+	0x1c, 0xc3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0xe9, 0xa4, 0x67, 0x96, 0x64,
+	0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea, 0x83, 0xdd, 0xa6, 0x9b, 0x97, 0x5a, 0x52, 0x9e, 0x5f,
+	0x94, 0x0d, 0xe5, 0xe5, 0xa4, 0xa6, 0xa4, 0xa7, 0x16, 0xe9, 0x57, 0x80, 0xbd, 0x93, 0xc4, 0x06,
+	0xf6, 0x85, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x95, 0xb4, 0x37, 0xe3, 0x00, 0x00, 0x00,
 }
 
 func (m *EventAnchorData) Marshal() (dAtA []byte, err error) {
@@ -225,7 +176,7 @@ func (m *EventAnchorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventSignData) Marshal() (dAtA []byte, err error) {
+func (m *EventAttestData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -235,55 +186,25 @@ func (m *EventSignData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventSignData) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventAttestData) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventSignData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventAttestData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Signers) > 0 {
-		for iNdEx := len(m.Signers) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Signers[iNdEx])
-			copy(dAtA[i:], m.Signers[iNdEx])
-			i = encodeVarintEvents(dAtA, i, uint64(len(m.Signers[iNdEx])))
+	if len(m.Attestors) > 0 {
+		for iNdEx := len(m.Attestors) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Attestors[iNdEx])
+			copy(dAtA[i:], m.Attestors[iNdEx])
+			i = encodeVarintEvents(dAtA, i, uint64(len(m.Attestors[iNdEx])))
 			i--
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Iri) > 0 {
-		i -= len(m.Iri)
-		copy(dAtA[i:], m.Iri)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Iri)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *EventStoreRawData) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventStoreRawData) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventStoreRawData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	if len(m.Iri) > 0 {
 		i -= len(m.Iri)
 		copy(dAtA[i:], m.Iri)
@@ -318,7 +239,7 @@ func (m *EventAnchorData) Size() (n int) {
 	return n
 }
 
-func (m *EventSignData) Size() (n int) {
+func (m *EventAttestData) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -328,24 +249,11 @@ func (m *EventSignData) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if len(m.Signers) > 0 {
-		for _, s := range m.Signers {
+	if len(m.Attestors) > 0 {
+		for _, s := range m.Attestors {
 			l = len(s)
 			n += 1 + l + sovEvents(uint64(l))
 		}
-	}
-	return n
-}
-
-func (m *EventStoreRawData) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Iri)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
 	}
 	return n
 }
@@ -438,7 +346,7 @@ func (m *EventAnchorData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventSignData) Unmarshal(dAtA []byte) error {
+func (m *EventAttestData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -461,10 +369,10 @@ func (m *EventSignData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventSignData: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventAttestData: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventSignData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventAttestData: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -501,7 +409,7 @@ func (m *EventSignData) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -529,89 +437,7 @@ func (m *EventSignData) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Signers = append(m.Signers, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventStoreRawData) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventStoreRawData: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventStoreRawData: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Iri = string(dAtA[iNdEx:postIndex])
+			m.Attestors = append(m.Attestors, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

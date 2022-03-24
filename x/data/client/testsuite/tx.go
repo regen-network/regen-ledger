@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestDataCmd(),
 			append(
 				[]string{
 					iri,
@@ -108,7 +108,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestDataCmd(),
 			append(
 				[]string{
 					iris[0],
@@ -217,7 +217,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxSignData() {
+func (s *IntegrationTestSuite) TestTxAttestData() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
@@ -237,7 +237,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 	_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
-	cmd = client.MsgSignDataCmd()
+	cmd = client.MsgAttestDataCmd()
 
 	testCases := []struct {
 		name   string

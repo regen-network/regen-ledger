@@ -27,11 +27,11 @@ type MsgClient interface {
 	//
 	// The sender in AnchorData is not attesting to the veracity of the underlying
 	// data. They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the
+	// AttestData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	AnchorData(ctx context.Context, in *MsgAnchorData, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the signers are making a statement about the
+	// AttestData allows for signing of an arbitrary piece of data on the
+	// blockchain. By "signing" data the attestors are making a statement about the
 	// veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
@@ -45,11 +45,11 @@ type MsgClient interface {
 	// - the blockchain transaction envelope provides built-in replay protection
 	//   and timestamping
 	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
+	// AttestData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
-	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	// AttestData can be called multiple times for the same content hash with different
+	// attestors and those attestors will be appended to the list of attestors.
+	AttestData(ctx context.Context, in *MsgAttestData, opts ...grpc.CallOption) (*MsgAttestDataResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
 	DefineResolver(ctx context.Context, in *MsgDefineResolver, opts ...grpc.CallOption) (*MsgDefineResolverResponse, error)
@@ -74,9 +74,9 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorData, opts ...g
 	return out, nil
 }
 
-func (c *msgClient) SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
-	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/SignData", in, out, opts...)
+func (c *msgClient) AttestData(ctx context.Context, in *MsgAttestData, opts ...grpc.CallOption) (*MsgAttestDataResponse, error) {
+	out := new(MsgAttestDataResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/AttestData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,11 +110,11 @@ type MsgServer interface {
 	//
 	// The sender in AnchorData is not attesting to the veracity of the underlying
 	// data. They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the
+	// AttestData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	AnchorData(context.Context, *MsgAnchorData) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the signers are making a statement about the
+	// AttestData allows for signing of an arbitrary piece of data on the
+	// blockchain. By "signing" data the attestors are making a statement about the
 	// veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
@@ -128,11 +128,11 @@ type MsgServer interface {
 	// - the blockchain transaction envelope provides built-in replay protection
 	//   and timestamping
 	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
+	// AttestData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
-	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
+	// AttestData can be called multiple times for the same content hash with different
+	// attestors and those attestors will be appended to the list of attestors.
+	AttestData(context.Context, *MsgAttestData) (*MsgAttestDataResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
 	DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error)
@@ -148,8 +148,8 @@ type UnimplementedMsgServer struct {
 func (UnimplementedMsgServer) AnchorData(context.Context, *MsgAnchorData) (*MsgAnchorDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AnchorData not implemented")
 }
-func (UnimplementedMsgServer) SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
+func (UnimplementedMsgServer) AttestData(context.Context, *MsgAttestData) (*MsgAttestDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AttestData not implemented")
 }
 func (UnimplementedMsgServer) DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DefineResolver not implemented")
@@ -188,20 +188,20 @@ func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSignData)
+func _Msg_AttestData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAttestData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).SignData(ctx, in)
+		return srv.(MsgServer).AttestData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Msg/SignData",
+		FullMethod: "/regen.data.v1.Msg/AttestData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SignData(ctx, req.(*MsgSignData))
+		return srv.(MsgServer).AttestData(ctx, req.(*MsgAttestData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,8 +254,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_AnchorData_Handler,
 		},
 		{
-			MethodName: "SignData",
-			Handler:    _Msg_SignData_Handler,
+			MethodName: "AttestData",
+			Handler:    _Msg_AttestData_Handler,
 		},
 		{
 			MethodName: "DefineResolver",
