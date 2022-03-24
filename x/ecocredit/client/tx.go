@@ -7,19 +7,20 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client/utils"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
@@ -43,12 +44,13 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
 		TxCreateProject(),
-		TxSellCmd(),
-		TxUpdateSellOrdersCmd(),
-		TxBuyCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
+		marketplacecli.TxAllowAskDenomCmd(),
+		marketplacecli.TxBuyCmd(),
+		marketplacecli.TxSellCmd(),
+		marketplacecli.TxUpdateSellOrdersCmd(),
 	)
 	return cmd
 }
@@ -62,7 +64,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
+		Use:   "create-class [issuer[,issuer]*] [credit type abbreviation] [metadata]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(
 			`Creates a new credit class with transaction author (--from) as admin.
@@ -75,9 +77,9 @@ They must also pay the fee associated with creating a new credit class, defined
 by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
-  issuer:    	       comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  credit type name:    the name of the credit class type (e.g. carbon, biodiversity, etc)
-  metadata:  	       base64 encoded metadata - arbitrary data attached to the credit class info`,
+  issuer:    	               comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  credit type abbreviation:    the name of the credit class type (e.g. carbon, biodiversity, etc)
+  metadata:  	               arbitrary data attached to the credit class info`,
 			ecocredit.KeyAllowedClassCreators,
 			ecocredit.KeyCreditClassFee,
 		),
@@ -97,26 +99,22 @@ Parameters:
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Check credit type name is provided
+			// Check credit type abbreviation is provided
 			if args[1] == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("credit type name is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type abbreviation is required")
 			}
-			creditTypeName := args[1]
+			creditTypeAbbrev := args[1]
 
-			// Check that metadata is provided and decode it
+			// Check that metadata is provided
 			if args[2] == "" {
-				return errors.New("base64_metadata is required")
-			}
-			b, err := decodeMetadata(args[2])
-			if err != nil {
-				return err
+				return errors.New("metadata is required")
 			}
 
-			msg := ecocredit.MsgCreateClass{
-				Admin:          admin.String(),
-				Issuers:        issuers,
-				Metadata:       b,
-				CreditTypeName: creditTypeName,
+			msg := core.MsgCreateClass{
+				Admin:            admin.String(),
+				Issuers:          issuers,
+				Metadata:         args[2],
+				CreditTypeAbbrev: creditTypeAbbrev,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -131,6 +129,8 @@ const (
 	FlagEndDate         string = "end-date"
 	FlagProjectLocation string = "project-location"
 	FlagMetadata        string = "metadata"
+	FlagAddIssuers      string = "add-issuers"
+	FlagRemoveIssuers   string = "remove-issuers"
 )
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
@@ -148,7 +148,7 @@ Required Flags:
               quantified and verified. Format: yyyy-mm-dd.
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
-  metadata:   base64 encoded issuance metadata
+  metadata:   issuance metadata
   `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -157,7 +157,7 @@ Required Flags:
 				return err
 			}
 
-			templateIssuance := &ecocredit.MsgCreateBatch_BatchIssuance{
+			templateIssuance := &core.MsgCreateBatch_BatchIssuance{
 				Recipient:          "recipient-address",
 				TradableAmount:     "tradable-amount",
 				RetiredAmount:      "retired-amount",
@@ -165,7 +165,11 @@ Required Flags:
 			}
 
 			numIssuances, err := cmd.Flags().GetUint32(FlagIssuances)
-			issuances := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuances)
+			if err != nil {
+				return err
+			}
+
+			issuances := make([]*core.MsgCreateBatch_BatchIssuance, numIssuances)
 			for i := range issuances {
 				issuances[i] = templateIssuance
 			}
@@ -174,7 +178,7 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			startDate, err := ParseDate("start_date", startDateStr)
+			startDate, err := utils.ParseDate("start_date", startDateStr)
 			if err != nil {
 				return err
 			}
@@ -183,24 +187,20 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			endDate, err := ParseDate("end_date", endDateStr)
+			endDate, err := utils.ParseDate("end_date", endDateStr)
 			if err != nil {
 				return err
 			}
 
-			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
-			if err != nil {
-				return err
-			}
-			b, err := decodeMetadata(metadataStr)
+			metadata, err := cmd.Flags().GetString(FlagMetadata)
 			if err != nil {
 				return err
 			}
 
-			msg := &ecocredit.MsgCreateBatch{
+			msg := &core.MsgCreateBatch{
 				ProjectId: projectId,
 				Issuance:  issuances,
-				Metadata:  b,
+				Metadata:  metadata,
 				StartDate: &startDate,
 				EndDate:   &endDate,
 			}
@@ -304,7 +304,7 @@ Parameters:
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgSend_SendCredits{}
+			var credits = []*core.MsgSend_SendCredits{}
 			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
@@ -312,7 +312,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgSend{
+			msg := core.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
@@ -339,7 +339,7 @@ Parameters:
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgRetire_RetireCredits{}
+			var credits = []*core.MsgRetire_RetireCredits{}
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
@@ -347,7 +347,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgRetire{
+			msg := core.MsgRetire{
 				Holder:   clientCtx.GetFromAddress().String(),
 				Credits:  credits,
 				Location: args[1],
@@ -377,7 +377,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCancel{
+			msg := core.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}
@@ -394,7 +394,7 @@ func TxUpdateClassMetadataCmd() *cobra.Command {
 
 Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
-  metadata:  base64 encoded metadata`,
+  metadata:  credit class metadata`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
@@ -405,11 +405,7 @@ Parameters:
 
 			// Check that metadata is provided and decode it
 			if args[1] == "" {
-				return errors.New("base64_metadata is required")
-			}
-			b, err := decodeMetadata(args[1])
-			if err != nil {
-				return err
+				return errors.New("metadata is required")
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -417,10 +413,10 @@ Parameters:
 				return err
 			}
 
-			msg := ecocredit.MsgUpdateClassMetadata{
+			msg := core.MsgUpdateClassMetadata{
 				Admin:    clientCtx.GetFromAddress().String(),
 				ClassId:  classID,
-				Metadata: b,
+				Metadata: args[1],
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -457,7 +453,7 @@ Parameters:
 				return err
 			}
 
-			msg := ecocredit.MsgUpdateClassAdmin{
+			msg := core.MsgUpdateClassAdmin{
 				Admin:    clientCtx.GetFromAddress().String(),
 				ClassId:  classID,
 				NewAdmin: newAdmin,
@@ -469,27 +465,42 @@ Parameters:
 }
 
 func TxUpdateClassIssuersCmd() *cobra.Command {
-	return txflags(&cobra.Command{
-		Use:   "update-class-issuers [class-id] [issuers]",
+	cmd := txflags(&cobra.Command{
+		Use:   "update-class-issuers [class-id]",
 		Short: "Update the list of issuers for a specific credit class",
 		Long: `Update the list of issuers for a specific credit class. the '--from' flag must equal the current credit class admin.
 
 Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
-  issuers:   the new list of issuers to replace the current issuers	
-            eg: 'regen tx ecocredit update-class-issuers C01 addr1,addr2,addr3`,
-		Args: cobra.ExactArgs(2),
+Flags:  
+  add-issuers:    the new list of issuers to add to the class issuers list
+  remove-issuers: the new list of issuers to remove from the class issuers list
+Example:
+	$'regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2,addr3
+	$'regen tx ecocredit update-class-issuers C01 --add-issuers addr1,addr2 --remove-issuers addr3,addr4`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			if args[0] == "" {
 				return errors.New("class-id is required")
 			}
-			classID := args[0]
 
-			// Parse the comma-separated list of issuers
-			issuers := strings.Split(args[1], ",")
-			for i := range issuers {
-				issuers[i] = strings.TrimSpace(issuers[i])
+			// parse add issuers
+			addIssuers, err := cmd.Flags().GetStringSlice(FlagAddIssuers)
+			if err != nil {
+				return err
+			}
+			for i := range addIssuers {
+				addIssuers[i] = strings.TrimSpace(addIssuers[i])
+			}
+
+			// parse remove issuers
+			removeIssuers, err := cmd.Flags().GetStringSlice(FlagRemoveIssuers)
+			if err != nil {
+				return err
+			}
+			for i := range removeIssuers {
+				removeIssuers[i] = strings.TrimSpace(removeIssuers[i])
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -497,260 +508,20 @@ Parameters:
 				return err
 			}
 
-			msg := ecocredit.MsgUpdateClassIssuers{
-				Admin:   clientCtx.GetFromAddress().String(),
-				ClassId: classID,
-				Issuers: issuers,
+			msg := core.MsgUpdateClassIssuers{
+				Admin:         clientCtx.GetFromAddress().String(),
+				ClassId:       args[0],
+				AddIssuers:    addIssuers,
+				RemoveIssuers: removeIssuers,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})
-}
+	cmd.Flags().StringSlice(FlagAddIssuers, []string{}, "comma separated (no spaces) list of addresses")
+	cmd.Flags().StringSlice(FlagRemoveIssuers, []string{}, "comma separated (no spaces) list of addresses")
 
-// TxSellCmd returns a transaction command that creates sell orders.
-func TxSellCmd() *cobra.Command {
-	return txflags(&cobra.Command{
-		Use:   "sell [orders]",
-		Short: "Creates new sell orders with transaction author (--from) as owner",
-		Long: fmt.Sprintf(
-			`Creates new sell orders with transaction author (--from) as owner.
-
-Parameters:
-  orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			owner := clientCtx.GetFromAddress()
-
-			// declare orders array with ask price as string
-			var strOrders []struct {
-				BatchDenom        string `json:"batch_denom"`
-				Quantity          string `json:"quantity"`
-				AskPrice          string `json:"ask_price"`
-				DisableAutoRetire bool   `json:"disable_auto_retire"`
-				Expiration        string `json:"expiration"`
-			}
-
-			// unmarshal YAML encoded orders with ask price as string
-			if err := yaml.Unmarshal([]byte(args[0]), &strOrders); err != nil {
-				return err
-			}
-
-			orders := make([]*ecocredit.MsgSell_Order, len(strOrders))
-
-			// loop through orders with ask price as string
-			for i, o := range strOrders {
-
-				askPrice, err := sdk.ParseCoinNormalized(o.AskPrice)
-				if err != nil {
-					return err
-				}
-
-				// set order with ask price as sdk.Coin
-				orders[i] = &ecocredit.MsgSell_Order{
-					BatchDenom:        o.BatchDenom,
-					AskPrice:          &askPrice,
-					Quantity:          o.Quantity,
-					DisableAutoRetire: o.DisableAutoRetire,
-				}
-
-				if o.Expiration != "" {
-					if err := parseAndSetDate(&orders[i].Expiration, "expiration", o.Expiration); err != nil {
-						return err
-					}
-				}
-			}
-
-			// create sell message
-			msg := ecocredit.MsgSell{
-				Owner:  owner.String(),
-				Orders: orders,
-			}
-
-			// generate and broadcast transaction
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	})
-}
-
-// TxUpdateSellOrdersCmd returns a transaction command that creates sell orders.
-func TxUpdateSellOrdersCmd() *cobra.Command {
-	return txflags(&cobra.Command{
-		Use:   "update-sell-orders [updates]",
-		Short: "Updates existing sell orders with transaction author (--from) as owner",
-		Long: fmt.Sprintf(
-			`Updates existing sell orders with transaction author (--from) as owner.
-
-Parameters:
-  updates:  YAML encoded update list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false, new_expiration: "2026-01-01"}]'`,
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			// get the order owner from the --from flag
-			owner := clientCtx.GetFromAddress()
-
-			// declare updates array with ask price as string
-			var strUpdates []struct {
-				SellOrderId       string `json:"sell_order_id"`
-				NewQuantity       string `json:"new_quantity"`
-				NewAskPrice       string `json:"new_ask_price"`
-				DisableAutoRetire bool   `json:"disable_auto_retire"`
-				NewExpiration     string `json:"new_expiration"`
-			}
-
-			// unmarshal YAML encoded updates with new ask price as string
-			if err := yaml.Unmarshal([]byte(args[0]), &strUpdates); err != nil {
-				return err
-			}
-
-			// declare updates array with new ask price as sdk.Coin
-			updates := make([]*ecocredit.MsgUpdateSellOrders_Update, len(strUpdates))
-
-			// loop through updates with new ask price as string
-			for i, u := range strUpdates {
-
-				// parse sell order id
-				sellOrderId, err := strconv.ParseUint(u.SellOrderId, 10, 64)
-				if err != nil {
-					return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-				}
-
-				// parse and normalize new ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(u.NewAskPrice)
-				if err != nil {
-					return err
-				}
-
-				// set update with new ask price as sdk.Coin
-				updates[i] = &ecocredit.MsgUpdateSellOrders_Update{
-					SellOrderId:       sellOrderId,
-					NewAskPrice:       &askPrice,
-					NewQuantity:       u.NewQuantity,
-					DisableAutoRetire: u.DisableAutoRetire,
-				}
-
-				if u.NewExpiration != "" {
-					if err := parseAndSetDate(&updates[i].NewExpiration, "expiration", u.NewExpiration); err != nil {
-						return err
-					}
-				}
-			}
-
-			// create update sell orders message
-			msg := ecocredit.MsgUpdateSellOrders{
-				Owner:   owner.String(),
-				Updates: updates,
-			}
-
-			// generate and broadcast transaction
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	})
-}
-
-// TxBuyCmd returns a transaction command that creates sell orders.
-func TxBuyCmd() *cobra.Command {
-	return txflags(&cobra.Command{
-		Use:   "buy [orders]",
-		Short: "Creates new buy orders with transaction author (--from) as buyer",
-		Long: fmt.Sprintf(
-			`Creates new buy orders with transaction author (--from) as buyer.
-
-Parameters:
-  orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false}]'
-           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
-		),
-		Args: cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			// get the order buyer from the --from flag
-			buyer := clientCtx.GetFromAddress()
-
-			// declare orders array with bid price as string
-			var strOrders []struct {
-				SellOrderId       string `json:"sell_order_id"`
-				Quantity          string `json:"quantity"`
-				BidPrice          string `json:"bid_price"`
-				DisableAutoRetire bool   `json:"disable_auto_retire"`
-				Expiration        string `json:"expiration"`
-			}
-
-			// unmarshal YAML encoded orders with new bid price as string
-			if err := yaml.Unmarshal([]byte(args[0]), &strOrders); err != nil {
-				return err
-			}
-
-			// declare orders array with new bid price as sdk.Coin
-			orders := make([]*ecocredit.MsgBuy_Order, len(strOrders))
-
-			// loop through orders with new bid price as string
-			for i, order := range strOrders {
-
-				// parse sell order id
-				sellOrderId, err := strconv.ParseUint(order.SellOrderId, 10, 64)
-				if err != nil {
-					return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-				}
-
-				// set sell order id as buy order selection
-				selection := &ecocredit.MsgBuy_Order_Selection{
-					Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId},
-				}
-
-				// parse and normalize new bid price as sdk.Coin
-				bidPrice, err := sdk.ParseCoinNormalized(order.BidPrice)
-				if err != nil {
-					return err
-				}
-
-				// set order with new bid price as sdk.Coin
-				orders[i] = &ecocredit.MsgBuy_Order{
-					Selection:         selection,
-					BidPrice:          &bidPrice,
-					Quantity:          order.Quantity,
-					DisableAutoRetire: order.DisableAutoRetire,
-				}
-
-				// parse and set expiration
-				if order.Expiration != "" {
-					expiration, err := ParseDate("expiration", order.Expiration)
-					if err != nil {
-						return err
-					}
-					orders[i].Expiration = &expiration
-				}
-			}
-
-			// create buy message
-			msg := ecocredit.MsgBuy{
-				Buyer:  buyer.String(),
-				Orders: orders,
-			}
-
-			// generate and broadcast transaction
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	})
+	return cmd
 }
 
 // TxCreateProject returns a transaction command that creates a new project.
