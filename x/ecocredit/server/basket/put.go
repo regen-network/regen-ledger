@@ -150,7 +150,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	return nil
 }
 
-// transferToBasket updates the balance of the user in the legacy KVStore as well as the basket's balance in the ORM.
+// transferToBasket moves credits from the user's tradable balance, into the basket's balance
 func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecoApi.BatchInfo) error {
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Id)
