@@ -73,7 +73,7 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 	}
 
 	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-	attestorIDStore := prefix.NewStore(store, IDAttestorIndexPrefix(addr))
+	attestorIDStore := prefix.NewStore(store, AttestorIDIndexPrefix(addr))
 
 	var entries []*data.ContentEntry
 	pageRes, err := query.Paginate(attestorIDStore, request.Pagination, func(key []byte, value []byte) error {
