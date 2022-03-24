@@ -266,6 +266,6 @@ Parameters:
 
 // TxAllowAskDenomCmd returns a transaction command which authorizes a new ask denom.
 func TxAllowAskDenomCmd() *cobra.Command {
-	// TODO: not implemented
-	return nil
+	// TODO: implement
+	return &cobra.Command{}
 }
