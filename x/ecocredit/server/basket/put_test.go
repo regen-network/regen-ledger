@@ -26,6 +26,7 @@ func TestPut_Valid(t *testing.T) {
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	insertBatch(t, s, batchDenom, timestamppb.Now())
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, "C01", "C")
 	s.bankKeeper.EXPECT().MintCoins(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
 
@@ -113,6 +114,7 @@ func TestPut_YearsIntoPast(t *testing.T) {
 	otherBatchDenom := "C01-000000-0000000-002"
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(_3YearsAgo))
 	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
 	s.bankKeeper.EXPECT().MintCoins(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -154,6 +156,7 @@ func TestPut_MinStartDate(t *testing.T) {
 	otherBatchDenom := "C01-000000-0000000-002"
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(currentTime))
 	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
 	s.bankKeeper.EXPECT().MintCoins(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -197,6 +200,7 @@ func TestPut_Window(t *testing.T) {
 	assert.NilError(t, err)
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(_2019))
 	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
 	s.bankKeeper.EXPECT().MintCoins(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(1)
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -217,6 +221,7 @@ func TestPut_InsufficientCredits(t *testing.T) {
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	insertBatch(t, s, batchDenom, timestamppb.Now())
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, classId, "C")
 
 	// can put 3 credits in basket
 	_, err := s.k.Put(s.ctx, &basket.MsgPut{
@@ -249,6 +254,26 @@ func TestPut_ClassNotAccepted(t *testing.T) {
 	assert.ErrorContains(t, err, "credit class C01 is not allowed in this basket")
 }
 
+func TestPut_BadCreditType(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchDenom := "C01-0000000-0000000-001"
+	userStartingBalance := math.NewDecFromInt64(10)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{"C01"})
+	insertBatch(t, s, batchDenom, timestamppb.Now())
+	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, "C01", "F")
+
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: userStartingBalance.String()},
+		},
+	})
+	assert.ErrorContains(t, err, "basket requires credit type C but a credit with type F was given")
+}
+
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
 	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
 		BasketDenom:       denom,
@@ -267,15 +292,6 @@ func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, crit
 	}
 }
 
-func insertBasketBalance(t *testing.T, s *baseSuite, basketId uint64, batchDenom, amount string) {
-	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
-		BasketId:       basketId,
-		BatchDenom:     batchDenom,
-		Balance:        amount,
-		BatchStartDate: nil,
-	}))
-}
-
 func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId uint64, amount string) {
 	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		Address:  user,
@@ -283,6 +299,15 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId
 		Tradable: amount,
 		Retired:  "",
 		Escrowed: "",
+	}))
+}
+
+func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+		Name:       name,
+		Admin:      s.addr,
+		Metadata:   "",
+		CreditType: creditTypeAbb,
 	}))
 }
 

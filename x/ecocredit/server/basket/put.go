@@ -131,8 +131,6 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	classId := ecocredit.GetClassIdFromBatchDenom(batchInfo.BatchDenom)
 
 	// check credit class match
-	// TODO: do we even need to check the credit type at this point? theres no way the class
-	// 		would be accepted otherwise
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
 	if err != nil {
 		return err
@@ -140,6 +138,15 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	if !found {
 		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
 	}
+
+	class, err := k.coreStore.ClassInfoTable().GetByName(ctx, classId)
+	if err != nil {
+		return err
+	}
+	if class.CreditType != basket.CreditTypeAbbrev {
+		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditType)
+	}
+
 	return nil
 }
 
