@@ -198,11 +198,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 		s.Require().Equal(uint32(0), txResp.Code, out.String())
 	}
-
-	res, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.QueryBatchesCmd(), []string{s.projectID})
-	s.Require().NoError(err)
-	fmt.Println(res)
-
+	
 	// Store the first one in the test suite
 	s.batchInfo = &core.BatchInfo{
 		ProjectId:  1,
