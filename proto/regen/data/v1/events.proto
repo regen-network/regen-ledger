@@ -4,14 +4,14 @@ package regen.data.v1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// EventAnchorData is an event emitted when data is anchored on chain.
-message EventAnchorData {
+// EventAnchor is an event emitted when data is anchored on chain.
+message EventAnchor {
     // iri is the data IRI
     string iri = 1;
 }
 
-// EventAttestData is an event emitted when data is attested to on chain.
-message EventAttestData {
+// EventAttest is an event emitted when data is attested to on chain.
+message EventAttest {
     // iri is the data IRI
     string iri = 1;
 

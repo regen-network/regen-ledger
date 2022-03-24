@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 )
 
-func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
+func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Sender string
@@ -56,7 +56,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAnchorData{
+			m := &MsgAnchor{
 				Sender: tt.fields.Sender,
 				Hash:   tt.fields.Hash,
 			}
@@ -70,7 +70,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgAttestDataRequest_ValidateBasic(t *testing.T) {
+func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Attestors []string
@@ -110,7 +110,7 @@ func TestMsgAttestDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAttestData{
+			m := &MsgAttest{
 				Attestors: tt.fields.Attestors,
 				Hash:      tt.fields.Hash,
 			}

@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require := s.Require()
 
 	// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   s.hash,
 	})
@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   s.hash,
 	})
@@ -96,7 +96,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(iri, queryRes.Entry.Iri)
 
 	// can attest to data
-	_, err = s.msgClient.AttestData(s.ctx, &data.MsgAttestData{
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr1.String()},
 		Hash:      graphHash,
 	})
@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(queryRes.Entry, byAttestorsRes.Entries[0])
 
 	// another attestor can attest
-	_, err = s.msgClient.AttestData(s.ctx, &data.MsgAttestData{
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr2.String()},
 		Hash:      graphHash,
 	})
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 
 	// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
+	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})

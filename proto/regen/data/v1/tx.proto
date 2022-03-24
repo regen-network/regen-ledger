@@ -10,16 +10,16 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
-  // AnchorData "anchors" a piece of data to the blockchain based on its secure
+  // Anchor "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.
   //
-  // The sender in AnchorData is not attesting to the veracity of the underlying
+  // The sender in Anchor is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing timestamp services.
-  // AttestData should be used to create a digital signature attesting to the
+  // Attest should be used to create a digital signature attesting to the
   // veracity of some piece of data.
-  rpc AnchorData(MsgAnchorData) returns (MsgAnchorDataResponse);
+  rpc Anchor(MsgAnchor) returns (MsgAnchorResponse);
 
-  // AttestData allows for signing of an arbitrary piece of data on the
+  // Attest allows for signing of an arbitrary piece of data on the
   // blockchain. By "signing" data the attestors are making a statement about the
   // veracity of the data itself. It is like signing a legal document, meaning
   // that I agree to all conditions and to the best of my knowledge everything
@@ -34,11 +34,11 @@ service Msg {
   // - the blockchain transaction envelope provides built-in replay protection
   //   and timestamping
   //
-  // AttestData implicitly calls AnchorData if the data was not already anchored.
+  // Attest implicitly calls Anchor if the data was not already anchored.
   //
-  // AttestData can be called multiple times for the same content hash with different
+  // Attest can be called multiple times for the same content hash with different
   // attestors and those attestors will be appended to the list of attestors.
-  rpc AttestData(MsgAttestData) returns (MsgAttestDataResponse);
+  rpc Attest(MsgAttest) returns (MsgAttestResponse);
 
   // DefineResolver defines a resolver URL and assigns it a new integer ID
   // that can be used in calls to RegisterResolver.
@@ -48,8 +48,8 @@ service Msg {
   rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
 }
 
-// MsgAnchorData is the Msg/AnchorData request type.
-message MsgAnchorData {
+// MsgAnchor is the Msg/Anchor request type.
+message MsgAnchor {
   // sender is the address of the sender of the transaction.
   // The sender in StoreData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing services.
@@ -59,8 +59,8 @@ message MsgAnchorData {
   ContentHash hash = 2;
 }
 
-// MsgAnchorData is the Msg/AnchorData response type.
-message MsgAnchorDataResponse {
+// MsgAnchor is the Msg/Anchor response type.
+message MsgAnchorResponse {
   // timestamp is the timestamp of the block at which the data was anchored.
   google.protobuf.Timestamp timestamp = 1;
 
@@ -68,12 +68,12 @@ message MsgAnchorDataResponse {
   string iri = 2;
 }
 
-// MsgAttestData is the Msg/AttestData request type.
-message MsgAttestData {
+// MsgAttest is the Msg/Attest request type.
+message MsgAttest {
   option (gogoproto.goproto_getters) = false;
 
   // attestors are the addresses of the accounts attesting to the validity of the data.
-  // By making an AttestData request, the attestors are attesting to the veracity
+  // By making an Attest request, the attestors are attesting to the veracity
   // of the data referenced by the cid. The precise meaning of this may vary
   // depending on the underlying data.
   repeated string attestors = 1;
@@ -83,8 +83,8 @@ message MsgAttestData {
   ContentHash.Graph hash = 2;
 }
 
-// MsgAttestDataResponse is the Msg/AttestData response type.
-message MsgAttestDataResponse {}
+// MsgAttestResponse is the Msg/Attest response type.
+message MsgAttestResponse {}
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {

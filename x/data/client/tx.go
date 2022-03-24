@@ -27,8 +27,8 @@ func TxCmd(name string) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		MsgAnchorDataCmd(),
-		MsgAttestDataCmd(),
+		MsgAnchorCmd(),
+		MsgAttestCmd(),
 		MsgDefineResolverCmd(),
 		MsgRegisterResolverCmd(),
 	)
@@ -36,8 +36,8 @@ func TxCmd(name string) *cobra.Command {
 	return cmd
 }
 
-// MsgAnchorDataCmd creates a CLI command for Msg/AnchorData.
-func MsgAnchorDataCmd() *cobra.Command {
+// MsgAnchorCmd creates a CLI command for Msg/Anchor.
+func MsgAnchorCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "anchor [iri]",
 		Short: "Anchors a piece of data to the blockchain based on its secure " +
@@ -60,7 +60,7 @@ func MsgAnchorDataCmd() *cobra.Command {
 				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
 			}
 
-			msg := data.MsgAnchorData{
+			msg := data.MsgAnchor{
 				Sender: attestor.String(),
 				Hash:   content,
 			}
@@ -74,8 +74,8 @@ func MsgAnchorDataCmd() *cobra.Command {
 	return cmd
 }
 
-// MsgAttestDataCmd creates a CLI command for Msg/AttestData.
-func MsgAttestDataCmd() *cobra.Command {
+// MsgAttestCmd creates a CLI command for Msg/Attest.
+func MsgAttestCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "attest [iri]",
 		Short:   `Attest to the validity of a piece of on-chain data.`,
@@ -103,7 +103,7 @@ func MsgAttestDataCmd() *cobra.Command {
 				return sdkerrors.ErrInvalidRequest.Wrap("can only attest to graph data types")
 			}
 
-			msg := data.MsgAttestData{
+			msg := data.MsgAttest{
 				Attestors: []string{attestor.String()},
 				Hash:      graph,
 			}

@@ -22,24 +22,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// EventAnchorData is an event emitted when data is anchored on-chain.
-type EventAnchorData struct {
+// EventAnchor is an event emitted when data is anchored on chain.
+type EventAnchor struct {
 	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
-func (m *EventAnchorData) Reset()         { *m = EventAnchorData{} }
-func (m *EventAnchorData) String() string { return proto.CompactTextString(m) }
-func (*EventAnchorData) ProtoMessage()    {}
-func (*EventAnchorData) Descriptor() ([]byte, []int) {
+func (m *EventAnchor) Reset()         { *m = EventAnchor{} }
+func (m *EventAnchor) String() string { return proto.CompactTextString(m) }
+func (*EventAnchor) ProtoMessage()    {}
+func (*EventAnchor) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3e110e0930a307df, []int{0}
 }
-func (m *EventAnchorData) XXX_Unmarshal(b []byte) error {
+func (m *EventAnchor) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventAnchorData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventAnchor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventAnchorData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventAnchor.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -49,45 +49,46 @@ func (m *EventAnchorData) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *EventAnchorData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAnchorData.Merge(m, src)
+func (m *EventAnchor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAnchor.Merge(m, src)
 }
-func (m *EventAnchorData) XXX_Size() int {
+func (m *EventAnchor) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventAnchorData) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAnchorData.DiscardUnknown(m)
+func (m *EventAnchor) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAnchor.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventAnchorData proto.InternalMessageInfo
+var xxx_messageInfo_EventAnchor proto.InternalMessageInfo
 
-func (m *EventAnchorData) GetIri() string {
+func (m *EventAnchor) GetIri() string {
 	if m != nil {
 		return m.Iri
 	}
 	return ""
 }
 
-// EventAttestData is an event emitted when data is signed on-chain.
-type EventAttestData struct {
+// EventAttest is an event emitted when data is attested to on chain.
+type EventAttest struct {
 	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestors are the addresses of the accounts which have signed the data.
+	// attestors are the addresses of the accounts which have attested
+	// to the validity of the data.
 	Attestors []string `protobuf:"bytes,2,rep,name=attestors,proto3" json:"attestors,omitempty"`
 }
 
-func (m *EventAttestData) Reset()         { *m = EventAttestData{} }
-func (m *EventAttestData) String() string { return proto.CompactTextString(m) }
-func (*EventAttestData) ProtoMessage()    {}
-func (*EventAttestData) Descriptor() ([]byte, []int) {
+func (m *EventAttest) Reset()         { *m = EventAttest{} }
+func (m *EventAttest) String() string { return proto.CompactTextString(m) }
+func (*EventAttest) ProtoMessage()    {}
+func (*EventAttest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3e110e0930a307df, []int{1}
 }
-func (m *EventAttestData) XXX_Unmarshal(b []byte) error {
+func (m *EventAttest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventAttestData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventAttest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventAttestData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventAttest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -97,26 +98,26 @@ func (m *EventAttestData) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *EventAttestData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAttestData.Merge(m, src)
+func (m *EventAttest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAttest.Merge(m, src)
 }
-func (m *EventAttestData) XXX_Size() int {
+func (m *EventAttest) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventAttestData) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAttestData.DiscardUnknown(m)
+func (m *EventAttest) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAttest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventAttestData proto.InternalMessageInfo
+var xxx_messageInfo_EventAttest proto.InternalMessageInfo
 
-func (m *EventAttestData) GetIri() string {
+func (m *EventAttest) GetIri() string {
 	if m != nil {
 		return m.Iri
 	}
 	return ""
 }
 
-func (m *EventAttestData) GetAttestors() []string {
+func (m *EventAttest) GetAttestors() []string {
 	if m != nil {
 		return m.Attestors
 	}
@@ -124,29 +125,29 @@ func (m *EventAttestData) GetAttestors() []string {
 }
 
 func init() {
-	proto.RegisterType((*EventAnchorData)(nil), "regen.data.v1.EventAnchorData")
-	proto.RegisterType((*EventAttestData)(nil), "regen.data.v1.EventAttestData")
+	proto.RegisterType((*EventAnchor)(nil), "regen.data.v1.EventAnchor")
+	proto.RegisterType((*EventAttest)(nil), "regen.data.v1.EventAttest")
 }
 
 func init() { proto.RegisterFile("regen/data/v1/events.proto", fileDescriptor_3e110e0930a307df) }
 
 var fileDescriptor_3e110e0930a307df = []byte{
-	// 192 bytes of a gzipped FileDescriptorProto
+	// 188 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2a, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x49, 0x2c, 0x49, 0xd4, 0x2f, 0x33, 0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29,
 	0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x05, 0xcb, 0xe9, 0x81, 0xe4, 0xf4, 0xca, 0x0c,
-	0x95, 0x94, 0xb9, 0xf8, 0x5d, 0x41, 0xd2, 0x8e, 0x79, 0xc9, 0x19, 0xf9, 0x45, 0x2e, 0x89, 0x25,
-	0x89, 0x42, 0x02, 0x5c, 0xcc, 0x99, 0x45, 0x99, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x20,
-	0xa6, 0x92, 0x23, 0x4c, 0x51, 0x49, 0x49, 0x6a, 0x71, 0x09, 0x76, 0x45, 0x42, 0x32, 0x5c, 0x9c,
-	0x89, 0x60, 0xf9, 0xfc, 0xa2, 0x62, 0x09, 0x26, 0x05, 0x66, 0x0d, 0xce, 0x20, 0x84, 0x80, 0x93,
-	0xdb, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1,
-	0x1c, 0xc3, 0x85, 0xc7, 0x72, 0x0c, 0x37, 0x1e, 0xcb, 0x31, 0x44, 0xe9, 0xa4, 0x67, 0x96, 0x64,
-	0x94, 0x26, 0xe9, 0x25, 0xe7, 0xe7, 0xea, 0x83, 0xdd, 0xa6, 0x9b, 0x97, 0x5a, 0x52, 0x9e, 0x5f,
-	0x94, 0x0d, 0xe5, 0xe5, 0xa4, 0xa6, 0xa4, 0xa7, 0x16, 0xe9, 0x57, 0x80, 0xbd, 0x93, 0xc4, 0x06,
-	0xf6, 0x85, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xbb, 0x95, 0xb4, 0x37, 0xe3, 0x00, 0x00, 0x00,
+	0x95, 0xe4, 0xb9, 0xb8, 0x5d, 0x41, 0xd2, 0x8e, 0x79, 0xc9, 0x19, 0xf9, 0x45, 0x42, 0x02, 0x5c,
+	0xcc, 0x99, 0x45, 0x99, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x20, 0xa6, 0x92, 0x2d, 0x4c,
+	0x41, 0x49, 0x49, 0x6a, 0x71, 0x09, 0xa6, 0x02, 0x21, 0x19, 0x2e, 0xce, 0x44, 0xb0, 0x5c, 0x7e,
+	0x51, 0xb1, 0x04, 0x93, 0x02, 0xb3, 0x06, 0x67, 0x10, 0x42, 0xc0, 0xc9, 0xed, 0xc4, 0x23, 0x39,
+	0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63,
+	0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0x74, 0xd2, 0x33, 0x4b, 0x32, 0x4a, 0x93, 0xf4, 0x92,
+	0xf3, 0x73, 0xf5, 0xc1, 0x6e, 0xd2, 0xcd, 0x4b, 0x2d, 0x29, 0xcf, 0x2f, 0xca, 0x86, 0xf2, 0x72,
+	0x52, 0x53, 0xd2, 0x53, 0x8b, 0xf4, 0x2b, 0xc0, 0xde, 0x48, 0x62, 0x03, 0xbb, 0xde, 0x18, 0x10,
+	0x00, 0x00, 0xff, 0xff, 0x37, 0x98, 0x60, 0xff, 0xdb, 0x00, 0x00, 0x00,
 }
 
-func (m *EventAnchorData) Marshal() (dAtA []byte, err error) {
+func (m *EventAnchor) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -156,12 +157,12 @@ func (m *EventAnchorData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAnchorData) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventAnchor) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAnchorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventAnchor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -176,7 +177,7 @@ func (m *EventAnchorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventAttestData) Marshal() (dAtA []byte, err error) {
+func (m *EventAttest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -186,12 +187,12 @@ func (m *EventAttestData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAttestData) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventAttest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAttestData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventAttest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -226,7 +227,7 @@ func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *EventAnchorData) Size() (n int) {
+func (m *EventAnchor) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -239,7 +240,7 @@ func (m *EventAnchorData) Size() (n int) {
 	return n
 }
 
-func (m *EventAttestData) Size() (n int) {
+func (m *EventAttest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -264,7 +265,7 @@ func sovEvents(x uint64) (n int) {
 func sozEvents(x uint64) (n int) {
 	return sovEvents(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *EventAnchorData) Unmarshal(dAtA []byte) error {
+func (m *EventAnchor) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -287,10 +288,10 @@ func (m *EventAnchorData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventAnchorData: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventAnchor: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAnchorData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventAnchor: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -346,7 +347,7 @@ func (m *EventAnchorData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventAttestData) Unmarshal(dAtA []byte) error {
+func (m *EventAttest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -369,10 +370,10 @@ func (m *EventAttestData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventAttestData: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventAttest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAttestData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventAttest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
