@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -79,6 +80,8 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
 	}
 
 	// add the new issuers
@@ -93,6 +96,8 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassIssuersUpdated{

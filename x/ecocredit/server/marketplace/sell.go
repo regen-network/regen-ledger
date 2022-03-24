@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -46,6 +47,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err = k.escrowCredits(ctx, ownerAcc, batch.Id, sellQty); err != nil {
 			return nil, err
 		}
+
 		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
 		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
 		//if err != nil {
@@ -68,8 +70,8 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, err
 		}
+
 		sellOrderIds[i] = id
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
 			OrderId:           id,
 			BatchDenom:        batch.BatchDenom,
@@ -80,6 +82,8 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
 	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }

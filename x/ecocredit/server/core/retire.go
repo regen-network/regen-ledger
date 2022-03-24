@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -75,12 +76,14 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}); err != nil {
 			return nil, err
 		}
+
 		err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,
 		})
+
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Retirer:    req.Holder,
 			BatchDenom: credit.BatchDenom,
@@ -89,7 +92,8 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}); err != nil {
 			return nil, err
 		}
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgRetire credit iteration")
 	}
 	return &core.MsgRetireResponse{}, nil
 }

@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"context"
-
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 
@@ -17,9 +16,9 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
+func (s serverImpl) AnchorData(ctx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	iri, _, timestamp, err := s.anchorAndGetIRI(sdkCtx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
@@ -34,20 +33,20 @@ type ToIRI interface {
 	ToIRI() (string, error)
 }
 
-func (s serverImpl) anchorAndGetIRI(ctx sdk.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
+func (s serverImpl) anchorAndGetIRI(sdkCtx sdk.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
 	iri, err = toIRI.ToIRI()
 	if err != nil {
 		return "", nil, nil, err
 	}
 
-	store := ctx.KVStore(s.storeKey)
+	store := sdkCtx.KVStore(s.storeKey)
 	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
-	timestamp, err = s.anchorAndGetTimestamp(ctx, id, iri)
+	timestamp, err = s.anchorAndGetTimestamp(sdkCtx, id, iri)
 	return iri, id, timestamp, err
 }
 
-func (s serverImpl) anchorAndGetTimestamp(ctx sdk.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
-	store := ctx.KVStore(s.storeKey)
+func (s serverImpl) anchorAndGetTimestamp(sdkCtx sdk.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
+	store := sdkCtx.KVStore(s.storeKey)
 	key := AnchorTimestampKey(id)
 	bz := store.Get(key)
 	if len(bz) != 0 {
@@ -60,7 +59,7 @@ func (s serverImpl) anchorAndGetTimestamp(ctx sdk.Context, id []byte, iri string
 		return &timestamp, nil
 	}
 
-	timestamp, err := blockTimestamp(ctx)
+	timestamp, err := blockTimestamp(sdkCtx)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +71,7 @@ func (s serverImpl) anchorAndGetTimestamp(ctx sdk.Context, id []byte, iri string
 
 	store.Set(key, bz)
 
-	return timestamp, ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
+	return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
 }
 
 func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
@@ -86,14 +85,14 @@ func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
 
 var trueBz = []byte{1}
 
-func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	iri, id, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
+func (s serverImpl) SignData(ctx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	iri, id, timestamp, err := s.anchorAndGetIRI(sdkCtx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
 
-	store := ctx.KVStore(s.storeKey)
+	store := sdkCtx.KVStore(s.storeKey)
 	timestampBz, err := timestamp.Marshal()
 	if err != nil {
 		return nil, err
@@ -113,9 +112,11 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 		store.Set(key, timestampBz)
 		// set reverse lookup key
 		store.Set(SignerIDKey(addr, id), trueBz)
+
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
+	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventSignData{
 		Iri:     iri,
 		Signers: request.Signers,
 	})
@@ -144,6 +145,8 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 }
 
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, msg.ResolverId)
 	if err != nil {
 		return nil, err
@@ -159,7 +162,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 	}
 
 	for _, datum := range msg.Data {
-		_, id, _, err := s.anchorAndGetIRI(sdk.UnwrapSDKContext(ctx), datum)
+		_, id, _, err := s.anchorAndGetIRI(sdkCtx, datum)
 		if err != nil {
 			return nil, err
 		}
@@ -173,6 +176,8 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		if err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest datum iteration")
 	}
 	return &data.MsgRegisterResolverResponse{}, nil
 }
