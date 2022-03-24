@@ -38,7 +38,7 @@ The credit class admin is defined within a credit class as the address with the 
 
 ### Credit Class Issuers
 
-The credit class issuers are defined within a credit class as the addresses with the authority to issue credit batches from the credit class. The list of credit class issuers is defined at the time the credit class is created and only the admin can update the list after the credit class is created.
+The credit class issuers are defined within a credit class as the addresses with the authority to issue credit batches under the credit class. The list of credit class issuers is defined at the time the credit class is created and only the admin can update the list after the credit class is created.
 
 ### Credit Batch
 
@@ -52,47 +52,59 @@ For more information about the properties of a credit batch, see [BatchInfo](htt
 
 ### Credits
 
-Credits are issued in credit batches in either a tradable or retired state. The owner of tradable credits can send, retire, or cancel the credits at any time. Tradable credits are only fungible with credits from the same credit batch. Retiring a credit is permanent.
+Credits are issued in credit batches in either a tradable or retired state. The owner of tradable credits can send, retire, or cancel the credits at any time. Tradable credits are only fungible with credits from the same credit batch. Retiring a credit implies the owner of the credit is consuming it as an offset. Retiring a credit is permanent. Cancelled credits are credits that have moved to another registry. 
 
 ### Tradable Credits
 
-Tradable credits are credits that the owner has full control over. Tradable credits can be transferred by the owner to another account, put into a basket in return for basket tokens (see [basket](#basket-submodule) for more information), or listed for sale in the marketplace, placing the credits in escrow until the sell order is either processed or cancelled (or the amount is updated).
+Tradable credits are credits that the owner has full control over. Tradable credits can be transferred by the owner to another account, put into a basket in return for basket tokens (see [basket](#basket-submodule) for more information), or listed for sale in the [marketplace](#marketplace-submodule), placing the credits in escrow until the sell order is either processed or cancelled (or the credit amount within the sell order is updated). Tradable credits can be retired or cancelled by the owner at any time.
 
 ### Retired Credits
 
-Retiring a credit is equivalent to burning a token with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the owner of the credit is claiming it as an offset. Credits can be retired upon issuance, retired upon transfer, or retired directly by the owner. Credits can also be set to automatically retire when taken from a [basket](#basket-submodule) or sold in the marketplace. Retiring a credit is permanent.
+Retiring a credit is equivalent to burning a token with the exception that retired credits are actively tracked after they are retired. Retiring a credit implies the owner of the credit is consuming it as an offset. Credits can be retired upon issuance, upon transfer, upon being taken from a [basket](#basket-submodule), upon being sold in the [marketplace](#marketplace-submodule), or directly by the owner. Retiring a credit is permanent.
 
 ### Cancelled Credits
 
-Cancelled credits are credit that cannot be traded or retired. Credits are cancelled in the event that the credit has moved to another registry.
+Cancelled credits are credit that cannot be transferred or retired. Credits are cancelled in the event that the credit has moved to another registry.
 
 ## Basket Submodule
 
 ### Basket
 
-...
+A basket is an abstraction for different types of credits that meet a defined criteria. Credits can be put into a basket in exchange for an equivalent amount of basket tokens. The basket criteria can be set to only accept specific credit types, credit classes, and credit batches that meet a specific date criteria (e.g. credit batches with a minimum start date, credit batches with a start date within a duration of time, or credit batches with a start date year within a number of years into the past). Basket tokens can be returned to the basket at any time in exchange for the equivalent amount of credits.
+
+For more information about the properties of a basket, see [Basket](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Basket).
 
 ### Basket Tokens
 
-...
+Basket tokens are minted when credits are put into a basket. Upon putting credits into a basket, the owner receives the equivalent amount of basket tokens. Basket tokens are fully fungible with other tokens from the same basket. Basket tokens are minted using the bank module from Cosmos SDK, and are therefore compatible with IBC, enabling basket tokens to easily move across chains. Basket tokens can be returned to the basket in exchange for the equivalent amount of credits.
 
 ## Marketplace Submodule
 
-The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution. In the current implementation of the order book, there is no automatic matching and users have to manually take the orders.
+### Storefront
+
+The ecocredit module supports marketplace functionality using a simple storefront model. Credit owners can create sell orders that can then be processed through direct buy orders. Credits can be auto-retired or remain in a tradable state upon purchase.
 
 ### Sell Order
 
-A sell order is an order to sell ecosystem service credits. Each sell order has a unique ID that is auto-generated using a sequence table. A sell order stores the address of the owner of the credits being sold, the credit batch ID (denomination) of the credits being sold, the quantity of credits being sold, the asking price for each unit of the credit batch, and an option to enable/disable auto-retirement. Each credit unit of the credit batch will be sold for at least the asking price.
+A sell order is an order to sell credits and is created by the owner of the credits. The seller sets the quantity of credits and the asking price. The asking price must use an approved token denomination listed within the on-chain parameter. When a sell order is created, the credits are held in escrow. The seller has the option to auto-retire the credits upon being sold and the option to allow for partial fills. The seller can update or cancel the order at any time. When a sell order is cancelled the credits are returned from escrow.
 
-### Buy Order
+For more information about the properties of a sell order, see [SellOrder](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.SellOrder).
 
-A buy order is an order to buy ecosystem service credits. Like the sell order, each buy order has a unique ID that is auto-generated using a sequence table. A buy order can either be a direct buy order (an order against a specific sell order) or an indirect buy order (an order that can be filled by multiple sell orders that match a filter criteria). A buy order stores the selection (either the sell order id or the filter criteria), the quantity of credits to buy, the bid price for each unit of the credit batch(es), an option to enable/disable auto-retirement, and an option to enable/disable partial fills. A buy order can only successfully disable auto-retirement if the sell-order has disabled auto-retirement.
+### Direct Buy Order
 
-### Ask Denom
+A direct buy order is an order to buy credits from a specific sell order. The buyer specifies the quantity of credits to buy. If partial fills are enabled in the sell order, the buyer can specify a quantity less than the available quantity. If partial fills are disabled, the buyer must specify the total quantity of credits. The buyer has the option to disable auto-retirement only if the sell order has also disabled auto-retirement. If auto-retirement is enabled, the credits are retired upon being sent to the buyer.
 
-An "ask denom" is a denom that has been approved through a governance process as an accepted denom for listing ecosystem service credits. The "ask denom" includes the denom to allow (the base denom), the denom to display to the user, and an exponent that relates the denom to the display denom.
+### Allowed Denom
+
+An allowed denom is a token denomination that has been approved to use within a sell order. A seller can only provide an ask price in a token denomination that is included in an on-chain parameter set through an on-chain governance process.
+
+For more information about the properties of an allowed denom, see [AllowedDenom](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.AllowedDenom).
+
+<br/>
 
 ---
+
+<br/>
 
 ![Ecocredit Types](./assets/types.png)
 
