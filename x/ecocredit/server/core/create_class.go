@@ -31,8 +31,16 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
+	feeAmt := params.CreditClassFee.AmountOf(req.Fee.Denom)
+	if feeAmt.IsZero() {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
+	}
+	if req.Fee.Amount.LT(feeAmt) {
+		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v", feeAmt, req.Fee.Denom, req.Fee)
+	}
+
 	// Charge the admin a fee to create the credit class
-	err = k.chargeCreditClassFee(sdkCtx, adminAddress, params.CreditClassFee)
+	err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{sdk.Coin{Denom: req.Fee.Denom, Amount: feeAmt}})
 	if err != nil {
 		return nil, err
 	}

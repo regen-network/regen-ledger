@@ -4,6 +4,7 @@ package regen.ecocredit.v1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -57,6 +58,10 @@ message MsgCreateClass {
 
   // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
+
+  // fee specifies the fee to pay for the creation of the credit class.
+  // acceptable fees for creating a credit class can be found in the governance parameters for the ecocredit module.
+  cosmos.base.v1beta1.Coin fee = 5;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
