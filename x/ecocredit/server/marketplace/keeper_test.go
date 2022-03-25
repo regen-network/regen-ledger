@@ -18,7 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -29,7 +29,7 @@ type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
 	coreStore    ecoApi.StateStore
-	marketStore  marketApi.StateStore
+	marketStore  api.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
@@ -48,7 +48,7 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.marketStore, err = marketApi.NewStateStore(s.db)
+	s.marketStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()

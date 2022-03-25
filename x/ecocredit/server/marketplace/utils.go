@@ -3,12 +3,12 @@ package marketplace
 import (
 	"context"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+  api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // assertHasBalance checks that the account has `qty` credits from the given batch id.
