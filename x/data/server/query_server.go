@@ -14,7 +14,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormstore"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -65,18 +65,18 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 	return entry, nil
 }
 
-// BySigner queries data based on signers.
-func (s serverImpl) BySigner(ctx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(request.Signer)
+// ByAttestor queries data based on attestors.
+func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttestorRequest) (*data.QueryByAttestorResponse, error) {
+	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
 		return nil, err
 	}
 
 	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-	signerIDStore := prefix.NewStore(store, SignerIDIndexPrefix(addr))
+	attestorIDStore := prefix.NewStore(store, AttestorIDIndexPrefix(addr))
 
 	var entries []*data.ContentEntry
-	pageRes, err := query.Paginate(signerIDStore, request.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(attestorIDStore, request.Pagination, func(key []byte, value []byte) error {
 		entry, err := s.getEntry(store, key)
 		if err != nil {
 			return err
@@ -89,33 +89,33 @@ func (s serverImpl) BySigner(ctx context.Context, request *data.QueryBySignerReq
 		return nil, err
 	}
 
-	return &data.QueryBySignerResponse{
+	return &data.QueryByAttestorResponse{
 		Entries:    entries,
 		Pagination: pageRes,
 	}, nil
 }
 
-// Signers queries the signers by IRI.
-func (s serverImpl) Signers(ctx context.Context, request *data.QuerySignersRequest) (*data.QuerySignersResponse, error) {
+// Attestors queries the attestors by IRI.
+func (s serverImpl) Attestors(ctx context.Context, request *data.QueryAttestorsRequest) (*data.QueryAttestorsResponse, error) {
 	id, err := s.getID(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
 
 	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-	signerIDStore := prefix.NewStore(store, IDSignerIndexPrefix(id))
+	attestorIDStore := prefix.NewStore(store, IDAttestorIndexPrefix(id))
 
-	var signers []string
-	pageRes, err := query.Paginate(signerIDStore, request.Pagination, func(key []byte, value []byte) error {
-		signers = append(signers, sdk.AccAddress(key).String())
+	var attestors []string
+	pageRes, err := query.Paginate(attestorIDStore, request.Pagination, func(key []byte, value []byte) error {
+		attestors = append(attestors, sdk.AccAddress(key).String())
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.QuerySignersResponse{
-		Signers:    signers,
+	return &data.QueryAttestorsResponse{
+		Attestors:  attestors,
 		Pagination: pageRes,
 	}, nil
 }
@@ -130,9 +130,13 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		request.Pagination = &query.PageRequest{}
 	}
 
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
+	}
 	it, err := s.stateStore.DataResolverTable().
 		List(ctx, api.DataResolverPrimaryKey{}.WithId(id),
-			ormlist.Paginate(ormstore.GogoPageReqToPulsarPageReq(request.Pagination)))
+			ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -152,8 +156,9 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
 	}
 
-	if it.PageResponse() != nil {
-		res.Pagination = ormstore.PulsarPageResToGogoPageRes(it.PageResponse())
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
 	}
 
 	return res, nil

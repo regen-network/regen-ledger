@@ -16,6 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 func TestSell_Valid(t *testing.T) {
@@ -165,7 +166,7 @@ func TestSell_Invalid(t *testing.T) {
 
 // assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
 func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.BatchBalance, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, orderAmt math.Dec) {
-	decs, err := server.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
+	decs, err := core.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
 		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
 	assert.NilError(t, err)
@@ -193,6 +194,7 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
+// testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
 		ProjectId:  1,

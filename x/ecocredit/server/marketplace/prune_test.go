@@ -1,16 +1,19 @@
 package marketplace
 
 import (
+	"testing"
+	"time"
+
+	"github.com/golang/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"gotest.tools/v3/assert"
-	"testing"
-	"time"
 )
 
 func TestSell_Prune(t *testing.T) {
@@ -39,7 +42,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
-		Owner:  s.addr.String(),
+		Owner: s.addr.String(),
 		Orders: []*v1.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},

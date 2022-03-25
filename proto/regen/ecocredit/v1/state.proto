@@ -80,23 +80,26 @@ message ProjectInfo {
         index: {id: 2, fields: "class_id,name", unique: true}
     };
 
-    // id is the unique ID of the project
+    // id is the unique ID of the project.
     uint64 id = 1;
 
     // name is the unique name of the project either formed from its credit
     // class name and an auto-generated number or a custom name provided
     // upon creation.
-    string name = 3;
+    string name = 2;
+
+    // admin is the admin of the project.
+    bytes admin = 3;
 
     // class_id is the ID of credit class for this project.
-    uint64 class_id = 2;
+    uint64 class_id = 4;
 
     // project_location is the location of the project.
     // Full documentation can be found in MsgCreateProject.project_location.
-    string project_location = 4;
+    string project_location = 5;
 
     // metadata is any arbitrary metadata attached to the project.
-    string metadata = 5;
+    string metadata = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.

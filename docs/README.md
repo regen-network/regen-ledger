@@ -1,10 +1,10 @@
 ---
 home: true
-heroImage: /regen-logo.png
+heroImage: /regen-ledger.png
 heroText: Regen Ledger 
-tagline: Technical docs for Regen Network's blockchain
+tagline: Technical documentation for Regen Network's blockchain application and networks
 actionText: Introduction →
-actionLink: /intro/
+actionLink: /ledger/
 features:
 - title: Ecosystem Service Credits
   details: Design and issue your own ecocredit. Agroforestry? Grasslands? Cover crops? You name it!

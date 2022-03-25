@@ -9,6 +9,8 @@ import (
 )
 
 func TestMsgPut_ValidateBasic(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr := testdata.KeyTestPubAddr()
 	t1, t2 := time.Now(), time.Now()
 	denom, err := ecocredit.FormatDenom("C02", 1, &t1, &t2)
@@ -97,6 +99,8 @@ func TestMsgPut_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			m := MsgPut{
 				Owner:       tt.fields.Owner,
 				BasketDenom: tt.fields.BasketDenom,

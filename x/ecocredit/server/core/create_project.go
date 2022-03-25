@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -20,7 +21,12 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
-	err = k.assertClassIssuer(ctx, classInfo.Id, req.Issuer)
+	adminAddress, err := sdk.AccAddressFromBech32(req.Issuer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = k.assertClassIssuer(ctx, classInfo.Id, adminAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +48,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 
 	if err = k.stateStore.ProjectInfoTable().Insert(ctx, &api.ProjectInfo{
 		Name:            projectID,
+		Admin:           adminAddress,
 		ClassId:         classInfo.Id,
 		ProjectLocation: req.ProjectLocation,
 		Metadata:        req.Metadata,
@@ -50,9 +57,9 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateProject{
-		ClassId:         classID,
 		ProjectId:       projectID,
-		Issuer:          req.Issuer,
+		Admin:           adminAddress.String(),
+		ClassId:         classID,
 		ProjectLocation: req.ProjectLocation,
 	}); err != nil {
 		return nil, err
