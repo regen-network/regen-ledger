@@ -6284,7 +6284,7 @@ type BatchInfo struct {
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
 	EndDate *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
-	// issuance_date is the block timestamp when this batch was committed to state
+	// issuance_date is the timestamp when the credit batch was issued.
 	IssuanceDate *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
 }
 

@@ -5848,7 +5848,7 @@ type EventCreateBatch struct {
 	// end_date is the end of the period during which this credit batch was
 	// quantified and verified.
 	EndDate string `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
-	// issuance_date is the time of the block in which the batch was issued
+	// issuance_date is the timestamp when the credit batch was issued.
 	IssuanceDate string `protobuf:"bytes,7,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
 	// project_location is the location of the project backing the credits in this
 	// batch. Full documentation can be found in MsgCreateBatch.project_location.
