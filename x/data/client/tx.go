@@ -128,7 +128,7 @@ Parameters:
 Flags:
   --from: from flag is the address of the resolver manager
 		`,
-		Example: "regen tx data define-resolver http://foo.bar --from manager",
+		Example: "regen tx data define-resolver https://foo.bar --from manager",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
