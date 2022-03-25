@@ -16,9 +16,10 @@ func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	any := gomock.Any()
+	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
+		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin(ccFee.Denom, 20))
 		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -30,6 +31,7 @@ func TestCreateClass_Valid(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 	assert.Equal(t, res.ClassId, "C01")
@@ -71,7 +73,7 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 func TestCreateClass_Sequence(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-
+	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
@@ -87,6 +89,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
@@ -95,9 +98,41 @@ func TestCreateClass_Sequence(t *testing.T) {
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
+		Fee:              ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
 	assert.Equal(t, res.ClassId, "C01")
 	assert.Equal(t, res2.ClassId, "C02")
+}
+
+func TestCreateClass_Fees(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	any := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
+		p.AllowlistEnabled = false
+		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
+		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	}).Times(2)
+
+	// wrong denom
+	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
+		Fee:              &sdk.Coin{Denom: "bar", Amount: sdk.NewInt(10)},
+	})
+	assert.ErrorContains(t, err, "bar is not allowed to be used in credit class fees")
+
+	// fee too low
+	_, err = s.k.CreateClass(s.ctx, &core.MsgCreateClass{
+		Admin:            s.addr.String(),
+		Issuers:          []string{s.addr.String()},
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
+		Fee:              &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)},
+	})
+	assert.ErrorContains(t, err, "expected 20foo for fee, got 10foo")
 }
