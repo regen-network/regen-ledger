@@ -270,7 +270,7 @@ func (m *QueryByAttestorRequest) GetPagination() *query.PageRequest {
 
 // QueryByAttestorResponse is the Query/ByAttestor response type.
 type QueryByAttestorResponse struct {
-	// entries are the ContentEntry's attested to by the attestor.
+	// entries are the ContentEntries attested to by the attestor.
 	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`

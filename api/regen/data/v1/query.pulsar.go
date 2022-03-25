@@ -9884,7 +9884,7 @@ type QueryByAttestorResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// entries are the ContentEntry's attested to by the attestor.
+	// entries are the ContentEntries attested to by the attestor.
 	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
