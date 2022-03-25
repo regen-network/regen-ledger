@@ -128,20 +128,9 @@ module.exports = {
             '/modules/ecocredit/01_concepts',
             '/modules/ecocredit/02_state',
             '/modules/ecocredit/03_messages',
-            '/modules/ecocredit/04_events',
-            '/modules/ecocredit/05_client',
-            {
-              title: 'Protobuf - Core',
-              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1',
-            },
-            {
-              title: 'Protobuf - Basket',
-              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1',
-            },
-            {
-              title: 'Protobuf - Marketplace',
-              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1',
-            },
+            '/modules/ecocredit/04_queries',
+            '/modules/ecocredit/05_events',
+            '/modules/ecocredit/06_client',
           ],
         },
         {
@@ -157,10 +146,6 @@ module.exports = {
             '/modules/data/03_messages',
             '/modules/data/04_events',
             '/modules/data/05_client',
-            {
-              title: 'Protobuf',
-              path: 'https://buf.build/regen/regen-ledger/docs/main/regen.data.v1',
-            },
           ],
         },
       ],
