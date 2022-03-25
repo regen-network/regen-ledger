@@ -7,34 +7,35 @@ import (
 	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
+	coreMocks "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
 type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
-	coreStore    ecocreditv1.StateStore
+	coreStore    ecoApi.StateStore
 	marketStore  marketApi.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
 	addr         sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks2.MockParamKeeper
+	paramsKeeper *coreMocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
@@ -45,7 +46,7 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.coreStore, err = ecocreditv1.NewStateStore(s.db)
+	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	s.marketStore, err = marketApi.NewStateStore(s.db)
 	assert.NilError(t, err)
@@ -63,7 +64,7 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	s.paramsKeeper = coreMocks.NewMockParamKeeper(s.ctrl)
 	s.k = NewKeeper(s.db, s.coreStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	return s
