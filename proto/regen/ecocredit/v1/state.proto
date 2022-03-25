@@ -133,7 +133,7 @@ message BatchInfo {
     // quantified and verified.
     google.protobuf.Timestamp end_date = 6;
 
-    // issuance_date is the block timestamp when this batch was committed to state
+    // issuance_date is the timestamp when the credit batch was issued.
     google.protobuf.Timestamp issuance_date = 7;
 }
 

@@ -54,7 +54,7 @@ message EventCreateBatch {
   // quantified and verified.
   string end_date = 6;
 
-  // issuance_date is the time of the block in which the batch was issued
+  // issuance_date is the timestamp when the credit batch was issued.
   string issuance_date = 7;
 
   // project_location is the location of the project backing the credits in this
