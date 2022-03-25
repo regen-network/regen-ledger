@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -40,6 +41,10 @@ func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) 
 
 // ByHash queries data based on ContentHash.
 func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
 		return nil, err
@@ -93,6 +98,10 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 
 // IRIByHash queries IRI based on ContentHash.
 func (s serverImpl) IRIByHash(ctx context.Context, request *data.QueryIRIByHashRequest) (*data.QueryIRIByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
 		return nil, err
@@ -142,6 +151,10 @@ func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttes
 
 // AttestorsByHash queries attestors based on ContentHash.
 func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAttestorsByHashRequest) (*data.QueryAttestorsByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
 		return nil, err
@@ -217,6 +230,10 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 // ResolversByHash queries resolvers based on ContentHash.
 func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryResolversByHashRequest) (*data.QueryResolversByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
 		return nil, err
