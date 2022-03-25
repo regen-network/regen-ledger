@@ -96,7 +96,7 @@ message QueryByAttestorRequest {
 
 // QueryByAttestorResponse is the Query/ByAttestor response type.
 message QueryByAttestorResponse {
-  // entries are the ContentEntry's attested to by the attestor.
+  // entries are the ContentEntries attested to by the attestor.
   repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
