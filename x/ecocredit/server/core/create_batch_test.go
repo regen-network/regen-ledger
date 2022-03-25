@@ -22,6 +22,11 @@ func TestCreateBatch_Valid(t *testing.T) {
 	_, projectName := batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
+	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = types.WrapSDKContext(s.sdkCtx)
+
 	any := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
 		p.AllowlistEnabled = false
@@ -56,6 +61,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	batch, err := s.stateStore.BatchInfoTable().Get(s.ctx, 1)
 	assert.NilError(t, err, "unexpected error: %w", err)
 	assert.Equal(t, res.BatchDenom, batch.BatchDenom)
+	assert.Check(t, batch.IssuanceDate.AsTime().Equal(blockTime))
 
 	// check the supply was set
 	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)

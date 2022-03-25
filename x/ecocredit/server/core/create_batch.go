@@ -51,12 +51,14 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
+	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	rowID, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
-		ProjectId:  projectInfo.Id,
-		BatchDenom: batchDenom,
-		Metadata:   req.Metadata,
-		StartDate:  startDate,
-		EndDate:    endDate,
+		ProjectId:    projectInfo.Id,
+		BatchDenom:   batchDenom,
+		Metadata:     req.Metadata,
+		StartDate:    startDate,
+		EndDate:      endDate,
+		IssuanceDate: issuanceDate,
 	})
 	if err != nil {
 		return nil, err
@@ -139,6 +141,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		TotalAmount:     totalAmount.String(),
 		StartDate:       startDate.String(),
 		EndDate:         endDate.String(),
+		IssuanceDate:    issuanceDate.String(),
 		ProjectLocation: projectInfo.ProjectLocation,
 		ProjectId:       projectInfo.Name,
 	}); err != nil {
