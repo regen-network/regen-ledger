@@ -47,8 +47,9 @@ The marketplace submodule enables the creation and management of sell orders for
 1. **[Concepts](01_concepts.md)**
 2. **[State](02_state.md)**
 3. **[Msg Service](03_messages.md)**
-4. **[Events](04_events.md)**
-5. **[Client](05_client.md)**
+3. **[Query Service](04_queries.md)**
+4. **[Events](05_events.md)**
+5. **[Client](06_client.md)**
 
 ## RFCs
 
