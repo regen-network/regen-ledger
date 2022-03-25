@@ -601,7 +601,7 @@ func (x *MsgSell_Order) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSell_Order) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[8]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2391,7 +2391,7 @@ func (x *MsgUpdateSellOrders_Update) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgUpdateSellOrders_Update) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[9]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3399,6 +3399,830 @@ func (x *fastReflection_MsgUpdateSellOrdersResponse) ProtoMethods() *protoiface.
 	}
 }
 
+var (
+	md_MsgCancelSellOrder               protoreflect.MessageDescriptor
+	fd_MsgCancelSellOrder_seller        protoreflect.FieldDescriptor
+	fd_MsgCancelSellOrder_sell_order_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_tx_proto_init()
+	md_MsgCancelSellOrder = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgCancelSellOrder")
+	fd_MsgCancelSellOrder_seller = md_MsgCancelSellOrder.Fields().ByName("seller")
+	fd_MsgCancelSellOrder_sell_order_id = md_MsgCancelSellOrder.Fields().ByName("sell_order_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgCancelSellOrder)(nil)
+
+type fastReflection_MsgCancelSellOrder MsgCancelSellOrder
+
+func (x *MsgCancelSellOrder) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgCancelSellOrder)(x)
+}
+
+func (x *MsgCancelSellOrder) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgCancelSellOrder_messageType fastReflection_MsgCancelSellOrder_messageType
+var _ protoreflect.MessageType = fastReflection_MsgCancelSellOrder_messageType{}
+
+type fastReflection_MsgCancelSellOrder_messageType struct{}
+
+func (x fastReflection_MsgCancelSellOrder_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgCancelSellOrder)(nil)
+}
+func (x fastReflection_MsgCancelSellOrder_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgCancelSellOrder)
+}
+func (x fastReflection_MsgCancelSellOrder_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgCancelSellOrder
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgCancelSellOrder) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgCancelSellOrder
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgCancelSellOrder) Type() protoreflect.MessageType {
+	return _fastReflection_MsgCancelSellOrder_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgCancelSellOrder) New() protoreflect.Message {
+	return new(fastReflection_MsgCancelSellOrder)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgCancelSellOrder) Interface() protoreflect.ProtoMessage {
+	return (*MsgCancelSellOrder)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgCancelSellOrder) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Seller != "" {
+		value := protoreflect.ValueOfString(x.Seller)
+		if !f(fd_MsgCancelSellOrder_seller, value) {
+			return
+		}
+	}
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_MsgCancelSellOrder_sell_order_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgCancelSellOrder) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		return x.Seller != ""
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		return x.SellOrderId != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrder) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		x.Seller = ""
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		x.SellOrderId = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgCancelSellOrder) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		value := x.Seller
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		value := x.SellOrderId
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrder) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		x.Seller = value.Interface().(string)
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		x.SellOrderId = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrder) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		panic(fmt.Errorf("field seller of message regen.ecocredit.marketplace.v1.MsgCancelSellOrder is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.MsgCancelSellOrder is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgCancelSellOrder) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.seller":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.marketplace.v1.MsgCancelSellOrder.sell_order_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgCancelSellOrder) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgCancelSellOrder", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgCancelSellOrder) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrder) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgCancelSellOrder) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgCancelSellOrder) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgCancelSellOrder)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Seller)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgCancelSellOrder)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.Seller) > 0 {
+			i -= len(x.Seller)
+			copy(dAtA[i:], x.Seller)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Seller)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgCancelSellOrder)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgCancelSellOrder: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgCancelSellOrder: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Seller", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Seller = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+				}
+				x.SellOrderId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SellOrderId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgCancelSellOrderResponse protoreflect.MessageDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_tx_proto_init()
+	md_MsgCancelSellOrderResponse = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgCancelSellOrderResponse")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgCancelSellOrderResponse)(nil)
+
+type fastReflection_MsgCancelSellOrderResponse MsgCancelSellOrderResponse
+
+func (x *MsgCancelSellOrderResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgCancelSellOrderResponse)(x)
+}
+
+func (x *MsgCancelSellOrderResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgCancelSellOrderResponse_messageType fastReflection_MsgCancelSellOrderResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgCancelSellOrderResponse_messageType{}
+
+type fastReflection_MsgCancelSellOrderResponse_messageType struct{}
+
+func (x fastReflection_MsgCancelSellOrderResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgCancelSellOrderResponse)(nil)
+}
+func (x fastReflection_MsgCancelSellOrderResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgCancelSellOrderResponse)
+}
+func (x fastReflection_MsgCancelSellOrderResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgCancelSellOrderResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgCancelSellOrderResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgCancelSellOrderResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgCancelSellOrderResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgCancelSellOrderResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgCancelSellOrderResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgCancelSellOrderResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgCancelSellOrderResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgCancelSellOrderResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgCancelSellOrderResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgCancelSellOrderResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrderResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgCancelSellOrderResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrderResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrderResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgCancelSellOrderResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgCancelSellOrderResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgCancelSellOrderResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgCancelSellOrderResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgCancelSellOrderResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgCancelSellOrderResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgCancelSellOrderResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgCancelSellOrderResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgCancelSellOrderResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgCancelSellOrderResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgCancelSellOrderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 var _ protoreflect.List = (*_MsgBuy_2_list)(nil)
 
 type _MsgBuy_2_list struct {
@@ -3472,7 +4296,7 @@ func (x *MsgBuy) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBuy) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[4]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3989,7 +4813,7 @@ func (x *MsgBuy_Order) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBuy_Order) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[10]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4808,7 +5632,7 @@ func (x *MsgBuy_Order_Selection) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBuy_Order_Selection) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5390,7 +6214,7 @@ func (x *MsgBuyResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgBuyResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[5]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5886,7 +6710,7 @@ func (x *MsgAllowAskDenom) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAllowAskDenom) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[6]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6474,7 +7298,7 @@ func (x *MsgAllowAskDenomResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgAllowAskDenomResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[7]
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6981,6 +7805,79 @@ func (*MsgUpdateSellOrdersResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
+// MsgCancelSellOrder is the Msg/CancelSellOrder request type.
+type MsgCancelSellOrder struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// seller is the address of the seller.
+	Seller string `protobuf:"bytes,1,opt,name=seller,proto3" json:"seller,omitempty"`
+	// sell_order_id is the id of the seller order to cancel.
+	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
+}
+
+func (x *MsgCancelSellOrder) Reset() {
+	*x = MsgCancelSellOrder{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgCancelSellOrder) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgCancelSellOrder) ProtoMessage() {}
+
+// Deprecated: Use MsgCancelSellOrder.ProtoReflect.Descriptor instead.
+func (*MsgCancelSellOrder) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MsgCancelSellOrder) GetSeller() string {
+	if x != nil {
+		return x.Seller
+	}
+	return ""
+}
+
+func (x *MsgCancelSellOrder) GetSellOrderId() uint64 {
+	if x != nil {
+		return x.SellOrderId
+	}
+	return 0
+}
+
+// MsgCancelSellOrder is the Msg/CancelSellOrder response type.
+type MsgCancelSellOrderResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *MsgCancelSellOrderResponse) Reset() {
+	*x = MsgCancelSellOrderResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgCancelSellOrderResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgCancelSellOrderResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgCancelSellOrderResponse.ProtoReflect.Descriptor instead.
+func (*MsgCancelSellOrderResponse) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{5}
+}
+
 // MsgBuy is the Msg/Buy request type.
 type MsgBuy struct {
 	state         protoimpl.MessageState
@@ -6996,7 +7893,7 @@ type MsgBuy struct {
 func (x *MsgBuy) Reset() {
 	*x = MsgBuy{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[4]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7010,7 +7907,7 @@ func (*MsgBuy) ProtoMessage() {}
 
 // Deprecated: Use MsgBuy.ProtoReflect.Descriptor instead.
 func (*MsgBuy) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{4}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MsgBuy) GetBuyer() string {
@@ -7042,7 +7939,7 @@ type MsgBuyResponse struct {
 func (x *MsgBuyResponse) Reset() {
 	*x = MsgBuyResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[5]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7056,7 +7953,7 @@ func (*MsgBuyResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgBuyResponse.ProtoReflect.Descriptor instead.
 func (*MsgBuyResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{5}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MsgBuyResponse) GetBuyOrderIds() []uint64 {
@@ -7086,7 +7983,7 @@ type MsgAllowAskDenom struct {
 func (x *MsgAllowAskDenom) Reset() {
 	*x = MsgAllowAskDenom{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[6]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7100,7 +7997,7 @@ func (*MsgAllowAskDenom) ProtoMessage() {}
 
 // Deprecated: Use MsgAllowAskDenom.ProtoReflect.Descriptor instead.
 func (*MsgAllowAskDenom) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{6}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MsgAllowAskDenom) GetRootAddress() string {
@@ -7141,7 +8038,7 @@ type MsgAllowAskDenomResponse struct {
 func (x *MsgAllowAskDenomResponse) Reset() {
 	*x = MsgAllowAskDenomResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[7]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7155,7 +8052,7 @@ func (*MsgAllowAskDenomResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgAllowAskDenomResponse.ProtoReflect.Descriptor instead.
 func (*MsgAllowAskDenomResponse) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{7}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{9}
 }
 
 // Order is the content of a new sell order.
@@ -7188,7 +8085,7 @@ type MsgSell_Order struct {
 func (x *MsgSell_Order) Reset() {
 	*x = MsgSell_Order{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[8]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7263,7 +8160,7 @@ type MsgUpdateSellOrders_Update struct {
 func (x *MsgUpdateSellOrders_Update) Reset() {
 	*x = MsgUpdateSellOrders_Update{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[9]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7352,7 +8249,7 @@ type MsgBuy_Order struct {
 func (x *MsgBuy_Order) Reset() {
 	*x = MsgBuy_Order{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[10]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7366,7 +8263,7 @@ func (*MsgBuy_Order) ProtoMessage() {}
 
 // Deprecated: Use MsgBuy_Order.ProtoReflect.Descriptor instead.
 func (*MsgBuy_Order) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{4, 0}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *MsgBuy_Order) GetSelection() *MsgBuy_Order_Selection {
@@ -7435,7 +8332,7 @@ type MsgBuy_Order_Selection struct {
 func (x *MsgBuy_Order_Selection) Reset() {
 	*x = MsgBuy_Order_Selection{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11]
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7449,7 +8346,7 @@ func (*MsgBuy_Order_Selection) ProtoMessage() {}
 
 // Deprecated: Use MsgBuy_Order_Selection.ProtoReflect.Descriptor instead.
 func (*MsgBuy_Order_Selection) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{4, 0, 0}
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{6, 0, 0}
 }
 
 func (x *MsgBuy_Order_Selection) GetSum() isMsgBuy_Order_Selection_Sum {
@@ -7560,7 +8457,14 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0d,
 	0x6e, 0x65, 0x77, 0x45, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x1d, 0x0a,
 	0x1b, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72,
-	0x64, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xe9, 0x04, 0x0a,
+	0x64, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x50, 0x0a, 0x12,
+	0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64,
+	0x65, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65,
+	0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x1c,
+	0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f,
+	0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xe9, 0x04, 0x0a,
 	0x06, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x62, 0x75, 0x79, 0x65, 0x72,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x62, 0x75, 0x79, 0x65, 0x72, 0x12, 0x44, 0x0a,
 	0x06, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c, 0x2e,
@@ -7613,7 +8517,7 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x22, 0x1a, 0x0a,
 	0x18, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f,
-	0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xca, 0x03, 0x0a, 0x03, 0x4d, 0x73,
+	0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xce, 0x04, 0x0a, 0x03, 0x4d, 0x73,
 	0x67, 0x12, 0x60, 0x0a, 0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65,
 	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
 	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65,
@@ -7628,40 +8532,48 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
 	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
 	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65,
-	0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x03, 0x42, 0x75,
-	0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75,
-	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x0d, 0x41, 0x6c, 0x6c,
-	0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41,
-	0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x38, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54,
-	0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f,
-	0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31,
-	0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x0f, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x32,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64,
+	0x65, 0x72, 0x1a, 0x3a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c,
+	0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d,
+	0x0a, 0x03, 0x42, 0x75, 0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x42, 0x75, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a,
+	0x0d, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x1a, 0x38, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63,
+	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76,
+	0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
+	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
+	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7676,46 +8588,50 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescData
 }
 
-var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgSell)(nil),                     // 0: regen.ecocredit.marketplace.v1.MsgSell
 	(*MsgSellResponse)(nil),             // 1: regen.ecocredit.marketplace.v1.MsgSellResponse
 	(*MsgUpdateSellOrders)(nil),         // 2: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
 	(*MsgUpdateSellOrdersResponse)(nil), // 3: regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
-	(*MsgBuy)(nil),                      // 4: regen.ecocredit.marketplace.v1.MsgBuy
-	(*MsgBuyResponse)(nil),              // 5: regen.ecocredit.marketplace.v1.MsgBuyResponse
-	(*MsgAllowAskDenom)(nil),            // 6: regen.ecocredit.marketplace.v1.MsgAllowAskDenom
-	(*MsgAllowAskDenomResponse)(nil),    // 7: regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
-	(*MsgSell_Order)(nil),               // 8: regen.ecocredit.marketplace.v1.MsgSell.Order
-	(*MsgUpdateSellOrders_Update)(nil),  // 9: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
-	(*MsgBuy_Order)(nil),                // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order
-	(*MsgBuy_Order_Selection)(nil),      // 11: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
-	(*v1beta1.Coin)(nil),                // 12: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil),       // 13: google.protobuf.Timestamp
-	(*Filter)(nil),                      // 14: regen.ecocredit.marketplace.v1.Filter
+	(*MsgCancelSellOrder)(nil),          // 4: regen.ecocredit.marketplace.v1.MsgCancelSellOrder
+	(*MsgCancelSellOrderResponse)(nil),  // 5: regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse
+	(*MsgBuy)(nil),                      // 6: regen.ecocredit.marketplace.v1.MsgBuy
+	(*MsgBuyResponse)(nil),              // 7: regen.ecocredit.marketplace.v1.MsgBuyResponse
+	(*MsgAllowAskDenom)(nil),            // 8: regen.ecocredit.marketplace.v1.MsgAllowAskDenom
+	(*MsgAllowAskDenomResponse)(nil),    // 9: regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
+	(*MsgSell_Order)(nil),               // 10: regen.ecocredit.marketplace.v1.MsgSell.Order
+	(*MsgUpdateSellOrders_Update)(nil),  // 11: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
+	(*MsgBuy_Order)(nil),                // 12: regen.ecocredit.marketplace.v1.MsgBuy.Order
+	(*MsgBuy_Order_Selection)(nil),      // 13: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
+	(*v1beta1.Coin)(nil),                // 14: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),       // 15: google.protobuf.Timestamp
+	(*Filter)(nil),                      // 16: regen.ecocredit.marketplace.v1.Filter
 }
 var file_regen_ecocredit_marketplace_v1_tx_proto_depIdxs = []int32{
-	8,  // 0: regen.ecocredit.marketplace.v1.MsgSell.orders:type_name -> regen.ecocredit.marketplace.v1.MsgSell.Order
-	9,  // 1: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.updates:type_name -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
-	10, // 2: regen.ecocredit.marketplace.v1.MsgBuy.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order
-	12, // 3: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
-	12, // 5: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
-	11, // 7: regen.ecocredit.marketplace.v1.MsgBuy.Order.selection:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
-	12, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
-	13, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
-	14, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
+	10, // 0: regen.ecocredit.marketplace.v1.MsgSell.orders:type_name -> regen.ecocredit.marketplace.v1.MsgSell.Order
+	11, // 1: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.updates:type_name -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
+	12, // 2: regen.ecocredit.marketplace.v1.MsgBuy.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order
+	14, // 3: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
+	15, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
+	14, // 5: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
+	15, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
+	13, // 7: regen.ecocredit.marketplace.v1.MsgBuy.Order.selection:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection
+	14, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
+	15, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
+	16, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.Selection.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
 	0,  // 11: regen.ecocredit.marketplace.v1.Msg.Sell:input_type -> regen.ecocredit.marketplace.v1.MsgSell
 	2,  // 12: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:input_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
-	4,  // 13: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
-	6,  // 14: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
-	1,  // 15: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
-	3,  // 16: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
-	5,  // 17: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
-	7,  // 18: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
-	15, // [15:19] is the sub-list for method output_type
-	11, // [11:15] is the sub-list for method input_type
+	4,  // 13: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:input_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrder
+	6,  // 14: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
+	8,  // 15: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
+	1,  // 16: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
+	3,  // 17: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
+	5,  // 18: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:output_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse
+	7,  // 19: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
+	9,  // 20: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
+	16, // [16:21] is the sub-list for method output_type
+	11, // [11:16] is the sub-list for method input_type
 	11, // [11:11] is the sub-list for extension type_name
 	11, // [11:11] is the sub-list for extension extendee
 	0,  // [0:11] is the sub-list for field type_name
@@ -7777,7 +8693,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgBuy); i {
+			switch v := v.(*MsgCancelSellOrder); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7789,7 +8705,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgBuyResponse); i {
+			switch v := v.(*MsgCancelSellOrderResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7801,7 +8717,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAllowAskDenom); i {
+			switch v := v.(*MsgBuy); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7813,7 +8729,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgAllowAskDenomResponse); i {
+			switch v := v.(*MsgBuyResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7825,7 +8741,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSell_Order); i {
+			switch v := v.(*MsgAllowAskDenom); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7837,7 +8753,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgUpdateSellOrders_Update); i {
+			switch v := v.(*MsgAllowAskDenomResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7849,7 +8765,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgBuy_Order); i {
+			switch v := v.(*MsgSell_Order); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -7861,6 +8777,30 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgUpdateSellOrders_Update); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgBuy_Order); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgBuy_Order_Selection); i {
 			case 0:
 				return &v.state
@@ -7873,7 +8813,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			}
 		}
 	}
-	file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[11].OneofWrappers = []interface{}{
+	file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[13].OneofWrappers = []interface{}{
 		(*MsgBuy_Order_Selection_SellOrderId)(nil),
 		(*MsgBuy_Order_Selection_Filter)(nil),
 	}
@@ -7883,7 +8823,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

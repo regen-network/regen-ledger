@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
@@ -30,8 +31,6 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		precision := creditType.Precision
-
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
@@ -40,7 +39,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		decs, err := utils.GetNonNegativeFixedDecs(precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -57,6 +56,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
+
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
@@ -65,6 +65,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
+
 		if err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
@@ -73,6 +74,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
+
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCancel{
 			Canceller:  holder.String(),
 			BatchDenom: credit.BatchDenom,
@@ -80,7 +82,8 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCancel credit iteration")
 	}
 	return &core.MsgCancelResponse{}, nil
 }

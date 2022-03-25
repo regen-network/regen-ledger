@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -15,7 +14,8 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestSell_Valid(t *testing.T) {
@@ -43,9 +43,9 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 
 	sellTime := time.Now()
-	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 		},
@@ -97,9 +97,9 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 		},
 	})
@@ -133,18 +133,18 @@ func TestSell_Invalid(t *testing.T) {
 	}).Times(2)
 
 	// invalid batch
-	_, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: "foo-bar-baz-001", Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
 	})
 	assert.ErrorContains(t, err, "batch denom foo-bar-baz-001")
 
 	// invalid balance
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10000000000", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
 	})
@@ -154,9 +154,9 @@ func TestSell_Invalid(t *testing.T) {
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	invalidExpirationTime, err := time.Parse("2006-01-02", "1500-01-01")
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &invalidExpirationTime},
 		},
 	})
@@ -224,10 +224,12 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
+		Escrowed: "0",
 	}))
 	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
 		BatchId:        1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
+		EscrowedAmount: "0",
 	}))
 }
