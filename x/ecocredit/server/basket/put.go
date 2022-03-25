@@ -177,13 +177,10 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
-				BasketId:   basket.Id,
-				BatchDenom: batchInfo.BatchDenom,
-				Balance:    amt.String(),
-				BatchStartDate: &timestamppb.Timestamp{
-					Seconds: batchInfo.StartDate.Seconds,
-					Nanos:   batchInfo.StartDate.Nanos,
-				},
+				BasketId:       basket.Id,
+				BatchDenom:     batchInfo.BatchDenom,
+				Balance:        amt.String(),
+				BatchStartDate: batchInfo.StartDate,
 			}
 		} else {
 			return err

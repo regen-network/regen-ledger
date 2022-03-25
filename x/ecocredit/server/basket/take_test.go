@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
@@ -83,7 +83,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	batchDenoms := []string{"C1-", "C2-", "C3-", "C4-"}
 	for _, denom := range batchDenoms {
-		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
+		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 			ProjectId:  1,
 			BatchDenom: denom,
 			Metadata:   "",
@@ -270,11 +270,11 @@ func (s takeSuite) expectRetiredSupply(batchDenom string, expected string) {
 	s.expectDec(expected, supply.RetiredAmount)
 }
 
-func (s takeSuite) getSupply(batchDenom string) *ecocreditv1.BatchSupply {
+func (s takeSuite) getSupply(batchDenom string) *ecoApi.BatchSupply {
 	id := s.denomToId[batchDenom]
 	supply, err := s.coreStore.BatchSupplyTable().Get(s.ctx, id)
 	if ormerrors.IsNotFound(err) {
-		supply = &ecocreditv1.BatchSupply{
+		supply = &ecoApi.BatchSupply{
 			BatchId:         id,
 			TradableAmount:  "0",
 			RetiredAmount:   "0",
@@ -288,7 +288,7 @@ func (s takeSuite) getSupply(batchDenom string) *ecocreditv1.BatchSupply {
 }
 
 func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
-	assert.NilError(s.t, s.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
+	assert.NilError(s.t, s.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
 		BatchId:         batchId,
 		TradableAmount:  amount,
 		RetiredAmount:   "0",
@@ -297,11 +297,11 @@ func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
 	}))
 }
 
-func (s takeSuite) getUserBalance(batchDenom string) *ecocreditv1.BatchBalance {
+func (s takeSuite) getUserBalance(batchDenom string) *ecoApi.BatchBalance {
 	id := s.denomToId[batchDenom]
 	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, id)
 	if ormerrors.IsNotFound(err) {
-		bal = &ecocreditv1.BatchBalance{
+		bal = &ecoApi.BatchBalance{
 			Address:  s.addr,
 			BatchId:  id,
 			Tradable: "0",

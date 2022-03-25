@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -210,7 +210,7 @@ func (k Keeper) addAndSaveBalance(ctx context.Context, user sdk.AccAddress, batc
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, user, batchId)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			userBal = &ecocreditv1.BatchBalance{
+			userBal = &ecoApi.BatchBalance{
 				Address:  user,
 				BatchId:  batchId,
 				Tradable: "0",
@@ -237,7 +237,7 @@ func (k Keeper) retireAndSaveBalance(ctx context.Context, user sdk.AccAddress, b
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, user, batchId)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			userBal = &ecocreditv1.BatchBalance{
+			userBal = &ecoApi.BatchBalance{
 				Address:  user,
 				BatchId:  batchId,
 				Tradable: "0",
