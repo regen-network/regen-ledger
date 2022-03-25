@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
+func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -101,7 +101,7 @@ func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid signer",
+			name:      "invalid attestor",
 			args:      []string{"foo"},
 			expErr:    true,
 			expErrMsg: "invalid bech32 string",
@@ -116,7 +116,7 @@ func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryBySignerCmd()
+			cmd := client.QueryByAttestorCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryBySignerResponse
+				var res data.QueryByAttestorResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				for i, entry := range res.Entries {
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySignersCmd() {
+func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -151,11 +151,11 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name       string
-		args       []string
-		expErr     bool
-		expErrMsg  string
-		expSigners []string
+		name         string
+		args         []string
+		expErr       bool
+		expErrMsg    string
+		expAttestors []string
 	}{
 		{
 			name:      "missing args",
@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid signer",
+			name:      "invalid attestor",
 			args:      []string{"foo"},
 			expErr:    true,
 			expErrMsg: "key not found",
@@ -179,7 +179,7 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 			name:   "valid",
 			args:   []string{validIri},
 			expErr: false,
-			expSigners: []string{
+			expAttestors: []string{
 				acc1.GetAddress().String(),
 				acc2.GetAddress().String(),
 			},
@@ -188,7 +188,7 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySignersCmd()
+			cmd := client.QueryAttestorsCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -196,11 +196,11 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QuerySignersResponse
+				var res data.QueryAttestorsResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-				for _, signer := range tc.expSigners {
-					s.Require().Contains(res.Signers, signer)
+				for _, attestor := range tc.expAttestors {
+					s.Require().Contains(res.Attestors, attestor)
 				}
 			}
 		})
