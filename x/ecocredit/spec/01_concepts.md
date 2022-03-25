@@ -4,15 +4,15 @@
 
 ### Credit Class
 
-A credit class is the primary abstraction for an ecosystem service credit. A credit class is associated with a credit type that represents the primary unit of measurement for the accepted methodologies included within the credit class. Information about the approved methodologies are typically stored off-chain, securely hashed, timestamped, and then included in the metadata field.
+A credit class is the primary abstraction for an ecosystem service credit. Each credit class is associated with a credit type that represents the primary unit of measurement that the credit accounts for (e.g. metric tons of CO2e sequestered). Information about the accepted methodologies for each credit class are typically stored off chain and referenced in the credit class's `metadata` field using a hash-based content identifier, such as an [IRI](https://github.com/regen-network/regen-ledger/blob/fc3df53f2ef3fcb43219f280417854813077792b/x/data/iri.go#L11-L24).
 
-A credit class also defines an admin, an address with permission to update the credit class, and a list of approved issuers, addresses with permission to issue credit batches under the credit class.
+Each credit class also has an admin (an address with permission to update the credit class) and a list of approved issuers (addresses with permission to issue credit batches under the credit class).
 
 For more information about the properties of a credit class, see [ClassInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.ClassInfo).
 
 ### Project
 
-A project describes the high-level on-chain information for a project implementing the approved methodologies defined within a credit class. Each credit batch is associated with a project, backing each issuance with information about the project.
+A project describes the high-level on-chain information for a project implementing the approved methodologies defined within a credit class. Each credit batch is associated with a project, giving every issuance of credits a direct link to information about the project responsible for the ecological regeneration represented by the credit batch.
 
 Over a project's lifecycle, it's expected that many credit batches will be issued at different points in time (e.g. at the conclusion of each monitoring period). To ensure that only legitimate projects are registered on-chain, projects can only be created by an issuer for the given credit class.
 
@@ -24,25 +24,25 @@ A credit type is the primary unit of measurement used by the approved methodolog
 
 The credit type abbreviation is used to construct the credit class ID. For example, `C01` is the ID for the first credit class that uses the `carbon` credit type where `C` is the credit type abbreviation and `01` is the sequence number (i.e. the first credit class for the given credit type).
 
-Credit types are listed as an on-chain parameter. Adding a new credit type to the list of allowed credit types requires a parameter change proposal.
+The list of allowed credit types is managed via on-chain governance. Adding a new credit type to the list requires a parameter change proposal.
 
 For more information about the properties of a credit type, see [CreditType](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.CreditType).
 
 ### Credit Class Creator Allowlist
 
-The ecocredit module supports the option of restricting credit class creation to a set of addresses. The option to enable the credit class creator allowlist and the list of allowed credit class creators are both on-chain parameters that can only be updated through parameter change proposals.
+The ecocredit module supports the option of restricting credit class creation to a set of addresses. Enabling this restriction and maintaining the list of allowed credit class creators are both controlled via on-chain governance and can only be updated through parameter change proposals.
 
 ### Credit Class Admin
 
-The credit class admin is defined within a credit class as the address with the authority to update the credit class (i.e. to update the admin, the list of approved issuers, and the metadata). When a credit class is created, the admin is initially set to the address that created the credit class.
+The credit class admin is the address with the authority to update a given credit class (i.e. to update the admin, the list of approved issuers, and the metadata). When a credit class is created, the admin is initially set to the address that created the credit class.
 
 ### Credit Class Issuers
 
-The credit class issuers are defined within a credit class as the addresses with the authority to issue credit batches under the credit class. The list of credit class issuers is defined at the time the credit class is created and only the admin can update the list after the credit class is created.
+The credit class issuers are the addresses with the authority to issue credit batches under the given credit class. The list of credit class issuers is defined at the time the credit class is created and only the admin can update the list after the credit class is created.
 
 ### Credit Batch
 
-Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time.
+All credits are issued in discrete batches by credit issuers. A credit batch refers to a batch of credits issued at a single point in time for a given credit class and project.
 
 Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the amount of carbon sequestered was measured between `20190101` and `20200101`.
 
