@@ -240,7 +240,7 @@ sudo systemctl enable cosmovisor.service
 ```
 ## Using StateSync
 
-Mainnet of Regen Network also supports [statesync](https://docs.cosmos.network/v0.44/architecture/adr-040-storage-and-smt-state-commitments.html#snapshots-for-storage-sync-and-state-versioning) which allows node operators to quickly spin up a node without downloading the existing chain data. It should be noted that not many nodes should be spun up on the network using this method as these nodes will be unable to propogate the historical data to other nodes.
+[Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) also supports [statesync](https://docs.cosmos.network/v0.44/architecture/adr-040-storage-and-smt-state-commitments.html#snapshots-for-storage-sync-and-state-versioning) which allows node operators to quickly spin up a node without downloading the existing chain data. It should be noted that not many nodes should be spun up on the network using this method as these nodes will be unable to propogate the historical data to other nodes.
 
 Download and execute the script:
 ```bash 
