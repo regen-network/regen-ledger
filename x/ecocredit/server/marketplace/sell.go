@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -12,6 +11,7 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
