@@ -510,7 +510,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 var _ protoreflect.List = (*_GenesisContentEntry_3_list)(nil)
 
 type _GenesisContentEntry_3_list struct {
-	list *[]*SignerEntry
+	list *[]*AttestorEntry
 }
 
 func (x *_GenesisContentEntry_3_list) Len() int {
@@ -526,18 +526,18 @@ func (x *_GenesisContentEntry_3_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisContentEntry_3_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*SignerEntry)
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisContentEntry_3_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*SignerEntry)
+	concreteValue := valueUnwrapped.Interface().(*AttestorEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisContentEntry_3_list) AppendMutable() protoreflect.Value {
-	v := new(SignerEntry)
+	v := new(AttestorEntry)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -550,7 +550,7 @@ func (x *_GenesisContentEntry_3_list) Truncate(n int) {
 }
 
 func (x *_GenesisContentEntry_3_list) NewElement() protoreflect.Value {
-	v := new(SignerEntry)
+	v := new(AttestorEntry)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -562,7 +562,7 @@ var (
 	md_GenesisContentEntry           protoreflect.MessageDescriptor
 	fd_GenesisContentEntry_hash      protoreflect.FieldDescriptor
 	fd_GenesisContentEntry_timestamp protoreflect.FieldDescriptor
-	fd_GenesisContentEntry_signers   protoreflect.FieldDescriptor
+	fd_GenesisContentEntry_attestors protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -570,7 +570,7 @@ func init() {
 	md_GenesisContentEntry = File_regen_data_v1_genesis_proto.Messages().ByName("GenesisContentEntry")
 	fd_GenesisContentEntry_hash = md_GenesisContentEntry.Fields().ByName("hash")
 	fd_GenesisContentEntry_timestamp = md_GenesisContentEntry.Fields().ByName("timestamp")
-	fd_GenesisContentEntry_signers = md_GenesisContentEntry.Fields().ByName("signers")
+	fd_GenesisContentEntry_attestors = md_GenesisContentEntry.Fields().ByName("attestors")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisContentEntry)(nil)
@@ -650,9 +650,9 @@ func (x *fastReflection_GenesisContentEntry) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
-	if len(x.Signers) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisContentEntry_3_list{list: &x.Signers})
-		if !f(fd_GenesisContentEntry_signers, value) {
+	if len(x.Attestors) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisContentEntry_3_list{list: &x.Attestors})
+		if !f(fd_GenesisContentEntry_attestors, value) {
 			return
 		}
 	}
@@ -675,8 +675,8 @@ func (x *fastReflection_GenesisContentEntry) Has(fd protoreflect.FieldDescriptor
 		return x.Hash != nil
 	case "regen.data.v1.GenesisContentEntry.timestamp":
 		return x.Timestamp != nil
-	case "regen.data.v1.GenesisContentEntry.signers":
-		return len(x.Signers) != 0
+	case "regen.data.v1.GenesisContentEntry.attestors":
+		return len(x.Attestors) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.GenesisContentEntry"))
@@ -697,8 +697,8 @@ func (x *fastReflection_GenesisContentEntry) Clear(fd protoreflect.FieldDescript
 		x.Hash = nil
 	case "regen.data.v1.GenesisContentEntry.timestamp":
 		x.Timestamp = nil
-	case "regen.data.v1.GenesisContentEntry.signers":
-		x.Signers = nil
+	case "regen.data.v1.GenesisContentEntry.attestors":
+		x.Attestors = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.GenesisContentEntry"))
@@ -721,11 +721,11 @@ func (x *fastReflection_GenesisContentEntry) Get(descriptor protoreflect.FieldDe
 	case "regen.data.v1.GenesisContentEntry.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.data.v1.GenesisContentEntry.signers":
-		if len(x.Signers) == 0 {
+	case "regen.data.v1.GenesisContentEntry.attestors":
+		if len(x.Attestors) == 0 {
 			return protoreflect.ValueOfList(&_GenesisContentEntry_3_list{})
 		}
-		listValue := &_GenesisContentEntry_3_list{list: &x.Signers}
+		listValue := &_GenesisContentEntry_3_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
@@ -751,10 +751,10 @@ func (x *fastReflection_GenesisContentEntry) Set(fd protoreflect.FieldDescriptor
 		x.Hash = value.Message().Interface().(*ContentHash)
 	case "regen.data.v1.GenesisContentEntry.timestamp":
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
-	case "regen.data.v1.GenesisContentEntry.signers":
+	case "regen.data.v1.GenesisContentEntry.attestors":
 		lv := value.List()
 		clv := lv.(*_GenesisContentEntry_3_list)
-		x.Signers = *clv.list
+		x.Attestors = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.GenesisContentEntry"))
@@ -785,11 +785,11 @@ func (x *fastReflection_GenesisContentEntry) Mutable(fd protoreflect.FieldDescri
 			x.Timestamp = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-	case "regen.data.v1.GenesisContentEntry.signers":
-		if x.Signers == nil {
-			x.Signers = []*SignerEntry{}
+	case "regen.data.v1.GenesisContentEntry.attestors":
+		if x.Attestors == nil {
+			x.Attestors = []*AttestorEntry{}
 		}
-		value := &_GenesisContentEntry_3_list{list: &x.Signers}
+		value := &_GenesisContentEntry_3_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
@@ -810,8 +810,8 @@ func (x *fastReflection_GenesisContentEntry) NewField(fd protoreflect.FieldDescr
 	case "regen.data.v1.GenesisContentEntry.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.data.v1.GenesisContentEntry.signers":
-		list := []*SignerEntry{}
+	case "regen.data.v1.GenesisContentEntry.attestors":
+		list := []*AttestorEntry{}
 		return protoreflect.ValueOfList(&_GenesisContentEntry_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
@@ -890,8 +890,8 @@ func (x *fastReflection_GenesisContentEntry) ProtoMethods() *protoiface.Methods 
 			l = options.Size(x.Timestamp)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.Signers) > 0 {
-			for _, e := range x.Signers {
+		if len(x.Attestors) > 0 {
+			for _, e := range x.Attestors {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -925,9 +925,9 @@ func (x *fastReflection_GenesisContentEntry) ProtoMethods() *protoiface.Methods 
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Signers) > 0 {
-			for iNdEx := len(x.Signers) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Signers[iNdEx])
+		if len(x.Attestors) > 0 {
+			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Attestors[iNdEx])
 				if err != nil {
 					return protoiface.MarshalOutput{
 						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1092,7 +1092,7 @@ func (x *fastReflection_GenesisContentEntry) ProtoMethods() *protoiface.Methods 
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 				}
 				var msglen int
 				for shift := uint(0); ; shift += 7 {
@@ -1119,8 +1119,8 @@ func (x *fastReflection_GenesisContentEntry) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Signers = append(x.Signers, &SignerEntry{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Signers[len(x.Signers)-1]); err != nil {
+				x.Attestors = append(x.Attestors, &AttestorEntry{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Attestors[len(x.Attestors)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -1219,8 +1219,8 @@ type GenesisContentEntry struct {
 	Hash *ContentHash `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// timestamp is the anchor Timestamp
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	// signers are the signers, if any
-	Signers []*SignerEntry `protobuf:"bytes,3,rep,name=signers,proto3" json:"signers,omitempty"`
+	// attestors are the attestors, if any
+	Attestors []*AttestorEntry `protobuf:"bytes,3,rep,name=attestors,proto3" json:"attestors,omitempty"`
 }
 
 func (x *GenesisContentEntry) Reset() {
@@ -1257,9 +1257,9 @@ func (x *GenesisContentEntry) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *GenesisContentEntry) GetSigners() []*SignerEntry {
+func (x *GenesisContentEntry) GetAttestors() []*AttestorEntry {
 	if x != nil {
-		return x.Signers
+		return x.Attestors
 	}
 	return nil
 }
@@ -1278,7 +1278,7 @@ var file_regen_data_v1_genesis_proto_rawDesc = []byte{
 	0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65,
 	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69,
 	0x73, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x65,
-	0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x22, 0xb5, 0x01, 0x0a, 0x13, 0x47, 0x65, 0x6e, 0x65, 0x73,
+	0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x22, 0xbb, 0x01, 0x0a, 0x13, 0x47, 0x65, 0x6e, 0x65, 0x73,
 	0x69, 0x73, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x2e,
 	0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
@@ -1286,22 +1286,23 @@ var file_regen_data_v1_genesis_proto_rawDesc = []byte{
 	0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x34, 0x0a, 0x07, 0x73, 0x69, 0x67, 0x6e,
-	0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72,
-	0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x42, 0xb7,
-	0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61,
-	0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
-	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a,
-	0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x3a, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65,
+	0x73, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x74, 0x74, 0x65,
+	0x73, 0x74, 0x6f, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x73, 0x42, 0xb7, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65,
+	0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74,
+	0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65,
+	0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61,
+	0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58,
+	0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31,
+	0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31,
+	0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1322,13 +1323,13 @@ var file_regen_data_v1_genesis_proto_goTypes = []interface{}{
 	(*GenesisContentEntry)(nil),   // 1: regen.data.v1.GenesisContentEntry
 	(*ContentHash)(nil),           // 2: regen.data.v1.ContentHash
 	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
-	(*SignerEntry)(nil),           // 4: regen.data.v1.SignerEntry
+	(*AttestorEntry)(nil),         // 4: regen.data.v1.AttestorEntry
 }
 var file_regen_data_v1_genesis_proto_depIdxs = []int32{
 	1, // 0: regen.data.v1.GenesisState.entries:type_name -> regen.data.v1.GenesisContentEntry
 	2, // 1: regen.data.v1.GenesisContentEntry.hash:type_name -> regen.data.v1.ContentHash
 	3, // 2: regen.data.v1.GenesisContentEntry.timestamp:type_name -> google.protobuf.Timestamp
-	4, // 3: regen.data.v1.GenesisContentEntry.signers:type_name -> regen.data.v1.SignerEntry
+	4, // 3: regen.data.v1.GenesisContentEntry.attestors:type_name -> regen.data.v1.AttestorEntry
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name

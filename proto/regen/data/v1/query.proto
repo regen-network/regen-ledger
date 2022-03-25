@@ -16,14 +16,14 @@ service Query {
     option (google.api.http).get = "/regen/data/v1/by-iri/{iri}";
   }
 
-  // BySigner queries data based on signers.
-  rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse) {
-    option (google.api.http).get = "/regen/data/v1/by-signer/{signer}";
+  // ByAttestor queries data based on attestors.
+  rpc ByAttestor (QueryByAttestorRequest) returns (QueryByAttestorResponse) {
+    option (google.api.http).get = "/regen/data/v1/by-attestor/{attestor}";
   }
 
-  // Signers queries signers based on IRI.
-  rpc Signers(QuerySignersRequest) returns (QuerySignersResponse) {
-    option (google.api.http).get = "/regen/data/v1/signers/{iri}";
+  // Attestors queries attestors based on IRI.
+  rpc Attestors(QueryAttestorsRequest) returns (QueryAttestorsResponse) {
+    option (google.api.http).get = "/regen/data/v1/attestors/{iri}";
   }
 
   // Resolvers returns the registered resolver URLs for the data IRI.
@@ -49,18 +49,18 @@ message QueryByIRIResponse {
   ContentEntry entry = 1;
 }
 
-// QueryBySignerRequest is the Query/BySigner request type.
-message QueryBySignerRequest {
-  // signer is the address of the signer to query by.
-  string signer = 1;
+// QueryByAttestorRequest is the Query/ByAttestor request type.
+message QueryByAttestorRequest {
+  // attestor is the address of the attestor to query by.
+  string attestor = 1;
 
   // pagination is the PageRequest to use for pagination.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryBySignerResponse is the Query/BySigner response type.
-message QueryBySignerResponse {
-  // entries is the ContentEntry's signed by the queried signer
+// QueryByAttestorResponse is the Query/ByAttestor response type.
+message QueryByAttestorResponse {
+  // entries is the ContentEntry's signed by the queried attestor.
   repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
@@ -79,8 +79,8 @@ message ContentEntry {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// QuerySignersRequest is the Query/Signers request type.
-message QuerySignersRequest {
+// QueryAttestorsRequest is the Query/Attestors request type.
+message QueryAttestorsRequest {
   // iri is the content IRI
   string iri = 1;
 
@@ -88,10 +88,10 @@ message QuerySignersRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySignersResponse is the Query/Signers response type.
-message QuerySignersResponse {
-  // signers are the addresses of the signers.
-  repeated string signers = 1;
+// QueryAttestorsResponse is the Query/Attestors response type.
+message QueryAttestorsResponse {
+  // attestors are the addresses of the attestors.
+  repeated string attestors = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

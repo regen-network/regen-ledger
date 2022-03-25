@@ -27,8 +27,8 @@ func TxCmd(name string) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		MsgAnchorDataCmd(),
-		MsgSignDataCmd(),
+		MsgAnchorCmd(),
+		MsgAttestCmd(),
 		MsgDefineResolverCmd(),
 		MsgRegisterResolverCmd(),
 	)
@@ -36,8 +36,8 @@ func TxCmd(name string) *cobra.Command {
 	return cmd
 }
 
-// MsgAnchorDataCmd creates a CLI command for Msg/AnchorData.
-func MsgAnchorDataCmd() *cobra.Command {
+// MsgAnchorCmd creates a CLI command for Msg/Anchor.
+func MsgAnchorCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "anchor [iri]",
 		Short: "Anchors a piece of data to the blockchain based on its secure " +
@@ -54,14 +54,14 @@ func MsgAnchorDataCmd() *cobra.Command {
 				return sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
 			}
 
-			signer := clientCtx.GetFromAddress()
+			attestor := clientCtx.GetFromAddress()
 			content, err := data.ParseIRI(iri)
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
 			}
 
-			msg := data.MsgAnchorData{
-				Sender: signer.String(),
+			msg := data.MsgAnchor{
+				Sender: attestor.String(),
 				Hash:   content,
 			}
 
@@ -74,13 +74,13 @@ func MsgAnchorDataCmd() *cobra.Command {
 	return cmd
 }
 
-// MsgSignDataCmd creates a CLI command for Msg/SignData.
-func MsgSignDataCmd() *cobra.Command {
+// MsgAttestCmd creates a CLI command for Msg/Attest.
+func MsgAttestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "sign [iri]",
-		Short:   `Sign a piece of on-chain data.`,
-		Long:    `Sign a piece of on-chain data, attesting to its validity. The data MUST be of graph type (rdf file extension).`,
-		Example: "regen tx data sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+		Use:     "attest [iri]",
+		Short:   `Attest to the validity of a piece of on-chain data.`,
+		Long:    `Attest to the validity of a piece of on-chain data. The data MUST be of graph type (rdf file extension).`,
+		Example: "regen tx data attest regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -93,19 +93,19 @@ func MsgSignDataCmd() *cobra.Command {
 				return sdkerrors.ErrInvalidRequest.Wrap("iri is required")
 			}
 
-			signer := clientCtx.GetFromAddress()
+			attestor := clientCtx.GetFromAddress()
 			content, err := data.ParseIRI(iri)
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
 			}
 			graph := content.GetGraph()
 			if graph == nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("can only sign graph data types")
+				return sdkerrors.ErrInvalidRequest.Wrap("can only attest to graph data types")
 			}
 
-			msg := data.MsgSignData{
-				Signers: []string{signer.String()},
-				Hash:    graph,
+			msg := data.MsgAttest{
+				Attestors: []string{attestor.String()},
+				Hash:      graph,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

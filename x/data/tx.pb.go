@@ -29,28 +29,28 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgAnchorData is the Msg/AnchorData request type.
-type MsgAnchorData struct {
+// MsgAnchor is the Msg/Anchor request type.
+type MsgAnchor struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing services.
+	// The sender in Anchor is not attesting to the veracity of the underlying
+	// data. They can simply be an intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// hash is the hash-based identifier for the anchored content.
 	Hash *ContentHash `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
-func (m *MsgAnchorData) Reset()         { *m = MsgAnchorData{} }
-func (m *MsgAnchorData) String() string { return proto.CompactTextString(m) }
-func (*MsgAnchorData) ProtoMessage()    {}
-func (*MsgAnchorData) Descriptor() ([]byte, []int) {
+func (m *MsgAnchor) Reset()         { *m = MsgAnchor{} }
+func (m *MsgAnchor) String() string { return proto.CompactTextString(m) }
+func (*MsgAnchor) ProtoMessage()    {}
+func (*MsgAnchor) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c87f072557099c45, []int{0}
 }
-func (m *MsgAnchorData) XXX_Unmarshal(b []byte) error {
+func (m *MsgAnchor) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAnchorData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAnchor) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAnchorData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAnchor.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -60,52 +60,52 @@ func (m *MsgAnchorData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *MsgAnchorData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAnchorData.Merge(m, src)
+func (m *MsgAnchor) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAnchor.Merge(m, src)
 }
-func (m *MsgAnchorData) XXX_Size() int {
+func (m *MsgAnchor) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAnchorData) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAnchorData.DiscardUnknown(m)
+func (m *MsgAnchor) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAnchor.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAnchorData proto.InternalMessageInfo
+var xxx_messageInfo_MsgAnchor proto.InternalMessageInfo
 
-func (m *MsgAnchorData) GetSender() string {
+func (m *MsgAnchor) GetSender() string {
 	if m != nil {
 		return m.Sender
 	}
 	return ""
 }
 
-func (m *MsgAnchorData) GetHash() *ContentHash {
+func (m *MsgAnchor) GetHash() *ContentHash {
 	if m != nil {
 		return m.Hash
 	}
 	return nil
 }
 
-// MsgAnchorData is the Msg/AnchorData response type.
-type MsgAnchorDataResponse struct {
+// MsgAnchor is the Msg/Anchor response type.
+type MsgAnchorResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// iri is the IRI of the data that was anchored.
 	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
-func (m *MsgAnchorDataResponse) Reset()         { *m = MsgAnchorDataResponse{} }
-func (m *MsgAnchorDataResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAnchorDataResponse) ProtoMessage()    {}
-func (*MsgAnchorDataResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAnchorResponse) Reset()         { *m = MsgAnchorResponse{} }
+func (m *MsgAnchorResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAnchorResponse) ProtoMessage()    {}
+func (*MsgAnchorResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c87f072557099c45, []int{1}
 }
-func (m *MsgAnchorDataResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAnchorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAnchorDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAnchorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAnchorDataResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAnchorResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -115,56 +115,56 @@ func (m *MsgAnchorDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgAnchorDataResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAnchorDataResponse.Merge(m, src)
+func (m *MsgAnchorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAnchorResponse.Merge(m, src)
 }
-func (m *MsgAnchorDataResponse) XXX_Size() int {
+func (m *MsgAnchorResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAnchorDataResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAnchorDataResponse.DiscardUnknown(m)
+func (m *MsgAnchorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAnchorResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAnchorDataResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAnchorResponse proto.InternalMessageInfo
 
-func (m *MsgAnchorDataResponse) GetTimestamp() *types.Timestamp {
+func (m *MsgAnchorResponse) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
 	return nil
 }
 
-func (m *MsgAnchorDataResponse) GetIri() string {
+func (m *MsgAnchorResponse) GetIri() string {
 	if m != nil {
 		return m.Iri
 	}
 	return ""
 }
 
-// MsgSignData is the Msg/SignData request type.
-type MsgSignData struct {
-	// signers are the addresses of the accounts signing the data.
-	// By making a SignData request, the signers are attesting to the veracity
+// MsgAttest is the Msg/Attest request type.
+type MsgAttest struct {
+	// attestors are the addresses of the accounts attesting to the validity of the data.
+	// By making an Attest request, the attestors are attesting to the veracity
 	// of the data referenced by the cid. The precise meaning of this may vary
 	// depending on the underlying data.
-	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
+	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// hash is the hash-based identifier for the anchored content. Only RDF graph
 	// data can be signed as its data model is intended to specifically convey semantic meaning.
 	Hash *ContentHash_Graph `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
-func (m *MsgSignData) Reset()         { *m = MsgSignData{} }
-func (m *MsgSignData) String() string { return proto.CompactTextString(m) }
-func (*MsgSignData) ProtoMessage()    {}
-func (*MsgSignData) Descriptor() ([]byte, []int) {
+func (m *MsgAttest) Reset()         { *m = MsgAttest{} }
+func (m *MsgAttest) String() string { return proto.CompactTextString(m) }
+func (*MsgAttest) ProtoMessage()    {}
+func (*MsgAttest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c87f072557099c45, []int{2}
 }
-func (m *MsgSignData) XXX_Unmarshal(b []byte) error {
+func (m *MsgAttest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSignData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAttest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSignData.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAttest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -174,34 +174,34 @@ func (m *MsgSignData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *MsgSignData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSignData.Merge(m, src)
+func (m *MsgAttest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAttest.Merge(m, src)
 }
-func (m *MsgSignData) XXX_Size() int {
+func (m *MsgAttest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSignData) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSignData.DiscardUnknown(m)
+func (m *MsgAttest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAttest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSignData proto.InternalMessageInfo
+var xxx_messageInfo_MsgAttest proto.InternalMessageInfo
 
-// MsgSignDataResponse is the Msg/SignData response type.
-type MsgSignDataResponse struct {
+// MsgAttestResponse is the Msg/Attest response type.
+type MsgAttestResponse struct {
 }
 
-func (m *MsgSignDataResponse) Reset()         { *m = MsgSignDataResponse{} }
-func (m *MsgSignDataResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSignDataResponse) ProtoMessage()    {}
-func (*MsgSignDataResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAttestResponse) Reset()         { *m = MsgAttestResponse{} }
+func (m *MsgAttestResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAttestResponse) ProtoMessage()    {}
+func (*MsgAttestResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_c87f072557099c45, []int{3}
 }
-func (m *MsgSignDataResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAttestResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSignDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAttestResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSignDataResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAttestResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -211,17 +211,17 @@ func (m *MsgSignDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSignDataResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSignDataResponse.Merge(m, src)
+func (m *MsgAttestResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAttestResponse.Merge(m, src)
 }
-func (m *MsgSignDataResponse) XXX_Size() int {
+func (m *MsgAttestResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSignDataResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSignDataResponse.DiscardUnknown(m)
+func (m *MsgAttestResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAttestResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSignDataResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAttestResponse proto.InternalMessageInfo
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 type MsgDefineResolver struct {
@@ -434,10 +434,10 @@ func (m *MsgRegisterResolverResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgRegisterResolverResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgAnchorData)(nil), "regen.data.v1.MsgAnchorData")
-	proto.RegisterType((*MsgAnchorDataResponse)(nil), "regen.data.v1.MsgAnchorDataResponse")
-	proto.RegisterType((*MsgSignData)(nil), "regen.data.v1.MsgSignData")
-	proto.RegisterType((*MsgSignDataResponse)(nil), "regen.data.v1.MsgSignDataResponse")
+	proto.RegisterType((*MsgAnchor)(nil), "regen.data.v1.MsgAnchor")
+	proto.RegisterType((*MsgAnchorResponse)(nil), "regen.data.v1.MsgAnchorResponse")
+	proto.RegisterType((*MsgAttest)(nil), "regen.data.v1.MsgAttest")
+	proto.RegisterType((*MsgAttestResponse)(nil), "regen.data.v1.MsgAttestResponse")
 	proto.RegisterType((*MsgDefineResolver)(nil), "regen.data.v1.MsgDefineResolver")
 	proto.RegisterType((*MsgDefineResolverResponse)(nil), "regen.data.v1.MsgDefineResolverResponse")
 	proto.RegisterType((*MsgRegisterResolver)(nil), "regen.data.v1.MsgRegisterResolver")
@@ -447,40 +447,40 @@ func init() {
 func init() { proto.RegisterFile("regen/data/v1/tx.proto", fileDescriptor_c87f072557099c45) }
 
 var fileDescriptor_c87f072557099c45 = []byte{
-	// 528 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0x8d, 0x9b, 0xa8, 0x90, 0x09, 0x45, 0xc5, 0xd0, 0x2a, 0x35, 0xe0, 0x18, 0x8b, 0x43, 0x84,
-	0x60, 0xad, 0x16, 0x0e, 0x08, 0x71, 0x01, 0x2a, 0xbe, 0xa4, 0x48, 0x95, 0x01, 0x21, 0x21, 0xa4,
-	0x6a, 0x13, 0x6f, 0xd7, 0x16, 0xce, 0xae, 0xb5, 0xbb, 0x09, 0xe5, 0xc6, 0x91, 0x23, 0x3f, 0x81,
-	0x9f, 0xc3, 0xb1, 0x47, 0x8e, 0x28, 0x11, 0xff, 0x03, 0x79, 0xe3, 0x35, 0xb5, 0xd3, 0x92, 0xdb,
-	0xce, 0xcc, 0xdb, 0xb7, 0xef, 0xcd, 0x8c, 0x0d, 0xdb, 0x82, 0x50, 0xc2, 0x82, 0x08, 0x2b, 0x1c,
-	0x4c, 0x77, 0x03, 0x75, 0x8c, 0x32, 0xc1, 0x15, 0xb7, 0x37, 0x74, 0x1e, 0xe5, 0x79, 0x34, 0xdd,
-	0x75, 0xae, 0x51, 0x4e, 0xb9, 0xae, 0x04, 0xf9, 0x69, 0x01, 0x72, 0x7a, 0x94, 0x73, 0x9a, 0x92,
-	0x40, 0x47, 0xc3, 0xc9, 0x51, 0xa0, 0x92, 0x31, 0x91, 0x0a, 0x8f, 0xb3, 0x02, 0xb0, 0x53, 0x63,
-	0xff, 0x92, 0x11, 0xb9, 0x28, 0xf9, 0xef, 0x61, 0x63, 0x20, 0xe9, 0x13, 0x36, 0x8a, 0xb9, 0xd8,
-	0xc7, 0x0a, 0xdb, 0xdb, 0xb0, 0x2e, 0x09, 0x8b, 0x88, 0xe8, 0x5a, 0x9e, 0xd5, 0x6f, 0x87, 0x45,
-	0x64, 0x23, 0x68, 0xc5, 0x58, 0xc6, 0xdd, 0x35, 0xcf, 0xea, 0x77, 0xf6, 0x1c, 0x54, 0x11, 0x86,
-	0x9e, 0x71, 0xa6, 0x08, 0x53, 0x2f, 0xb1, 0x8c, 0x43, 0x8d, 0xf3, 0x47, 0xb0, 0x55, 0x21, 0x0e,
-	0x89, 0xcc, 0x38, 0x93, 0xc4, 0x7e, 0x08, 0xed, 0x52, 0x9f, 0x7e, 0x23, 0x67, 0x5b, 0x38, 0x40,
-	0xc6, 0x01, 0x7a, 0x6b, 0x10, 0xe1, 0x3f, 0xb0, 0xbd, 0x09, 0xcd, 0x44, 0x24, 0x5a, 0x41, 0x3b,
-	0xcc, 0x8f, 0xfe, 0x08, 0x3a, 0x03, 0x49, 0xdf, 0x24, 0x94, 0x69, 0xed, 0x5d, 0xb8, 0x20, 0x13,
-	0xca, 0x88, 0x90, 0x5d, 0xcb, 0x6b, 0xf6, 0xdb, 0xa1, 0x09, 0xed, 0x07, 0x15, 0xf5, 0xde, 0xf9,
-	0xea, 0xd1, 0x0b, 0x81, 0xb3, 0xc2, 0xc3, 0xa3, 0xd6, 0xb7, 0x1f, 0xbd, 0x86, 0xbf, 0x05, 0x57,
-	0x4f, 0x3d, 0x62, 0x7c, 0xf8, 0x07, 0x70, 0x65, 0x20, 0xe9, 0x3e, 0x39, 0x4a, 0x18, 0x09, 0x89,
-	0xe4, 0xe9, 0x94, 0x88, 0x5c, 0xc1, 0x18, 0x33, 0x4c, 0xcb, 0xf6, 0x99, 0xd0, 0xbe, 0x05, 0x97,
-	0x44, 0x81, 0x3a, 0x9c, 0x88, 0xb4, 0x70, 0xd1, 0x31, 0xb9, 0x77, 0x22, 0xf5, 0x1f, 0xc3, 0xce,
-	0x12, 0x63, 0xd9, 0xb6, 0x1e, 0x94, 0xd8, 0xc3, 0x24, 0xd2, 0xec, 0xad, 0x10, 0x4c, 0xea, 0x55,
-	0xe4, 0x7f, 0xb5, 0xb4, 0xce, 0x90, 0xd0, 0x44, 0x2a, 0x7d, 0x71, 0x95, 0xa4, 0x1a, 0xe5, 0x5a,
-	0x9d, 0x32, 0x9f, 0x79, 0xde, 0xa2, 0x6e, 0xd3, 0x6b, 0xae, 0x9a, 0x79, 0x9e, 0xf4, 0x6f, 0xc2,
-	0xf5, 0x33, 0x14, 0x18, 0x0b, 0x7b, 0x7f, 0xd6, 0xa0, 0x39, 0x90, 0xd4, 0x3e, 0x00, 0x38, 0xb5,
-	0x70, 0x37, 0x6a, 0xb4, 0x95, 0xad, 0x71, 0x6e, 0xff, 0xaf, 0x5a, 0x36, 0xe7, 0x35, 0x5c, 0x2c,
-	0x97, 0xc0, 0x59, 0xbe, 0x61, 0x6a, 0x8e, 0x7f, 0x7e, 0xad, 0xe4, 0xfa, 0x08, 0x97, 0x6b, 0x43,
-	0xf5, 0x96, 0x6f, 0x55, 0x11, 0x4e, 0x7f, 0x15, 0xa2, 0x64, 0x1f, 0xc2, 0xe6, 0xd2, 0x84, 0xce,
-	0x50, 0x55, 0xc7, 0x38, 0x77, 0x56, 0x63, 0xcc, 0x1b, 0x4f, 0x9f, 0xff, 0x9c, 0xb9, 0xd6, 0xc9,
-	0xcc, 0xb5, 0x7e, 0xcf, 0x5c, 0xeb, 0xfb, 0xdc, 0x6d, 0x9c, 0xcc, 0xdd, 0xc6, 0xaf, 0xb9, 0xdb,
-	0xf8, 0x70, 0x97, 0x26, 0x2a, 0x9e, 0x0c, 0xd1, 0x88, 0x8f, 0x03, 0xcd, 0x77, 0x8f, 0x11, 0xf5,
-	0x99, 0x8b, 0x4f, 0x45, 0x94, 0x92, 0x88, 0x12, 0x11, 0x1c, 0xeb, 0x5f, 0xc5, 0x70, 0x5d, 0x7f,
-	0x8e, 0xf7, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x03, 0x12, 0xbd, 0xf2, 0x9d, 0x04, 0x00, 0x00,
+	// 517 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0xc7, 0xe3, 0x24, 0x0a, 0xf2, 0x14, 0x50, 0xd9, 0xa2, 0xca, 0x35, 0xe0, 0x18, 0x9f, 0x22,
+	0x04, 0x6b, 0xb5, 0x70, 0x40, 0x88, 0x0b, 0x50, 0xf1, 0x71, 0x88, 0x84, 0x0c, 0x5c, 0x10, 0x52,
+	0xe4, 0x34, 0xd3, 0xb5, 0x85, 0xe3, 0xb5, 0x76, 0x37, 0xa1, 0xdc, 0x38, 0x72, 0xe4, 0x11, 0x78,
+	0x1c, 0x8e, 0x95, 0xb8, 0x70, 0x44, 0xc9, 0x8b, 0x54, 0x5e, 0x7f, 0x54, 0x71, 0x52, 0xe5, 0xb6,
+	0x33, 0xf3, 0xdf, 0x9f, 0xff, 0x33, 0xb3, 0x09, 0xec, 0x0b, 0x64, 0x98, 0xfa, 0x93, 0x50, 0x85,
+	0xfe, 0xfc, 0xd0, 0x57, 0x67, 0x34, 0x13, 0x5c, 0x71, 0x72, 0x43, 0xe7, 0x69, 0x9e, 0xa7, 0xf3,
+	0x43, 0xfb, 0x36, 0xe3, 0x8c, 0xeb, 0x8a, 0x9f, 0x9f, 0x0a, 0x91, 0xdd, 0x67, 0x9c, 0xb3, 0x04,
+	0x7d, 0x1d, 0x8d, 0x67, 0xa7, 0xbe, 0x8a, 0xa7, 0x28, 0x55, 0x38, 0xcd, 0x4a, 0xc1, 0x41, 0x83,
+	0xfe, 0x3d, 0x43, 0x59, 0x94, 0xbc, 0x0f, 0x60, 0x0e, 0x25, 0x7b, 0x91, 0x9e, 0x44, 0x5c, 0x90,
+	0x7d, 0xe8, 0x49, 0x4c, 0x27, 0x28, 0x2c, 0xc3, 0x35, 0x06, 0x66, 0x50, 0x46, 0x84, 0x42, 0x37,
+	0x0a, 0x65, 0x64, 0xb5, 0x5d, 0x63, 0xb0, 0x73, 0x64, 0xd3, 0x15, 0x53, 0xf4, 0x15, 0x4f, 0x15,
+	0xa6, 0xea, 0x6d, 0x28, 0xa3, 0x40, 0xeb, 0xbc, 0x11, 0xdc, 0xaa, 0xa1, 0x01, 0xca, 0x8c, 0xa7,
+	0x12, 0xc9, 0x53, 0x30, 0x6b, 0x5f, 0x9a, 0x9f, 0x93, 0x0a, 0xe7, 0xb4, 0x72, 0x4e, 0x3f, 0x56,
+	0x8a, 0xe0, 0x52, 0x4c, 0x76, 0xa1, 0x13, 0x8b, 0x58, 0x7f, 0xdd, 0x0c, 0xf2, 0xa3, 0x87, 0x85,
+	0x6b, 0xa5, 0x50, 0x2a, 0x72, 0x17, 0xcc, 0x50, 0x9f, 0xb8, 0x90, 0x96, 0xe1, 0x76, 0x06, 0x66,
+	0x70, 0x99, 0x20, 0x4f, 0x56, 0xbc, 0xbb, 0x57, 0x7b, 0xa7, 0x6f, 0x44, 0x98, 0x95, 0x1d, 0x3c,
+	0xeb, 0xfe, 0xfc, 0xdd, 0x6f, 0x79, 0x7b, 0x45, 0x1f, 0x9a, 0x55, 0xf5, 0xe1, 0xbd, 0xd7, 0xc9,
+	0x63, 0x3c, 0x8d, 0x53, 0x0c, 0x50, 0xf2, 0x64, 0x8e, 0x82, 0x58, 0x70, 0x6d, 0x1a, 0xa6, 0x21,
+	0xab, 0x47, 0x57, 0x85, 0xe4, 0x3e, 0x5c, 0x17, 0xa5, 0x6a, 0x34, 0x13, 0x49, 0xd9, 0xc5, 0x4e,
+	0x95, 0xfb, 0x24, 0x12, 0xef, 0x39, 0x1c, 0xac, 0x11, 0xeb, 0xb1, 0xf5, 0xa1, 0xd6, 0x8e, 0xe2,
+	0x89, 0xa6, 0x77, 0x03, 0xa8, 0x52, 0xef, 0x26, 0xde, 0x0f, 0x03, 0xf6, 0x86, 0x92, 0x05, 0xc8,
+	0x62, 0xa9, 0xf4, 0xc5, 0x6d, 0x96, 0x1a, 0xc8, 0x76, 0x13, 0x99, 0xef, 0x3b, 0x1f, 0x90, 0xd5,
+	0x71, 0x3b, 0xdb, 0xf6, 0x9d, 0x27, 0xbd, 0x7b, 0x70, 0x67, 0x83, 0x83, 0xaa, 0x85, 0xa3, 0xbf,
+	0x6d, 0xe8, 0x0c, 0x25, 0x23, 0xc7, 0xd0, 0x2b, 0x1f, 0x9a, 0xd5, 0x40, 0xd6, 0xaf, 0xc5, 0x76,
+	0xaf, 0xaa, 0xd4, 0x03, 0xc9, 0x29, 0xc5, 0xe2, 0x37, 0x51, 0x74, 0x65, 0x23, 0x65, 0x65, 0x8b,
+	0xe4, 0x0b, 0xdc, 0x6c, 0xac, 0x70, 0xc3, 0x9d, 0x55, 0x85, 0x3d, 0xd8, 0xa6, 0xa8, 0xe9, 0x63,
+	0xd8, 0x5d, 0xdb, 0x87, 0xb7, 0x7e, 0xbb, 0xa9, 0xb1, 0x1f, 0x6c, 0xd7, 0x54, 0xdf, 0x78, 0xf9,
+	0xfa, 0xcf, 0xc2, 0x31, 0xce, 0x17, 0x8e, 0xf1, 0x7f, 0xe1, 0x18, 0xbf, 0x96, 0x4e, 0xeb, 0x7c,
+	0xe9, 0xb4, 0xfe, 0x2d, 0x9d, 0xd6, 0xe7, 0x87, 0x2c, 0x56, 0xd1, 0x6c, 0x4c, 0x4f, 0xf8, 0xd4,
+	0xd7, 0xbc, 0x47, 0x29, 0xaa, 0x6f, 0x5c, 0x7c, 0x2d, 0xa3, 0x04, 0x27, 0x0c, 0x85, 0x7f, 0xa6,
+	0xff, 0x10, 0xc6, 0x3d, 0xfd, 0xe3, 0x7b, 0x7c, 0x11, 0x00, 0x00, 0xff, 0xff, 0x14, 0x83, 0x24,
+	0xfb, 0x83, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -495,17 +495,17 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure
+	// Anchor "anchors" a piece of data to the blockchain based on its secure
 	// hash, effectively providing a tamper resistant timestamp.
 	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the
+	// The sender in Anchor is not attesting to the veracity of the underlying
+	// data. They can simply be an intermediary providing timestamp services.
+	// Attest should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	AnchorData(ctx context.Context, in *MsgAnchorData, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the signers are making a statement about the
-	// veracity of the data itself. It is like signing a legal document, meaning
+	Anchor(ctx context.Context, in *MsgAnchor, opts ...grpc.CallOption) (*MsgAnchorResponse, error)
+	// Attest allows for digital signing of an arbitrary piece of data on the
+	// blockchain. By attesting to data, the attestor is making a statement about
+	// the veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
 	// of the data, they are simply communicating that it exists.
@@ -518,11 +518,13 @@ type MsgClient interface {
 	// - the blockchain transaction envelope provides built-in replay protection
 	//   and timestamping
 	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
+	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
-	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	// Attest can be called multiple times for the same content hash with different
+	// attestors and those attestors will be appended to the list of attestors. If
+	// the same attestor attempts to attest to the same piece of data, the attestor
+	// will be ignored and a new attestation with a new timestamp will not be added.
+	Attest(ctx context.Context, in *MsgAttest, opts ...grpc.CallOption) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
 	DefineResolver(ctx context.Context, in *MsgDefineResolver, opts ...grpc.CallOption) (*MsgDefineResolverResponse, error)
@@ -538,18 +540,18 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorData, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
-	out := new(MsgAnchorDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/AnchorData", in, out, opts...)
+func (c *msgClient) Anchor(ctx context.Context, in *MsgAnchor, opts ...grpc.CallOption) (*MsgAnchorResponse, error) {
+	out := new(MsgAnchorResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/Anchor", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
-	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/SignData", in, out, opts...)
+func (c *msgClient) Attest(ctx context.Context, in *MsgAttest, opts ...grpc.CallOption) (*MsgAttestResponse, error) {
+	out := new(MsgAttestResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Msg/Attest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -576,17 +578,17 @@ func (c *msgClient) RegisterResolver(ctx context.Context, in *MsgRegisterResolve
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure
+	// Anchor "anchors" a piece of data to the blockchain based on its secure
 	// hash, effectively providing a tamper resistant timestamp.
 	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the
+	// The sender in Anchor is not attesting to the veracity of the underlying
+	// data. They can simply be an intermediary providing timestamp services.
+	// Attest should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	AnchorData(context.Context, *MsgAnchorData) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the
-	// blockchain. By "signing" data the signers are making a statement about the
-	// veracity of the data itself. It is like signing a legal document, meaning
+	Anchor(context.Context, *MsgAnchor) (*MsgAnchorResponse, error)
+	// Attest allows for digital signing of an arbitrary piece of data on the
+	// blockchain. By attesting to data, the attestor is making a statement about
+	// the veracity of the data itself. It is like signing a legal document, meaning
 	// that I agree to all conditions and to the best of my knowledge everything
 	// is true. When anchoring data, the sender is not attesting to the veracity
 	// of the data, they are simply communicating that it exists.
@@ -599,11 +601,13 @@ type MsgServer interface {
 	// - the blockchain transaction envelope provides built-in replay protection
 	//   and timestamping
 	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
+	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
-	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
+	// Attest can be called multiple times for the same content hash with different
+	// attestors and those attestors will be appended to the list of attestors. If
+	// the same attestor attempts to attest to the same piece of data, the attestor
+	// will be ignored and a new attestation with a new timestamp will not be added.
+	Attest(context.Context, *MsgAttest) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
 	DefineResolver(context.Context, *MsgDefineResolver) (*MsgDefineResolverResponse, error)
@@ -615,11 +619,11 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) AnchorData(ctx context.Context, req *MsgAnchorData) (*MsgAnchorDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AnchorData not implemented")
+func (*UnimplementedMsgServer) Anchor(ctx context.Context, req *MsgAnchor) (*MsgAnchorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Anchor not implemented")
 }
-func (*UnimplementedMsgServer) SignData(ctx context.Context, req *MsgSignData) (*MsgSignDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
+func (*UnimplementedMsgServer) Attest(ctx context.Context, req *MsgAttest) (*MsgAttestResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Attest not implemented")
 }
 func (*UnimplementedMsgServer) DefineResolver(ctx context.Context, req *MsgDefineResolver) (*MsgDefineResolverResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DefineResolver not implemented")
@@ -632,38 +636,38 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAnchorData)
+func _Msg_Anchor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAnchor)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AnchorData(ctx, in)
+		return srv.(MsgServer).Anchor(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Msg/AnchorData",
+		FullMethod: "/regen.data.v1.Msg/Anchor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AnchorData(ctx, req.(*MsgAnchorData))
+		return srv.(MsgServer).Anchor(ctx, req.(*MsgAnchor))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSignData)
+func _Msg_Attest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAttest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).SignData(ctx, in)
+		return srv.(MsgServer).Attest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Msg/SignData",
+		FullMethod: "/regen.data.v1.Msg/Attest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SignData(ctx, req.(*MsgSignData))
+		return srv.(MsgServer).Attest(ctx, req.(*MsgAttest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -709,12 +713,12 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AnchorData",
-			Handler:    _Msg_AnchorData_Handler,
+			MethodName: "Anchor",
+			Handler:    _Msg_Anchor_Handler,
 		},
 		{
-			MethodName: "SignData",
-			Handler:    _Msg_SignData_Handler,
+			MethodName: "Attest",
+			Handler:    _Msg_Attest_Handler,
 		},
 		{
 			MethodName: "DefineResolver",
@@ -729,7 +733,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "regen/data/v1/tx.proto",
 }
 
-func (m *MsgAnchorData) Marshal() (dAtA []byte, err error) {
+func (m *MsgAnchor) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -739,12 +743,12 @@ func (m *MsgAnchorData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAnchorData) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAnchor) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAnchorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAnchor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -771,7 +775,7 @@ func (m *MsgAnchorData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAnchorDataResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAnchorResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -781,12 +785,12 @@ func (m *MsgAnchorDataResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAnchorDataResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAnchorResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAnchorDataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAnchorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -813,7 +817,7 @@ func (m *MsgAnchorDataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSignData) Marshal() (dAtA []byte, err error) {
+func (m *MsgAttest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -823,12 +827,12 @@ func (m *MsgSignData) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSignData) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAttest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSignData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAttest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -845,11 +849,11 @@ func (m *MsgSignData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Signers) > 0 {
-		for iNdEx := len(m.Signers) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Signers[iNdEx])
-			copy(dAtA[i:], m.Signers[iNdEx])
-			i = encodeVarintTx(dAtA, i, uint64(len(m.Signers[iNdEx])))
+	if len(m.Attestors) > 0 {
+		for iNdEx := len(m.Attestors) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Attestors[iNdEx])
+			copy(dAtA[i:], m.Attestors[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.Attestors[iNdEx])))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -857,7 +861,7 @@ func (m *MsgSignData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSignDataResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAttestResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -867,12 +871,12 @@ func (m *MsgSignDataResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSignDataResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAttestResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSignDataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAttestResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1028,7 +1032,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgAnchorData) Size() (n int) {
+func (m *MsgAnchor) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1045,7 +1049,7 @@ func (m *MsgAnchorData) Size() (n int) {
 	return n
 }
 
-func (m *MsgAnchorDataResponse) Size() (n int) {
+func (m *MsgAnchorResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1062,14 +1066,14 @@ func (m *MsgAnchorDataResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgSignData) Size() (n int) {
+func (m *MsgAttest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.Signers) > 0 {
-		for _, s := range m.Signers {
+	if len(m.Attestors) > 0 {
+		for _, s := range m.Attestors {
 			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
@@ -1081,7 +1085,7 @@ func (m *MsgSignData) Size() (n int) {
 	return n
 }
 
-func (m *MsgSignDataResponse) Size() (n int) {
+func (m *MsgAttestResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1156,7 +1160,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgAnchorData) Unmarshal(dAtA []byte) error {
+func (m *MsgAnchor) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1179,10 +1183,10 @@ func (m *MsgAnchorData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAnchorData: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAnchor: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAnchorData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAnchor: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1274,7 +1278,7 @@ func (m *MsgAnchorData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAnchorDataResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAnchorResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1297,10 +1301,10 @@ func (m *MsgAnchorDataResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAnchorDataResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAnchorResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAnchorDataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAnchorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1392,7 +1396,7 @@ func (m *MsgAnchorDataResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSignData) Unmarshal(dAtA []byte) error {
+func (m *MsgAttest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1415,15 +1419,15 @@ func (m *MsgSignData) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSignData: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAttest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSignData: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAttest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1451,7 +1455,7 @@ func (m *MsgSignData) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Signers = append(m.Signers, string(dAtA[iNdEx:postIndex]))
+			m.Attestors = append(m.Attestors, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -1510,7 +1514,7 @@ func (m *MsgSignData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSignDataResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAttestResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1533,10 +1537,10 @@ func (m *MsgSignDataResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSignDataResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAttestResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSignDataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAttestResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
