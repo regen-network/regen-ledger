@@ -42,9 +42,6 @@ type baseSuite struct {
 }
 
 func setupBase(t *testing.T) *baseSuite {
-	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
-	})
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
