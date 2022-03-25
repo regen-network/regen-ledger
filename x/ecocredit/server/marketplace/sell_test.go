@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -164,7 +164,7 @@ func TestSell_Invalid(t *testing.T) {
 }
 
 // assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.BatchBalance, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, orderAmt math.Dec) {
+func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
 	decs, err := core.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
 		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
@@ -195,14 +195,14 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
 		Name:       classId,
 		Admin:      s.addr,
 		Metadata:   "",
@@ -219,15 +219,17 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	//	DisplayDenom: displayDenom,
 	//	Exponent:     1,
 	//}))
-	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
+		Escrowed: "0",
 	}))
-	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
+	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
 		BatchId:        1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
+		EscrowedAmount: "0",
 	}))
 }
