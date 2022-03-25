@@ -1,19 +1,19 @@
 package marketplace
 
 import (
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -53,7 +53,7 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.SellOrderIds))
 
-	it, err := s.marketStore.SellOrderTable().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
+	it, err := s.marketStore.SellOrderTable().List(s.ctx, api.SellOrderSellerIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -164,13 +164,13 @@ func TestSell_Invalid(t *testing.T) {
 }
 
 // assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.BatchBalance, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, orderAmt math.Dec) {
-	decs, err := server.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
+func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
+	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
 		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
 	assert.NilError(t, err)
 	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed, supBeforeTradable, supAfterTradable,
-	supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
+		supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
 
 	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
 	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
@@ -193,22 +193,22 @@ func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecocreditv1.
 	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
-
+// testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditv1.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
 		Name:       classId,
 		Admin:      s.addr,
 		Metadata:   "",
 		CreditType: creditType.Abbreviation,
 	}))
-	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &marketApi.Market{
+	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
@@ -219,14 +219,14 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	//	DisplayDenom: displayDenom,
 	//	Exponent:     1,
 	//}))
-	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditv1.BatchBalance{
+	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		Address:  s.addr,
 		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
 	}))
-	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecocreditv1.BatchSupply{
-		BatchId:  1,
+	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
+		BatchId:        1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 	}))

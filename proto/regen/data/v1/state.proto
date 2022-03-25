@@ -37,20 +37,20 @@ message DataAnchor {
   google.protobuf.Timestamp timestamp = 2;
 }
 
-// DataSigner is a join table for associating data IDs and signers.
-message DataSigner {
+// DataAttestor is a join table for associating data IDs and attestors.
+message DataAttestor {
   option (cosmos.orm.v1alpha1.table) = {
     id: 3
-    primary_key: {fields: "id,signer"}
+    primary_key: {fields: "id,attestor"}
   };
 
   // id is the compact data ID.
   bytes id = 1;
 
-  // signer is the account address of the signer.
-  bytes signer = 2;
+  // attestor is the account address of the attestor.
+  bytes attestor = 2;
 
-  // timestamp is the time at which the signer signed this data object.
+  // timestamp is the time at which the attestor signed this data object.
   google.protobuf.Timestamp timestamp = 3;
 }
 

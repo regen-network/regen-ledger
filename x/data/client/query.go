@@ -22,7 +22,7 @@ func QueryCmd(name string) *cobra.Command {
 		Long: strings.TrimSpace(`Querying commands for the data module.
 
 If an IRI is passed as first argument, then this command will query timestamp,
-signers and content (if available) for the given IRI. Otherwise, this command
+attestors and content (if available) for the given IRI. Otherwise, this command
 will run the given subcommand.
 
 Example (the two following commands are equivalent):
@@ -43,8 +43,8 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 
 	cmd.AddCommand(
 		queryByIRICmd,
-		QueryBySignerCmd(),
-		QuerySignersCmd(),
+		QueryByAttestorCmd(),
+		QueryAttestorsCmd(),
 		QueryResolverInfoCmd(),
 		QueryResolversCmd(),
 	)
@@ -79,11 +79,11 @@ func QueryByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryBySignerCmd creates a CLI command for Query/Data.
-func QueryBySignerCmd() *cobra.Command {
+// QueryByAttestorCmd creates a CLI command for Query/Data.
+func QueryByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "by-signer [signer]",
-		Short: "Query for anchored data based on signer",
+		Use:   "by-attestor [attestor]",
+		Short: "Query for anchored data based on an attestor",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -96,8 +96,8 @@ func QueryBySignerCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.BySigner(cmd.Context(), &data.QueryBySignerRequest{
-				Signer:     args[0],
+			res, err := c.ByAttestor(cmd.Context(), &data.QueryByAttestorRequest{
+				Attestor:   args[0],
 				Pagination: pagination,
 			})
 
@@ -110,11 +110,11 @@ func QueryBySignerCmd() *cobra.Command {
 	return cmd
 }
 
-// QuerySignersCmd creates a CLI command for Query/Data.
-func QuerySignersCmd() *cobra.Command {
+// QueryAttestorsCmd creates a CLI command for Query/Data.
+func QueryAttestorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "signers [iri]",
-		Short: "Query for signers based on IRI",
+		Use:   "attestors [iri]",
+		Short: "Query for attestors based on IRI",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -127,7 +127,7 @@ func QuerySignersCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Signers(cmd.Context(), &data.QuerySignersRequest{
+			res, err := c.Attestors(cmd.Context(), &data.QueryAttestorsRequest{
 				Iri:        args[0],
 				Pagination: pagination,
 			})

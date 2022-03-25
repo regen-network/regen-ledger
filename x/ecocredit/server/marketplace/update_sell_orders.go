@@ -3,6 +3,7 @@ package marketplace
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // UpdateSellOrders updates the sellOrder with the provided values.
@@ -141,7 +141,7 @@ func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocr
 	if err != nil {
 		return nil, err
 	}
-	creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

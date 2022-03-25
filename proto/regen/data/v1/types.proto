@@ -144,10 +144,10 @@ enum DigestAlgorithm {
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
-// SignerEntry is a signer entry wrapping a signer address and timestamp
-message SignerEntry {
-    // signer is the address of the signer
-    string signer = 1;
+// AttestorEntry is a attestor entry wrapping a attestor address and timestamp
+message AttestorEntry {
+    // attestor is the address of the attestor
+    string attestor = 1;
 
     // timestamp is the time at which the data was signed
     google.protobuf.Timestamp timestamp = 2;

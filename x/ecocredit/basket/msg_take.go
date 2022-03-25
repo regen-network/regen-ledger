@@ -7,9 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var (
-	_ legacytx.LegacyMsg = &MsgTake{}
-)
+var _ legacytx.LegacyMsg = &MsgTake{}
 
 // Route implements LegacyMsg.
 func (m MsgTake) Route() string { return sdk.MsgTypeURL(&m) }

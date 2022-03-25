@@ -187,6 +187,18 @@ tidy:
 ###                              Documentation                              ###
 ###############################################################################
 
+docs-dev:
+	@echo "Starting regen-ledger static documentation site..."
+	@cd docs && yarn dev
+
+docs-build:
+	@echo "Building regen-ledger static documentation site..."
+	@cd docs && yarn dev
+
+godocs:
+	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v3/"
+	godoc -http=:6060
+
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
@@ -201,32 +213,6 @@ update-swagger-docs: statik
 		echo "\033[92mSwagger docs are in sync\033[0m";\
 	fi
 .PHONY: update-swagger-docs
-
-godocs:
-	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/cosmos/cosmos-sdk/types"
-	godoc -http=:6060
-
-# This builds a docs site for each branch/tag in `./docs/versions`
-# and copies each site to a version prefixed path. The last entry inside
-# the `versions` file will be the default root index.html.
-build-docs:
-	@cd docs && \
-	while read -a p; do \
-		branch=$${p[0]} ; \
-		path_prefix=$${p[1]} ; \
-		(git checkout $${branch} && npm install && VUEPRESS_BASE="/$${path_prefix}/" npm run build) ; \
-		mkdir -p ~/output/$${path_prefix} ; \
-		cp -r .vuepress/dist/* ~/output/$${path_prefix}/ ; \
-		cp ~/output/$${path_prefix}/index.html ~/output ; \
-	done < versions ;
-
-sync-docs:
-	cd ~/output && \
-	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
-	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
-	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
-	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
-.PHONY: sync-docs
 
 ###############################################################################
 ###                           Tests & Simulation                            ###

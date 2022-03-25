@@ -19,8 +19,8 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket/mocks"
 )
@@ -44,7 +44,7 @@ func setupBase(t *testing.T) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
-	s.db, err = ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)

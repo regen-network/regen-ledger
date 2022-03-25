@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -14,32 +13,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-var (
-	any        = gomock.Any()
-	batchDenom = "C01-20200101-20200201-001"
-	classId    = "C01"
-	start, end = timestamppb.Now(), timestamppb.Now()
-	ask        = sdk.NewInt64Coin("ufoo", 10)
-	creditType = ecocredit.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-)
+var gmAny = gomock.Any()
 
 func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(4)
 	expiration := time.Now()
@@ -90,7 +77,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(4)
 	expiration := time.Now()
@@ -136,7 +123,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 	expiration := time.Now()
@@ -164,7 +151,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 	expiration := time.Now()
@@ -216,7 +203,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(1)
 
@@ -264,7 +251,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	assert.ErrorContains(t, err, "expiration must be in the future")
 }
 
-func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecocreditv1.StateStore, batchId uint64, addr sdk.AccAddress) (*ecocreditv1.BatchBalance, *ecocreditv1.BatchSupply) {
+func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecoApi.StateStore, batchId uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
 	bal, err := store.BatchBalanceTable().Get(ctx, addr, batchId)
 	assert.NilError(t, err)
 	sup, err := store.BatchSupplyTable().Get(ctx, batchId)

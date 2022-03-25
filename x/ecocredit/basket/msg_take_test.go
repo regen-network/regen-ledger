@@ -7,6 +7,8 @@ import (
 )
 
 func TestMsgTakeValidateBasic(t *testing.T) {
+	t.Parallel()
+
 	_, _, addr := testdata.KeyTestPubAddr()
 
 	type fields struct {
@@ -176,6 +178,8 @@ func TestMsgTakeValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			m := MsgTake{
 				Owner:              tt.fields.Owner,
 				BasketDenom:        tt.fields.BasketDenom,

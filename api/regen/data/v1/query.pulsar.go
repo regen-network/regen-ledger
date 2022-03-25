@@ -871,27 +871,27 @@ func (x *fastReflection_QueryByIRIResponse) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_QueryBySignerRequest            protoreflect.MessageDescriptor
-	fd_QueryBySignerRequest_signer     protoreflect.FieldDescriptor
-	fd_QueryBySignerRequest_pagination protoreflect.FieldDescriptor
+	md_QueryByAttestorRequest            protoreflect.MessageDescriptor
+	fd_QueryByAttestorRequest_attestor   protoreflect.FieldDescriptor
+	fd_QueryByAttestorRequest_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
-	md_QueryBySignerRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryBySignerRequest")
-	fd_QueryBySignerRequest_signer = md_QueryBySignerRequest.Fields().ByName("signer")
-	fd_QueryBySignerRequest_pagination = md_QueryBySignerRequest.Fields().ByName("pagination")
+	md_QueryByAttestorRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryByAttestorRequest")
+	fd_QueryByAttestorRequest_attestor = md_QueryByAttestorRequest.Fields().ByName("attestor")
+	fd_QueryByAttestorRequest_pagination = md_QueryByAttestorRequest.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryBySignerRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryByAttestorRequest)(nil)
 
-type fastReflection_QueryBySignerRequest QueryBySignerRequest
+type fastReflection_QueryByAttestorRequest QueryByAttestorRequest
 
-func (x *QueryBySignerRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryBySignerRequest)(x)
+func (x *QueryByAttestorRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryByAttestorRequest)(x)
 }
 
-func (x *QueryBySignerRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryByAttestorRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_query_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -903,43 +903,43 @@ func (x *QueryBySignerRequest) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryBySignerRequest_messageType fastReflection_QueryBySignerRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QueryBySignerRequest_messageType{}
+var _fastReflection_QueryByAttestorRequest_messageType fastReflection_QueryByAttestorRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryByAttestorRequest_messageType{}
 
-type fastReflection_QueryBySignerRequest_messageType struct{}
+type fastReflection_QueryByAttestorRequest_messageType struct{}
 
-func (x fastReflection_QueryBySignerRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryBySignerRequest)(nil)
+func (x fastReflection_QueryByAttestorRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryByAttestorRequest)(nil)
 }
-func (x fastReflection_QueryBySignerRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryBySignerRequest)
+func (x fastReflection_QueryByAttestorRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryByAttestorRequest)
 }
-func (x fastReflection_QueryBySignerRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBySignerRequest
+func (x fastReflection_QueryByAttestorRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryByAttestorRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryBySignerRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBySignerRequest
+func (x *fastReflection_QueryByAttestorRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryByAttestorRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryBySignerRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QueryBySignerRequest_messageType
+func (x *fastReflection_QueryByAttestorRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryByAttestorRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryBySignerRequest) New() protoreflect.Message {
-	return new(fastReflection_QueryBySignerRequest)
+func (x *fastReflection_QueryByAttestorRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryByAttestorRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryBySignerRequest) Interface() protoreflect.ProtoMessage {
-	return (*QueryBySignerRequest)(x)
+func (x *fastReflection_QueryByAttestorRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryByAttestorRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -947,16 +947,16 @@ func (x *fastReflection_QueryBySignerRequest) Interface() protoreflect.ProtoMess
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryBySignerRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Signer != "" {
-		value := protoreflect.ValueOfString(x.Signer)
-		if !f(fd_QueryBySignerRequest_signer, value) {
+func (x *fastReflection_QueryByAttestorRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Attestor != "" {
+		value := protoreflect.ValueOfString(x.Attestor)
+		if !f(fd_QueryByAttestorRequest_attestor, value) {
 			return
 		}
 	}
 	if x.Pagination != nil {
 		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QueryBySignerRequest_pagination, value) {
+		if !f(fd_QueryByAttestorRequest_pagination, value) {
 			return
 		}
 	}
@@ -973,17 +973,17 @@ func (x *fastReflection_QueryBySignerRequest) Range(f func(protoreflect.FieldDes
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryBySignerRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryByAttestorRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.signer":
-		return x.Signer != ""
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
+		return x.Attestor != ""
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -993,17 +993,17 @@ func (x *fastReflection_QueryBySignerRequest) Has(fd protoreflect.FieldDescripto
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryByAttestorRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.signer":
-		x.Signer = ""
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
+		x.Attestor = ""
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1013,19 +1013,19 @@ func (x *fastReflection_QueryBySignerRequest) Clear(fd protoreflect.FieldDescrip
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryBySignerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.signer":
-		value := x.Signer
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
+		value := x.Attestor
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1039,17 +1039,17 @@ func (x *fastReflection_QueryBySignerRequest) Get(descriptor protoreflect.FieldD
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryByAttestorRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.signer":
-		x.Signer = value.Interface().(string)
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
+		x.Attestor = value.Interface().(string)
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1063,48 +1063,48 @@ func (x *fastReflection_QueryBySignerRequest) Set(fd protoreflect.FieldDescripto
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "regen.data.v1.QueryBySignerRequest.signer":
-		panic(fmt.Errorf("field signer of message regen.data.v1.QueryBySignerRequest is not mutable"))
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
+		panic(fmt.Errorf("field attestor of message regen.data.v1.QueryByAttestorRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryBySignerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerRequest.signer":
+	case "regen.data.v1.QueryByAttestorRequest.attestor":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.QueryBySignerRequest.pagination":
+	case "regen.data.v1.QueryByAttestorRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryBySignerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryByAttestorRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryBySignerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryByAttestorRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1112,7 +1112,7 @@ func (x *fastReflection_QueryBySignerRequest) WhichOneof(d protoreflect.OneofDes
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryBySignerRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryByAttestorRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1123,7 +1123,7 @@ func (x *fastReflection_QueryBySignerRequest) GetUnknown() protoreflect.RawField
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryByAttestorRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1135,7 +1135,7 @@ func (x *fastReflection_QueryBySignerRequest) SetUnknown(fields protoreflect.Raw
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryBySignerRequest) IsValid() bool {
+func (x *fastReflection_QueryByAttestorRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -1145,9 +1145,9 @@ func (x *fastReflection_QueryBySignerRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryByAttestorRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryBySignerRequest)
+		x := input.Message.Interface().(*QueryByAttestorRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1159,7 +1159,7 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 		var n int
 		var l int
 		_ = l
-		l = len(x.Signer)
+		l = len(x.Attestor)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1177,7 +1177,7 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBySignerRequest)
+		x := input.Message.Interface().(*QueryByAttestorRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1210,10 +1210,10 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Signer) > 0 {
-			i -= len(x.Signer)
-			copy(dAtA[i:], x.Signer)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
+		if len(x.Attestor) > 0 {
+			i -= len(x.Attestor)
+			copy(dAtA[i:], x.Attestor)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestor)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -1228,7 +1228,7 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBySignerRequest)
+		x := input.Message.Interface().(*QueryByAttestorRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1260,15 +1260,15 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBySignerRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryByAttestorRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBySignerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryByAttestorRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestor", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1296,7 +1296,7 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Signer = string(dAtA[iNdEx:postIndex])
+				x.Attestor = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -1369,79 +1369,79 @@ func (x *fastReflection_QueryBySignerRequest) ProtoMethods() *protoiface.Methods
 	}
 }
 
-var _ protoreflect.List = (*_QueryBySignerResponse_1_list)(nil)
+var _ protoreflect.List = (*_QueryByAttestorResponse_1_list)(nil)
 
-type _QueryBySignerResponse_1_list struct {
+type _QueryByAttestorResponse_1_list struct {
 	list *[]*ContentEntry
 }
 
-func (x *_QueryBySignerResponse_1_list) Len() int {
+func (x *_QueryByAttestorResponse_1_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_QueryBySignerResponse_1_list) Get(i int) protoreflect.Value {
+func (x *_QueryByAttestorResponse_1_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_QueryBySignerResponse_1_list) Set(i int, value protoreflect.Value) {
+func (x *_QueryByAttestorResponse_1_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*ContentEntry)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_QueryBySignerResponse_1_list) Append(value protoreflect.Value) {
+func (x *_QueryByAttestorResponse_1_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*ContentEntry)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_QueryBySignerResponse_1_list) AppendMutable() protoreflect.Value {
+func (x *_QueryByAttestorResponse_1_list) AppendMutable() protoreflect.Value {
 	v := new(ContentEntry)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryBySignerResponse_1_list) Truncate(n int) {
+func (x *_QueryByAttestorResponse_1_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_QueryBySignerResponse_1_list) NewElement() protoreflect.Value {
+func (x *_QueryByAttestorResponse_1_list) NewElement() protoreflect.Value {
 	v := new(ContentEntry)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_QueryBySignerResponse_1_list) IsValid() bool {
+func (x *_QueryByAttestorResponse_1_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_QueryBySignerResponse            protoreflect.MessageDescriptor
-	fd_QueryBySignerResponse_entries    protoreflect.FieldDescriptor
-	fd_QueryBySignerResponse_pagination protoreflect.FieldDescriptor
+	md_QueryByAttestorResponse            protoreflect.MessageDescriptor
+	fd_QueryByAttestorResponse_entries    protoreflect.FieldDescriptor
+	fd_QueryByAttestorResponse_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
-	md_QueryBySignerResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryBySignerResponse")
-	fd_QueryBySignerResponse_entries = md_QueryBySignerResponse.Fields().ByName("entries")
-	fd_QueryBySignerResponse_pagination = md_QueryBySignerResponse.Fields().ByName("pagination")
+	md_QueryByAttestorResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryByAttestorResponse")
+	fd_QueryByAttestorResponse_entries = md_QueryByAttestorResponse.Fields().ByName("entries")
+	fd_QueryByAttestorResponse_pagination = md_QueryByAttestorResponse.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QueryBySignerResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryByAttestorResponse)(nil)
 
-type fastReflection_QueryBySignerResponse QueryBySignerResponse
+type fastReflection_QueryByAttestorResponse QueryByAttestorResponse
 
-func (x *QueryBySignerResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QueryBySignerResponse)(x)
+func (x *QueryByAttestorResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryByAttestorResponse)(x)
 }
 
-func (x *QueryBySignerResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryByAttestorResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_query_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1453,43 +1453,43 @@ func (x *QueryBySignerResponse) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QueryBySignerResponse_messageType fastReflection_QueryBySignerResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QueryBySignerResponse_messageType{}
+var _fastReflection_QueryByAttestorResponse_messageType fastReflection_QueryByAttestorResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryByAttestorResponse_messageType{}
 
-type fastReflection_QueryBySignerResponse_messageType struct{}
+type fastReflection_QueryByAttestorResponse_messageType struct{}
 
-func (x fastReflection_QueryBySignerResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QueryBySignerResponse)(nil)
+func (x fastReflection_QueryByAttestorResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryByAttestorResponse)(nil)
 }
-func (x fastReflection_QueryBySignerResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QueryBySignerResponse)
+func (x fastReflection_QueryByAttestorResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryByAttestorResponse)
 }
-func (x fastReflection_QueryBySignerResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBySignerResponse
+func (x fastReflection_QueryByAttestorResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryByAttestorResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QueryBySignerResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QueryBySignerResponse
+func (x *fastReflection_QueryByAttestorResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryByAttestorResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QueryBySignerResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QueryBySignerResponse_messageType
+func (x *fastReflection_QueryByAttestorResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryByAttestorResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QueryBySignerResponse) New() protoreflect.Message {
-	return new(fastReflection_QueryBySignerResponse)
+func (x *fastReflection_QueryByAttestorResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryByAttestorResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QueryBySignerResponse) Interface() protoreflect.ProtoMessage {
-	return (*QueryBySignerResponse)(x)
+func (x *fastReflection_QueryByAttestorResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryByAttestorResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1497,16 +1497,16 @@ func (x *fastReflection_QueryBySignerResponse) Interface() protoreflect.ProtoMes
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QueryBySignerResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryByAttestorResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if len(x.Entries) != 0 {
-		value := protoreflect.ValueOfList(&_QueryBySignerResponse_1_list{list: &x.Entries})
-		if !f(fd_QueryBySignerResponse_entries, value) {
+		value := protoreflect.ValueOfList(&_QueryByAttestorResponse_1_list{list: &x.Entries})
+		if !f(fd_QueryByAttestorResponse_entries, value) {
 			return
 		}
 	}
 	if x.Pagination != nil {
 		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QueryBySignerResponse_pagination, value) {
+		if !f(fd_QueryByAttestorResponse_pagination, value) {
 			return
 		}
 	}
@@ -1523,17 +1523,17 @@ func (x *fastReflection_QueryBySignerResponse) Range(f func(protoreflect.FieldDe
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QueryBySignerResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryByAttestorResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		return len(x.Entries) != 0
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1543,17 +1543,17 @@ func (x *fastReflection_QueryBySignerResponse) Has(fd protoreflect.FieldDescript
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryByAttestorResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		x.Entries = nil
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1563,22 +1563,22 @@ func (x *fastReflection_QueryBySignerResponse) Clear(fd protoreflect.FieldDescri
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QueryBySignerResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		if len(x.Entries) == 0 {
-			return protoreflect.ValueOfList(&_QueryBySignerResponse_1_list{})
+			return protoreflect.ValueOfList(&_QueryByAttestorResponse_1_list{})
 		}
-		listValue := &_QueryBySignerResponse_1_list{list: &x.Entries}
+		listValue := &_QueryByAttestorResponse_1_list{list: &x.Entries}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1592,19 +1592,19 @@ func (x *fastReflection_QueryBySignerResponse) Get(descriptor protoreflect.Field
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryByAttestorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		lv := value.List()
-		clv := lv.(*_QueryBySignerResponse_1_list)
+		clv := lv.(*_QueryByAttestorResponse_1_list)
 		x.Entries = *clv.list
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1618,53 +1618,53 @@ func (x *fastReflection_QueryBySignerResponse) Set(fd protoreflect.FieldDescript
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		if x.Entries == nil {
 			x.Entries = []*ContentEntry{}
 		}
-		value := &_QueryBySignerResponse_1_list{list: &x.Entries}
+		value := &_QueryByAttestorResponse_1_list{list: &x.Entries}
 		return protoreflect.ValueOfList(value)
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QueryBySignerResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryByAttestorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryBySignerResponse.entries":
+	case "regen.data.v1.QueryByAttestorResponse.entries":
 		list := []*ContentEntry{}
-		return protoreflect.ValueOfList(&_QueryBySignerResponse_1_list{list: &list})
-	case "regen.data.v1.QueryBySignerResponse.pagination":
+		return protoreflect.ValueOfList(&_QueryByAttestorResponse_1_list{list: &list})
+	case "regen.data.v1.QueryByAttestorResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryBySignerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryByAttestorResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QueryBySignerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryByAttestorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QueryBySignerResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryByAttestorResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryBySignerResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryByAttestorResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1672,7 +1672,7 @@ func (x *fastReflection_QueryBySignerResponse) WhichOneof(d protoreflect.OneofDe
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QueryBySignerResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryByAttestorResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1683,7 +1683,7 @@ func (x *fastReflection_QueryBySignerResponse) GetUnknown() protoreflect.RawFiel
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QueryBySignerResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryByAttestorResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1695,7 +1695,7 @@ func (x *fastReflection_QueryBySignerResponse) SetUnknown(fields protoreflect.Ra
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QueryBySignerResponse) IsValid() bool {
+func (x *fastReflection_QueryByAttestorResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -1705,9 +1705,9 @@ func (x *fastReflection_QueryBySignerResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QueryBySignerResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryByAttestorResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QueryBySignerResponse)
+		x := input.Message.Interface().(*QueryByAttestorResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1739,7 +1739,7 @@ func (x *fastReflection_QueryBySignerResponse) ProtoMethods() *protoiface.Method
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBySignerResponse)
+		x := input.Message.Interface().(*QueryByAttestorResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1799,7 +1799,7 @@ func (x *fastReflection_QueryBySignerResponse) ProtoMethods() *protoiface.Method
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QueryBySignerResponse)
+		x := input.Message.Interface().(*QueryByAttestorResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1831,10 +1831,10 @@ func (x *fastReflection_QueryBySignerResponse) ProtoMethods() *protoiface.Method
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBySignerResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryByAttestorResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryBySignerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryByAttestorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2521,27 +2521,27 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_QuerySignersRequest            protoreflect.MessageDescriptor
-	fd_QuerySignersRequest_iri        protoreflect.FieldDescriptor
-	fd_QuerySignersRequest_pagination protoreflect.FieldDescriptor
+	md_QueryAttestorsRequest            protoreflect.MessageDescriptor
+	fd_QueryAttestorsRequest_iri        protoreflect.FieldDescriptor
+	fd_QueryAttestorsRequest_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
-	md_QuerySignersRequest = File_regen_data_v1_query_proto.Messages().ByName("QuerySignersRequest")
-	fd_QuerySignersRequest_iri = md_QuerySignersRequest.Fields().ByName("iri")
-	fd_QuerySignersRequest_pagination = md_QuerySignersRequest.Fields().ByName("pagination")
+	md_QueryAttestorsRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryAttestorsRequest")
+	fd_QueryAttestorsRequest_iri = md_QueryAttestorsRequest.Fields().ByName("iri")
+	fd_QueryAttestorsRequest_pagination = md_QueryAttestorsRequest.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QuerySignersRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryAttestorsRequest)(nil)
 
-type fastReflection_QuerySignersRequest QuerySignersRequest
+type fastReflection_QueryAttestorsRequest QueryAttestorsRequest
 
-func (x *QuerySignersRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QuerySignersRequest)(x)
+func (x *QueryAttestorsRequest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAttestorsRequest)(x)
 }
 
-func (x *QuerySignersRequest) slowProtoReflect() protoreflect.Message {
+func (x *QueryAttestorsRequest) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_query_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2553,43 +2553,43 @@ func (x *QuerySignersRequest) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QuerySignersRequest_messageType fastReflection_QuerySignersRequest_messageType
-var _ protoreflect.MessageType = fastReflection_QuerySignersRequest_messageType{}
+var _fastReflection_QueryAttestorsRequest_messageType fastReflection_QueryAttestorsRequest_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAttestorsRequest_messageType{}
 
-type fastReflection_QuerySignersRequest_messageType struct{}
+type fastReflection_QueryAttestorsRequest_messageType struct{}
 
-func (x fastReflection_QuerySignersRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QuerySignersRequest)(nil)
+func (x fastReflection_QueryAttestorsRequest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAttestorsRequest)(nil)
 }
-func (x fastReflection_QuerySignersRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_QuerySignersRequest)
+func (x fastReflection_QueryAttestorsRequest_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAttestorsRequest)
 }
-func (x fastReflection_QuerySignersRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QuerySignersRequest
+func (x fastReflection_QueryAttestorsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAttestorsRequest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QuerySignersRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_QuerySignersRequest
+func (x *fastReflection_QueryAttestorsRequest) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAttestorsRequest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QuerySignersRequest) Type() protoreflect.MessageType {
-	return _fastReflection_QuerySignersRequest_messageType
+func (x *fastReflection_QueryAttestorsRequest) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAttestorsRequest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QuerySignersRequest) New() protoreflect.Message {
-	return new(fastReflection_QuerySignersRequest)
+func (x *fastReflection_QueryAttestorsRequest) New() protoreflect.Message {
+	return new(fastReflection_QueryAttestorsRequest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QuerySignersRequest) Interface() protoreflect.ProtoMessage {
-	return (*QuerySignersRequest)(x)
+func (x *fastReflection_QueryAttestorsRequest) Interface() protoreflect.ProtoMessage {
+	return (*QueryAttestorsRequest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2597,16 +2597,16 @@ func (x *fastReflection_QuerySignersRequest) Interface() protoreflect.ProtoMessa
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QuerySignersRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_QueryAttestorsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Iri != "" {
 		value := protoreflect.ValueOfString(x.Iri)
-		if !f(fd_QuerySignersRequest_iri, value) {
+		if !f(fd_QueryAttestorsRequest_iri, value) {
 			return
 		}
 	}
 	if x.Pagination != nil {
 		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QuerySignersRequest_pagination, value) {
+		if !f(fd_QueryAttestorsRequest_pagination, value) {
 			return
 		}
 	}
@@ -2623,17 +2623,17 @@ func (x *fastReflection_QuerySignersRequest) Range(f func(protoreflect.FieldDesc
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QuerySignersRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryAttestorsRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersRequest.iri":
+	case "regen.data.v1.QueryAttestorsRequest.iri":
 		return x.Iri != ""
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2643,17 +2643,17 @@ func (x *fastReflection_QuerySignersRequest) Has(fd protoreflect.FieldDescriptor
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryAttestorsRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersRequest.iri":
+	case "regen.data.v1.QueryAttestorsRequest.iri":
 		x.Iri = ""
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2663,19 +2663,19 @@ func (x *fastReflection_QuerySignersRequest) Clear(fd protoreflect.FieldDescript
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QuerySignersRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QuerySignersRequest.iri":
+	case "regen.data.v1.QueryAttestorsRequest.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2689,17 +2689,17 @@ func (x *fastReflection_QuerySignersRequest) Get(descriptor protoreflect.FieldDe
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryAttestorsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersRequest.iri":
+	case "regen.data.v1.QueryAttestorsRequest.iri":
 		x.Iri = value.Interface().(string)
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2713,48 +2713,48 @@ func (x *fastReflection_QuerySignersRequest) Set(fd protoreflect.FieldDescriptor
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "regen.data.v1.QuerySignersRequest.iri":
-		panic(fmt.Errorf("field iri of message regen.data.v1.QuerySignersRequest is not mutable"))
+	case "regen.data.v1.QueryAttestorsRequest.iri":
+		panic(fmt.Errorf("field iri of message regen.data.v1.QueryAttestorsRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QuerySignersRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersRequest.iri":
+	case "regen.data.v1.QueryAttestorsRequest.iri":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.QuerySignersRequest.pagination":
+	case "regen.data.v1.QueryAttestorsRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsRequest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QuerySignersRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryAttestorsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QuerySignersRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryAttestorsRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2762,7 +2762,7 @@ func (x *fastReflection_QuerySignersRequest) WhichOneof(d protoreflect.OneofDesc
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QuerySignersRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryAttestorsRequest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2773,7 +2773,7 @@ func (x *fastReflection_QuerySignersRequest) GetUnknown() protoreflect.RawFields
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryAttestorsRequest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2785,7 +2785,7 @@ func (x *fastReflection_QuerySignersRequest) SetUnknown(fields protoreflect.RawF
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QuerySignersRequest) IsValid() bool {
+func (x *fastReflection_QueryAttestorsRequest) IsValid() bool {
 	return x != nil
 }
 
@@ -2795,9 +2795,9 @@ func (x *fastReflection_QuerySignersRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QuerySignersRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryAttestorsRequest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QuerySignersRequest)
+		x := input.Message.Interface().(*QueryAttestorsRequest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2827,7 +2827,7 @@ func (x *fastReflection_QuerySignersRequest) ProtoMethods() *protoiface.Methods 
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QuerySignersRequest)
+		x := input.Message.Interface().(*QueryAttestorsRequest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2878,7 +2878,7 @@ func (x *fastReflection_QuerySignersRequest) ProtoMethods() *protoiface.Methods 
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QuerySignersRequest)
+		x := input.Message.Interface().(*QueryAttestorsRequest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2910,10 +2910,10 @@ func (x *fastReflection_QuerySignersRequest) ProtoMethods() *protoiface.Methods 
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QuerySignersRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAttestorsRequest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QuerySignersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAttestorsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -3019,74 +3019,74 @@ func (x *fastReflection_QuerySignersRequest) ProtoMethods() *protoiface.Methods 
 	}
 }
 
-var _ protoreflect.List = (*_QuerySignersResponse_1_list)(nil)
+var _ protoreflect.List = (*_QueryAttestorsResponse_1_list)(nil)
 
-type _QuerySignersResponse_1_list struct {
+type _QueryAttestorsResponse_1_list struct {
 	list *[]string
 }
 
-func (x *_QuerySignersResponse_1_list) Len() int {
+func (x *_QueryAttestorsResponse_1_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_QuerySignersResponse_1_list) Get(i int) protoreflect.Value {
+func (x *_QueryAttestorsResponse_1_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_QuerySignersResponse_1_list) Set(i int, value protoreflect.Value) {
+func (x *_QueryAttestorsResponse_1_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_QuerySignersResponse_1_list) Append(value protoreflect.Value) {
+func (x *_QueryAttestorsResponse_1_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_QuerySignersResponse_1_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message QuerySignersResponse at list field Signers as it is not of Message kind"))
+func (x *_QueryAttestorsResponse_1_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message QueryAttestorsResponse at list field Attestors as it is not of Message kind"))
 }
 
-func (x *_QuerySignersResponse_1_list) Truncate(n int) {
+func (x *_QueryAttestorsResponse_1_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_QuerySignersResponse_1_list) NewElement() protoreflect.Value {
+func (x *_QueryAttestorsResponse_1_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_QuerySignersResponse_1_list) IsValid() bool {
+func (x *_QueryAttestorsResponse_1_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_QuerySignersResponse            protoreflect.MessageDescriptor
-	fd_QuerySignersResponse_signers    protoreflect.FieldDescriptor
-	fd_QuerySignersResponse_pagination protoreflect.FieldDescriptor
+	md_QueryAttestorsResponse            protoreflect.MessageDescriptor
+	fd_QueryAttestorsResponse_attestors  protoreflect.FieldDescriptor
+	fd_QueryAttestorsResponse_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
-	md_QuerySignersResponse = File_regen_data_v1_query_proto.Messages().ByName("QuerySignersResponse")
-	fd_QuerySignersResponse_signers = md_QuerySignersResponse.Fields().ByName("signers")
-	fd_QuerySignersResponse_pagination = md_QuerySignersResponse.Fields().ByName("pagination")
+	md_QueryAttestorsResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryAttestorsResponse")
+	fd_QueryAttestorsResponse_attestors = md_QueryAttestorsResponse.Fields().ByName("attestors")
+	fd_QueryAttestorsResponse_pagination = md_QueryAttestorsResponse.Fields().ByName("pagination")
 }
 
-var _ protoreflect.Message = (*fastReflection_QuerySignersResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_QueryAttestorsResponse)(nil)
 
-type fastReflection_QuerySignersResponse QuerySignersResponse
+type fastReflection_QueryAttestorsResponse QueryAttestorsResponse
 
-func (x *QuerySignersResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_QuerySignersResponse)(x)
+func (x *QueryAttestorsResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_QueryAttestorsResponse)(x)
 }
 
-func (x *QuerySignersResponse) slowProtoReflect() protoreflect.Message {
+func (x *QueryAttestorsResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_query_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3098,43 +3098,43 @@ func (x *QuerySignersResponse) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_QuerySignersResponse_messageType fastReflection_QuerySignersResponse_messageType
-var _ protoreflect.MessageType = fastReflection_QuerySignersResponse_messageType{}
+var _fastReflection_QueryAttestorsResponse_messageType fastReflection_QueryAttestorsResponse_messageType
+var _ protoreflect.MessageType = fastReflection_QueryAttestorsResponse_messageType{}
 
-type fastReflection_QuerySignersResponse_messageType struct{}
+type fastReflection_QueryAttestorsResponse_messageType struct{}
 
-func (x fastReflection_QuerySignersResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_QuerySignersResponse)(nil)
+func (x fastReflection_QueryAttestorsResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_QueryAttestorsResponse)(nil)
 }
-func (x fastReflection_QuerySignersResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_QuerySignersResponse)
+func (x fastReflection_QueryAttestorsResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_QueryAttestorsResponse)
 }
-func (x fastReflection_QuerySignersResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_QuerySignersResponse
+func (x fastReflection_QueryAttestorsResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAttestorsResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_QuerySignersResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_QuerySignersResponse
+func (x *fastReflection_QueryAttestorsResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_QueryAttestorsResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_QuerySignersResponse) Type() protoreflect.MessageType {
-	return _fastReflection_QuerySignersResponse_messageType
+func (x *fastReflection_QueryAttestorsResponse) Type() protoreflect.MessageType {
+	return _fastReflection_QueryAttestorsResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_QuerySignersResponse) New() protoreflect.Message {
-	return new(fastReflection_QuerySignersResponse)
+func (x *fastReflection_QueryAttestorsResponse) New() protoreflect.Message {
+	return new(fastReflection_QueryAttestorsResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_QuerySignersResponse) Interface() protoreflect.ProtoMessage {
-	return (*QuerySignersResponse)(x)
+func (x *fastReflection_QueryAttestorsResponse) Interface() protoreflect.ProtoMessage {
+	return (*QueryAttestorsResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -3142,16 +3142,16 @@ func (x *fastReflection_QuerySignersResponse) Interface() protoreflect.ProtoMess
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_QuerySignersResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if len(x.Signers) != 0 {
-		value := protoreflect.ValueOfList(&_QuerySignersResponse_1_list{list: &x.Signers})
-		if !f(fd_QuerySignersResponse_signers, value) {
+func (x *fastReflection_QueryAttestorsResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.Attestors) != 0 {
+		value := protoreflect.ValueOfList(&_QueryAttestorsResponse_1_list{list: &x.Attestors})
+		if !f(fd_QueryAttestorsResponse_attestors, value) {
 			return
 		}
 	}
 	if x.Pagination != nil {
 		value := protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-		if !f(fd_QuerySignersResponse_pagination, value) {
+		if !f(fd_QueryAttestorsResponse_pagination, value) {
 			return
 		}
 	}
@@ -3168,17 +3168,17 @@ func (x *fastReflection_QuerySignersResponse) Range(f func(protoreflect.FieldDes
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_QuerySignersResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_QueryAttestorsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
-		return len(x.Signers) != 0
-	case "regen.data.v1.QuerySignersResponse.pagination":
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
+		return len(x.Attestors) != 0
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3188,17 +3188,17 @@ func (x *fastReflection_QuerySignersResponse) Has(fd protoreflect.FieldDescripto
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_QueryAttestorsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
-		x.Signers = nil
-	case "regen.data.v1.QuerySignersResponse.pagination":
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
+		x.Attestors = nil
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3208,22 +3208,22 @@ func (x *fastReflection_QuerySignersResponse) Clear(fd protoreflect.FieldDescrip
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_QuerySignersResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
-		if len(x.Signers) == 0 {
-			return protoreflect.ValueOfList(&_QuerySignersResponse_1_list{})
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
+		if len(x.Attestors) == 0 {
+			return protoreflect.ValueOfList(&_QueryAttestorsResponse_1_list{})
 		}
-		listValue := &_QuerySignersResponse_1_list{list: &x.Signers}
+		listValue := &_QueryAttestorsResponse_1_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.data.v1.QuerySignersResponse.pagination":
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3237,19 +3237,19 @@ func (x *fastReflection_QuerySignersResponse) Get(descriptor protoreflect.FieldD
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_QueryAttestorsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
 		lv := value.List()
-		clv := lv.(*_QuerySignersResponse_1_list)
-		x.Signers = *clv.list
-	case "regen.data.v1.QuerySignersResponse.pagination":
+		clv := lv.(*_QueryAttestorsResponse_1_list)
+		x.Attestors = *clv.list
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3263,53 +3263,53 @@ func (x *fastReflection_QuerySignersResponse) Set(fd protoreflect.FieldDescripto
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
-		if x.Signers == nil {
-			x.Signers = []string{}
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
+		if x.Attestors == nil {
+			x.Attestors = []string{}
 		}
-		value := &_QuerySignersResponse_1_list{list: &x.Signers}
+		value := &_QueryAttestorsResponse_1_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(value)
-	case "regen.data.v1.QuerySignersResponse.pagination":
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_QuerySignersResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_QueryAttestorsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QuerySignersResponse.signers":
+	case "regen.data.v1.QueryAttestorsResponse.attestors":
 		list := []string{}
-		return protoreflect.ValueOfList(&_QuerySignersResponse_1_list{list: &list})
-	case "regen.data.v1.QuerySignersResponse.pagination":
+		return protoreflect.ValueOfList(&_QueryAttestorsResponse_1_list{list: &list})
+	case "regen.data.v1.QueryAttestorsResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QuerySignersResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryAttestorsResponse"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.QuerySignersResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.QueryAttestorsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_QuerySignersResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_QueryAttestorsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QuerySignersResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.QueryAttestorsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3317,7 +3317,7 @@ func (x *fastReflection_QuerySignersResponse) WhichOneof(d protoreflect.OneofDes
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_QuerySignersResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_QueryAttestorsResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -3328,7 +3328,7 @@ func (x *fastReflection_QuerySignersResponse) GetUnknown() protoreflect.RawField
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_QuerySignersResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_QueryAttestorsResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -3340,7 +3340,7 @@ func (x *fastReflection_QuerySignersResponse) SetUnknown(fields protoreflect.Raw
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_QuerySignersResponse) IsValid() bool {
+func (x *fastReflection_QueryAttestorsResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -3350,9 +3350,9 @@ func (x *fastReflection_QuerySignersResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_QueryAttestorsResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*QuerySignersResponse)
+		x := input.Message.Interface().(*QueryAttestorsResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3364,8 +3364,8 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 		var n int
 		var l int
 		_ = l
-		if len(x.Signers) > 0 {
-			for _, s := range x.Signers {
+		if len(x.Attestors) > 0 {
+			for _, s := range x.Attestors {
 				l = len(s)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -3384,7 +3384,7 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*QuerySignersResponse)
+		x := input.Message.Interface().(*QueryAttestorsResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3417,11 +3417,11 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Signers) > 0 {
-			for iNdEx := len(x.Signers) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Signers[iNdEx])
-				copy(dAtA[i:], x.Signers[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signers[iNdEx])))
+		if len(x.Attestors) > 0 {
+			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.Attestors[iNdEx])
+				copy(dAtA[i:], x.Attestors[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestors[iNdEx])))
 				i--
 				dAtA[i] = 0xa
 			}
@@ -3437,7 +3437,7 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*QuerySignersResponse)
+		x := input.Message.Interface().(*QueryAttestorsResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -3469,15 +3469,15 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QuerySignersResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAttestorsResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QuerySignersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: QueryAttestorsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3505,7 +3505,7 @@ func (x *fastReflection_QuerySignersResponse) ProtoMethods() *protoiface.Methods
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Signers = append(x.Signers, string(dAtA[iNdEx:postIndex]))
+				x.Attestors = append(x.Attestors, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -5611,20 +5611,20 @@ func (x *QueryByIRIResponse) GetEntry() *ContentEntry {
 	return nil
 }
 
-// QueryBySignerRequest is the Query/BySigner request type.
-type QueryBySignerRequest struct {
+// QueryByAttestorRequest is the Query/ByAttestor request type.
+type QueryByAttestorRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// signer is the address of the signer to query by.
-	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// attestor is the address of the attestor to query by.
+	Attestor string `protobuf:"bytes,1,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QueryBySignerRequest) Reset() {
-	*x = QueryBySignerRequest{}
+func (x *QueryByAttestorRequest) Reset() {
+	*x = QueryByAttestorRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_query_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5632,45 +5632,45 @@ func (x *QueryBySignerRequest) Reset() {
 	}
 }
 
-func (x *QueryBySignerRequest) String() string {
+func (x *QueryByAttestorRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryBySignerRequest) ProtoMessage() {}
+func (*QueryByAttestorRequest) ProtoMessage() {}
 
-// Deprecated: Use QueryBySignerRequest.ProtoReflect.Descriptor instead.
-func (*QueryBySignerRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryByAttestorRequest.ProtoReflect.Descriptor instead.
+func (*QueryByAttestorRequest) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *QueryBySignerRequest) GetSigner() string {
+func (x *QueryByAttestorRequest) GetAttestor() string {
 	if x != nil {
-		return x.Signer
+		return x.Attestor
 	}
 	return ""
 }
 
-func (x *QueryBySignerRequest) GetPagination() *v1beta1.PageRequest {
+func (x *QueryByAttestorRequest) GetPagination() *v1beta1.PageRequest {
 	if x != nil {
 		return x.Pagination
 	}
 	return nil
 }
 
-// QueryBySignerResponse is the Query/BySigner response type.
-type QueryBySignerResponse struct {
+// QueryByAttestorResponse is the Query/ByAttestor response type.
+type QueryByAttestorResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// entries is the ContentEntry's signed by the queried signer
+	// entries is the ContentEntry's signed by the queried attestor.
 	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QueryBySignerResponse) Reset() {
-	*x = QueryBySignerResponse{}
+func (x *QueryByAttestorResponse) Reset() {
+	*x = QueryByAttestorResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_query_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5678,25 +5678,25 @@ func (x *QueryBySignerResponse) Reset() {
 	}
 }
 
-func (x *QueryBySignerResponse) String() string {
+func (x *QueryByAttestorResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QueryBySignerResponse) ProtoMessage() {}
+func (*QueryByAttestorResponse) ProtoMessage() {}
 
-// Deprecated: Use QueryBySignerResponse.ProtoReflect.Descriptor instead.
-func (*QueryBySignerResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryByAttestorResponse.ProtoReflect.Descriptor instead.
+func (*QueryByAttestorResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *QueryBySignerResponse) GetEntries() []*ContentEntry {
+func (x *QueryByAttestorResponse) GetEntries() []*ContentEntry {
 	if x != nil {
 		return x.Entries
 	}
 	return nil
 }
 
-func (x *QueryBySignerResponse) GetPagination() *v1beta1.PageResponse {
+func (x *QueryByAttestorResponse) GetPagination() *v1beta1.PageResponse {
 	if x != nil {
 		return x.Pagination
 	}
@@ -5758,8 +5758,8 @@ func (x *ContentEntry) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// QuerySignersRequest is the Query/Signers request type.
-type QuerySignersRequest struct {
+// QueryAttestorsRequest is the Query/Attestors request type.
+type QueryAttestorsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -5770,8 +5770,8 @@ type QuerySignersRequest struct {
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QuerySignersRequest) Reset() {
-	*x = QuerySignersRequest{}
+func (x *QueryAttestorsRequest) Reset() {
+	*x = QueryAttestorsRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_query_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5779,45 +5779,45 @@ func (x *QuerySignersRequest) Reset() {
 	}
 }
 
-func (x *QuerySignersRequest) String() string {
+func (x *QueryAttestorsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QuerySignersRequest) ProtoMessage() {}
+func (*QueryAttestorsRequest) ProtoMessage() {}
 
-// Deprecated: Use QuerySignersRequest.ProtoReflect.Descriptor instead.
-func (*QuerySignersRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryAttestorsRequest.ProtoReflect.Descriptor instead.
+func (*QueryAttestorsRequest) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *QuerySignersRequest) GetIri() string {
+func (x *QueryAttestorsRequest) GetIri() string {
 	if x != nil {
 		return x.Iri
 	}
 	return ""
 }
 
-func (x *QuerySignersRequest) GetPagination() *v1beta1.PageRequest {
+func (x *QueryAttestorsRequest) GetPagination() *v1beta1.PageRequest {
 	if x != nil {
 		return x.Pagination
 	}
 	return nil
 }
 
-// QuerySignersResponse is the Query/Signers response type.
-type QuerySignersResponse struct {
+// QueryAttestorsResponse is the Query/Attestors response type.
+type QueryAttestorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// signers are the addresses of the signers.
-	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
+	// attestors are the addresses of the attestors.
+	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (x *QuerySignersResponse) Reset() {
-	*x = QuerySignersResponse{}
+func (x *QueryAttestorsResponse) Reset() {
+	*x = QueryAttestorsResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_query_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -5825,25 +5825,25 @@ func (x *QuerySignersResponse) Reset() {
 	}
 }
 
-func (x *QuerySignersResponse) String() string {
+func (x *QueryAttestorsResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*QuerySignersResponse) ProtoMessage() {}
+func (*QueryAttestorsResponse) ProtoMessage() {}
 
-// Deprecated: Use QuerySignersResponse.ProtoReflect.Descriptor instead.
-func (*QuerySignersResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueryAttestorsResponse.ProtoReflect.Descriptor instead.
+func (*QueryAttestorsResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *QuerySignersResponse) GetSigners() []string {
+func (x *QueryAttestorsResponse) GetAttestors() []string {
 	if x != nil {
-		return x.Signers
+		return x.Attestors
 	}
 	return nil
 }
 
-func (x *QuerySignersResponse) GetPagination() *v1beta1.PageResponse {
+func (x *QueryAttestorsResponse) GetPagination() *v1beta1.PageResponse {
 	if x != nil {
 		return x.Pagination
 	}
@@ -6047,42 +6047,43 @@ var file_regen_data_v1_query_proto_rawDesc = []byte{
 	0x05, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e,
 	0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x05, 0x65, 0x6e, 0x74, 0x72, 0x79,
-	0x22, 0x76, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x53, 0x69, 0x67, 0x6e, 0x65,
-	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72,
-	0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61,
-	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x97, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x42, 0x79, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x35, 0x0a, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
-	0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79,
-	0x52, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72,
-	0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x22, 0x8a, 0x01, 0x0a, 0x0c, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e,
-	0x74, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x04, 0x68, 0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
-	0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x04, 0x68,
-	0x61, 0x73, 0x68, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22,
-	0x6f, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x79, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x69, 0x67, 0x6e,
-	0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x73, 0x69, 0x67, 0x6e, 0x65,
+	0x22, 0x7c, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x99,
+	0x01, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x07, 0x65, 0x6e,
+	0x74, 0x72, 0x69, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x65, 0x6e, 0x74, 0x72, 0x69, 0x65,
+	0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62,
+	0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x8a, 0x01, 0x0a, 0x0c, 0x43,
+	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x04, 0x68,
+	0x61, 0x73, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
+	0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x10, 0x0a, 0x03, 0x69,
+	0x72, 0x69, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x38, 0x0a,
+	0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x71, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69,
+	0x72, 0x69, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x7f, 0x0a, 0x16, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
 	0x72, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
 	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
@@ -6110,7 +6111,7 @@ var file_regen_data_v1_query_proto_rawDesc = []byte{
 	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02,
 	0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x32, 0xff, 0x04, 0x0a,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x32, 0x92, 0x05, 0x0a,
 	0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x71, 0x0a, 0x05, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12,
 	0x20, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
 	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
@@ -6118,51 +6119,53 @@ var file_regen_data_v1_query_proto_rawDesc = []byte{
 	0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x49, 0x52, 0x49, 0x52, 0x65, 0x73, 0x70,
 	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x23, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1d, 0x12, 0x1b, 0x2f, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x79, 0x2d,
-	0x69, 0x72, 0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x80, 0x01, 0x0a, 0x08, 0x42, 0x79,
-	0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x12, 0x23, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
-	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x53, 0x69,
-	0x67, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x42, 0x79, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x29, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x23, 0x12, 0x21, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x79, 0x2d, 0x73, 0x69, 0x67,
-	0x6e, 0x65, 0x72, 0x2f, 0x7b, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x7d, 0x12, 0x78, 0x0a, 0x07,
-	0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x69, 0x67,
-	0x6e, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x24, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1e, 0x12, 0x1c, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73,
-	0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x80, 0x01, 0x0a, 0x09, 0x52, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x73, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76,
-	0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67,
+	0x69, 0x72, 0x69, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x8a, 0x01, 0x0a, 0x0a, 0x42, 0x79,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12,
+	0x25, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f,
+	0x62, 0x79, 0x2d, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x2f, 0x7b, 0x61, 0x74, 0x74,
+	0x65, 0x73, 0x74, 0x6f, 0x72, 0x7d, 0x12, 0x80, 0x01, 0x0a, 0x09, 0x41, 0x74, 0x74, 0x65, 0x73,
+	0x74, 0x6f, 0x72, 0x73, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
+	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67,
 	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76,
-	0x65, 0x72, 0x73, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x82, 0x01, 0x0a, 0x0c, 0x52, 0x65,
-	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61,
-	0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
-	0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1f, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61,
-	0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x42, 0xb5,
-	0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61,
-	0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61,
-	0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x73, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x80, 0x01, 0x0a, 0x09, 0x52, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73,
+	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x26, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x20, 0x12, 0x1e, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73,
+	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x73, 0x2f, 0x7b, 0x69, 0x72, 0x69, 0x7d, 0x12, 0x82, 0x01, 0x0a,
+	0x0c, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x27, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
+	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f,
+	0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x1f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65,
+	0x72, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f,
+	0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64,
+	0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a,
+	0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -6181,11 +6184,11 @@ var file_regen_data_v1_query_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_regen_data_v1_query_proto_goTypes = []interface{}{
 	(*QueryByIRIRequest)(nil),         // 0: regen.data.v1.QueryByIRIRequest
 	(*QueryByIRIResponse)(nil),        // 1: regen.data.v1.QueryByIRIResponse
-	(*QueryBySignerRequest)(nil),      // 2: regen.data.v1.QueryBySignerRequest
-	(*QueryBySignerResponse)(nil),     // 3: regen.data.v1.QueryBySignerResponse
+	(*QueryByAttestorRequest)(nil),    // 2: regen.data.v1.QueryByAttestorRequest
+	(*QueryByAttestorResponse)(nil),   // 3: regen.data.v1.QueryByAttestorResponse
 	(*ContentEntry)(nil),              // 4: regen.data.v1.ContentEntry
-	(*QuerySignersRequest)(nil),       // 5: regen.data.v1.QuerySignersRequest
-	(*QuerySignersResponse)(nil),      // 6: regen.data.v1.QuerySignersResponse
+	(*QueryAttestorsRequest)(nil),     // 5: regen.data.v1.QueryAttestorsRequest
+	(*QueryAttestorsResponse)(nil),    // 6: regen.data.v1.QueryAttestorsResponse
 	(*QueryResolversRequest)(nil),     // 7: regen.data.v1.QueryResolversRequest
 	(*QueryResolversResponse)(nil),    // 8: regen.data.v1.QueryResolversResponse
 	(*QueryResolverInfoRequest)(nil),  // 9: regen.data.v1.QueryResolverInfoRequest
@@ -6197,23 +6200,23 @@ var file_regen_data_v1_query_proto_goTypes = []interface{}{
 }
 var file_regen_data_v1_query_proto_depIdxs = []int32{
 	4,  // 0: regen.data.v1.QueryByIRIResponse.entry:type_name -> regen.data.v1.ContentEntry
-	11, // 1: regen.data.v1.QueryBySignerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	4,  // 2: regen.data.v1.QueryBySignerResponse.entries:type_name -> regen.data.v1.ContentEntry
-	12, // 3: regen.data.v1.QueryBySignerResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	11, // 1: regen.data.v1.QueryByAttestorRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	4,  // 2: regen.data.v1.QueryByAttestorResponse.entries:type_name -> regen.data.v1.ContentEntry
+	12, // 3: regen.data.v1.QueryByAttestorResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
 	13, // 4: regen.data.v1.ContentEntry.hash:type_name -> regen.data.v1.ContentHash
 	14, // 5: regen.data.v1.ContentEntry.timestamp:type_name -> google.protobuf.Timestamp
-	11, // 6: regen.data.v1.QuerySignersRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	12, // 7: regen.data.v1.QuerySignersResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	11, // 6: regen.data.v1.QueryAttestorsRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	12, // 7: regen.data.v1.QueryAttestorsResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
 	11, // 8: regen.data.v1.QueryResolversRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
 	12, // 9: regen.data.v1.QueryResolversResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
 	0,  // 10: regen.data.v1.Query.ByIRI:input_type -> regen.data.v1.QueryByIRIRequest
-	2,  // 11: regen.data.v1.Query.BySigner:input_type -> regen.data.v1.QueryBySignerRequest
-	5,  // 12: regen.data.v1.Query.Signers:input_type -> regen.data.v1.QuerySignersRequest
+	2,  // 11: regen.data.v1.Query.ByAttestor:input_type -> regen.data.v1.QueryByAttestorRequest
+	5,  // 12: regen.data.v1.Query.Attestors:input_type -> regen.data.v1.QueryAttestorsRequest
 	7,  // 13: regen.data.v1.Query.Resolvers:input_type -> regen.data.v1.QueryResolversRequest
 	9,  // 14: regen.data.v1.Query.ResolverInfo:input_type -> regen.data.v1.QueryResolverInfoRequest
 	1,  // 15: regen.data.v1.Query.ByIRI:output_type -> regen.data.v1.QueryByIRIResponse
-	3,  // 16: regen.data.v1.Query.BySigner:output_type -> regen.data.v1.QueryBySignerResponse
-	6,  // 17: regen.data.v1.Query.Signers:output_type -> regen.data.v1.QuerySignersResponse
+	3,  // 16: regen.data.v1.Query.ByAttestor:output_type -> regen.data.v1.QueryByAttestorResponse
+	6,  // 17: regen.data.v1.Query.Attestors:output_type -> regen.data.v1.QueryAttestorsResponse
 	8,  // 18: regen.data.v1.Query.Resolvers:output_type -> regen.data.v1.QueryResolversResponse
 	10, // 19: regen.data.v1.Query.ResolverInfo:output_type -> regen.data.v1.QueryResolverInfoResponse
 	15, // [15:20] is the sub-list for method output_type
@@ -6255,7 +6258,7 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryBySignerRequest); i {
+			switch v := v.(*QueryByAttestorRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6267,7 +6270,7 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryBySignerResponse); i {
+			switch v := v.(*QueryByAttestorResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6291,7 +6294,7 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QuerySignersRequest); i {
+			switch v := v.(*QueryAttestorsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6303,7 +6306,7 @@ func file_regen_data_v1_query_proto_init() {
 			}
 		}
 		file_regen_data_v1_query_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QuerySignersResponse); i {
+			switch v := v.(*QueryAttestorsResponse); i {
 			case 0:
 				return &v.state
 			case 1:

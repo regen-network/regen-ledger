@@ -2,10 +2,12 @@ package basket
 
 import (
 	"context"
+
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -20,7 +22,7 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 	}
 
 	basketGogo := &baskettypes.Basket{}
-	err = PulsarToGogoSlow(basket, basketGogo)
+	err = ormutil.PulsarToGogoSlow(basket, basketGogo)
 	if err != nil {
 		return nil, err
 	}
