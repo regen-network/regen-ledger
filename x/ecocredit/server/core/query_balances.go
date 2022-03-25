@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
@@ -22,7 +22,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchBalanceTable().List(ctx, ecocreditv1.BatchBalanceAddressBatchIdIndexKey{}.WithAddress(acc), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceAddressBatchIdIndexKey{}.WithAddress(acc), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
