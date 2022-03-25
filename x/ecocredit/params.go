@@ -19,10 +19,6 @@ var (
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
 
-// TODO: Revisit this once we have proper gas fee framework.
-// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
-const GasCostPerIteration = uint64(10)
-
 // TODO: remove after we open governance changes for precision
 const (
 	PRECISION uint32 = 6
