@@ -46,6 +46,17 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		}
 	}
 
+	if m.Fee != nil {
+		if m.Fee.Amount.IsZero() {
+			return sdkerrors.ErrInsufficientFee.Wrap("must specify nonzero fee")
+		}
+		if err := sdk.ValidateDenom(m.Fee.Denom); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s", err.Error())
+		}
+	} else {
+		return sdkerrors.ErrInvalidRequest.Wrap("fee must be specified")
+	}
+
 	return nil
 }
 
