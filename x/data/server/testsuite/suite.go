@@ -198,8 +198,14 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	})
 	require.NoError(err)
 	require.Len(attestorsByIri.Attestors, 2)
-	require.Equal(s.addr1.String(), attestorsByIri.Attestors[0])
-	require.Equal(s.addr2.String(), attestorsByIri.Attestors[1])
+
+	// loop through attestors as the order can vary
+	attestors := make([]string, len(attestorsByIri.Attestors))
+	for _, attestor := range attestorsByIri.Attestors {
+		attestors = append(attestors, attestor)
+	}
+	require.Contains(attestors, s.addr1.String())
+	require.Contains(attestors, s.addr2.String())
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
