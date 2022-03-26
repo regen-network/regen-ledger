@@ -139,7 +139,7 @@ func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
 			"valid message",
 			fields{
 				Manager:     addr.String(),
-				ResolverUrl: "http://foo.bar",
+				ResolverUrl: "https://foo.bar",
 			},
 			"",
 		},
@@ -147,7 +147,7 @@ func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
 			"invalid manager",
 			fields{
 				Manager:     "foo",
-				ResolverUrl: "http://foo.bar",
+				ResolverUrl: "https://foo.bar",
 			},
 			"decoding bech32 failed: invalid bech32 string length 3: invalid address",
 		},
