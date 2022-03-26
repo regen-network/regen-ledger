@@ -26,6 +26,9 @@ func (m *MsgCancelSellOrder) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Seller); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
+	if m.SellOrderId == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("0 is not a valid sell order id")
+	}
 	return nil
 }
 
