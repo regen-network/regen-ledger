@@ -10,12 +10,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestSell_Valid(t *testing.T) {
@@ -43,9 +43,9 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 
 	sellTime := time.Now()
-	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 		},
@@ -53,7 +53,7 @@ func TestSell_Valid(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.SellOrderIds))
 
-	it, err := s.marketStore.SellOrderTable().List(s.ctx, marketApi.SellOrderSellerIndexKey{})
+	it, err := s.marketStore.SellOrderTable().List(s.ctx, api.SellOrderSellerIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -97,9 +97,9 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 		},
 	})
@@ -133,18 +133,18 @@ func TestSell_Invalid(t *testing.T) {
 	}).Times(2)
 
 	// invalid batch
-	_, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: "foo-bar-baz-001", Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
 	})
 	assert.ErrorContains(t, err, "batch denom foo-bar-baz-001")
 
 	// invalid balance
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10000000000", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
 	})
@@ -154,9 +154,9 @@ func TestSell_Invalid(t *testing.T) {
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	invalidExpirationTime, err := time.Parse("2006-01-02", "1500-01-01")
-	_, err = s.k.Sell(s.ctx, &v1.MsgSell{
+	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &invalidExpirationTime},
 		},
 	})
@@ -165,7 +165,7 @@ func TestSell_Invalid(t *testing.T) {
 
 // assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
 func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
-	decs, err := core.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
+	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
 		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
 	assert.NilError(t, err)
@@ -208,7 +208,7 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		Metadata:   "",
 		CreditType: creditType.Abbreviation,
 	}))
-	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &marketApi.Market{
+	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,

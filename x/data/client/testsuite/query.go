@@ -27,18 +27,14 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
-			name: "too many args",
-			args: []string{
-				"foo", "bar",
-			},
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
 			expErr:    true,
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name: "invalid iri",
-			args: []string{
-				"foo",
-			},
+			name:      "invalid iri",
+			args:      []string{"foo"},
 			expErr:    true,
 			expErrMsg: "key not found",
 		},
@@ -137,6 +133,67 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expIRI    string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid iri",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid IRI",
+		},
+		{
+			name:   "valid",
+			args:   []string{validIri},
+			expErr: false,
+			expIRI: validIri,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryHashByIRICmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryHashByIRIResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+				iri, err := res.ContentHash.ToIRI()
+				s.Require().NoError(err)
+				s.Require().Equal(tc.expIRI, iri)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -196,7 +253,7 @@ func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryAttestorsResponse
+				var res data.QueryAttestorsByIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				for _, attestor := range tc.expAttestors {
@@ -238,7 +295,7 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 		},
 		{
 			name:   "valid",
-			args:   []string{"http://foo.bar"},
+			args:   []string{"https://foo.bar"},
 			expErr: false,
 		},
 	}
@@ -306,7 +363,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryResolversResponse
+				var res data.QueryResolversByIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 			}
 		})

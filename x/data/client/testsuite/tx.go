@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
-					iris[0],
+					iri,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, account2.String()),
 				},
 				commonFlags...,
@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
-				"http://foo.bar",
+				"https://foo.bar",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 			},
 			commonFlags...,
@@ -131,26 +131,66 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	cmd := client.QueryResolverInfoCmd()
-	out, err := cli.ExecTestCLICmd(val1.ClientCtx, cmd, []string{"http://foo.bar", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
+	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
+		append(
+			[]string{
+				"https://foo.bar",
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+		),
+	)
 	s.Require().NoError(err)
-	var rInfo data.QueryResolverInfoResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &rInfo))
-	s.resolverID = rInfo.Id
+
+	var resolverInfo data.QueryResolverInfoResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resolverInfo))
+	s.resolverID = resolverInfo.Id
 
 	content := []byte("abcdefg")
 	_, chs := s.createDataContent(content)
-
 	s.iri, err = chs.Data[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
 	bz, err := val1.ClientCtx.Codec.MarshalJSON(chs)
 	s.Require().NoError(err)
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	cmd = client.MsgRegisterResolverCmd()
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, cmd, append(
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
 			fmt.Sprintf("%d", s.resolverID),
+			filePath,
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+		},
+		commonFlags...,
+	))
+	s.Require().NoError(err)
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+		append(
+			[]string{
+				"https://bar.baz",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+			},
+			commonFlags...,
+		),
+	)
+	s.Require().NoError(err)
+
+	out2, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
+		append(
+			[]string{
+				"https://bar.baz",
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+		),
+	)
+	s.Require().NoError(err)
+
+	var resolverInfo2 data.QueryResolverInfoResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &resolverInfo2))
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
+		[]string{
+			fmt.Sprintf("%d", resolverInfo2.Id),
 			filePath,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 		},
@@ -317,7 +357,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 		},
 		{
 			"valid test",
-			"http:foo.bar",
+			"https://foo.bar",
 			false,
 			"",
 		},
