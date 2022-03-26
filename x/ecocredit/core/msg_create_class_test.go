@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
@@ -20,6 +21,12 @@ func TestMsgCreateClass(t *testing.T) {
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	validFee := &sdk.Coin{
+		Denom:  "regen",
+		Amount: sdk.NewInt(10),
+	}
+
 	tests := map[string]struct {
 		src    MsgCreateClass
 		expErr bool
@@ -30,6 +37,7 @@ func TestMsgCreateClass(t *testing.T) {
 				Issuers:          []string{addr1.String(), addr2.String()},
 				CreditTypeAbbrev: "C",
 				Metadata:         "hello",
+				Fee:              validFee,
 			},
 			expErr: false,
 		},
@@ -38,6 +46,7 @@ func TestMsgCreateClass(t *testing.T) {
 				Admin:            addr1.String(),
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String(), addr2.String()},
+				Fee:              validFee,
 			},
 			expErr: false,
 		},
@@ -81,6 +90,26 @@ func TestMsgCreateClass(t *testing.T) {
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1.String(), addr2.String()},
 				Metadata:         simtypes.RandStringOfLength(r, 288),
+			},
+			expErr: true,
+		},
+		"invalid bad fee denom": {
+			src: MsgCreateClass{
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{addr1.String()},
+				Metadata:         "foo",
+				Fee:              &sdk.Coin{Denom: "k,vm.zkx,cvzxk", Amount: sdk.NewInt(10)},
+			},
+			expErr: true,
+		},
+		"invalid bad fee amount": {
+			src: MsgCreateClass{
+				Admin:            addr1.String(),
+				CreditTypeAbbrev: "C",
+				Issuers:          []string{addr1.String()},
+				Metadata:         "foo",
+				Fee:              &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(0)},
 			},
 			expErr: true,
 		},

@@ -238,6 +238,15 @@ Enable cosmovisor to start automatically when the machine reboots:
 ```bash
 sudo systemctl enable cosmovisor.service
 ```
+## Using StateSync
+
+[Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) also supports [statesync](https://docs.cosmos.network/v0.44/architecture/adr-040-storage-and-smt-state-commitments.html#snapshots-for-storage-sync-and-state-versioning) which allows node operators to quickly spin up a node without downloading the existing chain data. It should be noted that not many nodes should be spun up on the network using this method as these nodes will be unable to propogate the historical data to other nodes.
+
+Download and execute the script:
+```bash 
+export MONIKER=<your-node-moniker>
+curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash
+```
 
 ## Prepare Upgrade
 
