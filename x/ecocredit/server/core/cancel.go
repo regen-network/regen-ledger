@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -25,7 +27,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +39,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		decs, err := GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
 		if err != nil {
 			return nil, err
 		}

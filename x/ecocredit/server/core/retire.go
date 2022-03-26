@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -23,7 +25,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -32,7 +34,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		decs, err := GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +56,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		decs, err = GetNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
+		decs, err = utils.GetNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
