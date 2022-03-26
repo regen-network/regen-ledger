@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.data.v1;
 
 import "google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/data/v1/types.proto";
 
@@ -11,47 +10,84 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Query is the regen.data.v1 Query service
 service Query {
-  // ByHash queries data based on its ContentHash.
+  // ByIRI queries data based on IRI.
   rpc ByIRI (QueryByIRIRequest) returns (QueryByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/by-iri/{iri}";
   }
 
-  // ByAttestor queries data based on attestors.
+  // ByHash queries data based on ContentHash.
+  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
+    // HTTP REST API not supported with ContentHash
+  }
+
+  // ByAttestor queries data based on attestor.
   rpc ByAttestor (QueryByAttestorRequest) returns (QueryByAttestorResponse) {
     option (google.api.http).get = "/regen/data/v1/by-attestor/{attestor}";
   }
 
-  // Attestors queries attestors based on IRI.
-  rpc Attestors(QueryAttestorsRequest) returns (QueryAttestorsResponse) {
+  // IRIByHash queries IRI based on ContentHash.
+  rpc IRIByHash (QueryIRIByHashRequest) returns (QueryIRIByHashResponse) {
+    // HTTP REST API not supported with ContentHash
+  }
+
+  // HashByIRI queries ContentHash based on IRI.
+  rpc HashByIRI (QueryHashByIRIRequest) returns (QueryHashByIRIResponse) {
+    option (google.api.http).get = "/regen/data/v1/hash/{iri}";
+  }
+
+  // AttestorsByIRI queries attestors based on IRI.
+  rpc AttestorsByIRI(QueryAttestorsByIRIRequest) returns (QueryAttestorsByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/attestors/{iri}";
   }
 
-  // Resolvers returns the registered resolver URLs for the data IRI.
-  rpc Resolvers(QueryResolversRequest) returns (QueryResolversResponse) {
+  // AttestorsByHash queries attestors based on ContentHash.
+  rpc AttestorsByHash(QueryAttestorsByHashRequest) returns (QueryAttestorsByHashResponse) {
+    // HTTP REST API not supported with ContentHash
+  }
+
+  // ResolversByIRI queries resolvers based on IRI.
+  rpc ResolversByIRI(QueryResolversByIRIRequest) returns (QueryResolversByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/resolvers/{iri}";
   }
 
-  // ResolverInfo returns information about a resolver.
+  // ResolversByHash queries resolvers based on ContentHash.
+  rpc ResolversByHash(QueryResolversByHashRequest) returns (QueryResolversByHashResponse) {
+    // HTTP REST API not supported with ContentHash
+  }
+
+  // ResolverInfo queries information about a resolved based on url.
   rpc ResolverInfo(QueryResolverInfoRequest) returns (QueryResolverInfoResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolver";
+    option (google.api.http).get = "/regen/data/v1/resolver"; // url must be passed as a parameter
   }
 }
 
-// QueryByContentHashRequest is the Query/ByContentHash request type.
+// QueryByIRIRequest is the Query/ByIRI request type.
 message QueryByIRIRequest {
-  // hash is the hash-based identifier for the anchored content.
+  // iri is the IRI for the anchored data.
   string iri = 1;
 }
 
-// QueryByContentHashResponse is the Query/ByContentHash response type.
+// QueryByIRIResponse is the Query/ByHash response type.
 message QueryByIRIResponse {
-  // entry is the ContentEntry
+  // entry is the ContentEntry for the anchored data.
+  ContentEntry entry = 1;
+}
+
+// QueryByHashRequest is the Query/ByHash request type.
+message QueryByHashRequest {
+  // hash is the ContentHash for the anchored data.
+  ContentHash content_hash = 1;
+}
+
+// QueryByHashResponse is the Query/ByHash response type.
+message QueryByHashResponse {
+  // entry is the ContentEntry for the anchored data.
   ContentEntry entry = 1;
 }
 
 // QueryByAttestorRequest is the Query/ByAttestor request type.
 message QueryByAttestorRequest {
-  // attestor is the address of the attestor to query by.
+  // attestor is the address of the attestor.
   string attestor = 1;
 
   // pagination is the PageRequest to use for pagination.
@@ -60,36 +96,48 @@ message QueryByAttestorRequest {
 
 // QueryByAttestorResponse is the Query/ByAttestor response type.
 message QueryByAttestorResponse {
-  // entries is the ContentEntry's signed by the queried attestor.
+  // entries are the ContentEntries attested to by the attestor.
   repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
-// ContentEntry describes data referenced and possibly stored on chain
-message ContentEntry {
-  // hash is the content hash
-  ContentHash hash = 1;
-
-  // iri is the content IRI
-  string iri = 2;
-
-  // timestamp is the anchor Timestamp
-  google.protobuf.Timestamp timestamp = 3;
+// QueryIRIByHashRequest is the Query/IRIByHash request type.
+message QueryIRIByHashRequest {
+  // hash is the ContentHash for the anchored data.
+  ContentHash content_hash = 1;
 }
 
-// QueryAttestorsRequest is the Query/Attestors request type.
-message QueryAttestorsRequest {
-  // iri is the content IRI
+// QueryIRIByHashResponse is the Query/IRIByHash response type.
+message QueryIRIByHashResponse {
+  // iri is the IRI for the anchored data.
+  string iri = 1;
+}
+
+// QueryHashByIRIRequest is the Query/HashByIRI request type.
+message QueryHashByIRIRequest {
+  // iri is the IRI for the anchored data.
+  string iri = 1;
+}
+
+// QueryHashByIRIResponse is the Query/HashByIRI response type.
+message QueryHashByIRIResponse {
+  // hash is the ContentHash for the anchored data.
+  ContentHash content_hash = 1;
+}
+
+// QueryAttestorsByIRIRequest is the Query/AttestorsByIRI request type.
+message QueryAttestorsByIRIRequest {
+  // iri is the IRI for the anchored data.
   string iri = 1;
 
   // pagination is the PageRequest to use for pagination.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryAttestorsResponse is the Query/Attestors response type.
-message QueryAttestorsResponse {
+// QueryAttestorsByIRIResponse is the Query/AttestorsByIRI response type.
+message QueryAttestorsByIRIResponse {
   // attestors are the addresses of the attestors.
   repeated string attestors = 1;
 
@@ -97,19 +145,56 @@ message QueryAttestorsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryResolversRequest is the Query/Resolvers request type.
-message QueryResolversRequest {
-  // iri is the content IRI
+// QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
+message QueryAttestorsByHashRequest {
+  // hash is the ContentHash for the anchored data.
+  ContentHash content_hash = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryAttestorsByHashResponse is the Query/AttestorsByHash response type.
+message QueryAttestorsByHashResponse {
+  // attestors are the addresses of the attestors.
+  repeated string attestors = 1;
+
+  // pagination is the pagination PageResponse.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryResolversByIRIRequest is the Query/ResolversByIRI request type.
+message QueryResolversByIRIRequest {
+  // iri is the IRI for the anchored data.
   string iri = 1;
 
   // pagination is the PageRequest to use for pagination.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryResolversResponse is the Query/Resolvers response type.
-message QueryResolversResponse {
-  // resolver_urls are the resolver URLs that have been registered for this
-  // data object.
+// QueryResolversByIRIResponse is the Query/ResolversByIRI response type.
+message QueryResolversByIRIResponse {
+  // resolver_urls are the resolver URLs that have been registered for the
+  // anchored data.
+  repeated string resolver_urls = 1;
+
+  // pagination is the PageResponse to use for pagination.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryResolversByHashRequest is the Query/ResolversByHash request type.
+message QueryResolversByHashRequest {
+  // hash is the ContentHash for the anchored data.
+  ContentHash content_hash = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryResolversByHashResponse is the Query/ResolversByHash response type.
+message QueryResolversByHashResponse {
+  // resolver_urls are the resolver URLs that have been registered for the
+  // anchored data.
   repeated string resolver_urls = 1;
 
   // pagination is the PageResponse to use for pagination.
@@ -118,7 +203,7 @@ message QueryResolversResponse {
 
 // QueryResolverInfoRequest is the Query/ResolverInfo request type.
 message QueryResolverInfoRequest {
-  // url is the URL of the resolver to query.
+  // url is the resolver URL that has been registered.
   string url = 1;
 }
 

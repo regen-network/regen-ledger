@@ -615,7 +615,7 @@ func (x *ContentHash_Raw) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ContentHash_Raw) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[3]
+	mi := &file_regen_data_v1_types_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1135,7 +1135,7 @@ func (x *ContentHash_Graph) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ContentHash_Graph) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[4]
+	mi := &file_regen_data_v1_types_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1676,6 +1676,584 @@ func (x *fastReflection_ContentHash_Graph) ProtoMethods() *protoiface.Methods {
 }
 
 var (
+	md_ContentEntry           protoreflect.MessageDescriptor
+	fd_ContentEntry_hash      protoreflect.FieldDescriptor
+	fd_ContentEntry_iri       protoreflect.FieldDescriptor
+	fd_ContentEntry_timestamp protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_data_v1_types_proto_init()
+	md_ContentEntry = File_regen_data_v1_types_proto.Messages().ByName("ContentEntry")
+	fd_ContentEntry_hash = md_ContentEntry.Fields().ByName("hash")
+	fd_ContentEntry_iri = md_ContentEntry.Fields().ByName("iri")
+	fd_ContentEntry_timestamp = md_ContentEntry.Fields().ByName("timestamp")
+}
+
+var _ protoreflect.Message = (*fastReflection_ContentEntry)(nil)
+
+type fastReflection_ContentEntry ContentEntry
+
+func (x *ContentEntry) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_ContentEntry)(x)
+}
+
+func (x *ContentEntry) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_data_v1_types_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_ContentEntry_messageType fastReflection_ContentEntry_messageType
+var _ protoreflect.MessageType = fastReflection_ContentEntry_messageType{}
+
+type fastReflection_ContentEntry_messageType struct{}
+
+func (x fastReflection_ContentEntry_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_ContentEntry)(nil)
+}
+func (x fastReflection_ContentEntry_messageType) New() protoreflect.Message {
+	return new(fastReflection_ContentEntry)
+}
+func (x fastReflection_ContentEntry_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_ContentEntry
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_ContentEntry) Descriptor() protoreflect.MessageDescriptor {
+	return md_ContentEntry
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_ContentEntry) Type() protoreflect.MessageType {
+	return _fastReflection_ContentEntry_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_ContentEntry) New() protoreflect.Message {
+	return new(fastReflection_ContentEntry)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_ContentEntry) Interface() protoreflect.ProtoMessage {
+	return (*ContentEntry)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_ContentEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Hash != nil {
+		value := protoreflect.ValueOfMessage(x.Hash.ProtoReflect())
+		if !f(fd_ContentEntry_hash, value) {
+			return
+		}
+	}
+	if x.Iri != "" {
+		value := protoreflect.ValueOfString(x.Iri)
+		if !f(fd_ContentEntry_iri, value) {
+			return
+		}
+	}
+	if x.Timestamp != nil {
+		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+		if !f(fd_ContentEntry_timestamp, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_ContentEntry) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		return x.Hash != nil
+	case "regen.data.v1.ContentEntry.iri":
+		return x.Iri != ""
+	case "regen.data.v1.ContentEntry.timestamp":
+		return x.Timestamp != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ContentEntry) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		x.Hash = nil
+	case "regen.data.v1.ContentEntry.iri":
+		x.Iri = ""
+	case "regen.data.v1.ContentEntry.timestamp":
+		x.Timestamp = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_ContentEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		value := x.Hash
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "regen.data.v1.ContentEntry.iri":
+		value := x.Iri
+		return protoreflect.ValueOfString(value)
+	case "regen.data.v1.ContentEntry.timestamp":
+		value := x.Timestamp
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ContentEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		x.Hash = value.Message().Interface().(*ContentHash)
+	case "regen.data.v1.ContentEntry.iri":
+		x.Iri = value.Interface().(string)
+	case "regen.data.v1.ContentEntry.timestamp":
+		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ContentEntry) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		if x.Hash == nil {
+			x.Hash = new(ContentHash)
+		}
+		return protoreflect.ValueOfMessage(x.Hash.ProtoReflect())
+	case "regen.data.v1.ContentEntry.timestamp":
+		if x.Timestamp == nil {
+			x.Timestamp = new(timestamppb.Timestamp)
+		}
+		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
+	case "regen.data.v1.ContentEntry.iri":
+		panic(fmt.Errorf("field iri of message regen.data.v1.ContentEntry is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_ContentEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.hash":
+		m := new(ContentHash)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "regen.data.v1.ContentEntry.iri":
+		return protoreflect.ValueOfString("")
+	case "regen.data.v1.ContentEntry.timestamp":
+		m := new(timestamppb.Timestamp)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ContentEntry"))
+		}
+		panic(fmt.Errorf("message regen.data.v1.ContentEntry does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_ContentEntry) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ContentEntry", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_ContentEntry) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_ContentEntry) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_ContentEntry) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*ContentEntry)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Hash != nil {
+			l = options.Size(x.Hash)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Iri)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Timestamp != nil {
+			l = options.Size(x.Timestamp)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*ContentEntry)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Timestamp != nil {
+			encoded, err := options.Marshal(x.Timestamp)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.Iri) > 0 {
+			i -= len(x.Iri)
+			copy(dAtA[i:], x.Iri)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.Hash != nil {
+			encoded, err := options.Marshal(x.Hash)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*ContentEntry)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentEntry: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ContentEntry: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Hash == nil {
+					x.Hash = &ContentHash{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Hash); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Iri = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Timestamp == nil {
+					x.Timestamp = &timestamppb.Timestamp{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_AttestorEntry           protoreflect.MessageDescriptor
 	fd_AttestorEntry_attestor  protoreflect.FieldDescriptor
 	fd_AttestorEntry_timestamp protoreflect.FieldDescriptor
@@ -1697,7 +2275,7 @@ func (x *AttestorEntry) ProtoReflect() protoreflect.Message {
 }
 
 func (x *AttestorEntry) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[1]
+	mi := &file_regen_data_v1_types_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2245,7 +2823,7 @@ func (x *ContentHashes) ProtoReflect() protoreflect.Message {
 }
 
 func (x *ContentHashes) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_types_proto_msgTypes[2]
+	mi := &file_regen_data_v1_types_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3015,22 +3593,77 @@ func (*ContentHash_Raw_) isContentHash_Sum() {}
 
 func (*ContentHash_Graph_) isContentHash_Sum() {}
 
+// ContentEntry describes data referenced and possibly stored on chain
+type ContentEntry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// hash is the content hash of the anchored data.
+	Hash *ContentHash `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
+	// iri is the content IRI of the anchored data.
+	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
+	// timestamp is the Timestamp of the anchored data.
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+}
+
+func (x *ContentEntry) Reset() {
+	*x = ContentEntry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_data_v1_types_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ContentEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContentEntry) ProtoMessage() {}
+
+// Deprecated: Use ContentEntry.ProtoReflect.Descriptor instead.
+func (*ContentEntry) Descriptor() ([]byte, []int) {
+	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ContentEntry) GetHash() *ContentHash {
+	if x != nil {
+		return x.Hash
+	}
+	return nil
+}
+
+func (x *ContentEntry) GetIri() string {
+	if x != nil {
+		return x.Iri
+	}
+	return ""
+}
+
+func (x *ContentEntry) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
 // AttestorEntry is a attestor entry wrapping a attestor address and timestamp
 type AttestorEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestor is the address of the attestor
+	// attestor is the address of the attestor.
 	Attestor string `protobuf:"bytes,1,opt,name=attestor,proto3" json:"attestor,omitempty"`
-	// timestamp is the time at which the data was signed
+	// timestamp is the Timestamp of the attestation.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (x *AttestorEntry) Reset() {
 	*x = AttestorEntry{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[1]
+		mi := &file_regen_data_v1_types_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3044,7 +3677,7 @@ func (*AttestorEntry) ProtoMessage() {}
 
 // Deprecated: Use AttestorEntry.ProtoReflect.Descriptor instead.
 func (*AttestorEntry) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{1}
+	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AttestorEntry) GetAttestor() string {
@@ -3074,7 +3707,7 @@ type ContentHashes struct {
 func (x *ContentHashes) Reset() {
 	*x = ContentHashes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[2]
+		mi := &file_regen_data_v1_types_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3088,7 +3721,7 @@ func (*ContentHashes) ProtoMessage() {}
 
 // Deprecated: Use ContentHashes.ProtoReflect.Descriptor instead.
 func (*ContentHashes) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{2}
+	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ContentHashes) GetData() []*ContentHash {
@@ -3115,7 +3748,7 @@ type ContentHash_Raw struct {
 func (x *ContentHash_Raw) Reset() {
 	*x = ContentHash_Raw{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[3]
+		mi := &file_regen_data_v1_types_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3172,7 +3805,7 @@ type ContentHash_Graph struct {
 func (x *ContentHash_Graph) Reset() {
 	*x = ContentHash_Graph{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_types_proto_msgTypes[4]
+		mi := &file_regen_data_v1_types_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3260,72 +3893,80 @@ var file_regen_data_v1_types_proto_rawDesc = []byte{
 	0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61,
 	0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c,
 	0x65, 0x54, 0x72, 0x65, 0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65,
-	0x65, 0x42, 0x05, 0x0a, 0x03, 0x73, 0x75, 0x6d, 0x22, 0x65, 0x0a, 0x0d, 0x41, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74, 0x74,
-	0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74, 0x74,
-	0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
-	0x6d, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22,
-	0x3f, 0x0a, 0x0d, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73,
-	0x12, 0x2e, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43,
-	0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61,
-	0x2a, 0x89, 0x03, 0x0a, 0x09, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a,
-	0x0a, 0x16, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53,
-	0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x19, 0x0a, 0x15, 0x4d, 0x45,
-	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x45, 0x58, 0x54, 0x5f, 0x50, 0x4c,
-	0x41, 0x49, 0x4e, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54,
-	0x59, 0x50, 0x45, 0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x10, 0x02, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45,
-	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x43, 0x53, 0x56, 0x10, 0x03, 0x12, 0x12,
-	0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x58, 0x4d, 0x4c,
-	0x10, 0x04, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45,
-	0x5f, 0x50, 0x44, 0x46, 0x10, 0x05, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f,
-	0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x49, 0x46, 0x46, 0x10, 0x10, 0x12, 0x12, 0x0a, 0x0e, 0x4d,
-	0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x50, 0x47, 0x10, 0x11, 0x12,
-	0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50, 0x4e,
-	0x47, 0x10, 0x12, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50,
-	0x45, 0x5f, 0x53, 0x56, 0x47, 0x10, 0x13, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41,
-	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57, 0x45, 0x42, 0x50, 0x10, 0x14, 0x12, 0x13, 0x0a, 0x0f,
-	0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x41, 0x56, 0x49, 0x46, 0x10,
-	0x15, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
-	0x47, 0x49, 0x46, 0x10, 0x16, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54,
-	0x59, 0x50, 0x45, 0x5f, 0x41, 0x50, 0x4e, 0x47, 0x10, 0x17, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45,
-	0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x45, 0x47, 0x10, 0x20, 0x12,
-	0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50,
-	0x34, 0x10, 0x21, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50,
-	0x45, 0x5f, 0x57, 0x45, 0x42, 0x4d, 0x10, 0x22, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49,
-	0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4f, 0x47, 0x47, 0x10, 0x23, 0x2a, 0x82, 0x01, 0x0a,
-	0x1e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x43, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69,
-	0x7a, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12,
-	0x30, 0x0a, 0x2c, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49, 0x43,
-	0x41, 0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49,
-	0x54, 0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
-	0x00, 0x12, 0x2e, 0x0a, 0x2a, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e,
-	0x49, 0x43, 0x41, 0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f,
-	0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x55, 0x52, 0x44, 0x4e, 0x41, 0x32, 0x30, 0x31, 0x35, 0x10,
-	0x01, 0x2a, 0x39, 0x0a, 0x0f, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65,
-	0x54, 0x72, 0x65, 0x65, 0x12, 0x26, 0x0a, 0x22, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x4d, 0x45,
-	0x52, 0x4b, 0x4c, 0x45, 0x5f, 0x54, 0x52, 0x45, 0x45, 0x5f, 0x4e, 0x4f, 0x4e, 0x45, 0x5f, 0x55,
-	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x2a, 0x55, 0x0a, 0x0f,
-	0x44, 0x69, 0x67, 0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12,
-	0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49,
-	0x54, 0x48, 0x4d, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10,
-	0x00, 0x12, 0x20, 0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f,
-	0x52, 0x49, 0x54, 0x48, 0x4d, 0x5f, 0x42, 0x4c, 0x41, 0x4b, 0x45, 0x32, 0x42, 0x5f, 0x32, 0x35,
-	0x36, 0x10, 0x01, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31,
-	0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x42, 0x05, 0x0a, 0x03, 0x73, 0x75, 0x6d, 0x22, 0x8a, 0x01, 0x0a, 0x0c, 0x43, 0x6f, 0x6e,
+	0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x2e, 0x0a, 0x04, 0x68, 0x61, 0x73,
+	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48,
+	0x61, 0x73, 0x68, 0x52, 0x04, 0x68, 0x61, 0x73, 0x68, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x38, 0x0a, 0x09, 0x74,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
+	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
+	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x65, 0x0a, 0x0d, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f,
+	0x72, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74,
+	0x6f, 0x72, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
+	0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x3f, 0x0a, 0x0d,
+	0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x65, 0x73, 0x12, 0x2e, 0x0a,
+	0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74,
+	0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x2a, 0x89, 0x03,
+	0x0a, 0x09, 0x4d, 0x65, 0x64, 0x69, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x16, 0x4d,
+	0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
+	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x19, 0x0a, 0x15, 0x4d, 0x45, 0x44, 0x49, 0x41,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x54, 0x45, 0x58, 0x54, 0x5f, 0x50, 0x4c, 0x41, 0x49, 0x4e,
+	0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45,
+	0x5f, 0x4a, 0x53, 0x4f, 0x4e, 0x10, 0x02, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x43, 0x53, 0x56, 0x10, 0x03, 0x12, 0x12, 0x0a, 0x0e, 0x4d,
+	0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x58, 0x4d, 0x4c, 0x10, 0x04, 0x12,
+	0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50, 0x44,
+	0x46, 0x10, 0x05, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50,
+	0x45, 0x5f, 0x54, 0x49, 0x46, 0x46, 0x10, 0x10, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49,
+	0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x50, 0x47, 0x10, 0x11, 0x12, 0x12, 0x0a, 0x0e,
+	0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x50, 0x4e, 0x47, 0x10, 0x12,
+	0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x53,
+	0x56, 0x47, 0x10, 0x13, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59,
+	0x50, 0x45, 0x5f, 0x57, 0x45, 0x42, 0x50, 0x10, 0x14, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44,
+	0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x41, 0x56, 0x49, 0x46, 0x10, 0x15, 0x12, 0x12,
+	0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x47, 0x49, 0x46,
+	0x10, 0x16, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45,
+	0x5f, 0x41, 0x50, 0x4e, 0x47, 0x10, 0x17, 0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41,
+	0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x45, 0x47, 0x10, 0x20, 0x12, 0x12, 0x0a, 0x0e,
+	0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x4d, 0x50, 0x34, 0x10, 0x21,
+	0x12, 0x13, 0x0a, 0x0f, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x57,
+	0x45, 0x42, 0x4d, 0x10, 0x22, 0x12, 0x12, 0x0a, 0x0e, 0x4d, 0x45, 0x44, 0x49, 0x41, 0x5f, 0x54,
+	0x59, 0x50, 0x45, 0x5f, 0x4f, 0x47, 0x47, 0x10, 0x23, 0x2a, 0x82, 0x01, 0x0a, 0x1e, 0x47, 0x72,
+	0x61, 0x70, 0x68, 0x43, 0x61, 0x6e, 0x6f, 0x6e, 0x69, 0x63, 0x61, 0x6c, 0x69, 0x7a, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x30, 0x0a, 0x2c,
+	0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49, 0x43, 0x41, 0x4c, 0x49,
+	0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d,
+	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x2e,
+	0x0a, 0x2a, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x43, 0x41, 0x4e, 0x4f, 0x4e, 0x49, 0x43, 0x41,
+	0x4c, 0x49, 0x5a, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54,
+	0x48, 0x4d, 0x5f, 0x55, 0x52, 0x44, 0x4e, 0x41, 0x32, 0x30, 0x31, 0x35, 0x10, 0x01, 0x2a, 0x39,
+	0x0a, 0x0f, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65,
+	0x65, 0x12, 0x26, 0x0a, 0x22, 0x47, 0x52, 0x41, 0x50, 0x48, 0x5f, 0x4d, 0x45, 0x52, 0x4b, 0x4c,
+	0x45, 0x5f, 0x54, 0x52, 0x45, 0x45, 0x5f, 0x4e, 0x4f, 0x4e, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x2a, 0x55, 0x0a, 0x0f, 0x44, 0x69, 0x67,
+	0x65, 0x73, 0x74, 0x41, 0x6c, 0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x20, 0x0a, 0x1c,
+	0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54, 0x48, 0x4d,
+	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x20,
+	0x0a, 0x1c, 0x44, 0x49, 0x47, 0x45, 0x53, 0x54, 0x5f, 0x41, 0x4c, 0x47, 0x4f, 0x52, 0x49, 0x54,
+	0x48, 0x4d, 0x5f, 0x42, 0x4c, 0x41, 0x4b, 0x45, 0x32, 0x42, 0x5f, 0x32, 0x35, 0x36, 0x10, 0x01,
+	0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64,
+	0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61,
+	0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a,
+	0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3341,34 +3982,37 @@ func file_regen_data_v1_types_proto_rawDescGZIP() []byte {
 }
 
 var file_regen_data_v1_types_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_regen_data_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_regen_data_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_regen_data_v1_types_proto_goTypes = []interface{}{
 	(MediaType)(0),                      // 0: regen.data.v1.MediaType
 	(GraphCanonicalizationAlgorithm)(0), // 1: regen.data.v1.GraphCanonicalizationAlgorithm
 	(GraphMerkleTree)(0),                // 2: regen.data.v1.GraphMerkleTree
 	(DigestAlgorithm)(0),                // 3: regen.data.v1.DigestAlgorithm
 	(*ContentHash)(nil),                 // 4: regen.data.v1.ContentHash
-	(*AttestorEntry)(nil),               // 5: regen.data.v1.AttestorEntry
-	(*ContentHashes)(nil),               // 6: regen.data.v1.ContentHashes
-	(*ContentHash_Raw)(nil),             // 7: regen.data.v1.ContentHash.Raw
-	(*ContentHash_Graph)(nil),           // 8: regen.data.v1.ContentHash.Graph
-	(*timestamppb.Timestamp)(nil),       // 9: google.protobuf.Timestamp
+	(*ContentEntry)(nil),                // 5: regen.data.v1.ContentEntry
+	(*AttestorEntry)(nil),               // 6: regen.data.v1.AttestorEntry
+	(*ContentHashes)(nil),               // 7: regen.data.v1.ContentHashes
+	(*ContentHash_Raw)(nil),             // 8: regen.data.v1.ContentHash.Raw
+	(*ContentHash_Graph)(nil),           // 9: regen.data.v1.ContentHash.Graph
+	(*timestamppb.Timestamp)(nil),       // 10: google.protobuf.Timestamp
 }
 var file_regen_data_v1_types_proto_depIdxs = []int32{
-	7, // 0: regen.data.v1.ContentHash.raw:type_name -> regen.data.v1.ContentHash.Raw
-	8, // 1: regen.data.v1.ContentHash.graph:type_name -> regen.data.v1.ContentHash.Graph
-	9, // 2: regen.data.v1.AttestorEntry.timestamp:type_name -> google.protobuf.Timestamp
-	4, // 3: regen.data.v1.ContentHashes.data:type_name -> regen.data.v1.ContentHash
-	3, // 4: regen.data.v1.ContentHash.Raw.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	0, // 5: regen.data.v1.ContentHash.Raw.media_type:type_name -> regen.data.v1.MediaType
-	3, // 6: regen.data.v1.ContentHash.Graph.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
-	1, // 7: regen.data.v1.ContentHash.Graph.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
-	2, // 8: regen.data.v1.ContentHash.Graph.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
-	9, // [9:9] is the sub-list for method output_type
-	9, // [9:9] is the sub-list for method input_type
-	9, // [9:9] is the sub-list for extension type_name
-	9, // [9:9] is the sub-list for extension extendee
-	0, // [0:9] is the sub-list for field type_name
+	8,  // 0: regen.data.v1.ContentHash.raw:type_name -> regen.data.v1.ContentHash.Raw
+	9,  // 1: regen.data.v1.ContentHash.graph:type_name -> regen.data.v1.ContentHash.Graph
+	4,  // 2: regen.data.v1.ContentEntry.hash:type_name -> regen.data.v1.ContentHash
+	10, // 3: regen.data.v1.ContentEntry.timestamp:type_name -> google.protobuf.Timestamp
+	10, // 4: regen.data.v1.AttestorEntry.timestamp:type_name -> google.protobuf.Timestamp
+	4,  // 5: regen.data.v1.ContentHashes.data:type_name -> regen.data.v1.ContentHash
+	3,  // 6: regen.data.v1.ContentHash.Raw.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	0,  // 7: regen.data.v1.ContentHash.Raw.media_type:type_name -> regen.data.v1.MediaType
+	3,  // 8: regen.data.v1.ContentHash.Graph.digest_algorithm:type_name -> regen.data.v1.DigestAlgorithm
+	1,  // 9: regen.data.v1.ContentHash.Graph.canonicalization_algorithm:type_name -> regen.data.v1.GraphCanonicalizationAlgorithm
+	2,  // 10: regen.data.v1.ContentHash.Graph.merkle_tree:type_name -> regen.data.v1.GraphMerkleTree
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_regen_data_v1_types_proto_init() }
@@ -3390,7 +4034,7 @@ func file_regen_data_v1_types_proto_init() {
 			}
 		}
 		file_regen_data_v1_types_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AttestorEntry); i {
+			switch v := v.(*ContentEntry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3402,7 +4046,7 @@ func file_regen_data_v1_types_proto_init() {
 			}
 		}
 		file_regen_data_v1_types_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ContentHashes); i {
+			switch v := v.(*AttestorEntry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3414,7 +4058,7 @@ func file_regen_data_v1_types_proto_init() {
 			}
 		}
 		file_regen_data_v1_types_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ContentHash_Raw); i {
+			switch v := v.(*ContentHashes); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3426,6 +4070,18 @@ func file_regen_data_v1_types_proto_init() {
 			}
 		}
 		file_regen_data_v1_types_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ContentHash_Raw); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_data_v1_types_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*ContentHash_Graph); i {
 			case 0:
 				return &v.state
@@ -3448,7 +4104,7 @@ func file_regen_data_v1_types_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_data_v1_types_proto_rawDesc,
 			NumEnums:      4,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
