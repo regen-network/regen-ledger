@@ -27,7 +27,7 @@ message ContentHash {
         // digest_algorithm represents the hash digest algorithm.
         DigestAlgorithm digest_algorithm = 2;
 
-        // media_type represents the MediaType for raw data.
+        // media_type represents the media type for raw data.
         RawMediaType media_type = 3;
 
     }

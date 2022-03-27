@@ -261,7 +261,7 @@ type ContentHash_Raw struct {
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
-	// media_type represents the MediaType for raw data.
+	// media_type represents the media type for raw data.
 	MediaType RawMediaType `protobuf:"varint,3,opt,name=media_type,json=mediaType,proto3,enum=regen.data.v1.RawMediaType" json:"media_type,omitempty"`
 }
 
