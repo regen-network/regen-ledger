@@ -144,12 +144,24 @@ enum DigestAlgorithm {
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
+// ContentEntry describes data referenced and possibly stored on chain
+message ContentEntry {
+  // hash is the content hash of the anchored data.
+  ContentHash hash = 1;
+
+  // iri is the content IRI of the anchored data.
+  string iri = 2;
+
+  // timestamp is the Timestamp of the anchored data.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
 // AttestorEntry is a attestor entry wrapping a attestor address and timestamp
 message AttestorEntry {
-    // attestor is the address of the attestor
+    // attestor is the address of the attestor.
     string attestor = 1;
 
-    // timestamp is the time at which the data was signed
+    // timestamp is the Timestamp of the attestation.
     google.protobuf.Timestamp timestamp = 2;
 }
 

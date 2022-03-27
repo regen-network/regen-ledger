@@ -15,7 +15,7 @@ import (
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
-	rgCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := types.UnwrapSDKContext(ctx)
 	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err = k.distKeeper.FundCommunityPool(rgCtx.Context, fee, sender)
+	err = k.distKeeper.FundCommunityPool(sdkCtx.Context, fee, sender)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = k.indexAllowedClasses(rgCtx, id, msg.AllowedClasses); err != nil {
+	if err = k.indexAllowedClasses(sdkCtx, id, msg.AllowedClasses); err != nil {
 		return nil, err
 	}
 
@@ -66,7 +66,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		})
 	}
 
-	k.bankKeeper.SetDenomMetaData(rgCtx.Context, banktypes.Metadata{
+	k.bankKeeper.SetDenomMetaData(sdkCtx.Context, banktypes.Metadata{
 		DenomUnits:  denomUnits,
 		Description: msg.Description,
 		Base:        denom,
@@ -75,7 +75,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Symbol:      msg.Name,
 	})
 
-	err = rgCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
+	err = sdkCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
 		BasketDenom: denom,
 		Curator:     msg.Curator,
 	})
@@ -85,8 +85,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
 // it's precision is bigger then the requested exponent.
-func validateCreditType(ctx context.Context, k EcocreditKeeper, creditTypeAbbr string, exponent uint32) error {
-	res, err := k.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
+func validateCreditType(sdkCtx context.Context, k EcocreditKeeper, creditTypeAbbr string, exponent uint32) error {
+	res, err := k.CreditTypes(sdkCtx, &ecocredit.QueryCreditTypesRequest{})
 	if err != nil {
 		return err
 	}
@@ -106,14 +106,14 @@ func validateCreditType(ctx context.Context, k EcocreditKeeper, creditTypeAbbr s
 	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", creditTypeAbbr)
 }
 
-func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedClasses []string) error {
+func (k Keeper) indexAllowedClasses(sdkCtx types.Context, basketID uint64, allowedClasses []string) error {
 	for _, class := range allowedClasses {
-		if !k.ecocreditKeeper.HasClassInfo(ctx, class) {
+		if !k.ecocreditKeeper.HasClassInfo(sdkCtx, class) {
 			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
 		}
 
-		wrappedCtx := sdk.WrapSDKContext(ctx.Context)
-		err := k.stateStore.BasketClassTable().Insert(wrappedCtx,
+		ctx := sdk.WrapSDKContext(sdkCtx.Context)
+		err := k.stateStore.BasketClassTable().Insert(ctx,
 			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,
@@ -122,6 +122,8 @@ func (k Keeper) indexAllowedClasses(ctx types.Context, basketID uint64, allowedC
 		if err != nil {
 			return err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgCreate class iteration")
 	}
 	return nil
 }

@@ -44,6 +44,7 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	cmd.AddCommand(
 		queryByIRICmd,
 		QueryByAttestorCmd(),
+		QueryHashByIRICmd(),
 		QueryAttestorsCmd(),
 		QueryResolverInfoCmd(),
 		QueryResolversCmd(),
@@ -79,7 +80,7 @@ func QueryByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryByAttestorCmd creates a CLI command for Query/Data.
+// QueryByAttestorCmd creates a CLI command for Query/ByAttestor.
 func QueryByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "by-attestor [attestor]",
@@ -110,7 +111,32 @@ func QueryByAttestorCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryAttestorsCmd creates a CLI command for Query/Data.
+// QueryHashByIRICmd creates a CLI command for Query/HashByIRI.
+func QueryHashByIRICmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "content-hash [iri]",
+		Short: "Query for content hash based on IRI",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.HashByIRI(cmd.Context(), &data.QueryHashByIRIRequest{
+				Iri: args[0],
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryAttestorsCmd creates a CLI command for Query/Attestors.
 func QueryAttestorsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestors [iri]",
@@ -127,7 +153,7 @@ func QueryAttestorsCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Attestors(cmd.Context(), &data.QueryAttestorsRequest{
+			res, err := c.AttestorsByIRI(cmd.Context(), &data.QueryAttestorsByIRIRequest{
 				Iri:        args[0],
 				Pagination: pagination,
 			})
@@ -183,7 +209,7 @@ func QueryResolversCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Resolvers(cmd.Context(), &data.QueryResolversRequest{
+			res, err := c.ResolversByIRI(cmd.Context(), &data.QueryResolversByIRIRequest{
 				Iri:        args[0],
 				Pagination: pagination,
 			})
