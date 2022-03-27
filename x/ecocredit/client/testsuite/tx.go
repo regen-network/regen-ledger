@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 		s.Require().Equal(uint32(0), txResp.Code, out.String())
 	}
-	
+
 	// Store the first one in the test suite
 	s.batchInfo = &core.BatchInfo{
 		ProjectId:  1,
@@ -287,20 +287,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr:      true,
 			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
-		},
-		{
-			name: "invalid metadata",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					"=",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "metadata is malformed, proper base64 string is required",
 		},
 		{
 			name: "missing from flag",
@@ -437,6 +423,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					for _, e := range res.Logs[0].Events {
 						if e.Type == proto.MessageName(&ecocredit.EventCreateClass{}) {
 							for _, attr := range e.Attributes {
+								fmt.Println(attr)
 								if attr.Key == "class_id" {
 									classIdFound = true
 									classId := strings.Trim(attr.Value, "\"")
