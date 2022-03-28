@@ -291,8 +291,8 @@ type EventReceive struct {
 	RetiredAmount string `protobuf:"bytes,5,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// basket_denom is the denom of the basket. When the basket_denom field is
 	// set, it indicates that this event was triggered by the transfer of credits
-	// from a basket. It will not be set if the credits were transferred or received
-	// at initial issuance.
+	// from a basket. It will not be set if the credits were transferred or
+	// received at initial issuance.
 	BasketDenom string `protobuf:"bytes,6,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 }
 
@@ -519,7 +519,8 @@ func (m *EventCancel) GetAmount() string {
 	return ""
 }
 
-// EventClassAdminUpdated is emitted when the admin address of a credit class is changed.
+// EventClassAdminUpdated is emitted when the admin address of a credit class is
+// changed.
 type EventClassAdminUpdated struct {
 	// class_name is the name of the class that was updated.
 	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
@@ -583,13 +584,15 @@ func (m *EventClassAdminUpdated) GetNewAdmin() string {
 	return ""
 }
 
-// EventClassIssuersUpdated is emitted when the issuer list for a credit class is updated.
+// EventClassIssuersUpdated is emitted when the issuer list for a credit class
+// is updated.
 type EventClassIssuersUpdated struct {
 	// class_name is the name of the class that was updated.
 	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
 	// added_issuers contains all the addresses added to the class issuer list.
 	AddedIssuers []string `protobuf:"bytes,2,rep,name=added_issuers,json=addedIssuers,proto3" json:"added_issuers,omitempty"`
-	// removed_issuers contains all the addresses removed from the class issuer list.
+	// removed_issuers contains all the addresses removed from the class issuer
+	// list.
 	RemovedIssuers []string `protobuf:"bytes,3,rep,name=removed_issuers,json=removedIssuers,proto3" json:"removed_issuers,omitempty"`
 }
 
@@ -647,7 +650,8 @@ func (m *EventClassIssuersUpdated) GetRemovedIssuers() []string {
 	return nil
 }
 
-// EventClassMetadataUpdated is emitted when the credit class metadata is changed.
+// EventClassMetadataUpdated is emitted when the credit class metadata is
+// changed.
 type EventClassMetadataUpdated struct {
 	// class_name is the name of the class that was updated.
 	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`

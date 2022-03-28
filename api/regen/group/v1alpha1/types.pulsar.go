@@ -6110,7 +6110,8 @@ const (
 	Proposal_STATUS_SUBMITTED Proposal_Status = 1
 	// Final status of a proposal when the final tally was executed.
 	Proposal_STATUS_CLOSED Proposal_Status = 2
-	// Final status of a proposal when the group was modified before the final tally.
+	// Final status of a proposal when the group was modified before the final
+	// tally.
 	Proposal_STATUS_ABORTED Proposal_Status = 3
 )
 
@@ -6370,10 +6371,11 @@ type ThresholdDecisionPolicy struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed.
+	// threshold is the minimum weighted sum of yes votes that must be met or
+	// exceeded for a proposal to succeed.
 	Threshold string `protobuf:"bytes,1,opt,name=threshold,proto3" json:"threshold,omitempty"`
-	// timeout is the duration from submission of a proposal to the end of voting period
-	// Within this times votes and exec messages can be submitted.
+	// timeout is the duration from submission of a proposal to the end of voting
+	// period Within this times votes and exec messages can be submitted.
 	Timeout *durationpb.Duration `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout,omitempty"`
 }
 
@@ -6533,7 +6535,8 @@ func (x *GroupMember) GetMember() *Member {
 	return nil
 }
 
-// GroupAccountInfo represents the high-level on-chain information for a group account.
+// GroupAccountInfo represents the high-level on-chain information for a group
+// account.
 type GroupAccountInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -6547,8 +6550,8 @@ type GroupAccountInfo struct {
 	Admin string `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
 	// metadata is any arbitrary metadata to attached to the group account.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// version is used to track changes to a group's GroupAccountInfo structure that
-	// would create a different result on a running proposal.
+	// version is used to track changes to a group's GroupAccountInfo structure
+	// that would create a different result on a running proposal.
 	Version uint64 `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
 	// decision_policy specifies the group account's decision policy.
 	DecisionPolicy *anypb.Any `protobuf:"bytes,6,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
@@ -6626,10 +6629,10 @@ func (x *GroupAccountInfo) GetDerivationKey() []byte {
 	return nil
 }
 
-// Proposal defines a group proposal. Any member of a group can submit a proposal
-// for a group account to decide upon.
-// A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
-// passes as well as some optional metadata associated with the proposal.
+// Proposal defines a group proposal. Any member of a group can submit a
+// proposal for a group account to decide upon. A proposal consists of a set of
+// `sdk.Msg`s that will be executed if the proposal passes as well as some
+// optional metadata associated with the proposal.
 type Proposal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -6645,24 +6648,31 @@ type Proposal struct {
 	Proposers []string `protobuf:"bytes,4,rep,name=proposers,proto3" json:"proposers,omitempty"`
 	// submitted_at is a timestamp specifying when a proposal was submitted.
 	SubmittedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at,omitempty"`
-	// group_version tracks the version of the group that this proposal corresponds to.
-	// When group membership is changed, existing proposals from previous group versions will become invalid.
+	// group_version tracks the version of the group that this proposal
+	// corresponds to. When group membership is changed, existing proposals from
+	// previous group versions will become invalid.
 	GroupVersion uint64 `protobuf:"varint,6,opt,name=group_version,json=groupVersion,proto3" json:"group_version,omitempty"`
-	// group_account_version tracks the version of the group account that this proposal corresponds to.
-	// When a decision policy is changed, existing proposals from previous policy versions will become invalid.
+	// group_account_version tracks the version of the group account that this
+	// proposal corresponds to. When a decision policy is changed, existing
+	// proposals from previous policy versions will become invalid.
 	GroupAccountVersion uint64 `protobuf:"varint,7,opt,name=group_account_version,json=groupAccountVersion,proto3" json:"group_account_version,omitempty"`
-	// Status represents the high level position in the life cycle of the proposal. Initial value is Submitted.
+	// Status represents the high level position in the life cycle of the
+	// proposal. Initial value is Submitted.
 	Status Proposal_Status `protobuf:"varint,8,opt,name=status,proto3,enum=regen.group.v1alpha1.Proposal_Status" json:"status,omitempty"`
-	// result is the final result based on the votes and election rule. Initial value is unfinalized.
-	// The result is persisted so that clients can always rely on this state and not have to replicate the logic.
+	// result is the final result based on the votes and election rule. Initial
+	// value is unfinalized. The result is persisted so that clients can always
+	// rely on this state and not have to replicate the logic.
 	Result Proposal_Result `protobuf:"varint,9,opt,name=result,proto3,enum=regen.group.v1alpha1.Proposal_Result" json:"result,omitempty"`
 	// vote_state contains the sums of all weighted votes for this proposal.
 	VoteState *Tally `protobuf:"bytes,10,opt,name=vote_state,json=voteState,proto3" json:"vote_state,omitempty"`
-	// timeout is the timestamp of the block where the proposal execution times out. Header times of the votes and execution messages
-	// must be before this end time to be included in the election. After the timeout timestamp the proposal can not be
-	// executed anymore and should be considered pending delete.
+	// timeout is the timestamp of the block where the proposal execution times
+	// out. Header times of the votes and execution messages must be before this
+	// end time to be included in the election. After the timeout timestamp the
+	// proposal can not be executed anymore and should be considered pending
+	// delete.
 	Timeout *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=timeout,proto3" json:"timeout,omitempty"`
-	// executor_result is the final result based on the votes and election rule. Initial value is NotRun.
+	// executor_result is the final result based on the votes and election rule.
+	// Initial value is NotRun.
 	ExecutorResult Proposal_ExecutorResult `protobuf:"varint,12,opt,name=executor_result,json=executorResult,proto3,enum=regen.group.v1alpha1.Proposal_ExecutorResult" json:"executor_result,omitempty"`
 	// msgs is a list of Msgs that will be executed if the proposal passes.
 	Msgs []*anypb.Any `protobuf:"bytes,13,rep,name=msgs,proto3" json:"msgs,omitempty"`
