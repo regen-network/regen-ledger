@@ -45,17 +45,23 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 
-  // AddCreditType adds a new credit type - Governance only method
+  // AddCreditType adds a new credit type. This message must be signed by the governance module.
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
-  // ToggleAllowList toggles the allow list - Governance only method
+  // ToggleAllowList toggles the allow list. This message must be signed by the governance module.
   rpc ToggleAllowList(MsgToggleAllowListRequest) returns (MsgToggleAllowListResponse);
 
-  // UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
+  // UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
+  // must be signed by the governance module.
   rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreatorsRequest) returns (MsgUpdateAllowedCreditClassCreatorsResponse);
 
-  // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
+  // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
+  // class fees. This message must be signed by the governance module.
   rpc UpdateCreditClassFee(MsgUpdateCreditClassFeeRequest) returns (MsgUpdateCreditClassFeeResponse);
+
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket
+  // creation fees. This message must be signed by the governance module.
+  rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -324,25 +330,24 @@ message MsgUpdateClassMetadata {
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
 
-// MsgAddCreditType is the Msg/AddCreditType request type.
-// The credit types are immutable and cannot be deleted.
-message MsgAddCreditType {
-  // credit_types is a list of new credit types to add
+// MsgAddCreditTypes is the Msg/AddCreditTypes request type.
+message MsgAddCreditTypes {
+  // credit_types is a list of credit types to add.
   repeated CreditType credit_types = 1;
 
-  // root_address is the address of the caller.
-  // this MUST equal the address of the gov module for the tx to succeed.
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 2;
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
-message MsgAddCreditTypeResponse {}
+// MsgAddCreditTypesResponse is the Msg/AddCreditTypes response type.
+message MsgAddCreditTypesResponse {}
 
 
 // MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
 message MsgToggleAllowListRequest {
-  // root_address is the address of the caller.
-  // this MUST equal the address of the gov module for the tx to succeed.
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
   // toggle is what the allow list will be set to.
@@ -354,8 +359,8 @@ message MsgToggleAllowListResponse {}
 
 // MsgUpdateAllowedCreditClassCreatorsRequest is the Msg/UpdateAllowedCreditClassCreators request type
 message MsgUpdateAllowedCreditClassCreatorsRequest {
-  // root_address is the address of the caller.
-  // this MUST equal the address of the gov module for the tx to succeed.
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
   // add_creators is a list of addresses to be added to the allow list for credit class creation.
@@ -368,10 +373,10 @@ message MsgUpdateAllowedCreditClassCreatorsRequest {
 // MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
 message MsgUpdateAllowedCreditClassCreatorsResponse {}
 
-// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFee request type
-message MsgUpdateCreditClassFeeRequest {
-  // root_address is the address of the caller.
-  // this MUST equal the address of the gov module for the tx to succeed.
+// MsgUpdateCreditClassFeesRequest is the Msg/UpdateCreditClassFees request type
+message MsgUpdateCreditClassFeesRequest {
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
   // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
@@ -381,5 +386,29 @@ message MsgUpdateCreditClassFeeRequest {
   repeated string remove_denoms = 3;
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFee response type
-message MsgUpdateCreditClassFeeResponse {}
+// MsgUpdateCreditClassFeesResponse is the Msg/UpdateCreditClassFees response type
+message MsgUpdateCreditClassFeesResponse {}
+
+// MsgUpdateBasketFeesRequest is the Msg/UpdateBasketFees request type.
+message MsgUpdateBasketFeesRequest {
+  // root_address is the address of the caller.
+  // This MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+  repeated Fee add_fees = 2;
+
+  // remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
+  repeated Fee remove_fees = 3;
+
+  // Fee represents a fee to be used in the credit class creation fee.
+  message Fee {
+    // denom is the coin denom
+    string denom = 1;
+    // amount is the amount of the coin needed to create the credit class.
+    string amount = 2;
+  }
+}
+
+// MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
+message MsgUpdateBasketFeesResponse {}
