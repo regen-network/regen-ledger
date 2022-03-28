@@ -120,24 +120,24 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, ErrInvalidIRI.Wrapf("can't parse IRI %s without %s prefix", iri, regenPrefix)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, %s prefix required", iri, regenPrefix)
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, ErrInvalidIRI.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, filename extension required", iri)
 	}
 
 	hashPart, ext := parts[0], parts[1]
 
 	res, version, err := base58.CheckDecode(hashPart)
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, %s", iri, err)
 	}
 
 	if version != iriVersion0 {
-		return nil, ErrInvalidIRI.Wrapf("invalid version found when parsing IRI %s", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, invalid version", iri)
 	}
 
 	rdr := bytes.NewBuffer(res)
@@ -160,7 +160,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		// look up extension as media type
 		mediaType, ok := stringToMediaExtensionType[ext]
 		if !ok {
-			return nil, ErrInvalidMediaExtension.Wrapf("cannot resolve MediaType for extension %s", ext)
+			return nil, ErrInvalidMediaExtension.Wrapf("failed to resolve MediaType for extension %s, expected %s", ext, mediaExtensionTypeToString[mediaType])
 		}
 
 		// interpret next byte as digest algorithm
