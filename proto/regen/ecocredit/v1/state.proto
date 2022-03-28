@@ -222,23 +222,24 @@ message BatchSupply {
     string cancelled_amount = 4;
 }
 
-// AllowedClassCreators tracks the allowed credit class creators.
-// This list is controlled via governance.
-message AllowedClassCreators {
+// AllowedClassCreator is an allowed credit class creator.
+message AllowedClassCreator {
+    // This table is controlled via governance.
     option (cosmos.orm.v1alpha1.table) = {
         id: 11,
         primary_key: {fields: "address"}
     };
 
-    // address is the address of the user that is allowed to create credit classes
+    // address is the address that is allowed to create credit classes
     bytes address = 1;
 }
 
-// AllowlistEnabled is a governance controlled, singleton table that holds a boolean value.
-// When set to true, only the addresses in AllowedClassCreators can create credit classes.
-// When set to false, any address is free to create credit classes.
+// AllowlistEnabled determines if the credit class creator allowlist is enabled.
+// When set to true, only the addresses in the AllowedClassCreator table can create
+// credit classes. When set to false, any address is free to create credit classes.
 message AllowlistEnabled {
-    option(cosmos.orm.v1alpha1.singleton) = {
+    // This table is controlled via governance.
+    option (cosmos.orm.v1alpha1.singleton) = {
         id: 12
     };
 
@@ -246,32 +247,34 @@ message AllowlistEnabled {
     bool enabled = 1;
 }
 
-// CreditClassFee stores the valid coin denoms and amounts that may be used as the fee for credit class creation.
-// This is controlled via governance.
+// CreditClassFee is a valid coin denom and amount that may be used as the fee for
+// credit class creation.
 message CreditClassFee {
+    // This table is controlled via governance.
     option (cosmos.orm.v1alpha1.table) = {
         id: 13,
         primary_key: {fields: "denom"}
     };
 
-    // denom is the denom of the coin allowed to be used for credit class fees
+    // denom is the denom of the fee required to create a credit class.
     string denom = 1;
 
-    // amount is the fee amount
+    // amount is the amount of the fee required to create a credit class.
     string amount = 2;
 }
 
-// BasketFee stores the valid coin denoms and amounts that may be used as the fee for creating a basket.
-// This is controlled via governance.
+// BasketFee is a valid coin denom and amount that may be used as the fee for
+// creating a basket.
 message BasketFee {
+    // This table is controlled via governance.
     option (cosmos.orm.v1alpha1.table) = {
         id: 14,
         primary_key: {fields: "denom"}
     };
 
-    // denom is the denom of the coin allowed to be used for basket creation fees
+    // denom is the denom of the fee required to create a basket.
     string denom = 1;
 
-    // amount is the fee amount
+    // amount is the amount of the fee required to create a basket.
     string amount = 2;
 }
