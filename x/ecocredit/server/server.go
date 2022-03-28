@@ -261,7 +261,8 @@ func RegisterServices(
 	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
+	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	return impl
 }
