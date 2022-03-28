@@ -36,6 +36,10 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 		marketId, err := k.getOrCreateMarketId(ctx, ct.Abbreviation, order.AskPrice.Denom)
+		if err != nil {
+			return nil, err
+		}
+
 		// verify expiration is in the future
 		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
@@ -57,6 +61,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
 		//}
 
+		var expiration *timestamppb.Timestamp
+		if order.Expiration != nil {
+			expiration = timestamppb.New(*order.Expiration)
+		}
+
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
@@ -64,7 +73,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			MarketId:          marketId,
 			AskPrice:          order.AskPrice.Amount.String(),
 			DisableAutoRetire: order.DisableAutoRetire,
-			Expiration:        timestamppb.New(*order.Expiration),
+			Expiration:        expiration,
 			Maker:             true, // maker is always true for sell orders
 		})
 		if err != nil {
