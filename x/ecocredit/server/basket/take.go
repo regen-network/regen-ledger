@@ -37,14 +37,14 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, err
 	}
 
-	sdkContext := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	basketCoins := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amountBasketTokens))
-	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkContext, acct, baskettypes.BasketSubModuleName, basketCoins)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, acct, baskettypes.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.bankKeeper.BurnCoins(sdkContext, baskettypes.BasketSubModuleName, basketCoins)
+	err = k.bankKeeper.BurnCoins(sdkCtx, baskettypes.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +78,6 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 			return nil, err
 		}
 		it.Close()
-		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgTake iteration")
 
 		balance, err := math.NewDecFromString(basketBalance.Balance)
 		if err != nil {
@@ -151,6 +150,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				return nil, err
 			}
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgTake balance iteration")
 	}
 
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&baskettypes.EventTake{

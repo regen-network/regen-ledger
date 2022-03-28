@@ -18,8 +18,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
@@ -27,8 +27,8 @@ import (
 type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
-	coreStore    ecocreditv1.StateStore
-	marketStore  marketApi.StateStore
+	coreStore    ecoApi.StateStore
+	marketStore  api.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
@@ -45,9 +45,9 @@ func setupBase(t *testing.T) *baseSuite {
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
-	s.coreStore, err = ecocreditv1.NewStateStore(s.db)
+	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	s.marketStore, err = marketApi.NewStateStore(s.db)
+	s.marketStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()

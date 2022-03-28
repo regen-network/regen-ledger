@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -45,7 +47,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := utils.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -91,6 +93,8 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass issuer iteration")
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateClass{
@@ -106,11 +110,12 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 
 func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {
 	for _, addr := range allowlist {
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
 		}
+
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass address iteration")
 	}
 	return false
 }

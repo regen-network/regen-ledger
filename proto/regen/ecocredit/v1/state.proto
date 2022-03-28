@@ -132,6 +132,9 @@ message BatchInfo {
     // end_date is the end of the period during which this credit batch was
     // quantified and verified.
     google.protobuf.Timestamp end_date = 6;
+
+    // issuance_date is the timestamp when the credit batch was issued.
+    google.protobuf.Timestamp issuance_date = 7;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for each

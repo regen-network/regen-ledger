@@ -8,6 +8,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -105,6 +106,7 @@ func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, e
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
 // the class into the BasketClass table.
 func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, class := range allowedClasses {
 		classInfo, err := k.coreStore.ClassInfoTable().GetByName(ctx, class)
 		if err != nil {
@@ -124,6 +126,8 @@ func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowe
 		); err != nil {
 			return err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgCreate class iteration")
 	}
 	return nil
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
@@ -38,34 +39,34 @@ func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) 
 	}, nil
 }
 
-func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, error) {
-	bz := store.Get(AnchorTimestampKey(id))
-	if len(bz) == 0 {
-		return nil, status.Error(codes.NotFound, "entry not found")
+// ByHash queries data based on ContentHash.
+func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 	}
 
-	var timestamp gogotypes.Timestamp
-	err := timestamp.Unmarshal(bz)
+	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
 		return nil, err
 	}
 
-	iri := string(s.iriIDTable.GetValue(store, id))
-	contentHash, err := data.ParseIRI(iri)
+	id, err := s.getID(ctx, iri)
 	if err != nil {
 		return nil, err
 	}
 
-	entry := &data.ContentEntry{
-		Timestamp: &timestamp,
-		Iri:       iri,
-		Hash:      contentHash,
+	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
+	entry, err := s.getEntry(store, id)
+	if err != nil {
+		return nil, err
 	}
 
-	return entry, nil
+	return &data.QueryByHashResponse{
+		Entry: entry,
+	}, nil
 }
 
-// ByAttestor queries data based on attestors.
+// ByAttestor queries data based on attestor.
 func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttestorRequest) (*data.QueryByAttestorResponse, error) {
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
@@ -95,8 +96,36 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 	}, nil
 }
 
-// Attestors queries the attestors by IRI.
-func (s serverImpl) Attestors(ctx context.Context, request *data.QueryAttestorsRequest) (*data.QueryAttestorsResponse, error) {
+// IRIByHash queries IRI based on ContentHash.
+func (s serverImpl) IRIByHash(ctx context.Context, request *data.QueryIRIByHashRequest) (*data.QueryIRIByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
+	iri, err := request.ContentHash.ToIRI()
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryIRIByHashResponse{
+		Iri: iri,
+	}, nil
+}
+
+// HashByIRI queries ContentHash based on IRI.
+func (s serverImpl) HashByIRI(ctx context.Context, request *data.QueryHashByIRIRequest) (*data.QueryHashByIRIResponse, error) {
+	hash, err := data.ParseIRI(request.Iri)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryHashByIRIResponse{
+		ContentHash: hash,
+	}, nil
+}
+
+// AttestorsByIRI queries attestors based on IRI.
+func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttestorsByIRIRequest) (*data.QueryAttestorsByIRIResponse, error) {
 	id, err := s.getID(ctx, request.Iri)
 	if err != nil {
 		return nil, err
@@ -114,13 +143,48 @@ func (s serverImpl) Attestors(ctx context.Context, request *data.QueryAttestorsR
 		return nil, err
 	}
 
-	return &data.QueryAttestorsResponse{
+	return &data.QueryAttestorsByIRIResponse{
 		Attestors:  attestors,
 		Pagination: pageRes,
 	}, nil
 }
 
-func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversRequest) (*data.QueryResolversResponse, error) {
+// AttestorsByHash queries attestors based on ContentHash.
+func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAttestorsByHashRequest) (*data.QueryAttestorsByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
+	iri, err := request.ContentHash.ToIRI()
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := s.getID(ctx, iri)
+	if err != nil {
+		return nil, err
+	}
+
+	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
+	attestorIDStore := prefix.NewStore(store, IDAttestorIndexPrefix(id))
+
+	var attestors []string
+	pageRes, err := query.Paginate(attestorIDStore, request.Pagination, func(key []byte, value []byte) error {
+		attestors = append(attestors, sdk.AccAddress(key).String())
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryAttestorsByHashResponse{
+		Attestors:  attestors,
+		Pagination: pageRes,
+	}, nil
+}
+
+// ResolversByIRI queries resolvers based on IRI.
+func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
 	id, err := s.getID(ctx, request.Iri)
 	if err != nil {
 		return nil, err
@@ -141,7 +205,7 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 		return nil, err
 	}
 
-	res := &data.QueryResolversResponse{}
+	res := &data.QueryResolversByIRIResponse{}
 	for it.Next() {
 		item, err := it.Value()
 		if err != nil {
@@ -164,6 +228,61 @@ func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversR
 	return res, nil
 }
 
+// ResolversByHash queries resolvers based on ContentHash.
+func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryResolversByHashRequest) (*data.QueryResolversByHashResponse, error) {
+	if request.ContentHash == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
+	}
+
+	iri, err := request.ContentHash.ToIRI()
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := s.getID(ctx, iri)
+	if err != nil {
+		return nil, err
+	}
+
+	if request.Pagination == nil {
+		request.Pagination = &query.PageRequest{}
+	}
+
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+	it, err := s.stateStore.DataResolverTable().
+		List(ctx, api.DataResolverPrimaryKey{}.WithId(id),
+			ormlist.Paginate(pg))
+	if err != nil {
+		return nil, err
+	}
+
+	res := &data.QueryResolversByHashResponse{}
+	for it.Next() {
+		item, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, item.ResolverId)
+		if err != nil {
+			return nil, err
+		}
+
+		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
+	}
+
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// ResolverInfo queries information about a resolved based on url.
 func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolverInfoRequest) (*data.QueryResolverInfoResponse, error) {
 	res, err := s.stateStore.ResolverInfoTable().GetByUrl(ctx, request.Url)
 	if err != nil {
@@ -186,4 +305,31 @@ func (s serverImpl) getID(ctx context.Context, iri string) ([]byte, error) {
 	}
 
 	return id, nil
+}
+
+func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, error) {
+	bz := store.Get(AnchorTimestampKey(id))
+	if len(bz) == 0 {
+		return nil, status.Error(codes.NotFound, "entry not found")
+	}
+
+	var timestamp gogotypes.Timestamp
+	err := timestamp.Unmarshal(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	iri := string(s.iriIDTable.GetValue(store, id))
+	contentHash, err := data.ParseIRI(iri)
+	if err != nil {
+		return nil, err
+	}
+
+	entry := &data.ContentEntry{
+		Timestamp: &timestamp,
+		Iri:       iri,
+		Hash:      contentHash,
+	}
+
+	return entry, nil
 }

@@ -21,8 +21,8 @@ type IntegrationTestSuite struct {
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress
 	addr2       sdk.AccAddress
-
-	hash *data.ContentHash
+	hash1       *data.ContentHash
+	hash2       *data.ContentHash
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
@@ -45,12 +45,20 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	_, err := hash.Write(content)
 	require.NoError(err)
 	digest := hash.Sum(nil)
+
 	graphHash := &data.ContentHash_Graph{
 		Hash:                      digest,
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}
-	s.hash = &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+	s.hash1 = &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+
+	rawHash := &data.ContentHash_Raw{
+		Hash:            digest,
+		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
+	}
+	s.hash2 = &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -60,40 +68,83 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestGraphScenario() {
 	require := s.Require()
 
+	iri, err := s.hash1.ToIRI()
+	require.NoError(err)
+	require.NotNil(iri)
+
+	graphHash := s.hash1.GetGraph()
+
 	// anchor some data
-	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
-		Hash:   s.hash,
+		Hash:   s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes)
+	require.NotNil(anchorRes1)
+	require.Equal(iri, anchorRes1.Iri)
+
+	// set original timestamp
+	ts := anchorRes1.Timestamp
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
-		Hash:   s.hash,
+		Hash:   s.hash1,
 	})
 	require.NoError(err)
+	require.NotNil(anchorRes2)
+	require.Equal(iri, anchorRes2.Iri)
+	require.Equal(ts, anchorRes2.Timestamp)
 
-	// can query data and get timestamp
-	iri, err := s.hash.ToIRI()
-	require.NoError(err)
-	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+	// can query data by iri
+	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.NotNil(queryRes.Entry)
-	ts := queryRes.Entry.Timestamp
-	require.NotNil(ts)
+	require.NotNil(dataByIRI)
+	require.NotNil(dataByIRI.Entry)
+	require.Equal(ts, dataByIRI.Entry.Timestamp)
 
-	attestorsRes, err := s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
+	// can query data by hash
+	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
+		ContentHash: s.hash1,
+	})
 	require.NoError(err)
-	require.Empty(attestorsRes.Attestors)
-	graphHash := s.hash.GetGraph()
-	iri, err = graphHash.ToIRI()
+	require.NotNil(dataByHash)
+	require.NotNil(dataByHash.Entry)
+	require.Equal(ts, dataByHash.Entry.Timestamp)
+
+	// can query iri by hash
+	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
+		ContentHash: s.hash1,
+	})
 	require.NoError(err)
-	require.Equal(iri, queryRes.Entry.Iri)
+	require.NotNil(iriByHash)
+	require.Equal(iri, iriByHash.Iri)
+
+	// can query hash by iri
+	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{
+		Iri: iri,
+	})
+	require.NoError(err)
+	require.NotNil(hashByIri)
+	require.Equal(s.hash1, hashByIri.ContentHash)
+
+	// can query attestors by iri
+	attestorsByIri, err := s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+		Iri: dataByIRI.Entry.Iri,
+	})
+	require.NoError(err)
+	require.Empty(attestorsByIri.Attestors)
+
+	// can query attestors by hash
+	attestorsByHash, err := s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+		ContentHash: dataByIRI.Entry.Hash,
+	})
+	require.NoError(err)
+	require.Empty(attestorsByHash.Attestors)
+
+	// TODO: should attesting to data return a timestamp?
 
 	// can attest to data
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -102,27 +153,37 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	})
 	require.NoError(err)
 
-	// can retrieve attestor, same timestamp
-	// can query data and get timestamp
-	iri, err = s.hash.ToIRI()
+	// attesting to the same data twice is a no-op
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestors: []string{s.addr1.String()},
+		Hash:      graphHash,
+	})
 	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
-	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
-	attestorsRes, err = s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: iri, Pagination: nil})
-	require.NoError(err)
-	require.Len(attestorsRes.Attestors, 1)
-	require.Equal(s.addr1.String(), attestorsRes.Attestors[0])
 
-	// query data by attestor
-	byAttestorsRes, err := s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
+	// can query attestors by iri
+	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+		Iri: iri,
+	})
+	require.NoError(err)
+	require.Len(attestorsByIri.Attestors, 1)
+	require.Equal(s.addr1.String(), attestorsByIri.Attestors[0])
+
+	// can query attestors by hash
+	attestorsByHash, err = s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
+		ContentHash: s.hash1,
+	})
+	require.NoError(err)
+	require.Len(attestorsByHash.Attestors, 1)
+	require.Equal(s.addr1.String(), attestorsByHash.Attestors[0])
+
+	// can query data by attestor
+	byAttestors, err := s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
 		Attestor: s.addr1.String(),
 	})
 	require.NoError(err)
-	require.NotNil(byAttestorsRes)
-	require.Len(byAttestorsRes.Entries, 1)
-	require.Equal(queryRes.Entry, byAttestorsRes.Entries[0])
+	require.NotNil(byAttestors)
+	require.Len(byAttestors.Entries, 1)
+	require.Equal(dataByIRI.Entry, byAttestors.Entries[0])
 
 	// another attestor can attest
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -131,30 +192,16 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	})
 	require.NoError(err)
 
-	// query data by attestor
-	byAttestorsRes, err = s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
-		Attestor: s.addr2.String(),
+	// can query attestors and get both attestations
+	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
+		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(byAttestorsRes)
-	require.Len(byAttestorsRes.Entries, 1)
-	require.Equal(s.hash, byAttestorsRes.Entries[0].Hash)
+	require.Len(attestorsByIri.Attestors, 2)
 
-	// query and get both attestations
-	iri, err = s.hash.ToIRI()
-	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
-	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp)
-
-	iri2, err := s.hash.ToIRI()
-	require.NoError(err)
-	attestorsRes, err = s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: iri2, Pagination: nil})
-	require.NoError(err)
-	require.Len(attestorsRes.Attestors, 2)
-	attestors := make([]string, len(attestorsRes.Attestors))
-	for _, attestor := range attestorsRes.Attestors {
+	// loop through attestors as the order can vary
+	attestors := make([]string, len(attestorsByIri.Attestors))
+	for _, attestor := range attestorsByIri.Attestors {
 		attestors = append(attestors, attestor)
 	}
 	require.Contains(attestors, s.addr1.String())
@@ -162,65 +209,79 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
-	testContent := []byte("19sdgh23t7sdghasf98sf")
-	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(testContent)
 	require := s.Require()
+
+	iri, err := s.hash2.ToIRI()
 	require.NoError(err)
-	digest := hash.Sum(nil)
-	rawHash := &data.ContentHash_Raw{
-		Hash:            digest,
-		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
-	}
-	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
+	require.NotNil(iri)
 
 	// anchor some data
-	anchorRes, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
-		Hash:   contentHash,
+		Hash:   s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(anchorRes)
+	require.NotNil(anchorRes1)
+	require.Equal(iri, anchorRes1.Iri)
+
+	// set original timestamp
+	ts := anchorRes1.Timestamp
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
+	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
-		Hash:   contentHash,
+		Hash:   s.hash2,
 	})
 	require.NoError(err)
+	require.NotNil(anchorRes2)
+	require.Equal(iri, anchorRes2.Iri)
+	require.Equal(ts, anchorRes2.Timestamp)
 
-	// can query data and get timestamp
-	iri, err := contentHash.ToIRI()
-	require.NoError(err)
-	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+	// can query data by iri
+	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.NotNil(queryRes.Entry)
-	ts := queryRes.Entry.Timestamp
-	require.NotNil(ts)
+	require.NotNil(dataByIRI)
+	require.NotNil(dataByIRI.Entry)
+	require.Equal(ts, dataByIRI.Entry.Timestamp)
 
-	attestorsRes, err := s.queryClient.Attestors(s.ctx, &data.QueryAttestorsRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
-	require.Empty(attestorsRes.Attestors)
-
-	// can retrieve same timestamp, and data
-	iri, err = contentHash.ToIRI()
+	// can query data by hash
+	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
+		ContentHash: s.hash2,
+	})
 	require.NoError(err)
-	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+	require.NotNil(dataByHash)
+	require.NotNil(dataByHash.Entry)
+	require.Equal(ts, dataByHash.Entry.Timestamp)
+
+	// can query iri by hash
+	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
+		ContentHash: s.hash2,
+	})
+	require.NoError(err)
+	require.NotNil(iriByHash)
+	require.Equal(iri, iriByHash.Iri)
+
+	// can query hash by iri
+	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(queryRes)
-	require.Equal(ts, queryRes.Entry.Timestamp)
+	require.NotNil(hashByIri)
+	require.Equal(s.hash2, hashByIri.ContentHash)
 }
 
 func (s *IntegrationTestSuite) TestResolver() {
 	require := s.Require()
-	testUrl := "http://foo.bar"
-	testData := []*data.ContentHash{s.hash}
+	testUrl := "https://foo.bar"
+	testData := []*data.ContentHash{s.hash1}
 
+	iri, err := s.hash1.ToIRI()
+	require.NoError(err)
+	require.NotNil(iri)
+
+	// can define a resolver
 	res1, err := s.msgClient.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.addr1.String(),
 		ResolverUrl: testUrl,
@@ -228,6 +289,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 	require.NoError(err)
 	require.NotNil(res1)
 
+	// can register content to a resolver
 	res2, err := s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
 		Manager:    s.addr1.String(),
 		ResolverId: res1.ResolverId,
@@ -236,21 +298,27 @@ func (s *IntegrationTestSuite) TestResolver() {
 	require.NoError(err)
 	require.NotNil(res2)
 
-	iri, err := s.hash.ToIRI()
-	require.NoError(err)
-	require.NotNil(iri)
-
-	res3, err := s.queryClient.Resolvers(s.ctx, &data.QueryResolversRequest{
+	// can query resolvers by iri
+	res3, err := s.queryClient.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
 	require.NotNil(res3)
 	require.Equal([]string{testUrl}, res3.ResolverUrls)
 
-	res4, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
-		Url: testUrl,
+	// can query resolvers by hash
+	res4, err := s.queryClient.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.NotNil(res4)
-	require.Equal(s.addr1.String(), res4.Manager)
+	require.Equal([]string{testUrl}, res4.ResolverUrls)
+
+	// can query resolver info
+	res5, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
+		Url: testUrl,
+	})
+	require.NoError(err)
+	require.NotNil(res5)
+	require.Equal(s.addr1.String(), res5.Manager)
 }
