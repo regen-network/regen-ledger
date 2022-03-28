@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -16,8 +17,10 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.15
+	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 	google.golang.org/grpc v1.44.0
+	gotest.tools/v3 v3.1.0
 )
 
 require (
@@ -59,6 +62,7 @@ require (
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/btree v1.0.0 // indirect
+	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -109,7 +113,6 @@ require (
 	github.com/tendermint/btcd v0.1.1 // indirect
 	github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
-	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272 // indirect
