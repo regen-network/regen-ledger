@@ -21,9 +21,9 @@ service Msg {
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
 
-
-  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees - Governance only method
-  rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
+  // This message must be signed by the governance module.
+  rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
 }
 
 // MsgCreateBasket is the Msg/CreateBasket request type.
@@ -158,8 +158,8 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
-// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFees request type.
-message MsgUpdateBasketFeeRequest {
+// MsgUpdateBasketFee is the Msg/UpdateBasketFee request type.
+message MsgUpdateBasketFee {
   // root_address is the address of the caller.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
@@ -171,5 +171,5 @@ message MsgUpdateBasketFeeRequest {
   repeated string remove_fees = 3;
 }
 
-// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFees response type.
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
 message MsgUpdateBasketFeeResponse {}

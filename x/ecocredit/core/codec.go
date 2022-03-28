@@ -22,4 +22,5 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateClassMetadata{}, "regen.core/MsgUpdateClassMetadata", nil)
 	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen.core/MsgUpdateClassIssuers", nil)
 	cdc.RegisterConcrete(&MsgUpdateCreditClassFee{}, "regen.core/MsgUpdateCreditClassFee", nil)
+	cdc.RegisterConcrete(&MsgToggleAllowList{}, "regen.core/MsgToggleAllowList", nil)
 }

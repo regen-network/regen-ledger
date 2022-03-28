@@ -17,11 +17,11 @@ func TestParams_CreditType(t *testing.T) {
 	s := setupBase(t)
 
 	govAddr := sdk.AccAddress("foo")
-	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
+	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(4)
 	_, err := s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{
 		CreditTypes: []*core.CreditType{
 			{Abbreviation: "C", Name: "carbon", Unit: "tonnes", Precision: 6},
-			{Abbreviation: "BIO", Name: "biodiversity", Unit: "acres", Precision: 1},
+			{Abbreviation: "BIO", Name: "biodiversity", Unit: "acres", Precision: 6},
 		},
 		RootAddress: govAddr.String(),
 	})
@@ -43,6 +43,15 @@ func TestParams_CreditType(t *testing.T) {
 		RootAddress: govAddr.String(),
 	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
+
+	// locked to 6
+	_, err = s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{
+		CreditTypes: []*core.CreditType{
+			{Abbreviation: "F", Name: "foo", Unit: "tonnes", Precision: 12},
+		},
+		RootAddress: govAddr.String(),
+	})
+	assert.ErrorContains(t, err, "invalid precision: credit type precision is currently locked to")
 
 	// only gov
 	_, err = s.k.AddCreditType(s.ctx, &core.MsgAddCreditType{RootAddress: s.addr.String()})

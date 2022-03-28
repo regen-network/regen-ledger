@@ -6,25 +6,18 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-
-	"github.com/cosmos/cosmos-sdk/types"
 )
 
 // UpdateBasketFee is a governance only function that allows for the removal and addition of fees users can pay to create a basket
-func (k Keeper) UpdateBasketFee(ctx context.Context, req *basket.MsgUpdateBasketFeeRequest) (*basket.MsgUpdateBasketFeeResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+func (k Keeper) UpdateBasketFee(ctx context.Context, req *basket.MsgUpdateBasketFee) (*basket.MsgUpdateBasketFeeResponse, error) {
+	if err := ecocredit.AssertGovernance(req.RootAddress, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
 	store := k.stateStore.BasketFeeTable()
 
 	for _, denom := range req.RemoveFees {
-		if err = store.Delete(ctx, &api.BasketFee{
+		if err := store.Delete(ctx, &api.BasketFee{
 			Denom: denom,
 		}); err != nil {
 			return nil, err
@@ -32,7 +25,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *basket.MsgUpdateBasket
 	}
 
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &api.BasketFee{
+		if err := store.Insert(ctx, &api.BasketFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount.String(),
 		}); err != nil {

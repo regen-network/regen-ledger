@@ -8,23 +8,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	"github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // AddCreditType is a governance only function that allows the addition of credit types to the credit types chain parameter
 func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (*core.MsgAddCreditTypeResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
+	if err := ecocredit.AssertGovernance(req.RootAddress, k.accountKeeper); err != nil {
 		return nil, err
 	}
-	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
-		return nil, err
-	}
-
-	// TODO: validate fields? should abbreviation be all uppercase? no numbers? no special characters?
 
 	store := k.stateStore.CreditTypeTable()
 	for _, ct := range req.CreditTypes {
-		if err = store.Insert(ctx, &api.CreditType{
+		if ct.Precision != ecocredit.PRECISION {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid precision: credit type precision is currently locked to %d", ecocredit.PRECISION)
+		}
+		if err := store.Insert(ctx, &api.CreditType{
 			Abbreviation: ct.Abbreviation,
 			Name:         ct.Name,
 			Unit:         ct.Unit,
@@ -40,11 +38,7 @@ func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (
 // ToggleAllowList is a governance only function that toggles the allowlist, enabling it if the request contains `True`,
 // and disabling it if the request contains `false`
 func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowList) (*core.MsgToggleAllowListResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
-		return nil, err
-	}
-	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err := ecocredit.AssertGovernance(req.RootAddress, k.accountKeeper); err != nil {
 		return nil, err
 	}
 	return &core.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledTable().Save(ctx, &api.AllowlistEnabled{Enabled: req.Toggle})
@@ -54,11 +48,7 @@ func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowLis
 // to the credit class creator list
 // NOTE: this list is only effective when the governance controlled AllowlistEnabled parameter is true.
 func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.MsgUpdateAllowedCreditClassCreators) (*core.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
-		return nil, err
-	}
-	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err := ecocredit.AssertGovernance(req.RootAddress, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
@@ -89,18 +79,14 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 
 // UpdateCreditClassFee is a governance only function that allows for the removal and addition of fees one can pay to create a class
 func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCreditClassFee) (*core.MsgUpdateCreditClassFeeResponse, error) {
-	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
-	if err != nil {
-		return nil, err
-	}
-	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
+	if err := ecocredit.AssertGovernance(req.RootAddress, k.accountKeeper); err != nil {
 		return nil, err
 	}
 
 	store := k.stateStore.CreditClassFeeTable()
 
 	for _, denom := range req.RemoveDenoms {
-		if err = store.Delete(ctx, &api.CreditClassFee{
+		if err := store.Delete(ctx, &api.CreditClassFee{
 			Denom: denom,
 		}); err != nil {
 			return nil, err
@@ -108,7 +94,7 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 	}
 
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &api.CreditClassFee{
+		if err := store.Insert(ctx, &api.CreditClassFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount.String(),
 		}); err != nil {

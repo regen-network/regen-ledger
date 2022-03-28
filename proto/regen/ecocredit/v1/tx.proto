@@ -328,12 +328,13 @@ message MsgUpdateClassMetadataResponse {}
 
 // MsgAddCreditType is the Msg/AddCreditTypes request type.
 message MsgAddCreditType {
-  // credit_types is a list of credit types to add.
-  repeated CreditType credit_types = 1;
 
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
-  string root_address = 2;
+  string root_address = 1;
+
+  // credit_types is a list of credit types to add.
+  repeated CreditType credit_types = 2;
 }
 
 // MsgAddCreditTypeResponse is the Msg/AddCreditTypes response type.

@@ -7,7 +7,11 @@ import (
 )
 
 // AssertGovernance asserts the address is equal to the governance module address
-func AssertGovernance(addr sdk.AccAddress, k AccountKeeper) error {
+func AssertGovernance(addrStr string, k AccountKeeper) error {
+	addr, err := sdk.AccAddressFromBech32(addrStr)
+	if err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
 	if !k.GetModuleAddress(govtypes.ModuleName).Equals(addr) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("params can only be updated via governance")
 	}

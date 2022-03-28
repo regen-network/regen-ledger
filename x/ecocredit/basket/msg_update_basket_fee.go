@@ -8,9 +8,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 )
 
-var _ legacytx.LegacyMsg = &MsgUpdateBasketFeeRequest{}
+var _ legacytx.LegacyMsg = &MsgUpdateBasketFee{}
 
-func (m *MsgUpdateBasketFeeRequest) ValidateBasic() error {
+func (m MsgUpdateBasketFee) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
 		return sdkerrors.Wrap(err, sdkerrors.ErrInvalidAddress.Error())
 	}
@@ -33,19 +33,15 @@ func (m *MsgUpdateBasketFeeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateBasketFeeRequest) GetSigners() []sdk.AccAddress {
+func (m MsgUpdateBasketFee) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgUpdateBasketFeeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(m))
+func (m MsgUpdateBasketFee) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
-func (m *MsgUpdateBasketFeeRequest) Route() string {
-	return sdk.MsgTypeURL(m)
-}
+func (m MsgUpdateBasketFee) Route() string { return sdk.MsgTypeURL(&m) }
 
-func (m *MsgUpdateBasketFeeRequest) Type() string {
-	return sdk.MsgTypeURL(m)
-}
+func (m MsgUpdateBasketFee) Type() string { return sdk.MsgTypeURL(&m) }

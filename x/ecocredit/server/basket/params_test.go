@@ -29,7 +29,7 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 
-	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{
+	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFee{
 		RootAddress: govAddr.String(),
 		AddFees:     []*sdk.Coin{&addFee},
 		RemoveFees:  []string{fee.Denom},
@@ -44,12 +44,12 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// no duplicates
-	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{
+	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFee{
 		RootAddress: govAddr.String(),
 		AddFees:     []*sdk.Coin{&addFee},
 	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
 
-	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{RootAddress: sdk.AccAddress("not_governance").String()})
+	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFee{RootAddress: sdk.AccAddress("not_governance").String()})
 	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
