@@ -59,7 +59,7 @@ func TestContentHash_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.ch.Validate()
-			if tt.err != "" {
+			if err != nil {
 				require.EqualError(t, err, tt.err)
 			} else {
 				require.NoError(t, err)
@@ -133,7 +133,7 @@ func TestContentHash_Raw_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.chr.Validate()
-			if tt.err != "" {
+			if err != nil {
 				require.EqualError(t, err, tt.err)
 			} else {
 				require.NoError(t, err)
@@ -218,7 +218,7 @@ func TestContentHash_Graph_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.chg.Validate()
-			if tt.err != "" {
+			if err != nil {
 				require.EqualError(t, err, tt.err)
 			} else {
 				require.NoError(t, err)
@@ -263,7 +263,7 @@ func TestDigestAlgorithm_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.da.Validate(tt.hash)
-			if len(tt.err) != 0 {
+			if err != nil {
 				require.EqualError(t, err, tt.err)
 			} else {
 				require.NoError(t, err)
@@ -298,7 +298,7 @@ func TestRawMediaType_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.rmt.Validate()
-			if len(tt.wantErr) != 0 {
+			if err != nil {
 				require.EqualError(t, err, tt.wantErr)
 			} else {
 				require.NoError(t, err)
@@ -332,7 +332,7 @@ func TestGraphCanonicalizationAlgorithm_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.gca.Validate()
-			if len(tt.wantErr) != 0 {
+			if err != nil {
 				require.EqualError(t, err, tt.wantErr)
 			} else {
 				require.NoError(t, err)
@@ -361,7 +361,7 @@ func TestGraphMerkleTree_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.gmt.Validate()
-			if len(tt.wantErr) != 0 {
+			if err != nil {
 				require.EqualError(t, err, tt.wantErr)
 			} else {
 				require.NoError(t, err)
