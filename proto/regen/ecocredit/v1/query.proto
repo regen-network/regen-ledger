@@ -250,7 +250,7 @@ message QueryBalanceRequest {
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
-  // balance is the user's balance
+  // balance is the balance of the given account.
   BatchBalance balance = 1;
 }
 
@@ -267,7 +267,7 @@ message QueryBalancesRequest {
 // QueryBalancesResponse is the Query/Balances response type.
 message QueryBalancesResponse {
 
-  // balances are a list of balances from different credit batches that the user holds.
+  // balances are a list of balances from different credit batches that the account holds.
   repeated BatchBalance balances = 1;
 
   // pagination defines the pagination in the response.
