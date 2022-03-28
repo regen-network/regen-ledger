@@ -7794,7 +7794,6 @@ const (
 
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...).
-// This list is controlled via governance.
 type CreditType struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

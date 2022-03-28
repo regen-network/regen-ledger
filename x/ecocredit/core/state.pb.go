@@ -26,7 +26,6 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...).
-// This list is controlled via governance.
 type CreditType struct {
 	// abbreviation is a 1-3 character uppercase abbreviation of the CreditType
 	// name, used in batch denominations within the CreditType. It must be unique.
