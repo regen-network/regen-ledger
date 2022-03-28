@@ -26,6 +26,7 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/utils"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
@@ -38,7 +39,7 @@ type IntegrationTestSuite struct {
 	classInfo   *core.ClassInfo
 	batchInfo   *core.BatchInfo
 	projectID   string
-	// sellOrders []*marketplace.SellOrder
+	sellOrders  []*marketplace.SellOrder
 }
 
 const (
@@ -260,7 +261,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectErr         bool
 		expectedErrMsg    string
 		respCode          uint32
-		expectedClassInfo *ecocredit.ClassInfo
+		expectedClassInfo *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -328,10 +329,11 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:      val0.Address.Bytes(),
+				Id:         1,
+				Metadata:   validMetadata,
+				CreditType: validCreditType,
 			},
 		},
 		{
@@ -346,10 +348,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:    val0.Address.Bytes(),
+				Metadata: validMetadata,
 			},
 		},
 		{
@@ -370,10 +371,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String(), val1.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:    val0.Address.Bytes(),
+				Metadata: validMetadata,
 			},
 		},
 		{
@@ -389,10 +389,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:    val0.Address.Bytes(),
+				Metadata: validMetadata,
 			},
 		},
 	}
@@ -421,7 +420,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				if tc.respCode == 0 {
 					classIdFound := false
 					for _, e := range res.Logs[0].Events {
-						if e.Type == proto.MessageName(&ecocredit.EventCreateClass{}) {
+						if e.Type == proto.MessageName(&core.EventCreateClass{}) {
 							for _, attr := range e.Attributes {
 								fmt.Println(attr)
 								if attr.Key == "class_id" {
@@ -432,11 +431,10 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 									queryArgs := []string{classId, flagOutputJSON}
 									queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 									s.Require().NoError(err, queryOut.String())
-									var queryRes ecocredit.QueryClassInfoResponse
+									var queryRes core.QueryClassInfoResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
 									s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Info.Admin)
-									s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
 									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
 								}
 							}
@@ -449,308 +447,329 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			}
 		})
 	}
+
+	s.sellOrders = []*marketplace.SellOrder{
+		{
+			Id:                1,
+			Seller:            val1.Address.Bytes(),
+			BatchId:           1,
+			Quantity:          "1",
+			AskPrice:          "100regen",
+			DisableAutoRetire: false,
+		},
+		{
+			Id:                2,
+			Seller:            val1.Address.Bytes(),
+			BatchId:           2,
+			Quantity:          "1",
+			AskPrice:          "100regen",
+			DisableAutoRetire: false,
+		},
+		{
+			Id:                3,
+			Seller:            val1.Address.Bytes(),
+			BatchId:           3,
+			Quantity:          "1",
+			AskPrice:          "100regen",
+			DisableAutoRetire: false,
+		},
+	}
 }
 
-// func (s *IntegrationTestSuite) TestTxCreateBatch() {
-// 	val := s.network.Validators[0]
-// 	clientCtx := val.ClientCtx
+func (s *IntegrationTestSuite) TestTxCreateBatch() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
 
-// 	// Write some invalid JSON to a file
-// 	invalidJsonFile := testutil.WriteToNewTempFile(s.T(), "{asdljdfklfklksdflk}")
+	// Write some invalid JSON to a file
+	invalidJsonFile := testutil.WriteToNewTempFile(s.T(), "{asdljdfklfklksdflk}")
 
-// 	// Create a valid MsgCreateBatch
-// 	startDate, err := utils.ParseDate("start date", "2021-01-01")
-// 	s.Require().NoError(err)
-// 	endDate, err := utils.ParseDate("end date", "2021-02-01")
-// 	s.Require().NoError(err)
+	// Create a valid MsgCreateBatch
+	startDate, err := utils.ParseDate("start date", "2021-01-01")
+	s.Require().NoError(err)
+	endDate, err := utils.ParseDate("end date", "2021-02-01")
+	s.Require().NoError(err)
 
-// 	msgCreateBatch := core.MsgCreateBatch{
-// 		ProjectId: s.projectID,
-// 		Issuance: []*core.MsgCreateBatch_BatchIssuance{
-// 			{
-// 				Recipient:          s.network.Validators[1].Address.String(),
-// 				TradableAmount:     "100",
-// 				RetiredAmount:      "0.000001",
-// 				RetirementLocation: "AB",
-// 			},
-// 		},
-// 		Metadata:  validMetadata,
-// 		StartDate: &startDate,
-// 		EndDate:   &endDate,
-// 	}
+	msgCreateBatch := core.MsgCreateBatch{
+		ProjectId: s.projectID,
+		Issuance: []*core.MsgCreateBatch_BatchIssuance{
+			{
+				Recipient:          s.network.Validators[1].Address.String(),
+				TradableAmount:     "100",
+				RetiredAmount:      "0.000001",
+				RetirementLocation: "AB",
+			},
+		},
+		Metadata:  validMetadata,
+		StartDate: &startDate,
+		EndDate:   &endDate,
+	}
 
-// 	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with invalid project
-// 	msgCreateBatch.ProjectId = "abcde-"
-// 	invalidProjectIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid project
+	msgCreateBatch.ProjectId = "abcde-"
+	invalidProjectIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with missing start date
-// 	msgCreateBatch.ProjectId = s.projectID
-// 	msgCreateBatch.StartDate = nil
-// 	missingStartDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with missing start date
+	msgCreateBatch.ProjectId = s.projectID
+	msgCreateBatch.StartDate = nil
+	missingStartDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with missing end date
-// 	msgCreateBatch.StartDate = &startDate
-// 	msgCreateBatch.EndDate = nil
-// 	missingEndDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with missing end date
+	msgCreateBatch.StartDate = &startDate
+	msgCreateBatch.EndDate = nil
+	missingEndDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with invalid issuance recipient
-// 	msgCreateBatch.Issuance[0].Recipient = "abcde"
-// 	msgCreateBatch.EndDate = &endDate
-// 	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid issuance recipient
+	msgCreateBatch.Issuance[0].Recipient = "abcde"
+	msgCreateBatch.EndDate = &endDate
+	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with invalid issuance tradable amount
-// 	msgCreateBatch.Issuance[0].Recipient = s.network.Validators[1].Address.String()
-// 	msgCreateBatch.Issuance[0].TradableAmount = "abcde"
-// 	invalidTradableAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid issuance tradable amount
+	msgCreateBatch.Issuance[0].Recipient = s.network.Validators[1].Address.String()
+	msgCreateBatch.Issuance[0].TradableAmount = "abcde"
+	invalidTradableAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with invalid issuance retired amount
-// 	msgCreateBatch.Issuance[0].TradableAmount = "100"
-// 	msgCreateBatch.Issuance[0].RetiredAmount = "abcde"
-// 	invalidRetiredAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid issuance retired amount
+	msgCreateBatch.Issuance[0].TradableAmount = "100"
+	msgCreateBatch.Issuance[0].RetiredAmount = "abcde"
+	invalidRetiredAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	// Write batch with invalid issuance retirement location
-// 	msgCreateBatch.Issuance[0].RetiredAmount = "0.000001"
-// 	msgCreateBatch.Issuance[0].RetirementLocation = "abcde"
-// 	invalidRetirementLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid issuance retirement location
+	msgCreateBatch.Issuance[0].RetiredAmount = "0.000001"
+	msgCreateBatch.Issuance[0].RetirementLocation = "abcde"
+	invalidRetirementLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-// 	testCases := []struct {
-// 		name              string
-// 		args              []string
-// 		expectErr         bool
-// 		errInTxResponse   bool
-// 		expectedErrMsg    string
-// 		expectedBatchInfo *ecocredit.BatchInfo
-// 	}{
-// 		{
-// 			name:           "missing args",
-// 			args:           []string{},
-// 			expectErr:      true,
-// 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-// 		},
-// 		{
-// 			name:           "too many args",
-// 			args:           []string{"r", "e", "g", "e", "n"},
-// 			expectErr:      true,
-// 			expectedErrMsg: "Error: accepts 1 arg(s), received 5",
-// 		},
-// 		{
-// 			name: "invalid json",
-// 			args: append(
-// 				[]string{
-// 					invalidJsonFile.Name(),
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "invalid character",
-// 		},
-// 		{
-// 			name: "invalid project id",
-// 			args: append(
-// 				[]string{
-// 					invalidProjectIdJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:       true,
-// 			errInTxResponse: false,
-// 			expectedErrMsg:  "invalid project id",
-// 		},
-// 		{
-// 			name: "missing start date",
-// 			args: append(
-// 				[]string{
-// 					missingStartDateJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "must provide a start date for the credit batch: invalid request",
-// 		},
-// 		{
-// 			name: "missing end date",
-// 			args: append(
-// 				[]string{
-// 					missingEndDateJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
-// 		},
-// 		{
-// 			name: "invalid issuance recipient",
-// 			args: append(
-// 				[]string{
-// 					invalidRecipientJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
-// 		},
-// 		{
-// 			name: "invalid issuance tradable amount",
-// 			args: append(
-// 				[]string{
-// 					invalidTradableAmountJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "invalid decimal string",
-// 		},
-// 		{
-// 			name: "invalid issuance retired amount",
-// 			args: append(
-// 				[]string{
-// 					invalidRetiredAmountJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "invalid decimal string",
-// 		},
-// 		{
-// 			name: "invalid issuance retirement location",
-// 			args: append(
-// 				[]string{
-// 					invalidRetirementLocationJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "Invalid location: abcde",
-// 		},
-// 		{
-// 			name: "missing from flag",
-// 			args: append(
-// 				[]string{
-// 					validBatchJson,
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr:      true,
-// 			expectedErrMsg: "required flag(s) \"from\" not set",
-// 		},
-// 		{
-// 			name: "valid batch",
-// 			args: append(
-// 				[]string{
-// 					validBatchJson,
-// 					makeFlagFrom(val.Address.String()),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr: false,
-// 			expectedBatchInfo: &ecocredit.BatchInfo{
-// 				ProjectId:       s.projectID,
-// 				TotalAmount:     "100.000001",
-// 				Metadata:        []byte{0x1},
-// 				AmountCancelled: "0",
-// 			},
-// 		},
-// 		{
-// 			name: "valid batch with from key-name",
-// 			args: append(
-// 				[]string{
-// 					validBatchJson,
-// 					makeFlagFrom("node0"),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr: false,
-// 			expectedBatchInfo: &ecocredit.BatchInfo{
-// 				ProjectId:       s.projectID,
-// 				TotalAmount:     "100.000001",
-// 				Metadata:        []byte{0x1},
-// 				AmountCancelled: "0",
-// 			},
-// 		},
-// 		{
-// 			name: "with amino-json",
-// 			args: append(
-// 				[]string{
-// 					validBatchJson,
-// 					makeFlagFrom(val.Address.String()),
-// 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-// 				},
-// 				s.commonTxFlags()...,
-// 			),
-// 			expectErr: false,
-// 			expectedBatchInfo: &ecocredit.BatchInfo{
-// 				ProjectId:       s.projectID,
-// 				TotalAmount:     "100.000001",
-// 				Metadata:        []byte{0x1},
-// 				AmountCancelled: "0",
-// 			},
-// 		},
-// 	}
+	testCases := []struct {
+		name              string
+		args              []string
+		expectErr         bool
+		errInTxResponse   bool
+		expectedErrMsg    string
+		expectedBatchInfo *core.BatchInfo
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"r", "e", "g", "e", "n"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 5",
+		},
+		{
+			name: "invalid json",
+			args: append(
+				[]string{
+					invalidJsonFile.Name(),
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "invalid character",
+		},
+		{
+			name: "invalid project id",
+			args: append(
+				[]string{
+					invalidProjectIdJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:       true,
+			errInTxResponse: false,
+			expectedErrMsg:  "invalid project id",
+		},
+		{
+			name: "missing start date",
+			args: append(
+				[]string{
+					missingStartDateJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "must provide a start date for the credit batch: invalid request",
+		},
+		{
+			name: "missing end date",
+			args: append(
+				[]string{
+					missingEndDateJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
+		},
+		{
+			name: "invalid issuance recipient",
+			args: append(
+				[]string{
+					invalidRecipientJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
+		},
+		{
+			name: "invalid issuance tradable amount",
+			args: append(
+				[]string{
+					invalidTradableAmountJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "invalid decimal string",
+		},
+		{
+			name: "invalid issuance retired amount",
+			args: append(
+				[]string{
+					invalidRetiredAmountJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "invalid decimal string",
+		},
+		{
+			name: "invalid issuance retirement location",
+			args: append(
+				[]string{
+					invalidRetirementLocationJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "Invalid location: abcde",
+		},
+		{
+			name: "missing from flag",
+			args: append(
+				[]string{
+					validBatchJson,
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "required flag(s) \"from\" not set",
+		},
+		{
+			name: "valid batch",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &core.BatchInfo{
+				ProjectId: 1,
+				Metadata:  validMetadata,
+			},
+		},
+		{
+			name: "valid batch with from key-name",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom("node0"),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &core.BatchInfo{
+				ProjectId: 1,
+				Metadata:  validMetadata,
+			},
+		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom(val.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &core.BatchInfo{
+				ProjectId: 1,
+				Metadata:  validMetadata,
+			},
+		},
+	}
 
-// 	for _, tc := range testCases {
-// 		s.Run(tc.name, func() {
-// 			// Commands may panic, so we need to recover and check the error messages
-// 			defer func() {
-// 				if r := recover(); r != nil {
-// 					s.Require().True(tc.expectErr)
-// 					s.Require().Contains(r.(error).Error(), tc.expectedErrMsg)
-// 				}
-// 			}()
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			// Commands may panic, so we need to recover and check the error messages
+			defer func() {
+				if r := recover(); r != nil {
+					s.Require().True(tc.expectErr)
+					s.Require().Contains(r.(error).Error(), tc.expectedErrMsg)
+				}
+			}()
 
-// 			cmd := coreclient.TxCreateBatchCmd()
-// 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-// 			if tc.expectErr {
-// 				if tc.errInTxResponse {
-// 					var res sdk.TxResponse
-// 					s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-// 					s.Require().NotEqual(res.Code, 0)
-// 					s.Require().Contains(res.RawLog, tc.expectedErrMsg)
-// 				} else {
-// 					s.Require().Error(err)
-// 					s.Require().Contains(out.String(), tc.expectedErrMsg)
-// 				}
-// 			} else {
-// 				s.Require().NoError(err, out.String())
+			cmd := coreclient.TxCreateBatchCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				if tc.errInTxResponse {
+					var res sdk.TxResponse
+					s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+					s.Require().NotEqual(res.Code, 0)
+					s.Require().Contains(res.RawLog, tc.expectedErrMsg)
+				} else {
+					s.Require().Error(err)
+					s.Require().Contains(out.String(), tc.expectedErrMsg)
+				}
+			} else {
+				s.Require().NoError(err, out.String())
 
-// 				var res sdk.TxResponse
-// 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
-// 				batchDenomFound := false
-// 				for _, e := range res.Logs[0].Events {
-// 					if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
-// 						for _, attr := range e.Attributes {
-// 							if attr.Key == "batch_denom" {
-// 								batchDenomFound = true
-// 								batchDenom := strings.Trim(attr.Value, "\"")
+				batchDenomFound := false
+				for _, e := range res.Logs[0].Events {
+					if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
+						for _, attr := range e.Attributes {
+							if attr.Key == "batch_denom" {
+								batchDenomFound = true
+								batchDenom := strings.Trim(attr.Value, "\"")
 
-// 								queryCmd := coreclient.QueryBatchInfoCmd()
-// 								queryArgs := []string{batchDenom, flagOutputJSON}
-// 								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
-// 								s.Require().NoError(err, queryOut.String())
-// 								var queryRes core.QueryBatchInfoResponse
-// 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
+								queryCmd := coreclient.QueryBatchInfoCmd()
+								queryArgs := []string{batchDenom, flagOutputJSON}
+								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
+								s.Require().NoError(err, queryOut.String())
+								var queryRes core.QueryBatchInfoResponse
+								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-// 								s.Require().Equal(tc.expectedBatchInfo.ProjectId, queryRes.Info.ProjectId)
-// 								s.Require().Equal(tc.expectedBatchInfo.Metadata, queryRes.Info.Metadata)
-// 							}
-// 						}
-// 					}
-// 				}
-// 				s.Require().True(batchDenomFound)
-// 			}
-// 		})
-// 	}
-// }
+								s.Require().Equal(tc.expectedBatchInfo.ProjectId, queryRes.Info.ProjectId)
+								s.Require().Equal(tc.expectedBatchInfo.Metadata, queryRes.Info.Metadata)
+							}
+						}
+					}
+				}
+				s.Require().True(batchDenomFound)
+			}
+		})
+	}
+}
 
 // func (s *IntegrationTestSuite) TestTxSend() {
 // 	val0 := s.network.Validators[0]
