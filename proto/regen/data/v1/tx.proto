@@ -21,10 +21,10 @@ service Msg {
 
   // Attest allows for digital signing of an arbitrary piece of data on the
   // blockchain. By attesting to data, the attestor is making a statement about
-  // the veracity of the data itself. It is like signing a legal document, meaning
-  // that I agree to all conditions and to the best of my knowledge everything
-  // is true. When anchoring data, the sender is not attesting to the veracity
-  // of the data, they are simply communicating that it exists.
+  // the veracity of the data itself. It is like signing a legal document,
+  // meaning that I agree to all conditions and to the best of my knowledge
+  // everything is true. When anchoring data, the sender is not attesting to the
+  // veracity of the data, they are simply communicating that it exists.
   //
   // On-chain signatures have the following benefits:
   // - on-chain identities can be managed using different cryptographic keys
@@ -36,10 +36,11 @@ service Msg {
   //
   // Attest implicitly calls Anchor if the data was not already anchored.
   //
-  // Attest can be called multiple times for the same content hash with different
-  // attestors and those attestors will be appended to the list of attestors. If
-  // the same attestor attempts to attest to the same piece of data, the attestor
-  // will be ignored and a new attestation with a new timestamp will not be added.
+  // Attest can be called multiple times for the same content hash with
+  // different attestors and those attestors will be appended to the list of
+  // attestors. If the same attestor attempts to attest to the same piece of
+  // data, the attestor will be ignored and a new attestation with a new
+  // timestamp will not be added.
   rpc Attest(MsgAttest) returns (MsgAttestResponse);
 
   // DefineResolver defines a resolver URL and assigns it a new integer ID
@@ -47,7 +48,8 @@ service Msg {
   rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
 
   // RegisterResolver registers data content hashes
-  rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
+  rpc RegisterResolver(MsgRegisterResolver)
+      returns (MsgRegisterResolverResponse);
 }
 
 // MsgAnchor is the Msg/Anchor request type.
@@ -74,14 +76,15 @@ message MsgAnchorResponse {
 message MsgAttest {
   option (gogoproto.goproto_getters) = false;
 
-  // attestors are the addresses of the accounts attesting to the validity of the data.
-  // By making an Attest request, the attestors are attesting to the veracity
-  // of the data referenced by the cid. The precise meaning of this may vary
-  // depending on the underlying data.
+  // attestors are the addresses of the accounts attesting to the validity of
+  // the data. By making an Attest request, the attestors are attesting to the
+  // veracity of the data referenced by the cid. The precise meaning of this may
+  // vary depending on the underlying data.
   repeated string attestors = 1;
 
   // hash is the hash-based identifier for the anchored content. Only RDF graph
-  // data can be signed as its data model is intended to specifically convey semantic meaning.
+  // data can be signed as its data model is intended to specifically convey
+  // semantic meaning.
   ContentHash.Graph hash = 2;
 }
 
@@ -106,7 +109,8 @@ message MsgDefineResolver {
 
 // MsgDefineResolverResponse is the Msg/DefineResolver response type.
 message MsgDefineResolverResponse {
-  // resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver.
+  // resolver_id is the integer ID of the resolver to be used in
+  // MsgRegisterResolver.
   uint64 resolver_id = 1;
 }
 

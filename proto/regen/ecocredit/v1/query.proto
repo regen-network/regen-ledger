@@ -14,22 +14,20 @@ service Query {
 
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes";
+    option (google.api.http).get = "/regen/ecocredit/v1/classes";
   }
 
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes/{class_id}";
+    option (google.api.http).get = "/regen/ecocredit/v1/classes/{class_id}";
   }
 
   // ClassIssuers queries for the addresses of the issuers for a credit class.
-  rpc ClassIssuers(QueryClassIssuersRequest) returns (QueryClassIssuersResponse) {
+  rpc ClassIssuers(QueryClassIssuersRequest)
+      returns (QueryClassIssuersResponse) {
     option (google.api.http).get =
-      "/regen/ecocredit/v1/classes/{class_id}/issuers";
+        "/regen/ecocredit/v1/classes/{class_id}/issuers";
   }
-
 
   // Projects queries for all projects within a class with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
@@ -39,8 +37,7 @@ service Query {
 
   // ClassInfo queries for information on a project.
   rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{project_id}";
+    option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
   }
 
   // Batches queries for all batches in the given project with pagination.
@@ -50,15 +47,15 @@ service Query {
   }
 
   // BatchesByClass queries all batches issued from a given class.
-  rpc BatchesByClass(QueryBatchesByClassRequest) returns (QueryBatchesByClassResponse) {
+  rpc BatchesByClass(QueryBatchesByClassRequest)
+      returns (QueryBatchesByClassResponse) {
     option (google.api.http).get =
-      "/regen/ecocredit/v1/classes/{class_id}/batches";
+        "/regen/ecocredit/v1/classes/{class_id}/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}";
+    option (google.api.http).get = "/regen/ecocredit/v1/batches/{batch_denom}";
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
@@ -77,14 +74,12 @@ service Query {
   // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/credit-types";
+    option (google.api.http).get = "/regen/ecocredit/v1/credit-types";
   }
 
   // Params queries the ecocredit module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/params";
+    option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
 }
 
@@ -176,7 +171,6 @@ message QueryProjectInfoResponse {
   // info is the ProjectInfo for the project.
   ProjectInfo info = 1;
 }
-
 
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
