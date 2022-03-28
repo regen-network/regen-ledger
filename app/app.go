@@ -390,7 +390,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.BankKeeper,
 		app.DistrKeeper,
 	)
-	newModules := []moduletypes.Module{ecocreditModule, data.Module{}}
+
+	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
+	newModules := []moduletypes.Module{ecocreditModule, dataModule}
 	err := app.smm.RegisterModules(newModules)
 	if err != nil {
 		panic(err)
@@ -538,6 +540,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
 			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+			data.NewModule(app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
 
