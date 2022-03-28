@@ -226,15 +226,15 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err)
 	}
 
-	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey)
+	s.basketKeeper = basket.NewKeeper(s.db, s, bankKeeper, distKeeper, storeKey, accountKeeper)
 
 	ss, err := api.NewStateStore(s.db)
 	if err != nil {
 		panic(err)
 	}
-	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
+	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace, accountKeeper)
 
-	s.marketplaceKeeper = marketplace.NewKeeper(s.db, ss, bankKeeper, s.paramSpace)
+	s.marketplaceKeeper = marketplace.NewKeeper(s.db, ss, bankKeeper, s.paramSpace, accountKeeper)
 
 	return s
 }

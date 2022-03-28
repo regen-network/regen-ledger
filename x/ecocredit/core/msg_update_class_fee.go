@@ -8,9 +8,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 )
 
-var _ legacytx.LegacyMsg = &MsgUpdateCreditClassFeeRequest{}
+var _ legacytx.LegacyMsg = &MsgUpdateCreditClassFee{}
 
-func (m *MsgUpdateCreditClassFeeRequest) ValidateBasic() error {
+func (m *MsgUpdateCreditClassFee) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
@@ -33,19 +33,19 @@ func (m *MsgUpdateCreditClassFeeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateCreditClassFeeRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateCreditClassFee) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgUpdateCreditClassFeeRequest) GetSignBytes() []byte {
+func (m *MsgUpdateCreditClassFee) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(m))
 }
 
-func (m *MsgUpdateCreditClassFeeRequest) Route() string {
+func (m *MsgUpdateCreditClassFee) Route() string {
 	return sdk.MsgTypeURL(m)
 }
 
-func (m *MsgUpdateCreditClassFeeRequest) Type() string {
+func (m *MsgUpdateCreditClassFee) Type() string {
 	return sdk.MsgTypeURL(m)
 }

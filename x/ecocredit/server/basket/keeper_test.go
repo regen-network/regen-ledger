@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 

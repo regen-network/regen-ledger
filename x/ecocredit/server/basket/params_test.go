@@ -31,10 +31,8 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 
 	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees: []*basket.MsgUpdateBasketFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		},
-		RemoveDenoms: []string{fee.Denom},
+		AddFees:     []*sdk.Coin{&addFee},
+		RemoveFees:  []string{fee.Denom},
 	})
 	assert.NilError(t, err)
 
@@ -48,9 +46,8 @@ func TestParams_UpdateBasketFee(t *testing.T) {
 	// no duplicates
 	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{
 		RootAddress: govAddr.String(),
-		AddFees: []*basket.MsgUpdateBasketFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		}})
+		AddFees:     []*sdk.Coin{&addFee},
+	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
 
 	_, err = s.k.UpdateBasketFee(s.ctx, &basket.MsgUpdateBasketFeeRequest{RootAddress: sdk.AccAddress("not_governance").String()})

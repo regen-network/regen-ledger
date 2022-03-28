@@ -1,7 +1,6 @@
 package basket
 
 import (
-	"fmt"
 	"testing"
 
 	"gotest.tools/v3/assert"
@@ -14,9 +13,10 @@ import (
 func TestMsgUpdateBasketFeeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		RootAddress  string
-		AddFees      []*MsgUpdateBasketFeeRequest_Fee
+		AddFees      []*sdk.Coin
 		RemoveDenoms []string
 	}
+	validCoin := sdk.NewInt64Coin("foo", 10)
 	_, _, validAddr := testdata.KeyTestPubAddr()
 	tests := []struct {
 		name   string
@@ -26,7 +26,7 @@ func TestMsgUpdateBasketFeeRequest_ValidateBasic(t *testing.T) {
 		{name: "valid",
 			fields: fields{
 				RootAddress:  validAddr.String(),
-				AddFees:      []*MsgUpdateBasketFeeRequest_Fee{{Denom: "foo", Amount: "10"}},
+				AddFees:      []*sdk.Coin{&validCoin},
 				RemoveDenoms: []string{"bar"},
 			},
 		},
@@ -52,7 +52,7 @@ func TestMsgUpdateBasketFeeRequest_ValidateBasic(t *testing.T) {
 			name: "no bad AddFees denom",
 			fields: fields{
 				RootAddress:  validAddr.String(),
-				AddFees:      []*MsgUpdateBasketFeeRequest_Fee{{Denom: "al;skdjg;l"}},
+				AddFees:      []*sdk.Coin{{Denom: "al;skdjg;l", Amount: sdk.NewInt(10)}},
 				RemoveDenoms: nil,
 			},
 			errMsg: "invalid denom",
@@ -61,10 +61,10 @@ func TestMsgUpdateBasketFeeRequest_ValidateBasic(t *testing.T) {
 			name: "no bad AddFees amount",
 			fields: fields{
 				RootAddress:  validAddr.String(),
-				AddFees:      []*MsgUpdateBasketFeeRequest_Fee{{Denom: "foo", Amount: "19.fee"}},
+				AddFees:      []*sdk.Coin{{Denom: "foo", Amount: sdk.NewInt(0)}},
 				RemoveDenoms: nil,
 			},
-			errMsg: fmt.Sprintf("could not convert 19.fee to %T", sdk.Int{}),
+			errMsg: "fee must be greater than zero",
 		},
 		{
 			name: "no bad RemoveDenoms denom",
@@ -79,9 +79,9 @@ func TestMsgUpdateBasketFeeRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgUpdateBasketFeeRequest{
-				RootAddress:  tt.fields.RootAddress,
-				AddFees:      tt.fields.AddFees,
-				RemoveDenoms: tt.fields.RemoveDenoms,
+				RootAddress: tt.fields.RootAddress,
+				AddFees:     tt.fields.AddFees,
+				RemoveFees:  tt.fields.RemoveDenoms,
 			}
 			err := m.ValidateBasic()
 			if len(tt.errMsg) != 0 {

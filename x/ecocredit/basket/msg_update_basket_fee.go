@@ -14,18 +14,18 @@ func (m *MsgUpdateBasketFeeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
 		return sdkerrors.Wrap(err, sdkerrors.ErrInvalidAddress.Error())
 	}
-	if len(m.AddFees) == 0 && len(m.RemoveDenoms) == 0 {
+	if len(m.AddFees) == 0 && len(m.RemoveFees) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("at least one of add_fees or remove_denoms must be specified")
 	}
 	for _, fee := range m.AddFees {
-		if err := sdk.ValidateDenom(fee.Denom); err != nil {
+		if err := fee.Validate(); err != nil {
 			return err
 		}
-		if _, ok := sdk.NewIntFromString(fee.Amount); !ok {
-			return sdkerrors.ErrInvalidRequest.Wrapf("could not convert %s to %T", fee.Amount, sdk.Int{})
+		if fee.Amount.IsZero() {
+			return sdkerrors.ErrInvalidRequest.Wrap("fee must be greater than zero")
 		}
 	}
-	for _, denom := range m.RemoveDenoms {
+	for _, denom := range m.RemoveFees {
 		if err := sdk.ValidateDenom(denom); err != nil {
 			return err
 		}

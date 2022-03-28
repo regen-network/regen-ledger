@@ -49,15 +49,15 @@ service Msg {
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
   // ToggleAllowList toggles the allow list. This message must be signed by the governance module.
-  rpc ToggleAllowList(MsgToggleAllowListRequest) returns (MsgToggleAllowListResponse);
+  rpc ToggleAllowList(MsgToggleAllowList) returns (MsgToggleAllowListResponse);
 
   // UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
   // must be signed by the governance module.
-  rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreatorsRequest) returns (MsgUpdateAllowedCreditClassCreatorsResponse);
+  rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreators) returns (MsgUpdateAllowedCreditClassCreatorsResponse);
 
   // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
   // class fees. This message must be signed by the governance module.
-  rpc UpdateCreditClassFee(MsgUpdateCreditClassFeeRequest) returns (MsgUpdateCreditClassFeeResponse);
+  rpc UpdateCreditClassFee(MsgUpdateCreditClassFee) returns (MsgUpdateCreditClassFeeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -340,8 +340,8 @@ message MsgAddCreditType {
 message MsgAddCreditTypeResponse {}
 
 
-// MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
-message MsgToggleAllowListRequest {
+// MsgToggleAllowList is the Msg/ToggleAllowList request type
+message MsgToggleAllowList {
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
@@ -350,11 +350,11 @@ message MsgToggleAllowListRequest {
   bool toggle = 2;
 }
 
-// MsgToggleAllowListResponse is the Msg/MsgToggleAllowListResponse response type.
+// MsgToggleAllowListResponse is the Msg/MsgToggleAllowList response type.
 message MsgToggleAllowListResponse {}
 
-// MsgUpdateAllowedCreditClassCreatorsRequest is the Msg/UpdateAllowedCreditClassCreators request type
-message MsgUpdateAllowedCreditClassCreatorsRequest {
+// MsgUpdateAllowedCreditClassCreators is the Msg/UpdateAllowedCreditClassCreators request type
+message MsgUpdateAllowedCreditClassCreators {
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
@@ -369,8 +369,8 @@ message MsgUpdateAllowedCreditClassCreatorsRequest {
 // MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
 message MsgUpdateAllowedCreditClassCreatorsResponse {}
 
-// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFees request type
-message MsgUpdateCreditClassFeeRequest {
+// MsgUpdateCreditClassFee is the Msg/UpdateCreditClassFees request type
+message MsgUpdateCreditClassFee {
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;

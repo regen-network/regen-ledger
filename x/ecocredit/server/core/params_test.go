@@ -59,7 +59,7 @@ func TestParams_Allowlist(t *testing.T) {
 	res, err := s.stateStore.AllowlistEnabledTable().Get(s.ctx)
 	assert.NilError(t, err)
 
-	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowListRequest{
+	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowList{
 		RootAddress: govAddr.String(),
 		Toggle:      !res.Enabled,
 	})
@@ -70,14 +70,14 @@ func TestParams_Allowlist(t *testing.T) {
 	assert.Equal(t, !res.Enabled, res2.Enabled)
 
 	// only gov
-	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowListRequest{
+	_, err = s.k.ToggleAllowList(s.ctx, &core.MsgToggleAllowList{
 		RootAddress: s.addr.String(),
 		Toggle:      false,
 	})
 	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
 
-func TestParams_UpdateAllowedClassCreators(t *testing.T) {
+func TestParams_UpdateAllowedClassCreator(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
@@ -85,20 +85,20 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 
 	addr1, addr2 := sdk.AccAddress("bar"), sdk.AccAddress("baz")
-	err := s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &api.AllowedClassCreators{Address: addr1})
+	err := s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &api.AllowedClassCreator{Address: addr1})
 	assert.NilError(t, err)
-	err = s.stateStore.AllowedClassCreatorsTable().Insert(s.ctx, &api.AllowedClassCreators{Address: addr2})
+	err = s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &api.AllowedClassCreator{Address: addr2})
 	assert.NilError(t, err)
 
 	add1, add2 := sdk.AccAddress("add1"), sdk.AccAddress("add2")
-	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreators{
 		RootAddress:    govAddr.String(),
 		AddCreators:    []string{add1.String(), add2.String()},
 		RemoveCreators: []string{addr1.String(), addr2.String()},
 	})
 	assert.NilError(t, err)
 
-	it, err := s.stateStore.AllowedClassCreatorsTable().List(s.ctx, api.AllowedClassCreatorsAddressIndexKey{})
+	it, err := s.stateStore.AllowedClassCreatorTable().List(s.ctx, api.AllowedClassCreatorAddressIndexKey{})
 	assert.NilError(t, err)
 	count := 0
 	for it.Next() {
@@ -112,14 +112,14 @@ func TestParams_UpdateAllowedClassCreators(t *testing.T) {
 	assert.Equal(t, 2, count)
 
 	// no duplicates
-	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreators{
 		RootAddress: govAddr.String(),
 		AddCreators: []string{add1.String()},
 	})
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
 
 	// only gov
-	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreatorsRequest{RootAddress: s.addr.String()})
+	_, err = s.k.UpdateAllowedCreditClassCreators(s.ctx, &core.MsgUpdateAllowedCreditClassCreators{RootAddress: s.addr.String()})
 	assert.ErrorContains(t, err, "params can only be updated via governance")
 }
 
@@ -140,14 +140,10 @@ func TestParams_UpdateClassFee(t *testing.T) {
 	govAddr := sdk.AccAddress("foo")
 	s.accountKeeper.EXPECT().GetModuleAddress(gomock.Any()).Return(govAddr).Times(3)
 
-	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{
-		RootAddress: govAddr.String(),
-		AddFees: []*core.MsgUpdateCreditClassFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		},
-		RemoveFees: []*core.MsgUpdateCreditClassFeeRequest_Fee{
-			{Denom: fee.Denom, Amount: fee.Amount.String()},
-		},
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFee{
+		RootAddress:  govAddr.String(),
+		AddFees:      []*sdk.Coin{&addFee},
+		RemoveDenoms: []string{fee.Denom},
 	})
 	assert.NilError(t, err)
 
@@ -159,14 +155,13 @@ func TestParams_UpdateClassFee(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// no duplicates
-	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFee{
 		RootAddress: govAddr.String(),
-		AddFees: []*core.MsgUpdateCreditClassFeeRequest_Fee{
-			{Denom: addFee.Denom, Amount: addFee.Amount.String()},
-		}})
+		AddFees:     []*sdk.Coin{&addFee}},
+	)
 	assert.ErrorContains(t, err, ormerrors.PrimaryKeyConstraintViolation.Error())
 
 	// only gov
-	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFeeRequest{RootAddress: s.addr.String()})
+	_, err = s.k.UpdateCreditClassFee(s.ctx, &core.MsgUpdateCreditClassFee{RootAddress: s.addr.String()})
 	assert.ErrorContains(t, err, "params can only be updated via governance")
 }

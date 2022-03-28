@@ -23,7 +23,7 @@ func (k Keeper) UpdateBasketFee(ctx context.Context, req *basket.MsgUpdateBasket
 
 	store := k.stateStore.BasketFeeTable()
 
-	for _, denom := range req.RemoveDenoms {
+	for _, denom := range req.RemoveFees {
 		if err = store.Delete(ctx, &api.BasketFee{
 			Denom: denom,
 		}); err != nil {

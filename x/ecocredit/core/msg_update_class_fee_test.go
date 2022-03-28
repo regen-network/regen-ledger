@@ -65,7 +65,7 @@ func TestMsgUpdateCreditClassFeeRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgUpdateCreditClassFeeRequest{
+			m := &MsgUpdateCreditClassFee{
 				RootAddress:  tt.fields.RootAddress,
 				AddFees:      tt.fields.AddFees,
 				RemoveDenoms: tt.fields.RemoveDenoms,

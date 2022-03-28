@@ -12,11 +12,11 @@ var _ core.QueryServer = &Keeper{}
 type Keeper struct {
 	stateStore    api.StateStore
 	bankKeeper    ecocredit.BankKeeper
-	params        ecocredit.ParamKeeper
+	paramsKeeper  ecocredit.ParamKeeper
 	accountKeeper ecocredit.AccountKeeper
 }
 
-func NewKeeper(ss api.StateStore, bk ecocredit.BankKeeper, params ecocredit.ParamKeeper, ak ecocredit.AccountKeeper) Keeper {
+func NewKeeper(ss api.StateStore, bk ecocredit.BankKeeper, pk ecocredit.ParamKeeper, ak ecocredit.AccountKeeper) Keeper {
 	return Keeper{
 		stateStore:    ss,
 		bankKeeper:    bk,

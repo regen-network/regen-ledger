@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
@@ -24,7 +24,7 @@ func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (
 
 	store := k.stateStore.CreditTypeTable()
 	for _, ct := range req.CreditTypes {
-		if err = store.Insert(ctx, &ecocreditv1.CreditType{
+		if err = store.Insert(ctx, &api.CreditType{
 			Abbreviation: ct.Abbreviation,
 			Name:         ct.Name,
 			Unit:         ct.Unit,
@@ -39,7 +39,7 @@ func (k Keeper) AddCreditType(ctx context.Context, req *core.MsgAddCreditType) (
 
 // ToggleAllowList is a governance only function that toggles the allowlist, enabling it if the request contains `True`,
 // and disabling it if the request contains `false`
-func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowListRequest) (*core.MsgToggleAllowListResponse, error) {
+func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowList) (*core.MsgToggleAllowListResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -47,13 +47,13 @@ func (k Keeper) ToggleAllowList(ctx context.Context, req *core.MsgToggleAllowLis
 	if err = ecocredit.AssertGovernance(govAddr, k.accountKeeper); err != nil {
 		return nil, err
 	}
-	return &core.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledTable().Save(ctx, &ecocreditv1.AllowlistEnabled{Enabled: req.Toggle})
+	return &core.MsgToggleAllowListResponse{}, k.stateStore.AllowlistEnabledTable().Save(ctx, &api.AllowlistEnabled{Enabled: req.Toggle})
 }
 
 // UpdateAllowedCreditClassCreators is a governance only function that allows for the removal and addition of addresses
 // to the credit class creator list
 // NOTE: this list is only effective when the governance controlled AllowlistEnabled parameter is true.
-func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.MsgUpdateAllowedCreditClassCreatorsRequest) (*core.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
+func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.MsgUpdateAllowedCreditClassCreators) (*core.MsgUpdateAllowedCreditClassCreatorsResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -62,14 +62,14 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 		return nil, err
 	}
 
-	store := k.stateStore.AllowedClassCreatorsTable()
+	store := k.stateStore.AllowedClassCreatorTable()
 
 	for _, addr := range req.RemoveCreators {
 		acc, err := types.AccAddressFromBech32(addr)
 		if err != nil {
 			return nil, err
 		}
-		if err = store.Delete(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
+		if err = store.Delete(ctx, &api.AllowedClassCreator{Address: acc}); err != nil {
 			return nil, err
 		}
 	}
@@ -79,7 +79,7 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 		if err != nil {
 			return nil, err
 		}
-		if err = store.Insert(ctx, &ecocreditv1.AllowedClassCreators{Address: acc}); err != nil {
+		if err = store.Insert(ctx, &api.AllowedClassCreator{Address: acc}); err != nil {
 			return nil, err
 		}
 	}
@@ -88,7 +88,7 @@ func (k Keeper) UpdateAllowedCreditClassCreators(ctx context.Context, req *core.
 }
 
 // UpdateCreditClassFee is a governance only function that allows for the removal and addition of fees one can pay to create a class
-func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCreditClassFeeRequest) (*core.MsgUpdateCreditClassFeeResponse, error) {
+func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCreditClassFee) (*core.MsgUpdateCreditClassFeeResponse, error) {
 	govAddr, err := types.AccAddressFromBech32(req.RootAddress)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 	store := k.stateStore.CreditClassFeeTable()
 
 	for _, denom := range req.RemoveDenoms {
-		if err = store.Delete(ctx, &ecocreditv1.CreditClassFee{
+		if err = store.Delete(ctx, &api.CreditClassFee{
 			Denom: denom,
 		}); err != nil {
 			return nil, err
@@ -108,7 +108,7 @@ func (k Keeper) UpdateCreditClassFee(ctx context.Context, req *core.MsgUpdateCre
 	}
 
 	for _, fee := range req.AddFees {
-		if err = store.Insert(ctx, &ecocreditv1.CreditClassFee{
+		if err = store.Insert(ctx, &api.CreditClassFee{
 			Denom:  fee.Denom,
 			Amount: fee.Amount.String(),
 		}); err != nil {

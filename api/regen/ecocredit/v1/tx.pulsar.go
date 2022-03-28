@@ -12419,27 +12419,27 @@ func (x *fastReflection_MsgAddCreditTypeResponse) ProtoMethods() *protoiface.Met
 }
 
 var (
-	md_MsgToggleAllowListRequest              protoreflect.MessageDescriptor
-	fd_MsgToggleAllowListRequest_root_address protoreflect.FieldDescriptor
-	fd_MsgToggleAllowListRequest_toggle       protoreflect.FieldDescriptor
+	md_MsgToggleAllowList              protoreflect.MessageDescriptor
+	fd_MsgToggleAllowList_root_address protoreflect.FieldDescriptor
+	fd_MsgToggleAllowList_toggle       protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgToggleAllowListRequest = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgToggleAllowListRequest")
-	fd_MsgToggleAllowListRequest_root_address = md_MsgToggleAllowListRequest.Fields().ByName("root_address")
-	fd_MsgToggleAllowListRequest_toggle = md_MsgToggleAllowListRequest.Fields().ByName("toggle")
+	md_MsgToggleAllowList = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgToggleAllowList")
+	fd_MsgToggleAllowList_root_address = md_MsgToggleAllowList.Fields().ByName("root_address")
+	fd_MsgToggleAllowList_toggle = md_MsgToggleAllowList.Fields().ByName("toggle")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgToggleAllowListRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgToggleAllowList)(nil)
 
-type fastReflection_MsgToggleAllowListRequest MsgToggleAllowListRequest
+type fastReflection_MsgToggleAllowList MsgToggleAllowList
 
-func (x *MsgToggleAllowListRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgToggleAllowListRequest)(x)
+func (x *MsgToggleAllowList) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgToggleAllowList)(x)
 }
 
-func (x *MsgToggleAllowListRequest) slowProtoReflect() protoreflect.Message {
+func (x *MsgToggleAllowList) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -12451,43 +12451,43 @@ func (x *MsgToggleAllowListRequest) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgToggleAllowListRequest_messageType fastReflection_MsgToggleAllowListRequest_messageType
-var _ protoreflect.MessageType = fastReflection_MsgToggleAllowListRequest_messageType{}
+var _fastReflection_MsgToggleAllowList_messageType fastReflection_MsgToggleAllowList_messageType
+var _ protoreflect.MessageType = fastReflection_MsgToggleAllowList_messageType{}
 
-type fastReflection_MsgToggleAllowListRequest_messageType struct{}
+type fastReflection_MsgToggleAllowList_messageType struct{}
 
-func (x fastReflection_MsgToggleAllowListRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgToggleAllowListRequest)(nil)
+func (x fastReflection_MsgToggleAllowList_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgToggleAllowList)(nil)
 }
-func (x fastReflection_MsgToggleAllowListRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgToggleAllowListRequest)
+func (x fastReflection_MsgToggleAllowList_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgToggleAllowList)
 }
-func (x fastReflection_MsgToggleAllowListRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgToggleAllowListRequest
+func (x fastReflection_MsgToggleAllowList_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgToggleAllowList
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgToggleAllowListRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgToggleAllowListRequest
+func (x *fastReflection_MsgToggleAllowList) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgToggleAllowList
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgToggleAllowListRequest) Type() protoreflect.MessageType {
-	return _fastReflection_MsgToggleAllowListRequest_messageType
+func (x *fastReflection_MsgToggleAllowList) Type() protoreflect.MessageType {
+	return _fastReflection_MsgToggleAllowList_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgToggleAllowListRequest) New() protoreflect.Message {
-	return new(fastReflection_MsgToggleAllowListRequest)
+func (x *fastReflection_MsgToggleAllowList) New() protoreflect.Message {
+	return new(fastReflection_MsgToggleAllowList)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgToggleAllowListRequest) Interface() protoreflect.ProtoMessage {
-	return (*MsgToggleAllowListRequest)(x)
+func (x *fastReflection_MsgToggleAllowList) Interface() protoreflect.ProtoMessage {
+	return (*MsgToggleAllowList)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -12495,16 +12495,16 @@ func (x *fastReflection_MsgToggleAllowListRequest) Interface() protoreflect.Prot
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgToggleAllowListRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgToggleAllowList) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.RootAddress != "" {
 		value := protoreflect.ValueOfString(x.RootAddress)
-		if !f(fd_MsgToggleAllowListRequest_root_address, value) {
+		if !f(fd_MsgToggleAllowList_root_address, value) {
 			return
 		}
 	}
 	if x.Toggle != false {
 		value := protoreflect.ValueOfBool(x.Toggle)
-		if !f(fd_MsgToggleAllowListRequest_toggle, value) {
+		if !f(fd_MsgToggleAllowList_toggle, value) {
 			return
 		}
 	}
@@ -12521,17 +12521,17 @@ func (x *fastReflection_MsgToggleAllowListRequest) Range(f func(protoreflect.Fie
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgToggleAllowListRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgToggleAllowList) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
 		return x.RootAddress != ""
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
 		return x.Toggle != false
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12541,17 +12541,17 @@ func (x *fastReflection_MsgToggleAllowListRequest) Has(fd protoreflect.FieldDesc
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgToggleAllowListRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgToggleAllowList) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
 		x.RootAddress = ""
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
 		x.Toggle = false
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12561,19 +12561,19 @@ func (x *fastReflection_MsgToggleAllowListRequest) Clear(fd protoreflect.FieldDe
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgToggleAllowListRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgToggleAllowList) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
 		value := x.RootAddress
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
 		value := x.Toggle
 		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -12587,17 +12587,17 @@ func (x *fastReflection_MsgToggleAllowListRequest) Get(descriptor protoreflect.F
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgToggleAllowListRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgToggleAllowList) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
 		x.RootAddress = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
 		x.Toggle = value.Bool()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12611,44 +12611,44 @@ func (x *fastReflection_MsgToggleAllowListRequest) Set(fd protoreflect.FieldDesc
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgToggleAllowListRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgToggleAllowList) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
-		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgToggleAllowListRequest is not mutable"))
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
-		panic(fmt.Errorf("field toggle of message regen.ecocredit.v1.MsgToggleAllowListRequest is not mutable"))
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
+		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgToggleAllowList is not mutable"))
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
+		panic(fmt.Errorf("field toggle of message regen.ecocredit.v1.MsgToggleAllowList is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgToggleAllowListRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgToggleAllowList) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.root_address":
+	case "regen.ecocredit.v1.MsgToggleAllowList.root_address":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgToggleAllowListRequest.toggle":
+	case "regen.ecocredit.v1.MsgToggleAllowList.toggle":
 		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowListRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgToggleAllowList"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowListRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgToggleAllowList does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgToggleAllowListRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgToggleAllowList) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgToggleAllowListRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgToggleAllowList", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -12656,7 +12656,7 @@ func (x *fastReflection_MsgToggleAllowListRequest) WhichOneof(d protoreflect.One
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgToggleAllowListRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgToggleAllowList) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -12667,7 +12667,7 @@ func (x *fastReflection_MsgToggleAllowListRequest) GetUnknown() protoreflect.Raw
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgToggleAllowListRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgToggleAllowList) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -12679,7 +12679,7 @@ func (x *fastReflection_MsgToggleAllowListRequest) SetUnknown(fields protoreflec
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgToggleAllowListRequest) IsValid() bool {
+func (x *fastReflection_MsgToggleAllowList) IsValid() bool {
 	return x != nil
 }
 
@@ -12689,9 +12689,9 @@ func (x *fastReflection_MsgToggleAllowListRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgToggleAllowListRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgToggleAllowList) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgToggleAllowListRequest)
+		x := input.Message.Interface().(*MsgToggleAllowList)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -12720,7 +12720,7 @@ func (x *fastReflection_MsgToggleAllowListRequest) ProtoMethods() *protoiface.Me
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgToggleAllowListRequest)
+		x := input.Message.Interface().(*MsgToggleAllowList)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -12767,7 +12767,7 @@ func (x *fastReflection_MsgToggleAllowListRequest) ProtoMethods() *protoiface.Me
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgToggleAllowListRequest)
+		x := input.Message.Interface().(*MsgToggleAllowList)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -12799,10 +12799,10 @@ func (x *fastReflection_MsgToggleAllowListRequest) ProtoMethods() *protoiface.Me
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgToggleAllowListRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgToggleAllowList: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgToggleAllowListRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgToggleAllowList: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -13248,122 +13248,122 @@ func (x *fastReflection_MsgToggleAllowListResponse) ProtoMethods() *protoiface.M
 	}
 }
 
-var _ protoreflect.List = (*_MsgUpdateAllowedCreditClassCreatorsRequest_2_list)(nil)
+var _ protoreflect.List = (*_MsgUpdateAllowedCreditClassCreators_2_list)(nil)
 
-type _MsgUpdateAllowedCreditClassCreatorsRequest_2_list struct {
+type _MsgUpdateAllowedCreditClassCreators_2_list struct {
 	list *[]string
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) Len() int {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) Get(i int) protoreflect.Value {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) Append(value protoreflect.Value) {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateAllowedCreditClassCreatorsRequest at list field AddCreators as it is not of Message kind"))
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateAllowedCreditClassCreators at list field AddCreators as it is not of Message kind"))
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) Truncate(n int) {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) NewElement() protoreflect.Value {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_2_list) IsValid() bool {
+func (x *_MsgUpdateAllowedCreditClassCreators_2_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_MsgUpdateAllowedCreditClassCreatorsRequest_3_list)(nil)
+var _ protoreflect.List = (*_MsgUpdateAllowedCreditClassCreators_3_list)(nil)
 
-type _MsgUpdateAllowedCreditClassCreatorsRequest_3_list struct {
+type _MsgUpdateAllowedCreditClassCreators_3_list struct {
 	list *[]string
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) Len() int {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) Get(i int) protoreflect.Value {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) Append(value protoreflect.Value) {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateAllowedCreditClassCreatorsRequest at list field RemoveCreators as it is not of Message kind"))
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateAllowedCreditClassCreators at list field RemoveCreators as it is not of Message kind"))
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) Truncate(n int) {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) NewElement() protoreflect.Value {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_MsgUpdateAllowedCreditClassCreatorsRequest_3_list) IsValid() bool {
+func (x *_MsgUpdateAllowedCreditClassCreators_3_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_MsgUpdateAllowedCreditClassCreatorsRequest                 protoreflect.MessageDescriptor
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_root_address    protoreflect.FieldDescriptor
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_add_creators    protoreflect.FieldDescriptor
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_remove_creators protoreflect.FieldDescriptor
+	md_MsgUpdateAllowedCreditClassCreators                 protoreflect.MessageDescriptor
+	fd_MsgUpdateAllowedCreditClassCreators_root_address    protoreflect.FieldDescriptor
+	fd_MsgUpdateAllowedCreditClassCreators_add_creators    protoreflect.FieldDescriptor
+	fd_MsgUpdateAllowedCreditClassCreators_remove_creators protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgUpdateAllowedCreditClassCreatorsRequest = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgUpdateAllowedCreditClassCreatorsRequest")
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_root_address = md_MsgUpdateAllowedCreditClassCreatorsRequest.Fields().ByName("root_address")
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_add_creators = md_MsgUpdateAllowedCreditClassCreatorsRequest.Fields().ByName("add_creators")
-	fd_MsgUpdateAllowedCreditClassCreatorsRequest_remove_creators = md_MsgUpdateAllowedCreditClassCreatorsRequest.Fields().ByName("remove_creators")
+	md_MsgUpdateAllowedCreditClassCreators = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgUpdateAllowedCreditClassCreators")
+	fd_MsgUpdateAllowedCreditClassCreators_root_address = md_MsgUpdateAllowedCreditClassCreators.Fields().ByName("root_address")
+	fd_MsgUpdateAllowedCreditClassCreators_add_creators = md_MsgUpdateAllowedCreditClassCreators.Fields().ByName("add_creators")
+	fd_MsgUpdateAllowedCreditClassCreators_remove_creators = md_MsgUpdateAllowedCreditClassCreators.Fields().ByName("remove_creators")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgUpdateAllowedCreditClassCreators)(nil)
 
-type fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest MsgUpdateAllowedCreditClassCreatorsRequest
+type fastReflection_MsgUpdateAllowedCreditClassCreators MsgUpdateAllowedCreditClassCreators
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest)(x)
+func (x *MsgUpdateAllowedCreditClassCreators) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgUpdateAllowedCreditClassCreators)(x)
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) slowProtoReflect() protoreflect.Message {
+func (x *MsgUpdateAllowedCreditClassCreators) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -13375,43 +13375,43 @@ func (x *MsgUpdateAllowedCreditClassCreatorsRequest) slowProtoReflect() protoref
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType
-var _ protoreflect.MessageType = fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType{}
+var _fastReflection_MsgUpdateAllowedCreditClassCreators_messageType fastReflection_MsgUpdateAllowedCreditClassCreators_messageType
+var _ protoreflect.MessageType = fastReflection_MsgUpdateAllowedCreditClassCreators_messageType{}
 
-type fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType struct{}
+type fastReflection_MsgUpdateAllowedCreditClassCreators_messageType struct{}
 
-func (x fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest)(nil)
+func (x fastReflection_MsgUpdateAllowedCreditClassCreators_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgUpdateAllowedCreditClassCreators)(nil)
 }
-func (x fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest)
+func (x fastReflection_MsgUpdateAllowedCreditClassCreators_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgUpdateAllowedCreditClassCreators)
 }
-func (x fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateAllowedCreditClassCreatorsRequest
+func (x fastReflection_MsgUpdateAllowedCreditClassCreators_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgUpdateAllowedCreditClassCreators
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateAllowedCreditClassCreatorsRequest
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgUpdateAllowedCreditClassCreators
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Type() protoreflect.MessageType {
-	return _fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest_messageType
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Type() protoreflect.MessageType {
+	return _fastReflection_MsgUpdateAllowedCreditClassCreators_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest)
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) New() protoreflect.Message {
+	return new(fastReflection_MsgUpdateAllowedCreditClassCreators)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Interface() protoreflect.ProtoMessage {
-	return (*MsgUpdateAllowedCreditClassCreatorsRequest)(x)
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Interface() protoreflect.ProtoMessage {
+	return (*MsgUpdateAllowedCreditClassCreators)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -13419,22 +13419,22 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Interface() 
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.RootAddress != "" {
 		value := protoreflect.ValueOfString(x.RootAddress)
-		if !f(fd_MsgUpdateAllowedCreditClassCreatorsRequest_root_address, value) {
+		if !f(fd_MsgUpdateAllowedCreditClassCreators_root_address, value) {
 			return
 		}
 	}
 	if len(x.AddCreators) != 0 {
-		value := protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_2_list{list: &x.AddCreators})
-		if !f(fd_MsgUpdateAllowedCreditClassCreatorsRequest_add_creators, value) {
+		value := protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_2_list{list: &x.AddCreators})
+		if !f(fd_MsgUpdateAllowedCreditClassCreators_add_creators, value) {
 			return
 		}
 	}
 	if len(x.RemoveCreators) != 0 {
-		value := protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_3_list{list: &x.RemoveCreators})
-		if !f(fd_MsgUpdateAllowedCreditClassCreatorsRequest_remove_creators, value) {
+		value := protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_3_list{list: &x.RemoveCreators})
+		if !f(fd_MsgUpdateAllowedCreditClassCreators_remove_creators, value) {
 			return
 		}
 	}
@@ -13451,19 +13451,19 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Range(f func
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
 		return x.RootAddress != ""
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		return len(x.AddCreators) != 0
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		return len(x.RemoveCreators) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13473,19 +13473,19 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Has(fd proto
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
 		x.RootAddress = ""
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		x.AddCreators = nil
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		x.RemoveCreators = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13495,28 +13495,28 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Clear(fd pro
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
 		value := x.RootAddress
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		if len(x.AddCreators) == 0 {
-			return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_2_list{})
+			return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_2_list{})
 		}
-		listValue := &_MsgUpdateAllowedCreditClassCreatorsRequest_2_list{list: &x.AddCreators}
+		listValue := &_MsgUpdateAllowedCreditClassCreators_2_list{list: &x.AddCreators}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		if len(x.RemoveCreators) == 0 {
-			return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_3_list{})
+			return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_3_list{})
 		}
-		listValue := &_MsgUpdateAllowedCreditClassCreatorsRequest_3_list{list: &x.RemoveCreators}
+		listValue := &_MsgUpdateAllowedCreditClassCreators_3_list{list: &x.RemoveCreators}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13530,23 +13530,23 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Get(descript
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
 		x.RootAddress = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		lv := value.List()
-		clv := lv.(*_MsgUpdateAllowedCreditClassCreatorsRequest_2_list)
+		clv := lv.(*_MsgUpdateAllowedCreditClassCreators_2_list)
 		x.AddCreators = *clv.list
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		lv := value.List()
-		clv := lv.(*_MsgUpdateAllowedCreditClassCreatorsRequest_3_list)
+		clv := lv.(*_MsgUpdateAllowedCreditClassCreators_3_list)
 		x.RemoveCreators = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13560,58 +13560,58 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Set(fd proto
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		if x.AddCreators == nil {
 			x.AddCreators = []string{}
 		}
-		value := &_MsgUpdateAllowedCreditClassCreatorsRequest_2_list{list: &x.AddCreators}
+		value := &_MsgUpdateAllowedCreditClassCreators_2_list{list: &x.AddCreators}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		if x.RemoveCreators == nil {
 			x.RemoveCreators = []string{}
 		}
-		value := &_MsgUpdateAllowedCreditClassCreatorsRequest_3_list{list: &x.RemoveCreators}
+		value := &_MsgUpdateAllowedCreditClassCreators_3_list{list: &x.RemoveCreators}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
-		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest is not mutable"))
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
+		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.root_address":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.add_creators":
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.add_creators":
 		list := []string{}
-		return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_2_list{list: &list})
-	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest.remove_creators":
+		return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_2_list{list: &list})
+	case "regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators.remove_creators":
 		list := []string{}
-		return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreatorsRequest_3_list{list: &list})
+		return protoreflect.ValueOfList(&_MsgUpdateAllowedCreditClassCreators_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -13619,7 +13619,7 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) WhichOneof(d
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -13630,7 +13630,7 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) GetUnknown()
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -13642,7 +13642,7 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) SetUnknown(f
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) IsValid() bool {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) IsValid() bool {
 	return x != nil
 }
 
@@ -13652,9 +13652,9 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) IsValid() bo
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgUpdateAllowedCreditClassCreators) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreatorsRequest)
+		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreators)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -13692,7 +13692,7 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) ProtoMethods
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreatorsRequest)
+		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreators)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -13747,7 +13747,7 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) ProtoMethods
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreatorsRequest)
+		x := input.Message.Interface().(*MsgUpdateAllowedCreditClassCreators)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -13779,10 +13779,10 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsRequest) ProtoMethods
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateAllowedCreditClassCreatorsRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateAllowedCreditClassCreators: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateAllowedCreditClassCreatorsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateAllowedCreditClassCreators: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -14272,127 +14272,127 @@ func (x *fastReflection_MsgUpdateAllowedCreditClassCreatorsResponse) ProtoMethod
 	}
 }
 
-var _ protoreflect.List = (*_MsgUpdateCreditClassFeeRequest_2_list)(nil)
+var _ protoreflect.List = (*_MsgUpdateCreditClassFee_2_list)(nil)
 
-type _MsgUpdateCreditClassFeeRequest_2_list struct {
+type _MsgUpdateCreditClassFee_2_list struct {
 	list *[]*v1beta1.Coin
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) Len() int {
+func (x *_MsgUpdateCreditClassFee_2_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) Get(i int) protoreflect.Value {
+func (x *_MsgUpdateCreditClassFee_2_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgUpdateCreditClassFee_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) Append(value protoreflect.Value) {
+func (x *_MsgUpdateCreditClassFee_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) AppendMutable() protoreflect.Value {
+func (x *_MsgUpdateCreditClassFee_2_list) AppendMutable() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) Truncate(n int) {
+func (x *_MsgUpdateCreditClassFee_2_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) NewElement() protoreflect.Value {
+func (x *_MsgUpdateCreditClassFee_2_list) NewElement() protoreflect.Value {
 	v := new(v1beta1.Coin)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_2_list) IsValid() bool {
+func (x *_MsgUpdateCreditClassFee_2_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_MsgUpdateCreditClassFeeRequest_3_list)(nil)
+var _ protoreflect.List = (*_MsgUpdateCreditClassFee_3_list)(nil)
 
-type _MsgUpdateCreditClassFeeRequest_3_list struct {
+type _MsgUpdateCreditClassFee_3_list struct {
 	list *[]string
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) Len() int {
+func (x *_MsgUpdateCreditClassFee_3_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) Get(i int) protoreflect.Value {
+func (x *_MsgUpdateCreditClassFee_3_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) Set(i int, value protoreflect.Value) {
+func (x *_MsgUpdateCreditClassFee_3_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) Append(value protoreflect.Value) {
+func (x *_MsgUpdateCreditClassFee_3_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateCreditClassFeeRequest at list field RemoveDenoms as it is not of Message kind"))
+func (x *_MsgUpdateCreditClassFee_3_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgUpdateCreditClassFee at list field RemoveDenoms as it is not of Message kind"))
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) Truncate(n int) {
+func (x *_MsgUpdateCreditClassFee_3_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) NewElement() protoreflect.Value {
+func (x *_MsgUpdateCreditClassFee_3_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_MsgUpdateCreditClassFeeRequest_3_list) IsValid() bool {
+func (x *_MsgUpdateCreditClassFee_3_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_MsgUpdateCreditClassFeeRequest               protoreflect.MessageDescriptor
-	fd_MsgUpdateCreditClassFeeRequest_root_address  protoreflect.FieldDescriptor
-	fd_MsgUpdateCreditClassFeeRequest_add_fees      protoreflect.FieldDescriptor
-	fd_MsgUpdateCreditClassFeeRequest_remove_denoms protoreflect.FieldDescriptor
+	md_MsgUpdateCreditClassFee               protoreflect.MessageDescriptor
+	fd_MsgUpdateCreditClassFee_root_address  protoreflect.FieldDescriptor
+	fd_MsgUpdateCreditClassFee_add_fees      protoreflect.FieldDescriptor
+	fd_MsgUpdateCreditClassFee_remove_denoms protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_tx_proto_init()
-	md_MsgUpdateCreditClassFeeRequest = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgUpdateCreditClassFeeRequest")
-	fd_MsgUpdateCreditClassFeeRequest_root_address = md_MsgUpdateCreditClassFeeRequest.Fields().ByName("root_address")
-	fd_MsgUpdateCreditClassFeeRequest_add_fees = md_MsgUpdateCreditClassFeeRequest.Fields().ByName("add_fees")
-	fd_MsgUpdateCreditClassFeeRequest_remove_denoms = md_MsgUpdateCreditClassFeeRequest.Fields().ByName("remove_denoms")
+	md_MsgUpdateCreditClassFee = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgUpdateCreditClassFee")
+	fd_MsgUpdateCreditClassFee_root_address = md_MsgUpdateCreditClassFee.Fields().ByName("root_address")
+	fd_MsgUpdateCreditClassFee_add_fees = md_MsgUpdateCreditClassFee.Fields().ByName("add_fees")
+	fd_MsgUpdateCreditClassFee_remove_denoms = md_MsgUpdateCreditClassFee.Fields().ByName("remove_denoms")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgUpdateCreditClassFeeRequest)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgUpdateCreditClassFee)(nil)
 
-type fastReflection_MsgUpdateCreditClassFeeRequest MsgUpdateCreditClassFeeRequest
+type fastReflection_MsgUpdateCreditClassFee MsgUpdateCreditClassFee
 
-func (x *MsgUpdateCreditClassFeeRequest) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgUpdateCreditClassFeeRequest)(x)
+func (x *MsgUpdateCreditClassFee) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgUpdateCreditClassFee)(x)
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) slowProtoReflect() protoreflect.Message {
+func (x *MsgUpdateCreditClassFee) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -14404,43 +14404,43 @@ func (x *MsgUpdateCreditClassFeeRequest) slowProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgUpdateCreditClassFeeRequest_messageType fastReflection_MsgUpdateCreditClassFeeRequest_messageType
-var _ protoreflect.MessageType = fastReflection_MsgUpdateCreditClassFeeRequest_messageType{}
+var _fastReflection_MsgUpdateCreditClassFee_messageType fastReflection_MsgUpdateCreditClassFee_messageType
+var _ protoreflect.MessageType = fastReflection_MsgUpdateCreditClassFee_messageType{}
 
-type fastReflection_MsgUpdateCreditClassFeeRequest_messageType struct{}
+type fastReflection_MsgUpdateCreditClassFee_messageType struct{}
 
-func (x fastReflection_MsgUpdateCreditClassFeeRequest_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgUpdateCreditClassFeeRequest)(nil)
+func (x fastReflection_MsgUpdateCreditClassFee_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgUpdateCreditClassFee)(nil)
 }
-func (x fastReflection_MsgUpdateCreditClassFeeRequest_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateCreditClassFeeRequest)
+func (x fastReflection_MsgUpdateCreditClassFee_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgUpdateCreditClassFee)
 }
-func (x fastReflection_MsgUpdateCreditClassFeeRequest_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateCreditClassFeeRequest
+func (x fastReflection_MsgUpdateCreditClassFee_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgUpdateCreditClassFee
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgUpdateCreditClassFeeRequest
+func (x *fastReflection_MsgUpdateCreditClassFee) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgUpdateCreditClassFee
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Type() protoreflect.MessageType {
-	return _fastReflection_MsgUpdateCreditClassFeeRequest_messageType
+func (x *fastReflection_MsgUpdateCreditClassFee) Type() protoreflect.MessageType {
+	return _fastReflection_MsgUpdateCreditClassFee_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) New() protoreflect.Message {
-	return new(fastReflection_MsgUpdateCreditClassFeeRequest)
+func (x *fastReflection_MsgUpdateCreditClassFee) New() protoreflect.Message {
+	return new(fastReflection_MsgUpdateCreditClassFee)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Interface() protoreflect.ProtoMessage {
-	return (*MsgUpdateCreditClassFeeRequest)(x)
+func (x *fastReflection_MsgUpdateCreditClassFee) Interface() protoreflect.ProtoMessage {
+	return (*MsgUpdateCreditClassFee)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -14448,22 +14448,22 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Interface() protoreflect
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgUpdateCreditClassFee) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.RootAddress != "" {
 		value := protoreflect.ValueOfString(x.RootAddress)
-		if !f(fd_MsgUpdateCreditClassFeeRequest_root_address, value) {
+		if !f(fd_MsgUpdateCreditClassFee_root_address, value) {
 			return
 		}
 	}
 	if len(x.AddFees) != 0 {
-		value := protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_2_list{list: &x.AddFees})
-		if !f(fd_MsgUpdateCreditClassFeeRequest_add_fees, value) {
+		value := protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_2_list{list: &x.AddFees})
+		if !f(fd_MsgUpdateCreditClassFee_add_fees, value) {
 			return
 		}
 	}
 	if len(x.RemoveDenoms) != 0 {
-		value := protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_3_list{list: &x.RemoveDenoms})
-		if !f(fd_MsgUpdateCreditClassFeeRequest_remove_denoms, value) {
+		value := protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_3_list{list: &x.RemoveDenoms})
+		if !f(fd_MsgUpdateCreditClassFee_remove_denoms, value) {
 			return
 		}
 	}
@@ -14480,19 +14480,19 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Range(f func(protoreflec
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgUpdateCreditClassFee) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
 		return x.RootAddress != ""
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		return len(x.AddFees) != 0
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		return len(x.RemoveDenoms) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14502,19 +14502,19 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Has(fd protoreflect.Fiel
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgUpdateCreditClassFee) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
 		x.RootAddress = ""
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		x.AddFees = nil
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		x.RemoveDenoms = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14524,28 +14524,28 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Clear(fd protoreflect.Fi
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateCreditClassFee) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
 		value := x.RootAddress
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		if len(x.AddFees) == 0 {
-			return protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_2_list{})
+			return protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_2_list{})
 		}
-		listValue := &_MsgUpdateCreditClassFeeRequest_2_list{list: &x.AddFees}
+		listValue := &_MsgUpdateCreditClassFee_2_list{list: &x.AddFees}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		if len(x.RemoveDenoms) == 0 {
-			return protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_3_list{})
+			return protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_3_list{})
 		}
-		listValue := &_MsgUpdateCreditClassFeeRequest_3_list{list: &x.RemoveDenoms}
+		listValue := &_MsgUpdateCreditClassFee_3_list{list: &x.RemoveDenoms}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -14559,23 +14559,23 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Get(descriptor protorefl
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgUpdateCreditClassFee) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
 		x.RootAddress = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		lv := value.List()
-		clv := lv.(*_MsgUpdateCreditClassFeeRequest_2_list)
+		clv := lv.(*_MsgUpdateCreditClassFee_2_list)
 		x.AddFees = *clv.list
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		lv := value.List()
-		clv := lv.(*_MsgUpdateCreditClassFeeRequest_3_list)
+		clv := lv.(*_MsgUpdateCreditClassFee_3_list)
 		x.RemoveDenoms = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14589,58 +14589,58 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Set(fd protoreflect.Fiel
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateCreditClassFee) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		if x.AddFees == nil {
 			x.AddFees = []*v1beta1.Coin{}
 		}
-		value := &_MsgUpdateCreditClassFeeRequest_2_list{list: &x.AddFees}
+		value := &_MsgUpdateCreditClassFee_2_list{list: &x.AddFees}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		if x.RemoveDenoms == nil {
 			x.RemoveDenoms = []string{}
 		}
-		value := &_MsgUpdateCreditClassFeeRequest_3_list{list: &x.RemoveDenoms}
+		value := &_MsgUpdateCreditClassFee_3_list{list: &x.RemoveDenoms}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
-		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest is not mutable"))
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
+		panic(fmt.Errorf("field root_address of message regen.ecocredit.v1.MsgUpdateCreditClassFee is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgUpdateCreditClassFee) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.root_address":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.root_address":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees":
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees":
 		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_2_list{list: &list})
-	case "regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.remove_denoms":
+		return protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_2_list{list: &list})
+	case "regen.ecocredit.v1.MsgUpdateCreditClassFee.remove_denoms":
 		list := []string{}
-		return protoreflect.ValueOfList(&_MsgUpdateCreditClassFeeRequest_3_list{list: &list})
+		return protoreflect.ValueOfList(&_MsgUpdateCreditClassFee_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgUpdateCreditClassFee"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1.MsgUpdateCreditClassFee does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgUpdateCreditClassFee) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.MsgUpdateCreditClassFee", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -14648,7 +14648,7 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) WhichOneof(d protoreflec
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgUpdateCreditClassFee) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -14659,7 +14659,7 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) GetUnknown() protoreflec
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgUpdateCreditClassFee) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -14671,7 +14671,7 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) SetUnknown(fields protor
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) IsValid() bool {
+func (x *fastReflection_MsgUpdateCreditClassFee) IsValid() bool {
 	return x != nil
 }
 
@@ -14681,9 +14681,9 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgUpdateCreditClassFeeRequest) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgUpdateCreditClassFee) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgUpdateCreditClassFeeRequest)
+		x := input.Message.Interface().(*MsgUpdateCreditClassFee)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -14721,7 +14721,7 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) ProtoMethods() *protoifa
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateCreditClassFeeRequest)
+		x := input.Message.Interface().(*MsgUpdateCreditClassFee)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -14783,7 +14783,7 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) ProtoMethods() *protoifa
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgUpdateCreditClassFeeRequest)
+		x := input.Message.Interface().(*MsgUpdateCreditClassFee)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -14815,10 +14815,10 @@ func (x *fastReflection_MsgUpdateCreditClassFeeRequest) ProtoMethods() *protoifa
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateCreditClassFeeRequest: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateCreditClassFee: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateCreditClassFeeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgUpdateCreditClassFee: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -16246,8 +16246,8 @@ func (*MsgAddCreditTypeResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{19}
 }
 
-// MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
-type MsgToggleAllowListRequest struct {
+// MsgToggleAllowList is the Msg/ToggleAllowList request type
+type MsgToggleAllowList struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -16259,8 +16259,8 @@ type MsgToggleAllowListRequest struct {
 	Toggle bool `protobuf:"varint,2,opt,name=toggle,proto3" json:"toggle,omitempty"`
 }
 
-func (x *MsgToggleAllowListRequest) Reset() {
-	*x = MsgToggleAllowListRequest{}
+func (x *MsgToggleAllowList) Reset() {
+	*x = MsgToggleAllowList{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -16268,32 +16268,32 @@ func (x *MsgToggleAllowListRequest) Reset() {
 	}
 }
 
-func (x *MsgToggleAllowListRequest) String() string {
+func (x *MsgToggleAllowList) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgToggleAllowListRequest) ProtoMessage() {}
+func (*MsgToggleAllowList) ProtoMessage() {}
 
-// Deprecated: Use MsgToggleAllowListRequest.ProtoReflect.Descriptor instead.
-func (*MsgToggleAllowListRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgToggleAllowList.ProtoReflect.Descriptor instead.
+func (*MsgToggleAllowList) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{20}
 }
 
-func (x *MsgToggleAllowListRequest) GetRootAddress() string {
+func (x *MsgToggleAllowList) GetRootAddress() string {
 	if x != nil {
 		return x.RootAddress
 	}
 	return ""
 }
 
-func (x *MsgToggleAllowListRequest) GetToggle() bool {
+func (x *MsgToggleAllowList) GetToggle() bool {
 	if x != nil {
 		return x.Toggle
 	}
 	return false
 }
 
-// MsgToggleAllowListResponse is the Msg/MsgToggleAllowListResponse response type.
+// MsgToggleAllowListResponse is the Msg/MsgToggleAllowList response type.
 type MsgToggleAllowListResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16320,8 +16320,8 @@ func (*MsgToggleAllowListResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{21}
 }
 
-// MsgUpdateAllowedCreditClassCreatorsRequest is the Msg/UpdateAllowedCreditClassCreators request type
-type MsgUpdateAllowedCreditClassCreatorsRequest struct {
+// MsgUpdateAllowedCreditClassCreators is the Msg/UpdateAllowedCreditClassCreators request type
+type MsgUpdateAllowedCreditClassCreators struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -16335,8 +16335,8 @@ type MsgUpdateAllowedCreditClassCreatorsRequest struct {
 	RemoveCreators []string `protobuf:"bytes,3,rep,name=remove_creators,json=removeCreators,proto3" json:"remove_creators,omitempty"`
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) Reset() {
-	*x = MsgUpdateAllowedCreditClassCreatorsRequest{}
+func (x *MsgUpdateAllowedCreditClassCreators) Reset() {
+	*x = MsgUpdateAllowedCreditClassCreators{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -16344,32 +16344,32 @@ func (x *MsgUpdateAllowedCreditClassCreatorsRequest) Reset() {
 	}
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) String() string {
+func (x *MsgUpdateAllowedCreditClassCreators) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgUpdateAllowedCreditClassCreatorsRequest) ProtoMessage() {}
+func (*MsgUpdateAllowedCreditClassCreators) ProtoMessage() {}
 
-// Deprecated: Use MsgUpdateAllowedCreditClassCreatorsRequest.ProtoReflect.Descriptor instead.
-func (*MsgUpdateAllowedCreditClassCreatorsRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgUpdateAllowedCreditClassCreators.ProtoReflect.Descriptor instead.
+func (*MsgUpdateAllowedCreditClassCreators) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{22}
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) GetRootAddress() string {
+func (x *MsgUpdateAllowedCreditClassCreators) GetRootAddress() string {
 	if x != nil {
 		return x.RootAddress
 	}
 	return ""
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) GetAddCreators() []string {
+func (x *MsgUpdateAllowedCreditClassCreators) GetAddCreators() []string {
 	if x != nil {
 		return x.AddCreators
 	}
 	return nil
 }
 
-func (x *MsgUpdateAllowedCreditClassCreatorsRequest) GetRemoveCreators() []string {
+func (x *MsgUpdateAllowedCreditClassCreators) GetRemoveCreators() []string {
 	if x != nil {
 		return x.RemoveCreators
 	}
@@ -16403,8 +16403,8 @@ func (*MsgUpdateAllowedCreditClassCreatorsResponse) Descriptor() ([]byte, []int)
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{23}
 }
 
-// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFees request type
-type MsgUpdateCreditClassFeeRequest struct {
+// MsgUpdateCreditClassFee is the Msg/UpdateCreditClassFees request type
+type MsgUpdateCreditClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -16418,8 +16418,8 @@ type MsgUpdateCreditClassFeeRequest struct {
 	RemoveDenoms []string `protobuf:"bytes,3,rep,name=remove_denoms,json=removeDenoms,proto3" json:"remove_denoms,omitempty"`
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) Reset() {
-	*x = MsgUpdateCreditClassFeeRequest{}
+func (x *MsgUpdateCreditClassFee) Reset() {
+	*x = MsgUpdateCreditClassFee{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_v1_tx_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -16427,32 +16427,32 @@ func (x *MsgUpdateCreditClassFeeRequest) Reset() {
 	}
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) String() string {
+func (x *MsgUpdateCreditClassFee) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgUpdateCreditClassFeeRequest) ProtoMessage() {}
+func (*MsgUpdateCreditClassFee) ProtoMessage() {}
 
-// Deprecated: Use MsgUpdateCreditClassFeeRequest.ProtoReflect.Descriptor instead.
-func (*MsgUpdateCreditClassFeeRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgUpdateCreditClassFee.ProtoReflect.Descriptor instead.
+func (*MsgUpdateCreditClassFee) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{24}
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) GetRootAddress() string {
+func (x *MsgUpdateCreditClassFee) GetRootAddress() string {
 	if x != nil {
 		return x.RootAddress
 	}
 	return ""
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) GetAddFees() []*v1beta1.Coin {
+func (x *MsgUpdateCreditClassFee) GetAddFees() []*v1beta1.Coin {
 	if x != nil {
 		return x.AddFees
 	}
 	return nil
 }
 
-func (x *MsgUpdateCreditClassFeeRequest) GetRemoveDenoms() []string {
+func (x *MsgUpdateCreditClassFee) GetRemoveDenoms() []string {
 	if x != nil {
 		return x.RemoveDenoms
 	}
@@ -16892,140 +16892,137 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74,
 	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x1a, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x41, 0x64,
 	0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x56, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65,
-	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x06, 0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x22, 0x1c, 0x0a, 0x1a, 0x4d,
-	0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9b, 0x01, 0x0a, 0x2a, 0x4d, 0x73,
-	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f, 0x74,
-	0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b,
-	0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x61,
-	0x64, 0x64, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28,
-	0x09, 0x52, 0x0b, 0x61, 0x64, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x27,
-	0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x22, 0x2d, 0x0a, 0x2b, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9e, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46,
-	0x65, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x4f, 0x0a, 0x12, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f,
 	0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x34, 0x0a, 0x08,
-	0x61, 0x64, 0x64, 0x5f, 0x66, 0x65, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19,
-	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x07, 0x61, 0x64, 0x64, 0x46, 0x65,
-	0x65, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x5f, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x6d, 0x6f, 0x76,
-	0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x73, 0x22, 0x21, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46,
-	0x65, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xe9, 0x0a, 0x0a, 0x03, 0x4d,
-	0x73, 0x67, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73,
-	0x73, 0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x63, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72,
-	0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x48, 0x0a, 0x04, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x1b, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x23, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x4e, 0x0a, 0x06, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x4e, 0x0a, 0x06, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x6c, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x2f, 0x2e, 0x72,
+	0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06,
+	0x74, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x74, 0x6f,
+	0x67, 0x67, 0x6c, 0x65, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c,
+	0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x94, 0x01, 0x0a, 0x23, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f,
+	0x6f, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x21, 0x0a,
+	0x0c, 0x61, 0x64, 0x64, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x64, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73,
+	0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x5f, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x22, 0x2d, 0x0a, 0x2b, 0x4d, 0x73, 0x67,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x97, 0x01, 0x0a, 0x17, 0x4d, 0x73, 0x67,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73,
+	0x73, 0x46, 0x65, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x5f, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x34, 0x0a, 0x08, 0x61, 0x64, 0x64, 0x5f, 0x66,
+	0x65, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
+	0x43, 0x6f, 0x69, 0x6e, 0x52, 0x07, 0x61, 0x64, 0x64, 0x46, 0x65, 0x65, 0x73, 0x12, 0x23, 0x0a,
+	0x0d, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x73, 0x18, 0x03,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x44, 0x65, 0x6e, 0x6f,
+	0x6d, 0x73, 0x22, 0x21, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xd4, 0x0a, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5d, 0x0a,
+	0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x22, 0x2e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x41, 0x64, 0x6d, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a,
-	0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75,
-	0x65, 0x72, 0x73, 0x12, 0x29, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x1a, 0x31,
+	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
+	0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x24, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a,
+	0x65, 0x63, 0x74, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x5d, 0x0a, 0x0b, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68,
+	0x12, 0x22, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42,
+	0x61, 0x74, 0x63, 0x68, 0x1a, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x48, 0x0a, 0x04, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x1b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x65, 0x6e, 0x64, 0x1a, 0x23, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65,
+	0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x06, 0x52, 0x65,
+	0x74, 0x69, 0x72, 0x65, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x74,
+	0x69, 0x72, 0x65, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69,
+	0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x06, 0x43, 0x61,
+	0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e,
+	0x63, 0x65, 0x6c, 0x1a, 0x25, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63,
+	0x65, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x10, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x27,
 	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
 	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x75, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x1a, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d, 0x41, 0x64, 0x64, 0x43,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x29,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x1a, 0x31, 0x2e, 0x72, 0x65, 0x67, 0x65,
 	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x1a,
-	0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a,
-	0x0f, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74,
-	0x12, 0x2d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x41,
-	0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x41, 0x6c,
-	0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0xa3, 0x01, 0x0a, 0x20, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65,
-	0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x6f, 0x72, 0x73, 0x12, 0x3e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x3f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x14, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x12, 0x32, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73,
+	0x75, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x13,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x12, 0x2a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x1a,
+	0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x6c,
+	0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0d, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x24, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64,
+	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x1a, 0x2c, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69, 0x0a, 0x0f, 0x54, 0x6f, 0x67, 0x67,
+	0x6c, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x26, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67, 0x6c, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c,
+	0x69, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x54, 0x6f, 0x67, 0x67,
+	0x6c, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x9c, 0x01, 0x0a, 0x20, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x12, 0x37, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
+	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x73, 0x1a, 0x3f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
-	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56,
-	0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a,
-	0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x78, 0x0a, 0x14, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x12, 0x2b, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43,
+	0x6c, 0x61, 0x73, 0x73, 0x46, 0x65, 0x65, 0x1a, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x43, 0x6c, 0x61, 0x73,
+	0x73, 0x46, 0x65, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xd5, 0x01, 0x0a,
+	0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31,
+	0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52,
+	0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
+	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56,
+	0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -17062,11 +17059,11 @@ var file_regen_ecocredit_v1_tx_proto_goTypes = []interface{}{
 	(*MsgUpdateClassMetadataResponse)(nil),              // 17: regen.ecocredit.v1.MsgUpdateClassMetadataResponse
 	(*MsgAddCreditType)(nil),                            // 18: regen.ecocredit.v1.MsgAddCreditType
 	(*MsgAddCreditTypeResponse)(nil),                    // 19: regen.ecocredit.v1.MsgAddCreditTypeResponse
-	(*MsgToggleAllowListRequest)(nil),                   // 20: regen.ecocredit.v1.MsgToggleAllowListRequest
+	(*MsgToggleAllowList)(nil),                          // 20: regen.ecocredit.v1.MsgToggleAllowList
 	(*MsgToggleAllowListResponse)(nil),                  // 21: regen.ecocredit.v1.MsgToggleAllowListResponse
-	(*MsgUpdateAllowedCreditClassCreatorsRequest)(nil),  // 22: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest
+	(*MsgUpdateAllowedCreditClassCreators)(nil),         // 22: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators
 	(*MsgUpdateAllowedCreditClassCreatorsResponse)(nil), // 23: regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsResponse
-	(*MsgUpdateCreditClassFeeRequest)(nil),              // 24: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest
+	(*MsgUpdateCreditClassFee)(nil),                     // 24: regen.ecocredit.v1.MsgUpdateCreditClassFee
 	(*MsgUpdateCreditClassFeeResponse)(nil),             // 25: regen.ecocredit.v1.MsgUpdateCreditClassFeeResponse
 	(*MsgCreateBatch_BatchIssuance)(nil),                // 26: regen.ecocredit.v1.MsgCreateBatch.BatchIssuance
 	(*MsgSend_SendCredits)(nil),                         // 27: regen.ecocredit.v1.MsgSend.SendCredits
@@ -17085,7 +17082,7 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	28, // 5: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.MsgRetire.RetireCredits
 	29, // 6: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.MsgCancel.CancelCredits
 	32, // 7: regen.ecocredit.v1.MsgAddCreditType.credit_types:type_name -> regen.ecocredit.v1.CreditType
-	30, // 8: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees:type_name -> cosmos.base.v1beta1.Coin
+	30, // 8: regen.ecocredit.v1.MsgUpdateCreditClassFee.add_fees:type_name -> cosmos.base.v1beta1.Coin
 	0,  // 9: regen.ecocredit.v1.Msg.CreateClass:input_type -> regen.ecocredit.v1.MsgCreateClass
 	2,  // 10: regen.ecocredit.v1.Msg.CreateProject:input_type -> regen.ecocredit.v1.MsgCreateProject
 	4,  // 11: regen.ecocredit.v1.Msg.CreateBatch:input_type -> regen.ecocredit.v1.MsgCreateBatch
@@ -17096,9 +17093,9 @@ var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
 	14, // 16: regen.ecocredit.v1.Msg.UpdateClassIssuers:input_type -> regen.ecocredit.v1.MsgUpdateClassIssuers
 	16, // 17: regen.ecocredit.v1.Msg.UpdateClassMetadata:input_type -> regen.ecocredit.v1.MsgUpdateClassMetadata
 	18, // 18: regen.ecocredit.v1.Msg.AddCreditType:input_type -> regen.ecocredit.v1.MsgAddCreditType
-	20, // 19: regen.ecocredit.v1.Msg.ToggleAllowList:input_type -> regen.ecocredit.v1.MsgToggleAllowListRequest
-	22, // 20: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:input_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest
-	24, // 21: regen.ecocredit.v1.Msg.UpdateCreditClassFee:input_type -> regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest
+	20, // 19: regen.ecocredit.v1.Msg.ToggleAllowList:input_type -> regen.ecocredit.v1.MsgToggleAllowList
+	22, // 20: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:input_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreators
+	24, // 21: regen.ecocredit.v1.Msg.UpdateCreditClassFee:input_type -> regen.ecocredit.v1.MsgUpdateCreditClassFee
 	1,  // 22: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
 	3,  // 23: regen.ecocredit.v1.Msg.CreateProject:output_type -> regen.ecocredit.v1.MsgCreateProjectResponse
 	5,  // 24: regen.ecocredit.v1.Msg.CreateBatch:output_type -> regen.ecocredit.v1.MsgCreateBatchResponse
@@ -17367,7 +17364,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgToggleAllowListRequest); i {
+			switch v := v.(*MsgToggleAllowList); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -17391,7 +17388,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgUpdateAllowedCreditClassCreatorsRequest); i {
+			switch v := v.(*MsgUpdateAllowedCreditClassCreators); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -17415,7 +17412,7 @@ func file_regen_ecocredit_v1_tx_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_tx_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgUpdateCreditClassFeeRequest); i {
+			switch v := v.(*MsgUpdateCreditClassFee); i {
 			case 0:
 				return &v.state
 			case 1:

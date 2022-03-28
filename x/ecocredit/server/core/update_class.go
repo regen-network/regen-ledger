@@ -13,7 +13,7 @@ import (
 
 // UpdateClassAdmin updates the admin address for a class.
 // WARNING: this method will forfeit control of the entire class to the provided address.
-// double check your inputs to ensure you do not lose control of the class.
+// double-check your inputs to ensure you do not lose control of the class.
 func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAdmin) (*core.MsgUpdateClassAdminResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	reqAddr, err := sdk.AccAddressFromBech32(req.Admin)
