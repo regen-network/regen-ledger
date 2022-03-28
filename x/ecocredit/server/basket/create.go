@@ -17,7 +17,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params core.Params
 	k.paramsKeeper.GetParamSet(sdkCtx, &params)
-	fee := params.BasketCreationFee
+	fee := params.BasketFee
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 	}

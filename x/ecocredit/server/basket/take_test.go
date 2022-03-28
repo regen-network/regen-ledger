@@ -6,16 +6,17 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/math"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/math"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 type takeSuite struct {
@@ -86,9 +87,6 @@ func setupTake(t *testing.T) *takeSuite {
 		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 			ProjectId:  1,
 			BatchDenom: denom,
-			Metadata:   "",
-			StartDate:  nil,
-			EndDate:    nil,
 		}))
 	}
 	s.denomToId = map[string]uint64{"C1-": 1, "C2-": 2, "C3-": 3, "C4-": 4}

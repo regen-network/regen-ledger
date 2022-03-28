@@ -27,7 +27,7 @@ func TestFeeToLow(t *testing.T) {
 	// no fee specified should fail
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.BasketCreationFee = minFee
+		p.BasketFee = minFee
 	}).Times(2)
 
 	// no fee
@@ -43,12 +43,12 @@ func TestFeeToLow(t *testing.T) {
 	assert.ErrorContains(t, err, "insufficient fee")
 }
 
-func TestBadCreditType(t *testing.T) {
+func TestInvalidCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
-		p.BasketCreationFee = sdk.Coins{basketFee}
+		p.BasketFee = sdk.Coins{basketFee}
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).Times(2)
@@ -89,7 +89,7 @@ func TestDuplicateDenom(t *testing.T) {
 	))
 
 	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
-		p.BasketCreationFee = sdk.Coins{fee}
+		p.BasketFee = sdk.Coins{fee}
 		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
 	}).Times(1)
 	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
@@ -98,19 +98,17 @@ func TestDuplicateDenom(t *testing.T) {
 	assert.ErrorContains(t, err, "unique")
 }
 
-func TestBadClass(t *testing.T) {
+func TestInvalidClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
 		Name:       "bar",
-		Admin:      nil,
-		Metadata:   "",
 		CreditType: "BIO",
 	}))
 	mockAny := gomock.Any()
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
 	s.paramsKeeper.EXPECT().GetParamSet(mockAny, mockAny).Do(func(any interface{}, p *core.Params) {
-		p.BasketCreationFee = basketFee
+		p.BasketFee = basketFee
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
@@ -138,7 +136,7 @@ func TestBadClass(t *testing.T) {
 	assert.ErrorContains(t, err, "basket specified credit type C, but class bar is of type BIO")
 }
 
-func TestGoodBasket(t *testing.T) {
+func TestValidBasket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
@@ -170,7 +168,7 @@ func TestGoodBasket(t *testing.T) {
 		CreditType: "C",
 	}))
 	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
-		p.BasketCreationFee = fee
+		p.BasketFee = fee
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 

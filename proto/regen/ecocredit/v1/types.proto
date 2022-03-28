@@ -18,7 +18,7 @@ message Params {
   ];
 
   // basket_creation_fee is the fixed fee charged on creation of a new basket
-  repeated cosmos.base.v1beta1.Coin basket_creation_fee = 2 [
+  repeated cosmos.base.v1beta1.Coin basket_fee = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
