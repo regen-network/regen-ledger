@@ -13263,7 +13263,7 @@ type QueryBalanceResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// balance is the user's balance
+	// balance is the balance of the given account.
 	Balance *BatchBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
@@ -13346,7 +13346,7 @@ type QueryBalancesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// balances are a list of balances from different credit batches that the user holds.
+	// balances are a list of balances from different credit batches that the account holds.
 	Balances []*BatchBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

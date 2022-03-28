@@ -986,7 +986,7 @@ func (m *QueryBalanceRequest) GetBatchDenom() string {
 
 // QueryBalanceResponse is the Query/Balance response type.
 type QueryBalanceResponse struct {
-	// balance is the user's balance
+	// balance is the balance of the given account.
 	Balance *BatchBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
@@ -1087,7 +1087,7 @@ func (m *QueryBalancesRequest) GetPagination() *query.PageRequest {
 
 // QueryBalancesResponse is the Query/Balances response type.
 type QueryBalancesResponse struct {
-	// balances are a list of balances from different credit batches that the user holds.
+	// balances are a list of balances from different credit batches that the account holds.
 	Balances []*BatchBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

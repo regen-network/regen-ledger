@@ -3,13 +3,14 @@ package core
 import (
 	"testing"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/cosmos/cosmos-sdk/types/query"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestQuery_Balances(t *testing.T) {
