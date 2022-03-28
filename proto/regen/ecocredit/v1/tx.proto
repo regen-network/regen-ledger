@@ -58,10 +58,6 @@ service Msg {
   // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
   // class fees. This message must be signed by the governance module.
   rpc UpdateCreditClassFee(MsgUpdateCreditClassFeeRequest) returns (MsgUpdateCreditClassFeeResponse);
-
-  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket
-  // creation fees. This message must be signed by the governance module.
-  rpc UpdateBasketFee(MsgUpdateBasketFeeRequest) returns (MsgUpdateBasketFeeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -330,8 +326,8 @@ message MsgUpdateClassMetadata {
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
 
-// MsgAddCreditTypes is the Msg/AddCreditTypes request type.
-message MsgAddCreditTypes {
+// MsgAddCreditType is the Msg/AddCreditTypes request type.
+message MsgAddCreditType {
   // credit_types is a list of credit types to add.
   repeated CreditType credit_types = 1;
 
@@ -340,8 +336,8 @@ message MsgAddCreditTypes {
   string root_address = 2;
 }
 
-// MsgAddCreditTypesResponse is the Msg/AddCreditTypes response type.
-message MsgAddCreditTypesResponse {}
+// MsgAddCreditTypeResponse is the Msg/AddCreditTypes response type.
+message MsgAddCreditTypeResponse {}
 
 
 // MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
@@ -373,8 +369,8 @@ message MsgUpdateAllowedCreditClassCreatorsRequest {
 // MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
 message MsgUpdateAllowedCreditClassCreatorsResponse {}
 
-// MsgUpdateCreditClassFeesRequest is the Msg/UpdateCreditClassFees request type
-message MsgUpdateCreditClassFeesRequest {
+// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFees request type
+message MsgUpdateCreditClassFeeRequest {
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
@@ -386,29 +382,5 @@ message MsgUpdateCreditClassFeesRequest {
   repeated string remove_denoms = 3;
 }
 
-// MsgUpdateCreditClassFeesResponse is the Msg/UpdateCreditClassFees response type
-message MsgUpdateCreditClassFeesResponse {}
-
-// MsgUpdateBasketFeesRequest is the Msg/UpdateBasketFees request type.
-message MsgUpdateBasketFeesRequest {
-  // root_address is the address of the caller.
-  // This MUST equal the address of the gov module for the tx to succeed.
-  string root_address = 1;
-
-  // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
-  repeated Fee add_fees = 2;
-
-  // remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
-  repeated Fee remove_fees = 3;
-
-  // Fee represents a fee to be used in the credit class creation fee.
-  message Fee {
-    // denom is the coin denom
-    string denom = 1;
-    // amount is the amount of the coin needed to create the credit class.
-    string amount = 2;
-  }
-}
-
-// MsgUpdateBasketFeesResponse is the Msg/UpdateBasketFees response type.
-message MsgUpdateBasketFeesResponse {}
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
+message MsgUpdateCreditClassFeeResponse {}

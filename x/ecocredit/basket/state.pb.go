@@ -270,12 +270,12 @@ func (m *BasketBalance) GetBatchStartDate() *types.Timestamp {
 	return nil
 }
 
-// BasketFee stores the valid coin denoms and amounts that may be used as the fee for creating a basket.
-// This is controlled via governance.
+// BasketFee is a valid coin denom and amount that may be used as the fee for
+// creating a basket.
 type BasketFee struct {
-	// denom is the denom of the coin allowed to be used for basket creation fees
+	// denom is the denom of the fee required to create a basket.
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
-	// amount is the fee amount
+	// amount is the amount of the fee required to create a basket.
 	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 

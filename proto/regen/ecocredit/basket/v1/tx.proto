@@ -158,19 +158,18 @@ message MsgTakeResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
-
-// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFee request type.
+// MsgUpdateBasketFeeRequest is the Msg/UpdateBasketFees request type.
 message MsgUpdateBasketFeeRequest {
   // root_address is the address of the caller.
-  // this MUST equal the address of the gov module for the tx to succeed.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
-  // add_fees are the coin denoms and amounts to be added to the allowed basket creation fees.
+  // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
   repeated cosmos.base.v1beta1.Coin add_fees = 2;
 
-  // remove_denoms are the coin denoms to be removed from the allowed basket creation fees.
-  repeated string remove_denoms = 3;
+  // remove_fees are the coin denoms to be removed from the allowed credit class creation fees.
+  repeated string remove_fees = 3;
 }
 
-// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFee response type.
+// MsgUpdateBasketFeeResponse is the Msg/UpdateBasketFees response type.
 message MsgUpdateBasketFeeResponse {}

@@ -16172,17 +16172,16 @@ func (*MsgUpdateClassMetadataResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{17}
 }
 
-// MsgAddCreditType is the Msg/AddCreditType request type.
-// The credit types are immutable and cannot be deleted.
+// MsgAddCreditType is the Msg/AddCreditTypes request type.
 type MsgAddCreditType struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// credit_types is a list of new credit types to add
+	// credit_types is a list of credit types to add.
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,2,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 }
 
@@ -16220,7 +16219,7 @@ func (x *MsgAddCreditType) GetRootAddress() string {
 	return ""
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// MsgAddCreditTypeResponse is the Msg/AddCreditTypes response type.
 type MsgAddCreditTypeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16253,8 +16252,8 @@ type MsgToggleAllowListRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// toggle is what the allow list will be set to.
 	Toggle bool `protobuf:"varint,2,opt,name=toggle,proto3" json:"toggle,omitempty"`
@@ -16327,8 +16326,8 @@ type MsgUpdateAllowedCreditClassCreatorsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_creators is a list of addresses to be added to the allow list for credit class creation.
 	AddCreators []string `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
@@ -16404,14 +16403,14 @@ func (*MsgUpdateAllowedCreditClassCreatorsResponse) Descriptor() ([]byte, []int)
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{23}
 }
 
-// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFee request type
+// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFees request type
 type MsgUpdateCreditClassFeeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
 	AddFees []*v1beta1.Coin `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
@@ -16460,7 +16459,7 @@ func (x *MsgUpdateCreditClassFeeRequest) GetRemoveDenoms() []string {
 	return nil
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFee response type
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
 type MsgUpdateCreditClassFeeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

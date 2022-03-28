@@ -1330,13 +1330,12 @@ func (m *MsgUpdateClassMetadataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateClassMetadataResponse proto.InternalMessageInfo
 
-// MsgAddCreditType is the Msg/AddCreditType request type.
-// The credit types are immutable and cannot be deleted.
+// MsgAddCreditType is the Msg/AddCreditTypes request type.
 type MsgAddCreditType struct {
-	// credit_types is a list of new credit types to add
+	// credit_types is a list of credit types to add.
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,2,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 }
 
@@ -1387,7 +1386,7 @@ func (m *MsgAddCreditType) GetRootAddress() string {
 	return ""
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
+// MsgAddCreditTypeResponse is the Msg/AddCreditTypes response type.
 type MsgAddCreditTypeResponse struct {
 }
 
@@ -1426,8 +1425,8 @@ var xxx_messageInfo_MsgAddCreditTypeResponse proto.InternalMessageInfo
 
 // MsgToggleAllowListRequest is the Msg/ToggleAllowListRequest request type
 type MsgToggleAllowListRequest struct {
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// toggle is what the allow list will be set to.
 	Toggle bool `protobuf:"varint,2,opt,name=toggle,proto3" json:"toggle,omitempty"`
@@ -1519,8 +1518,8 @@ var xxx_messageInfo_MsgToggleAllowListResponse proto.InternalMessageInfo
 
 // MsgUpdateAllowedCreditClassCreatorsRequest is the Msg/UpdateAllowedCreditClassCreators request type
 type MsgUpdateAllowedCreditClassCreatorsRequest struct {
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_creators is a list of addresses to be added to the allow list for credit class creation.
 	AddCreators []string `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
@@ -1627,10 +1626,10 @@ func (m *MsgUpdateAllowedCreditClassCreatorsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateAllowedCreditClassCreatorsResponse proto.InternalMessageInfo
 
-// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFee request type
+// MsgUpdateCreditClassFeeRequest is the Msg/UpdateCreditClassFees request type
 type MsgUpdateCreditClassFeeRequest struct {
-	// root_address is the address of the caller.
-	// this MUST equal the address of the gov module for the tx to succeed.
+	// root_address is the address of the signer.
+	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
 	AddFees []*types.Coin `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
@@ -1692,7 +1691,7 @@ func (m *MsgUpdateCreditClassFeeRequest) GetRemoveDenoms() []string {
 	return nil
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFee response type
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
 type MsgUpdateCreditClassFeeResponse struct {
 }
 
@@ -1888,13 +1887,15 @@ type MsgClient interface {
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type - Governance only method
+	// AddCreditType adds a new credit type. This message must be signed by the governance module.
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list - Governance only method
+	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
 	ToggleAllowList(ctx context.Context, in *MsgToggleAllowListRequest, opts ...grpc.CallOption) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
+	// must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreatorsRequest, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
+	// class fees. This message must be signed by the governance module.
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFeeRequest, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
 }
 
@@ -2049,13 +2050,15 @@ type MsgServer interface {
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type - Governance only method
+	// AddCreditType adds a new credit type. This message must be signed by the governance module.
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list - Governance only method
+	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
 	ToggleAllowList(context.Context, *MsgToggleAllowListRequest) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators - Governance only method
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
+	// must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreatorsRequest) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit class fees - Governance only method
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
+	// class fees. This message must be signed by the governance module.
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFeeRequest) (*MsgUpdateCreditClassFeeResponse, error)
 }
 
