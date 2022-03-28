@@ -54,12 +54,15 @@ message EventCreateBatch {
   // quantified and verified.
   string end_date = 6;
 
+  // issuance_date is the timestamp when the credit batch was issued.
+  string issuance_date = 7;
+
   // project_location is the location of the project backing the credits in this
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 7;
+  string project_location = 8;
 
   // project_id is the unique ID of the project this batch belongs to.
-  string project_id = 8;
+  string project_id = 9;
 }
 
 // EventReceive is an event emitted when credits are received either via
