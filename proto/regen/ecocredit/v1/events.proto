@@ -89,8 +89,8 @@ message EventReceive {
 
   // basket_denom is the denom of the basket. When the basket_denom field is
   // set, it indicates that this event was triggered by the transfer of credits
-  // from a basket. It will not be set if the credits were transferred or received
-  // at initial issuance.
+  // from a basket. It will not be set if the credits were transferred or
+  // received at initial issuance.
   string basket_denom = 6;
 }
 
@@ -134,7 +134,8 @@ message EventCancel {
   string amount = 3;
 }
 
-// EventClassAdminUpdated is emitted when the admin address of a credit class is changed.
+// EventClassAdminUpdated is emitted when the admin address of a credit class is
+// changed.
 message EventClassAdminUpdated {
 
   // class_name is the name of the class that was updated.
@@ -147,7 +148,8 @@ message EventClassAdminUpdated {
   string new_admin = 3;
 }
 
-// EventClassIssuersUpdated is emitted when the issuer list for a credit class is updated.
+// EventClassIssuersUpdated is emitted when the issuer list for a credit class
+// is updated.
 message EventClassIssuersUpdated {
   // class_name is the name of the class that was updated.
   string class_name = 1;
@@ -155,11 +157,13 @@ message EventClassIssuersUpdated {
   // added_issuers contains all the addresses added to the class issuer list.
   repeated string added_issuers = 2;
 
-  // removed_issuers contains all the addresses removed from the class issuer list.
+  // removed_issuers contains all the addresses removed from the class issuer
+  // list.
   repeated string removed_issuers = 3;
 }
 
-// EventClassMetadataUpdated is emitted when the credit class metadata is changed.
+// EventClassMetadataUpdated is emitted when the credit class metadata is
+// changed.
 message EventClassMetadataUpdated {
   // class_name is the name of the class that was updated.
   string class_name = 1;

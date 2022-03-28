@@ -10898,7 +10898,8 @@ type ClassInfo struct {
 	Issuers []string `protobuf:"bytes,3,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+	// credit_type describes the type of credit (e.g. carbon, biodiversity), as
+	// well as unit and precision.
 	CreditType *CreditType `protobuf:"bytes,5,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
 	// The number of batches issued in this credit class.
 	NumBatches uint64 `protobuf:"varint,6,opt,name=num_batches,json=numBatches,proto3" json:"num_batches,omitempty"`
@@ -11446,8 +11447,8 @@ type BuyOrder struct {
 	// buy order will fail if the buyer does not have enough funds available
 	// to complete the purchase.
 	BidPrice *v1beta1.Coin `protobuf:"bytes,5,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
-	// the credits will not auto-retire and can be resold assuming that the
+	// disable_auto_retire allows auto-retirement to be disabled. If it is set to
+	// true the credits will not auto-retire and can be resold assuming that the
 	// corresponding sell order has auto-retirement disabled. If the sell order
 	// hasn't disabled auto-retirement and the buy order tries to disable it,
 	// that buy order will fail.
@@ -11837,7 +11838,8 @@ type Filter_And_ struct {
 }
 
 type Filter_Or_ struct {
-	// or specifies a list of filters where at least one of the conditions should be satisfied.
+	// or specifies a list of filters where at least one of the conditions
+	// should be satisfied.
 	Or *Filter_Or `protobuf:"bytes,2,opt,name=or,proto3,oneof"`
 }
 
@@ -11972,9 +11974,9 @@ type isBuyOrder_Selection_Sum interface {
 }
 
 type BuyOrder_Selection_SellOrderId struct {
-	// sell_order_id is the sell order ID against which the buyer is trying to buy.
-	// When sell_order_id is set, this is known as a direct buy order because it
-	// is placed directly against a specific sell order.
+	// sell_order_id is the sell order ID against which the buyer is trying to
+	// buy. When sell_order_id is set, this is known as a direct buy order
+	// because it is placed directly against a specific sell order.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3,oneof"`
 }
 
@@ -12023,7 +12025,8 @@ type Filter_Or struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// filters is a list of filters where at least one of the conditions should be satisfied.
+	// filters is a list of filters where at least one of the conditions should
+	// be satisfied.
 	Filters []*Filter `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
 }
 

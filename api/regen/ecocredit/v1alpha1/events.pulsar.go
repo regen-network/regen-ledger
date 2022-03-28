@@ -3374,9 +3374,10 @@ type EventReceive struct {
 	TradableAmount string `protobuf:"bytes,4,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
 	// retired_amount is the decimal number of retired credits received.
 	RetiredAmount string `protobuf:"bytes,5,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
-	// basket_denom is the denom of the basket. when the basket_denom field is set, it indicates that this event was
-	// triggered by the transfer of credits from a basket. It will not be set if the credits were sent by a user, or
-	// by initial issuance.
+	// basket_denom is the denom of the basket. when the basket_denom field is
+	// set, it indicates that this event was triggered by the transfer of credits
+	// from a basket. It will not be set if the credits were sent by a user, or by
+	// initial issuance.
 	BasketDenom string `protobuf:"bytes,6,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 }
 
