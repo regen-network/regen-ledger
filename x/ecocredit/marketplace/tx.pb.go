@@ -861,6 +861,7 @@ func (m *MsgAllowAskDenom) GetRemoveDenoms() []string {
 	return nil
 }
 
+// DenomInfo contains the information related to a bank denom
 type MsgAllowAskDenom_DenomInfo struct {
 	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`

@@ -8999,6 +8999,7 @@ func (*MsgBuy_Order_Selection_SellOrderId) isMsgBuy_Order_Selection_Sum() {}
 
 func (*MsgBuy_Order_Selection_Filter) isMsgBuy_Order_Selection_Sum() {}
 
+// DenomInfo contains the information related to a bank denom
 type MsgAllowAskDenom_DenomInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

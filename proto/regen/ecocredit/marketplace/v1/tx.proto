@@ -203,6 +203,7 @@ message MsgAllowAskDenom {
   // remove_denoms specifies denoms to remove from the allowed denom list
   repeated string remove_denoms = 3;
 
+  // DenomInfo contains the information related to a bank denom
   message DenomInfo {
     // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
     string denom = 1;
