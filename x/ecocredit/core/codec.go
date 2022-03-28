@@ -11,7 +11,6 @@ func RegisterTypes(registry codectypes.InterfaceRegistry) {
 }
 
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen.core/MsgAddCreditType", nil)
 	cdc.RegisterConcrete(&MsgCreateClass{}, "regen.core/MsgCreateClass", nil)
 	cdc.RegisterConcrete(&MsgCreateProject{}, "regen.core/MsgCreateProject", nil)
 	cdc.RegisterConcrete(&MsgCancel{}, "regen.core/MsgCancel", nil)
@@ -23,4 +22,5 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen.core/MsgUpdateClassIssuers", nil)
 	cdc.RegisterConcrete(&MsgUpdateCreditClassFee{}, "regen.core/MsgUpdateCreditClassFee", nil)
 	cdc.RegisterConcrete(&MsgToggleAllowList{}, "regen.core/MsgToggleAllowList", nil)
+	cdc.RegisterConcrete(&MsgAddCreditType{}, "regen.core/MsgAddCreditType", nil)
 }
