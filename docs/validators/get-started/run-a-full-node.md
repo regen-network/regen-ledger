@@ -245,7 +245,7 @@ sudo systemctl enable cosmovisor.service
 Download and execute the script for **Mainnet**:
 ```bash 
 export MONIKER=<your-node-moniker>
-curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash
+curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash -s $MONIKER
 ```
 
 Download and execute the script for **Testnet**:
