@@ -6,6 +6,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {
+
   // class_id is the unique ID of credit class.
   string class_id = 1;
 
@@ -15,6 +16,7 @@ message EventCreateClass {
 
 // EventCreateProject is an event emitted when a project is created.
 message EventCreateProject {
+
   // project_id is the unique ID of the project.
   string project_id = 1;
 
@@ -31,6 +33,7 @@ message EventCreateProject {
 
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
+
   // class_id is the unique ID of credit class.
   string class_id = 1;
 
