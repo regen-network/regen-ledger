@@ -41,10 +41,12 @@ type MsgCreateClass struct {
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
+	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C",
+	// "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// fee specifies the fee to pay for the creation of the credit class.
-	// acceptable fees for creating a credit class can be found in the governance parameters for the ecocredit module.
+	// acceptable fees for creating a credit class can be found in the governance
+	// parameters for the ecocredit module.
 	Fee *types.Coin `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
@@ -1235,7 +1237,8 @@ type MsgUpdateClassMetadata struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// metadata is the updated arbitrary metadata to be attached to the credit class.
+	// metadata is the updated arbitrary metadata to be attached to the credit
+	// class.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 

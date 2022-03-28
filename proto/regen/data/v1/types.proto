@@ -8,140 +8,145 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // ContentHash specifies a hash based content identifier for a piece of data
 message ContentHash {
-    // sum selects the type of content hash
-    oneof sum {
-        // Raw specifies "raw" data which does not specify a deterministic, canonical encoding.
-        // Users of these hashes MUST maintain a copy of the hashed data which is preserved bit by bit.
-        // All other content encodings specify a deterministic, canonical encoding allowing implementations to
-        // choose from a variety of alternative formats for transport and encoding while maintaining the guarantee
-        // that the canonical hash will not change. The media type for "raw" data is defined by the MediaType enum.
-        Raw raw = 1;
+  // sum selects the type of content hash
+  oneof sum {
+    // Raw specifies "raw" data which does not specify a deterministic,
+    // canonical encoding. Users of these hashes MUST maintain a copy of the
+    // hashed data which is preserved bit by bit. All other content encodings
+    // specify a deterministic, canonical encoding allowing implementations to
+    // choose from a variety of alternative formats for transport and encoding
+    // while maintaining the guarantee that the canonical hash will not change.
+    // The media type for "raw" data is defined by the MediaType enum.
+    Raw raw = 1;
 
-        // Graph specifies graph data that conforms to the RDF data model.
-        // The canonicalization algorithm used for an RDF graph is specified by GraphCanonicalizationAlgorithm.
-        Graph graph = 2;
-    }
+    // Graph specifies graph data that conforms to the RDF data model.
+    // The canonicalization algorithm used for an RDF graph is specified by
+    // GraphCanonicalizationAlgorithm.
+    Graph graph = 2;
+  }
 
-    // Raw is the content hash type used for raw data
-    message Raw {
-        // hash represents the hash of the data based on the specified digest_algorithm
-        bytes hash = 1;
+  // Raw is the content hash type used for raw data
+  message Raw {
+    // hash represents the hash of the data based on the specified
+    // digest_algorithm
+    bytes hash = 1;
 
-        // digest_algorithm represents the hash digest algorithm.
-        DigestAlgorithm digest_algorithm = 2;
+    // digest_algorithm represents the hash digest algorithm.
+    DigestAlgorithm digest_algorithm = 2;
 
-        // media_type represents the MediaType for raw data.
-        MediaType media_type = 3;
+    // media_type represents the MediaType for raw data.
+    MediaType media_type = 3;
+  }
 
-    }
+  // Graph is the content hash type used for RDF graph data
+  message Graph {
+    // hash represents the hash of the data based on the specified
+    // digest_algorithm
+    bytes hash = 1;
 
-    // Graph is the content hash type used for RDF graph data
-    message Graph {
-        // hash represents the hash of the data based on the specified digest_algorithm
-        bytes hash = 1;
+    // digest_algorithm represents the hash digest algorithm.
+    DigestAlgorithm digest_algorithm = 2;
 
-        // digest_algorithm represents the hash digest algorithm.
-        DigestAlgorithm digest_algorithm = 2;
+    // graph_canonicalization_algorithm represents the RDF graph
+    // canonicalization algorithm.
+    GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
 
-        // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm.
-        GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
-
-        // merkle_tree is the merkle tree type used for the graph hash, if any
-        GraphMerkleTree merkle_tree = 4;
-    }
+    // merkle_tree is the merkle tree type used for the graph hash, if any
+    GraphMerkleTree merkle_tree = 4;
+  }
 }
 
 // MediaType defines MIME media types to be used with a ContentHash.Raw hash.
 enum MediaType {
-    // MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
-    MEDIA_TYPE_UNSPECIFIED = 0;
+  // MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
+  MEDIA_TYPE_UNSPECIFIED = 0;
 
-    // basic formats
+  // basic formats
 
-    // plain text
-    MEDIA_TYPE_TEXT_PLAIN = 1;
+  // plain text
+  MEDIA_TYPE_TEXT_PLAIN = 1;
 
-    // JSON
-    MEDIA_TYPE_JSON = 2;
+  // JSON
+  MEDIA_TYPE_JSON = 2;
 
-    // CSV
-    MEDIA_TYPE_CSV = 3;
+  // CSV
+  MEDIA_TYPE_CSV = 3;
 
-    // XML
-    MEDIA_TYPE_XML = 4;
+  // XML
+  MEDIA_TYPE_XML = 4;
 
-    // PDF
-    MEDIA_TYPE_PDF = 5;
+  // PDF
+  MEDIA_TYPE_PDF = 5;
 
-    // images
+  // images
 
-    // TIIF
-    MEDIA_TYPE_TIFF = 16;
+  // TIIF
+  MEDIA_TYPE_TIFF = 16;
 
-    // JPG
-    MEDIA_TYPE_JPG = 17;
+  // JPG
+  MEDIA_TYPE_JPG = 17;
 
-    // PNG
-    MEDIA_TYPE_PNG = 18;
+  // PNG
+  MEDIA_TYPE_PNG = 18;
 
-    // SVG
-    MEDIA_TYPE_SVG = 19;
+  // SVG
+  MEDIA_TYPE_SVG = 19;
 
-    // WEBP
-    MEDIA_TYPE_WEBP = 20;
+  // WEBP
+  MEDIA_TYPE_WEBP = 20;
 
-    // AVIF
-    MEDIA_TYPE_AVIF = 21;
+  // AVIF
+  MEDIA_TYPE_AVIF = 21;
 
-    // GIF
-    MEDIA_TYPE_GIF = 22;
+  // GIF
+  MEDIA_TYPE_GIF = 22;
 
-    // APNG
-    MEDIA_TYPE_APNG = 23;
+  // APNG
+  MEDIA_TYPE_APNG = 23;
 
-    // audio-visual media containers
+  // audio-visual media containers
 
-    // MPEG
-    MEDIA_TYPE_MPEG = 32;
+  // MPEG
+  MEDIA_TYPE_MPEG = 32;
 
-    // MP4
-    MEDIA_TYPE_MP4 = 33;
+  // MP4
+  MEDIA_TYPE_MP4 = 33;
 
-    // WEBM
-    MEDIA_TYPE_WEBM = 34;
+  // WEBM
+  MEDIA_TYPE_WEBM = 34;
 
-    // OGG
-    MEDIA_TYPE_OGG = 35;
+  // OGG
+  MEDIA_TYPE_OGG = 35;
 
-    // geospatial raster formats
-    // TODO
+  // geospatial raster formats
+  // TODO
 
-    // geospatial vector formats
-    // TODO
+  // geospatial vector formats
+  // TODO
 }
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
 enum GraphCanonicalizationAlgorithm {
-    // unspecified and invalid
-    GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
+  // unspecified and invalid
+  GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
-    // URDNA2015 graph hashing
-    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
+  // URDNA2015 graph hashing
+  GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
 }
 
 // GraphMerkleTree is the graph merkle tree type used for hashing, if any
 enum GraphMerkleTree {
-    // no merkle tree
-    GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
+  // no merkle tree
+  GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
 // DigestAlgorithm is the hash digest algorithm
 enum DigestAlgorithm {
-    // unspecified and invalid
-    DIGEST_ALGORITHM_UNSPECIFIED = 0;
+  // unspecified and invalid
+  DIGEST_ALGORITHM_UNSPECIFIED = 0;
 
-    // BLAKE2b-256
-    DIGEST_ALGORITHM_BLAKE2B_256 = 1;
+  // BLAKE2b-256
+  DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
 // ContentEntry describes data referenced and possibly stored on chain
@@ -158,15 +163,15 @@ message ContentEntry {
 
 // AttestorEntry is a attestor entry wrapping a attestor address and timestamp
 message AttestorEntry {
-    // attestor is the address of the attestor.
-    string attestor = 1;
+  // attestor is the address of the attestor.
+  string attestor = 1;
 
-    // timestamp is the Timestamp of the attestation.
-    google.protobuf.Timestamp timestamp = 2;
+  // timestamp is the Timestamp of the attestation.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // ContentHashes contains list of content ContentHash.
 message ContentHashes {
-    // data is a list of content hashes which the resolver claims to serve.
-    repeated ContentHash data = 1;
+  // data is a list of content hashes which the resolver claims to serve.
+  repeated ContentHash data = 1;
 }
