@@ -43,12 +43,12 @@ type IntegrationTestSuite struct {
 }
 
 const (
-	validCreditType = "C"
-	classId         = "C01"
-	batchDenom      = "C01-20210101-20210201-001"
+	validCreditType  = "C"
+	classId          = "C01"
+	batchDenom       = "C01-20210101-20210201-001"
+	validMetadata    = "abcd"
+	classCreationFee = "20000000stake"
 )
-
-var validMetadata = "abcd"
 
 func RunCLITests(t *testing.T, cfg network.Config) {
 	suite.Run(t, NewIntegrationTestSuite(cfg))
@@ -122,6 +122,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 					val.Address.String(),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 				},
 				commonFlags...,
@@ -202,6 +203,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// Store the first one in the test suite
 	s.batchInfo = &core.BatchInfo{
+		Id:         1,
 		ProjectId:  1,
 		BatchDenom: batchDenom,
 		Metadata:   "abcd",
@@ -267,13 +269,13 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 0",
+			expectedErrMsg: "accepts 4 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde", "abcde", "abcde"},
+			args:           []string{"abcde", "abcde", "abcde", "abcde", "efgh"},
 			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 4",
+			expectedErrMsg: "accepts 4 arg(s), received 5",
 		},
 		{
 			name: "invalid issuer",
@@ -282,6 +284,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					"abcde",
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -296,6 +299,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 				},
 				s.commonTxFlags()...,
 			),
@@ -309,6 +313,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					val0.Address.String(),
 					"caarbon",
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -324,6 +329,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -343,6 +349,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom("node0"),
 				},
 				s.commonTxFlags()...,
@@ -366,6 +373,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -383,6 +391,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
+					classCreationFee,
 					makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},

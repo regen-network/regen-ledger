@@ -12,6 +12,7 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/yaml"
@@ -64,7 +65,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [issuer[,issuer]*] [credit type abbreviation] [metadata]",
+		Use:   "create-class [issuer[,issuer]*] [credit type abbreviation] [metadata] [fee]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(
 			`Creates a new credit class with transaction author (--from) as admin.
@@ -79,11 +80,12 @@ by the %s parameter, so should make sure they have enough funds to cover that.
 Parameters:
   issuer:    	               comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type abbreviation:    the name of the credit class type (e.g. carbon, biodiversity, etc)
-  metadata:  	               arbitrary data attached to the credit class info`,
+  metadata:  	               arbitrary data attached to the credit class info
+  fee:                         fee to pay for the creation of the credit class (e.g. 10uatom, 10uregen)`,
 			ecocredit.KeyAllowedClassCreators,
 			ecocredit.KeyCreditClassFee,
 		),
-		Args: cobra.ExactArgs(3),
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
@@ -110,11 +112,17 @@ Parameters:
 				return errors.New("metadata is required")
 			}
 
+			fee, err := sdk.ParseCoinNormalized(args[3])
+			if err != nil {
+				return err
+			}
+
 			msg := core.MsgCreateClass{
 				Admin:            admin.String(),
 				Issuers:          issuers,
 				Metadata:         args[2],
 				CreditTypeAbbrev: creditTypeAbbrev,
+				Fee:              &fee,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

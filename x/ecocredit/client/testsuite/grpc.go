@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 			fmt.Sprintf("%s/regen/ecocredit/v1/projects/%s/batches", val.APIAddress, "abc-d"),
 			0,
 			true,
-			"invalid project id",
+			"not found",
 		},
 		{
 			"no batches found",
@@ -183,28 +183,28 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 		url       string
 		expErr    bool
 		errMsg    string
-		projectID string
+		projectID uint64
 	}{
 		{
 			"invalid batch denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "C999"),
 			true,
 			"invalid denom",
-			"",
+			0,
 		},
 		{
 			"no batches found",
 			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
 			true,
 			"not found",
-			"",
+			0,
 		},
 		{
 			"valid request",
 			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
 			false,
 			"",
-			"P01",
+			1,
 		},
 	}
 
@@ -260,7 +260,7 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 			"invalid batch-denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
 			true,
-			"invalid denom",
+			"not found",
 		},
 		{
 			"invalid account address",
@@ -312,7 +312,7 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			"invalid batch-denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/supply", val.APIAddress, "abcd"),
 			true,
-			"invalid denom",
+			"not found",
 		},
 		{
 			"valid request",
@@ -370,13 +370,13 @@ func (s *IntegrationTestSuite) TestGetSellOrder() {
 	}{
 		{
 			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "99"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/id/%s", val.APIAddress, "99"),
 			true,
 			"not found",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/id/%s", val.APIAddress, "1"),
 			false,
 			"",
 		},
@@ -415,14 +415,14 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders?pagination.limit=2", val.APIAddress),
 			false,
 			"",
 			2,
@@ -464,21 +464,21 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 	}{
 		{
 			"invalid denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
 			true,
-			"invalid denom",
+			"could not get batch with denom foo",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
 			false,
 			"",
 			2,
@@ -519,21 +519,21 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 	}{
 		{
 			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, "abc"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s", val.APIAddress, "abc"),
 			true,
 			"invalid request",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			2,
@@ -573,7 +573,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrder() {
 	}{
 		{
 			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "99"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/id/%s", val.APIAddress, "99"),
 			true,
 			"not found",
 		},
@@ -619,14 +619,14 @@ func (s *IntegrationTestSuite) TestGetBuyOrders() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders?pagination.limit=2", val.APIAddress),
 			false,
 			"",
 			2,
@@ -669,21 +669,21 @@ func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
 	}{
 		{
 			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, "abc"),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s", val.APIAddress, "abc"),
 			true,
 			"invalid request",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s", val.APIAddress, addr),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
 			false,
 			"",
 			2,
@@ -725,14 +725,14 @@ func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/ask-denoms", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/ask-denoms", val.APIAddress),
 			false,
 			"",
 			2,

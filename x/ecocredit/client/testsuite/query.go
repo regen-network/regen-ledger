@@ -173,10 +173,10 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "invalid project id",
 		},
 		{
-			name:                "existing project no batches",
-			args:                []string{"P02"},
-			expectErr:           false,
-			expectedBatchDenoms: []string{},
+			name:           "existing project no batches",
+			args:           []string{"P02"},
+			expectErr:      true,
+			expectedErrMsg: "not found",
 		},
 		{
 			name:      "no pagination flags",
@@ -296,7 +296,11 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 
 				var res core.QueryBatchInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedBatchInfo, res.Info)
+				s.Require().Equal(tc.expectedBatchInfo.Id, res.Info.Id)
+				s.Require().Equal(tc.expectedBatchInfo.BatchDenom, res.Info.BatchDenom)
+				s.Require().Equal(tc.expectedBatchInfo.ProjectId, res.Info.ProjectId)
+				s.Require().Equal(tc.expectedBatchInfo.StartDate, res.Info.StartDate)
+				s.Require().Equal(tc.expectedBatchInfo.EndDate, res.Info.EndDate)
 			}
 		})
 	}
@@ -331,7 +335,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			name:           "invalid credit batch",
 			args:           []string{"abcde", s.network.Validators[0].Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "invalid denom",
+			expectedErrMsg: "not found",
 		},
 		{
 			name:                   "valid credit batch and invalid account",
@@ -1043,7 +1047,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 			name:      "invalid project id ",
 			args:      []string{"A@a@"},
 			expErr:    true,
-			expErrMsg: "invalid project id",
+			expErrMsg: "not found",
 		},
 		{
 			name:      "not found",
