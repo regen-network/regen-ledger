@@ -13,25 +13,25 @@ import (
 )
 
 var (
-	md_EventAnchorData     protoreflect.MessageDescriptor
-	fd_EventAnchorData_iri protoreflect.FieldDescriptor
+	md_EventAnchor     protoreflect.MessageDescriptor
+	fd_EventAnchor_iri protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_events_proto_init()
-	md_EventAnchorData = File_regen_data_v1_events_proto.Messages().ByName("EventAnchorData")
-	fd_EventAnchorData_iri = md_EventAnchorData.Fields().ByName("iri")
+	md_EventAnchor = File_regen_data_v1_events_proto.Messages().ByName("EventAnchor")
+	fd_EventAnchor_iri = md_EventAnchor.Fields().ByName("iri")
 }
 
-var _ protoreflect.Message = (*fastReflection_EventAnchorData)(nil)
+var _ protoreflect.Message = (*fastReflection_EventAnchor)(nil)
 
-type fastReflection_EventAnchorData EventAnchorData
+type fastReflection_EventAnchor EventAnchor
 
-func (x *EventAnchorData) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EventAnchorData)(x)
+func (x *EventAnchor) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventAnchor)(x)
 }
 
-func (x *EventAnchorData) slowProtoReflect() protoreflect.Message {
+func (x *EventAnchor) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_events_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -43,43 +43,43 @@ func (x *EventAnchorData) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_EventAnchorData_messageType fastReflection_EventAnchorData_messageType
-var _ protoreflect.MessageType = fastReflection_EventAnchorData_messageType{}
+var _fastReflection_EventAnchor_messageType fastReflection_EventAnchor_messageType
+var _ protoreflect.MessageType = fastReflection_EventAnchor_messageType{}
 
-type fastReflection_EventAnchorData_messageType struct{}
+type fastReflection_EventAnchor_messageType struct{}
 
-func (x fastReflection_EventAnchorData_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EventAnchorData)(nil)
+func (x fastReflection_EventAnchor_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventAnchor)(nil)
 }
-func (x fastReflection_EventAnchorData_messageType) New() protoreflect.Message {
-	return new(fastReflection_EventAnchorData)
+func (x fastReflection_EventAnchor_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventAnchor)
 }
-func (x fastReflection_EventAnchorData_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventAnchorData
+func (x fastReflection_EventAnchor_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAnchor
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_EventAnchorData) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventAnchorData
+func (x *fastReflection_EventAnchor) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAnchor
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EventAnchorData) Type() protoreflect.MessageType {
-	return _fastReflection_EventAnchorData_messageType
+func (x *fastReflection_EventAnchor) Type() protoreflect.MessageType {
+	return _fastReflection_EventAnchor_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EventAnchorData) New() protoreflect.Message {
-	return new(fastReflection_EventAnchorData)
+func (x *fastReflection_EventAnchor) New() protoreflect.Message {
+	return new(fastReflection_EventAnchor)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_EventAnchorData) Interface() protoreflect.ProtoMessage {
-	return (*EventAnchorData)(x)
+func (x *fastReflection_EventAnchor) Interface() protoreflect.ProtoMessage {
+	return (*EventAnchor)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -87,10 +87,10 @@ func (x *fastReflection_EventAnchorData) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_EventAnchorData) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_EventAnchor) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Iri != "" {
 		value := protoreflect.ValueOfString(x.Iri)
-		if !f(fd_EventAnchorData_iri, value) {
+		if !f(fd_EventAnchor_iri, value) {
 			return
 		}
 	}
@@ -107,15 +107,15 @@ func (x *fastReflection_EventAnchorData) Range(f func(protoreflect.FieldDescript
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_EventAnchorData) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_EventAnchor) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
+	case "regen.data.v1.EventAnchor.iri":
 		return x.Iri != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -125,15 +125,15 @@ func (x *fastReflection_EventAnchorData) Has(fd protoreflect.FieldDescriptor) bo
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAnchorData) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_EventAnchor) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
+	case "regen.data.v1.EventAnchor.iri":
 		x.Iri = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -143,16 +143,16 @@ func (x *fastReflection_EventAnchorData) Clear(fd protoreflect.FieldDescriptor) 
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EventAnchorData) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAnchor) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
+	case "regen.data.v1.EventAnchor.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -166,15 +166,15 @@ func (x *fastReflection_EventAnchorData) Get(descriptor protoreflect.FieldDescri
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAnchorData) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_EventAnchor) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
+	case "regen.data.v1.EventAnchor.iri":
 		x.Iri = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -188,40 +188,40 @@ func (x *fastReflection_EventAnchorData) Set(fd protoreflect.FieldDescriptor, va
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAnchorData) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAnchor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
-		panic(fmt.Errorf("field iri of message regen.data.v1.EventAnchorData is not mutable"))
+	case "regen.data.v1.EventAnchor.iri":
+		panic(fmt.Errorf("field iri of message regen.data.v1.EventAnchor is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EventAnchorData) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAnchor) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchorData.iri":
+	case "regen.data.v1.EventAnchor.iri":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchorData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventAnchorData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAnchor does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EventAnchorData) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_EventAnchor) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.EventAnchorData", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.EventAnchor", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -229,7 +229,7 @@ func (x *fastReflection_EventAnchorData) WhichOneof(d protoreflect.OneofDescript
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EventAnchorData) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_EventAnchor) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -240,7 +240,7 @@ func (x *fastReflection_EventAnchorData) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAnchorData) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_EventAnchor) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -252,7 +252,7 @@ func (x *fastReflection_EventAnchorData) SetUnknown(fields protoreflect.RawField
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_EventAnchorData) IsValid() bool {
+func (x *fastReflection_EventAnchor) IsValid() bool {
 	return x != nil
 }
 
@@ -262,9 +262,9 @@ func (x *fastReflection_EventAnchorData) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_EventAnchorData) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EventAnchorData)
+		x := input.Message.Interface().(*EventAnchor)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -290,7 +290,7 @@ func (x *fastReflection_EventAnchorData) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EventAnchorData)
+		x := input.Message.Interface().(*EventAnchor)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -327,7 +327,7 @@ func (x *fastReflection_EventAnchorData) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EventAnchorData)
+		x := input.Message.Interface().(*EventAnchor)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -359,10 +359,10 @@ func (x *fastReflection_EventAnchorData) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAnchorData: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAnchor: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAnchorData: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAnchor: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -432,74 +432,74 @@ func (x *fastReflection_EventAnchorData) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_EventSignData_2_list)(nil)
+var _ protoreflect.List = (*_EventAttest_2_list)(nil)
 
-type _EventSignData_2_list struct {
+type _EventAttest_2_list struct {
 	list *[]string
 }
 
-func (x *_EventSignData_2_list) Len() int {
+func (x *_EventAttest_2_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_EventSignData_2_list) Get(i int) protoreflect.Value {
+func (x *_EventAttest_2_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfString((*x.list)[i])
 }
 
-func (x *_EventSignData_2_list) Set(i int, value protoreflect.Value) {
+func (x *_EventAttest_2_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_EventSignData_2_list) Append(value protoreflect.Value) {
+func (x *_EventAttest_2_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.String()
 	concreteValue := valueUnwrapped
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_EventSignData_2_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message EventSignData at list field Signers as it is not of Message kind"))
+func (x *_EventAttest_2_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message EventAttest at list field Attestors as it is not of Message kind"))
 }
 
-func (x *_EventSignData_2_list) Truncate(n int) {
+func (x *_EventAttest_2_list) Truncate(n int) {
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_EventSignData_2_list) NewElement() protoreflect.Value {
+func (x *_EventAttest_2_list) NewElement() protoreflect.Value {
 	v := ""
 	return protoreflect.ValueOfString(v)
 }
 
-func (x *_EventSignData_2_list) IsValid() bool {
+func (x *_EventAttest_2_list) IsValid() bool {
 	return x.list != nil
 }
 
 var (
-	md_EventSignData         protoreflect.MessageDescriptor
-	fd_EventSignData_iri     protoreflect.FieldDescriptor
-	fd_EventSignData_signers protoreflect.FieldDescriptor
+	md_EventAttest           protoreflect.MessageDescriptor
+	fd_EventAttest_iri       protoreflect.FieldDescriptor
+	fd_EventAttest_attestors protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_events_proto_init()
-	md_EventSignData = File_regen_data_v1_events_proto.Messages().ByName("EventSignData")
-	fd_EventSignData_iri = md_EventSignData.Fields().ByName("iri")
-	fd_EventSignData_signers = md_EventSignData.Fields().ByName("signers")
+	md_EventAttest = File_regen_data_v1_events_proto.Messages().ByName("EventAttest")
+	fd_EventAttest_iri = md_EventAttest.Fields().ByName("iri")
+	fd_EventAttest_attestors = md_EventAttest.Fields().ByName("attestors")
 }
 
-var _ protoreflect.Message = (*fastReflection_EventSignData)(nil)
+var _ protoreflect.Message = (*fastReflection_EventAttest)(nil)
 
-type fastReflection_EventSignData EventSignData
+type fastReflection_EventAttest EventAttest
 
-func (x *EventSignData) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EventSignData)(x)
+func (x *EventAttest) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventAttest)(x)
 }
 
-func (x *EventSignData) slowProtoReflect() protoreflect.Message {
+func (x *EventAttest) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_events_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -511,43 +511,43 @@ func (x *EventSignData) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_EventSignData_messageType fastReflection_EventSignData_messageType
-var _ protoreflect.MessageType = fastReflection_EventSignData_messageType{}
+var _fastReflection_EventAttest_messageType fastReflection_EventAttest_messageType
+var _ protoreflect.MessageType = fastReflection_EventAttest_messageType{}
 
-type fastReflection_EventSignData_messageType struct{}
+type fastReflection_EventAttest_messageType struct{}
 
-func (x fastReflection_EventSignData_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EventSignData)(nil)
+func (x fastReflection_EventAttest_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventAttest)(nil)
 }
-func (x fastReflection_EventSignData_messageType) New() protoreflect.Message {
-	return new(fastReflection_EventSignData)
+func (x fastReflection_EventAttest_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventAttest)
 }
-func (x fastReflection_EventSignData_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventSignData
+func (x fastReflection_EventAttest_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAttest
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_EventSignData) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventSignData
+func (x *fastReflection_EventAttest) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAttest
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EventSignData) Type() protoreflect.MessageType {
-	return _fastReflection_EventSignData_messageType
+func (x *fastReflection_EventAttest) Type() protoreflect.MessageType {
+	return _fastReflection_EventAttest_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EventSignData) New() protoreflect.Message {
-	return new(fastReflection_EventSignData)
+func (x *fastReflection_EventAttest) New() protoreflect.Message {
+	return new(fastReflection_EventAttest)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_EventSignData) Interface() protoreflect.ProtoMessage {
-	return (*EventSignData)(x)
+func (x *fastReflection_EventAttest) Interface() protoreflect.ProtoMessage {
+	return (*EventAttest)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -555,16 +555,16 @@ func (x *fastReflection_EventSignData) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_EventSignData) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_EventAttest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Iri != "" {
 		value := protoreflect.ValueOfString(x.Iri)
-		if !f(fd_EventSignData_iri, value) {
+		if !f(fd_EventAttest_iri, value) {
 			return
 		}
 	}
-	if len(x.Signers) != 0 {
-		value := protoreflect.ValueOfList(&_EventSignData_2_list{list: &x.Signers})
-		if !f(fd_EventSignData_signers, value) {
+	if len(x.Attestors) != 0 {
+		value := protoreflect.ValueOfList(&_EventAttest_2_list{list: &x.Attestors})
+		if !f(fd_EventAttest_attestors, value) {
 			return
 		}
 	}
@@ -581,17 +581,17 @@ func (x *fastReflection_EventSignData) Range(f func(protoreflect.FieldDescriptor
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_EventSignData) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_EventAttest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.EventSignData.iri":
+	case "regen.data.v1.EventAttest.iri":
 		return x.Iri != ""
-	case "regen.data.v1.EventSignData.signers":
-		return len(x.Signers) != 0
+	case "regen.data.v1.EventAttest.attestors":
+		return len(x.Attestors) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -601,17 +601,17 @@ func (x *fastReflection_EventSignData) Has(fd protoreflect.FieldDescriptor) bool
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventSignData) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_EventAttest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.EventSignData.iri":
+	case "regen.data.v1.EventAttest.iri":
 		x.Iri = ""
-	case "regen.data.v1.EventSignData.signers":
-		x.Signers = nil
+	case "regen.data.v1.EventAttest.attestors":
+		x.Attestors = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -621,22 +621,22 @@ func (x *fastReflection_EventSignData) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EventSignData) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAttest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.EventSignData.iri":
+	case "regen.data.v1.EventAttest.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.EventSignData.signers":
-		if len(x.Signers) == 0 {
-			return protoreflect.ValueOfList(&_EventSignData_2_list{})
+	case "regen.data.v1.EventAttest.attestors":
+		if len(x.Attestors) == 0 {
+			return protoreflect.ValueOfList(&_EventAttest_2_list{})
 		}
-		listValue := &_EventSignData_2_list{list: &x.Signers}
+		listValue := &_EventAttest_2_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -650,19 +650,19 @@ func (x *fastReflection_EventSignData) Get(descriptor protoreflect.FieldDescript
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventSignData) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_EventAttest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.EventSignData.iri":
+	case "regen.data.v1.EventAttest.iri":
 		x.Iri = value.Interface().(string)
-	case "regen.data.v1.EventSignData.signers":
+	case "regen.data.v1.EventAttest.attestors":
 		lv := value.List()
-		clv := lv.(*_EventSignData_2_list)
-		x.Signers = *clv.list
+		clv := lv.(*_EventAttest_2_list)
+		x.Attestors = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -676,49 +676,49 @@ func (x *fastReflection_EventSignData) Set(fd protoreflect.FieldDescriptor, valu
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventSignData) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAttest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventSignData.signers":
-		if x.Signers == nil {
-			x.Signers = []string{}
+	case "regen.data.v1.EventAttest.attestors":
+		if x.Attestors == nil {
+			x.Attestors = []string{}
 		}
-		value := &_EventSignData_2_list{list: &x.Signers}
+		value := &_EventAttest_2_list{list: &x.Attestors}
 		return protoreflect.ValueOfList(value)
-	case "regen.data.v1.EventSignData.iri":
-		panic(fmt.Errorf("field iri of message regen.data.v1.EventSignData is not mutable"))
+	case "regen.data.v1.EventAttest.iri":
+		panic(fmt.Errorf("field iri of message regen.data.v1.EventAttest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EventSignData) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAttest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventSignData.iri":
+	case "regen.data.v1.EventAttest.iri":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.EventSignData.signers":
+	case "regen.data.v1.EventAttest.attestors":
 		list := []string{}
-		return protoreflect.ValueOfList(&_EventSignData_2_list{list: &list})
+		return protoreflect.ValueOfList(&_EventAttest_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventSignData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.EventSignData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.EventAttest does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EventSignData) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_EventAttest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.EventSignData", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.EventAttest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -726,7 +726,7 @@ func (x *fastReflection_EventSignData) WhichOneof(d protoreflect.OneofDescriptor
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EventSignData) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_EventAttest) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -737,7 +737,7 @@ func (x *fastReflection_EventSignData) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventSignData) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_EventAttest) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -749,7 +749,7 @@ func (x *fastReflection_EventSignData) SetUnknown(fields protoreflect.RawFields)
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_EventSignData) IsValid() bool {
+func (x *fastReflection_EventAttest) IsValid() bool {
 	return x != nil
 }
 
@@ -759,9 +759,9 @@ func (x *fastReflection_EventSignData) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EventSignData)
+		x := input.Message.Interface().(*EventAttest)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -777,8 +777,8 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.Signers) > 0 {
-			for _, s := range x.Signers {
+		if len(x.Attestors) > 0 {
+			for _, s := range x.Attestors {
 				l = len(s)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -793,7 +793,7 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EventSignData)
+		x := input.Message.Interface().(*EventAttest)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -812,11 +812,11 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Signers) > 0 {
-			for iNdEx := len(x.Signers) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Signers[iNdEx])
-				copy(dAtA[i:], x.Signers[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signers[iNdEx])))
+		if len(x.Attestors) > 0 {
+			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.Attestors[iNdEx])
+				copy(dAtA[i:], x.Attestors[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestors[iNdEx])))
 				i--
 				dAtA[i] = 0x12
 			}
@@ -839,7 +839,7 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EventSignData)
+		x := input.Message.Interface().(*EventAttest)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -871,10 +871,10 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventSignData: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAttest: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventSignData: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAttest: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -911,7 +911,7 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signers", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -939,427 +939,7 @@ func (x *fastReflection_EventSignData) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Signers = append(x.Signers, string(dAtA[iNdEx:postIndex]))
-				iNdEx = postIndex
-			default:
-				iNdEx = preIndex
-				skippy, err := runtime.Skip(dAtA[iNdEx:])
-				if err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				if (skippy < 0) || (iNdEx+skippy) < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if (iNdEx + skippy) > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if !options.DiscardUnknown {
-					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
-				}
-				iNdEx += skippy
-			}
-		}
-
-		if iNdEx > l {
-			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-		}
-		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
-	}
-	return &protoiface.Methods{
-		NoUnkeyedLiterals: struct{}{},
-		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
-		Size:              size,
-		Marshal:           marshal,
-		Unmarshal:         unmarshal,
-		Merge:             nil,
-		CheckInitialized:  nil,
-	}
-}
-
-var (
-	md_EventStoreRawData     protoreflect.MessageDescriptor
-	fd_EventStoreRawData_iri protoreflect.FieldDescriptor
-)
-
-func init() {
-	file_regen_data_v1_events_proto_init()
-	md_EventStoreRawData = File_regen_data_v1_events_proto.Messages().ByName("EventStoreRawData")
-	fd_EventStoreRawData_iri = md_EventStoreRawData.Fields().ByName("iri")
-}
-
-var _ protoreflect.Message = (*fastReflection_EventStoreRawData)(nil)
-
-type fastReflection_EventStoreRawData EventStoreRawData
-
-func (x *EventStoreRawData) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EventStoreRawData)(x)
-}
-
-func (x *EventStoreRawData) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_data_v1_events_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-var _fastReflection_EventStoreRawData_messageType fastReflection_EventStoreRawData_messageType
-var _ protoreflect.MessageType = fastReflection_EventStoreRawData_messageType{}
-
-type fastReflection_EventStoreRawData_messageType struct{}
-
-func (x fastReflection_EventStoreRawData_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EventStoreRawData)(nil)
-}
-func (x fastReflection_EventStoreRawData_messageType) New() protoreflect.Message {
-	return new(fastReflection_EventStoreRawData)
-}
-func (x fastReflection_EventStoreRawData_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventStoreRawData
-}
-
-// Descriptor returns message descriptor, which contains only the protobuf
-// type information for the message.
-func (x *fastReflection_EventStoreRawData) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventStoreRawData
-}
-
-// Type returns the message type, which encapsulates both Go and protobuf
-// type information. If the Go type information is not needed,
-// it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EventStoreRawData) Type() protoreflect.MessageType {
-	return _fastReflection_EventStoreRawData_messageType
-}
-
-// New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EventStoreRawData) New() protoreflect.Message {
-	return new(fastReflection_EventStoreRawData)
-}
-
-// Interface unwraps the message reflection interface and
-// returns the underlying ProtoMessage interface.
-func (x *fastReflection_EventStoreRawData) Interface() protoreflect.ProtoMessage {
-	return (*EventStoreRawData)(x)
-}
-
-// Range iterates over every populated field in an undefined order,
-// calling f for each field descriptor and value encountered.
-// Range returns immediately if f returns false.
-// While iterating, mutating operations may only be performed
-// on the current field descriptor.
-func (x *fastReflection_EventStoreRawData) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Iri != "" {
-		value := protoreflect.ValueOfString(x.Iri)
-		if !f(fd_EventStoreRawData_iri, value) {
-			return
-		}
-	}
-}
-
-// Has reports whether a field is populated.
-//
-// Some fields have the property of nullability where it is possible to
-// distinguish between the default value of a field and whether the field
-// was explicitly populated with the default value. Singular message fields,
-// member fields of a oneof, and proto2 scalar fields are nullable. Such
-// fields are populated only if explicitly set.
-//
-// In other cases (aside from the nullable cases above),
-// a proto3 scalar field is populated if it contains a non-zero value, and
-// a repeated field is populated if it is non-empty.
-func (x *fastReflection_EventStoreRawData) Has(fd protoreflect.FieldDescriptor) bool {
-	switch fd.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		return x.Iri != ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", fd.FullName()))
-	}
-}
-
-// Clear clears the field such that a subsequent Has call reports false.
-//
-// Clearing an extension field clears both the extension type and value
-// associated with the given field number.
-//
-// Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventStoreRawData) Clear(fd protoreflect.FieldDescriptor) {
-	switch fd.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		x.Iri = ""
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", fd.FullName()))
-	}
-}
-
-// Get retrieves the value for a field.
-//
-// For unpopulated scalars, it returns the default value, where
-// the default value of a bytes scalar is guaranteed to be a copy.
-// For unpopulated composite types, it returns an empty, read-only view
-// of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EventStoreRawData) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
-	switch descriptor.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		value := x.Iri
-		return protoreflect.ValueOfString(value)
-	default:
-		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", descriptor.FullName()))
-	}
-}
-
-// Set stores the value for a field.
-//
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType.
-// When setting a composite type, it is unspecified whether the stored value
-// aliases the source's memory in any way. If the composite value is an
-// empty, read-only value, then it panics.
-//
-// Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventStoreRawData) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
-	switch fd.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		x.Iri = value.Interface().(string)
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", fd.FullName()))
-	}
-}
-
-// Mutable returns a mutable reference to a composite type.
-//
-// If the field is unpopulated, it may allocate a composite value.
-// For a field belonging to a oneof, it implicitly clears any other field
-// that may be currently set within the same oneof.
-// For extension fields, it implicitly stores the provided ExtensionType
-// if not already stored.
-// It panics if the field does not contain a composite type.
-//
-// Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventStoreRawData) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		panic(fmt.Errorf("field iri of message regen.data.v1.EventStoreRawData is not mutable"))
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", fd.FullName()))
-	}
-}
-
-// NewField returns a new value that is assignable to the field
-// for the given descriptor. For scalars, this returns the default value.
-// For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EventStoreRawData) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
-	switch fd.FullName() {
-	case "regen.data.v1.EventStoreRawData.iri":
-		return protoreflect.ValueOfString("")
-	default:
-		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventStoreRawData"))
-		}
-		panic(fmt.Errorf("message regen.data.v1.EventStoreRawData does not contain field %s", fd.FullName()))
-	}
-}
-
-// WhichOneof reports which field within the oneof is populated,
-// returning nil if none are populated.
-// It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EventStoreRawData) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
-	switch d.FullName() {
-	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.EventStoreRawData", d.FullName()))
-	}
-	panic("unreachable")
-}
-
-// GetUnknown retrieves the entire list of unknown fields.
-// The caller may only mutate the contents of the RawFields
-// if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EventStoreRawData) GetUnknown() protoreflect.RawFields {
-	return x.unknownFields
-}
-
-// SetUnknown stores an entire list of unknown fields.
-// The raw fields must be syntactically valid according to the wire format.
-// An implementation may panic if this is not the case.
-// Once stored, the caller must not mutate the content of the RawFields.
-// An empty RawFields may be passed to clear the fields.
-//
-// SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventStoreRawData) SetUnknown(fields protoreflect.RawFields) {
-	x.unknownFields = fields
-}
-
-// IsValid reports whether the message is valid.
-//
-// An invalid message is an empty, read-only value.
-//
-// An invalid message often corresponds to a nil pointer of the concrete
-// message type, but the details are implementation dependent.
-// Validity is not part of the protobuf data model, and may not
-// be preserved in marshaling or other operations.
-func (x *fastReflection_EventStoreRawData) IsValid() bool {
-	return x != nil
-}
-
-// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
-// This method may return nil.
-//
-// The returned methods type is identical to
-// "google.golang.org/protobuf/runtime/protoiface".Methods.
-// Consult the protoiface package documentation for details.
-func (x *fastReflection_EventStoreRawData) ProtoMethods() *protoiface.Methods {
-	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EventStoreRawData)
-		if x == nil {
-			return protoiface.SizeOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Size:              0,
-			}
-		}
-		options := runtime.SizeInputToOptions(input)
-		_ = options
-		var n int
-		var l int
-		_ = l
-		l = len(x.Iri)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.unknownFields != nil {
-			n += len(x.unknownFields)
-		}
-		return protoiface.SizeOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Size:              n,
-		}
-	}
-
-	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EventStoreRawData)
-		if x == nil {
-			return protoiface.MarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Buf:               input.Buf,
-			}, nil
-		}
-		options := runtime.MarshalInputToOptions(input)
-		_ = options
-		size := options.Size(x)
-		dAtA := make([]byte, size)
-		i := len(dAtA)
-		_ = i
-		var l int
-		_ = l
-		if x.unknownFields != nil {
-			i -= len(x.unknownFields)
-			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Iri) > 0 {
-			i -= len(x.Iri)
-			copy(dAtA[i:], x.Iri)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
-			i--
-			dAtA[i] = 0xa
-		}
-		if input.Buf != nil {
-			input.Buf = append(input.Buf, dAtA...)
-		} else {
-			input.Buf = dAtA
-		}
-		return protoiface.MarshalOutput{
-			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-			Buf:               input.Buf,
-		}, nil
-	}
-	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EventStoreRawData)
-		if x == nil {
-			return protoiface.UnmarshalOutput{
-				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-				Flags:             input.Flags,
-			}, nil
-		}
-		options := runtime.UnmarshalInputToOptions(input)
-		_ = options
-		dAtA := input.Buf
-		l := len(dAtA)
-		iNdEx := 0
-		for iNdEx < l {
-			preIndex := iNdEx
-			var wire uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-				}
-				if iNdEx >= l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				wire |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			fieldNum := int32(wire >> 3)
-			wireType := int(wire & 0x7)
-			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventStoreRawData: wiretype end group for non-group")
-			}
-			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventStoreRawData: illegal tag %d (wire type %d)", fieldNum, wire)
-			}
-			switch fieldNum {
-			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Iri = string(dAtA[iNdEx:postIndex])
+				x.Attestors = append(x.Attestors, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -1409,8 +989,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// EventAnchorData is an event emitted when data is anchored on-chain.
-type EventAnchorData struct {
+// EventAnchor is an event emitted when data is anchored on chain.
+type EventAnchor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1419,8 +999,8 @@ type EventAnchorData struct {
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
-func (x *EventAnchorData) Reset() {
-	*x = EventAnchorData{}
+func (x *EventAnchor) Reset() {
+	*x = EventAnchor{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_events_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1428,38 +1008,39 @@ func (x *EventAnchorData) Reset() {
 	}
 }
 
-func (x *EventAnchorData) String() string {
+func (x *EventAnchor) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EventAnchorData) ProtoMessage() {}
+func (*EventAnchor) ProtoMessage() {}
 
-// Deprecated: Use EventAnchorData.ProtoReflect.Descriptor instead.
-func (*EventAnchorData) Descriptor() ([]byte, []int) {
+// Deprecated: Use EventAnchor.ProtoReflect.Descriptor instead.
+func (*EventAnchor) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_events_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *EventAnchorData) GetIri() string {
+func (x *EventAnchor) GetIri() string {
 	if x != nil {
 		return x.Iri
 	}
 	return ""
 }
 
-// EventSignData is an event emitted when data is signed on-chain.
-type EventSignData struct {
+// EventAttest is an event emitted when data is attested to on chain.
+type EventAttest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// signers are the addresses of the accounts which have signed the data.
-	Signers []string `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
+	// attestors are the addresses of the accounts which have attested
+	// to the validity of the data.
+	Attestors []string `protobuf:"bytes,2,rep,name=attestors,proto3" json:"attestors,omitempty"`
 }
 
-func (x *EventSignData) Reset() {
-	*x = EventSignData{}
+func (x *EventAttest) Reset() {
+	*x = EventAttest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_events_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1467,66 +1048,29 @@ func (x *EventSignData) Reset() {
 	}
 }
 
-func (x *EventSignData) String() string {
+func (x *EventAttest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EventSignData) ProtoMessage() {}
+func (*EventAttest) ProtoMessage() {}
 
-// Deprecated: Use EventSignData.ProtoReflect.Descriptor instead.
-func (*EventSignData) Descriptor() ([]byte, []int) {
+// Deprecated: Use EventAttest.ProtoReflect.Descriptor instead.
+func (*EventAttest) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_events_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *EventSignData) GetIri() string {
+func (x *EventAttest) GetIri() string {
 	if x != nil {
 		return x.Iri
 	}
 	return ""
 }
 
-func (x *EventSignData) GetSigners() []string {
+func (x *EventAttest) GetAttestors() []string {
 	if x != nil {
-		return x.Signers
+		return x.Attestors
 	}
 	return nil
-}
-
-// EventStoreRawData is an event emitted when data is stored on-chain.
-type EventStoreRawData struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// iri is the data IRI
-	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-}
-
-func (x *EventStoreRawData) Reset() {
-	*x = EventStoreRawData{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_data_v1_events_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *EventStoreRawData) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*EventStoreRawData) ProtoMessage() {}
-
-// Deprecated: Use EventStoreRawData.ProtoReflect.Descriptor instead.
-func (*EventStoreRawData) Descriptor() ([]byte, []int) {
-	return file_regen_data_v1_events_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *EventStoreRawData) GetIri() string {
-	if x != nil {
-		return x.Iri
-	}
-	return ""
 }
 
 var File_regen_data_v1_events_proto protoreflect.FileDescriptor
@@ -1534,28 +1078,25 @@ var File_regen_data_v1_events_proto protoreflect.FileDescriptor
 var file_regen_data_v1_events_proto_rawDesc = []byte{
 	0x0a, 0x1a, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f,
 	0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0x23, 0x0a, 0x0f, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x44, 0x61, 0x74, 0x61, 0x12, 0x10,
-	0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69,
-	0x22, 0x3b, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x69, 0x67, 0x6e, 0x44, 0x61, 0x74,
-	0x61, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x69, 0x72, 0x69, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x18, 0x02,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x73, 0x22, 0x25, 0x0a,
-	0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x52, 0x61, 0x77, 0x44, 0x61,
-	0x74, 0x61, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x03, 0x69, 0x72, 0x69, 0x42, 0xb6, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75,
-	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f,
-	0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa,
-	0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2,
-	0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0x1f, 0x0a, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72,
+	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x3d, 0x0a, 0x0b,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69,
+	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x1c, 0x0a,
+	0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0xb6, 0x01, 0x0a, 0x11,
+	0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
+	0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31,
+	0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44,
+	0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
+	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
+	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1570,11 +1111,10 @@ func file_regen_data_v1_events_proto_rawDescGZIP() []byte {
 	return file_regen_data_v1_events_proto_rawDescData
 }
 
-var file_regen_data_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_regen_data_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_regen_data_v1_events_proto_goTypes = []interface{}{
-	(*EventAnchorData)(nil),   // 0: regen.data.v1.EventAnchorData
-	(*EventSignData)(nil),     // 1: regen.data.v1.EventSignData
-	(*EventStoreRawData)(nil), // 2: regen.data.v1.EventStoreRawData
+	(*EventAnchor)(nil), // 0: regen.data.v1.EventAnchor
+	(*EventAttest)(nil), // 1: regen.data.v1.EventAttest
 }
 var file_regen_data_v1_events_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -1591,7 +1131,7 @@ func file_regen_data_v1_events_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_regen_data_v1_events_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAnchorData); i {
+			switch v := v.(*EventAnchor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1603,19 +1143,7 @@ func file_regen_data_v1_events_proto_init() {
 			}
 		}
 		file_regen_data_v1_events_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventSignData); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_regen_data_v1_events_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventStoreRawData); i {
+			switch v := v.(*EventAttest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1633,7 +1161,7 @@ func file_regen_data_v1_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_data_v1_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
