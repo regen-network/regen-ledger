@@ -67,7 +67,7 @@ var (
 	fd_MsgCreateClass_issuers            protoreflect.FieldDescriptor
 	fd_MsgCreateClass_metadata           protoreflect.FieldDescriptor
 	fd_MsgCreateClass_credit_type_abbrev protoreflect.FieldDescriptor
-	fd_MsgCreateClass_fee_denom          protoreflect.FieldDescriptor
+	fd_MsgCreateClass_fee                protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -77,7 +77,7 @@ func init() {
 	fd_MsgCreateClass_issuers = md_MsgCreateClass.Fields().ByName("issuers")
 	fd_MsgCreateClass_metadata = md_MsgCreateClass.Fields().ByName("metadata")
 	fd_MsgCreateClass_credit_type_abbrev = md_MsgCreateClass.Fields().ByName("credit_type_abbrev")
-	fd_MsgCreateClass_fee_denom = md_MsgCreateClass.Fields().ByName("fee_denom")
+	fd_MsgCreateClass_fee = md_MsgCreateClass.Fields().ByName("fee")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgCreateClass)(nil)
@@ -169,9 +169,9 @@ func (x *fastReflection_MsgCreateClass) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
-	if x.FeeDenom != "" {
-		value := protoreflect.ValueOfString(x.FeeDenom)
-		if !f(fd_MsgCreateClass_fee_denom, value) {
+	if x.Fee != nil {
+		value := protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
+		if !f(fd_MsgCreateClass_fee, value) {
 			return
 		}
 	}
@@ -198,8 +198,8 @@ func (x *fastReflection_MsgCreateClass) Has(fd protoreflect.FieldDescriptor) boo
 		return x.Metadata != ""
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		return x.CreditTypeAbbrev != ""
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		return x.FeeDenom != ""
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		return x.Fee != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -224,8 +224,8 @@ func (x *fastReflection_MsgCreateClass) Clear(fd protoreflect.FieldDescriptor) {
 		x.Metadata = ""
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		x.CreditTypeAbbrev = ""
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		x.FeeDenom = ""
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		x.Fee = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -257,9 +257,9 @@ func (x *fastReflection_MsgCreateClass) Get(descriptor protoreflect.FieldDescrip
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		value := x.CreditTypeAbbrev
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		value := x.FeeDenom
-		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		value := x.Fee
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -290,8 +290,8 @@ func (x *fastReflection_MsgCreateClass) Set(fd protoreflect.FieldDescriptor, val
 		x.Metadata = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		x.CreditTypeAbbrev = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		x.FeeDenom = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		x.Fee = value.Message().Interface().(*v1beta1.Coin)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -318,14 +318,17 @@ func (x *fastReflection_MsgCreateClass) Mutable(fd protoreflect.FieldDescriptor)
 		}
 		value := &_MsgCreateClass_2_list{list: &x.Issuers}
 		return protoreflect.ValueOfList(value)
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		if x.Fee == nil {
+			x.Fee = new(v1beta1.Coin)
+		}
+		return protoreflect.ValueOfMessage(x.Fee.ProtoReflect())
 	case "regen.ecocredit.v1.MsgCreateClass.admin":
 		panic(fmt.Errorf("field admin of message regen.ecocredit.v1.MsgCreateClass is not mutable"))
 	case "regen.ecocredit.v1.MsgCreateClass.metadata":
 		panic(fmt.Errorf("field metadata of message regen.ecocredit.v1.MsgCreateClass is not mutable"))
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		panic(fmt.Errorf("field credit_type_abbrev of message regen.ecocredit.v1.MsgCreateClass is not mutable"))
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		panic(fmt.Errorf("field fee_denom of message regen.ecocredit.v1.MsgCreateClass is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -348,8 +351,9 @@ func (x *fastReflection_MsgCreateClass) NewField(fd protoreflect.FieldDescriptor
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateClass.credit_type_abbrev":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgCreateClass.fee_denom":
-		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.MsgCreateClass.fee":
+		m := new(v1beta1.Coin)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgCreateClass"))
@@ -437,8 +441,8 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.FeeDenom)
-		if l > 0 {
+		if x.Fee != nil {
+			l = options.Size(x.Fee)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
@@ -470,10 +474,17 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.FeeDenom) > 0 {
-			i -= len(x.FeeDenom)
-			copy(dAtA[i:], x.FeeDenom)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.FeeDenom)))
+		if x.Fee != nil {
+			encoded, err := options.Marshal(x.Fee)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0x2a
 		}
@@ -686,9 +697,9 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FeeDenom", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fee", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -698,23 +709,27 @@ func (x *fastReflection_MsgCreateClass) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.FeeDenom = string(dAtA[iNdEx:postIndex])
+				if x.Fee == nil {
+					x.Fee = &v1beta1.Coin{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Fee); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -15322,10 +15337,9 @@ type MsgCreateClass struct {
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
-	// fee_denom is the currency denom to be used to pay the credit class fee.
-	// This denom MUST exist in the governance controlled allowed credit class fee list.
-	// The user's balance must be at least equal to the amount specified in the credit class fee list.
-	FeeDenom string `protobuf:"bytes,5,opt,name=fee_denom,json=feeDenom,proto3" json:"fee_denom,omitempty"`
+	// fee specifies the fee to pay for the creation of the credit class.
+	// acceptable fees for creating a credit class can be found in the governance parameters for the ecocredit module.
+	Fee *v1beta1.Coin `protobuf:"bytes,5,opt,name=fee,proto3" json:"fee,omitempty"`
 }
 
 func (x *MsgCreateClass) Reset() {
@@ -15376,11 +15390,11 @@ func (x *MsgCreateClass) GetCreditTypeAbbrev() string {
 	return ""
 }
 
-func (x *MsgCreateClass) GetFeeDenom() string {
+func (x *MsgCreateClass) GetFee() *v1beta1.Coin {
 	if x != nil {
-		return x.FeeDenom
+		return x.Fee
 	}
-	return ""
+	return nil
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
@@ -16730,7 +16744,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
 	0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x61,
-	0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa7, 0x01, 0x0a, 0x0e, 0x4d, 0x73, 0x67,
+	0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb7, 0x01, 0x0a, 0x0e, 0x4d, 0x73, 0x67,
 	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x61,
 	0x64, 0x6d, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x64, 0x6d, 0x69,
 	0x6e, 0x12, 0x18, 0x0a, 0x07, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03,
@@ -16739,9 +16753,10 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x2c, 0x0a, 0x12, 0x63, 0x72, 0x65, 0x64, 0x69,
 	0x74, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x5f, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x18, 0x04, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x10, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x41,
-	0x62, 0x62, 0x72, 0x65, 0x76, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x65, 0x65, 0x5f, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x65, 0x65, 0x44, 0x65, 0x6e,
-	0x6f, 0x6d, 0x22, 0x33, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
+	0x62, 0x62, 0x72, 0x65, 0x76, 0x12, 0x2b, 0x0a, 0x03, 0x66, 0x65, 0x65, 0x18, 0x05, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x03, 0x66,
+	0x65, 0x65, 0x22, 0x33, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
 	0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08,
 	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
 	0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x22, 0xab, 0x01, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x43,
@@ -17058,50 +17073,51 @@ var file_regen_ecocredit_v1_tx_proto_goTypes = []interface{}{
 	(*MsgSend_SendCredits)(nil),                         // 27: regen.ecocredit.v1.MsgSend.SendCredits
 	(*MsgRetire_RetireCredits)(nil),                     // 28: regen.ecocredit.v1.MsgRetire.RetireCredits
 	(*MsgCancel_CancelCredits)(nil),                     // 29: regen.ecocredit.v1.MsgCancel.CancelCredits
-	(*timestamppb.Timestamp)(nil),                       // 30: google.protobuf.Timestamp
-	(*CreditType)(nil),                                  // 31: regen.ecocredit.v1.CreditType
-	(*v1beta1.Coin)(nil),                                // 32: cosmos.base.v1beta1.Coin
+	(*v1beta1.Coin)(nil),                                // 30: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),                       // 31: google.protobuf.Timestamp
+	(*CreditType)(nil),                                  // 32: regen.ecocredit.v1.CreditType
 }
 var file_regen_ecocredit_v1_tx_proto_depIdxs = []int32{
-	26, // 0: regen.ecocredit.v1.MsgCreateBatch.issuance:type_name -> regen.ecocredit.v1.MsgCreateBatch.BatchIssuance
-	30, // 1: regen.ecocredit.v1.MsgCreateBatch.start_date:type_name -> google.protobuf.Timestamp
-	30, // 2: regen.ecocredit.v1.MsgCreateBatch.end_date:type_name -> google.protobuf.Timestamp
-	27, // 3: regen.ecocredit.v1.MsgSend.credits:type_name -> regen.ecocredit.v1.MsgSend.SendCredits
-	28, // 4: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.MsgRetire.RetireCredits
-	29, // 5: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.MsgCancel.CancelCredits
-	31, // 6: regen.ecocredit.v1.MsgAddCreditType.credit_types:type_name -> regen.ecocredit.v1.CreditType
-	32, // 7: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees:type_name -> cosmos.base.v1beta1.Coin
-	0,  // 8: regen.ecocredit.v1.Msg.CreateClass:input_type -> regen.ecocredit.v1.MsgCreateClass
-	2,  // 9: regen.ecocredit.v1.Msg.CreateProject:input_type -> regen.ecocredit.v1.MsgCreateProject
-	4,  // 10: regen.ecocredit.v1.Msg.CreateBatch:input_type -> regen.ecocredit.v1.MsgCreateBatch
-	6,  // 11: regen.ecocredit.v1.Msg.Send:input_type -> regen.ecocredit.v1.MsgSend
-	8,  // 12: regen.ecocredit.v1.Msg.Retire:input_type -> regen.ecocredit.v1.MsgRetire
-	10, // 13: regen.ecocredit.v1.Msg.Cancel:input_type -> regen.ecocredit.v1.MsgCancel
-	12, // 14: regen.ecocredit.v1.Msg.UpdateClassAdmin:input_type -> regen.ecocredit.v1.MsgUpdateClassAdmin
-	14, // 15: regen.ecocredit.v1.Msg.UpdateClassIssuers:input_type -> regen.ecocredit.v1.MsgUpdateClassIssuers
-	16, // 16: regen.ecocredit.v1.Msg.UpdateClassMetadata:input_type -> regen.ecocredit.v1.MsgUpdateClassMetadata
-	18, // 17: regen.ecocredit.v1.Msg.AddCreditType:input_type -> regen.ecocredit.v1.MsgAddCreditType
-	20, // 18: regen.ecocredit.v1.Msg.ToggleAllowList:input_type -> regen.ecocredit.v1.MsgToggleAllowListRequest
-	22, // 19: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:input_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest
-	24, // 20: regen.ecocredit.v1.Msg.UpdateCreditClassFee:input_type -> regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest
-	1,  // 21: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
-	3,  // 22: regen.ecocredit.v1.Msg.CreateProject:output_type -> regen.ecocredit.v1.MsgCreateProjectResponse
-	5,  // 23: regen.ecocredit.v1.Msg.CreateBatch:output_type -> regen.ecocredit.v1.MsgCreateBatchResponse
-	7,  // 24: regen.ecocredit.v1.Msg.Send:output_type -> regen.ecocredit.v1.MsgSendResponse
-	9,  // 25: regen.ecocredit.v1.Msg.Retire:output_type -> regen.ecocredit.v1.MsgRetireResponse
-	11, // 26: regen.ecocredit.v1.Msg.Cancel:output_type -> regen.ecocredit.v1.MsgCancelResponse
-	13, // 27: regen.ecocredit.v1.Msg.UpdateClassAdmin:output_type -> regen.ecocredit.v1.MsgUpdateClassAdminResponse
-	15, // 28: regen.ecocredit.v1.Msg.UpdateClassIssuers:output_type -> regen.ecocredit.v1.MsgUpdateClassIssuersResponse
-	17, // 29: regen.ecocredit.v1.Msg.UpdateClassMetadata:output_type -> regen.ecocredit.v1.MsgUpdateClassMetadataResponse
-	19, // 30: regen.ecocredit.v1.Msg.AddCreditType:output_type -> regen.ecocredit.v1.MsgAddCreditTypeResponse
-	21, // 31: regen.ecocredit.v1.Msg.ToggleAllowList:output_type -> regen.ecocredit.v1.MsgToggleAllowListResponse
-	23, // 32: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:output_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsResponse
-	25, // 33: regen.ecocredit.v1.Msg.UpdateCreditClassFee:output_type -> regen.ecocredit.v1.MsgUpdateCreditClassFeeResponse
-	21, // [21:34] is the sub-list for method output_type
-	8,  // [8:21] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	30, // 0: regen.ecocredit.v1.MsgCreateClass.fee:type_name -> cosmos.base.v1beta1.Coin
+	26, // 1: regen.ecocredit.v1.MsgCreateBatch.issuance:type_name -> regen.ecocredit.v1.MsgCreateBatch.BatchIssuance
+	31, // 2: regen.ecocredit.v1.MsgCreateBatch.start_date:type_name -> google.protobuf.Timestamp
+	31, // 3: regen.ecocredit.v1.MsgCreateBatch.end_date:type_name -> google.protobuf.Timestamp
+	27, // 4: regen.ecocredit.v1.MsgSend.credits:type_name -> regen.ecocredit.v1.MsgSend.SendCredits
+	28, // 5: regen.ecocredit.v1.MsgRetire.credits:type_name -> regen.ecocredit.v1.MsgRetire.RetireCredits
+	29, // 6: regen.ecocredit.v1.MsgCancel.credits:type_name -> regen.ecocredit.v1.MsgCancel.CancelCredits
+	32, // 7: regen.ecocredit.v1.MsgAddCreditType.credit_types:type_name -> regen.ecocredit.v1.CreditType
+	30, // 8: regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest.add_fees:type_name -> cosmos.base.v1beta1.Coin
+	0,  // 9: regen.ecocredit.v1.Msg.CreateClass:input_type -> regen.ecocredit.v1.MsgCreateClass
+	2,  // 10: regen.ecocredit.v1.Msg.CreateProject:input_type -> regen.ecocredit.v1.MsgCreateProject
+	4,  // 11: regen.ecocredit.v1.Msg.CreateBatch:input_type -> regen.ecocredit.v1.MsgCreateBatch
+	6,  // 12: regen.ecocredit.v1.Msg.Send:input_type -> regen.ecocredit.v1.MsgSend
+	8,  // 13: regen.ecocredit.v1.Msg.Retire:input_type -> regen.ecocredit.v1.MsgRetire
+	10, // 14: regen.ecocredit.v1.Msg.Cancel:input_type -> regen.ecocredit.v1.MsgCancel
+	12, // 15: regen.ecocredit.v1.Msg.UpdateClassAdmin:input_type -> regen.ecocredit.v1.MsgUpdateClassAdmin
+	14, // 16: regen.ecocredit.v1.Msg.UpdateClassIssuers:input_type -> regen.ecocredit.v1.MsgUpdateClassIssuers
+	16, // 17: regen.ecocredit.v1.Msg.UpdateClassMetadata:input_type -> regen.ecocredit.v1.MsgUpdateClassMetadata
+	18, // 18: regen.ecocredit.v1.Msg.AddCreditType:input_type -> regen.ecocredit.v1.MsgAddCreditType
+	20, // 19: regen.ecocredit.v1.Msg.ToggleAllowList:input_type -> regen.ecocredit.v1.MsgToggleAllowListRequest
+	22, // 20: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:input_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsRequest
+	24, // 21: regen.ecocredit.v1.Msg.UpdateCreditClassFee:input_type -> regen.ecocredit.v1.MsgUpdateCreditClassFeeRequest
+	1,  // 22: regen.ecocredit.v1.Msg.CreateClass:output_type -> regen.ecocredit.v1.MsgCreateClassResponse
+	3,  // 23: regen.ecocredit.v1.Msg.CreateProject:output_type -> regen.ecocredit.v1.MsgCreateProjectResponse
+	5,  // 24: regen.ecocredit.v1.Msg.CreateBatch:output_type -> regen.ecocredit.v1.MsgCreateBatchResponse
+	7,  // 25: regen.ecocredit.v1.Msg.Send:output_type -> regen.ecocredit.v1.MsgSendResponse
+	9,  // 26: regen.ecocredit.v1.Msg.Retire:output_type -> regen.ecocredit.v1.MsgRetireResponse
+	11, // 27: regen.ecocredit.v1.Msg.Cancel:output_type -> regen.ecocredit.v1.MsgCancelResponse
+	13, // 28: regen.ecocredit.v1.Msg.UpdateClassAdmin:output_type -> regen.ecocredit.v1.MsgUpdateClassAdminResponse
+	15, // 29: regen.ecocredit.v1.Msg.UpdateClassIssuers:output_type -> regen.ecocredit.v1.MsgUpdateClassIssuersResponse
+	17, // 30: regen.ecocredit.v1.Msg.UpdateClassMetadata:output_type -> regen.ecocredit.v1.MsgUpdateClassMetadataResponse
+	19, // 31: regen.ecocredit.v1.Msg.AddCreditType:output_type -> regen.ecocredit.v1.MsgAddCreditTypeResponse
+	21, // 32: regen.ecocredit.v1.Msg.ToggleAllowList:output_type -> regen.ecocredit.v1.MsgToggleAllowListResponse
+	23, // 33: regen.ecocredit.v1.Msg.UpdateAllowedCreditClassCreators:output_type -> regen.ecocredit.v1.MsgUpdateAllowedCreditClassCreatorsResponse
+	25, // 34: regen.ecocredit.v1.Msg.UpdateCreditClassFee:output_type -> regen.ecocredit.v1.MsgUpdateCreditClassFeeResponse
+	22, // [22:35] is the sub-list for method output_type
+	9,  // [9:22] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_v1_tx_proto_init() }

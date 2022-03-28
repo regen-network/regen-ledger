@@ -3,20 +3,21 @@ package marketplace
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // Sell creates new sell orders for credits
-func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
+func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
@@ -30,7 +31,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -46,6 +47,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		if err = k.escrowCredits(ctx, ownerAcc, batch.Id, sellQty); err != nil {
 			return nil, err
 		}
+
 		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
 		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
 		//if err != nil {
@@ -55,7 +57,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
 		//}
 
-		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &api.SellOrder{
+		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,
 			Quantity:          order.Quantity,
@@ -68,9 +70,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		if err != nil {
 			return nil, err
 		}
+
 		sellOrderIds[i] = id
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
-		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
 			OrderId:           id,
 			BatchDenom:        batch.BatchDenom,
 			Quantity:          order.Quantity,
@@ -80,8 +82,10 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
-	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
@@ -91,7 +95,7 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
-		return k.stateStore.MarketTable().InsertReturningID(ctx, &api.Market{
+		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
 			PrecisionModifier: 0,

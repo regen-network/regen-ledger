@@ -18,6 +18,9 @@ service Msg {
   // UpdateSellOrders updates existing sell orders.
   rpc UpdateSellOrders(MsgUpdateSellOrders) returns (MsgUpdateSellOrdersResponse);
 
+  // CancelSellOrder cancels a sell order and returns the funds from escrow.
+  rpc CancelSellOrder(MsgCancelSellOrder) returns (MsgCancelSellOrderResponse);
+
   // Buy creates credit buy orders.
   rpc Buy (MsgBuy) returns (MsgBuyResponse);
 
@@ -103,6 +106,19 @@ message MsgUpdateSellOrders {
 
 // MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
 message MsgUpdateSellOrdersResponse {}
+
+// MsgCancelSellOrder is the Msg/CancelSellOrder request type.
+message MsgCancelSellOrder {
+
+  // seller is the address of the seller.
+  string seller = 1;
+
+  // sell_order_id is the id of the seller order to cancel.
+  uint64 sell_order_id = 2;
+}
+
+// MsgCancelSellOrder is the Msg/CancelSellOrder response type.
+message MsgCancelSellOrderResponse {}
 
 // MsgBuy is the Msg/Buy request type.
 message MsgBuy {

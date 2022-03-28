@@ -3,12 +3,12 @@ package marketplace
 import (
 	"context"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // assertHasBalance checks that the account has `qty` credits from the given batch id.
@@ -28,6 +28,6 @@ func assertHasBalance(ctx context.Context, store ecoApi.StateStore, acc sdk.AccA
 }
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
-func isDenomAllowed(ctx context.Context, store marketApi.StateStore, denom string) (bool, error) {
+func isDenomAllowed(ctx context.Context, store api.StateStore, denom string) (bool, error) {
 	return store.AllowedDenomTable().Has(ctx, denom)
 }

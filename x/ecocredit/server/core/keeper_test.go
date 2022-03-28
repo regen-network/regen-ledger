@@ -5,14 +5,9 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
-
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -20,24 +15,28 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/server/core/mocks"
 )
 
 type baseSuite struct {
-	t             *testing.T
-	db            ormdb.ModuleDB
-	stateStore    api.StateStore
-	ctx           context.Context
-	k             Keeper
-	ctrl          *gomock.Controller
-	addr          sdk.AccAddress
-	bankKeeper    *mocks.MockBankKeeper
-	paramsKeeper  *mocks.MockParamKeeper
-	accountKeeper *mocks.MockAccountKeeper
-	storeKey      *sdk.KVStoreKey
-	sdkCtx        sdk.Context
+	t            *testing.T
+	db           ormdb.ModuleDB
+	stateStore   api.StateStore
+	ctx          context.Context
+	k            Keeper
+	ctrl         *gomock.Controller
+	addr         sdk.AccAddress
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks2.MockParamKeeper
+	storeKey     *sdk.KVStoreKey
+	sdkCtx       sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -62,9 +61,8 @@ func setupBase(t *testing.T) *baseSuite {
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
-	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.accountKeeper = mocks.NewMockAccountKeeper(s.ctrl)
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.accountKeeper)
+	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

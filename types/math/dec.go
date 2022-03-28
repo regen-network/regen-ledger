@@ -18,6 +18,13 @@ type Dec struct {
 	dec apd.Decimal
 }
 
+// constants for more convenient intent behind dec.Cmp values.
+const (
+	GreaterThan = 1
+	LessThan    = -1
+	EqualTo     = 0
+)
+
 const mathCodespace = "math"
 
 var (

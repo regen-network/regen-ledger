@@ -21,6 +21,6 @@ message GenesisContentEntry {
     // timestamp is the anchor Timestamp
     google.protobuf.Timestamp timestamp = 2;
 
-    // signers are the signers, if any
-    repeated SignerEntry signers = 3;
+    // attestors are the attestors, if any
+    repeated AttestorEntry attestors = 3;
 }

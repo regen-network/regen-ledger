@@ -1,6 +1,18 @@
 # Prerequisites
 
-## For Developers
+## Hardware
+
+We recommend the following hardware specifications:
+
+- 16G RAM
+- 4vCPUs
+- 500GB Disk space
+
+## Image
+
+We recommend using Ubuntu 18.04 or 20.04.
+
+## Software
 
 ### Git
 
@@ -14,24 +26,10 @@ For more information, see [GNU Make](https://www.gnu.org/software/make/).
 
 For more information, see [Go](https://golang.org/).
 
-## For Node Operators
-
-### Hardware
-
-We recommend the following hardware specifications:
-
-- 16G RAM
-- 4vCPUs
-- 500GB Disk space
-
-### Software
-
-We recommend using Ubuntu 18.04 or 20.04.
-
-The prerequisites listed above for developers are also required for node operators. The following instructions will install the necessary prerequisites on a Linux machine.
+## Initial Setup
 
 :::tip NOTE
-These commands are included in the [quickstart script](./running-a-validator.md#quickstart).
+These commands are included in the [quickstart script](../get-started/run-a-full-node.md#quickstart).
 :::
 
 Update packages:
@@ -86,4 +84,4 @@ Source profile file:
 . ~/.profile
 ```
 
-You're now ready to set up a [full node](./running-a-full-node.md) or a [validator node](./running-a-validator.md).
+You're now ready to [run a full node](run-a-full-node.md).

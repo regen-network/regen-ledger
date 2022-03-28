@@ -2,6 +2,9 @@ package core
 
 import (
 	"context"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -9,7 +12,6 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder
@@ -25,12 +27,10 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.params, batch.BatchDenom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
-		precision := creditType.Precision
-
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
 			return nil, err
@@ -39,7 +39,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		decs, err := server.GetNonNegativeFixedDecs(precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -56,6 +56,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
+
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			Address:  holder,
 			BatchId:  batch.Id,
@@ -64,6 +65,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
+
 		if err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
@@ -72,6 +74,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
+
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCancel{
 			Canceller:  holder.String(),
 			BatchDenom: credit.BatchDenom,
@@ -79,7 +82,8 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}); err != nil {
 			return nil, err
 		}
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCancel credit iteration")
 	}
 	return &core.MsgCancelResponse{}, nil
 }

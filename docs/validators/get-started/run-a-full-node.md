@@ -1,6 +1,6 @@
-# Running a Full Node
+# Run a Full Node
 
-This document provides instructions for running a full node for a [live network](./live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
+This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.17`
 
-For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
+For more information (including hardware recommendations), see [Prerequisites](prerequisites.md). 
 
 ## Quickstart
 
@@ -238,7 +238,16 @@ Enable cosmovisor to start automatically when the machine reboots:
 ```bash
 sudo systemctl enable cosmovisor.service
 ```
+## Using StateSync
+
+[Regen Mainnet](../../ledger/get-started/live-networks.md#regen-mainnet) also supports [statesync](https://docs.cosmos.network/v0.44/architecture/adr-040-storage-and-smt-state-commitments.html#snapshots-for-storage-sync-and-state-versioning) which allows node operators to quickly spin up a node without downloading the existing chain data. It should be noted that not many nodes should be spun up on the network using this method as these nodes will be unable to propogate the historical data to other nodes.
+
+Download and execute the script:
+```bash 
+export MONIKER=<your-node-moniker>
+curl -s -L https://raw.githubusercontent.com/regen-network/regen-ledger/master/scripts/statesync.bash | bash
+```
 
 ## Prepare Upgrade
 
-The next step will be to prepare your node for the upgrade process. See [Upgrade Overview](../migrations/upgrade.md) for more information.
+The next step will be to [create a validator](create-a-validator.md) and prepare your node for the [upgrade process](../migrations/upgrade.md).
