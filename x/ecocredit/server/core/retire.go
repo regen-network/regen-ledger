@@ -3,13 +3,15 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // Retire credits to the specified location.
@@ -23,7 +25,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := server.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -32,7 +34,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		decs, err := server.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
 		if err != nil {
 			return nil, err
 		}
@@ -54,7 +56,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		decs, err = server.GetNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
+		decs, err = utils.GetNonNegativeFixedDecs(creditType.Precision, batchSupply.RetiredAmount, batchSupply.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -76,12 +78,14 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}); err != nil {
 			return nil, err
 		}
+
 		err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchId:         batch.Id,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,
 		})
+
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Retirer:    req.Holder,
 			BatchDenom: credit.BatchDenom,
@@ -90,7 +94,8 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}); err != nil {
 			return nil, err
 		}
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgRetire credit iteration")
 	}
 	return &core.MsgRetireResponse{}, nil
 }

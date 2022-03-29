@@ -71,33 +71,6 @@ func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	return nil
 }
 
-func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		stop, err := cb(string(ecocredit.ParseSupplyKey(iter.Key())), string(iter.Value()))
-		if err != nil {
-			return err
-		}
-		if stop {
-			break
-		}
-	}
-
-	return nil
-}
-
-func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		addr, denom := ecocredit.ParseBalanceKey(iter.Key())
-		if cb(addr.String(), string(denom), string(iter.Value())) {
-			break
-		}
-	}
-}
-
 func verifyCreditBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
 	bd := ecocredit.BatchDenomT(batchDenom)
 

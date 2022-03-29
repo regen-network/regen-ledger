@@ -3,6 +3,8 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -10,7 +12,6 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -32,13 +33,21 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
+	feeAmt := params.CreditClassFee.AmountOf(req.Fee.Denom)
+	if feeAmt.IsZero() {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
+	}
+	if req.Fee.Amount.LT(feeAmt) {
+		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v", feeAmt, req.Fee.Denom, req.Fee)
+	}
+
 	// Charge the admin a fee to create the credit class
-	err = k.chargeCreditClassFee(sdkCtx, adminAddress, params.CreditClassFee)
+	err = k.chargeCreditClassFee(sdkCtx, adminAddress, sdk.Coins{sdk.Coin{Denom: req.Fee.Denom, Amount: feeAmt}})
 	if err != nil {
 		return nil, err
 	}
 
-	creditType, err := server.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := utils.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +93,8 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		}); err != nil {
 			return nil, err
 		}
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass issuer iteration")
 	}
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateClass{
@@ -99,11 +110,12 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 
 func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {
 	for _, addr := range allowlist {
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
 		}
+
+		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass address iteration")
 	}
 	return false
 }

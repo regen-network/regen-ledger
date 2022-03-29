@@ -1125,32 +1125,31 @@ func (x *BasketCredit) GetAmount() string {
 
 // DateCriteria represents the information for credit acceptance in a basket.
 // At most, only one of the values should be set.
-// NOTE: gogo proto `oneof` is not compatible with Amino signing, hence we directly define
-// both `start_date_window` and `min_start_date`. In the future, with pulsar, this should change
-// and we should use `oneof`.
+// NOTE: gogo proto `oneof` is not compatible with Amino signing, hence we
+// directly define both `start_date_window` and `min_start_date`. In the future,
+// with pulsar, this should change and we should use `oneof`.
 type DateCriteria struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// min_start_date (optional) is the earliest start date for batches of credits allowed
-	// into the basket.
-	// At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
-	// can be set for a basket.
+	// min_start_date (optional) is the earliest start date for batches of credits
+	// allowed into the basket. At most only one of `start_date_window`,
+	// `min_start_date`, and `years_in_the_past` can be set for a basket.
 	MinStartDate *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=min_start_date,json=minStartDate,proto3" json:"min_start_date,omitempty"`
-	// start_date_window (optional) is a duration of time measured into the past which sets
-	// a cutoff for batch start dates when adding new credits to the basket.
-	// Based on the current block timestamp, credits whose start date is before
-	// `block_timestamp - start_date_window` will not be allowed into the basket.
-	// At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
-	// can be set for a basket.
+	// start_date_window (optional) is a duration of time measured into the past
+	// which sets a cutoff for batch start dates when adding new credits to the
+	// basket. Based on the current block timestamp, credits whose start date is
+	// before `block_timestamp - start_date_window` will not be allowed into the
+	// basket. At most only one of `start_date_window`, `min_start_date`, and
+	// `years_in_the_past` can be set for a basket.
 	StartDateWindow *durationpb.Duration `protobuf:"bytes,2,opt,name=start_date_window,json=startDateWindow,proto3" json:"start_date_window,omitempty"`
-	// years_in_the_past (optional) is the number of years into the past which sets a
-	// cutoff for the batch start dates when adding new credits to the basket.
-	// Based on the current block timestamp, credits whose start date year is less than
-	// `block_timestamp_year - years_in_the_past` will not be allowed into the basket.
-	// At most only one of `start_date_window`, `min_start_date`, and `years_in_the_past`
-	// can be set for a basket.
+	// years_in_the_past (optional) is the number of years into the past which
+	// sets a cutoff for the batch start dates when adding new credits to the
+	// basket. Based on the current block timestamp, credits whose start date year
+	// is less than `block_timestamp_year - years_in_the_past` will not be allowed
+	// into the basket. At most only one of `start_date_window`, `min_start_date`,
+	// and `years_in_the_past` can be set for a basket.
 	//
 	// Since Revision 1
 	YearsInThePast uint32 `protobuf:"varint,3,opt,name=years_in_the_past,json=yearsInThePast,proto3" json:"years_in_the_past,omitempty"`

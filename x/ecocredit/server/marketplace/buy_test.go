@@ -34,8 +34,8 @@ func TestBuy_ValidTradable(t *testing.T) {
 	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
@@ -48,8 +48,8 @@ func TestBuy_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
-	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(ask).Times(1)
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -97,8 +97,8 @@ func TestBuy_ValidRetired(t *testing.T) {
 	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
@@ -111,8 +111,8 @@ func TestBuy_ValidRetired(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
-	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(ask).Times(1)
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -159,8 +159,8 @@ func TestBuy_OrderFilled(t *testing.T) {
 	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
@@ -173,8 +173,8 @@ func TestBuy_OrderFilled(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(1)
-	s.bankKeeper.EXPECT().SendCoins(any, any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(ask).Times(1)
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -218,8 +218,8 @@ func TestBuy_Invalid(t *testing.T) {
 	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
 		p.CreditTypes = []*ecocredit.CreditType{&creditType}
 	}).Times(6)
 	sellExp := time.Now()
@@ -232,7 +232,7 @@ func TestBuy_Invalid(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(ask).Times(5)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(ask).Times(5)
 
 	// sell order not found
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
@@ -287,7 +287,7 @@ func TestBuy_Invalid(t *testing.T) {
 
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(wrongDenom).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(wrongDenom).Times(1)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
@@ -300,7 +300,7 @@ func TestBuy_Invalid(t *testing.T) {
 	// bidding more than in the bank
 	inBank := sdk.NewInt64Coin("ubar", 50)
 	biddingWith := sdk.NewInt64Coin("ubar", 100)
-	s.bankKeeper.EXPECT().GetBalance(any, any, any).Return(inBank).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{

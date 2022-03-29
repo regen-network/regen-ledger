@@ -11251,7 +11251,8 @@ func (x *QueryGroupsByAdminResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request
+// type.
 type QueryGroupAccountsByGroupRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11297,13 +11298,15 @@ func (x *QueryGroupAccountsByGroupRequest) GetPagination() *v1beta1.PageRequest 
 	return nil
 }
 
-// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response
+// type.
 type QueryGroupAccountsByGroupResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// group_accounts are the group accounts info associated with the provided group.
+	// group_accounts are the group accounts info associated with the provided
+	// group.
 	GroupAccounts []*GroupAccountInfo `protobuf:"bytes,1,rep,name=group_accounts,json=groupAccounts,proto3" json:"group_accounts,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -11343,7 +11346,8 @@ func (x *QueryGroupAccountsByGroupResponse) GetPagination() *v1beta1.PageRespons
 	return nil
 }
 
-// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request
+// type.
 type QueryGroupAccountsByAdminRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11389,7 +11393,8 @@ func (x *QueryGroupAccountsByAdminRequest) GetPagination() *v1beta1.PageRequest 
 	return nil
 }
 
-// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response
+// type.
 type QueryGroupAccountsByAdminResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11509,7 +11514,8 @@ func (x *QueryProposalResponse) GetProposal() *Proposal {
 	return nil
 }
 
-// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
+// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount
+// request type.
 type QueryProposalsByGroupAccountRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11555,7 +11561,8 @@ func (x *QueryProposalsByGroupAccountRequest) GetPagination() *v1beta1.PageReque
 	return nil
 }
 
-// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount response type.
+// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount
+// response type.
 type QueryProposalsByGroupAccountResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11601,7 +11608,8 @@ func (x *QueryProposalsByGroupAccountResponse) GetPagination() *v1beta1.PageResp
 	return nil
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request
+// type.
 type QueryVoteByProposalVoterRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11647,7 +11655,8 @@ func (x *QueryVoteByProposalVoterRequest) GetVoter() string {
 	return ""
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response
+// type.
 type QueryVoteByProposalVoterResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

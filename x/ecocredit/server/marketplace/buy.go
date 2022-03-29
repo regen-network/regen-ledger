@@ -10,7 +10,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -42,23 +42,22 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			if err != nil {
 				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
 			}
+			if sellOrder.DisableAutoRetire != order.DisableAutoRetire {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
+					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
+			}
 			batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
 			if err != nil {
 
 				return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 			}
-			ct, err := server.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+			ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
 			if err != nil {
 				return nil, err
 			}
 			creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 			if err != nil {
 				return nil, err
-			}
-
-			if sellOrder.DisableAutoRetire != order.DisableAutoRetire {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
-					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
 			}
 
 			// check that bid price and ask price denoms match
@@ -81,7 +80,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 					order.BidPrice.Amount.String(), sellOrder.AskPrice)
 			}
 
-			if err = k.updateBalances(ctx, sellOrder, buyerAcc, creditOrderQty, *order.BidPrice, false); err != nil {
+			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, *order.BidPrice, false); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
 			if !sellOrder.DisableAutoRetire {
@@ -118,13 +117,13 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 	return &v1.MsgBuyResponse{}, nil
 }
 
-// updateBalances moves credits according to the order. it will:
+// fillOrder moves credits according to the order. it will:
 // - update a sell order, removing it if quantity becomes 0 as a result of this purchase.
 // - remove the purchaseQty from the seller's escrowed balance.
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) updateBalances(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin, canPartialFill bool) error {
+func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin, canPartialFill bool) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {

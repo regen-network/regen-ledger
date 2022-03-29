@@ -156,20 +156,6 @@ func (mr *MockBankKeeperMockRecorder) GetSupply(ctx, denom interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSupply", reflect.TypeOf((*MockBankKeeper)(nil).GetSupply), ctx, denom)
 }
 
-// HasBalance mocks base method.
-func (m *MockBankKeeper) HasBalance(ctx types.Context, addr types.AccAddress, amt types.Coin) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "HasBalance", ctx, addr, amt)
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// HasBalance indicates an expected call of HasBalance.
-func (mr *MockBankKeeperMockRecorder) HasBalance(ctx, addr, amt interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasBalance", reflect.TypeOf((*MockBankKeeper)(nil).HasBalance), ctx, addr, amt)
-}
-
 // MintCoins mocks base method.
 func (m *MockBankKeeper) MintCoins(ctx types.Context, moduleName string, amt types.Coins) error {
 	m.ctrl.T.Helper()

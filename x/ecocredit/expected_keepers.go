@@ -30,10 +30,9 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-	HasBalance(ctx sdk.Context, addr sdk.AccAddress, amt sdk.Coin) bool
-	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
 // Keeper defines the expected interface needed to prune expired buy and sell orders.
@@ -45,9 +44,6 @@ type DistributionKeeper interface {
 	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
 }
 
-// ParamKeeper is an interface to interact with the params of a module.
-// The function in this signature will eventually change, after sdk v0.46 is merged
-// along with https://github.com/regen-network/regen-ledger/pull/854.
 type ParamKeeper interface {
 	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }

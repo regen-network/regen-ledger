@@ -1002,29 +1002,29 @@ func (x *fastReflection_DataAnchor) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_DataSigner           protoreflect.MessageDescriptor
-	fd_DataSigner_id        protoreflect.FieldDescriptor
-	fd_DataSigner_signer    protoreflect.FieldDescriptor
-	fd_DataSigner_timestamp protoreflect.FieldDescriptor
+	md_DataAttestor           protoreflect.MessageDescriptor
+	fd_DataAttestor_id        protoreflect.FieldDescriptor
+	fd_DataAttestor_attestor  protoreflect.FieldDescriptor
+	fd_DataAttestor_timestamp protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_state_proto_init()
-	md_DataSigner = File_regen_data_v1_state_proto.Messages().ByName("DataSigner")
-	fd_DataSigner_id = md_DataSigner.Fields().ByName("id")
-	fd_DataSigner_signer = md_DataSigner.Fields().ByName("signer")
-	fd_DataSigner_timestamp = md_DataSigner.Fields().ByName("timestamp")
+	md_DataAttestor = File_regen_data_v1_state_proto.Messages().ByName("DataAttestor")
+	fd_DataAttestor_id = md_DataAttestor.Fields().ByName("id")
+	fd_DataAttestor_attestor = md_DataAttestor.Fields().ByName("attestor")
+	fd_DataAttestor_timestamp = md_DataAttestor.Fields().ByName("timestamp")
 }
 
-var _ protoreflect.Message = (*fastReflection_DataSigner)(nil)
+var _ protoreflect.Message = (*fastReflection_DataAttestor)(nil)
 
-type fastReflection_DataSigner DataSigner
+type fastReflection_DataAttestor DataAttestor
 
-func (x *DataSigner) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_DataSigner)(x)
+func (x *DataAttestor) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_DataAttestor)(x)
 }
 
-func (x *DataSigner) slowProtoReflect() protoreflect.Message {
+func (x *DataAttestor) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_state_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1036,43 +1036,43 @@ func (x *DataSigner) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_DataSigner_messageType fastReflection_DataSigner_messageType
-var _ protoreflect.MessageType = fastReflection_DataSigner_messageType{}
+var _fastReflection_DataAttestor_messageType fastReflection_DataAttestor_messageType
+var _ protoreflect.MessageType = fastReflection_DataAttestor_messageType{}
 
-type fastReflection_DataSigner_messageType struct{}
+type fastReflection_DataAttestor_messageType struct{}
 
-func (x fastReflection_DataSigner_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_DataSigner)(nil)
+func (x fastReflection_DataAttestor_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_DataAttestor)(nil)
 }
-func (x fastReflection_DataSigner_messageType) New() protoreflect.Message {
-	return new(fastReflection_DataSigner)
+func (x fastReflection_DataAttestor_messageType) New() protoreflect.Message {
+	return new(fastReflection_DataAttestor)
 }
-func (x fastReflection_DataSigner_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_DataSigner
+func (x fastReflection_DataAttestor_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_DataAttestor
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_DataSigner) Descriptor() protoreflect.MessageDescriptor {
-	return md_DataSigner
+func (x *fastReflection_DataAttestor) Descriptor() protoreflect.MessageDescriptor {
+	return md_DataAttestor
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_DataSigner) Type() protoreflect.MessageType {
-	return _fastReflection_DataSigner_messageType
+func (x *fastReflection_DataAttestor) Type() protoreflect.MessageType {
+	return _fastReflection_DataAttestor_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_DataSigner) New() protoreflect.Message {
-	return new(fastReflection_DataSigner)
+func (x *fastReflection_DataAttestor) New() protoreflect.Message {
+	return new(fastReflection_DataAttestor)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_DataSigner) Interface() protoreflect.ProtoMessage {
-	return (*DataSigner)(x)
+func (x *fastReflection_DataAttestor) Interface() protoreflect.ProtoMessage {
+	return (*DataAttestor)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1080,22 +1080,22 @@ func (x *fastReflection_DataSigner) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_DataSigner) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_DataAttestor) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if len(x.Id) != 0 {
 		value := protoreflect.ValueOfBytes(x.Id)
-		if !f(fd_DataSigner_id, value) {
+		if !f(fd_DataAttestor_id, value) {
 			return
 		}
 	}
-	if len(x.Signer) != 0 {
-		value := protoreflect.ValueOfBytes(x.Signer)
-		if !f(fd_DataSigner_signer, value) {
+	if len(x.Attestor) != 0 {
+		value := protoreflect.ValueOfBytes(x.Attestor)
+		if !f(fd_DataAttestor_attestor, value) {
 			return
 		}
 	}
 	if x.Timestamp != nil {
 		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_DataSigner_timestamp, value) {
+		if !f(fd_DataAttestor_timestamp, value) {
 			return
 		}
 	}
@@ -1112,19 +1112,19 @@ func (x *fastReflection_DataSigner) Range(f func(protoreflect.FieldDescriptor, p
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_DataSigner) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_DataAttestor) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.DataSigner.id":
+	case "regen.data.v1.DataAttestor.id":
 		return len(x.Id) != 0
-	case "regen.data.v1.DataSigner.signer":
-		return len(x.Signer) != 0
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.attestor":
+		return len(x.Attestor) != 0
+	case "regen.data.v1.DataAttestor.timestamp":
 		return x.Timestamp != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1134,19 +1134,19 @@ func (x *fastReflection_DataSigner) Has(fd protoreflect.FieldDescriptor) bool {
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DataSigner) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_DataAttestor) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.DataSigner.id":
+	case "regen.data.v1.DataAttestor.id":
 		x.Id = nil
-	case "regen.data.v1.DataSigner.signer":
-		x.Signer = nil
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.attestor":
+		x.Attestor = nil
+	case "regen.data.v1.DataAttestor.timestamp":
 		x.Timestamp = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1156,22 +1156,22 @@ func (x *fastReflection_DataSigner) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_DataSigner) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DataAttestor) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.DataSigner.id":
+	case "regen.data.v1.DataAttestor.id":
 		value := x.Id
 		return protoreflect.ValueOfBytes(value)
-	case "regen.data.v1.DataSigner.signer":
-		value := x.Signer
+	case "regen.data.v1.DataAttestor.attestor":
+		value := x.Attestor
 		return protoreflect.ValueOfBytes(value)
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1185,19 +1185,19 @@ func (x *fastReflection_DataSigner) Get(descriptor protoreflect.FieldDescriptor)
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DataSigner) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_DataAttestor) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.DataSigner.id":
+	case "regen.data.v1.DataAttestor.id":
 		x.Id = value.Bytes()
-	case "regen.data.v1.DataSigner.signer":
-		x.Signer = value.Bytes()
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.attestor":
+		x.Attestor = value.Bytes()
+	case "regen.data.v1.DataAttestor.timestamp":
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1211,52 +1211,52 @@ func (x *fastReflection_DataSigner) Set(fd protoreflect.FieldDescriptor, value p
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DataSigner) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DataAttestor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.timestamp":
 		if x.Timestamp == nil {
 			x.Timestamp = new(timestamppb.Timestamp)
 		}
 		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-	case "regen.data.v1.DataSigner.id":
-		panic(fmt.Errorf("field id of message regen.data.v1.DataSigner is not mutable"))
-	case "regen.data.v1.DataSigner.signer":
-		panic(fmt.Errorf("field signer of message regen.data.v1.DataSigner is not mutable"))
+	case "regen.data.v1.DataAttestor.id":
+		panic(fmt.Errorf("field id of message regen.data.v1.DataAttestor is not mutable"))
+	case "regen.data.v1.DataAttestor.attestor":
+		panic(fmt.Errorf("field attestor of message regen.data.v1.DataAttestor is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_DataSigner) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_DataAttestor) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.DataSigner.id":
+	case "regen.data.v1.DataAttestor.id":
 		return protoreflect.ValueOfBytes(nil)
-	case "regen.data.v1.DataSigner.signer":
+	case "regen.data.v1.DataAttestor.attestor":
 		return protoreflect.ValueOfBytes(nil)
-	case "regen.data.v1.DataSigner.timestamp":
+	case "regen.data.v1.DataAttestor.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataSigner"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.DataAttestor"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.DataSigner does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.DataAttestor does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_DataSigner) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_DataAttestor) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.DataSigner", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.DataAttestor", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1264,7 +1264,7 @@ func (x *fastReflection_DataSigner) WhichOneof(d protoreflect.OneofDescriptor) p
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_DataSigner) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_DataAttestor) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1275,7 +1275,7 @@ func (x *fastReflection_DataSigner) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_DataSigner) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_DataAttestor) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1287,7 +1287,7 @@ func (x *fastReflection_DataSigner) SetUnknown(fields protoreflect.RawFields) {
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_DataSigner) IsValid() bool {
+func (x *fastReflection_DataAttestor) IsValid() bool {
 	return x != nil
 }
 
@@ -1297,9 +1297,9 @@ func (x *fastReflection_DataSigner) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_DataAttestor) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*DataSigner)
+		x := input.Message.Interface().(*DataAttestor)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1315,7 +1315,7 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Signer)
+		l = len(x.Attestor)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1333,7 +1333,7 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*DataSigner)
+		x := input.Message.Interface().(*DataAttestor)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1366,10 +1366,10 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Signer) > 0 {
-			i -= len(x.Signer)
-			copy(dAtA[i:], x.Signer)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Signer)))
+		if len(x.Attestor) > 0 {
+			i -= len(x.Attestor)
+			copy(dAtA[i:], x.Attestor)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestor)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1391,7 +1391,7 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*DataSigner)
+		x := input.Message.Interface().(*DataAttestor)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1423,10 +1423,10 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DataSigner: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DataAttestor: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DataSigner: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: DataAttestor: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -1465,7 +1465,7 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestor", wireType)
 				}
 				var byteLen int
 				for shift := uint(0); ; shift += 7 {
@@ -1492,9 +1492,9 @@ func (x *fastReflection_DataSigner) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Signer = append(x.Signer[:0], dAtA[iNdEx:postIndex]...)
-				if x.Signer == nil {
-					x.Signer = []byte{}
+				x.Attestor = append(x.Attestor[:0], dAtA[iNdEx:postIndex]...)
+				if x.Attestor == nil {
+					x.Attestor = []byte{}
 				}
 				iNdEx = postIndex
 			case 3:
@@ -2678,22 +2678,22 @@ func (x *DataAnchor) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// DataSigner is a join table for associating data IDs and signers.
-type DataSigner struct {
+// DataAttestor is a join table for associating data IDs and attestors.
+type DataAttestor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// id is the compact data ID.
 	Id []byte `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// signer is the account address of the signer.
-	Signer []byte `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
-	// timestamp is the time at which the signer signed this data object.
+	// attestor is the account address of the attestor.
+	Attestor []byte `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
+	// timestamp is the time at which the attestor signed this data object.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
-func (x *DataSigner) Reset() {
-	*x = DataSigner{}
+func (x *DataAttestor) Reset() {
+	*x = DataAttestor{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_state_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2701,32 +2701,32 @@ func (x *DataSigner) Reset() {
 	}
 }
 
-func (x *DataSigner) String() string {
+func (x *DataAttestor) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DataSigner) ProtoMessage() {}
+func (*DataAttestor) ProtoMessage() {}
 
-// Deprecated: Use DataSigner.ProtoReflect.Descriptor instead.
-func (*DataSigner) Descriptor() ([]byte, []int) {
+// Deprecated: Use DataAttestor.ProtoReflect.Descriptor instead.
+func (*DataAttestor) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_state_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *DataSigner) GetId() []byte {
+func (x *DataAttestor) GetId() []byte {
 	if x != nil {
 		return x.Id
 	}
 	return nil
 }
 
-func (x *DataSigner) GetSigner() []byte {
+func (x *DataAttestor) GetAttestor() []byte {
 	if x != nil {
-		return x.Signer
+		return x.Attestor
 	}
 	return nil
 }
 
-func (x *DataSigner) GetTimestamp() *timestamppb.Timestamp {
+func (x *DataAttestor) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
 	}
@@ -2856,41 +2856,41 @@ var file_regen_data_v1_state_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09,
 	0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x3a, 0x0e, 0xf2, 0x9e, 0xd3, 0x8e, 0x03,
-	0x08, 0x0a, 0x04, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x22, 0x85, 0x01, 0x0a, 0x0a, 0x44, 0x61,
-	0x74, 0x61, 0x53, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x69, 0x67, 0x6e,
-	0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72,
-	0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
-	0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x3a, 0x15, 0xf2, 0x9e, 0xd3, 0x8e,
-	0x03, 0x0f, 0x0a, 0x0b, 0x0a, 0x09, 0x69, 0x64, 0x2c, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x72, 0x18,
-	0x03, 0x22, 0x74, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66,
-	0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
-	0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x3a, 0x28, 0xf2,
-	0x9e, 0xd3, 0x8e, 0x03, 0x22, 0x0a, 0x06, 0x0a, 0x02, 0x69, 0x64, 0x10, 0x01, 0x12, 0x09, 0x0a,
-	0x03, 0x75, 0x72, 0x6c, 0x10, 0x01, 0x18, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61,
-	0x67, 0x65, 0x72, 0x10, 0x02, 0x18, 0x04, 0x22, 0x5b, 0x0a, 0x0c, 0x44, 0x61, 0x74, 0x61, 0x52,
-	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x72, 0x65,
-	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x1a, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x14,
-	0x0a, 0x10, 0x0a, 0x0e, 0x69, 0x64, 0x2c, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f,
-	0x69, 0x64, 0x18, 0x05, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74,
-	0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76,
-	0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02,
-	0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02,
-	0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02,
-	0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x08, 0x0a, 0x04, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x22, 0x8d, 0x01, 0x0a, 0x0c, 0x44, 0x61,
+	0x74, 0x61, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x08, 0x61, 0x74,
+	0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
+	0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x3a, 0x17, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x11, 0x0a, 0x0d, 0x0a, 0x0b, 0x69, 0x64, 0x2c, 0x61,
+	0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x22, 0x74, 0x0a, 0x0c, 0x52, 0x65, 0x73,
+	0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d,
+	0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x6d, 0x61,
+	0x6e, 0x61, 0x67, 0x65, 0x72, 0x3a, 0x28, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x22, 0x0a, 0x06, 0x0a,
+	0x02, 0x69, 0x64, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x10, 0x01, 0x18, 0x01,
+	0x12, 0x0b, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x10, 0x02, 0x18, 0x04, 0x22,
+	0x5b, 0x0a, 0x0c, 0x44, 0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12,
+	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x64,
+	0x3a, 0x1a, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x14, 0x0a, 0x10, 0x0a, 0x0e, 0x69, 0x64, 0x2c, 0x72,
+	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x42, 0xb5, 0x01, 0x0a,
+	0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e,
+	0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31,
+	0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44,
+	0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
+	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
+	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2909,14 +2909,14 @@ var file_regen_data_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_regen_data_v1_state_proto_goTypes = []interface{}{
 	(*DataID)(nil),                // 0: regen.data.v1.DataID
 	(*DataAnchor)(nil),            // 1: regen.data.v1.DataAnchor
-	(*DataSigner)(nil),            // 2: regen.data.v1.DataSigner
+	(*DataAttestor)(nil),          // 2: regen.data.v1.DataAttestor
 	(*ResolverInfo)(nil),          // 3: regen.data.v1.ResolverInfo
 	(*DataResolver)(nil),          // 4: regen.data.v1.DataResolver
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_regen_data_v1_state_proto_depIdxs = []int32{
 	5, // 0: regen.data.v1.DataAnchor.timestamp:type_name -> google.protobuf.Timestamp
-	5, // 1: regen.data.v1.DataSigner.timestamp:type_name -> google.protobuf.Timestamp
+	5, // 1: regen.data.v1.DataAttestor.timestamp:type_name -> google.protobuf.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -2955,7 +2955,7 @@ func file_regen_data_v1_state_proto_init() {
 			}
 		}
 		file_regen_data_v1_state_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataSigner); i {
+			switch v := v.(*DataAttestor); i {
 			case 0:
 				return &v.state
 			case 1:
