@@ -76,9 +76,9 @@ func (m *Filter) GetOr() []*Filter_Criteria {
 type Filter_Criteria struct {
 	// Valid selector types are all
 	// attributes which are assigned to credit batches by some authority such
-	// as the credit issuer or a curator. Requiring some authority-based selector
-	// ensures that buy orders cannot just match some randomly issued credit
-	// based on location and dates.
+	// as the credit issuer or a curator. Requiring some authority-based
+	// selector ensures that buy orders cannot just match some randomly issued
+	// credit based on location and dates.
 	//
 	// Types that are valid to be assigned to Selector:
 	//	*Filter_Criteria_ClassSelector

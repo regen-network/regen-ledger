@@ -6,16 +6,16 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // EventAnchor is an event emitted when data is anchored on chain.
 message EventAnchor {
-    // iri is the data IRI
-    string iri = 1;
+  // iri is the data IRI
+  string iri = 1;
 }
 
 // EventAttest is an event emitted when data is attested to on chain.
 message EventAttest {
-    // iri is the data IRI
-    string iri = 1;
+  // iri is the data IRI
+  string iri = 1;
 
-    // attestors are the addresses of the accounts which have attested
-    // to the validity of the data.
-    repeated string attestors = 2;
+  // attestors are the addresses of the accounts which have attested
+  // to the validity of the data.
+  repeated string attestors = 2;
 }

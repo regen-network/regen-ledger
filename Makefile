@@ -326,11 +326,11 @@ devdoc-update:
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.3
+containerProtoVer=v0.6
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=${PROJECT_NAME}-proto-gen-$(containerProtoVer)
-containerProtoFmt=${PROJECT_NAME}-proto-fmt-$(containerProtoVer)
-containerProtoGenSwagger=${PROJECT_NAME}-proto-gen-swagger-$(containerProtoVer)
+containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
+containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
 
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
 .PHONY: proto-all proto-gen proto-gen-docker proto-lint proto-check-breaking proto-format

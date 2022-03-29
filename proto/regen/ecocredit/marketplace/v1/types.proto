@@ -18,9 +18,9 @@ message Filter {
   message Criteria {
     // Valid selector types are all
     // attributes which are assigned to credit batches by some authority such
-    // as the credit issuer or a curator. Requiring some authority-based selector
-    // ensures that buy orders cannot just match some randomly issued credit
-    // based on location and dates.
+    // as the credit issuer or a curator. Requiring some authority-based
+    // selector ensures that buy orders cannot just match some randomly issued
+    // credit based on location and dates.
     oneof selector {
       // class_selector is a credit class selector.
       ClassSelector class_selector = 1;
