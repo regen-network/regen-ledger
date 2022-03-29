@@ -30,7 +30,8 @@ type MsgClient interface {
 	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
 }
 
@@ -99,7 +100,8 @@ type MsgServer interface {
 	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

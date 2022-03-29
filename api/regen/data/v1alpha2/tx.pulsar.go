@@ -2894,7 +2894,8 @@ type MsgSignData struct {
 	// depending on the underlying data.
 	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
 	// hash is the hash-based identifier for the anchored content. Only RDF graph
-	// data can be signed as its data model is intended to specifically convey semantic meaning.
+	// data can be signed as its data model is intended to specifically convey
+	// semantic meaning.
 	Hash *ContentHash_Graph `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
@@ -2971,7 +2972,8 @@ type MsgStoreRawData struct {
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// content_hash is the hash-based identifier for the anchored content.
 	ContentHash *ContentHash_Raw `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
-	// content is the content of the raw data corresponding to the provided content hash.
+	// content is the content of the raw data corresponding to the provided
+	// content hash.
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 

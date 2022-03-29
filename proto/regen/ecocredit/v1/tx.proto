@@ -36,13 +36,16 @@ service Msg {
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
 
   // UpdateClassAdmin updates the credit class admin
-  rpc UpdateClassAdmin(MsgUpdateClassAdmin) returns (MsgUpdateClassAdminResponse);
+  rpc UpdateClassAdmin(MsgUpdateClassAdmin)
+      returns (MsgUpdateClassAdminResponse);
 
   // UpdateClassIssuers updates the credit class issuer list
-  rpc UpdateClassIssuers(MsgUpdateClassIssuers) returns (MsgUpdateClassIssuersResponse);
+  rpc UpdateClassIssuers(MsgUpdateClassIssuers)
+      returns (MsgUpdateClassIssuersResponse);
 
   // UpdateClassMetadata updates the credit class metadata
-  rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
+  rpc UpdateClassMetadata(MsgUpdateClassMetadata)
+      returns (MsgUpdateClassMetadataResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -56,11 +59,13 @@ message MsgCreateClass {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C", "BIO").
+  // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C",
+  // "BIO").
   string credit_type_abbrev = 4;
 
   // fee specifies the fee to pay for the creation of the credit class.
-  // acceptable fees for creating a credit class can be found in the governance parameters for the ecocredit module.
+  // acceptable fees for creating a credit class can be found in the governance
+  // parameters for the ecocredit module.
   cosmos.base.v1beta1.Coin fee = 5;
 }
 
@@ -304,7 +309,8 @@ message MsgUpdateClassMetadata {
   // class_id is the unique ID of the credit class.
   string class_id = 2;
 
-  // metadata is the updated arbitrary metadata to be attached to the credit class.
+  // metadata is the updated arbitrary metadata to be attached to the credit
+  // class.
   string metadata = 3;
 }
 

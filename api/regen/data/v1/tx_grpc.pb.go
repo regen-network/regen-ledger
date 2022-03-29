@@ -32,10 +32,10 @@ type MsgClient interface {
 	Anchor(ctx context.Context, in *MsgAnchor, opts ...grpc.CallOption) (*MsgAnchorResponse, error)
 	// Attest allows for digital signing of an arbitrary piece of data on the
 	// blockchain. By attesting to data, the attestor is making a statement about
-	// the veracity of the data itself. It is like signing a legal document, meaning
-	// that I agree to all conditions and to the best of my knowledge everything
-	// is true. When anchoring data, the sender is not attesting to the veracity
-	// of the data, they are simply communicating that it exists.
+	// the veracity of the data itself. It is like signing a legal document,
+	// meaning that I agree to all conditions and to the best of my knowledge
+	// everything is true. When anchoring data, the sender is not attesting to the
+	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
 	// - on-chain identities can be managed using different cryptographic keys
@@ -47,10 +47,11 @@ type MsgClient interface {
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
-	// Attest can be called multiple times for the same content hash with different
-	// attestors and those attestors will be appended to the list of attestors. If
-	// the same attestor attempts to attest to the same piece of data, the attestor
-	// will be ignored and a new attestation with a new timestamp will not be added.
+	// Attest can be called multiple times for the same content hash with
+	// different attestors and those attestors will be appended to the list of
+	// attestors. If the same attestor attempts to attest to the same piece of
+	// data, the attestor will be ignored and a new attestation with a new
+	// timestamp will not be added.
 	Attest(ctx context.Context, in *MsgAttest, opts ...grpc.CallOption) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.
@@ -117,10 +118,10 @@ type MsgServer interface {
 	Anchor(context.Context, *MsgAnchor) (*MsgAnchorResponse, error)
 	// Attest allows for digital signing of an arbitrary piece of data on the
 	// blockchain. By attesting to data, the attestor is making a statement about
-	// the veracity of the data itself. It is like signing a legal document, meaning
-	// that I agree to all conditions and to the best of my knowledge everything
-	// is true. When anchoring data, the sender is not attesting to the veracity
-	// of the data, they are simply communicating that it exists.
+	// the veracity of the data itself. It is like signing a legal document,
+	// meaning that I agree to all conditions and to the best of my knowledge
+	// everything is true. When anchoring data, the sender is not attesting to the
+	// veracity of the data, they are simply communicating that it exists.
 	//
 	// On-chain signatures have the following benefits:
 	// - on-chain identities can be managed using different cryptographic keys
@@ -132,10 +133,11 @@ type MsgServer interface {
 	//
 	// Attest implicitly calls Anchor if the data was not already anchored.
 	//
-	// Attest can be called multiple times for the same content hash with different
-	// attestors and those attestors will be appended to the list of attestors. If
-	// the same attestor attempts to attest to the same piece of data, the attestor
-	// will be ignored and a new attestation with a new timestamp will not be added.
+	// Attest can be called multiple times for the same content hash with
+	// different attestors and those attestors will be appended to the list of
+	// attestors. If the same attestor attempts to attest to the same piece of
+	// data, the attestor will be ignored and a new attestation with a new
+	// timestamp will not be added.
 	Attest(context.Context, *MsgAttest) (*MsgAttestResponse, error)
 	// DefineResolver defines a resolver URL and assigns it a new integer ID
 	// that can be used in calls to RegisterResolver.

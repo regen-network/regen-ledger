@@ -103,8 +103,8 @@ func (m *CreditType) GetPrecision() uint32 {
 type ClassInfo struct {
 	// id is the unique ID of credit class.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// abbrev is the unique string name for this credit class formed from its credit type
-	// and an auto-generated integer.
+	// abbrev is the unique string name for this credit class formed from its
+	// credit type and an auto-generated integer.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// admin is the admin of the credit class.
 	Admin []byte `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -182,7 +182,8 @@ func (m *ClassInfo) GetCreditType() string {
 	return ""
 }
 
-// ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
+// ClassIssuers is a JOIN table for Class Info that stores the credit class
+// issuers
 type ClassIssuer struct {
 	// class_id is the row ID of a credit class.
 	ClassId uint64 `protobuf:"varint,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
@@ -434,8 +435,8 @@ func (m *BatchInfo) GetIssuanceDate() *types.Timestamp {
 	return nil
 }
 
-// ClassSequence is a sequence number for creating credit class identifiers for each
-// credit type.
+// ClassSequence is a sequence number for creating credit class identifiers for
+// each credit type.
 type ClassSequence struct {
 	// credit_type is the credit type abbreviation
 	CreditType string `protobuf:"bytes,1,opt,name=credit_type,json=creditType,proto3" json:"credit_type,omitempty"`
@@ -687,12 +688,14 @@ func (m *BatchBalance) GetEscrowed() string {
 type BatchSupply struct {
 	// batch_id is the id of the batch
 	BatchId uint64 `protobuf:"varint,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
-	// tradable_amount is the total number of tradable credits in the credit batch.
-	// Some of the issued credits may be cancelled and will be removed from
-	// tradable_amount and tracked in amount_cancelled. tradable_amount + retired_amount +
-	// amount_cancelled will always sum to the original credit issuance amount.
+	// tradable_amount is the total number of tradable credits in the credit
+	// batch. Some of the issued credits may be cancelled and will be removed from
+	// tradable_amount and tracked in amount_cancelled. tradable_amount +
+	// retired_amount + amount_cancelled will always sum to the original credit
+	// issuance amount.
 	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the total amount of credits that have been retired from the credit batch.
+	// retired_amount is the total amount of credits that have been retired from
+	// the credit batch.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// cancelled_amount is the number of credits in the batch that have been
 	// cancelled, effectively undoing the issuance. The sum of total_amount and

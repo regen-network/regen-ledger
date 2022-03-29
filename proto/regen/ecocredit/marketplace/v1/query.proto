@@ -13,27 +13,36 @@ service Query {
 
   // SellOrder queries a sell order by its ID
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/id/{sell_order_id}";
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/sell-orders/id/{sell_order_id}";
   }
 
   // SellOrders queries a paginated list of all sell orders
   rpc SellOrders(QuerySellOrdersRequest) returns (QuerySellOrdersResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders";
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
+  // SellOrdersByDenom queries a paginated list of all sell orders of a specific
+  // ecocredit denom
+  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest)
+      returns (QuerySellOrdersByBatchDenomResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
   }
 
-  // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest) returns (QuerySellOrdersByAddressResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
+  // SellOrdersByAddress queries a paginated list of all sell orders from a
+  // specific address
+  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest)
+      returns (QuerySellOrdersByAddressResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
   }
 
   // BuyOrder queries a buy order by its id
   rpc BuyOrder(QueryBuyOrderRequest) returns (QueryBuyOrderResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders/id/{buy_order_id}";
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/buy-orders/id/{buy_order_id}";
   }
 
   // BuyOrders queries a paginated list of all buy orders
@@ -41,13 +50,18 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders";
   }
 
-  // BuyOrdersByAddress queries a paginated list of buy orders by creator address
-  rpc BuyOrdersByAddress(QueryBuyOrdersByAddressRequest) returns (QueryBuyOrdersByAddressResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders/address/{address}";
+  // BuyOrdersByAddress queries a paginated list of buy orders by creator
+  // address
+  rpc BuyOrdersByAddress(QueryBuyOrdersByAddressRequest)
+      returns (QueryBuyOrdersByAddressResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/buy-orders/address/{address}";
   }
 
-  // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a sell order
-  rpc AllowedDenoms(QueryAllowedDenomsRequest) returns (QueryAllowedDenomsResponse) {
+  // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
+  // sell order
+  rpc AllowedDenoms(QueryAllowedDenomsRequest)
+      returns (QueryAllowedDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/marketplace/v1/ask-denoms";
   }
 }
@@ -100,7 +114,8 @@ message QuerySellOrdersByBatchDenomResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
+// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request
+// type.
 message QuerySellOrdersByAddressRequest {
 
   // address is the creator of the sell order
@@ -110,7 +125,8 @@ message QuerySellOrdersByAddressRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
+// response type.
 message QuerySellOrdersByAddressResponse {
 
   // sell_orders is a list of sell orders.
@@ -158,7 +174,8 @@ message QueryBuyOrdersByAddressRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
+// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response
+// type.
 message QueryBuyOrdersByAddressResponse {
 
   // buy_orders is a list of buy orders.
@@ -177,7 +194,8 @@ message QueryAllowedDenomsRequest {
 // QueryAllowedDenomsResponse is the Query/AllowedDenoms response type.
 message QueryAllowedDenomsResponse {
 
-  // allowed_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+  // allowed_denoms is a list of coin denoms allowed to use in the ask price of
+  // sell orders.
   repeated AllowedDenom allowed_denoms = 1;
 
   // pagination defines an optional pagination for the response.

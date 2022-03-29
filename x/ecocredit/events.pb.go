@@ -288,8 +288,8 @@ type EventReceive struct {
 	RetiredAmount string `protobuf:"bytes,5,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 	// basket_denom is the denom of the basket. When the basket_denom field is
 	// set, it indicates that this event was triggered by the transfer of credits
-	// from a basket. It will not be set if the credits were transferred or received
-	// at initial issuance.
+	// from a basket. It will not be set if the credits were transferred or
+	// received at initial issuance.
 	BasketDenom string `protobuf:"bytes,6,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 }
 
