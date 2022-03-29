@@ -129,29 +129,28 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		return err
 	}
-	// since we only support direct buy orders at this time, we fail when the requested purchase amount is more than
-	// the available credits for sale, rather than partial filling the buy order.
-	newSellOrderQty, err := sellOrderQty.Sub(purchaseQty)
-	if err != nil {
-		return err
-	}
-	if newSellOrderQty.IsNegative() {
+
+	switch sellOrderQty.Cmp(purchaseQty) {
+	case math.LessThan:
 		if !canPartialFill {
 			return ecocredit.ErrInsufficientCredits.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
 		} else {
-			// if we can partial fill, we just delete the sellOrder and take whatever
+			// if we can partially fill, we just delete the sellOrder and take whatever
 			// credits are left from that order.
 			if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 				return err
 			}
 			purchaseQty = sellOrderQty
 		}
-	}
-	if newSellOrderQty.IsZero() { // remove the sell order if no credits are left
+	case math.EqualTo:
 		if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 			return err
 		}
-	} else { // update the sell order with the new value otherwise
+	case math.GreaterThan:
+		newSellOrderQty, err := sellOrderQty.Sub(purchaseQty)
+		if err != nil {
+			return err
+		}
 		sellOrder.Quantity = newSellOrderQty.String()
 		if err = k.stateStore.SellOrderTable().Update(ctx, sellOrder); err != nil {
 			return err
