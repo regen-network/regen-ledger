@@ -631,7 +631,8 @@ func (m *MsgUpdateGroupAccountAdmin) GetNewAdmin() string {
 	return ""
 }
 
-// MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
+// MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin
+// response type.
 type MsgUpdateGroupAccountAdminResponse struct {
 }
 
@@ -668,7 +669,8 @@ func (m *MsgUpdateGroupAccountAdminResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountAdminResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
+// MsgUpdateGroupAccountDecisionPolicy is the
+// Msg/UpdateGroupAccountDecisionPolicy request type.
 type MsgUpdateGroupAccountDecisionPolicy struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -711,7 +713,8 @@ func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicy proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
+// MsgUpdateGroupAccountDecisionPolicyResponse is the
+// Msg/UpdateGroupAccountDecisionPolicy response type.
 type MsgUpdateGroupAccountDecisionPolicyResponse struct {
 }
 
@@ -752,7 +755,8 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
+// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request
+// type.
 type MsgUpdateGroupAccountMetadata struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -816,7 +820,8 @@ func (m *MsgUpdateGroupAccountMetadata) GetMetadata() []byte {
 	return nil
 }
 
-// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
+// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata
+// response type.
 type MsgUpdateGroupAccountMetadataResponse struct {
 }
 
@@ -1266,19 +1271,24 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	// CreateGroup creates a new group with an admin account address, a list of
+	// members and some optional metadata.
 	CreateGroup(ctx context.Context, in *MsgCreateGroup, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error)
-	// UpdateGroupMembers updates the group members with given group id and admin address.
+	// UpdateGroupMembers updates the group members with given group id and admin
+	// address.
 	UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembers, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error)
-	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	// UpdateGroupAdmin updates the group admin with given group id and previous
+	// admin address.
 	UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error)
-	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	// UpdateGroupMetadata updates the group metadata with given group id and
+	// admin address.
 	UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error)
 	// CreateGroupAccount creates a new group account using given DecisionPolicy.
 	CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccount, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error)
 	// UpdateGroupAccountAdmin updates a group account admin.
 	UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error)
-	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to
+	// be updated.
 	UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicy, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
 	// UpdateGroupAccountMetadata updates a group account metadata.
 	UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error)
@@ -1399,19 +1409,24 @@ func (c *msgClient) Exec(ctx context.Context, in *MsgExec, opts ...grpc.CallOpti
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	// CreateGroup creates a new group with an admin account address, a list of
+	// members and some optional metadata.
 	CreateGroup(context.Context, *MsgCreateGroup) (*MsgCreateGroupResponse, error)
-	// UpdateGroupMembers updates the group members with given group id and admin address.
+	// UpdateGroupMembers updates the group members with given group id and admin
+	// address.
 	UpdateGroupMembers(context.Context, *MsgUpdateGroupMembers) (*MsgUpdateGroupMembersResponse, error)
-	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	// UpdateGroupAdmin updates the group admin with given group id and previous
+	// admin address.
 	UpdateGroupAdmin(context.Context, *MsgUpdateGroupAdmin) (*MsgUpdateGroupAdminResponse, error)
-	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	// UpdateGroupMetadata updates the group metadata with given group id and
+	// admin address.
 	UpdateGroupMetadata(context.Context, *MsgUpdateGroupMetadata) (*MsgUpdateGroupMetadataResponse, error)
 	// CreateGroupAccount creates a new group account using given DecisionPolicy.
 	CreateGroupAccount(context.Context, *MsgCreateGroupAccount) (*MsgCreateGroupAccountResponse, error)
 	// UpdateGroupAccountAdmin updates a group account admin.
 	UpdateGroupAccountAdmin(context.Context, *MsgUpdateGroupAccountAdmin) (*MsgUpdateGroupAccountAdminResponse, error)
-	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to
+	// be updated.
 	UpdateGroupAccountDecisionPolicy(context.Context, *MsgUpdateGroupAccountDecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
 	// UpdateGroupAccountMetadata updates a group account metadata.
 	UpdateGroupAccountMetadata(context.Context, *MsgUpdateGroupAccountMetadata) (*MsgUpdateGroupAccountMetadataResponse, error)

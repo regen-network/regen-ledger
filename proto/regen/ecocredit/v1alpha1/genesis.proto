@@ -17,7 +17,7 @@ message GenesisState {
   repeated BatchInfo batch_info = 3;
 
   // sequences is the list of credit type sequence.
-  repeated CreditTypeSeq sequences  = 4;
+  repeated CreditTypeSeq sequences = 4;
 
   // balances is the list of credit batch tradable/retired units.
   repeated Balance balances = 5;

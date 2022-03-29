@@ -157,20 +157,20 @@ type BuyOrder struct {
 	Buyer []byte `protobuf:"bytes,2,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	// selection is the buy order selection.
 	Selection *BuyOrder_Selection `protobuf:"bytes,3,opt,name=selection,proto3" json:"selection,omitempty"`
-	// quantity is the decimal quantity of credits to buy. If the quantity of credits
-	// available is less than this amount the order will be partially filled
-	// unless disable_partial_fill is true.
+	// quantity is the decimal quantity of credits to buy. If the quantity of
+	// credits available is less than this amount the order will be partially
+	// filled unless disable_partial_fill is true.
 	Quantity string `protobuf:"bytes,4,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	// market_id is the market in which this sell order exists and specifies
 	// the bank_denom that ask_price corresponds to.
 	MarketId uint64 `protobuf:"varint,5,opt,name=market_id,json=marketId,proto3" json:"market_id,omitempty"`
-	// bid price is the integer bid price for this buy order. A credit unit will be
-	// settled at a purchase price that is no more than the bid price. The
-	// buy order will fail if the buyer does not have enough funds available
-	// to complete the purchase.
+	// bid price is the integer bid price for this buy order. A credit unit will
+	// be settled at a purchase price that is no more than the bid price. The buy
+	// order will fail if the buyer does not have enough funds available to
+	// complete the purchase.
 	BidPrice string `protobuf:"bytes,6,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
-	// the credits will not auto-retire and can be resold assuming that the
+	// disable_auto_retire allows auto-retirement to be disabled. If it is set to
+	// true the credits will not auto-retire and can be resold assuming that the
 	// corresponding sell order has auto-retirement disabled. If the sell order
 	// hasn't disabled auto-retirement and the buy order tries to disable it,
 	// that buy order will fail.

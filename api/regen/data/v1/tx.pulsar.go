@@ -3890,13 +3890,14 @@ type MsgAttest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// attestors are the addresses of the accounts attesting to the validity of the data.
-	// By making an Attest request, the attestors are attesting to the veracity
-	// of the data referenced by the cid. The precise meaning of this may vary
-	// depending on the underlying data.
+	// attestors are the addresses of the accounts attesting to the validity of
+	// the data. By making an Attest request, the attestors are attesting to the
+	// veracity of the data referenced by the cid. The precise meaning of this may
+	// vary depending on the underlying data.
 	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
 	// hash is the hash-based identifier for the anchored content. Only RDF graph
-	// data can be signed as its data model is intended to specifically convey semantic meaning.
+	// data can be signed as its data model is intended to specifically convey
+	// semantic meaning.
 	Hash *ContentHash_Graph `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
 }
 
@@ -4020,7 +4021,8 @@ type MsgDefineResolverResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver.
+	// resolver_id is the integer ID of the resolver to be used in
+	// MsgRegisterResolver.
 	ResolverId uint64 `protobuf:"varint,1,opt,name=resolver_id,json=resolverId,proto3" json:"resolver_id,omitempty"`
 }
 
