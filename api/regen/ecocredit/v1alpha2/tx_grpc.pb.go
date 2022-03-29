@@ -52,7 +52,8 @@ type MsgClient interface {
 	UpdateSellOrders(ctx context.Context, in *MsgUpdateSellOrders, opts ...grpc.CallOption) (*MsgUpdateSellOrdersResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
 	// CreateBasket creates a bank denom which wraps credits.
 	CreateBasket(ctx context.Context, in *MsgCreateBasket, opts ...grpc.CallOption) (*MsgCreateBasketResponse, error)
@@ -278,7 +279,8 @@ type MsgServer interface {
 	UpdateSellOrders(context.Context, *MsgUpdateSellOrders) (*MsgUpdateSellOrdersResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
 	// CreateBasket creates a bank denom which wraps credits.
 	CreateBasket(context.Context, *MsgCreateBasket) (*MsgCreateBasketResponse, error)

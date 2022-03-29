@@ -285,7 +285,8 @@ func (*ContentHash) XXX_OneofWrappers() []interface{} {
 
 // Raw is the content hash type used for raw data
 type ContentHash_Raw struct {
-	// hash represents the hash of the data based on the specified digest_algorithm
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
@@ -349,11 +350,13 @@ func (m *ContentHash_Raw) GetMediaType() MediaType {
 
 // Graph is the content hash type used for RDF graph data
 type ContentHash_Graph struct {
-	// hash represents the hash of the data based on the specified digest_algorithm
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
-	// graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm.
+	// graph_canonicalization_algorithm represents the RDF graph
+	// canonicalization algorithm.
 	CanonicalizationAlgorithm GraphCanonicalizationAlgorithm `protobuf:"varint,3,opt,name=canonicalization_algorithm,json=canonicalizationAlgorithm,proto3,enum=regen.data.v1.GraphCanonicalizationAlgorithm" json:"canonicalization_algorithm,omitempty"`
 	// merkle_tree is the merkle tree type used for the graph hash, if any
 	MerkleTree GraphMerkleTree `protobuf:"varint,4,opt,name=merkle_tree,json=merkleTree,proto3,enum=regen.data.v1.GraphMerkleTree" json:"merkle_tree,omitempty"`

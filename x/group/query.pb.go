@@ -433,7 +433,8 @@ func (m *QueryGroupsByAdminResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request
+// type.
 type QueryGroupAccountsByGroupRequest struct {
 	// group_id is the unique ID of the group account's group.
 	GroupId uint64 `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
@@ -488,9 +489,11 @@ func (m *QueryGroupAccountsByGroupRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response
+// type.
 type QueryGroupAccountsByGroupResponse struct {
-	// group_accounts are the group accounts info associated with the provided group.
+	// group_accounts are the group accounts info associated with the provided
+	// group.
 	GroupAccounts []*GroupAccountInfo `protobuf:"bytes,1,rep,name=group_accounts,json=groupAccounts,proto3" json:"group_accounts,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -543,7 +546,8 @@ func (m *QueryGroupAccountsByGroupResponse) GetPagination() *query.PageResponse 
 	return nil
 }
 
-// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request
+// type.
 type QueryGroupAccountsByAdminRequest struct {
 	// admin is the admin address of the group account.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -598,7 +602,8 @@ func (m *QueryGroupAccountsByAdminRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response
+// type.
 type QueryGroupAccountsByAdminResponse struct {
 	// group_accounts are the group accounts info with provided admin.
 	GroupAccounts []*GroupAccountInfo `protobuf:"bytes,1,rep,name=group_accounts,json=groupAccounts,proto3" json:"group_accounts,omitempty"`
@@ -745,7 +750,8 @@ func (m *QueryProposalResponse) GetProposal() *Proposal {
 	return nil
 }
 
-// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
+// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount
+// request type.
 type QueryProposalsByGroupAccountRequest struct {
 	// address is the group account address related to proposals.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -800,7 +806,8 @@ func (m *QueryProposalsByGroupAccountRequest) GetPagination() *query.PageRequest
 	return nil
 }
 
-// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount response type.
+// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount
+// response type.
 type QueryProposalsByGroupAccountResponse struct {
 	// proposals are the proposals with given group account.
 	Proposals []*Proposal `protobuf:"bytes,1,rep,name=proposals,proto3" json:"proposals,omitempty"`
@@ -855,7 +862,8 @@ func (m *QueryProposalsByGroupAccountResponse) GetPagination() *query.PageRespon
 	return nil
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request
+// type.
 type QueryVoteByProposalVoterRequest struct {
 	// proposal_id is the unique ID of a proposal.
 	ProposalId uint64 `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3" json:"proposal_id,omitempty"`
@@ -910,7 +918,8 @@ func (m *QueryVoteByProposalVoterRequest) GetVoter() string {
 	return ""
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response
+// type.
 type QueryVoteByProposalVoterResponse struct {
 	// vote is the vote with given proposal_id and voter.
 	Vote *Vote `protobuf:"bytes,1,opt,name=vote,proto3" json:"vote,omitempty"`

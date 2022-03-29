@@ -47,17 +47,20 @@ type MsgClient interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
+	// SignData can be called multiple times for the same content hash with
+	// different signers and those signers will be appended to the list of
+	// signers.
 	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw
+	// on the blockchain.
 	//
-	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
+	// StoreRawData implicitly calls AnchorData if the data was not already
+	// anchored.
 	//
-	// The sender in StoreRawData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the
-	// veracity of some piece of data.
+	// The sender in StoreRawData is not attesting to the veracity of the
+	// underlying data. They can simply be a intermediary providing storage
+	// services. SignData should be used to create a digital signature attesting
+	// to the veracity of some piece of data.
 	StoreRawData(ctx context.Context, in *MsgStoreRawData, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error)
 }
 
@@ -125,17 +128,20 @@ type MsgServer interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same content hash with different
-	// signers and those signers will be appended to the list of signers.
+	// SignData can be called multiple times for the same content hash with
+	// different signers and those signers will be appended to the list of
+	// signers.
 	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw
+	// on the blockchain.
 	//
-	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
+	// StoreRawData implicitly calls AnchorData if the data was not already
+	// anchored.
 	//
-	// The sender in StoreRawData is not attesting to the veracity of the underlying
-	// data. They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the
-	// veracity of some piece of data.
+	// The sender in StoreRawData is not attesting to the veracity of the
+	// underlying data. They can simply be a intermediary providing storage
+	// services. SignData should be used to create a digital signature attesting
+	// to the veracity of some piece of data.
 	StoreRawData(context.Context, *MsgStoreRawData) (*MsgStoreRawDataResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
