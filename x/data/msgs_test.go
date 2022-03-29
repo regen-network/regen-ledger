@@ -23,11 +23,10 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 			name: "good",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 32),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 				}},
 			},
 			wantErr: "",
@@ -44,11 +43,10 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 			name: "bad",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 31),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 				}},
 			},
 			wantErr: "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: invalid request",
@@ -180,12 +178,10 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	validData := []*ContentHash{
 		{
-			Sum: &ContentHash_Raw_{
-				Raw: &ContentHash_Raw{
-					Hash:            make([]byte, 32),
-					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+			Raw: &ContentHash_Raw{
+				Hash:            make([]byte, 32),
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 			},
 		},
 	}
@@ -229,12 +225,10 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 				Manager: addr.String(),
 				Data: []*ContentHash{
 					{
-						Sum: &ContentHash_Raw_{
-							Raw: &ContentHash_Raw{
-								Hash:            make([]byte, 31),
-								DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-								MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-							},
+						Raw: &ContentHash_Raw{
+							Hash:            make([]byte, 31),
+							DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+							MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 						},
 					},
 				},
