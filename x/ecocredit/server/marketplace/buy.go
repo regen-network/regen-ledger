@@ -69,18 +69,29 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
 					" %s, expected %s", order.BidPrice.Denom, market.BankDenom)
 			}
-
-			// check that bid price is at least equal to ask price
-			askAmount, ok := sdk.NewIntFromString(sellOrder.AskPrice)
+			// check that bid price >= sell price
+			sellOrderPricePerCredit, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 			if !ok {
-				return nil, fmt.Errorf("could not convert sell order's ask price to %T: %s", sdk.Int{}, sellOrder.AskPrice)
+				return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
 			}
-			if order.BidPrice.Amount.LT(askAmount) {
-				return nil, ErrBidTooLow.Wrapf("bid %s, ask: %s",
-					order.BidPrice.Amount.String(), sellOrder.AskPrice)
+			sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderPricePerCredit}
+			if sellOrderPricePerCredit.GT(order.BidPrice.Amount) {
+				return nil, ErrBidTooLow.Wrapf("sell order ask: %v, bid: %v", sellOrderPriceCoin, order.BidPrice)
 			}
 
-			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, *order.BidPrice, false); err != nil {
+			// check address has the total cost (price per * order quantity)
+			cost, err := getTotalCost(sellOrderPricePerCredit, order.Quantity)
+			if err != nil {
+				return nil, err
+			}
+			coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
+			if bal.IsLT(coinCost) {
+				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
+					"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal)
+			}
+
+			// fill the order, updating balances and the sell order in state
+			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, false); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
 			if !sellOrder.DisableAutoRetire {
@@ -123,7 +134,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, bidCoin sdk.Coin, canPartialFill bool) error {
+func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, cost sdk.Coin, canPartialFill bool) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
@@ -252,5 +263,15 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		return err
 	}
 
-	return k.bankKeeper.SendCoins(sdkCtx, buyerAcc, sellOrder.Seller, sdk.NewCoins(bidCoin))
+	return k.bankKeeper.SendCoins(sdkCtx, buyerAcc, sellOrder.Seller, sdk.NewCoins(cost))
+}
+
+// getTotalCost calculates the cost of the order by multiplying the price per credit, and the amount of credits
+// desired in the order.
+func getTotalCost(pricePerCredit sdk.Int, amtCredits string) (sdk.Int, error) {
+	amtCreditsInt, ok := sdk.NewIntFromString(amtCredits)
+	if !ok {
+		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", amtCreditsInt, sdk.Int{})
+	}
+	return pricePerCredit.Mul(amtCreditsInt), nil
 }
