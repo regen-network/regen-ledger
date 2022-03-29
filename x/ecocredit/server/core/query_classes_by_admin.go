@@ -12,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// ClassesByAdmin queries for all classes with a specific admin address.
 func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdminRequest) (*core.QueryClassesByAdminResponse, error) {
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
