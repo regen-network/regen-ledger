@@ -118,24 +118,24 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, %s prefix required", iri, regenPrefix)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s prefix required", iri, regenPrefix)
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, filename extension required", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: extension required", iri)
 	}
 
 	hashPart, ext := parts[0], parts[1]
 
 	res, version, err := base58.CheckDecode(hashPart)
 	if err != nil {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, %s", iri, err)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: %s", iri, err)
 	}
 
 	if version != iriVersion0 {
-		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s, invalid version", iri)
+		return nil, ErrInvalidIRI.Wrapf("failed to parse IRI %s: invalid version", iri)
 	}
 
 	rdr := bytes.NewBuffer(res)
@@ -178,7 +178,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
 		if ext != "rdf" {
-			return nil, ErrInvalidMediaExtension.Wrapf("expected extension .rdf for graph data, got .%s", ext)
+			return nil, ErrInvalidIRI.Wrapf("invalid extension .%s for graph data, expected .rdf", ext)
 		}
 
 		// read next byte

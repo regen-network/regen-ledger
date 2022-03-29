@@ -9,7 +9,7 @@ import (
 )
 
 func TestContentHash_Graph_ToIRI(t *testing.T) {
-	hash1 := []byte("abcdefghijklmnopqrstuvwxyz123456")
+	hash := []byte("abcdefghijklmnopqrstuvwxyz123456")
 
 	tests := []struct {
 		name string
@@ -19,7 +19,7 @@ func TestContentHash_Graph_ToIRI(t *testing.T) {
 		{
 			"valid graph",
 			ContentHash_Graph{
-				Hash:                      hash1,
+				Hash:                      hash,
 				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 				MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
@@ -37,7 +37,7 @@ func TestContentHash_Graph_ToIRI(t *testing.T) {
 }
 
 func TestContentHash_Raw_ToIRI(t *testing.T) {
-	hash1 := []byte("abcdefghijklmnopqrstuvwxyz123456")
+	hash := []byte("abcdefghijklmnopqrstuvwxyz123456")
 
 	tests := []struct {
 		name string
@@ -47,7 +47,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media bin",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 			},
@@ -56,7 +56,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media txt",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN,
 			},
@@ -65,7 +65,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media csv",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_CSV,
 			},
@@ -74,7 +74,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media json",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JSON,
 			},
@@ -83,7 +83,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media xml",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_XML,
 			},
@@ -92,7 +92,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media pdf",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
 			},
@@ -101,7 +101,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media tiff",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TIFF,
 			},
@@ -110,7 +110,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media jpg",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JPG,
 			},
@@ -119,7 +119,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media png",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PNG,
 			},
@@ -128,7 +128,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media svg",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_SVG,
 			},
@@ -137,7 +137,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media webp",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBP,
 			},
@@ -146,7 +146,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media avif",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_AVIF,
 			},
@@ -155,7 +155,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media gif",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_GIF,
 			},
@@ -164,7 +164,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media apng",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_APNG,
 			},
@@ -173,7 +173,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media mpeg",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MPEG,
 			},
@@ -182,7 +182,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media mp4",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MP4,
 			},
@@ -191,7 +191,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media webm",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBM,
 			},
@@ -200,7 +200,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 		{
 			"valid media ogg",
 			ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_OGG,
 			},
@@ -228,7 +228,7 @@ func TestMediaType_ToExtension(t *testing.T) {
 }
 
 func TestParseIRI(t *testing.T) {
-	hash1 := []byte("abcdefghijklmnopqrstuvwxyz123456")
+	hash := []byte("abcdefghijklmnopqrstuvwxyz123456")
 
 	tests := []struct {
 		name     string
@@ -239,25 +239,25 @@ func TestParseIRI(t *testing.T) {
 		{
 			name:    "invalid prefix",
 			iri:     "cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-			wantErr: "failed to parse IRI cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf, regen: prefix required: invalid IRI",
+			wantErr: "failed to parse IRI cosmos:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: regen: prefix required: invalid IRI",
 		},
 		{
 			name:    "invalid extension",
 			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd",
-			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd, filename extension required: invalid IRI",
+			wantErr: "failed to parse IRI regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd: extension required: invalid IRI",
 		},
 		{
 			name:    "invalid checksum",
 			iri:     "regen:23toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-			wantErr: "failed to parse IRI regen:23toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf, checksum error: invalid IRI",
+			wantErr: "failed to parse IRI regen:23toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf: checksum error: invalid IRI",
 		},
 		{
 			name:    "invalid version",
 			iri:     "regen:esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX.rdf",
-			wantErr: "failed to parse IRI regen:esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX.rdf, invalid version: invalid IRI",
+			wantErr: "failed to parse IRI regen:esV713VcRqk5TWxDgKQjGSpN4aXL4a9XTzbWRduCMQDqq2zo3TtX.rdf: invalid version: invalid IRI",
 		},
 		{
-			name:    "invalid raw media extension",
+			name:    "invalid media extension",
 			iri:     "regen:114DDL1RtVwKpfqgaPfAG153ckiKfuPEgTT7tEGs1Hic5sC9dCta.abc",
 			wantErr: "failed to resolve media type for extension abc, expected bin: invalid media extension",
 		},
@@ -266,7 +266,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media bin",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.bin",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 			}},
@@ -275,7 +275,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media txt",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.txt",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN,
 			}},
@@ -284,7 +284,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media csv",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.csv",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_CSV,
 			}},
@@ -293,7 +293,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media json",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.json",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JSON,
 			}},
@@ -302,7 +302,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media xml",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.xml",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_XML,
 			}},
@@ -311,7 +311,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid raw media pdf",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
 			}},
@@ -320,7 +320,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media tiff",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.tiff",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TIFF,
 			}},
@@ -329,7 +329,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media jpg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.jpg",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JPG,
 			}},
@@ -338,7 +338,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media png",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.png",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PNG,
 			}},
@@ -347,7 +347,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media svg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.svg",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_SVG,
 			}},
@@ -356,7 +356,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media webp",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webp",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBP,
 			}},
@@ -365,7 +365,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media avif",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.avif",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_AVIF,
 			}},
@@ -374,7 +374,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media gif",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.gif",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_GIF,
 			}},
@@ -383,7 +383,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media apng",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.apng",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_APNG,
 			}},
@@ -392,7 +392,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media mpeg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mpeg",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MPEG,
 			}},
@@ -401,7 +401,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media mp4",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mp4",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MP4,
 			}},
@@ -410,7 +410,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media webm",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webm",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBM,
 			}},
@@ -419,7 +419,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid media ogg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.ogg",
 			wantHash: &ContentHash{Raw: &ContentHash_Raw{
-				Hash:            hash1,
+				Hash:            hash,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				MediaType:       RawMediaType_RAW_MEDIA_TYPE_OGG,
 			}},
@@ -428,7 +428,7 @@ func TestParseIRI(t *testing.T) {
 			name: "valid graph",
 			iri:  "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 			wantHash: &ContentHash{Graph: &ContentHash_Graph{
-				Hash:                      hash1,
+				Hash:                      hash,
 				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 			}},
