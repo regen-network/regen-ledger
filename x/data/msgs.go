@@ -9,10 +9,6 @@ import (
 )
 
 var (
-	_, _, _, _ sdk.Msg = &MsgAnchor{}, &MsgAttest{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
-)
-
-var (
 	_, _, _, _ legacytx.LegacyMsg = &MsgAnchor{}, &MsgAttest{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
 )
 
