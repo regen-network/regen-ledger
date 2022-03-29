@@ -49,7 +49,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.bin",
 		},
@@ -58,7 +58,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_TEXT_PLAIN,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.txt",
 		},
@@ -67,7 +67,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_CSV,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_CSV,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.csv",
 		},
@@ -76,7 +76,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_JSON,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JSON,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.json",
 		},
@@ -85,7 +85,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_XML,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_XML,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.xml",
 		},
@@ -94,7 +94,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PDF,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
 		},
@@ -103,7 +103,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_TIFF,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TIFF,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.tiff",
 		},
@@ -112,7 +112,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_JPG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JPG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.jpg",
 		},
@@ -121,7 +121,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PNG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PNG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.png",
 		},
@@ -130,7 +130,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_SVG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_SVG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.svg",
 		},
@@ -139,7 +139,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_WEBP,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBP,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webp",
 		},
@@ -148,7 +148,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_AVIF,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_AVIF,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.avif",
 		},
@@ -157,7 +157,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_GIF,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_GIF,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.gif",
 		},
@@ -166,7 +166,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_APNG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_APNG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.apng",
 		},
@@ -175,7 +175,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_MPEG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MPEG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mpeg",
 		},
@@ -184,7 +184,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_MP4,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MP4,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mp4",
 		},
@@ -193,7 +193,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_WEBM,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBM,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webm",
 		},
@@ -202,7 +202,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_OGG,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_OGG,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.ogg",
 		},
@@ -218,12 +218,12 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 
 func TestMediaType_ToExtension(t *testing.T) {
 	// ensure every valid media type has an extension
-	for mt := range MediaType_name {
-		_, err := MediaType(mt).ToExtension()
+	for mt := range RawMediaType_name {
+		_, err := RawMediaType(mt).ToExtension()
 		require.NoError(t, err)
 	}
 
-	_, err := MediaType(-1).ToExtension()
+	_, err := RawMediaType(-1).ToExtension()
 	require.Error(t, err)
 }
 
@@ -259,179 +259,179 @@ func TestParseIRI(t *testing.T) {
 		{
 			name:    "invalid raw media extension",
 			iri:     "regen:114DDL1RtVwKpfqgaPfAG153ckiKfuPEgTT7tEGs1Hic5sC9dCta.abc",
-			wantErr: "failed to resolve MediaType for extension abc, expected bin: invalid media extension",
+			wantErr: "failed to resolve media type for extension abc, expected bin: invalid media extension",
 		},
 
 		{
 			name: "valid media bin",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.bin",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+			}},
 		},
 		{
 			name: "valid media txt",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.txt",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_TEXT_PLAIN,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TEXT_PLAIN,
+			}},
 		},
 		{
 			name: "valid media csv",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.csv",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_CSV,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_CSV,
+			}},
 		},
 		{
 			name: "valid media json",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.json",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_JSON,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JSON,
+			}},
 		},
 		{
 			name: "valid media xml",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.xml",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_XML,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_XML,
+			}},
 		},
 		{
 			name: "valid raw media pdf",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PDF,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
+			}},
 		},
 		{
 			name: "valid media tiff",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.tiff",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_TIFF,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_TIFF,
+			}},
 		},
 		{
 			name: "valid media jpg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.jpg",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_JPG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_JPG,
+			}},
 		},
 		{
 			name: "valid media png",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.png",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PNG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PNG,
+			}},
 		},
 		{
 			name: "valid media svg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.svg",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_SVG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_SVG,
+			}},
 		},
 		{
 			name: "valid media webp",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webp",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_WEBP,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBP,
+			}},
 		},
 		{
 			name: "valid media avif",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.avif",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_AVIF,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_AVIF,
+			}},
 		},
 		{
 			name: "valid media gif",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.gif",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_GIF,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_GIF,
+			}},
 		},
 		{
 			name: "valid media apng",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.apng",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_APNG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_APNG,
+			}},
 		},
 		{
 			name: "valid media mpeg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mpeg",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_MPEG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MPEG,
+			}},
 		},
 		{
 			name: "valid media mp4",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.mp4",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_MP4,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_MP4,
+			}},
 		},
 		{
 			name: "valid media webm",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.webm",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_WEBM,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_WEBM,
+			}},
 		},
 		{
 			name: "valid media ogg",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.ogg",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_OGG,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_OGG,
+			}},
 		},
 		{
 			name: "valid graph",
 			iri:  "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-			wantHash: &ContentHash{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{
+			wantHash: &ContentHash{Graph: &ContentHash_Graph{
 				Hash:                      hash1,
 				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			}}},
+			}},
 		},
 	}
 	for _, tt := range tests {

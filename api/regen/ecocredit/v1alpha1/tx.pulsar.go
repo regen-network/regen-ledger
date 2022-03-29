@@ -10299,7 +10299,8 @@ type MsgCreateClass struct {
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
+	// credit_type_name describes the type of credit (e.g. "carbon",
+	// "biodiversity").
 	CreditTypeName string `protobuf:"bytes,4,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
 }
 
@@ -10938,7 +10939,8 @@ type MsgUpdateClassMetadata struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// metadata is the updated arbitrary metadata to be attached to the credit class.
+	// metadata is the updated arbitrary metadata to be attached to the credit
+	// class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
