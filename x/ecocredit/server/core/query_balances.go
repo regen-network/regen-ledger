@@ -27,7 +27,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	balances := make([]*core.BatchBalance, 0, 10)
+	balances := make([]*core.BatchBalance, 0, 8) // pre-allocate some cap space
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
