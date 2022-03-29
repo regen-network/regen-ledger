@@ -3,6 +3,7 @@ package testsuite
 import (
 	"context"
 	"crypto"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -51,14 +52,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}
-	s.hash1 = &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+	s.hash1 = &data.ContentHash{Graph: graphHash}
 
 	rawHash := &data.ContentHash_Raw{
 		Hash:            digest,
 		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
+		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 	}
-	s.hash2 = &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
+	s.hash2 = &data.ContentHash{Raw: rawHash}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
