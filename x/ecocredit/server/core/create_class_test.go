@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -17,13 +17,9 @@ func TestCreateClass_Valid(t *testing.T) {
 	s := setupBase(t)
 	any := gomock.Any()
 	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin(ccFee.Denom, 20))
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
+	setupParams(s, false, nil, *ccFee, "C")
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, sdk.Coins{*ccFee}).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -54,35 +50,26 @@ func TestCreateClass_Valid(t *testing.T) {
 func TestCreateClass_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-
 	// allowlist = true and sender is not in allowlist
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
-		p.AllowlistEnabled = true
-		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
-	}).Times(1)
+	setupParams(s, true, []sdk.AccAddress{sdk.AccAddress("foo")}, sdk.NewInt64Coin("foo", 3), "C")
 	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
-	assert.ErrorContains(t, err, "is not allowed to create credit classes")
+	assert.ErrorContains(t, err, "class creation is currently limited to addresses in the governance controlled class creation allowlist")
 }
 
 func TestCreateClass_Sequence(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
+	gmAny := gomock.Any()
+	setupParams(s, true, []sdk.AccAddress{s.addr}, *ccFee, "C")
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(2)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
@@ -109,12 +96,7 @@ func TestCreateClass_Sequence(t *testing.T) {
 func TestCreateClass_Fees(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *ecocredit.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
+	setupParams(s, false, nil, sdk.NewInt64Coin("foo", 20), "C")
 
 	// wrong denom
 	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -135,4 +117,13 @@ func TestCreateClass_Fees(t *testing.T) {
 		Fee:              &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)},
 	})
 	assert.ErrorContains(t, err, "expected 20foo for fee, got 10foo")
+}
+
+func setupParams(s *baseSuite, allowlistEnabled bool, allowedCreators []sdk.AccAddress, classFee sdk.Coin, ctAbbrev string) {
+	assert.NilError(s.t, s.stateStore.AllowlistEnabledTable().Save(s.ctx, &api.AllowlistEnabled{Enabled: allowlistEnabled}))
+	assert.NilError(s.t, s.stateStore.CreditClassFeeTable().Insert(s.ctx, &api.CreditClassFee{Amount: classFee.Amount.String(), Denom: classFee.Denom}))
+	assert.NilError(s.t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{Abbreviation: ctAbbrev}))
+	for _, creator := range allowedCreators {
+		assert.NilError(s.t, s.stateStore.AllowedClassCreatorTable().Insert(s.ctx, &api.AllowedClassCreator{Address: creator}))
+	}
 }

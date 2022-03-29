@@ -2,8 +2,7 @@ package core
 
 import (
 	"context"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,15 +26,31 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var params ecocredit.Params
-	k.paramsKeeper.GetParamSet(sdkCtx, &params)
-	if params.AllowlistEnabled && !k.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+	allowlistSetting, err := k.stateStore.AllowlistEnabledTable().Get(goCtx)
+	if err != nil {
+		return nil, err
+	}
+	if allowlistSetting.Enabled {
+		allowed, err := k.stateStore.AllowedClassCreatorTable().Has(goCtx, adminAddress)
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
+			return nil, sdkerrors.ErrUnauthorized.Wrap("class creation is currently limited to addresses in the " +
+				"governance controlled class creation allowlist")
+		}
 	}
 
-	feeAmt := params.CreditClassFee.AmountOf(req.Fee.Denom)
-	if feeAmt.IsZero() {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
+	classFee, err := k.stateStore.CreditClassFeeTable().Get(goCtx, req.Fee.Denom)
+	if err != nil {
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
+		}
+		return nil, err
+	}
+	feeAmt, ok := sdk.NewIntFromString(classFee.Amount)
+	if !ok {
+		return nil, fmt.Errorf("could not convert %s to %T", classFee.Amount, sdk.Int{})
 	}
 	if req.Fee.Amount.LT(feeAmt) {
 		return nil, sdkerrors.ErrInsufficientFee.Wrapf("expected %v%s for fee, got %v", feeAmt, req.Fee.Denom, req.Fee)
@@ -47,9 +62,10 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := utils.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := k.stateStore.CreditTypeTable().Get(goCtx, req.CreditTypeAbbrev)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type for abbreviation %s: %s",
+			req.CreditTypeAbbrev, err.Error())
 	}
 
 	// default the sequence to 1 for the `not found` case.
