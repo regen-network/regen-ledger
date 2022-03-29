@@ -463,12 +463,10 @@ func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.
 	digest := hash.Sum(nil)
 
 	ch := data.ContentHash{
-		Sum: &data.ContentHash_Graph_{
-			Graph: &data.ContentHash_Graph{
-				Hash:                      digest,
-				DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			},
+		Graph: &data.ContentHash_Graph{
+			Hash:                      digest,
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 		},
 	}
 

@@ -10,9 +10,9 @@ import "google/protobuf/timestamp.proto";
 // DataID stores a compact data ID and its full IRI.
 message DataID {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 1
-    primary_key: {fields: "id"}
-    index:{id:1, fields:"iri", unique:true}
+    id : 1
+    primary_key : {fields : "id"}
+    index : {id : 1, fields : "iri", unique : true}
   };
 
   // id is the compact automatically-generated data ID.
@@ -25,8 +25,8 @@ message DataID {
 // DataAnchor stores the anchor timestamp for a data object.
 message DataAnchor {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 2
-    primary_key: {fields: "id"}
+    id : 2
+    primary_key : {fields : "id"}
   };
 
   // id is the compact data ID.
@@ -40,8 +40,8 @@ message DataAnchor {
 // DataAttestor is a join table for associating data IDs and attestors.
 message DataAttestor {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 3
-    primary_key: {fields: "id,attestor"}
+    id : 3
+    primary_key : {fields : "id,attestor"}
   };
 
   // id is the compact data ID.
@@ -57,10 +57,10 @@ message DataAttestor {
 // ResolverInfo describes a data resolver.
 message ResolverInfo {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 4
-    primary_key: {fields: "id", auto_increment: true}
-    index: {id: 1, fields: "url", unique: true}
-    index: {id: 2, fields: "manager"}
+    id : 4
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1, fields : "url", unique : true}
+    index : {id : 2, fields : "manager"}
   };
 
   // id is the ID of the resolver.
@@ -78,8 +78,8 @@ message ResolverInfo {
 // that a resolver claims to be able to resolve this data object.
 message DataResolver {
   option (cosmos.orm.v1alpha1.table) = {
-    id: 5
-    primary_key: {fields: "id,resolver_id"}
+    id : 5
+    primary_key : {fields : "id,resolver_id"}
   };
 
   // id is the compact data ID.

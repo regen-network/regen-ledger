@@ -332,7 +332,8 @@ func (m *QuerySellOrdersByBatchDenomResponse) GetPagination() *query.PageRespons
 	return nil
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
+// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request
+// type.
 type QuerySellOrdersByAddressRequest struct {
 	// address is the creator of the sell order
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
@@ -387,7 +388,8 @@ func (m *QuerySellOrdersByAddressRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
+// response type.
 type QuerySellOrdersByAddressResponse struct {
 	// sell_orders is a list of sell orders.
 	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
@@ -690,7 +692,8 @@ func (m *QueryBuyOrdersByAddressRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
+// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response
+// type.
 type QueryBuyOrdersByAddressResponse struct {
 	// buy_orders is a list of buy orders.
 	BuyOrders []*BuyOrder `protobuf:"bytes,1,rep,name=buy_orders,json=buyOrders,proto3" json:"buy_orders,omitempty"`
@@ -793,7 +796,8 @@ func (m *QueryAllowedDenomsRequest) GetPagination() *query.PageRequest {
 
 // QueryAllowedDenomsResponse is the Query/AllowedDenoms response type.
 type QueryAllowedDenomsResponse struct {
-	// allowed_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+	// allowed_denoms is a list of coin denoms allowed to use in the ask price of
+	// sell orders.
 	AllowedDenoms []*AllowedDenom `protobuf:"bytes,1,rep,name=allowed_denoms,json=allowedDenoms,proto3" json:"allowed_denoms,omitempty"`
 	// pagination defines an optional pagination for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -944,17 +948,21 @@ type QueryClient interface {
 	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders
 	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
+	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
+	// ecocredit denom
 	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
+	// SellOrdersByAddress queries a paginated list of all sell orders from a
+	// specific address
 	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
 	// BuyOrder queries a buy order by its id
 	BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error)
 	// BuyOrders queries a paginated list of all buy orders
 	BuyOrders(ctx context.Context, in *QueryBuyOrdersRequest, opts ...grpc.CallOption) (*QueryBuyOrdersResponse, error)
-	// BuyOrdersByAddress queries a paginated list of buy orders by creator address
+	// BuyOrdersByAddress queries a paginated list of buy orders by creator
+	// address
 	BuyOrdersByAddress(ctx context.Context, in *QueryBuyOrdersByAddressRequest, opts ...grpc.CallOption) (*QueryBuyOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a sell order
+	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
+	// sell order
 	AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedDenomsResponse, error)
 }
 
@@ -1044,17 +1052,21 @@ type QueryServer interface {
 	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
 	// SellOrders queries a paginated list of all sell orders
 	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
+	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
+	// ecocredit denom
 	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
+	// SellOrdersByAddress queries a paginated list of all sell orders from a
+	// specific address
 	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
 	// BuyOrder queries a buy order by its id
 	BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error)
 	// BuyOrders queries a paginated list of all buy orders
 	BuyOrders(context.Context, *QueryBuyOrdersRequest) (*QueryBuyOrdersResponse, error)
-	// BuyOrdersByAddress queries a paginated list of buy orders by creator address
+	// BuyOrdersByAddress queries a paginated list of buy orders by creator
+	// address
 	BuyOrdersByAddress(context.Context, *QueryBuyOrdersByAddressRequest) (*QueryBuyOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a sell order
+	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
+	// sell order
 	AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error)
 }
 
