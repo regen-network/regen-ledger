@@ -1,10 +1,13 @@
 package simulation
 
 import (
+	"crypto"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -22,11 +25,11 @@ const (
 	ModuleName = "data"
 )
 
-const (
-	TypeMsgAnchor           = data.MsgAnchor{}.Route()
-	TypeMsgAttest           = data.MsgAttest{}.Route()
-	TypeMsgDefineResolver   = data.MsgDefineResolver{}.Route()
-	TypeMsgRegisterResolver = data.MsgRegisterResolver{}.Route()
+var (
+	TypeMsgAnchor           = sdk.MsgTypeURL(&data.MsgAnchor{})           // data.MsgAnchor{}.Route()
+	TypeMsgAttest           = sdk.MsgTypeURL(&data.MsgAttest{})           // data.MsgAttest{}.Route()
+	TypeMsgDefineResolver   = sdk.MsgTypeURL(&data.MsgDefineResolver{})   // data.MsgDefineResolver{}.Route()
+	TypeMsgRegisterResolver = sdk.MsgTypeURL(&data.MsgRegisterResolver{}) // data.MsgRegisterResolver{}.Route()
 )
 
 const (
@@ -101,7 +104,46 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		return simtypes.NoOpMsg(ModuleName, TypeMsgAnchor, ""), nil, nil
+		sender, _ := simtypes.RandomAcc(r, accs)
+
+		contentHash, err := getContentHash(r)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAnchor, err.Error()), nil, err
+		}
+
+		spendable := bk.SpendableCoins(sdkCtx, sender.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAnchor, "fee error"), nil, err
+		}
+
+		msg := &data.MsgAnchor{
+			Sender: sender.Address.String(),
+			Hash:   contentHash,
+		}
+
+		account := ak.GetAccount(sdkCtx, sender.Address)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			2000000,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			sender.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAnchor, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAnchor, "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -111,7 +153,48 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, ""), nil, nil
+		attestors := randomAttestors(r, accs)
+		acc, _ := simtypes.RandomAcc(r, accs)
+
+		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "fee error"), nil, err
+		}
+
+		hash1, err := getContentHash(r)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, err.Error()), nil, err
+		}
+
+		graph := hash1.GetGraph()
+		msg := &data.MsgAttest{
+			Attestors: attestors,
+			Hash:      graph,
+		}
+
+		account := ak.GetAccount(sdkCtx, acc.Address)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			2000000,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			acc.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -134,4 +217,41 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 
 		return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, ""), nil, nil
 	}
+}
+
+func getContentHash(r *rand.Rand) (*data.ContentHash, error) {
+	content := []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 100)))
+	hash := crypto.BLAKE2b_256.New()
+	_, err := hash.Write(content)
+	if err != nil {
+		return nil, err
+	}
+
+	digest := hash.Sum(nil)
+	if r.Float32() < 0.5 {
+		graphHash := &data.ContentHash_Graph{
+			Hash:                      digest,
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		}
+		return &data.ContentHash{Graph: graphHash}, nil
+	} else {
+		rawHash := &data.ContentHash_Raw{
+			Hash:            digest,
+			DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+		}
+		return &data.ContentHash{Raw: rawHash}, nil
+	}
+}
+
+func randomAttestors(r *rand.Rand, accounts []simtypes.Account) []string {
+	n := simtypes.RandIntBetween(r, 3, 10)
+	attestors := make([]string, n)
+	for i := 0; i < n; i++ {
+		acc, _ := simtypes.RandomAcc(r, accounts)
+		attestors[i] = acc.Address.String()
+	}
+
+	return attestors
 }
