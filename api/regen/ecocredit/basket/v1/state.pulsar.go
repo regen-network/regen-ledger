@@ -1964,9 +1964,11 @@ type Basket struct {
 	// names must be unique across all credit types and choices of exponent
 	// above and beyond the uniqueness constraint on basket_denom.
 	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	// disable_auto_retire indicates whether or not the credits will be retired upon withdraw from the basket.
+	// disable_auto_retire indicates whether or not the credits will be retired
+	// upon withdraw from the basket.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// credit_type_abbrev is the abbreviation of the credit type this basket is able to hold.
+	// credit_type_abbrev is the abbreviation of the credit type this basket is
+	// able to hold.
 	CreditTypeAbbrev string `protobuf:"bytes,5,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// date_criteria is the date criteria for batches admitted to the basket.
 	DateCriteria *DateCriteria `protobuf:"bytes,6,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
@@ -2063,7 +2065,8 @@ type BasketClass struct {
 
 	// basket_id is the ID of the basket
 	BasketId uint64 `protobuf:"varint,1,opt,name=basket_id,json=basketId,proto3" json:"basket_id,omitempty"`
-	// class_id is the id of the credit class that is allowed to be deposited in the basket
+	// class_id is the id of the credit class that is allowed to be deposited in
+	// the basket
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 

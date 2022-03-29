@@ -11116,7 +11116,8 @@ func (x *MsgUpdateGroupAccountAdmin) GetNewAdmin() string {
 	return ""
 }
 
-// MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
+// MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin
+// response type.
 type MsgUpdateGroupAccountAdminResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11143,7 +11144,8 @@ func (*MsgUpdateGroupAccountAdminResponse) Descriptor() ([]byte, []int) {
 	return file_regen_group_v1alpha1_tx_proto_rawDescGZIP(), []int{11}
 }
 
-// MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
+// MsgUpdateGroupAccountDecisionPolicy is the
+// Msg/UpdateGroupAccountDecisionPolicy request type.
 type MsgUpdateGroupAccountDecisionPolicy struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11198,7 +11200,8 @@ func (x *MsgUpdateGroupAccountDecisionPolicy) GetDecisionPolicy() *anypb.Any {
 	return nil
 }
 
-// MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
+// MsgUpdateGroupAccountDecisionPolicyResponse is the
+// Msg/UpdateGroupAccountDecisionPolicy response type.
 type MsgUpdateGroupAccountDecisionPolicyResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11225,7 +11228,8 @@ func (*MsgUpdateGroupAccountDecisionPolicyResponse) Descriptor() ([]byte, []int)
 	return file_regen_group_v1alpha1_tx_proto_rawDescGZIP(), []int{13}
 }
 
-// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
+// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request
+// type.
 type MsgUpdateGroupAccountMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -11280,7 +11284,8 @@ func (x *MsgUpdateGroupAccountMetadata) GetMetadata() []byte {
 	return nil
 }
 
-// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
+// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata
+// response type.
 type MsgUpdateGroupAccountMetadataResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

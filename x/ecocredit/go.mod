@@ -136,8 +136,6 @@ replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.4
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/regen-network/regen-ledger/orm => ../../orm
-
 replace github.com/regen-network/regen-ledger/types => ../../types
 
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.14

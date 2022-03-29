@@ -11,53 +11,59 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1 Query service
 service Query {
   // ByIRI queries data based on IRI.
-  rpc ByIRI (QueryByIRIRequest) returns (QueryByIRIResponse) {
+  rpc ByIRI(QueryByIRIRequest) returns (QueryByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/by-iri/{iri}";
   }
 
   // ByHash queries data based on ContentHash.
-  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
+  rpc ByHash(QueryByHashRequest) returns (QueryByHashResponse) {
     // HTTP REST API not supported with ContentHash
   }
 
   // ByAttestor queries data based on attestor.
-  rpc ByAttestor (QueryByAttestorRequest) returns (QueryByAttestorResponse) {
+  rpc ByAttestor(QueryByAttestorRequest) returns (QueryByAttestorResponse) {
     option (google.api.http).get = "/regen/data/v1/by-attestor/{attestor}";
   }
 
   // IRIByHash queries IRI based on ContentHash.
-  rpc IRIByHash (QueryIRIByHashRequest) returns (QueryIRIByHashResponse) {
+  rpc IRIByHash(QueryIRIByHashRequest) returns (QueryIRIByHashResponse) {
     // HTTP REST API not supported with ContentHash
   }
 
   // HashByIRI queries ContentHash based on IRI.
-  rpc HashByIRI (QueryHashByIRIRequest) returns (QueryHashByIRIResponse) {
+  rpc HashByIRI(QueryHashByIRIRequest) returns (QueryHashByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/hash/{iri}";
   }
 
   // AttestorsByIRI queries attestors based on IRI.
-  rpc AttestorsByIRI(QueryAttestorsByIRIRequest) returns (QueryAttestorsByIRIResponse) {
+  rpc AttestorsByIRI(QueryAttestorsByIRIRequest)
+      returns (QueryAttestorsByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/attestors/{iri}";
   }
 
   // AttestorsByHash queries attestors based on ContentHash.
-  rpc AttestorsByHash(QueryAttestorsByHashRequest) returns (QueryAttestorsByHashResponse) {
+  rpc AttestorsByHash(QueryAttestorsByHashRequest)
+      returns (QueryAttestorsByHashResponse) {
     // HTTP REST API not supported with ContentHash
   }
 
   // ResolversByIRI queries resolvers based on IRI.
-  rpc ResolversByIRI(QueryResolversByIRIRequest) returns (QueryResolversByIRIResponse) {
+  rpc ResolversByIRI(QueryResolversByIRIRequest)
+      returns (QueryResolversByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/resolvers/{iri}";
   }
 
   // ResolversByHash queries resolvers based on ContentHash.
-  rpc ResolversByHash(QueryResolversByHashRequest) returns (QueryResolversByHashResponse) {
+  rpc ResolversByHash(QueryResolversByHashRequest)
+      returns (QueryResolversByHashResponse) {
     // HTTP REST API not supported with ContentHash
   }
 
   // ResolverInfo queries information about a resolved based on url.
-  rpc ResolverInfo(QueryResolverInfoRequest) returns (QueryResolverInfoResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolver"; // url must be passed as a parameter
+  rpc ResolverInfo(QueryResolverInfoRequest)
+      returns (QueryResolverInfoResponse) {
+    option (google.api.http).get =
+        "/regen/data/v1/resolver"; // url must be passed as a parameter
   }
 }
 
