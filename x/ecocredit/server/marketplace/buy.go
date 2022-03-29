@@ -76,7 +76,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 				return nil, fmt.Errorf("could not convert sell order's ask price to %T: %s", sdk.Int{}, sellOrder.AskPrice)
 			}
 			if order.BidPrice.Amount.LT(askAmount) {
-				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("bid price too low: got %s, ask: %s",
+				return nil, ErrBidTooLow.Wrapf("bid %s, ask: %s",
 					order.BidPrice.Amount.String(), sellOrder.AskPrice)
 			}
 

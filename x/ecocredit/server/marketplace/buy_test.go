@@ -8,15 +8,14 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestBuy_ValidTradable(t *testing.T) {
@@ -283,7 +282,7 @@ func TestBuy_Invalid(t *testing.T) {
 				Quantity: "10", BidPrice: &bidTooLow, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
-	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+	assert.ErrorContains(t, err, ErrBidTooLow.Error())
 
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
