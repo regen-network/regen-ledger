@@ -21,8 +21,9 @@ service Msg {
   // credits first.
   rpc Take(MsgTake) returns (MsgTakeResponse);
 
-  // UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
-  // This message must be signed by the governance module.
+  // UpdateBasketFee updates the list of allowed denoms and their amounts to be
+  // used as basket creation fees. This message must be signed by the governance
+  // module.
   rpc UpdateBasketFee(MsgUpdateBasketFee) returns (MsgUpdateBasketFeeResponse);
 }
 
@@ -164,10 +165,12 @@ message MsgUpdateBasketFee {
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
-  // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+  // add_fees are the coin denoms and amounts to be added to the allowed credit
+  // class creation fees.
   repeated cosmos.base.v1beta1.Coin add_fees = 2;
 
-  // remove_fees are the coin denoms to be removed from the allowed credit class creation fees.
+  // remove_fees are the coin denoms to be removed from the allowed credit class
+  // creation fees.
   repeated string remove_fees = 3;
 }
 

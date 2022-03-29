@@ -9011,8 +9011,8 @@ type MsgAllowAskDenom_DenomInfo struct {
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 	// display_denom is the denom to display to the user and is informational
 	DisplayDenom string `protobuf:"bytes,2,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
-	// exponent is the exponent that relates the denom to the display_denom and is
-	// informational
+	// exponent is the exponent that relates the denom to the display_denom and
+	// is informational
 	Exponent uint32 `protobuf:"varint,3,opt,name=exponent,proto3" json:"exponent,omitempty"`
 }
 

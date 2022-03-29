@@ -16323,7 +16323,8 @@ func (*MsgToggleAllowListResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{21}
 }
 
-// MsgUpdateAllowedCreditClassCreators is the Msg/UpdateAllowedCreditClassCreators request type
+// MsgUpdateAllowedCreditClassCreators is the
+// Msg/UpdateAllowedCreditClassCreators request type
 type MsgUpdateAllowedCreditClassCreators struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16332,9 +16333,11 @@ type MsgUpdateAllowedCreditClassCreators struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// add_creators is a list of addresses to be added to the allow list for credit class creation.
+	// add_creators is a list of addresses to be added to the allow list for
+	// credit class creation.
 	AddCreators []string `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
-	// remove_creators is a list of addresses to be removed from the allow list for credit class creation.
+	// remove_creators is a list of addresses to be removed from the allow list
+	// for credit class creation.
 	RemoveCreators []string `protobuf:"bytes,3,rep,name=remove_creators,json=removeCreators,proto3" json:"remove_creators,omitempty"`
 }
 
@@ -16379,7 +16382,8 @@ func (x *MsgUpdateAllowedCreditClassCreators) GetRemoveCreators() []string {
 	return nil
 }
 
-// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
+// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators
+// response type
 type MsgUpdateAllowedCreditClassCreatorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16415,9 +16419,11 @@ type MsgUpdateCreditClassFee struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+	// add_fees are the coin denoms and amounts to be added to the allowed credit
+	// class creation fees.
 	AddFees []*v1beta1.Coin `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
-	// remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
+	// remove_fees are the coin denoms and amounts to be removed from the allowed
+	// credit class creation fees.
 	RemoveDenoms []string `protobuf:"bytes,3,rep,name=remove_denoms,json=removeDenoms,proto3" json:"remove_denoms,omitempty"`
 }
 
@@ -16462,7 +16468,8 @@ func (x *MsgUpdateCreditClassFee) GetRemoveDenoms() []string {
 	return nil
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response
+// type
 type MsgUpdateCreditClassFeeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

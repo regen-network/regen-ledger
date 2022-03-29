@@ -1519,14 +1519,17 @@ func (m *MsgToggleAllowListResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgToggleAllowListResponse proto.InternalMessageInfo
 
-// MsgUpdateAllowedCreditClassCreators is the Msg/UpdateAllowedCreditClassCreators request type
+// MsgUpdateAllowedCreditClassCreators is the
+// Msg/UpdateAllowedCreditClassCreators request type
 type MsgUpdateAllowedCreditClassCreators struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// add_creators is a list of addresses to be added to the allow list for credit class creation.
+	// add_creators is a list of addresses to be added to the allow list for
+	// credit class creation.
 	AddCreators []string `protobuf:"bytes,2,rep,name=add_creators,json=addCreators,proto3" json:"add_creators,omitempty"`
-	// remove_creators is a list of addresses to be removed from the allow list for credit class creation.
+	// remove_creators is a list of addresses to be removed from the allow list
+	// for credit class creation.
 	RemoveCreators []string `protobuf:"bytes,3,rep,name=remove_creators,json=removeCreators,proto3" json:"remove_creators,omitempty"`
 }
 
@@ -1584,7 +1587,8 @@ func (m *MsgUpdateAllowedCreditClassCreators) GetRemoveCreators() []string {
 	return nil
 }
 
-// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
+// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators
+// response type
 type MsgUpdateAllowedCreditClassCreatorsResponse struct {
 }
 
@@ -1630,9 +1634,11 @@ type MsgUpdateCreditClassFee struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+	// add_fees are the coin denoms and amounts to be added to the allowed credit
+	// class creation fees.
 	AddFees []*types.Coin `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
-	// remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
+	// remove_fees are the coin denoms and amounts to be removed from the allowed
+	// credit class creation fees.
 	RemoveDenoms []string `protobuf:"bytes,3,rep,name=remove_denoms,json=removeDenoms,proto3" json:"remove_denoms,omitempty"`
 }
 
@@ -1690,7 +1696,8 @@ func (m *MsgUpdateCreditClassFee) GetRemoveDenoms() []string {
 	return nil
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response
+// type
 type MsgUpdateCreditClassFeeResponse struct {
 }
 
@@ -1885,15 +1892,18 @@ type MsgClient interface {
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type. This message must be signed by the governance module.
+	// AddCreditType adds a new credit type. This message must be signed by the
+	// governance module.
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
+	// ToggleAllowList toggles the allow list. This message must be signed by the
+	// governance module.
 	ToggleAllowList(ctx context.Context, in *MsgToggleAllowList, opts ...grpc.CallOption) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
-	// must be signed by the governance module.
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class
+	// creators. This message must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreators, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
-	// class fees. This message must be signed by the governance module.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts
+	// to be used as credit class fees. This message must be signed by the
+	// governance module.
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFee, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
 }
 
@@ -2048,15 +2058,18 @@ type MsgServer interface {
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type. This message must be signed by the governance module.
+	// AddCreditType adds a new credit type. This message must be signed by the
+	// governance module.
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
+	// ToggleAllowList toggles the allow list. This message must be signed by the
+	// governance module.
 	ToggleAllowList(context.Context, *MsgToggleAllowList) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
-	// must be signed by the governance module.
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class
+	// creators. This message must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreators) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
-	// class fees. This message must be signed by the governance module.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts
+	// to be used as credit class fees. This message must be signed by the
+	// governance module.
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFee) (*MsgUpdateCreditClassFeeResponse, error)
 }
 

@@ -48,19 +48,24 @@ service Msg {
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
 
-  // AddCreditType adds a new credit type. This message must be signed by the governance module.
+  // AddCreditType adds a new credit type. This message must be signed by the
+  // governance module.
   rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
 
-  // ToggleAllowList toggles the allow list. This message must be signed by the governance module.
+  // ToggleAllowList toggles the allow list. This message must be signed by the
+  // governance module.
   rpc ToggleAllowList(MsgToggleAllowList) returns (MsgToggleAllowListResponse);
 
-  // UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
-  // must be signed by the governance module.
-  rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreators) returns (MsgUpdateAllowedCreditClassCreatorsResponse);
+  // UpdateAllowedCreditClassCreators updates the allow list of credit class
+  // creators. This message must be signed by the governance module.
+  rpc UpdateAllowedCreditClassCreators(MsgUpdateAllowedCreditClassCreators)
+      returns (MsgUpdateAllowedCreditClassCreatorsResponse);
 
-  // UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
-  // class fees. This message must be signed by the governance module.
-  rpc UpdateCreditClassFee(MsgUpdateCreditClassFee) returns (MsgUpdateCreditClassFeeResponse);
+  // UpdateCreditClassFee updates the list of allowed denoms and their amounts
+  // to be used as credit class fees. This message must be signed by the
+  // governance module.
+  rpc UpdateCreditClassFee(MsgUpdateCreditClassFee)
+      returns (MsgUpdateCreditClassFeeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -346,7 +351,6 @@ message MsgAddCreditType {
 // MsgAddCreditTypeResponse is the Msg/AddCreditTypes response type.
 message MsgAddCreditTypeResponse {}
 
-
 // MsgToggleAllowList is the Msg/ToggleAllowList request type
 message MsgToggleAllowList {
   // root_address is the address of the signer.
@@ -360,20 +364,24 @@ message MsgToggleAllowList {
 // MsgToggleAllowListResponse is the Msg/MsgToggleAllowList response type.
 message MsgToggleAllowListResponse {}
 
-// MsgUpdateAllowedCreditClassCreators is the Msg/UpdateAllowedCreditClassCreators request type
+// MsgUpdateAllowedCreditClassCreators is the
+// Msg/UpdateAllowedCreditClassCreators request type
 message MsgUpdateAllowedCreditClassCreators {
   // root_address is the address of the signer.
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
-  // add_creators is a list of addresses to be added to the allow list for credit class creation.
+  // add_creators is a list of addresses to be added to the allow list for
+  // credit class creation.
   repeated string add_creators = 2;
 
-  // remove_creators is a list of addresses to be removed from the allow list for credit class creation.
+  // remove_creators is a list of addresses to be removed from the allow list
+  // for credit class creation.
   repeated string remove_creators = 3;
 }
 
-// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators response type
+// MsgNewCreditClassCreatorResponse is the Msg/UpdateAllowedCreditClassCreators
+// response type
 message MsgUpdateAllowedCreditClassCreatorsResponse {}
 
 // MsgUpdateCreditClassFee is the Msg/UpdateCreditClassFees request type
@@ -382,12 +390,15 @@ message MsgUpdateCreditClassFee {
   // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
-  // add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+  // add_fees are the coin denoms and amounts to be added to the allowed credit
+  // class creation fees.
   repeated cosmos.base.v1beta1.Coin add_fees = 2;
 
-  // remove_fees are the coin denoms and amounts to be removed from the allowed credit class creation fees.
+  // remove_fees are the coin denoms and amounts to be removed from the allowed
+  // credit class creation fees.
   repeated string remove_denoms = 3;
 }
 
-// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response type
+// MsgUpdateCreditClassFeeResponse is the Msg/UpdateCreditClassFees response
+// type
 message MsgUpdateCreditClassFeeResponse {}

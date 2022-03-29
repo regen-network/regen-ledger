@@ -484,9 +484,11 @@ type MsgUpdateBasketFee struct {
 	// root_address is the address of the caller.
 	// This MUST equal the address of the gov module for the tx to succeed.
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
-	// add_fees are the coin denoms and amounts to be added to the allowed credit class creation fees.
+	// add_fees are the coin denoms and amounts to be added to the allowed credit
+	// class creation fees.
 	AddFees []*types.Coin `protobuf:"bytes,2,rep,name=add_fees,json=addFees,proto3" json:"add_fees,omitempty"`
-	// remove_fees are the coin denoms to be removed from the allowed credit class creation fees.
+	// remove_fees are the coin denoms to be removed from the allowed credit class
+	// creation fees.
 	RemoveFees []string `protobuf:"bytes,3,rep,name=remove_fees,json=removeFees,proto3" json:"remove_fees,omitempty"`
 }
 
@@ -668,8 +670,9 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
-	// This message must be signed by the governance module.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be
+	// used as basket creation fees. This message must be signed by the governance
+	// module.
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
@@ -726,8 +729,9 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
-	// This message must be signed by the governance module.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be
+	// used as basket creation fees. This message must be signed by the governance
+	// module.
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
 }
 

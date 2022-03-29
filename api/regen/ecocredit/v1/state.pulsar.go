@@ -8490,8 +8490,9 @@ func (x *AllowedClassCreator) GetAddress() []byte {
 }
 
 // AllowlistEnabled determines if the credit class creator allowlist is enabled.
-// When set to true, only the addresses in the AllowedClassCreator table can create
-// credit classes. When set to false, any address is free to create credit classes.
+// When set to true, only the addresses in the AllowedClassCreator table can
+// create credit classes. When set to false, any address is free to create
+// credit classes.
 type AllowlistEnabled struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -8528,8 +8529,8 @@ func (x *AllowlistEnabled) GetEnabled() bool {
 	return false
 }
 
-// CreditClassFee is a valid coin denom and amount that may be used as the fee for
-// credit class creation.
+// CreditClassFee is a valid coin denom and amount that may be used as the fee
+// for credit class creation.
 type CreditClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

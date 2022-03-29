@@ -46,15 +46,18 @@ type MsgClient interface {
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type. This message must be signed by the governance module.
+	// AddCreditType adds a new credit type. This message must be signed by the
+	// governance module.
 	AddCreditType(ctx context.Context, in *MsgAddCreditType, opts ...grpc.CallOption) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
+	// ToggleAllowList toggles the allow list. This message must be signed by the
+	// governance module.
 	ToggleAllowList(ctx context.Context, in *MsgToggleAllowList, opts ...grpc.CallOption) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
-	// must be signed by the governance module.
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class
+	// creators. This message must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(ctx context.Context, in *MsgUpdateAllowedCreditClassCreators, opts ...grpc.CallOption) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
-	// class fees. This message must be signed by the governance module.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts
+	// to be used as credit class fees. This message must be signed by the
+	// governance module.
 	UpdateCreditClassFee(ctx context.Context, in *MsgUpdateCreditClassFee, opts ...grpc.CallOption) (*MsgUpdateCreditClassFeeResponse, error)
 }
 
@@ -211,15 +214,18 @@ type MsgServer interface {
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
-	// AddCreditType adds a new credit type. This message must be signed by the governance module.
+	// AddCreditType adds a new credit type. This message must be signed by the
+	// governance module.
 	AddCreditType(context.Context, *MsgAddCreditType) (*MsgAddCreditTypeResponse, error)
-	// ToggleAllowList toggles the allow list. This message must be signed by the governance module.
+	// ToggleAllowList toggles the allow list. This message must be signed by the
+	// governance module.
 	ToggleAllowList(context.Context, *MsgToggleAllowList) (*MsgToggleAllowListResponse, error)
-	// UpdateAllowedCreditClassCreators updates the allow list of credit class creators. This message
-	// must be signed by the governance module.
+	// UpdateAllowedCreditClassCreators updates the allow list of credit class
+	// creators. This message must be signed by the governance module.
 	UpdateAllowedCreditClassCreators(context.Context, *MsgUpdateAllowedCreditClassCreators) (*MsgUpdateAllowedCreditClassCreatorsResponse, error)
-	// UpdateCreditClassFee updates the list of allowed denoms and their amounts to be used as credit
-	// class fees. This message must be signed by the governance module.
+	// UpdateCreditClassFee updates the list of allowed denoms and their amounts
+	// to be used as credit class fees. This message must be signed by the
+	// governance module.
 	UpdateCreditClassFee(context.Context, *MsgUpdateCreditClassFee) (*MsgUpdateCreditClassFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }

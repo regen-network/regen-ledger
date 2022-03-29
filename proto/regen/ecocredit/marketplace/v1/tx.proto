@@ -215,11 +215,10 @@ message MsgAllowAskDenom {
     // display_denom is the denom to display to the user and is informational
     string display_denom = 2;
 
-    // exponent is the exponent that relates the denom to the display_denom and is
-    // informational
+    // exponent is the exponent that relates the denom to the display_denom and
+    // is informational
     uint32 exponent = 3;
   }
-
 }
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.

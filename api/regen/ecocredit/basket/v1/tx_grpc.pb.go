@@ -29,8 +29,9 @@ type MsgClient interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(ctx context.Context, in *MsgTake, opts ...grpc.CallOption) (*MsgTakeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
-	// This message must be signed by the governance module.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be
+	// used as basket creation fees. This message must be signed by the governance
+	// module.
 	UpdateBasketFee(ctx context.Context, in *MsgUpdateBasketFee, opts ...grpc.CallOption) (*MsgUpdateBasketFeeResponse, error)
 }
 
@@ -89,8 +90,9 @@ type MsgServer interface {
 	// Take takes credits from a basket starting from the oldest
 	// credits first.
 	Take(context.Context, *MsgTake) (*MsgTakeResponse, error)
-	// UpdateBasketFee updates the list of allowed denoms and their amounts to be used as basket creation fees.
-	// This message must be signed by the governance module.
+	// UpdateBasketFee updates the list of allowed denoms and their amounts to be
+	// used as basket creation fees. This message must be signed by the governance
+	// module.
 	UpdateBasketFee(context.Context, *MsgUpdateBasketFee) (*MsgUpdateBasketFeeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
