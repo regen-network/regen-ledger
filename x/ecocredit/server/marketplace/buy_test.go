@@ -25,6 +25,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
+	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
 	creditType := ecocredit.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
@@ -47,8 +48,9 @@ func TestBuy_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 	sellOrderId := res.SellOrderIds[0]
 
-	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(ask).Times(1)
-	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
+	// sell order ask price: 10ufoo, buy order of 3 credits -> 10 * 3 = 30ufoo
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
 
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
