@@ -41,6 +41,8 @@ type QueryClient interface {
 	// Balance queries the balance (both tradable and retired) of a given credit
 	// batch for a given account.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
+	// Balances queries all credit balances the given account holds.
+	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
@@ -139,6 +141,15 @@ func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts
 	return out, nil
 }
 
+func (c *queryClient) Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error) {
+	out := new(QueryBalancesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Balances", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error) {
 	out := new(QuerySupplyResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Supply", in, out, opts...)
@@ -189,6 +200,8 @@ type QueryServer interface {
 	// Balance queries the balance (both tradable and retired) of a given credit
 	// batch for a given account.
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
+	// Balances queries all credit balances the given account holds.
+	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
@@ -229,6 +242,9 @@ func (UnimplementedQueryServer) BatchInfo(context.Context, *QueryBatchInfoReques
 }
 func (UnimplementedQueryServer) Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
+}
+func (UnimplementedQueryServer) Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Balances not implemented")
 }
 func (UnimplementedQueryServer) Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Supply not implemented")
@@ -414,6 +430,24 @@ func _Query_Balance_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Balances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBalancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Balances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/Balances",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Balances(ctx, req.(*QueryBalancesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Supply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QuerySupplyRequest)
 	if err := dec(in); err != nil {
@@ -510,6 +544,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Balance",
 			Handler:    _Query_Balance_Handler,
+		},
+		{
+			MethodName: "Balances",
+			Handler:    _Query_Balances_Handler,
 		},
 		{
 			MethodName: "Supply",
