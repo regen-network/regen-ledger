@@ -27,8 +27,20 @@ func (m *MsgAllowAskDenom) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
-
-	return sdk.ValidateDenom(m.Denom)
+	if len(m.AddDenoms) == 0 && len(m.RemoveDenoms) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("must specify one or both of add_denoms/remove_denoms")
+	}
+	for _, denomInfo := range m.AddDenoms {
+		if err := sdk.ValidateDenom(denomInfo.Denom); err != nil {
+			return err
+		}
+	}
+	for _, denom := range m.RemoveDenoms {
+		if err := sdk.ValidateDenom(denom); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgAllowAskDenom.

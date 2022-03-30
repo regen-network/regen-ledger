@@ -19,19 +19,39 @@ func TestMsgAllowAskDenom(t *testing.T) {
 	}{
 		"valid": {
 			src: MsgAllowAskDenom{
-				RootAddress:  a1.String(),
-				Denom:        "uregen",
-				DisplayDenom: "regen",
-				Exponent:     6,
+				RootAddress: a1.String(),
+				AddDenoms: []*MsgAllowAskDenom_DenomInfo{
+					{Denom: "uregen", DisplayDenom: "regen", Exponent: 6},
+				},
+				RemoveDenoms: []string{"uregen"},
 			},
 			expErr: false,
 		},
 		"invalid address": {
 			src: MsgAllowAskDenom{
-				RootAddress:  "foobar",
-				Denom:        "uregen",
-				DisplayDenom: "regen",
-				Exponent:     6,
+				RootAddress: "foobar",
+			},
+			expErr: true,
+		},
+		"none specified": {
+			src: MsgAllowAskDenom{
+				RootAddress: a1.String(),
+			},
+			expErr: true,
+		},
+		"invalid denom in add_denoms": {
+			src: MsgAllowAskDenom{
+				RootAddress: a1.String(),
+				AddDenoms: []*MsgAllowAskDenom_DenomInfo{
+					{Denom: "r/e-ge!n", DisplayDenom: "foo", Exponent: 3},
+				},
+			},
+			expErr: true,
+		},
+		"invalid denom in remove_denoms": {
+			src: MsgAllowAskDenom{
+				RootAddress:  a1.String(),
+				RemoveDenoms: []string{"r/e!g)(n"},
 			},
 			expErr: true,
 		},
