@@ -8,39 +8,34 @@ import (
 )
 
 func TestContentHash_ToIRI(t *testing.T) {
-	type fields struct {
-		Sum isContentHash_Sum
-	}
 	tests := []struct {
 		name    string
-		fields  fields
+		fields  ContentHash
 		want    string
 		wantErr bool
 	}{
 		{
 			"bad graph",
-			fields{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{}}},
+			ContentHash{Graph: &ContentHash_Graph{}},
 			"",
 			true,
 		},
 		{
 			"bad raw",
-			fields{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{}}},
+			ContentHash{Raw: &ContentHash_Raw{}},
 			"",
 			true,
 		},
 		{
 			"nil",
-			fields{},
+			ContentHash{},
 			"",
 			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ch := ContentHash{
-				Sum: tt.fields.Sum,
-			}
+			ch := ContentHash{}
 			got, err := ch.ToIRI()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ToIRI() error = %v, wantErr %v", err, tt.wantErr)
@@ -102,13 +97,14 @@ func TestContentHash_Graph_ToIRI(t *testing.T) {
 }
 
 func TestContentHash_Raw_ToIRI(t *testing.T) {
-	hash1 := []byte("abcdefghijklmnopqrstuvwxyz123456")
-
 	type fields struct {
 		Hash            []byte
 		DigestAlgorithm DigestAlgorithm
-		MediaType       MediaType
+		MediaType       RawMediaType
 	}
+
+	hash1 := []byte("abcdefghijklmnopqrstuvwxyz123456")
+
 	tests := []struct {
 		name    string
 		fields  fields
@@ -120,7 +116,7 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 			fields{
 				Hash:            hash1,
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PDF,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
 			},
 			"regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
 			false,
@@ -157,12 +153,12 @@ func TestContentHash_Raw_ToIRI(t *testing.T) {
 
 func TestMediaType_ToExtension(t *testing.T) {
 	// ensure every good media type has an extension
-	for mt := range MediaType_name {
-		_, err := MediaType(mt).ToExtension()
+	for mt := range RawMediaType_name {
+		_, err := RawMediaType(mt).ToExtension()
 		require.NoError(t, err)
 	}
 
-	_, err := MediaType(-1).ToExtension()
+	_, err := RawMediaType(-1).ToExtension()
 	require.Error(t, err)
 }
 
@@ -176,20 +172,20 @@ func TestParseIRI(t *testing.T) {
 		{
 			name: "raw",
 			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
-			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+			wantHash: &ContentHash{Raw: &ContentHash_Raw{
 				Hash:            []byte("abcdefghijklmnopqrstuvwxyz123456"),
 				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       MediaType_MEDIA_TYPE_PDF,
-			}}},
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
+			}},
 		},
 		{
 			name: "graph",
 			iri:  "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
-			wantHash: &ContentHash{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{
+			wantHash: &ContentHash{Graph: &ContentHash_Graph{
 				Hash:                      []byte("abcdefghijklmnopqrstuvwxyz123456"),
 				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			}}},
+			}},
 		},
 		{
 			name:    "no ext",

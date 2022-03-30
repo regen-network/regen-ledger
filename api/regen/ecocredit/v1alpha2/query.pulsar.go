@@ -21916,7 +21916,8 @@ func (x *QuerySellOrdersByBatchDenomResponse) GetPagination() *v1beta1.PageRespo
 	return nil
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
+// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request
+// type.
 type QuerySellOrdersByAddressRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -21962,7 +21963,8 @@ func (x *QuerySellOrdersByAddressRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
+// response type.
 type QuerySellOrdersByAddressResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -22211,7 +22213,8 @@ func (x *QueryBuyOrdersByAddressRequest) GetPagination() *v1beta1.PageRequest {
 	return nil
 }
 
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
+// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response
+// type.
 type QueryBuyOrdersByAddressResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -22300,7 +22303,8 @@ type QueryAllowedAskDenomsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+	// ask_denoms is a list of coin denoms allowed to use in the ask price of sell
+	// orders.
 	AskDenoms []*AskDenom `protobuf:"bytes,1,rep,name=ask_denoms,json=askDenoms,proto3" json:"ask_denoms,omitempty"`
 	// pagination defines an optional pagination for the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
