@@ -2,18 +2,23 @@ package basket_test
 
 import (
 	"context"
+	"strconv"
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -428,4 +433,141 @@ func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string,
 	require.NoError(t, err)
 
 	require.True(t, checkBalance.Equal(oldBalance))
+}
+
+type putSuite struct {
+	*baseSuite
+	basketDenom     string
+	classId         string
+	creditType      string
+	batchDenom      string
+	batchStartDate  *timestamppb.Timestamp
+	tradableCredits string
+	err             error
+}
+
+func TestPutDate(t *testing.T) {
+	gocuke.NewRunner(t, &putSuite{}).Path("../../features/basket/put_date.feature").Run()
+}
+
+func (s *putSuite) Before(t gocuke.TestingT) {
+	s.baseSuite = setupBase(t)
+	s.tradableCredits = "5"
+	s.classId = "C01"
+	s.creditType = "C"
+}
+
+func (s *putSuite) ACurrentBlockTimestampOf(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
+	assert.NilError(s.t, err)
+
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+}
+
+func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
+	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
+	assert.NilError(s.t, err)
+
+	s.basketDenom = "basket-" + a
+
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:      s.basketDenom,
+		CreditTypeAbbrev: s.creditType,
+		DateCriteria:     &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
+	})
+	assert.NilError(s.t, err)
+
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
+		BasketId: basketId,
+		ClassId:  s.classId,
+	})
+	assert.NilError(s.t, err)
+}
+
+func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
+	startDate, err := time.Parse("2006-01-02", a)
+	assert.NilError(s.t, err)
+
+	s.batchDenom = "batch-" + a
+	s.batchStartDate = timestamppb.New(startDate)
+
+	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditapi.BatchInfo{
+		BatchDenom: s.batchDenom,
+		StartDate:  s.batchStartDate,
+	})
+	assert.NilError(s.t, err)
+
+	// TODO: migrate from legacy tradable balance store to batch balance table
+
+	//batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
+	//assert.NilError(s.t, err)
+	//
+	//err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
+	//	Address:  s.addr,
+	//	BatchId:  batch.Id,
+	//	Tradable: s.tradableCredits,
+	//})
+	//assert.NilError(s.t, err)
+
+	legacyStore := s.sdkCtx.KVStore(s.storeKey)
+	tradKey := ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(s.batchDenom))
+	userFunds, err := math.NewDecFromString(s.tradableCredits)
+	require.NoError(s.t, err)
+
+	ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
+}
+
+func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
+	startDate := time.Unix(s.batchStartDate.Seconds, int64(s.batchStartDate.Nanos))
+
+	s.ecocreditKeeper.EXPECT().
+		BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: s.batchDenom}).
+		Return(&ecocredit.QueryBatchInfoResponse{Info: &ecocredit.BatchInfo{
+			BatchDenom: s.batchDenom,
+			StartDate:  &startDate,
+		}}, nil).AnyTimes() // only called if valid start date
+
+	s.ecocreditKeeper.EXPECT().
+		ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{}).
+		Return(&ecocredit.QueryProjectInfoResponse{Info: &ecocredit.ProjectInfo{
+			ClassId: s.classId,
+		}}, nil).AnyTimes() // only called if valid start date
+
+	s.ecocreditKeeper.EXPECT().
+		ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: s.classId}).
+		Return(&ecocredit.QueryClassInfoResponse{Info: &ecocredit.ClassInfo{
+			CreditType: &ecocredit.CreditType{Abbreviation: s.creditType},
+		}}, nil).AnyTimes() // only called if valid start date
+
+	any := gomock.Any()
+	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
+	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
+
+	s.bankKeeper.EXPECT().
+		MintCoins(any, basket.BasketSubModuleName, tokenAmount).
+		Return(nil).AnyTimes() // only called if valid start date
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(any, basket.BasketSubModuleName, s.addr, tokenAmount).
+		Return(nil).AnyTimes() // only called if valid start date
+
+	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: s.basketDenom,
+		Credits: []*basket.BasketCredit{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     s.tradableCredits,
+			},
+		},
+	})
+}
+
+func (s *putSuite) TheCreditsArePutIntoTheBasket() {
+	assert.ErrorIs(s.t, s.err, nil)
+}
+
+func (s *putSuite) TheCreditsAreNotPutIntoTheBasket() {
+	assert.ErrorContains(s.t, s.err, "cannot put a credit from a batch with start date")
 }
