@@ -166,7 +166,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 		return ecocredit.ErrInsufficientFunds.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
 	}
 	userBal.Tradable = newTradable.String()
-	if err = k.coreStore.BatchBalanceTable().Save(ctx, userBal); err != nil {
+	if err = k.coreStore.BatchBalanceTable().Update(ctx, userBal); err != nil {
 		return err
 	}
 
