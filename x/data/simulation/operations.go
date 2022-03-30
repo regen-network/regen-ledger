@@ -2,10 +2,13 @@ package simulation
 
 import (
 	"crypto"
+	"fmt"
 	"math/rand"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,8 +25,7 @@ const (
 	OpWeightMsgDefineResolver   = "op_weight_msg_define_resolver"
 	OpWeightMsgRegisterResolver = "op_weight_msg_register_resolver"
 
-	ModuleName  = "data"
-	resolverUrl = "https://foo.bar"
+	ModuleName = "data"
 )
 
 var (
@@ -80,19 +82,19 @@ func WeightedOperations(
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgAnchor(ak, bk, qryClient),
+			SimulateMsgAnchor(ak, bk),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgAnchor(ak, bk, qryClient),
+			SimulateMsgAttest(ak, bk),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgAnchor(ak, bk, qryClient),
+			SimulateMsgDefineResolver(ak, bk),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAnchor,
-			SimulateMsgAnchor(ak, bk, qryClient),
+			SimulateMsgRegisterResolver(ak, bk, qryClient),
 		),
 	}
 
@@ -100,8 +102,7 @@ func WeightedOperations(
 }
 
 // SimulateMsgAnchor generates a MsgAnchor with random values.
-func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryClient) simtypes.Operation {
+func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -149,31 +150,40 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper,
 }
 
 // SimulateMsgAttest generates a MsgAttest with random values.
-func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryClient) simtypes.Operation {
+func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		attestors := randomAttestors(r, accs)
-		acc, _ := simtypes.RandomAcc(r, accs)
+		privateKeys, accNumbers, sequences, attestorsAddrs := attestorsWithAccInfos(r, sdkCtx, ak, accs)
+		if len(privateKeys) == 0 {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "no accounts"), nil, nil
+		}
 
+		accAddr0, err := sdk.AccAddressFromBech32(attestorsAddrs[0])
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, err.Error()), nil, err
+		}
+
+		acc, _ := simtypes.FindAccount(accs, accAddr0)
 		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "fee error"), nil, err
 		}
 
-		hash1, err := getContentHash(r)
+		content := []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 100)))
+		hash := crypto.BLAKE2b_256.New()
+		_, err = hash.Write(content)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, err.Error()), nil, err
 		}
 
+		digest := hash.Sum(nil)
 		msg := &data.MsgAttest{
-			Attestors: attestors,
-			Hash:      hash1.GetGraph(),
+			Attestors: attestorsAddrs,
+			Hash:      getGraph(digest),
 		}
 
-		account := ak.GetAccount(sdkCtx, acc.Address)
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(
 			txGen,
@@ -181,9 +191,9 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			acc.PrivKey,
+			accNumbers,
+			sequences,
+			privateKeys...,
 		)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "unable to generate mock tx"), nil, err
@@ -191,6 +201,9 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
+			if strings.Contains(err.Error(), "insufficient funds") {
+				return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "not enough balance"), nil, nil
+			}
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "unable to deliver tx"), nil, err
 		}
 
@@ -199,8 +212,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 }
 
 // SimulateMsgDefineResolver generates a MsgDefineResolver with random values.
-func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper,
-	qryClient data.QueryClient) simtypes.Operation {
+func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
@@ -212,6 +224,7 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
 		}
 
+		resolverUrl := genResolverUrl(r)
 		msg := &data.MsgDefineResolver{
 			Manager:     manager.Address.String(),
 			ResolverUrl: resolverUrl,
@@ -235,11 +248,18 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
+			if strings.Contains(err.Error(), "unique key violation") {
+				return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unique key voilation"), nil, nil
+			}
 			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
 		}
 
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
+}
+
+func genResolverUrl(r *rand.Rand) string {
+	return fmt.Sprintf("https://%s.com", simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 3)))
 }
 
 // SimulateMsgRegisterResolver generates a MsgRegisterResolver with random values.
@@ -249,6 +269,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		ctx := sdk.WrapSDKContext(sdkCtx)
+		resolverUrl := genResolverUrl(r)
 		res, err := qryClient.ResolverInfo(ctx, &data.QueryResolverInfoRequest{Url: resolverUrl})
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
@@ -270,9 +291,14 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "fee error"), nil, err
 		}
 
+		hash, err := getContentHash(r)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
+		}
 		msg := &data.MsgRegisterResolver{
 			Manager:    manager.String(),
 			ResolverId: res.Id,
+			Data:       []*data.ContentHash{hash},
 		}
 
 		account := ak.GetAccount(sdkCtx, manager)
@@ -310,29 +336,43 @@ func getContentHash(r *rand.Rand) (*data.ContentHash, error) {
 
 	digest := hash.Sum(nil)
 	if r.Float32() < 0.5 {
-		graphHash := &data.ContentHash_Graph{
-			Hash:                      digest,
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		}
-		return &data.ContentHash{Graph: graphHash}, nil
+		return &data.ContentHash{Graph: getGraph(digest)}, nil
 	} else {
-		rawHash := &data.ContentHash_Raw{
-			Hash:            digest,
-			DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
-		}
-		return &data.ContentHash{Raw: rawHash}, nil
+		return &data.ContentHash{Raw: getRaw(digest)}, nil
 	}
 }
 
-func randomAttestors(r *rand.Rand, accounts []simtypes.Account) []string {
-	n := simtypes.RandIntBetween(r, 3, 10)
-	attestors := make([]string, n)
+func getGraph(digest []byte) *data.ContentHash_Graph {
+	return &data.ContentHash_Graph{
+		Hash:                      digest,
+		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+	}
+}
+
+func getRaw(digest []byte) *data.ContentHash_Raw {
+	return &data.ContentHash_Raw{
+		Hash:            digest,
+		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
+	}
+}
+
+func attestorsWithAccInfos(r *rand.Rand, sdkCtx sdk.Context,
+	ak data.AccountKeeper, accounts []simtypes.Account) ([]cryptotypes.PrivKey, []uint64, []uint64, []string) {
+	n := simtypes.RandIntBetween(r, 1, 5)
+	attestors := make([]cryptotypes.PrivKey, n)
+	attestorAddrs := make([]string, n)
+	sequence := make([]uint64, n)
+	accnumber := make([]uint64, n)
 	for i := 0; i < n; i++ {
-		acc, _ := simtypes.RandomAcc(r, accounts)
-		attestors[i] = acc.Address.String()
+		account := ak.GetAccount(sdkCtx, accounts[i].Address)
+		acc := accounts[i]
+		attestorAddrs[i] = acc.Address.String()
+		attestors[i] = acc.PrivKey
+		sequence[i] = account.GetSequence()
+		accnumber[i] = account.GetAccountNumber()
 	}
 
-	return attestors
+	return attestors, accnumber, sequence, attestorAddrs
 }

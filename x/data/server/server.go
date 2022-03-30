@@ -56,4 +56,6 @@ func RegisterServices(configurator servermodule.Configurator, ak data.AccountKee
 	impl := newServer(configurator.ModuleKey(), ak, bk)
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)
+
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }
