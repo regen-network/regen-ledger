@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 )
 
-func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
+func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Sender string
@@ -23,11 +23,10 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 			name: "good",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 32),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 				}},
 			},
 			wantErr: "",
@@ -44,11 +43,10 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 			name: "bad",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 31),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 				}},
 			},
 			wantErr: "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: invalid request",
@@ -56,7 +54,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAnchorData{
+			m := &MsgAnchor{
 				Sender: tt.fields.Sender,
 				Hash:   tt.fields.Hash,
 			}
@@ -70,11 +68,11 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
+func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
-		Signers []string
-		Hash    *ContentHash_Graph
+		Attestors []string
+		Hash      *ContentHash_Graph
 	}
 	tests := []struct {
 		name    string
@@ -84,7 +82,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		{
 			"good",
 			fields{
-				Signers: []string{addr.String()},
+				Attestors: []string{addr.String()},
 				Hash: &ContentHash_Graph{
 					Hash:                      make([]byte, 32),
 					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -97,7 +95,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		{
 			"bad",
 			fields{
-				Signers: nil,
+				Attestors: nil,
 				Hash: &ContentHash_Graph{
 					Hash:                      make([]byte, 32),
 					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -110,9 +108,9 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSignData{
-				Signers: tt.fields.Signers,
-				Hash:    tt.fields.Hash,
+			m := &MsgAttest{
+				Attestors: tt.fields.Attestors,
+				Hash:      tt.fields.Hash,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {
@@ -139,7 +137,7 @@ func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
 			"valid message",
 			fields{
 				Manager:     addr.String(),
-				ResolverUrl: "http://foo.bar",
+				ResolverUrl: "https://foo.bar",
 			},
 			"",
 		},
@@ -147,7 +145,7 @@ func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
 			"invalid manager",
 			fields{
 				Manager:     "foo",
-				ResolverUrl: "http://foo.bar",
+				ResolverUrl: "https://foo.bar",
 			},
 			"decoding bech32 failed: invalid bech32 string length 3: invalid address",
 		},
@@ -180,12 +178,10 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	validData := []*ContentHash{
 		{
-			Sum: &ContentHash_Raw_{
-				Raw: &ContentHash_Raw{
-					Hash:            make([]byte, 32),
-					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-				},
+			Raw: &ContentHash_Raw{
+				Hash:            make([]byte, 32),
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 			},
 		},
 	}
@@ -229,12 +225,10 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 				Manager: addr.String(),
 				Data: []*ContentHash{
 					{
-						Sum: &ContentHash_Raw_{
-							Raw: &ContentHash_Raw{
-								Hash:            make([]byte, 31),
-								DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-								MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
-							},
+						Raw: &ContentHash_Raw{
+							Hash:            make([]byte, 31),
+							DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+							MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 						},
 					},
 				},

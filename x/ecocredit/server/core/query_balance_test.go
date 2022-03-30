@@ -40,8 +40,8 @@ func TestQuery_Balance(t *testing.T) {
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, tradable, res.TradableAmount)
-	assert.Equal(t, retired, res.RetiredAmount)
+	assert.Equal(t, tradable, res.Balance.Tradable)
+	assert.Equal(t, retired, res.Balance.Retired)
 
 	// random addr should just give 0
 	res, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
@@ -49,8 +49,8 @@ func TestQuery_Balance(t *testing.T) {
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, "0", res.TradableAmount)
-	assert.Equal(t, "0", res.RetiredAmount)
+	assert.Equal(t, "0", res.Balance.Tradable)
+	assert.Equal(t, "0", res.Balance.Retired)
 
 	// query with invalid batch should return not found
 	_, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{

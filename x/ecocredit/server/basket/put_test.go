@@ -16,9 +16,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -278,9 +278,9 @@ func TestPut(t *testing.T) {
 			expectCalls: func() {
 				s.ecocreditKeeper.EXPECT().
 					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "FooBarBaz"}).
-					Return(nil, orm.ErrNotFound)
+					Return(nil, ormerrors.NotFound)
 			},
-			errMsg: orm.ErrNotFound.Error(),
+			errMsg: ormerrors.NotFound.Error(),
 		},
 		//{
 		//	name:            "class not allowed",

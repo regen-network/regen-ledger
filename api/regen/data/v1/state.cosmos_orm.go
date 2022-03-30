@@ -273,123 +273,123 @@ func NewDataAnchorTable(db ormtable.Schema) (DataAnchorTable, error) {
 	return dataAnchorTable{table}, nil
 }
 
-type DataSignerTable interface {
-	Insert(ctx context.Context, dataSigner *DataSigner) error
-	Update(ctx context.Context, dataSigner *DataSigner) error
-	Save(ctx context.Context, dataSigner *DataSigner) error
-	Delete(ctx context.Context, dataSigner *DataSigner) error
-	Has(ctx context.Context, id []byte, signer []byte) (found bool, err error)
+type DataAttestorTable interface {
+	Insert(ctx context.Context, dataAttestor *DataAttestor) error
+	Update(ctx context.Context, dataAttestor *DataAttestor) error
+	Save(ctx context.Context, dataAttestor *DataAttestor) error
+	Delete(ctx context.Context, dataAttestor *DataAttestor) error
+	Has(ctx context.Context, id []byte, attestor []byte) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, id []byte, signer []byte) (*DataSigner, error)
-	List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
-	ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error)
-	DeleteBy(ctx context.Context, prefixKey DataSignerIndexKey) error
-	DeleteRange(ctx context.Context, from, to DataSignerIndexKey) error
+	Get(ctx context.Context, id []byte, attestor []byte) (*DataAttestor, error)
+	List(ctx context.Context, prefixKey DataAttestorIndexKey, opts ...ormlist.Option) (DataAttestorIterator, error)
+	ListRange(ctx context.Context, from, to DataAttestorIndexKey, opts ...ormlist.Option) (DataAttestorIterator, error)
+	DeleteBy(ctx context.Context, prefixKey DataAttestorIndexKey) error
+	DeleteRange(ctx context.Context, from, to DataAttestorIndexKey) error
 
 	doNotImplement()
 }
 
-type DataSignerIterator struct {
+type DataAttestorIterator struct {
 	ormtable.Iterator
 }
 
-func (i DataSignerIterator) Value() (*DataSigner, error) {
-	var dataSigner DataSigner
-	err := i.UnmarshalMessage(&dataSigner)
-	return &dataSigner, err
+func (i DataAttestorIterator) Value() (*DataAttestor, error) {
+	var dataAttestor DataAttestor
+	err := i.UnmarshalMessage(&dataAttestor)
+	return &dataAttestor, err
 }
 
-type DataSignerIndexKey interface {
+type DataAttestorIndexKey interface {
 	id() uint32
 	values() []interface{}
-	dataSignerIndexKey()
+	dataAttestorIndexKey()
 }
 
 // primary key starting index..
-type DataSignerPrimaryKey = DataSignerIdSignerIndexKey
+type DataAttestorPrimaryKey = DataAttestorIdAttestorIndexKey
 
-type DataSignerIdSignerIndexKey struct {
+type DataAttestorIdAttestorIndexKey struct {
 	vs []interface{}
 }
 
-func (x DataSignerIdSignerIndexKey) id() uint32            { return 0 }
-func (x DataSignerIdSignerIndexKey) values() []interface{} { return x.vs }
-func (x DataSignerIdSignerIndexKey) dataSignerIndexKey()   {}
+func (x DataAttestorIdAttestorIndexKey) id() uint32            { return 0 }
+func (x DataAttestorIdAttestorIndexKey) values() []interface{} { return x.vs }
+func (x DataAttestorIdAttestorIndexKey) dataAttestorIndexKey() {}
 
-func (this DataSignerIdSignerIndexKey) WithId(id []byte) DataSignerIdSignerIndexKey {
+func (this DataAttestorIdAttestorIndexKey) WithId(id []byte) DataAttestorIdAttestorIndexKey {
 	this.vs = []interface{}{id}
 	return this
 }
 
-func (this DataSignerIdSignerIndexKey) WithIdSigner(id []byte, signer []byte) DataSignerIdSignerIndexKey {
-	this.vs = []interface{}{id, signer}
+func (this DataAttestorIdAttestorIndexKey) WithIdAttestor(id []byte, attestor []byte) DataAttestorIdAttestorIndexKey {
+	this.vs = []interface{}{id, attestor}
 	return this
 }
 
-type dataSignerTable struct {
+type dataAttestorTable struct {
 	table ormtable.Table
 }
 
-func (this dataSignerTable) Insert(ctx context.Context, dataSigner *DataSigner) error {
-	return this.table.Insert(ctx, dataSigner)
+func (this dataAttestorTable) Insert(ctx context.Context, dataAttestor *DataAttestor) error {
+	return this.table.Insert(ctx, dataAttestor)
 }
 
-func (this dataSignerTable) Update(ctx context.Context, dataSigner *DataSigner) error {
-	return this.table.Update(ctx, dataSigner)
+func (this dataAttestorTable) Update(ctx context.Context, dataAttestor *DataAttestor) error {
+	return this.table.Update(ctx, dataAttestor)
 }
 
-func (this dataSignerTable) Save(ctx context.Context, dataSigner *DataSigner) error {
-	return this.table.Save(ctx, dataSigner)
+func (this dataAttestorTable) Save(ctx context.Context, dataAttestor *DataAttestor) error {
+	return this.table.Save(ctx, dataAttestor)
 }
 
-func (this dataSignerTable) Delete(ctx context.Context, dataSigner *DataSigner) error {
-	return this.table.Delete(ctx, dataSigner)
+func (this dataAttestorTable) Delete(ctx context.Context, dataAttestor *DataAttestor) error {
+	return this.table.Delete(ctx, dataAttestor)
 }
 
-func (this dataSignerTable) Has(ctx context.Context, id []byte, signer []byte) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, id, signer)
+func (this dataAttestorTable) Has(ctx context.Context, id []byte, attestor []byte) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id, attestor)
 }
 
-func (this dataSignerTable) Get(ctx context.Context, id []byte, signer []byte) (*DataSigner, error) {
-	var dataSigner DataSigner
-	found, err := this.table.PrimaryKey().Get(ctx, &dataSigner, id, signer)
+func (this dataAttestorTable) Get(ctx context.Context, id []byte, attestor []byte) (*DataAttestor, error) {
+	var dataAttestor DataAttestor
+	found, err := this.table.PrimaryKey().Get(ctx, &dataAttestor, id, attestor)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &dataSigner, nil
+	return &dataAttestor, nil
 }
 
-func (this dataSignerTable) List(ctx context.Context, prefixKey DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
+func (this dataAttestorTable) List(ctx context.Context, prefixKey DataAttestorIndexKey, opts ...ormlist.Option) (DataAttestorIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return DataSignerIterator{it}, err
+	return DataAttestorIterator{it}, err
 }
 
-func (this dataSignerTable) ListRange(ctx context.Context, from, to DataSignerIndexKey, opts ...ormlist.Option) (DataSignerIterator, error) {
+func (this dataAttestorTable) ListRange(ctx context.Context, from, to DataAttestorIndexKey, opts ...ormlist.Option) (DataAttestorIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return DataSignerIterator{it}, err
+	return DataAttestorIterator{it}, err
 }
 
-func (this dataSignerTable) DeleteBy(ctx context.Context, prefixKey DataSignerIndexKey) error {
+func (this dataAttestorTable) DeleteBy(ctx context.Context, prefixKey DataAttestorIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this dataSignerTable) DeleteRange(ctx context.Context, from, to DataSignerIndexKey) error {
+func (this dataAttestorTable) DeleteRange(ctx context.Context, from, to DataAttestorIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this dataSignerTable) doNotImplement() {}
+func (this dataAttestorTable) doNotImplement() {}
 
-var _ DataSignerTable = dataSignerTable{}
+var _ DataAttestorTable = dataAttestorTable{}
 
-func NewDataSignerTable(db ormtable.Schema) (DataSignerTable, error) {
-	table := db.GetTable(&DataSigner{})
+func NewDataAttestorTable(db ormtable.Schema) (DataAttestorTable, error) {
+	table := db.GetTable(&DataAttestor{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&DataSigner{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&DataAttestor{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return dataSignerTable{table}, nil
+	return dataAttestorTable{table}, nil
 }
 
 type ResolverInfoTable interface {
@@ -682,7 +682,7 @@ func NewDataResolverTable(db ormtable.Schema) (DataResolverTable, error) {
 type StateStore interface {
 	DataIDTable() DataIDTable
 	DataAnchorTable() DataAnchorTable
-	DataSignerTable() DataSignerTable
+	DataAttestorTable() DataAttestorTable
 	ResolverInfoTable() ResolverInfoTable
 	DataResolverTable() DataResolverTable
 
@@ -692,7 +692,7 @@ type StateStore interface {
 type stateStore struct {
 	dataID       DataIDTable
 	dataAnchor   DataAnchorTable
-	dataSigner   DataSignerTable
+	dataAttestor DataAttestorTable
 	resolverInfo ResolverInfoTable
 	dataResolver DataResolverTable
 }
@@ -705,8 +705,8 @@ func (x stateStore) DataAnchorTable() DataAnchorTable {
 	return x.dataAnchor
 }
 
-func (x stateStore) DataSignerTable() DataSignerTable {
-	return x.dataSigner
+func (x stateStore) DataAttestorTable() DataAttestorTable {
+	return x.dataAttestor
 }
 
 func (x stateStore) ResolverInfoTable() ResolverInfoTable {
@@ -732,7 +732,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	dataSignerTable, err := NewDataSignerTable(db)
+	dataAttestorTable, err := NewDataAttestorTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -750,7 +750,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 	return stateStore{
 		dataIDTable,
 		dataAnchorTable,
-		dataSignerTable,
+		dataAttestorTable,
 		resolverInfoTable,
 		dataResolverTable,
 	}, nil

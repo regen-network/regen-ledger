@@ -1,16 +1,18 @@
 package data
 
 import (
+	"net/url"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"net/url"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 )
 
 var (
-	_, _, _, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
+	_, _, _, _ legacytx.LegacyMsg = &MsgAnchor{}, &MsgAttest{}, &MsgDefineResolver{}, &MsgRegisterResolver{}
 )
 
-func (m *MsgAnchorData) ValidateBasic() error {
+func (m *MsgAnchor) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
@@ -20,13 +22,24 @@ func (m *MsgAnchorData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgAnchorData) GetSigners() []sdk.AccAddress {
+func (m *MsgAnchor) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSignData) ValidateBasic() error {
-	for _, addr := range m.Signers {
+// Route implements the LegacyMsg interface.
+func (m MsgAnchor) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgAnchor) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgAnchor) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgAttest) ValidateBasic() error {
+	for _, addr := range m.Attestors {
 		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
 			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 		}
@@ -37,15 +50,26 @@ func (m *MsgSignData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgSignData) GetSigners() []sdk.AccAddress {
-	addrs := make([]sdk.AccAddress, len(m.Signers))
+func (m *MsgAttest) GetSigners() []sdk.AccAddress {
+	addrs := make([]sdk.AccAddress, len(m.Attestors))
 
-	for i, signer := range m.Signers {
-		addr, _ := sdk.AccAddressFromBech32(signer)
+	for i, attestor := range m.Attestors {
+		addr, _ := sdk.AccAddressFromBech32(attestor)
 		addrs[i] = addr
 	}
 
 	return addrs
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgAttest) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgAttest) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgAttest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgDefineResolver) ValidateBasic() error {
@@ -63,6 +87,17 @@ func (m *MsgDefineResolver) ValidateBasic() error {
 func (m *MsgDefineResolver) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Manager)
 	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgDefineResolver) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgDefineResolver) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgDefineResolver) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgRegisterResolver) ValidateBasic() error {
@@ -83,4 +118,15 @@ func (m *MsgRegisterResolver) ValidateBasic() error {
 func (m *MsgRegisterResolver) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Manager)
 	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgRegisterResolver) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgRegisterResolver) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgRegisterResolver) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }

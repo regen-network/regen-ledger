@@ -7,22 +7,21 @@ import "google/protobuf/timestamp.proto";
 
 // GenesisState is the genesis state
 message GenesisState {
-    // entries are the content entries
-    repeated GenesisContentEntry entries = 1;
+  // entries are the content entries
+  repeated GenesisContentEntry entries = 1;
 }
 
 // GenesisContentEntry is a genesis content entry
 message GenesisContentEntry {
-    // hash is the ContentHash
-    ContentHash hash = 1;
+  // hash is the ContentHash
+  ContentHash hash = 1;
 
-    // timestamp is the anchor Timestamp
-    google.protobuf.Timestamp timestamp = 2;
+  // timestamp is the anchor Timestamp
+  google.protobuf.Timestamp timestamp = 2;
 
-    // signers are the signers, if any
-    repeated SignerEntry signers = 3;
+  // signers are the signers, if any
+  repeated SignerEntry signers = 3;
 
-    // content is the actual content if stored on-chain
-    Content content = 4;
-
+  // content is the actual content if stored on-chain
+  Content content = 4;
 }

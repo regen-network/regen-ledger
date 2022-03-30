@@ -11,7 +11,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/orm"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -28,7 +27,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// get the basket
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, req.BasketDenom)
 	if err != nil {
-		if orm.ErrNotFound.Is(err) {
+		if ormerrors.IsNotFound(err) {
 			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
 		}
 		return nil, err
@@ -36,13 +35,12 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
-	sdkContext := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
-		sdkContext.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut iteration")
 		// get credit batch info
 		res, err := k.ecocreditKeeper.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: credit.BatchDenom})
 		if err != nil {
-			if orm.ErrNotFound.Is(err) {
+			if ormerrors.IsNotFound(err) {
 				return nil, sdkerrors.ErrNotFound.Wrapf("%s batch not found", credit.BatchDenom)
 			}
 			return nil, err
@@ -72,11 +70,12 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		}
 		// update the total amount received so far
 		amountReceived = amountReceived.Add(tokens[0].Amount)
+
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut credit iteration")
 	}
 
 	// mint and send tokens to depositor
 	coinsToSend := sdk.Coins{sdk.NewCoin(basket.BasketDenom, amountReceived)}
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if err = k.bankKeeper.MintCoins(sdkCtx, baskettypes.BasketSubModuleName, coinsToSend); err != nil {
 		return nil, err
 	}
