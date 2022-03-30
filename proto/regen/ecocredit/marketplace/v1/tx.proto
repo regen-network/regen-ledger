@@ -25,8 +25,8 @@ service Msg {
   // Buy creates credit buy orders.
   rpc Buy(MsgBuy) returns (MsgBuyResponse);
 
-  // AllowAskDenom is a governance operation which authorizes a new ask denom to
-  // be used in sell orders
+  // AllowAskDenom is a governance operation which authorizes new ask denoms and/or removes denoms to
+  // be used in sell orders.
   rpc AllowAskDenom(MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
 }
 
@@ -195,21 +195,32 @@ message MsgBuyResponse {
   repeated uint64 buy_order_ids = 1;
 }
 
+
 // MsgAllowAskDenom is the Msg/AllowAskDenom request type.
 message MsgAllowAskDenom {
-  // root_address is the address of the governance account which can authorize
-  // ask denoms
+
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
   string root_address = 1;
 
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-  string denom = 2;
+  // add_denoms specifies denoms to add to the allowed denom list
+  repeated DenomInfo add_denoms = 2;
 
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 3;
+  // remove_denoms specifies denoms to remove from the allowed denom list
+  repeated string remove_denoms = 3;
 
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 4;
+  // DenomInfo contains the information related to a bank denom
+  message DenomInfo {
+    // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+    string denom = 1;
+
+    // display_denom is the denom to display to the user and is informational
+    string display_denom = 2;
+
+    // exponent is the exponent that relates the denom to the display_denom and
+    // is informational
+    uint32 exponent = 3;
+  }
 }
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.

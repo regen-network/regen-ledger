@@ -123,6 +123,7 @@ message BuyOrder {
 
 // AllowedDenom represents the information for an allowed ask/bid denom.
 message AllowedDenom {
+  // This table is controlled via governance.
   option (cosmos.orm.v1alpha1.table) = {
     id : 3
     primary_key : {fields : "bank_denom"}
