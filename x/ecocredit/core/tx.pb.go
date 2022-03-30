@@ -1333,7 +1333,7 @@ func (m *MsgUpdateClassMetadataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateClassMetadataResponse proto.InternalMessageInfo
 
-// MsgAddCreditType is the Msg/AddCreditType request type. (Gov only)
+// MsgAddCreditType is the Msg/AddCreditType request type.
 type MsgAddCreditType struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
@@ -1389,7 +1389,7 @@ func (m *MsgAddCreditType) GetCreditTypes() []*CreditType {
 	return nil
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type. (Gov only)
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
 type MsgAddCreditTypeResponse struct {
 }
 
@@ -1426,7 +1426,7 @@ func (m *MsgAddCreditTypeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddCreditTypeResponse proto.InternalMessageInfo
 
-// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type. (Gov only)
+// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type.
 type MsgUpdateClassCreatorAllowlist struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
@@ -1491,7 +1491,7 @@ func (m *MsgUpdateClassCreatorAllowlist) GetRemoveCreators() []string {
 	return nil
 }
 
-// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type. (Gov only)
+// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type.
 type MsgUpdateClassCreatorAllowlistResponse struct {
 }
 
@@ -1530,7 +1530,7 @@ func (m *MsgUpdateClassCreatorAllowlistResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateClassCreatorAllowlistResponse proto.InternalMessageInfo
 
-// MsgToggleAllowlist is the Msg/ToggleAllowlist request type. (Gov only)
+// MsgToggleAllowlist is the Msg/ToggleAllowlist request type.
 type MsgToggleAllowlist struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
@@ -1586,7 +1586,7 @@ func (m *MsgToggleAllowlist) GetSetting() bool {
 	return false
 }
 
-// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type. (Gov only)
+// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type.
 type MsgToggleAllowlistResponse struct {
 }
 
@@ -1623,7 +1623,7 @@ func (m *MsgToggleAllowlistResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgToggleAllowlistResponse proto.InternalMessageInfo
 
-// MsgUpdateClassFee is the Msg/UpdateClassFee request type. (Gov only)
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 type MsgUpdateClassFee struct {
 	// root_address is the address of the signer.
 	// This MUST equal the address of the gov module for the tx to succeed.
@@ -1688,7 +1688,7 @@ func (m *MsgUpdateClassFee) GetRemoveFeeDenoms() []string {
 	return nil
 }
 
-// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type. (Gov only)
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 type MsgUpdateClassFeeResponse struct {
 }
 

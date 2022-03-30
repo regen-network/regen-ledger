@@ -334,7 +334,7 @@ message MsgUpdateClassMetadata {
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
 
-// MsgAddCreditType is the Msg/AddCreditType request type. (Gov only)
+// MsgAddCreditType is the Msg/AddCreditType request type.
 message MsgAddCreditType {
 
   // root_address is the address of the signer.
@@ -345,10 +345,10 @@ message MsgAddCreditType {
   repeated CreditType credit_types = 2;
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type. (Gov only)
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
 message MsgAddCreditTypeResponse{}
 
-// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type. (Gov only)
+// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type.
 message MsgUpdateClassCreatorAllowlist{
 
   // root_address is the address of the signer.
@@ -362,10 +362,10 @@ message MsgUpdateClassCreatorAllowlist{
   repeated string remove_creators = 3;
 }
 
-// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type. (Gov only)
+// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type.
 message MsgUpdateClassCreatorAllowlistResponse {}
 
-// MsgToggleAllowlist is the Msg/ToggleAllowlist request type. (Gov only)
+// MsgToggleAllowlist is the Msg/ToggleAllowlist request type.
 message MsgToggleAllowlist {
 
   // root_address is the address of the signer.
@@ -376,10 +376,10 @@ message MsgToggleAllowlist {
   bool setting = 2;
 }
 
-// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type. (Gov only)
+// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type.
 message MsgToggleAllowlistResponse {}
 
-// MsgUpdateClassFee is the Msg/UpdateClassFee request type. (Gov only)
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 message MsgUpdateClassFee {
 
   // root_address is the address of the signer.
@@ -393,5 +393,5 @@ message MsgUpdateClassFee {
   repeated string remove_fee_denoms = 3;
 }
 
-// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type. (Gov only)
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 message MsgUpdateClassFeeResponse {}

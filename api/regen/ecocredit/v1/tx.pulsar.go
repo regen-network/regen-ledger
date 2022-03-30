@@ -16175,7 +16175,7 @@ func (*MsgUpdateClassMetadataResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{17}
 }
 
-// MsgAddCreditType is the Msg/AddCreditType request type. (Gov only)
+// MsgAddCreditType is the Msg/AddCreditType request type.
 type MsgAddCreditType struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16222,7 +16222,7 @@ func (x *MsgAddCreditType) GetCreditTypes() []*CreditType {
 	return nil
 }
 
-// MsgAddCreditTypeResponse is the Msg/AddCreditType response type. (Gov only)
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type.
 type MsgAddCreditTypeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16249,7 +16249,7 @@ func (*MsgAddCreditTypeResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{19}
 }
 
-// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type. (Gov only)
+// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type.
 type MsgUpdateClassCreatorAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16305,7 +16305,7 @@ func (x *MsgUpdateClassCreatorAllowlist) GetRemoveCreators() []string {
 	return nil
 }
 
-// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type. (Gov only)
+// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type.
 type MsgUpdateClassCreatorAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16332,7 +16332,7 @@ func (*MsgUpdateClassCreatorAllowlistResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{21}
 }
 
-// MsgToggleAllowlist is the Msg/ToggleAllowlist request type. (Gov only)
+// MsgToggleAllowlist is the Msg/ToggleAllowlist request type.
 type MsgToggleAllowlist struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16379,7 +16379,7 @@ func (x *MsgToggleAllowlist) GetSetting() bool {
 	return false
 }
 
-// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type. (Gov only)
+// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type.
 type MsgToggleAllowlistResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16406,7 +16406,7 @@ func (*MsgToggleAllowlistResponse) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_tx_proto_rawDescGZIP(), []int{23}
 }
 
-// MsgUpdateClassFee is the Msg/UpdateClassFee request type. (Gov only)
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type.
 type MsgUpdateClassFee struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -16462,7 +16462,7 @@ func (x *MsgUpdateClassFee) GetRemoveFeeDenoms() []string {
 	return nil
 }
 
-// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type. (Gov only)
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type.
 type MsgUpdateClassFeeResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
