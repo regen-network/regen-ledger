@@ -29,7 +29,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfo, 0)
+	batches := make([]*core.BatchInfo, 0, 8)
 
 	for it.Next() {
 		v, err := it.Value()
