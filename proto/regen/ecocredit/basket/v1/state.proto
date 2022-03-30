@@ -86,3 +86,19 @@ message BasketBalance {
   // to create an index which is used to remove the oldest credits first.
   google.protobuf.Timestamp batch_start_date = 4;
 }
+
+// BasketFee is a valid coin denom and amount that may be used as the fee
+// for basket creation.
+message BasketFee {
+  // This table is controlled via governance.
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 13,
+    primary_key : {fields : "denom"}
+  };
+
+  // denom is the denom of the fee required to create a basket.
+  string denom = 1;
+
+  // amount is the amount of the fee required to create a basket.
+  string amount = 2;
+}
