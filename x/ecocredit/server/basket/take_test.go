@@ -43,7 +43,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
-		BatchDenom:     "C1-",
+		BatchDenom:     "C1-00000000-0000000-001",
 		Balance:        "3.0",
 		BatchStartDate: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
@@ -51,7 +51,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.fooBasketId,
-		BatchDenom:     "C2-",
+		BatchDenom:     "C2-00000000-0000000-001",
 		Balance:        "5.0",
 		BatchStartDate: timestamppb.New(time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
@@ -68,7 +68,7 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
-		BatchDenom:     "C3-",
+		BatchDenom:     "C3-00000000-0000000-001",
 		Balance:        "7.0",
 		BatchStartDate: timestamppb.New(time.Date(2018, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
@@ -76,20 +76,20 @@ func setupTake(t *testing.T) *takeSuite {
 
 	assert.NilError(t, s.stateStore.BasketBalanceTable().Insert(s.ctx, &api.BasketBalance{
 		BasketId:       s.barBasketId,
-		BatchDenom:     "C4-",
+		BatchDenom:     "C4-00000000-0000000-001",
 		Balance:        "4.0",
 		BatchStartDate: timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
 	}))
 	s.setTradableSupply(4, "4.0")
 
-	batchDenoms := []string{"C1-", "C2-", "C3-", "C4-"}
+	batchDenoms := []string{"C1-00000000-0000000-001", "C2-00000000-0000000-001", "C3-00000000-0000000-001", "C4-00000000-0000000-001"}
 	for _, denom := range batchDenoms {
 		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 			ProjectId:  1,
 			BatchDenom: denom,
 		}))
 	}
-	s.denomToId = map[string]uint64{"C1-": 1, "C2-": 2, "C3-": 3, "C4-": 4}
+	s.denomToId = map[string]uint64{"C1-00000000-0000000-001": 1, "C2-00000000-0000000-001": 2, "C3-00000000-0000000-001": 3, "C4-00000000-0000000-001": 4}
 	return s
 }
 
@@ -125,25 +125,25 @@ func TestTakeRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C2-", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C2-00000000-0000000-001", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "5.0", res.Credits[0].Amount)
-	assert.Equal(t, "C1-", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C1-00000000-0000000-001", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "1.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.fooBasketId, "C2-")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.fooBasketId, "C2-00000000-0000000-001")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.fooBasketId, "C1-")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.fooBasketId, "C1-00000000-0000000-001")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "2.0", balance.Balance)
 
-	s.expectTradableBalance("C1-", "0")
-	s.expectTradableBalance("C2-", "0")
-	s.expectRetiredBalance("C1-", "1")
-	s.expectRetiredBalance("C2-", "5")
-	s.expectTradableSupply("C1-", "2")
-	s.expectTradableSupply("C2-", "0")
-	s.expectRetiredSupply("C1-", "1")
-	s.expectRetiredSupply("C2-", "5")
+	s.expectTradableBalance("C1-00000000-0000000-001", "0")
+	s.expectTradableBalance("C2-00000000-0000000-001", "0")
+	s.expectRetiredBalance("C1-00000000-0000000-001", "1")
+	s.expectRetiredBalance("C2-00000000-0000000-001", "5")
+	s.expectTradableSupply("C1-00000000-0000000-001", "2")
+	s.expectTradableSupply("C2-00000000-0000000-001", "0")
+	s.expectRetiredSupply("C1-00000000-0000000-001", "1")
+	s.expectRetiredSupply("C2-00000000-0000000-001", "5")
 }
 
 func TestTakeTradable(t *testing.T) {
@@ -162,25 +162,25 @@ func TestTakeTradable(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C3-", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C3-00000000-0000000-001", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
-	assert.Equal(t, "C4-", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C4-00000000-0000000-001", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "3.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-00000000-0000000-001")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-")
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-00000000-0000000-001")
 	assert.NilError(t, err)
 	assertDecStringEqual(t, "1.0", balance.Balance)
 
-	s.expectTradableBalance("C3-", "7")
-	s.expectTradableBalance("C4-", "3")
-	s.expectRetiredBalance("C3-", "0")
-	s.expectRetiredBalance("C4-", "0")
-	s.expectTradableSupply("C3-", "7")
-	s.expectTradableSupply("C4-", "4")
-	s.expectRetiredSupply("C3-", "0")
-	s.expectRetiredSupply("C4-", "0")
+	s.expectTradableBalance("C3-00000000-0000000-001", "7")
+	s.expectTradableBalance("C4-00000000-0000000-001", "3")
+	s.expectRetiredBalance("C3-00000000-0000000-001", "0")
+	s.expectRetiredBalance("C4-00000000-0000000-001", "0")
+	s.expectTradableSupply("C3-00000000-0000000-001", "7")
+	s.expectTradableSupply("C4-00000000-0000000-001", "4")
+	s.expectRetiredSupply("C3-00000000-0000000-001", "0")
+	s.expectRetiredSupply("C4-00000000-0000000-001", "0")
 }
 
 func TestTakeTooMuchTradable(t *testing.T) {
@@ -220,24 +220,24 @@ func TestTakeAllTradable(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))
-	assert.Equal(t, "C3-", res.Credits[0].BatchDenom)
+	assert.Equal(t, "C3-00000000-0000000-001", res.Credits[0].BatchDenom)
 	assertDecStringEqual(t, "7.0", res.Credits[0].Amount)
-	assert.Equal(t, "C4-", res.Credits[1].BatchDenom)
+	assert.Equal(t, "C4-00000000-0000000-001", res.Credits[1].BatchDenom)
 	assertDecStringEqual(t, "4.0", res.Credits[1].Amount)
-	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-")
+	found, err := s.stateStore.BasketBalanceTable().Has(s.ctx, s.barBasketId, "C3-00000000-0000000-001")
 	assert.NilError(t, err)
 	assert.Assert(t, !found)
-	_, err = s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-")
+	_, err = s.stateStore.BasketBalanceTable().Get(s.ctx, s.barBasketId, "C4-00000000-0000000-001")
 	assert.ErrorIs(t, err, ormerrors.NotFound)
 
-	s.expectTradableBalance("C3-", "7")
-	s.expectTradableBalance("C4-", "4")
-	s.expectRetiredBalance("C3-", "0")
-	s.expectRetiredBalance("C4-", "0")
-	s.expectTradableSupply("C3-", "7")
-	s.expectTradableSupply("C4-", "4")
-	s.expectRetiredSupply("C3-", "0")
-	s.expectRetiredSupply("C4-", "0")
+	s.expectTradableBalance("C3-00000000-0000000-001", "7")
+	s.expectTradableBalance("C4-00000000-0000000-001", "4")
+	s.expectRetiredBalance("C3-00000000-0000000-001", "0")
+	s.expectRetiredBalance("C4-00000000-0000000-001", "0")
+	s.expectTradableSupply("C3-00000000-0000000-001", "7")
+	s.expectTradableSupply("C4-00000000-0000000-001", "4")
+	s.expectRetiredSupply("C3-00000000-0000000-001", "0")
+	s.expectRetiredSupply("C4-00000000-0000000-001", "0")
 }
 
 func assertDecStringEqual(t *testing.T, expected, actual string) {
