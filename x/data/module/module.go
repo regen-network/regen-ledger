@@ -63,4 +63,8 @@ func (Module) ConsensusVersion() uint64 { return 1 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
+
+// RegisterLegacyAminoCodec registers the data module's types on the given LegacyAmino codec.
+func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	data.RegisterLegacyAminoCodec(cdc)
+}
