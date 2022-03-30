@@ -267,7 +267,7 @@ func TestBuy_Invalid(t *testing.T) {
 				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})
-	assert.ErrorContains(t, err, "auto-retire mismatch")
+	assert.ErrorContains(t, err, "cannot disable auto retire")
 
 	// cannot buy more credits than available
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
