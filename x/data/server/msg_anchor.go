@@ -7,10 +7,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	sdk "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 

@@ -5,10 +5,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	cosmossdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	sdk "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -22,7 +21,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	}
 
 	for _, attestor := range request.Attestors {
-		addr, err := cosmossdk.AccAddressFromBech32(attestor)
+		addr, err := sdk.AccAddressFromBech32(attestor)
 		if err != nil {
 			return nil, err
 		}

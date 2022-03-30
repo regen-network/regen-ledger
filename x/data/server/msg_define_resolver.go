@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 
-	cosmossdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -11,7 +11,7 @@ import (
 
 // DefineResolver defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver.
 func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	manager, err := cosmossdk.AccAddressFromBech32(msg.Manager)
+	manager, err := sdk.AccAddressFromBech32(msg.Manager)
 	if err != nil {
 		return nil, err
 	}

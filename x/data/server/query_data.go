@@ -8,7 +8,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -81,7 +80,7 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		return nil, err
 	}
 
-	store := types.UnwrapSDKContext(ctx).KVStore(s.storeKey)
+	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
 
 	var entries []*data.ContentEntry
 	for it.Next() {
