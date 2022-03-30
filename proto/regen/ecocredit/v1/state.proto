@@ -10,227 +10,229 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 1,
-        primary_key: {fields: "abbreviation"}
-        index: {id: 1, fields: "name", unique: true}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "abbreviation"}
+    index : {id : 1, fields : "name", unique : true}
+  };
 
-    // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
-    // name, used in batch denominations within the CreditType. It must be unique.
-    string abbreviation = 1;
+  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+  // name, used in batch denominations within the CreditType. It must be unique.
+  string abbreviation = 1;
 
-    // the type of credit (e.g. carbon, biodiversity, etc)
-    string name = 2;
+  // the type of credit (e.g. carbon, biodiversity, etc)
+  string name = 2;
 
-    // the measurement unit (e.g. kg, ton, etc)
-    string unit = 3;
+  // the measurement unit (e.g. kg, ton, etc)
+  string unit = 3;
 
-    // the decimal precision
-    uint32 precision = 4;
+  // the decimal precision
+  uint32 precision = 4;
 }
 
 // ClassInfo represents the high-level on-chain information for a credit class.
 message ClassInfo {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 2,
-        primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1 fields: "name", unique: true}
-        index: {id: 2 fields: "admin"}
-        index: {id: 3 fields: "credit_type"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 2,
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1 fields : "name", unique : true}
+    index : {id : 2 fields : "admin"}
+    index : {id : 3 fields : "credit_type"}
+  };
 
-    // id is the unique ID of credit class.
-    uint64 id = 1;
+  // id is the unique ID of credit class.
+  uint64 id = 1;
 
-    // abbrev is the unique string name for this credit class formed from its credit type
-    // and an auto-generated integer.
-    string name = 2;
+  // abbrev is the unique string name for this credit class formed from its
+  // credit type and an auto-generated integer.
+  string name = 2;
 
-    // admin is the admin of the credit class.
-    bytes admin = 3;
+  // admin is the admin of the credit class.
+  bytes admin = 3;
 
-    // metadata is any arbitrary metadata to attached to the credit class.
-    string metadata = 4;
+  // metadata is any arbitrary metadata to attached to the credit class.
+  string metadata = 4;
 
-    // credit_type is the abbreviation of the credit type.
-    string credit_type = 5;
+  // credit_type is the abbreviation of the credit type.
+  string credit_type = 5;
 }
 
-// ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
+// ClassIssuers is a JOIN table for Class Info that stores the credit class
+// issuers
 message ClassIssuer {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 3,
-        primary_key: {fields: "class_id,issuer"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 3,
+    primary_key : {fields : "class_id,issuer"}
+  };
 
-    // class_id is the row ID of a credit class.
-    uint64 class_id = 1;
+  // class_id is the row ID of a credit class.
+  uint64 class_id = 1;
 
-    // issuer is the approved issuer of the credit class.
-    bytes issuer = 2;
+  // issuer is the approved issuer of the credit class.
+  bytes issuer = 2;
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.
 message ProjectInfo {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 4,
-        primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1, fields: "name", unique: true}
-        index: {id: 2, fields: "class_id,name", unique: true}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 4,
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1, fields : "name", unique : true}
+    index : {id : 2, fields : "class_id,name", unique : true}
+  };
 
-    // id is the unique ID of the project.
-    uint64 id = 1;
+  // id is the unique ID of the project.
+  uint64 id = 1;
 
-    // name is the unique name of the project either formed from its credit
-    // class name and an auto-generated number or a custom name provided
-    // upon creation.
-    string name = 2;
+  // name is the unique name of the project either formed from its credit
+  // class name and an auto-generated number or a custom name provided
+  // upon creation.
+  string name = 2;
 
-    // admin is the admin of the project.
-    bytes admin = 3;
+  // admin is the admin of the project.
+  bytes admin = 3;
 
-    // class_id is the ID of credit class for this project.
-    uint64 class_id = 4;
+  // class_id is the ID of credit class for this project.
+  uint64 class_id = 4;
 
-    // project_location is the location of the project.
-    // Full documentation can be found in MsgCreateProject.project_location.
-    string project_location = 5;
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 5;
 
-    // metadata is any arbitrary metadata attached to the project.
-    string metadata = 6;
+  // metadata is any arbitrary metadata attached to the project.
+  string metadata = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 5,
-        primary_key: {fields: "id", auto_increment: true}
-        index: {id: 1 fields: "batch_denom", unique: true}
-        index: {id: 2 fields: "project_id"}
-        index: {id: 3 fields: "start_date"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 5,
+    primary_key : {fields : "id", auto_increment : true}
+    index : {id : 1 fields : "batch_denom", unique : true}
+    index : {id : 2 fields : "project_id"}
+    index : {id : 3 fields : "start_date"}
+  };
 
-    // id is an auto-incrementing integer to succinctly identify the batch
-    uint64 id = 1;
+  // id is an auto-incrementing integer to succinctly identify the batch
+  uint64 id = 1;
 
-    // project_id is the unique ID of the project this batch belongs to.
-    uint64 project_id = 2;
+  // project_id is the unique ID of the project this batch belongs to.
+  uint64 project_id = 2;
 
-    // batch_denom is the unique string identifier of the credit batch formed
-    // from the project name, batch sequence number and dates.
-    string batch_denom = 3;
+  // batch_denom is the unique string identifier of the credit batch formed
+  // from the project name, batch sequence number and dates.
+  string batch_denom = 3;
 
-    // metadata is any arbitrary metadata attached to the credit batch.
-    string metadata = 4;
+  // metadata is any arbitrary metadata attached to the credit batch.
+  string metadata = 4;
 
-    // start_date is the beginning of the period during which this credit batch
-    // was quantified and verified.
-    google.protobuf.Timestamp start_date = 5;
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5;
 
-    // end_date is the end of the period during which this credit batch was
-    // quantified and verified.
-    google.protobuf.Timestamp end_date = 6;
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6;
 
-    // issuance_date is the timestamp when the credit batch was issued.
-    google.protobuf.Timestamp issuance_date = 7;
+  // issuance_date is the timestamp when the credit batch was issued.
+  google.protobuf.Timestamp issuance_date = 7;
 }
 
-// ClassSequence is a sequence number for creating credit class identifiers for each
-// credit type.
+// ClassSequence is a sequence number for creating credit class identifiers for
+// each credit type.
 message ClassSequence {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 6,
-        primary_key: {fields: "credit_type"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 6,
+    primary_key : {fields : "credit_type"}
+  };
 
-    // credit_type is the credit type abbreviation
-    string credit_type = 1;
+  // credit_type is the credit type abbreviation
+  string credit_type = 1;
 
-    // next_class_id is the next class ID for this credit type
-    uint64 next_class_id = 2;
+  // next_class_id is the next class ID for this credit type
+  uint64 next_class_id = 2;
 }
 
 // ProjectSequence stores and increments the sequence number for projects
 // within a given credit class.
 message ProjectSequence {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 7,
-        primary_key: {fields: "class_id"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 7,
+    primary_key : {fields : "class_id"}
+  };
 
-    // class_id is the id of the credit class
-    uint64 class_id = 1;
+  // class_id is the id of the credit class
+  uint64 class_id = 1;
 
-    // next_project_id is the sequence number for the project
-    uint64 next_project_id = 2;
+  // next_project_id is the sequence number for the project
+  uint64 next_project_id = 2;
 }
-
 
 // BatchSequence tracks the sequence number for batches within a project
 message BatchSequence {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 8,
-        primary_key: {fields: "project_id"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 8,
+    primary_key : {fields : "project_id"}
+  };
 
-    // project_id is the id of the project for a batch
-    string project_id = 1;
+  // project_id is the id of the project for a batch
+  string project_id = 1;
 
-    // next_batch_id is a sequence number incrementing on each issued batch
-    uint64 next_batch_id = 2;
+  // next_batch_id is a sequence number incrementing on each issued batch
+  uint64 next_batch_id = 2;
 }
 
 // BatchBalance stores each users credit balance
 message BatchBalance {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 9,
-        primary_key: {fields: "address,batch_id"}
-        index: {id: 1, fields: "batch_id,address"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 9,
+    primary_key : {fields : "address,batch_id"}
+    index : {id : 1, fields : "batch_id,address"}
+  };
 
-    // address is the address of the credit holder
-    bytes address = 1;
+  // address is the address of the credit holder
+  bytes address = 1;
 
-    // batch_id is the id of the credit batch
-    uint64 batch_id = 2;
+  // batch_id is the id of the credit batch
+  uint64 batch_id = 2;
 
-    // tradable is the tradable amount of credits
-    string tradable = 3;
+  // tradable is the tradable amount of credits
+  string tradable = 3;
 
-    // retired is the retired amount of credits
-    string retired = 4;
+  // retired is the retired amount of credits
+  string retired = 4;
 
-    // escrowed is the amount of credits locked up in escrow for the marketplace.
-    string escrowed = 5;
+  // escrowed is the amount of credits locked up in escrow for the marketplace.
+  string escrowed = 5;
 }
 
 // BatchSupply tracks the supply of a credit batch
 message BatchSupply {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 10,
-        primary_key: {fields: "batch_id"}
-    };
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 10,
+    primary_key : {fields : "batch_id"}
+  };
 
-    // batch_id is the id of the batch
-    uint64 batch_id = 1;
+  // batch_id is the id of the batch
+  uint64 batch_id = 1;
 
-    // tradable_amount is the total number of tradable credits in the credit batch.
-    // Some of the issued credits may be cancelled and will be removed from
-    // tradable_amount and tracked in amount_cancelled. tradable_amount + retired_amount +
-    // amount_cancelled will always sum to the original credit issuance amount.
-    string tradable_amount = 2;
+  // tradable_amount is the total number of tradable credits in the credit
+  // batch. Some of the issued credits may be cancelled and will be removed from
+  // tradable_amount and tracked in amount_cancelled. tradable_amount +
+  // retired_amount + amount_cancelled will always sum to the original credit
+  // issuance amount.
+  string tradable_amount = 2;
 
-    // retired_amount is the total amount of credits that have been retired from the credit batch.
-    string retired_amount = 3;
+  // retired_amount is the total amount of credits that have been retired from
+  // the credit batch.
+  string retired_amount = 3;
 
-    // cancelled_amount is the number of credits in the batch that have been
-    // cancelled, effectively undoing the issuance. The sum of total_amount and
-    // amount_cancelled will always equal the original credit issuance amount.
-    string cancelled_amount = 4;
+  // cancelled_amount is the number of credits in the batch that have been
+  // cancelled, effectively undoing the issuance. The sum of total_amount and
+  // amount_cancelled will always equal the original credit issuance amount.
+  string cancelled_amount = 4;
 
-    // escrowed_amount is the amount of credits in the batch that have been
-    // locked up in escrow for use in the marketplace.
-    string escrowed_amount = 5;
+  // escrowed_amount is the amount of credits in the batch that have been
+  // locked up in escrow for use in the marketplace.
+  string escrowed_amount = 5;
 }

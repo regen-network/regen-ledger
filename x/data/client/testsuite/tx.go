@@ -306,7 +306,7 @@ func (s *IntegrationTestSuite) TestTxAttest() {
 			name:   "bad extension",
 			iri:    "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.png",
 			expErr: true,
-			errMsg: "invalid iri: expected extension .rdf for graph data, got .png",
+			errMsg: "invalid iri: invalid extension .png for graph data, expected .rdf",
 		},
 	}
 
@@ -463,12 +463,10 @@ func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.
 	digest := hash.Sum(nil)
 
 	ch := data.ContentHash{
-		Sum: &data.ContentHash_Graph_{
-			Graph: &data.ContentHash_Graph{
-				Hash:                      digest,
-				DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			},
+		Graph: &data.ContentHash_Graph{
+			Hash:                      digest,
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 		},
 	}
 

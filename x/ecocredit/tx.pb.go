@@ -41,7 +41,8 @@ type MsgCreateClass struct {
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
+	// credit_type_name describes the type of credit (e.g. "carbon",
+	// "biodiversity").
 	CreditTypeName string `protobuf:"bytes,4,opt,name=credit_type_name,json=creditTypeName,proto3" json:"credit_type_name,omitempty"`
 }
 
@@ -1215,7 +1216,8 @@ type MsgUpdateClassMetadata struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// class_id is the unique ID of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// metadata is the updated arbitrary metadata to be attached to the credit class.
+	// metadata is the updated arbitrary metadata to be attached to the credit
+	// class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
@@ -1566,10 +1568,11 @@ type MsgUpdateSellOrders_Update struct {
 	NewQuantity string `protobuf:"bytes,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	// new_ask_price is the new ask price for this sell order
 	NewAskPrice *types1.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
-	// disable_auto_retire updates the disable_auto_retire field in the sell order.
+	// disable_auto_retire updates the disable_auto_retire field in the sell
+	// order.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// new_expiration is an optional timestamp when the sell order expires. When the
-	// expiration time is reached, the sell order is removed from state.
+	// new_expiration is an optional timestamp when the sell order expires. When
+	// the expiration time is reached, the sell order is removed from state.
 	NewExpiration *time.Time `protobuf:"bytes,5,opt,name=new_expiration,json=newExpiration,proto3,stdtime" json:"new_expiration,omitempty"`
 }
 
@@ -1746,11 +1749,11 @@ type MsgBuy_Order struct {
 	// buy order will fail if the buyer does not have enough funds available
 	// to complete the purchase.
 	BidPrice *types1.Coin `protobuf:"bytes,3,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
-	// the credits will not auto-retire and can be resold assuming that the
-	// corresponding sell order has auto-retirement disabled. If the sell order
-	// hasn't disabled auto-retirement and the buy order tries to disable it,
-	// that buy order will fail.
+	// disable_auto_retire allows auto-retirement to be disabled. If it is set
+	// to true the credits will not auto-retire and can be resold assuming that
+	// the corresponding sell order has auto-retirement disabled. If the sell
+	// order hasn't disabled auto-retirement and the buy order tries to disable
+	// it, that buy order will fail.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 	// disable_partial_fill disables the default behavior of partially filling
 	// buy orders if the requested quantity is not available.
@@ -1970,7 +1973,8 @@ func (m *MsgBuyResponse) GetBuyOrderIds() []uint64 {
 
 // MsgAllowAskDenom is the Msg/AllowAskDenom request type.
 type MsgAllowAskDenom struct {
-	// root_address is the address of the governance account which can authorize ask denoms
+	// root_address is the address of the governance account which can authorize
+	// ask denoms
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
 	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
@@ -2790,7 +2794,8 @@ type MsgClient interface {
 	UpdateSellOrders(ctx context.Context, in *MsgUpdateSellOrders, opts ...grpc.CallOption) (*MsgUpdateSellOrdersResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
 	// CreateBasket creates a bank denom which wraps credits.
 	CreateBasket(ctx context.Context, in *MsgCreateBasket, opts ...grpc.CallOption) (*MsgCreateBasketResponse, error)
@@ -3014,7 +3019,8 @@ type MsgServer interface {
 	UpdateSellOrders(context.Context, *MsgUpdateSellOrders) (*MsgUpdateSellOrdersResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
 	// CreateBasket creates a bank denom which wraps credits.
 	CreateBasket(context.Context, *MsgCreateBasket) (*MsgCreateBasketResponse, error)

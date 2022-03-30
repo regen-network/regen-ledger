@@ -9,18 +9,18 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // GenesisState is the genesis state
 message GenesisState {
-    // entries are the content entries
-    repeated GenesisContentEntry entries = 1;
+  // entries are the content entries
+  repeated GenesisContentEntry entries = 1;
 }
 
 // GenesisContentEntry is a genesis content entry
 message GenesisContentEntry {
-    // hash is the ContentHash
-    ContentHash hash = 1;
+  // hash is the ContentHash
+  ContentHash hash = 1;
 
-    // timestamp is the anchor Timestamp
-    google.protobuf.Timestamp timestamp = 2;
+  // timestamp is the anchor Timestamp
+  google.protobuf.Timestamp timestamp = 2;
 
-    // attestors are the attestors, if any
-    repeated AttestorEntry attestors = 3;
+  // attestors are the attestors, if any
+  repeated AttestorEntry attestors = 3;
 }

@@ -1,4 +1,4 @@
-Feature: Take From Basket
+Feature: Take
 
   Scenario: user provides a valid basket denom
     Given basket with denom eco.dC.Foo exists
