@@ -36,9 +36,9 @@ func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.
 			if err != nil {
 				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
 			}
-			if order.DisableAutoRetire && !sellOrder.DisableRetire {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
-					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
+			if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
+					"from a sell order that does not disable auto retire")
 			}
 			batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
 			if err != nil {
