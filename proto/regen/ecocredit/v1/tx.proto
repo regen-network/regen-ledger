@@ -5,6 +5,7 @@ package regen.ecocredit.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "regen/ecocredit/v1/state.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -46,6 +47,22 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
+
+  // AddCreditType is a governance method that allows the addition of new credit types to the network.
+  rpc AddCreditType(MsgAddCreditType) returns (MsgAddCreditTypeResponse);
+
+  // UpdateClassCreatorAllowlist is a governance method that allows for the addition and removal of addresses from the class creation allowlist.
+  // note: the allowlist is only effective when the allowlist parameter is set to false.
+  rpc UpdateClassCreatorAllowlist(MsgUpdateClassCreatorAllowlist) returns (MsgUpdateClassCreatorAllowlistResponse);
+
+  // ToggleAllowlist is a governance method that toggles the network allowlist to on or off.
+  // when on, the class creator allowlist is used to enforce which addresses may create classes.
+  // when off, any address may create classes.
+  rpc ToggleAllowlist(MsgToggleAllowlist) returns (MsgToggleAllowlistResponse);
+
+  // UpdateClassFee is a governance method that allows for the addition and removal of fees to be used for the
+  // class creation fee.
+  rpc UpdateClassFee(MsgUpdateClassFee) returns (MsgUpdateClassFeeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -316,3 +333,65 @@ message MsgUpdateClassMetadata {
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+// MsgAddCreditType is the Msg/AddCreditType request type. (Gov only)
+message MsgAddCreditType {
+
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // credit_types defines a credit type to add to the credit types parameter.
+  repeated CreditType credit_types = 2;
+}
+
+// MsgAddCreditTypeResponse is the Msg/AddCreditType response type. (Gov only)
+message MsgAddCreditTypeResponse{}
+
+// MsgUpdateClassCreatorAllowlist is the Msg/UpdateClassCreatorAllowlist request type. (Gov only)
+message MsgUpdateClassCreatorAllowlist{
+
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // add_creators is a list of addresses to add to the allowed class creator list
+  repeated string add_creators = 2;
+
+  // remove_creators is a list of addresses to remove from the allowed class creator list
+  repeated string remove_creators = 3;
+}
+
+// MsgUpdateClassCreatorAllowlistResponse is the Msg/UpdateClassCreatorAllowlist response type. (Gov only)
+message MsgUpdateClassCreatorAllowlistResponse {}
+
+// MsgToggleAllowlist is the Msg/ToggleAllowlist request type. (Gov only)
+message MsgToggleAllowlist {
+
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // setting defines the boolean value to set the allowlist on or off.
+  bool setting = 2;
+}
+
+// MsgToggleAllowlistResponse is the Msg/ToggleAllowlist response type. (Gov only)
+message MsgToggleAllowlistResponse {}
+
+// MsgUpdateClassFee is the Msg/UpdateClassFee request type. (Gov only)
+message MsgUpdateClassFee {
+
+  // root_address is the address of the signer.
+  // This MUST equal the address of the gov module for the tx to succeed.
+  string root_address = 1;
+
+  // add_fees defines a list of coins to append to the list of fees that can be used in the class creation fee.
+  repeated cosmos.base.v1beta1.Coin add_fees = 2;
+
+  // remove_fee_denoms defines a list of denoms to remove from the list of class creation fees.
+  repeated string remove_fee_denoms = 3;
+}
+
+// MsgUpdateClassFeeResponse is the Msg/UpdateClassFee response type. (Gov only)
+message MsgUpdateClassFeeResponse {}
