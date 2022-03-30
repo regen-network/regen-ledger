@@ -46,12 +46,13 @@ func TestFeeToLow(t *testing.T) {
 func TestInvalidCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	gmAny := gomock.Any()
 	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{basketFee}
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).Times(2)
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// non-existent credit type should fail
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -74,6 +75,7 @@ func TestInvalidCreditType(t *testing.T) {
 func TestDuplicateDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	gmAny := gomock.Any()
 	fee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 	mc := baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
@@ -88,11 +90,11 @@ func TestDuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{fee}
 		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
 	}).Times(1)
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 
 	_, err = s.k.Create(s.ctx, &mc)
 	assert.ErrorContains(t, err, "unique")
@@ -139,13 +141,14 @@ func TestInvalidClass(t *testing.T) {
 func TestValidBasket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+	gmAny := gomock.Any()
 	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
-	s.distKeeper.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any())
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 	seconds := time.Hour * 24 * 356 * 5
 	dateCriteria := &baskettypes.DateCriteria{
 		StartDateWindow: gogotypes.DurationProto(seconds),
 	}
-	s.bankKeeper.EXPECT().SetDenomMetaData(gomock.Any(),
+	s.bankKeeper.EXPECT().SetDenomMetaData(gmAny,
 		banktypes.Metadata{
 			Name:        "foo",
 			Display:     "eco.C.foo",
@@ -167,7 +170,7 @@ func TestValidBasket(t *testing.T) {
 		Metadata:   "",
 		CreditType: "C",
 	}))
-	s.paramsKeeper.EXPECT().GetParamSet(gomock.Any(), gomock.Any()).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = fee
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
