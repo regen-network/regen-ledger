@@ -22,7 +22,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	basketserver "github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 func TestPut(t *testing.T) {
@@ -251,7 +250,7 @@ func TestPut(t *testing.T) {
 					Return(&classInfoRes, nil)
 
 			},
-			errMsg: basketserver.ErrInsufficientCredits.Error(),
+			errMsg: ecocredit.ErrInsufficientCredits.Error(),
 		},
 		{
 			name:            "basket not found",

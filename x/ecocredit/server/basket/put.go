@@ -59,7 +59,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		// update the user and basket balances
 		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
 			if sdkerrors.ErrInsufficientFunds.Is(err) {
-				return nil, ErrInsufficientCredits
+				return nil, ecocredit.ErrInsufficientCredits
 			}
 			return nil, err
 		}
