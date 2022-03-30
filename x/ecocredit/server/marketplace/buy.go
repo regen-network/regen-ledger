@@ -36,7 +36,7 @@ func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.
 			if err != nil {
 				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
 			}
-			if sellOrder.DisableAutoRetire && !order.DisableAutoRetire {
+			if order.DisableAutoRetire && !sellOrder.DisableRetire {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
 					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
 			}
