@@ -1432,6 +1432,264 @@ func NewBatchSupplyTable(db ormtable.Schema) (BatchSupplyTable, error) {
 	return batchSupplyTable{table}, nil
 }
 
+type AllowedClassCreatorTable interface {
+	Insert(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
+	Update(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
+	Save(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
+	Delete(ctx context.Context, allowedClassCreator *AllowedClassCreator) error
+	Has(ctx context.Context, address []byte) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, address []byte) (*AllowedClassCreator, error)
+	List(ctx context.Context, prefixKey AllowedClassCreatorIndexKey, opts ...ormlist.Option) (AllowedClassCreatorIterator, error)
+	ListRange(ctx context.Context, from, to AllowedClassCreatorIndexKey, opts ...ormlist.Option) (AllowedClassCreatorIterator, error)
+	DeleteBy(ctx context.Context, prefixKey AllowedClassCreatorIndexKey) error
+	DeleteRange(ctx context.Context, from, to AllowedClassCreatorIndexKey) error
+
+	doNotImplement()
+}
+
+type AllowedClassCreatorIterator struct {
+	ormtable.Iterator
+}
+
+func (i AllowedClassCreatorIterator) Value() (*AllowedClassCreator, error) {
+	var allowedClassCreator AllowedClassCreator
+	err := i.UnmarshalMessage(&allowedClassCreator)
+	return &allowedClassCreator, err
+}
+
+type AllowedClassCreatorIndexKey interface {
+	id() uint32
+	values() []interface{}
+	allowedClassCreatorIndexKey()
+}
+
+// primary key starting index..
+type AllowedClassCreatorPrimaryKey = AllowedClassCreatorAddressIndexKey
+
+type AllowedClassCreatorAddressIndexKey struct {
+	vs []interface{}
+}
+
+func (x AllowedClassCreatorAddressIndexKey) id() uint32                   { return 0 }
+func (x AllowedClassCreatorAddressIndexKey) values() []interface{}        { return x.vs }
+func (x AllowedClassCreatorAddressIndexKey) allowedClassCreatorIndexKey() {}
+
+func (this AllowedClassCreatorAddressIndexKey) WithAddress(address []byte) AllowedClassCreatorAddressIndexKey {
+	this.vs = []interface{}{address}
+	return this
+}
+
+type allowedClassCreatorTable struct {
+	table ormtable.Table
+}
+
+func (this allowedClassCreatorTable) Insert(ctx context.Context, allowedClassCreator *AllowedClassCreator) error {
+	return this.table.Insert(ctx, allowedClassCreator)
+}
+
+func (this allowedClassCreatorTable) Update(ctx context.Context, allowedClassCreator *AllowedClassCreator) error {
+	return this.table.Update(ctx, allowedClassCreator)
+}
+
+func (this allowedClassCreatorTable) Save(ctx context.Context, allowedClassCreator *AllowedClassCreator) error {
+	return this.table.Save(ctx, allowedClassCreator)
+}
+
+func (this allowedClassCreatorTable) Delete(ctx context.Context, allowedClassCreator *AllowedClassCreator) error {
+	return this.table.Delete(ctx, allowedClassCreator)
+}
+
+func (this allowedClassCreatorTable) Has(ctx context.Context, address []byte) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, address)
+}
+
+func (this allowedClassCreatorTable) Get(ctx context.Context, address []byte) (*AllowedClassCreator, error) {
+	var allowedClassCreator AllowedClassCreator
+	found, err := this.table.PrimaryKey().Get(ctx, &allowedClassCreator, address)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &allowedClassCreator, nil
+}
+
+func (this allowedClassCreatorTable) List(ctx context.Context, prefixKey AllowedClassCreatorIndexKey, opts ...ormlist.Option) (AllowedClassCreatorIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return AllowedClassCreatorIterator{it}, err
+}
+
+func (this allowedClassCreatorTable) ListRange(ctx context.Context, from, to AllowedClassCreatorIndexKey, opts ...ormlist.Option) (AllowedClassCreatorIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return AllowedClassCreatorIterator{it}, err
+}
+
+func (this allowedClassCreatorTable) DeleteBy(ctx context.Context, prefixKey AllowedClassCreatorIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this allowedClassCreatorTable) DeleteRange(ctx context.Context, from, to AllowedClassCreatorIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this allowedClassCreatorTable) doNotImplement() {}
+
+var _ AllowedClassCreatorTable = allowedClassCreatorTable{}
+
+func NewAllowedClassCreatorTable(db ormtable.Schema) (AllowedClassCreatorTable, error) {
+	table := db.GetTable(&AllowedClassCreator{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&AllowedClassCreator{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return allowedClassCreatorTable{table}, nil
+}
+
+// singleton store
+type AllowlistEnabledTable interface {
+	Get(ctx context.Context) (*AllowlistEnabled, error)
+	Save(ctx context.Context, allowlistEnabled *AllowlistEnabled) error
+}
+
+type allowlistEnabledTable struct {
+	table ormtable.Table
+}
+
+var _ AllowlistEnabledTable = allowlistEnabledTable{}
+
+func (x allowlistEnabledTable) Get(ctx context.Context) (*AllowlistEnabled, error) {
+	allowlistEnabled := &AllowlistEnabled{}
+	_, err := x.table.Get(ctx, allowlistEnabled)
+	return allowlistEnabled, err
+}
+
+func (x allowlistEnabledTable) Save(ctx context.Context, allowlistEnabled *AllowlistEnabled) error {
+	return x.table.Save(ctx, allowlistEnabled)
+}
+
+func NewAllowlistEnabledTable(db ormtable.Schema) (AllowlistEnabledTable, error) {
+	table := db.GetTable(&AllowlistEnabled{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&AllowlistEnabled{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return &allowlistEnabledTable{table}, nil
+}
+
+type CreditClassFeeTable interface {
+	Insert(ctx context.Context, creditClassFee *CreditClassFee) error
+	Update(ctx context.Context, creditClassFee *CreditClassFee) error
+	Save(ctx context.Context, creditClassFee *CreditClassFee) error
+	Delete(ctx context.Context, creditClassFee *CreditClassFee) error
+	Has(ctx context.Context, denom string) (found bool, err error)
+	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	Get(ctx context.Context, denom string) (*CreditClassFee, error)
+	List(ctx context.Context, prefixKey CreditClassFeeIndexKey, opts ...ormlist.Option) (CreditClassFeeIterator, error)
+	ListRange(ctx context.Context, from, to CreditClassFeeIndexKey, opts ...ormlist.Option) (CreditClassFeeIterator, error)
+	DeleteBy(ctx context.Context, prefixKey CreditClassFeeIndexKey) error
+	DeleteRange(ctx context.Context, from, to CreditClassFeeIndexKey) error
+
+	doNotImplement()
+}
+
+type CreditClassFeeIterator struct {
+	ormtable.Iterator
+}
+
+func (i CreditClassFeeIterator) Value() (*CreditClassFee, error) {
+	var creditClassFee CreditClassFee
+	err := i.UnmarshalMessage(&creditClassFee)
+	return &creditClassFee, err
+}
+
+type CreditClassFeeIndexKey interface {
+	id() uint32
+	values() []interface{}
+	creditClassFeeIndexKey()
+}
+
+// primary key starting index..
+type CreditClassFeePrimaryKey = CreditClassFeeDenomIndexKey
+
+type CreditClassFeeDenomIndexKey struct {
+	vs []interface{}
+}
+
+func (x CreditClassFeeDenomIndexKey) id() uint32              { return 0 }
+func (x CreditClassFeeDenomIndexKey) values() []interface{}   { return x.vs }
+func (x CreditClassFeeDenomIndexKey) creditClassFeeIndexKey() {}
+
+func (this CreditClassFeeDenomIndexKey) WithDenom(denom string) CreditClassFeeDenomIndexKey {
+	this.vs = []interface{}{denom}
+	return this
+}
+
+type creditClassFeeTable struct {
+	table ormtable.Table
+}
+
+func (this creditClassFeeTable) Insert(ctx context.Context, creditClassFee *CreditClassFee) error {
+	return this.table.Insert(ctx, creditClassFee)
+}
+
+func (this creditClassFeeTable) Update(ctx context.Context, creditClassFee *CreditClassFee) error {
+	return this.table.Update(ctx, creditClassFee)
+}
+
+func (this creditClassFeeTable) Save(ctx context.Context, creditClassFee *CreditClassFee) error {
+	return this.table.Save(ctx, creditClassFee)
+}
+
+func (this creditClassFeeTable) Delete(ctx context.Context, creditClassFee *CreditClassFee) error {
+	return this.table.Delete(ctx, creditClassFee)
+}
+
+func (this creditClassFeeTable) Has(ctx context.Context, denom string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, denom)
+}
+
+func (this creditClassFeeTable) Get(ctx context.Context, denom string) (*CreditClassFee, error) {
+	var creditClassFee CreditClassFee
+	found, err := this.table.PrimaryKey().Get(ctx, &creditClassFee, denom)
+	if err != nil {
+		return nil, err
+	}
+	if !found {
+		return nil, ormerrors.NotFound
+	}
+	return &creditClassFee, nil
+}
+
+func (this creditClassFeeTable) List(ctx context.Context, prefixKey CreditClassFeeIndexKey, opts ...ormlist.Option) (CreditClassFeeIterator, error) {
+	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
+	return CreditClassFeeIterator{it}, err
+}
+
+func (this creditClassFeeTable) ListRange(ctx context.Context, from, to CreditClassFeeIndexKey, opts ...ormlist.Option) (CreditClassFeeIterator, error) {
+	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
+	return CreditClassFeeIterator{it}, err
+}
+
+func (this creditClassFeeTable) DeleteBy(ctx context.Context, prefixKey CreditClassFeeIndexKey) error {
+	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
+}
+
+func (this creditClassFeeTable) DeleteRange(ctx context.Context, from, to CreditClassFeeIndexKey) error {
+	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
+}
+
+func (this creditClassFeeTable) doNotImplement() {}
+
+var _ CreditClassFeeTable = creditClassFeeTable{}
+
+func NewCreditClassFeeTable(db ormtable.Schema) (CreditClassFeeTable, error) {
+	table := db.GetTable(&CreditClassFee{})
+	if table == nil {
+		return nil, ormerrors.TableNotFound.Wrap(string((&CreditClassFee{}).ProtoReflect().Descriptor().FullName()))
+	}
+	return creditClassFeeTable{table}, nil
+}
+
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
 	ClassInfoTable() ClassInfoTable
@@ -1443,21 +1701,27 @@ type StateStore interface {
 	BatchSequenceTable() BatchSequenceTable
 	BatchBalanceTable() BatchBalanceTable
 	BatchSupplyTable() BatchSupplyTable
+	AllowedClassCreatorTable() AllowedClassCreatorTable
+	AllowlistEnabledTable() AllowlistEnabledTable
+	CreditClassFeeTable() CreditClassFeeTable
 
 	doNotImplement()
 }
 
 type stateStore struct {
-	creditType      CreditTypeTable
-	classInfo       ClassInfoTable
-	classIssuer     ClassIssuerTable
-	projectInfo     ProjectInfoTable
-	batchInfo       BatchInfoTable
-	classSequence   ClassSequenceTable
-	projectSequence ProjectSequenceTable
-	batchSequence   BatchSequenceTable
-	batchBalance    BatchBalanceTable
-	batchSupply     BatchSupplyTable
+	creditType          CreditTypeTable
+	classInfo           ClassInfoTable
+	classIssuer         ClassIssuerTable
+	projectInfo         ProjectInfoTable
+	batchInfo           BatchInfoTable
+	classSequence       ClassSequenceTable
+	projectSequence     ProjectSequenceTable
+	batchSequence       BatchSequenceTable
+	batchBalance        BatchBalanceTable
+	batchSupply         BatchSupplyTable
+	allowedClassCreator AllowedClassCreatorTable
+	allowlistEnabled    AllowlistEnabledTable
+	creditClassFee      CreditClassFeeTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -1498,6 +1762,18 @@ func (x stateStore) BatchBalanceTable() BatchBalanceTable {
 
 func (x stateStore) BatchSupplyTable() BatchSupplyTable {
 	return x.batchSupply
+}
+
+func (x stateStore) AllowedClassCreatorTable() AllowedClassCreatorTable {
+	return x.allowedClassCreator
+}
+
+func (x stateStore) AllowlistEnabledTable() AllowlistEnabledTable {
+	return x.allowlistEnabled
+}
+
+func (x stateStore) CreditClassFeeTable() CreditClassFeeTable {
+	return x.creditClassFee
 }
 
 func (stateStore) doNotImplement() {}
@@ -1555,6 +1831,21 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
+	allowedClassCreatorTable, err := NewAllowedClassCreatorTable(db)
+	if err != nil {
+		return nil, err
+	}
+
+	allowlistEnabledTable, err := NewAllowlistEnabledTable(db)
+	if err != nil {
+		return nil, err
+	}
+
+	creditClassFeeTable, err := NewCreditClassFeeTable(db)
+	if err != nil {
+		return nil, err
+	}
+
 	return stateStore{
 		creditTypeTable,
 		classInfoTable,
@@ -1566,5 +1857,8 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchSequenceTable,
 		batchBalanceTable,
 		batchSupplyTable,
+		allowedClassCreatorTable,
+		allowlistEnabledTable,
+		creditClassFeeTable,
 	}, nil
 }
