@@ -984,7 +984,7 @@ type Params struct {
 
 	// credit_class_fee is the fixed fee charged on creation of a new credit class
 	CreditClassFee []*v1beta1.Coin `protobuf:"bytes,1,rep,name=credit_class_fee,json=creditClassFee,proto3" json:"credit_class_fee,omitempty"`
-	// basket_creation_fee is the fixed fee charged on creation of a new basket
+	// basket_fee is the fixed fee charged on creation of a new basket
 	BasketFee []*v1beta1.Coin `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3" json:"basket_fee,omitempty"`
 	// allowed_class_creators is an allowlist defining the addresses with
 	// the required permissions to create credit classes

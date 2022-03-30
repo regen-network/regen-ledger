@@ -30,7 +30,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type Params struct {
 	// credit_class_fee is the fixed fee charged on creation of a new credit class
 	CreditClassFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=credit_class_fee,json=creditClassFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"credit_class_fee"`
-	// basket_creation_fee is the fixed fee charged on creation of a new basket
+	// basket_fee is the fixed fee charged on creation of a new basket
 	BasketFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"basket_fee"`
 	// allowed_class_creators is an allowlist defining the addresses with
 	// the required permissions to create credit classes
