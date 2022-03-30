@@ -5,11 +5,11 @@ import (
 	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -22,7 +22,7 @@ import (
 //
 // Currently, only the former is supported. Calls to this function with anything other than
 // MsgBuy_Order_Selection_SellOrderId will fail.
-func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, error) {
+func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.MsgBuyResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
 	if err != nil {
@@ -30,19 +30,13 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 	}
 
 	for _, order := range req.Orders {
-		// assert they have the balance they're  bidding with
-		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-		if bal.IsLT(*order.BidPrice) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("cannot bid %v with a balance of %v", bal, *order.BidPrice)
-		}
-
 		switch selection := order.Selection.Sum.(type) {
-		case *v1.MsgBuy_Order_Selection_SellOrderId:
+		case *marketplace.MsgBuy_Order_Selection_SellOrderId:
 			sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, selection.SellOrderId)
 			if err != nil {
 				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
 			}
-			if sellOrder.DisableAutoRetire != order.DisableAutoRetire {
+			if sellOrder.DisableAutoRetire && !order.DisableAutoRetire {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("auto-retire mismatch: sell order set to %t, buy "+
 					"order set to %t", sellOrder.DisableAutoRetire, order.DisableAutoRetire)
 			}
@@ -80,6 +74,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			}
 
 			// check address has the total cost (price per * order quantity)
+			bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
 			cost, err := getTotalCost(sellOrderPricePerCredit, order.Quantity)
 			if err != nil {
 				return nil, err
@@ -91,31 +86,10 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			}
 
 			// fill the order, updating balances and the sell order in state
-			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, false); err != nil {
+			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, false, !order.DisableAutoRetire, order.RetirementLocation, batch.BatchDenom); err != nil {
 				return nil, fmt.Errorf("error updating balances: %w", err)
 			}
-			if !sellOrder.DisableAutoRetire {
-				if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-					Retirer:    buyerAcc.String(),
-					BatchDenom: batch.BatchDenom,
-					Amount:     order.Quantity,
-					Location:   order.RetirementLocation,
-				}); err != nil {
-					return nil, err
-				}
-			} else {
-				if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
-					Sender:         sdk.AccAddress(sellOrder.Seller).String(),
-					Recipient:      buyerAcc.String(),
-					BatchDenom:     batch.BatchDenom,
-					TradableAmount: order.Quantity,
-					RetiredAmount:  "",
-					BasketDenom:    "",
-				}); err != nil {
-					return nil, err
-				}
-			}
-		case *v1.MsgBuy_Order_Selection_Filter:
+		case *marketplace.MsgBuy_Order_Selection_Filter:
 			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 			// verify expiration is in the future
 			//if order.Expiration.Before(sdkCtx.BlockTime()) {
@@ -125,7 +99,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 		}
 	}
-	return &v1.MsgBuyResponse{}, nil
+	return &marketplace.MsgBuyResponse{}, nil
 }
 
 // fillOrder moves credits according to the order. it will:
@@ -134,7 +108,7 @@ func (k Keeper) Buy(ctx context.Context, req *v1.MsgBuy) (*v1.MsgBuyResponse, er
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, cost sdk.Coin, canPartialFill bool) error {
+func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, cost sdk.Coin, canPartialFill, autoRetire bool, retireLocation, batchDenom string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
@@ -194,7 +168,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	buyerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, buyerAcc, sellOrder.BatchId)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			buyerBal = &ecocreditv1.BatchBalance{
+			buyerBal = &ecoApi.BatchBalance{
 				Address:  buyerAcc,
 				BatchId:  sellOrder.BatchId,
 				Tradable: "0",
@@ -205,7 +179,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 	}
-	if sellOrder.DisableAutoRetire { // if auto retire is disabled, we move the credits into the buyer's/supply's tradable balance.
+	if !autoRetire { // if auto retire is disabled, we move the credits into the buyer's/supply's tradable balance.
 		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
 		if err != nil {
 			return err
@@ -225,6 +199,16 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		supply.TradableAmount = supplyTradable.String()
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
+			Recipient:      buyerAcc.String(),
+			BatchDenom:     batchDenom,
+			TradableAmount: purchaseQty.String(),
+			RetiredAmount:  "",
+			BasketDenom:    "",
+		}); err != nil {
+			return err
+		}
 	} else {
 		retiredBalance, err := math.NewDecFromString(buyerBal.Retired)
 		if err != nil {
@@ -245,6 +229,14 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		supply.RetiredAmount = supplyRetired.String()
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
+			Retirer:    buyerAcc.String(),
+			BatchDenom: batchDenom,
+			Amount:     purchaseQty.String(),
+			Location:   retireLocation,
+		}); err != nil {
+			return err
+		}
 	}
 
 	supplyEscrowed, err := math.NewDecFromString(supply.EscrowedAmount)
