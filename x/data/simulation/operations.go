@@ -22,14 +22,15 @@ const (
 	OpWeightMsgDefineResolver   = "op_weight_msg_define_resolver"
 	OpWeightMsgRegisterResolver = "op_weight_msg_register_resolver"
 
-	ModuleName = "data"
+	ModuleName  = "data"
+	resolverUrl = "https://foo.bar"
 )
 
 var (
-	TypeMsgAnchor           = sdk.MsgTypeURL(&data.MsgAnchor{})           // data.MsgAnchor{}.Route()
-	TypeMsgAttest           = sdk.MsgTypeURL(&data.MsgAttest{})           // data.MsgAttest{}.Route()
-	TypeMsgDefineResolver   = sdk.MsgTypeURL(&data.MsgDefineResolver{})   // data.MsgDefineResolver{}.Route()
-	TypeMsgRegisterResolver = sdk.MsgTypeURL(&data.MsgRegisterResolver{}) // data.MsgRegisterResolver{}.Route()
+	TypeMsgAnchor           = data.MsgAnchor{}.Type()
+	TypeMsgAttest           = data.MsgAttest{}.Type()
+	TypeMsgDefineResolver   = data.MsgDefineResolver{}.Type()
+	TypeMsgRegisterResolver = data.MsgRegisterResolver{}.Type()
 )
 
 const (
@@ -128,7 +129,7 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			2000000,
+			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -167,10 +168,9 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, err.Error()), nil, err
 		}
 
-		graph := hash1.GetGraph()
 		msg := &data.MsgAttest{
 			Attestors: attestors,
-			Hash:      graph,
+			Hash:      hash1.GetGraph(),
 		}
 
 		account := ak.GetAccount(sdkCtx, acc.Address)
@@ -179,7 +179,7 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper,
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
-			2000000,
+			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
@@ -204,7 +204,41 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, ""), nil, nil
+		manager, _ := simtypes.RandomAcc(r, accs)
+
+		spendable := bk.SpendableCoins(sdkCtx, manager.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
+		}
+
+		msg := &data.MsgDefineResolver{
+			Manager:     manager.Address.String(),
+			ResolverUrl: resolverUrl,
+		}
+
+		account := ak.GetAccount(sdkCtx, manager.Address)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			manager.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
@@ -214,8 +248,55 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		ctx := sdk.WrapSDKContext(sdkCtx)
+		res, err := qryClient.ResolverInfo(ctx, &data.QueryResolverInfoRequest{Url: resolverUrl})
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
+		}
 
-		return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, ""), nil, nil
+		manager, err := sdk.AccAddressFromBech32(res.Manager)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
+		}
+
+		managerAcc, found := simtypes.FindAccount(accs, manager)
+		if !found {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "not a sim account"), nil, nil
+		}
+
+		spendable := bk.SpendableCoins(sdkCtx, managerAcc.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "fee error"), nil, err
+		}
+
+		msg := &data.MsgRegisterResolver{
+			Manager:    manager.String(),
+			ResolverId: res.Id,
+		}
+
+		account := ak.GetAccount(sdkCtx, manager)
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			managerAcc.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
