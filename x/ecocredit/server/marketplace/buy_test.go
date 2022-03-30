@@ -231,7 +231,7 @@ func TestBuy_Invalid(t *testing.T) {
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.NilError(t, err)
@@ -244,7 +244,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 532}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
@@ -254,7 +254,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10.23958230958", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: "10.23958230958", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
@@ -264,7 +264,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
+				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, "auto-retire mismatch")
@@ -274,7 +274,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "11", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: "11", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, "cannot purchase 11 credits from a sell order that has 10 credits")
@@ -285,7 +285,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &wrongDenom, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: "10", BidPrice: &wrongDenom, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
@@ -298,7 +298,7 @@ func TestBuy_Invalid(t *testing.T) {
 		Buyer: buyerAddr.String(),
 		Orders: []*marketplace.MsgBuy_Order{
 			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &biddingWith, DisableAutoRetire: true, Expiration: &sellExp},
+				Quantity: "10", BidPrice: &biddingWith, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
