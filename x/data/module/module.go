@@ -5,22 +5,24 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
-	"github.com/spf13/cobra"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
 	"github.com/regen-network/regen-ledger/x/data/server"
+	"github.com/regen-network/regen-ledger/x/data/simulation"
 )
 
 type Module struct {
@@ -77,12 +79,18 @@ func (Module) ConsensusVersion() uint64 { return 1 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
+
+// RegisterLegacyAminoCodec registers the data module's types on the given LegacyAmino codec.
+func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	data.RegisterLegacyAminoCodec(cdc)
+}
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenesisState of the ecocredit module.
-func (Module) GenerateGenesisState(simState *module.SimulationState) {}
+// GenerateGenesisState creates a randomized GenesisState of the data module.
+func (Module) GenerateGenesisState(simState *module.SimulationState) {
+	simulation.RandomizedGenState(simState)
+}
 
 // ProposalContents returns all the data content functions used to
 // simulate proposals.
