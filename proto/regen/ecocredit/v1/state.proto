@@ -137,10 +137,9 @@ message BatchInfo {
   // issuance_date is the timestamp when the credit batch was issued.
   google.protobuf.Timestamp issuance_date = 7;
 
-  // enable_future_minting tells if it's possible to mint new credits in
-  // the future. Once the enable_future_minting is set to false, it can't be
-  // toggled any more.
-  bool enable_future_minting = 8;
+  // sealed tells if it's possible to mint new credits in the future.
+  // Once the sealed is set to true, it can't be toggled any more.
+  bool sealed = 8;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
