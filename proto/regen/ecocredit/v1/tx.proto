@@ -24,13 +24,13 @@ service Msg {
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
   // MintBatch issues new token in a given batch.
-  // Currently the issuer must be the Credit Class issuer, or an address
-  // autorized by him. The request will fail if the batch is sealed.
-  // NOTE: this method is only for bridging credits from other registries.
-  // It should not be used for issuing native credits on Regen. More
-  // specifically, we enable minting more credits in an existing batch, when the
-  // batch represents a vintage originally registered in another chain or
-  // registry.
+  // The issuer must be the account who created (or delegated using x/authz),
+  // the batch.
+  // The request will fail if the batch is sealed.
+  // NOTE: this method is only for bridge purpose. It must not be used
+  // for issuing native credits on Regen. More specifically, we
+  // enable minting more credits in an existing batch, when the batch
+  // represents a vintage originally registered in another chain.
   rpc MintBatch(MsgMintBatch) returns (MsgMintBatchResponse);
 
   // Send sends tradable credits from one account to another account. Sent
@@ -181,7 +181,7 @@ message MsgCreateBatchResponse {
 
 // MsgMintBatch is a request type for MintBatch Msg RPC.
 message MsgMintBatch {
-  // Issuer is an address authorized to issue new credits in a given batch.
+  // Issuer must equal to the batch.issuer address.
   // Signer of the msg.
   string issuer = 1;
 
@@ -195,9 +195,9 @@ message MsgMintBatch {
   // reference note for accounting, will be passed to an event
   string note = 4;
 
-  // sealed tells if it's possible to mint new credits in the future.
+  // seal tells if it's possible to mint new credits in the future.
   // Once the sealed is set to true, it can't be toggled any more.
-  bool sealed = 5;
+  bool seal = 5;
 
   message OriginTx {
     // type of the transaction originating the mint process. Eg: Polygon,

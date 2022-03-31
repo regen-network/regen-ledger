@@ -137,9 +137,13 @@ message BatchInfo {
   // issuance_date is the timestamp when the credit batch was issued.
   google.protobuf.Timestamp issuance_date = 7;
 
+  // issuer is an account address which created the batch and which is
+  // authorized to issue more credits if sealed=false.
+  string issuer = 8;
+
   // sealed tells if it's possible to mint new credits in the future.
   // Once the sealed is set to true, it can't be toggled any more.
-  bool sealed = 8;
+  bool sealed = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
