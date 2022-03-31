@@ -17,6 +17,13 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/classes";
   }
 
+  // ClassesByAdmin queries for all credit classes with a specific admin
+  // address.
+  rpc ClassesByAdmin(QueryClassesByAdminRequest)
+      returns (QueryClassesByAdminResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/classes/admin/{admin}";
+  }
+
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/classes/{class_id}";
@@ -67,9 +74,8 @@ service Query {
 
   // Balances queries all credit balances the given account holds.
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
-        option (google.api.http).get =
-        "/regen/ecocredit/v1/balances/{account}";
-}
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{account}";
+  }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
@@ -89,15 +95,6 @@ service Query {
   }
 }
 
-// QueryParamsRequest is the Query/Params request type.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is the Query/Params response type.
-message QueryParamsResponse {
-  // params defines the parameters of the ecocredit module.
-  Params params = 1;
-}
-
 // QueryClassesRequest is the Query/Classes request type.
 message QueryClassesRequest {
   // pagination defines an optional pagination for the request.
@@ -106,6 +103,25 @@ message QueryClassesRequest {
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryClassesByAdminRequest is the Query/ClassesByAdmin request type.
+message QueryClassesByAdminRequest {
+
+  // admin is the address of the admin of the class.
+  string admin = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
+message QueryClassesByAdminResponse {
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -261,7 +277,8 @@ message QueryBalancesRequest {
 // QueryBalancesResponse is the Query/Balances response type.
 message QueryBalancesResponse {
 
-  // balances are a list of balances from different credit batches that the account holds.
+  // balances are a list of balances from different credit batches that the
+  // account holds.
   repeated BatchBalance balances = 1;
 
   // pagination defines the pagination in the response.
@@ -298,4 +315,13 @@ message QueryCreditTypesRequest {}
 message QueryCreditTypesResponse {
   // list of credit types
   repeated CreditType credit_types = 1;
+}
+
+// QueryParamsRequest is the Query/Params request type.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the Query/Params response type.
+message QueryParamsResponse {
+  // params defines the parameters of the ecocredit module.
+  Params params = 1;
 }
