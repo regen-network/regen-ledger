@@ -59,7 +59,7 @@ func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	}
 
 	if value.Cmp(x) == -1 {
-		return ecocredit.ErrInsufficientFunds
+		return ecocredit.ErrInsufficientCredits
 	}
 
 	value, err = math.SafeSubBalance(value, x)
@@ -85,7 +85,7 @@ func verifyCreditBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, bat
 	}
 
 	if balance.Cmp(q) == -1 {
-		return ecocredit.ErrInsufficientFunds
+		return ecocredit.ErrInsufficientCredits
 	}
 
 	return nil

@@ -306,7 +306,7 @@ func (s *IntegrationTestSuite) TestTxAttest() {
 			name:   "bad extension",
 			iri:    "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.png",
 			expErr: true,
-			errMsg: "invalid iri: expected extension .rdf for graph data, got .png",
+			errMsg: "invalid iri: invalid extension .png for graph data, expected .rdf",
 		},
 	}
 

@@ -70,7 +70,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	// we can reuse this function and pass the negated amount to get our desired behavior.
-	assertCoinsEscrowed(t, balBefore, balAfter, supBefore, supAfter, math.NewDecFromInt64(-10))
+	assertCreditsEscrowed(t, balBefore, balAfter, supBefore, supAfter, math.NewDecFromInt64(-10))
 
 	assert.Equal(t, 2, len(res.SellOrderIds))
 	shouldBeExpired := res.SellOrderIds[0]

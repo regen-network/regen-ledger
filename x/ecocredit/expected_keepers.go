@@ -32,6 +32,7 @@ type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
+	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
 // Keeper defines the expected interface needed to prune expired buy and sell orders.
