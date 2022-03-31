@@ -215,6 +215,39 @@ func TestBuy_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
 }
 
+func TestBuy_Decimal(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	_, _, buyerAddr := testdata.KeyTestPubAddr()
+	userCoinBalance := sdk.NewInt64Coin("ufoo", 50)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
+	// make a sell order
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
+		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	}).Times(2)
+	sellExp := time.Now()
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.addr.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+		},
+	})
+	assert.NilError(t, err)
+	sellOrderId := res.SellOrderIds[0]
+
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
+
+	purchaseAmt := "3.985321"
+	expectedCost := sdk.NewInt64Coin("ufoo", 39)
+	// sell order ask price: 10ufoo, buy order of 3.215 credits -> 10 * 3.215 = 32.15
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{expectedCost}).Return(nil).Times(1)
+
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt, &ask, true, "")
+	assert.NilError(t, err)
+}
+
 func assertSupplyEscrowedAmounts(t *testing.T, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
 	var beforeSupply, beforeSupplyEscrowed math.Dec
 	var afterSupply, afterSupplyEscrowed math.Dec

@@ -61,10 +61,11 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 	// check address has the total cost (price per * order quantity)
 	bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, req.PricePerCredit.Denom)
-	cost, err := getTotalCost(sellOrderPricePerCredit, req.Quantity)
+	cost, err := getTotalCost(sellOrderPricePerCredit, creditOrderQty)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(cost)
 	coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
 	if bal.IsLT(coinCost) {
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
