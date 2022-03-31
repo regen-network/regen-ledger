@@ -1,24 +1,21 @@
 package basket
 
 import (
-	"context"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 )
 
 // Keeper is the basket keeper.
 type Keeper struct {
-	stateStore      api.StateStore
-	bankKeeper      ecocredit.BankKeeper
-	ecocreditKeeper EcocreditKeeper
-	storeKey        sdk.StoreKey
-	distKeeper      ecocredit.DistributionKeeper
+	stateStore   api.StateStore
+	coreStore    ecoApi.StateStore
+	bankKeeper   ecocredit.BankKeeper
+	distKeeper   ecocredit.DistributionKeeper
+	paramsKeeper ecocredit.ParamKeeper
 }
 
 var _ baskettypes.MsgServer = Keeper{}
@@ -27,33 +24,23 @@ var _ baskettypes.QueryServer = Keeper{}
 // NewKeeper returns a new keeper instance.
 func NewKeeper(
 	db ormdb.ModuleDB,
-	ecocreditKeeper EcocreditKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-	storeKey sdk.StoreKey,
+	pk ecocredit.ParamKeeper,
 ) Keeper {
 	basketStore, err := api.NewStateStore(db)
 	if err != nil {
 		panic(err)
 	}
-	return Keeper{
-		bankKeeper:      bankKeeper,
-		ecocreditKeeper: ecocreditKeeper,
-		distKeeper:      distKeeper,
-		stateStore:      basketStore,
-		storeKey:        storeKey,
+	coreStore, err := ecoApi.NewStateStore(db)
+	if err != nil {
+		panic(err)
 	}
-}
-
-// EcocreditKeeper abstracts over methods that the main ecocredit keeper
-// needs to expose to the basket keeper.
-//
-// NOTE: run `make mocks` whenever you add methods here
-type EcocreditKeeper interface {
-	// we embed a query server directly here rather than trying to go through
-	// ADR 033 for simplicity
-	ecocredit.QueryServer
-
-	GetCreateBasketFee(ctx context.Context) sdk.Coins
-	HasClassInfo(ctx types.Context, classID string) bool
+	return Keeper{
+		bankKeeper:   bankKeeper,
+		distKeeper:   distKeeper,
+		stateStore:   basketStore,
+		coreStore:    coreStore,
+		paramsKeeper: pk,
+	}
 }

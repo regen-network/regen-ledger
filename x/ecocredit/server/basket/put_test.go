@@ -1,437 +1,353 @@
 package basket_test
 
 import (
-	"context"
 	"strconv"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
-func TestPut(t *testing.T) {
-	basketDenom := "BASKET"
-	basketDenom2 := "BASKET2"
-	basketDenom3 := "BASKET3"
-	classId := "C02"
-	projectId := "P01"
-	startDate, err := time.Parse("2006-01-02", "2020-01-01")
-	require.NoError(t, err)
-	endDate, err := time.Parse("2006-01-02", "2021-01-01")
-	require.NoError(t, err)
-	denom, err := ecocredit.FormatDenom(classId, 1, &startDate, &endDate)
-	require.NoError(t, err)
-	testClassInfo := ecocredit.ClassInfo{
-		ClassId:  classId,
-		Admin:    "somebody",
-		Issuers:  nil,
-		Metadata: nil,
-		CreditType: &ecocredit.CreditType{
-			Name:         "carbon",
-			Abbreviation: "C",
-			Unit:         "many carbons",
-			Precision:    6,
-		},
-		NumBatches: 1,
-	}
-	classInfoRes := ecocredit.QueryClassInfoResponse{Info: &testClassInfo}
-	testProjectInfo := ecocredit.ProjectInfo{
-		ProjectId:       projectId,
-		ClassId:         classId,
-		Issuer:          "somebody",
-		ProjectLocation: "US-NY",
-		Metadata:        nil,
-	}
-	projectInfoRes := ecocredit.QueryProjectInfoResponse{Info: &testProjectInfo}
-	testBatchInfo := ecocredit.BatchInfo{
-		ProjectId:       projectId,
-		BatchDenom:      denom,
-		TotalAmount:     "1000000000000000000000000000",
-		Metadata:        nil,
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-	}
-	batchInfoRes := ecocredit.QueryBatchInfoResponse{Info: &testBatchInfo}
+func TestPut_Valid(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	gmAny := gomock.Any()
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	userStartingBalance, basketStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(0), math.NewDecFromInt64(3)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
+	insertBatch(t, s, batchDenom, timestamppb.Now())
+	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, "C01", "C")
+	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(2)
 
+	// can put 3 credits in basket
+	res, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: amtToDeposit.String()},
+		},
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, res.AmountReceived, "3000000") // 3 credits 10^6 * 3 = 3M
+	assertCreditsDeposited(t, s, userStartingBalance, basketStartingBalance, amtToDeposit, s.addr, 1, 1, batchDenom)
+
+	// can put 3 more credits in basket
+	res, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: amtToDeposit.String()},
+		},
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, res.AmountReceived, "3000000") // 3 credits 10^6 * 3
+	assertCreditsDeposited(t, s, math.NewDecFromInt64(7), math.NewDecFromInt64(3), amtToDeposit, s.addr, 1, 1, batchDenom)
+}
+
+func TestPut_BasketNotFound(t *testing.T) {
+	t.Parallel()
 	s := setupBase(t)
 
-	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom:       basketDenom,
-		Name:              basketDenom,
-		DisableAutoRetire: true,
-		CreditTypeAbbrev:  "C",
-		DateCriteria:      &api.DateCriteria{MinStartDate: timestamppb.New(startDate)},
-		Exponent:          6,
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "FOO",
+		Credits:     nil,
 	})
-	require.NoError(t, err)
+	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+}
 
-	var dur time.Duration = 500000000000000000
-	validStartDateWindow := startDate.Add(-dur)
-	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom:       basketDenom2,
-		Name:              basketDenom2,
-		DisableAutoRetire: true,
-		CreditTypeAbbrev:  "C",
-		DateCriteria:      &api.DateCriteria{StartDateWindow: durationpb.New(dur)},
-		Exponent:          6,
-	})
-	require.NoError(t, err)
-	validYearsInThePast := uint32(10)
-	err = s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
-		BasketDenom:       basketDenom3,
-		Name:              basketDenom3,
-		DisableAutoRetire: true,
-		CreditTypeAbbrev:  "C",
-		DateCriteria:      &api.DateCriteria{YearsInThePast: validYearsInThePast},
-		Exponent:          6,
-	})
-	require.NoError(t, err)
-	basketDenomToId := make(map[string]uint64)
-	basketDenomToId[basketDenom] = 1
-	basketDenomToId[basketDenom2] = 2
-	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: 1,
-		ClassId:  classId,
-	})
-	require.NoError(t, err)
-	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: 2,
-		ClassId:  classId,
-	})
-	require.NoError(t, err)
+func TestPut_BatchNotFound(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	userStartingBalance, _ := math.NewDecFromInt64(10), math.NewDecFromInt64(0)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 
-	s.sdkCtx = s.sdkCtx.WithBlockTime(startDate)
+	// can put all credits in basket
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: userStartingBalance.String()},
+		},
+	})
+	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+}
+
+func TestPut_YearsIntoPast(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	gmAny := gomock.Any()
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
+	currentTime, err := time.Parse("2006", "2020")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(currentTime)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	testCases := []struct {
-		name                string
-		startingBalance     string
-		msg                 basket.MsgPut
-		expectedCredits     []*basket.BasketCredit
-		expectedBasketCoins string
-		expectCalls         func()
-		errMsg              string
-	}{
-		{
-			name:            "valid case",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&batchInfoRes, nil)
-
-				s.ecocreditKeeper.EXPECT().
-					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
-					Return(&projectInfoRes, nil)
-
-				s.ecocreditKeeper.EXPECT().
-					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
-					Return(&classInfoRes, nil)
-
-				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(2_000_000)))
-				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
-					Return(nil)
-
-				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
-					Return(nil)
-			},
+	// too long ago should fail
+	fourYearsAgo, err := time.Parse("2006", "2016")
+	assert.NilError(t, err)
+	insertBatch(t, s, batchDenom, timestamppb.New(fourYearsAgo))
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: "10"},
 		},
-		{
-			name:            "valid case - basket with existing balance",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "1"}},
-			},
-			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "3"}},
-			expectedBasketCoins: "1000000", // 1 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&batchInfoRes, nil)
+	})
+	assert.ErrorContains(t, err, "basket that requires an earliest start date")
 
-				s.ecocreditKeeper.EXPECT().
-					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
-					Return(&projectInfoRes, nil)
-
-				s.ecocreditKeeper.EXPECT().
-					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
-					Return(&classInfoRes, nil)
-
-				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(1_000_000)))
-				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
-					Return(nil)
-
-				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
-					Return(nil)
-			},
+	// exactly 3 years into the past should work
+	threeYearsAgo, err := time.Parse("2006", "2017")
+	assert.NilError(t, err)
+	otherBatchDenom := "C01-000000-0000000-002"
+	insertBatch(t, s, otherBatchDenom, timestamppb.New(threeYearsAgo))
+	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
+	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: otherBatchDenom, Amount: "10"},
 		},
-		{
-			name:            "valid case - basket 2 with rolling window",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom2,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedCredits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&batchInfoRes, nil)
+	})
+	assert.NilError(t, err)
+}
 
-				s.ecocreditKeeper.EXPECT().
-					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
-					Return(&projectInfoRes, nil)
+func TestPut_MinStartDate(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	gmAny := gomock.Any()
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	currentTime, err := time.Parse("2006", "2020")
+	assert.NilError(t, err)
 
-				s.ecocreditKeeper.EXPECT().
-					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
-					Return(&classInfoRes, nil)
+	// make a basket with min start date as 2020
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{MinStartDate: timestamppb.New(currentTime)}, []string{classId})
+	s.sdkCtx = s.sdkCtx.WithBlockTime(currentTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-				coinAward := sdk.NewCoins(sdk.NewCoin(basketDenom2, sdk.NewInt(2_000_000)))
-				s.bankKeeper.EXPECT().
-					MintCoins(s.sdkCtx, basket.BasketSubModuleName, coinAward).
-					Return(nil)
-
-				s.bankKeeper.EXPECT().
-					SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coinAward).
-					Return(nil)
-			},
+	// make a batch 1 year before min start date
+	_2019, err := time.Parse("2006", "2019")
+	assert.NilError(t, err)
+	insertBatch(t, s, batchDenom, timestamppb.New(_2019))
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: "10"},
 		},
-		{
-			name:            "insufficient funds",
-			startingBalance: "1",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&batchInfoRes, nil)
+	})
+	assert.ErrorContains(t, err, "basket that requires an earliest start date")
 
-				s.ecocreditKeeper.EXPECT().
-					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
-					Return(&projectInfoRes, nil)
-
-				s.ecocreditKeeper.EXPECT().
-					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
-					Return(&classInfoRes, nil)
-
-			},
-			errMsg: ecocredit.ErrInsufficientCredits.Error(),
+	// should pass with batch start date == min start date
+	otherBatchDenom := "C01-000000-0000000-002"
+	insertBatch(t, s, otherBatchDenom, timestamppb.New(currentTime))
+	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
+	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: otherBatchDenom, Amount: "10"},
 		},
-		{
-			name:            "basket not found",
-			startingBalance: "1",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: "FooBar",
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-			},
-			errMsg: ormerrors.NotFound.Error(),
-		},
-		{
-			name:            "batch not found",
-			startingBalance: "20",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: "FooBarBaz", Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "FooBarBaz"}).
-					Return(nil, ormerrors.NotFound)
-			},
-			errMsg: ormerrors.NotFound.Error(),
-		},
-		//{
-		//	name:            "class not allowed",
-		//	startingBalance: "100000000",
-		//	msg: basket.MsgPut{
-		//		Owner:       s.addr.String(),
-		//		BasketDenom: basketDenom,
-		//		Credits:     []*basket.BasketCredit{{BatchDenom: "blah", Amount: "2"}},
-		//	},
-		//	expectedBasketCoins: "2000000", // 2 million
-		//	expectCalls: func() {
-		//		badInfo := *batchInfoRes.Info
-		//		badInfo.ClassId = "blah01"
-		//		ecocreditKeeper.EXPECT().
-		//			BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: "blah"}).
-		//			Return(&ecocredit.QueryBatchInfoResponse{Info: &badInfo}, nil)
-		//	},
-		//	errMsg: "credit class blah01 is not allowed in this basket",
-		//},
-		{
-			name:            "wrong credit type",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&batchInfoRes, nil)
+	})
+	assert.NilError(t, err)
+}
 
-				s.ecocreditKeeper.EXPECT().
-					ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{ProjectId: projectId}).
-					Return(&projectInfoRes, nil)
+func TestPut_Window(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	gmAny := gomock.Any()
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	currentTime, err := time.Parse("2006", "2020")
+	assert.NilError(t, err)
 
-				badClass := *classInfoRes.Info
-				badClass.CreditType.Abbreviation = "FOO"
-				s.ecocreditKeeper.EXPECT().
-					ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classId}).
-					Return(&ecocredit.QueryClassInfoResponse{Info: &badClass}, nil)
-			},
-			errMsg: "cannot use credit of type FOO in a basket that requires credit type C",
+	// make a basket with StartDateWindow of 1 year. with block time forced to 2020, this means only credits 2019 and up are accepted.
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{StartDateWindow: &durationpb.Duration{Seconds: 31560000}}, []string{classId})
+	s.sdkCtx = s.sdkCtx.WithBlockTime(currentTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	// make a batch 1 year before min start date
+	_2018, err := time.Parse("2006", "2018")
+	assert.NilError(t, err)
+	insertBatch(t, s, batchDenom, timestamppb.New(_2018))
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: "10"},
 		},
-		{
-			name:            "batch out of time window",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				badTime, err := time.Parse("2006-01-02", "1984-01-01")
-				require.NoError(t, err)
-				badTimeInfo := *batchInfoRes.Info
-				badTimeInfo.StartDate = &badTime
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
+	})
+	assert.ErrorContains(t, err, "basket that requires an earliest start date")
 
-			},
-			errMsg: "cannot put a credit from a batch with start date",
+	// should pass with batch start date exactly 1 year before block time. (1 year window).
+	otherBatchDenom := "C01-000000-0000000-002"
+	_2019, err := time.Parse("2006", "2019")
+	assert.NilError(t, err)
+	insertBatch(t, s, otherBatchDenom, timestamppb.New(_2019))
+	insertBatchBalance(t, s, s.addr, 2, "10")
+	insertClassInfo(t, s, "C01", "C")
+	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: otherBatchDenom, Amount: "10"},
 		},
-		{
-			name:            "batch outside of start date window",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom2,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				badTimeInfo := *batchInfoRes.Info
-				bogusDur := time.Duration(999999999999999)
-				badTime := validStartDateWindow.Add(-bogusDur)
-				badTimeInfo.StartDate = &badTime
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
+	})
+	assert.NilError(t, err)
+}
 
-			},
-			errMsg: "cannot put a credit from a batch with start date",
+func TestPut_InsufficientCredits(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	userStartingBalance := math.NewDecFromInt64(10)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
+	insertBatch(t, s, batchDenom, timestamppb.Now())
+	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, classId, "C")
+
+	// can put 3 credits in basket
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: "1000000"},
 		},
-		{
-			name:            "batch outside of years in the past",
-			startingBalance: "100000000",
-			msg: basket.MsgPut{
-				Owner:       s.addr.String(),
-				BasketDenom: basketDenom3,
-				Credits:     []*basket.BasketCredit{{BatchDenom: denom, Amount: "2"}},
-			},
-			expectedBasketCoins: "2000000", // 2 million
-			expectCalls: func() {
-				badTimeInfo := *batchInfoRes.Info
-				badYear := int(validYearsInThePast + 10)
-				badTime := time.Date(badYear, 1, 1, 0, 0, 0, 0, time.UTC)
-				badTimeInfo.StartDate = &badTime
-				s.ecocreditKeeper.EXPECT().
-					BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: denom}).
-					Return(&ecocredit.QueryBatchInfoResponse{Info: &badTimeInfo}, nil)
+	})
+	assert.ErrorContains(t, err, ecocredit.ErrInsufficientCredits.Error())
+}
 
-			},
-			errMsg: "cannot put a credit from a batch with start date",
+func TestPut_ClassNotAccepted(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchDenom := "C01-0000000-0000000-001"
+	userStartingBalance := math.NewDecFromInt64(10)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{"C02"})
+	insertBatch(t, s, batchDenom, timestamppb.Now())
+	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+
+	// can put 3 credits in basket
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: "1000000"},
 		},
-	}
+	})
+	assert.ErrorContains(t, err, "credit class C01 is not allowed in this basket")
+}
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			tc.expectCalls()
-			legacyStore := s.sdkCtx.KVStore(s.storeKey)
-			tradKey := ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(denom))
-			userFunds, err := math.NewDecFromString(tc.startingBalance)
-			require.NoError(t, err)
-			ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
-			res, err := s.k.Put(s.ctx, &tc.msg)
-			if tc.errMsg == "" { //  no error!
-				require.NoError(t, err)
-				require.Equal(t, res.AmountReceived, tc.expectedBasketCoins)
-				for _, credit := range tc.msg.Credits {
-					assertUserSentCredits(t, userFunds, credit.Amount, tradKey, legacyStore)
-				}
-				for _, credit := range tc.expectedCredits {
-					assertBasketHasCredits(t, s.ctx, credit, basketDenomToId[tc.msg.BasketDenom], s.stateStore.BasketBalanceTable())
-				}
-			} else {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.errMsg)
-			}
-		})
+func TestPut_BadCreditType(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchDenom := "C01-0000000-0000000-001"
+	userStartingBalance := math.NewDecFromInt64(10)
+	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{"C01"})
+	insertBatch(t, s, batchDenom, timestamppb.Now())
+	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
+	insertClassInfo(t, s, "C01", "F")
+
+	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.addr.String(),
+		BasketDenom: "foo",
+		Credits: []*basket.BasketCredit{
+			{BatchDenom: batchDenom, Amount: userStartingBalance.String()},
+		},
+	})
+	assert.ErrorContains(t, err, "basket requires credit type C but a credit with type F was given")
+}
+
+func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
+	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
+		BasketDenom:       denom,
+		Name:              name,
+		DisableAutoRetire: false,
+		CreditTypeAbbrev:  ctAbbrev,
+		DateCriteria:      criteria,
+		Exponent:          6,
+		Curator:           s.addr.String(),
+	}))
+	for _, class := range classes {
+		assert.NilError(t, s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
+			BasketId: 1,
+			ClassId:  class,
+		}))
 	}
 }
 
-func assertBasketHasCredits(t *testing.T, ctx context.Context, credit *basket.BasketCredit, basketID uint64, balanceTable api.BasketBalanceTable) {
-	bal, err := balanceTable.Get(ctx, basketID, credit.BatchDenom)
-	require.NoError(t, err)
-	require.Equal(t, bal.Balance, credit.Amount)
+func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId uint64, amount string) {
+	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		Address:  user,
+		BatchId:  batchId,
+		Tradable: amount,
+		Retired:  "",
+		Escrowed: "",
+	}))
 }
 
-func assertUserSentCredits(t *testing.T, oldBalance math.Dec, amountSent string, balanceKey []byte, store types.KVStore) {
-	amtSent, err := math.NewDecFromString(amountSent)
-	require.NoError(t, err)
-	currentBalance, err := ecocredit.GetDecimal(store, balanceKey)
-	require.NoError(t, err)
+func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+		Name:       name,
+		Admin:      s.addr,
+		Metadata:   "",
+		CreditType: creditTypeAbb,
+	}))
+}
 
-	checkBalance, err := currentBalance.Add(amtSent)
-	require.NoError(t, err)
+func insertBatch(t *testing.T, s *baseSuite, batchDenom string, startDate *timestamppb.Timestamp) {
+	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
+		ProjectId:  1,
+		BatchDenom: batchDenom,
+		Metadata:   "",
+		StartDate:  startDate,
+		EndDate:    nil,
+	}))
+}
 
-	require.True(t, checkBalance.Equal(oldBalance))
+func assertCreditsDeposited(t *testing.T, s *baseSuite, startingUserBalance, startingBasketBalance, amountPut math.Dec, user sdk.AccAddress, batchId, basketId uint64, batchDenom string) {
+	userBal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, user, batchId)
+	assert.NilError(t, err)
+	userTradable, err := math.NewDecFromString(userBal.Tradable)
+	assert.NilError(t, err)
+
+	basketBal, err := s.stateStore.BasketBalanceTable().Get(s.ctx, basketId, batchDenom)
+	assert.NilError(t, err)
+	basketBalAmt, err := math.NewDecFromString(basketBal.Balance)
+	assert.NilError(t, err)
+
+	expectedUserBal, err := startingUserBalance.Sub(amountPut)
+	assert.NilError(t, err)
+
+	expectedBasketBalance, err := startingBasketBalance.Add(amountPut)
+	assert.NilError(t, err)
+
+	assert.Check(t, expectedUserBal.Equal(userTradable))
+	assert.Check(t, expectedBasketBalance.Equal(basketBalAmt))
 }
 
 type putSuite struct {
@@ -452,7 +368,7 @@ func TestPutDate(t *testing.T) {
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.tradableCredits = "5"
-	s.classId = "C01"
+	s.classId = "batch"
 	s.creditType = "C"
 }
 
@@ -491,64 +407,41 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	s.batchDenom = "batch-" + a
 	s.batchStartDate = timestamppb.New(startDate)
 
-	err = s.ecocreditStore.BatchInfoTable().Insert(s.ctx, &ecocreditapi.BatchInfo{
+	id, err := s.coreStore.ClassInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ClassInfo{
+		Name:       s.classId,
+		CreditType: s.creditType,
+	})
+	assert.NilError(s.t, err)
+
+	id, err = s.coreStore.ProjectInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ProjectInfo{ClassId: id})
+	assert.NilError(s.t, err)
+
+	id, err = s.coreStore.BatchInfoTable().InsertReturningID(s.ctx, &ecocreditapi.BatchInfo{
+		ProjectId:  id,
 		BatchDenom: s.batchDenom,
 		StartDate:  s.batchStartDate,
 	})
 	assert.NilError(s.t, err)
 
-	// TODO: migrate from legacy tradable balance store to batch balance table
-
-	//batch, err := s.ecocreditStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
-	//assert.NilError(s.t, err)
-	//
-	//err = s.ecocreditStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
-	//	Address:  s.addr,
-	//	BatchId:  batch.Id,
-	//	Tradable: s.tradableCredits,
-	//})
-	//assert.NilError(s.t, err)
-
-	legacyStore := s.sdkCtx.KVStore(s.storeKey)
-	tradKey := ecocredit.TradableBalanceKey(s.addr, ecocredit.BatchDenomT(s.batchDenom))
-	userFunds, err := math.NewDecFromString(s.tradableCredits)
-	require.NoError(s.t, err)
-
-	ecocredit.SetDecimal(legacyStore, tradKey, userFunds)
+	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
+		Address:  s.addr,
+		BatchId:  id,
+		Tradable: s.tradableCredits,
+	})
+	assert.NilError(s.t, err)
 }
 
 func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
-	startDate := time.Unix(s.batchStartDate.Seconds, int64(s.batchStartDate.Nanos))
-
-	s.ecocreditKeeper.EXPECT().
-		BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: s.batchDenom}).
-		Return(&ecocredit.QueryBatchInfoResponse{Info: &ecocredit.BatchInfo{
-			BatchDenom: s.batchDenom,
-			StartDate:  &startDate,
-		}}, nil).AnyTimes() // only called if valid start date
-
-	s.ecocreditKeeper.EXPECT().
-		ProjectInfo(s.ctx, &ecocredit.QueryProjectInfoRequest{}).
-		Return(&ecocredit.QueryProjectInfoResponse{Info: &ecocredit.ProjectInfo{
-			ClassId: s.classId,
-		}}, nil).AnyTimes() // only called if valid start date
-
-	s.ecocreditKeeper.EXPECT().
-		ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: s.classId}).
-		Return(&ecocredit.QueryClassInfoResponse{Info: &ecocredit.ClassInfo{
-			CreditType: &ecocredit.CreditType{Abbreviation: s.creditType},
-		}}, nil).AnyTimes() // only called if valid start date
-
-	any := gomock.Any()
+	gmAny := gomock.Any()
 	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
 	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
 
 	s.bankKeeper.EXPECT().
-		MintCoins(any, basket.BasketSubModuleName, tokenAmount).
+		MintCoins(gmAny, basket.BasketSubModuleName, tokenAmount).
 		Return(nil).AnyTimes() // only called if valid start date
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(any, basket.BasketSubModuleName, s.addr, tokenAmount).
+		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, tokenAmount).
 		Return(nil).AnyTimes() // only called if valid start date
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
