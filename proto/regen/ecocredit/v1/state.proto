@@ -111,31 +111,35 @@ message BatchInfo {
     index : {id : 1 fields : "batch_denom", unique : true}
     index : {id : 2 fields : "project_id"}
     index : {id : 3 fields : "start_date"}
+    index : {id : 4 fields : "issuer"}
   };
 
   // id is an auto-incrementing integer to succinctly identify the batch
   uint64 id = 1;
 
+  // issuer is the address that issued the batch
+  bytes issuer = 2;
+
   // project_id is the unique ID of the project this batch belongs to.
-  uint64 project_id = 2;
+  uint64 project_id = 3;
 
   // batch_denom is the unique string identifier of the credit batch formed
   // from the project name, batch sequence number and dates.
-  string batch_denom = 3;
+  string batch_denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
-  string metadata = 4;
+  string metadata = 5;
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  google.protobuf.Timestamp start_date = 5;
+  google.protobuf.Timestamp start_date = 6;
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  google.protobuf.Timestamp end_date = 6;
+  google.protobuf.Timestamp end_date = 7;
 
   // issuance_date is the timestamp when the credit batch was issued.
-  google.protobuf.Timestamp issuance_date = 7;
+  google.protobuf.Timestamp issuance_date = 8;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for

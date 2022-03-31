@@ -29,89 +29,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryParamsRequest is the Query/Params request type.
-type QueryParamsRequest struct {
-}
-
-func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
-func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsRequest) ProtoMessage()    {}
-func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{0}
-}
-func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
-}
-func (m *QueryParamsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
-
-// QueryParamsResponse is the Query/Params response type.
-type QueryParamsResponse struct {
-	// params defines the parameters of the ecocredit module.
-	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
-}
-
-func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
-func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryParamsResponse) ProtoMessage()    {}
-func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{1}
-}
-func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
-}
-func (m *QueryParamsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *QueryParamsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
-
-func (m *QueryParamsResponse) GetParams() *Params {
-	if m != nil {
-		return m.Params
-	}
-	return nil
-}
-
 // QueryClassesRequest is the Query/Classes request type.
 type QueryClassesRequest struct {
 	// pagination defines an optional pagination for the request.
@@ -122,7 +39,7 @@ func (m *QueryClassesRequest) Reset()         { *m = QueryClassesRequest{} }
 func (m *QueryClassesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryClassesRequest) ProtoMessage()    {}
 func (*QueryClassesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{2}
+	return fileDescriptor_c85efa417eafb74b, []int{0}
 }
 func (m *QueryClassesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -170,7 +87,7 @@ func (m *QueryClassesResponse) Reset()         { *m = QueryClassesResponse{} }
 func (m *QueryClassesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryClassesResponse) ProtoMessage()    {}
 func (*QueryClassesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{3}
+	return fileDescriptor_c85efa417eafb74b, []int{1}
 }
 func (m *QueryClassesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -207,6 +124,116 @@ func (m *QueryClassesResponse) GetClasses() []*ClassInfo {
 }
 
 func (m *QueryClassesResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryClassesByAdminRequest is the Query/ClassesByAdmin request type.
+type QueryClassesByAdminRequest struct {
+	// admin is the address of the admin of the class.
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryClassesByAdminRequest) Reset()         { *m = QueryClassesByAdminRequest{} }
+func (m *QueryClassesByAdminRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByAdminRequest) ProtoMessage()    {}
+func (*QueryClassesByAdminRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{2}
+}
+func (m *QueryClassesByAdminRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryClassesByAdminRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryClassesByAdminRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryClassesByAdminRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByAdminRequest.Merge(m, src)
+}
+func (m *QueryClassesByAdminRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryClassesByAdminRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByAdminRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryClassesByAdminRequest proto.InternalMessageInfo
+
+func (m *QueryClassesByAdminRequest) GetAdmin() string {
+	if m != nil {
+		return m.Admin
+	}
+	return ""
+}
+
+func (m *QueryClassesByAdminRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
+type QueryClassesByAdminResponse struct {
+	// classes are the fetched credit classes.
+	Classes []*ClassInfo `protobuf:"bytes,1,rep,name=classes,proto3" json:"classes,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryClassesByAdminResponse) Reset()         { *m = QueryClassesByAdminResponse{} }
+func (m *QueryClassesByAdminResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryClassesByAdminResponse) ProtoMessage()    {}
+func (*QueryClassesByAdminResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{3}
+}
+func (m *QueryClassesByAdminResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryClassesByAdminResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryClassesByAdminResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryClassesByAdminResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryClassesByAdminResponse.Merge(m, src)
+}
+func (m *QueryClassesByAdminResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryClassesByAdminResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryClassesByAdminResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryClassesByAdminResponse proto.InternalMessageInfo
+
+func (m *QueryClassesByAdminResponse) GetClasses() []*ClassInfo {
+	if m != nil {
+		return m.Classes
+	}
+	return nil
+}
+
+func (m *QueryClassesByAdminResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -727,6 +754,116 @@ func (m *QueryBatchesResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// QueryBatchesByIssuerRequest is the Query/BatchesByIssuer request type.
+type QueryBatchesByIssuerRequest struct {
+	// issuer is the address that issued the batch
+	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBatchesByIssuerRequest) Reset()         { *m = QueryBatchesByIssuerRequest{} }
+func (m *QueryBatchesByIssuerRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBatchesByIssuerRequest) ProtoMessage()    {}
+func (*QueryBatchesByIssuerRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{14}
+}
+func (m *QueryBatchesByIssuerRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBatchesByIssuerRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBatchesByIssuerRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBatchesByIssuerRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBatchesByIssuerRequest.Merge(m, src)
+}
+func (m *QueryBatchesByIssuerRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBatchesByIssuerRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBatchesByIssuerRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBatchesByIssuerRequest proto.InternalMessageInfo
+
+func (m *QueryBatchesByIssuerRequest) GetIssuer() string {
+	if m != nil {
+		return m.Issuer
+	}
+	return ""
+}
+
+func (m *QueryBatchesByIssuerRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
+type QueryBatchesByIssuerResponse struct {
+	// batches are the fetched credit batches within the project.
+	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBatchesByIssuerResponse) Reset()         { *m = QueryBatchesByIssuerResponse{} }
+func (m *QueryBatchesByIssuerResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBatchesByIssuerResponse) ProtoMessage()    {}
+func (*QueryBatchesByIssuerResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{15}
+}
+func (m *QueryBatchesByIssuerResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBatchesByIssuerResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBatchesByIssuerResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBatchesByIssuerResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBatchesByIssuerResponse.Merge(m, src)
+}
+func (m *QueryBatchesByIssuerResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBatchesByIssuerResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBatchesByIssuerResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBatchesByIssuerResponse proto.InternalMessageInfo
+
+func (m *QueryBatchesByIssuerResponse) GetBatches() []*BatchInfo {
+	if m != nil {
+		return m.Batches
+	}
+	return nil
+}
+
+func (m *QueryBatchesByIssuerResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 // QueryBatchesByClassRequest is the Query/BatchesByClass request type.
 type QueryBatchesByClassRequest struct {
 	// class_id is the unique ID of the class to query.
@@ -739,7 +876,7 @@ func (m *QueryBatchesByClassRequest) Reset()         { *m = QueryBatchesByClassR
 func (m *QueryBatchesByClassRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryBatchesByClassRequest) ProtoMessage()    {}
 func (*QueryBatchesByClassRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{14}
+	return fileDescriptor_c85efa417eafb74b, []int{16}
 }
 func (m *QueryBatchesByClassRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -794,7 +931,7 @@ func (m *QueryBatchesByClassResponse) Reset()         { *m = QueryBatchesByClass
 func (m *QueryBatchesByClassResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryBatchesByClassResponse) ProtoMessage()    {}
 func (*QueryBatchesByClassResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{15}
+	return fileDescriptor_c85efa417eafb74b, []int{17}
 }
 func (m *QueryBatchesByClassResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -847,7 +984,7 @@ func (m *QueryBatchInfoRequest) Reset()         { *m = QueryBatchInfoRequest{} }
 func (m *QueryBatchInfoRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryBatchInfoRequest) ProtoMessage()    {}
 func (*QueryBatchInfoRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{16}
+	return fileDescriptor_c85efa417eafb74b, []int{18}
 }
 func (m *QueryBatchInfoRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -893,7 +1030,7 @@ func (m *QueryBatchInfoResponse) Reset()         { *m = QueryBatchInfoResponse{}
 func (m *QueryBatchInfoResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryBatchInfoResponse) ProtoMessage()    {}
 func (*QueryBatchInfoResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{17}
+	return fileDescriptor_c85efa417eafb74b, []int{19}
 }
 func (m *QueryBatchInfoResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -941,7 +1078,7 @@ func (m *QueryBalanceRequest) Reset()         { *m = QueryBalanceRequest{} }
 func (m *QueryBalanceRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryBalanceRequest) ProtoMessage()    {}
 func (*QueryBalanceRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{18}
+	return fileDescriptor_c85efa417eafb74b, []int{20}
 }
 func (m *QueryBalanceRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -986,17 +1123,15 @@ func (m *QueryBalanceRequest) GetBatchDenom() string {
 
 // QueryBalanceResponse is the Query/Balance response type.
 type QueryBalanceResponse struct {
-	// tradable_amount is the decimal number of tradable credits.
-	TradableAmount string `protobuf:"bytes,1,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
-	// retired_amount is the decimal number of retired credits.
-	RetiredAmount string `protobuf:"bytes,2,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
+	// balance is the balance of the given account.
+	Balance *BatchBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
 func (m *QueryBalanceResponse) Reset()         { *m = QueryBalanceResponse{} }
 func (m *QueryBalanceResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryBalanceResponse) ProtoMessage()    {}
 func (*QueryBalanceResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{19}
+	return fileDescriptor_c85efa417eafb74b, []int{21}
 }
 func (m *QueryBalanceResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1025,18 +1160,122 @@ func (m *QueryBalanceResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceResponse proto.InternalMessageInfo
 
-func (m *QueryBalanceResponse) GetTradableAmount() string {
+func (m *QueryBalanceResponse) GetBalance() *BatchBalance {
 	if m != nil {
-		return m.TradableAmount
+		return m.Balance
+	}
+	return nil
+}
+
+// QueryBalancesRequest is the Query/Balances request type.
+type QueryBalancesRequest struct {
+	// account is the address of the account whose balance is being queried.
+	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBalancesRequest) Reset()         { *m = QueryBalancesRequest{} }
+func (m *QueryBalancesRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBalancesRequest) ProtoMessage()    {}
+func (*QueryBalancesRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{22}
+}
+func (m *QueryBalancesRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBalancesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBalancesRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBalancesRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBalancesRequest.Merge(m, src)
+}
+func (m *QueryBalancesRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBalancesRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBalancesRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBalancesRequest proto.InternalMessageInfo
+
+func (m *QueryBalancesRequest) GetAccount() string {
+	if m != nil {
+		return m.Account
 	}
 	return ""
 }
 
-func (m *QueryBalanceResponse) GetRetiredAmount() string {
+func (m *QueryBalancesRequest) GetPagination() *query.PageRequest {
 	if m != nil {
-		return m.RetiredAmount
+		return m.Pagination
 	}
-	return ""
+	return nil
+}
+
+// QueryBalancesResponse is the Query/Balances response type.
+type QueryBalancesResponse struct {
+	// balances are a list of balances from different credit batches that the
+	// account holds.
+	Balances []*BatchBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBalancesResponse) Reset()         { *m = QueryBalancesResponse{} }
+func (m *QueryBalancesResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBalancesResponse) ProtoMessage()    {}
+func (*QueryBalancesResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{23}
+}
+func (m *QueryBalancesResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBalancesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBalancesResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBalancesResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBalancesResponse.Merge(m, src)
+}
+func (m *QueryBalancesResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBalancesResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBalancesResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBalancesResponse proto.InternalMessageInfo
+
+func (m *QueryBalancesResponse) GetBalances() []*BatchBalance {
+	if m != nil {
+		return m.Balances
+	}
+	return nil
+}
+
+func (m *QueryBalancesResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
@@ -1049,7 +1288,7 @@ func (m *QuerySupplyRequest) Reset()         { *m = QuerySupplyRequest{} }
 func (m *QuerySupplyRequest) String() string { return proto.CompactTextString(m) }
 func (*QuerySupplyRequest) ProtoMessage()    {}
 func (*QuerySupplyRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{20}
+	return fileDescriptor_c85efa417eafb74b, []int{24}
 }
 func (m *QuerySupplyRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1102,7 +1341,7 @@ func (m *QuerySupplyResponse) Reset()         { *m = QuerySupplyResponse{} }
 func (m *QuerySupplyResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySupplyResponse) ProtoMessage()    {}
 func (*QuerySupplyResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{21}
+	return fileDescriptor_c85efa417eafb74b, []int{25}
 }
 func (m *QuerySupplyResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1160,7 +1399,7 @@ func (m *QueryCreditTypesRequest) Reset()         { *m = QueryCreditTypesRequest
 func (m *QueryCreditTypesRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryCreditTypesRequest) ProtoMessage()    {}
 func (*QueryCreditTypesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{22}
+	return fileDescriptor_c85efa417eafb74b, []int{26}
 }
 func (m *QueryCreditTypesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1199,7 +1438,7 @@ func (m *QueryCreditTypesResponse) Reset()         { *m = QueryCreditTypesRespon
 func (m *QueryCreditTypesResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryCreditTypesResponse) ProtoMessage()    {}
 func (*QueryCreditTypesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c85efa417eafb74b, []int{23}
+	return fileDescriptor_c85efa417eafb74b, []int{27}
 }
 func (m *QueryCreditTypesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1235,11 +1474,94 @@ func (m *QueryCreditTypesResponse) GetCreditTypes() []*CreditType {
 	return nil
 }
 
+// QueryParamsRequest is the Query/Params request type.
+type QueryParamsRequest struct {
+}
+
+func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
+func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsRequest) ProtoMessage()    {}
+func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{28}
+}
+func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
+}
+func (m *QueryParamsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
+
+// QueryParamsResponse is the Query/Params response type.
+type QueryParamsResponse struct {
+	// params defines the parameters of the ecocredit module.
+	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
+}
+
+func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
+func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsResponse) ProtoMessage()    {}
+func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{29}
+}
+func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
+}
+func (m *QueryParamsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
+
+func (m *QueryParamsResponse) GetParams() *Params {
+	if m != nil {
+		return m.Params
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*QueryParamsRequest)(nil), "regen.ecocredit.v1.QueryParamsRequest")
-	proto.RegisterType((*QueryParamsResponse)(nil), "regen.ecocredit.v1.QueryParamsResponse")
 	proto.RegisterType((*QueryClassesRequest)(nil), "regen.ecocredit.v1.QueryClassesRequest")
 	proto.RegisterType((*QueryClassesResponse)(nil), "regen.ecocredit.v1.QueryClassesResponse")
+	proto.RegisterType((*QueryClassesByAdminRequest)(nil), "regen.ecocredit.v1.QueryClassesByAdminRequest")
+	proto.RegisterType((*QueryClassesByAdminResponse)(nil), "regen.ecocredit.v1.QueryClassesByAdminResponse")
 	proto.RegisterType((*QueryClassInfoRequest)(nil), "regen.ecocredit.v1.QueryClassInfoRequest")
 	proto.RegisterType((*QueryClassInfoResponse)(nil), "regen.ecocredit.v1.QueryClassInfoResponse")
 	proto.RegisterType((*QueryClassIssuersRequest)(nil), "regen.ecocredit.v1.QueryClassIssuersRequest")
@@ -1250,93 +1572,111 @@ func init() {
 	proto.RegisterType((*QueryProjectInfoResponse)(nil), "regen.ecocredit.v1.QueryProjectInfoResponse")
 	proto.RegisterType((*QueryBatchesRequest)(nil), "regen.ecocredit.v1.QueryBatchesRequest")
 	proto.RegisterType((*QueryBatchesResponse)(nil), "regen.ecocredit.v1.QueryBatchesResponse")
+	proto.RegisterType((*QueryBatchesByIssuerRequest)(nil), "regen.ecocredit.v1.QueryBatchesByIssuerRequest")
+	proto.RegisterType((*QueryBatchesByIssuerResponse)(nil), "regen.ecocredit.v1.QueryBatchesByIssuerResponse")
 	proto.RegisterType((*QueryBatchesByClassRequest)(nil), "regen.ecocredit.v1.QueryBatchesByClassRequest")
 	proto.RegisterType((*QueryBatchesByClassResponse)(nil), "regen.ecocredit.v1.QueryBatchesByClassResponse")
 	proto.RegisterType((*QueryBatchInfoRequest)(nil), "regen.ecocredit.v1.QueryBatchInfoRequest")
 	proto.RegisterType((*QueryBatchInfoResponse)(nil), "regen.ecocredit.v1.QueryBatchInfoResponse")
 	proto.RegisterType((*QueryBalanceRequest)(nil), "regen.ecocredit.v1.QueryBalanceRequest")
 	proto.RegisterType((*QueryBalanceResponse)(nil), "regen.ecocredit.v1.QueryBalanceResponse")
+	proto.RegisterType((*QueryBalancesRequest)(nil), "regen.ecocredit.v1.QueryBalancesRequest")
+	proto.RegisterType((*QueryBalancesResponse)(nil), "regen.ecocredit.v1.QueryBalancesResponse")
 	proto.RegisterType((*QuerySupplyRequest)(nil), "regen.ecocredit.v1.QuerySupplyRequest")
 	proto.RegisterType((*QuerySupplyResponse)(nil), "regen.ecocredit.v1.QuerySupplyResponse")
 	proto.RegisterType((*QueryCreditTypesRequest)(nil), "regen.ecocredit.v1.QueryCreditTypesRequest")
 	proto.RegisterType((*QueryCreditTypesResponse)(nil), "regen.ecocredit.v1.QueryCreditTypesResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "regen.ecocredit.v1.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "regen.ecocredit.v1.QueryParamsResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/query.proto", fileDescriptor_c85efa417eafb74b) }
 
 var fileDescriptor_c85efa417eafb74b = []byte{
-	// 1131 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x5f, 0x6f, 0x1b, 0x45,
-	0x10, 0xef, 0xa6, 0x90, 0xc4, 0xe3, 0x92, 0xa2, 0xa5, 0x40, 0x72, 0x6d, 0xdc, 0xe8, 0x10, 0x89,
-	0xd3, 0x36, 0xb7, 0xb5, 0x23, 0xda, 0xa0, 0x8a, 0x87, 0x26, 0x08, 0x14, 0xf1, 0x80, 0x31, 0x3c,
-	0x21, 0x55, 0xd1, 0xf9, 0xbc, 0x71, 0x0d, 0xf6, 0xed, 0xf5, 0xee, 0x1c, 0x88, 0x82, 0x41, 0xf0,
-	0x09, 0x2a, 0x2a, 0x44, 0x25, 0x84, 0x10, 0xe2, 0x09, 0xf1, 0x45, 0x78, 0xac, 0xc4, 0x0b, 0x8f,
-	0x28, 0xe1, 0x83, 0x20, 0xef, 0xce, 0xde, 0x1f, 0xe7, 0x7a, 0x77, 0xaa, 0xa2, 0x8a, 0xb7, 0x78,
-	0x76, 0xfe, 0xfc, 0x66, 0x67, 0x76, 0x7e, 0x93, 0x83, 0x9a, 0xcf, 0x7b, 0xdc, 0x65, 0xdc, 0x11,
-	0x8e, 0xcf, 0xbb, 0xfd, 0x90, 0x1d, 0x34, 0xd8, 0x83, 0x11, 0xf7, 0x0f, 0x2d, 0xcf, 0x17, 0xa1,
-	0xa0, 0x54, 0x9e, 0x5b, 0xd1, 0xb9, 0x75, 0xd0, 0x30, 0xae, 0xf4, 0x84, 0xe8, 0x0d, 0x38, 0xb3,
-	0xbd, 0x3e, 0xb3, 0x5d, 0x57, 0x84, 0x76, 0xd8, 0x17, 0x6e, 0xa0, 0x2c, 0x8c, 0x2c, 0x8f, 0x41,
-	0x68, 0x87, 0x3c, 0xe7, 0x3c, 0x3c, 0xf4, 0xb8, 0xb6, 0xbf, 0xe6, 0x88, 0x60, 0x28, 0x02, 0xd6,
-	0xb1, 0x03, 0xae, 0xa0, 0xb0, 0x83, 0x46, 0x87, 0x87, 0x76, 0x83, 0x79, 0x76, 0xaf, 0xef, 0xca,
-	0x60, 0x4a, 0xd7, 0xbc, 0x04, 0xf4, 0xa3, 0x89, 0x46, 0xcb, 0xf6, 0xed, 0x61, 0xd0, 0xe6, 0x0f,
-	0x46, 0x3c, 0x08, 0xcd, 0x5d, 0x78, 0x25, 0x25, 0x0d, 0x3c, 0xe1, 0x06, 0x9c, 0x36, 0x61, 0xd6,
-	0x93, 0x92, 0x45, 0xb2, 0x42, 0xea, 0xd5, 0xa6, 0x61, 0x9d, 0xce, 0xcd, 0x42, 0x1b, 0xd4, 0x34,
-	0xef, 0xa1, 0xab, 0x9d, 0x81, 0x1d, 0x04, 0x5c, 0x47, 0xa0, 0xef, 0x01, 0xc4, 0x58, 0xd0, 0xdd,
-	0xaa, 0xa5, 0x80, 0x5b, 0x13, 0xe0, 0x96, 0xba, 0x43, 0x04, 0x6e, 0xb5, 0xec, 0x1e, 0x47, 0xdb,
-	0x76, 0xc2, 0xd2, 0x7c, 0x4c, 0xe0, 0x52, 0xda, 0x3f, 0x62, 0xbd, 0x0d, 0x73, 0x8e, 0x12, 0x2d,
-	0x92, 0x95, 0xf3, 0xf5, 0x6a, 0x73, 0x39, 0x0b, 0xac, 0xb4, 0xda, 0x75, 0xf7, 0x45, 0x5b, 0x6b,
-	0xd3, 0xf7, 0x53, 0xc8, 0x66, 0x24, 0xb2, 0xb5, 0x42, 0x64, 0x2a, 0x6a, 0x0a, 0x5a, 0x13, 0x5e,
-	0x8d, 0x91, 0xc9, 0x18, 0x98, 0xfb, 0x12, 0xcc, 0xcb, 0x60, 0x7b, 0xfd, 0xae, 0xcc, 0xbc, 0x82,
-	0xc1, 0x77, 0xbb, 0xe6, 0x07, 0xf0, 0xda, 0xb4, 0x0d, 0xe6, 0xd3, 0x80, 0x17, 0xfa, 0xee, 0xbe,
-	0xc0, 0xab, 0x2a, 0x48, 0x46, 0xaa, 0x9a, 0x63, 0x58, 0x4c, 0x38, 0x0b, 0x82, 0x11, 0xf7, 0x83,
-	0x62, 0x0c, 0x53, 0xa5, 0x99, 0x79, 0xe6, 0xd2, 0x7c, 0x0d, 0x4b, 0x19, 0xe1, 0x31, 0x9d, 0x45,
-	0x98, 0xeb, 0x2b, 0x91, 0x2c, 0x4f, 0xa5, 0xad, 0x7f, 0x9e, 0xdd, 0xfd, 0x1f, 0x62, 0x67, 0xb4,
-	0x7c, 0xf1, 0x19, 0x77, 0xc2, 0xe7, 0x99, 0xfa, 0xcf, 0x04, 0x6b, 0x1f, 0xc7, 0xc6, 0xbc, 0xef,
-	0xc0, 0xbc, 0x87, 0x32, 0xec, 0xcb, 0xab, 0x99, 0x8f, 0x48, 0xe9, 0xc8, 0x62, 0x46, 0x06, 0x67,
-	0x77, 0x35, 0x5b, 0xf0, 0x7a, 0x12, 0x5e, 0xb2, 0x39, 0x97, 0x01, 0x30, 0x5e, 0x7c, 0x3f, 0x15,
-	0x94, 0xec, 0x76, 0xcd, 0x0f, 0xb1, 0xa7, 0x52, 0x96, 0x98, 0xdb, 0x66, 0xaa, 0x45, 0x0b, 0xf3,
-	0x52, 0x4d, 0xfa, 0x15, 0xce, 0x87, 0x6d, 0x3b, 0x74, 0xee, 0xc7, 0xf3, 0x21, 0x1f, 0xc6, 0x99,
-	0x15, 0x2a, 0x1a, 0x1f, 0x51, 0xf8, 0x78, 0x7c, 0x74, 0x94, 0x28, 0x6f, 0x7c, 0x48, 0x2b, 0x35,
-	0x3e, 0x50, 0xfb, 0xec, 0x6a, 0xf4, 0x0d, 0x18, 0x49, 0x64, 0xdb, 0xea, 0x1d, 0x3d, 0xc7, 0x26,
-	0xfe, 0x85, 0xc0, 0xe5, 0x4c, 0x04, 0xff, 0x9b, 0x2b, 0xda, 0xc2, 0x57, 0x16, 0xc7, 0xc0, 0xdb,
-	0xb9, 0x0a, 0x55, 0x19, 0x6c, 0xaf, 0xcb, 0x5d, 0x31, 0xc4, 0x0b, 0x02, 0x29, 0x7a, 0x77, 0x22,
-	0x89, 0xe6, 0x6c, 0xc2, 0xb2, 0xfc, 0x9c, 0x8d, 0x8d, 0x54, 0x0b, 0xb7, 0xa2, 0x16, 0x1e, 0xd8,
-	0xae, 0xa3, 0xef, 0x72, 0x32, 0xe2, 0x6c, 0xc7, 0x11, 0x23, 0x37, 0xd4, 0x15, 0xc2, 0x9f, 0xd3,
-	0xf0, 0x66, 0x4e, 0xc1, 0xdb, 0x8f, 0xba, 0x12, 0x3d, 0x22, 0xb8, 0x35, 0xb8, 0x18, 0xfa, 0x76,
-	0xd7, 0xee, 0x0c, 0xf8, 0x9e, 0x3d, 0x4c, 0xb8, 0x5e, 0xd0, 0xe2, 0xbb, 0x52, 0x4a, 0xdf, 0x84,
-	0x05, 0x9f, 0x87, 0x7d, 0x9f, 0x77, 0xb5, 0x9e, 0x0a, 0xf2, 0x12, 0x4a, 0x95, 0x9a, 0xf9, 0x16,
-	0xb2, 0xff, 0xc7, 0x23, 0xcf, 0x1b, 0x1c, 0x96, 0xbe, 0xbd, 0x87, 0x04, 0x33, 0xd6, 0x76, 0x19,
-	0xf0, 0x02, 0x79, 0x34, 0x0d, 0x4f, 0x19, 0x24, 0xe1, 0xa1, 0x5e, 0x1a, 0x1e, 0xaa, 0xad, 0xc3,
-	0xcb, 0xce, 0x24, 0xff, 0xc1, 0x20, 0xce, 0xe3, 0xbc, 0x54, 0xbc, 0x18, 0xc9, 0x31, 0x93, 0x25,
-	0x9c, 0x68, 0x3b, 0xb2, 0x4a, 0x9f, 0x4c, 0xb6, 0x21, 0xbd, 0xcc, 0xdc, 0xd3, 0x34, 0x98, 0x3c,
-	0x42, 0xc4, 0x77, 0xe1, 0x82, 0xaa, 0xeb, 0x9e, 0x5c, 0xa0, 0xb0, 0x91, 0x6b, 0x99, 0xec, 0x1a,
-	0x99, 0xb7, 0xab, 0x4e, 0xec, 0xaa, 0xf9, 0xc7, 0x02, 0xbc, 0x28, 0xfd, 0xd3, 0x6f, 0x09, 0xcc,
-	0xe1, 0x1a, 0x42, 0xd7, 0xb2, 0x5c, 0x64, 0x2c, 0x42, 0x46, 0xbd, 0x58, 0x51, 0x61, 0x35, 0xdf,
-	0xf8, 0xee, 0xaf, 0x7f, 0x1f, 0xcd, 0x2c, 0xd3, 0xcb, 0x2c, 0x63, 0xff, 0xd3, 0xdb, 0xcb, 0xf7,
-	0x04, 0x2a, 0xd1, 0x1e, 0x40, 0xd7, 0xf3, 0x9d, 0x27, 0x9e, 0x8c, 0x71, 0xad, 0x8c, 0x2a, 0x22,
-	0xb1, 0x24, 0x92, 0x3a, 0x5d, 0xcd, 0x41, 0xc2, 0x8e, 0xf4, 0x7c, 0x1a, 0xd3, 0xdf, 0x08, 0x5c,
-	0x48, 0x6e, 0x01, 0xf4, 0x46, 0x41, 0xb0, 0xd4, 0xae, 0x62, 0x6c, 0x94, 0xd4, 0x46, 0x74, 0xb7,
-	0x24, 0xba, 0x9b, 0xd4, 0x2a, 0x87, 0x8e, 0xe9, 0xc5, 0xe3, 0x31, 0x81, 0x79, 0xcd, 0xd7, 0xf4,
-	0xe9, 0x65, 0x99, 0x5a, 0x27, 0x8c, 0xf5, 0x12, 0x9a, 0x88, 0xec, 0xb6, 0x44, 0xd6, 0xa0, 0xac,
-	0x24, 0xb2, 0x88, 0xf8, 0x7f, 0x22, 0x50, 0x4d, 0x50, 0x27, 0xbd, 0x5e, 0x14, 0x33, 0x59, 0xd9,
-	0x1b, 0xe5, 0x94, 0x11, 0x63, 0x43, 0x62, 0xbc, 0x4e, 0xd7, 0xb3, 0x30, 0x6a, 0x40, 0xec, 0x28,
-	0x26, 0xe7, 0x31, 0xfd, 0x91, 0xc0, 0x1c, 0x72, 0x44, 0x4e, 0xdf, 0xa7, 0x09, 0x3e, 0xa7, 0xef,
-	0xa7, 0xa8, 0xd8, 0x7c, 0x5b, 0x22, 0xda, 0xa4, 0x8d, 0xd2, 0x88, 0x98, 0x66, 0x9a, 0xdf, 0x09,
-	0x2c, 0xa4, 0xd9, 0x8b, 0x5a, 0x45, 0x71, 0xd3, 0x44, 0x6b, 0xb0, 0xd2, 0xfa, 0xcf, 0xd8, 0x7e,
-	0x1a, 0xeb, 0x0f, 0x04, 0x2a, 0x11, 0xb3, 0xe4, 0xbc, 0xdc, 0x69, 0xb2, 0xcb, 0x79, 0xb9, 0xa7,
-	0xd8, 0x2d, 0xbf, 0xba, 0x88, 0x84, 0x1d, 0x25, 0xa6, 0xff, 0x98, 0xfe, 0x2a, 0xab, 0x2b, 0x79,
-	0x28, 0xb7, 0xba, 0x49, 0xee, 0xcb, 0xad, 0x6e, 0x8a, 0xd2, 0xcc, 0x1d, 0x89, 0xe8, 0x1d, 0x7a,
-	0xa7, 0x34, 0x22, 0xd6, 0x51, 0x2e, 0xd8, 0x11, 0xf2, 0xe9, 0x98, 0x3e, 0x22, 0x30, 0x8b, 0x9c,
-	0xb1, 0xfa, 0xd4, 0xc8, 0x29, 0x92, 0x33, 0xd6, 0x0a, 0xf5, 0x10, 0xe0, 0x96, 0x04, 0xd8, 0xa4,
-	0x37, 0xcb, 0x03, 0x54, 0x9c, 0x36, 0x99, 0xc5, 0xd5, 0x04, 0xe9, 0xe4, 0xbc, 0xda, 0xd3, 0xac,
-	0x95, 0xf3, 0x6a, 0x33, 0x78, 0xcc, 0xac, 0x4b, 0x90, 0x26, 0x5d, 0xc9, 0x6c, 0x3a, 0xf9, 0xd7,
-	0x86, 0x64, 0x38, 0x3a, 0x86, 0x59, 0xf5, 0x1f, 0x7a, 0xce, 0x4d, 0xa5, 0x3e, 0x06, 0xe4, 0xdc,
-	0x54, 0xfa, 0xf3, 0x80, 0x69, 0x4a, 0x10, 0x57, 0xa8, 0x91, 0xf9, 0x50, 0xa5, 0xee, 0x76, 0xeb,
-	0xcf, 0xe3, 0x1a, 0x79, 0x72, 0x5c, 0x23, 0xff, 0x1c, 0xd7, 0xc8, 0xc3, 0x93, 0xda, 0xb9, 0x27,
-	0x27, 0xb5, 0x73, 0x7f, 0x9f, 0xd4, 0xce, 0x7d, 0x7a, 0xab, 0xd7, 0x0f, 0xef, 0x8f, 0x3a, 0x96,
-	0x23, 0x86, 0xca, 0x7e, 0xc3, 0xe5, 0xe1, 0x17, 0xc2, 0xff, 0x1c, 0x7f, 0x0d, 0x78, 0xb7, 0xc7,
-	0x7d, 0xf6, 0x65, 0xc2, 0xad, 0x23, 0x7c, 0xde, 0x99, 0x95, 0x1f, 0x32, 0x36, 0xff, 0x0b, 0x00,
-	0x00, 0xff, 0xff, 0x5a, 0x40, 0x0e, 0x32, 0x88, 0x11, 0x00, 0x00,
+	// 1313 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x5f, 0x6f, 0xdb, 0x54,
+	0x14, 0xef, 0xed, 0x58, 0xff, 0x9c, 0x8c, 0x16, 0x5d, 0xca, 0x68, 0xbd, 0x36, 0xab, 0x8c, 0xe8,
+	0x9f, 0x75, 0xf5, 0x6d, 0x52, 0xb1, 0x15, 0x06, 0x0f, 0x6d, 0x11, 0xa8, 0xe2, 0x81, 0x12, 0x78,
+	0x42, 0x9a, 0x22, 0xc7, 0xb9, 0xcb, 0x02, 0x89, 0x9d, 0xd9, 0x4e, 0x59, 0x08, 0x01, 0xc1, 0x17,
+	0xa0, 0x62, 0x42, 0x4c, 0x42, 0xfc, 0x13, 0xbc, 0xf0, 0x4d, 0x78, 0x9c, 0xc4, 0x0b, 0x8f, 0xa8,
+	0xe5, 0x83, 0xa0, 0xdc, 0x7b, 0xae, 0x63, 0xa7, 0xae, 0x6d, 0x4d, 0xd1, 0xd4, 0xa7, 0xd4, 0xc7,
+	0xe7, 0xdc, 0xf3, 0x3b, 0xbf, 0x7b, 0xee, 0xb9, 0x3f, 0x17, 0xf2, 0x2e, 0xaf, 0x71, 0x9b, 0x71,
+	0xcb, 0xb1, 0x5c, 0x5e, 0xad, 0xfb, 0xec, 0xa8, 0xc0, 0x1e, 0xb4, 0xb9, 0xdb, 0x31, 0x5a, 0xae,
+	0xe3, 0x3b, 0x94, 0x8a, 0xf7, 0x46, 0xf0, 0xde, 0x38, 0x2a, 0x68, 0x8b, 0x35, 0xc7, 0xa9, 0x35,
+	0x38, 0x33, 0x5b, 0x75, 0x66, 0xda, 0xb6, 0xe3, 0x9b, 0x7e, 0xdd, 0xb1, 0x3d, 0x19, 0xa1, 0xc5,
+	0xad, 0xe8, 0xf9, 0xa6, 0xcf, 0x13, 0xde, 0xfb, 0x9d, 0x16, 0x57, 0xf1, 0x37, 0x2c, 0xc7, 0x6b,
+	0x3a, 0x1e, 0xab, 0x98, 0x1e, 0x97, 0x50, 0xd8, 0x51, 0xa1, 0xc2, 0x7d, 0xb3, 0xc0, 0x5a, 0x66,
+	0xad, 0x6e, 0x8b, 0x64, 0xd2, 0x57, 0xbf, 0x0b, 0x2f, 0x7e, 0xd0, 0xf7, 0xd8, 0x6f, 0x98, 0x9e,
+	0xc7, 0xbd, 0x12, 0x7f, 0xd0, 0xe6, 0x9e, 0x4f, 0xdf, 0x01, 0x18, 0xb8, 0xce, 0x93, 0x65, 0xb2,
+	0x96, 0x2b, 0xae, 0x18, 0x72, 0x5d, 0xa3, 0xbf, 0xae, 0x21, 0x4b, 0xc4, 0x75, 0x8d, 0x43, 0xb3,
+	0xc6, 0x31, 0xb6, 0x14, 0x8a, 0xd4, 0x1f, 0x13, 0x98, 0x8b, 0xae, 0xef, 0xb5, 0x1c, 0xdb, 0xe3,
+	0xf4, 0x36, 0x4c, 0x5a, 0xd2, 0x34, 0x4f, 0x96, 0x2f, 0xad, 0xe5, 0x8a, 0x4b, 0xc6, 0x59, 0x9e,
+	0x0c, 0x11, 0x75, 0x60, 0xdf, 0x73, 0x4a, 0xca, 0x9b, 0xbe, 0x1b, 0x41, 0x36, 0x2e, 0x90, 0xad,
+	0xa6, 0x22, 0x93, 0x59, 0x23, 0xd0, 0x3e, 0x07, 0x2d, 0x8c, 0x6c, 0xaf, 0xb3, 0x5b, 0x6d, 0xd6,
+	0x6d, 0x45, 0xc0, 0x1c, 0x5c, 0x36, 0xfb, 0xcf, 0xa2, 0xf6, 0xe9, 0x92, 0x7c, 0x18, 0xa2, 0x65,
+	0xfc, 0xa9, 0x69, 0xf9, 0x85, 0xc0, 0xb5, 0xd8, 0xe4, 0x17, 0x86, 0x9d, 0x22, 0xbc, 0x34, 0x00,
+	0x28, 0x72, 0x20, 0x31, 0x0b, 0x30, 0x25, 0x92, 0x95, 0xeb, 0x55, 0xe4, 0x46, 0x26, 0x3f, 0xa8,
+	0xea, 0xef, 0xc1, 0xd5, 0xe1, 0x18, 0xac, 0xa7, 0x00, 0xcf, 0xd5, 0xed, 0x7b, 0x0e, 0x36, 0x52,
+	0x4a, 0x31, 0xc2, 0x55, 0xef, 0xc1, 0x7c, 0x68, 0x31, 0xcf, 0x6b, 0x73, 0xd7, 0x4b, 0xc7, 0x30,
+	0xb2, 0x1d, 0xfa, 0x12, 0x16, 0x62, 0xd2, 0x63, 0x39, 0xf3, 0x30, 0x59, 0x97, 0x26, 0xb1, 0x3d,
+	0xd3, 0x25, 0xf5, 0x38, 0x3a, 0xfe, 0x3b, 0x78, 0x6e, 0x0e, 0x5d, 0xe7, 0x13, 0x6e, 0xf9, 0xcf,
+	0xb2, 0xf4, 0x9f, 0x08, 0xee, 0xfd, 0x20, 0x37, 0xd6, 0x7d, 0x07, 0xa6, 0x5a, 0x68, 0xc3, 0xbe,
+	0xbc, 0x1e, 0xb7, 0x95, 0x18, 0x27, 0x36, 0x33, 0x08, 0x18, 0x1d, 0x35, 0x3b, 0xf0, 0x72, 0x18,
+	0x5e, 0xb8, 0x39, 0x97, 0x00, 0x30, 0xdf, 0x80, 0x9f, 0x69, 0xb4, 0x1c, 0x54, 0xf5, 0xf7, 0xb1,
+	0xa7, 0x22, 0x91, 0x58, 0xdb, 0x76, 0xa4, 0x45, 0x53, 0xeb, 0x92, 0x4d, 0xfa, 0x05, 0x4e, 0xcf,
+	0x3d, 0xd3, 0xb7, 0xee, 0x0f, 0xa6, 0x67, 0x32, 0x8c, 0x91, 0x6d, 0x54, 0x30, 0x5c, 0x83, 0xf4,
+	0x83, 0xf1, 0x51, 0x91, 0xa6, 0xa4, 0xf1, 0x21, 0xa2, 0xe4, 0xf8, 0x40, 0xef, 0xd1, 0xed, 0x51,
+	0x0f, 0xe7, 0x1b, 0x22, 0xdb, 0xeb, 0xc8, 0x23, 0xa4, 0x08, 0xba, 0x0a, 0x13, 0xf2, 0xc4, 0x20,
+	0x39, 0xf8, 0x34, 0x32, 0x66, 0x7e, 0x25, 0xb0, 0x18, 0x9f, 0xff, 0xc2, 0x30, 0xf4, 0x15, 0x5e,
+	0x3f, 0x01, 0x42, 0x31, 0x69, 0x9e, 0xe1, 0x31, 0x0f, 0xee, 0xa0, 0x61, 0x04, 0x17, 0x86, 0xa2,
+	0x1d, 0x9c, 0x43, 0x83, 0x1c, 0xc8, 0xce, 0x75, 0xc8, 0x89, 0x64, 0xe5, 0x2a, 0xb7, 0x9d, 0x26,
+	0x12, 0x04, 0xc2, 0xf4, 0x76, 0xdf, 0x12, 0xdc, 0x44, 0xa1, 0xc8, 0xec, 0x37, 0xd1, 0x20, 0x48,
+	0x1e, 0xf2, 0xc3, 0xe0, 0x90, 0x37, 0x4c, 0xdb, 0x52, 0x5c, 0xf6, 0x2f, 0x01, 0xd3, 0xb2, 0x9c,
+	0xb6, 0xed, 0xab, 0x1d, 0xc2, 0xc7, 0x61, 0x78, 0xe3, 0x67, 0xe0, 0x95, 0x82, 0x73, 0x8b, 0x2b,
+	0x22, 0xb8, 0x37, 0xfa, 0x94, 0x0b, 0x13, 0xe2, 0x5b, 0x3e, 0x17, 0x9f, 0x0a, 0x55, 0x01, 0xfa,
+	0xc3, 0xe8, 0x9a, 0x5e, 0x3a, 0xcc, 0x51, 0x35, 0xd2, 0xcf, 0x24, 0xd8, 0x27, 0x95, 0x1a, 0xeb,
+	0x79, 0x13, 0xa6, 0x10, 0x9e, 0xea, 0xa1, 0xf4, 0x82, 0x82, 0x88, 0xd1, 0xf5, 0xd1, 0x6b, 0x40,
+	0x05, 0xbe, 0x0f, 0xdb, 0xad, 0x56, 0xa3, 0x93, 0xb9, 0x89, 0x8e, 0x09, 0x6e, 0xbc, 0x8a, 0xc3,
+	0xaa, 0x56, 0x61, 0xd6, 0x77, 0xcd, 0xaa, 0x59, 0x69, 0xf0, 0xb2, 0x27, 0x5e, 0x61, 0xf0, 0x8c,
+	0x32, 0xcb, 0x00, 0xfa, 0x2a, 0xcc, 0xb8, 0xdc, 0xaf, 0xbb, 0xbc, 0xaa, 0xfc, 0x64, 0x2b, 0x3c,
+	0x8f, 0x56, 0x74, 0x5b, 0x87, 0x17, 0xac, 0x7e, 0xc5, 0x8d, 0x06, 0xaf, 0x96, 0xcd, 0xa6, 0xd8,
+	0xaa, 0x4b, 0xc2, 0x71, 0x36, 0xb0, 0xef, 0x0a, 0xb3, 0xbe, 0x80, 0x57, 0xdf, 0xbe, 0xe0, 0xee,
+	0xa3, 0xbe, 0xe6, 0xc7, 0x72, 0xf4, 0xbb, 0x4a, 0x2f, 0x85, 0x5f, 0x21, 0xe2, 0x5d, 0xb8, 0x22,
+	0xd9, 0x2e, 0x8b, 0xcf, 0x04, 0xdc, 0x8b, 0x7c, 0xac, 0x0c, 0x0b, 0xc2, 0x4b, 0x39, 0x6b, 0xb0,
+	0x94, 0x3e, 0x87, 0x1c, 0x1e, 0x9a, 0xae, 0xd9, 0x0c, 0x92, 0x1e, 0x20, 0x43, 0xca, 0x8a, 0xf9,
+	0x8a, 0x30, 0xd1, 0x12, 0x16, 0x6c, 0x63, 0x2d, 0xf6, 0x36, 0x95, 0x31, 0xe8, 0x59, 0x3c, 0xa6,
+	0x70, 0x59, 0xac, 0x45, 0xbf, 0x26, 0x30, 0x89, 0xba, 0x98, 0xae, 0xc6, 0x45, 0xc6, 0x7c, 0xb0,
+	0x68, 0x6b, 0xe9, 0x8e, 0x12, 0x9c, 0xfe, 0xca, 0x37, 0x7f, 0xff, 0xf7, 0x68, 0x7c, 0x89, 0x5e,
+	0x63, 0x31, 0x9f, 0x51, 0x4a, 0x47, 0xff, 0x41, 0x60, 0x26, 0xaa, 0xcd, 0xa9, 0x91, 0x96, 0x21,
+	0xfa, 0x05, 0xa1, 0xb1, 0xcc, 0xfe, 0x08, 0xac, 0x20, 0x80, 0x6d, 0xd0, 0xf5, 0x04, 0x60, 0x4c,
+	0x7c, 0x87, 0xb0, 0xae, 0xf8, 0xe9, 0xd1, 0xef, 0x08, 0x4c, 0x07, 0xc2, 0x99, 0xae, 0x27, 0x67,
+	0x0c, 0x4d, 0x50, 0xed, 0x46, 0x16, 0x57, 0xc4, 0x65, 0x08, 0x5c, 0x6b, 0x74, 0x25, 0x09, 0x57,
+	0x57, 0x5d, 0x57, 0x3d, 0xfa, 0x3b, 0x81, 0x2b, 0x61, 0xd9, 0x4c, 0x6f, 0xa6, 0x24, 0x8b, 0x88,
+	0x7b, 0x6d, 0x33, 0xa3, 0x37, 0xa2, 0xbb, 0x25, 0xd0, 0x6d, 0x51, 0x23, 0x1b, 0x3a, 0xa6, 0x94,
+	0xfa, 0x63, 0x02, 0x53, 0x4a, 0xe0, 0xd2, 0xf3, 0xbb, 0x67, 0x48, 0x7f, 0x6b, 0xeb, 0x19, 0x3c,
+	0x11, 0xd9, 0x6d, 0x81, 0xac, 0x40, 0x59, 0x46, 0x64, 0x81, 0x52, 0xfe, 0x91, 0x40, 0x2e, 0xa4,
+	0x35, 0xe9, 0x46, 0x5a, 0xce, 0xf0, 0xce, 0xde, 0xcc, 0xe6, 0x9c, 0xa5, 0xe7, 0x14, 0x20, 0xd6,
+	0x1d, 0xa8, 0xd9, 0x1e, 0xfd, 0x81, 0xc0, 0x24, 0x4a, 0x86, 0x84, 0xe3, 0x19, 0x55, 0xc4, 0x09,
+	0xc7, 0x73, 0x48, 0xbb, 0xea, 0xaf, 0x0b, 0x44, 0xdb, 0xb4, 0x90, 0x19, 0x11, 0x53, 0xc2, 0xe3,
+	0x4f, 0x02, 0xb3, 0x43, 0x82, 0x8f, 0xb2, 0xb4, 0xc4, 0x43, 0xd2, 0x54, 0xdb, 0xca, 0x1e, 0x80,
+	0x88, 0xb7, 0x05, 0xe2, 0x4d, 0xba, 0x11, 0x87, 0x18, 0xb1, 0x61, 0xdb, 0xb1, 0xae, 0xfc, 0xed,
+	0xf5, 0xb1, 0xce, 0x44, 0x85, 0x57, 0xc2, 0x80, 0x89, 0xd5, 0x88, 0x1a, 0xcb, 0xec, 0xff, 0x94,
+	0x47, 0x45, 0xf1, 0xfa, 0x3d, 0x81, 0xe9, 0x40, 0x14, 0x25, 0x4c, 0x99, 0x61, 0x9d, 0x96, 0x30,
+	0x65, 0xce, 0x08, 0xb3, 0xe4, 0x4e, 0x54, 0x2c, 0x76, 0x43, 0x37, 0x76, 0x8f, 0xfe, 0x26, 0x3a,
+	0x51, 0xa8, 0x85, 0xc4, 0x4e, 0x0c, 0xcb, 0xb6, 0xc4, 0x4e, 0x8c, 0xa8, 0x31, 0x7d, 0x5f, 0x20,
+	0x7a, 0x8b, 0xde, 0xc9, 0x8c, 0x88, 0xa1, 0x76, 0x61, 0x5d, 0xd4, 0x58, 0x3d, 0xfa, 0x2d, 0x81,
+	0x29, 0xa5, 0x8b, 0x68, 0x6a, 0xee, 0x0c, 0x63, 0x66, 0x58, 0x64, 0x25, 0x8f, 0x67, 0x25, 0xa6,
+	0x42, 0x88, 0x1e, 0x11, 0x98, 0x40, 0xe5, 0xb1, 0x72, 0x6e, 0x96, 0x88, 0x54, 0xd2, 0x56, 0x53,
+	0xfd, 0x10, 0xcb, 0x8e, 0xc0, 0x52, 0xa4, 0x5b, 0xd9, 0x29, 0x93, 0xca, 0xa8, 0x7f, 0x93, 0xe5,
+	0x42, 0xd2, 0x25, 0x61, 0xe6, 0x9d, 0xd5, 0x3e, 0x09, 0x33, 0x2f, 0x46, 0x0d, 0xe9, 0x6b, 0x02,
+	0xa4, 0x4e, 0x97, 0x63, 0x8f, 0x81, 0xf8, 0x6b, 0x53, 0xe8, 0x24, 0xda, 0x83, 0x09, 0xa9, 0x52,
+	0x12, 0x98, 0x8a, 0x08, 0xa2, 0x04, 0xa6, 0xa2, 0x12, 0x49, 0xd7, 0x05, 0x88, 0x45, 0xaa, 0xc5,
+	0x8e, 0x39, 0xe1, 0xbb, 0x77, 0xf8, 0xd7, 0x49, 0x9e, 0x3c, 0x39, 0xc9, 0x93, 0x7f, 0x4f, 0xf2,
+	0xe4, 0xf8, 0x34, 0x3f, 0xf6, 0xe4, 0x34, 0x3f, 0xf6, 0xcf, 0x69, 0x7e, 0xec, 0xe3, 0x5b, 0xb5,
+	0xba, 0x7f, 0xbf, 0x5d, 0x31, 0x2c, 0xa7, 0x29, 0xe3, 0x37, 0x6d, 0xee, 0x7f, 0xe6, 0xb8, 0x9f,
+	0xe2, 0x53, 0x83, 0x57, 0x6b, 0xdc, 0x65, 0x0f, 0x43, 0xcb, 0x5a, 0x8e, 0xcb, 0x2b, 0x13, 0xe2,
+	0x9f, 0xbe, 0xdb, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0x6b, 0xca, 0x97, 0x67, 0xb4, 0x16, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1353,6 +1693,9 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Classes queries for all credit classes with pagination.
 	Classes(ctx context.Context, in *QueryClassesRequest, opts ...grpc.CallOption) (*QueryClassesResponse, error)
+	// ClassesByAdmin queries for all credit classes with a specific admin
+	// address.
+	ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
@@ -1363,6 +1706,8 @@ type QueryClient interface {
 	ProjectInfo(ctx context.Context, in *QueryProjectInfoRequest, opts ...grpc.CallOption) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries all batches issued from a given issuer address.
+	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
 	// BatchInfo queries for information on a credit batch.
@@ -1370,6 +1715,8 @@ type QueryClient interface {
 	// Balance queries the balance (both tradable and retired) of a given credit
 	// batch for a given account.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
+	// Balances queries all credit balances the given account holds.
+	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
@@ -1390,6 +1737,15 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 func (c *queryClient) Classes(ctx context.Context, in *QueryClassesRequest, opts ...grpc.CallOption) (*QueryClassesResponse, error) {
 	out := new(QueryClassesResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Classes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error) {
+	out := new(QueryClassesByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassesByAdmin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1441,6 +1797,15 @@ func (c *queryClient) Batches(ctx context.Context, in *QueryBatchesRequest, opts
 	return out, nil
 }
 
+func (c *queryClient) BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error) {
+	out := new(QueryBatchesByIssuerResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByIssuer", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error) {
 	out := new(QueryBatchesByClassResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByClass", in, out, opts...)
@@ -1462,6 +1827,15 @@ func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, 
 func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error) {
 	out := new(QueryBalanceResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Balance", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error) {
+	out := new(QueryBalancesResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Balances", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1499,6 +1873,9 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 type QueryServer interface {
 	// Classes queries for all credit classes with pagination.
 	Classes(context.Context, *QueryClassesRequest) (*QueryClassesResponse, error)
+	// ClassesByAdmin queries for all credit classes with a specific admin
+	// address.
+	ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
@@ -1509,6 +1886,8 @@ type QueryServer interface {
 	ProjectInfo(context.Context, *QueryProjectInfoRequest) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries all batches issued from a given issuer address.
+	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
 	// BatchInfo queries for information on a credit batch.
@@ -1516,6 +1895,8 @@ type QueryServer interface {
 	// Balance queries the balance (both tradable and retired) of a given credit
 	// batch for a given account.
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
+	// Balances queries all credit balances the given account holds.
+	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
 	// CreditTypes returns the list of allowed types that credit classes can have.
@@ -1532,6 +1913,9 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Classes(ctx context.Context, req *QueryClassesRequest) (*QueryClassesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Classes not implemented")
 }
+func (*UnimplementedQueryServer) ClassesByAdmin(ctx context.Context, req *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAdmin not implemented")
+}
 func (*UnimplementedQueryServer) ClassInfo(ctx context.Context, req *QueryClassInfoRequest) (*QueryClassInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassInfo not implemented")
 }
@@ -1547,6 +1931,9 @@ func (*UnimplementedQueryServer) ProjectInfo(ctx context.Context, req *QueryProj
 func (*UnimplementedQueryServer) Batches(ctx context.Context, req *QueryBatchesRequest) (*QueryBatchesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batches not implemented")
 }
+func (*UnimplementedQueryServer) BatchesByIssuer(ctx context.Context, req *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchesByIssuer not implemented")
+}
 func (*UnimplementedQueryServer) BatchesByClass(ctx context.Context, req *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchesByClass not implemented")
 }
@@ -1555,6 +1942,9 @@ func (*UnimplementedQueryServer) BatchInfo(ctx context.Context, req *QueryBatchI
 }
 func (*UnimplementedQueryServer) Balance(ctx context.Context, req *QueryBalanceRequest) (*QueryBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
+}
+func (*UnimplementedQueryServer) Balances(ctx context.Context, req *QueryBalancesRequest) (*QueryBalancesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Balances not implemented")
 }
 func (*UnimplementedQueryServer) Supply(ctx context.Context, req *QuerySupplyRequest) (*QuerySupplyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Supply not implemented")
@@ -1584,6 +1974,24 @@ func _Query_Classes_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Classes(ctx, req.(*QueryClassesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassesByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassesByAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassesByAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ClassesByAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassesByAdmin(ctx, req.(*QueryClassesByAdminRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1678,6 +2086,24 @@ func _Query_Batches_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BatchesByIssuer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchesByIssuerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BatchesByIssuer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BatchesByIssuer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BatchesByIssuer(ctx, req.(*QueryBatchesByIssuerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_BatchesByClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryBatchesByClassRequest)
 	if err := dec(in); err != nil {
@@ -1728,6 +2154,24 @@ func _Query_Balance_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Balance(ctx, req.(*QueryBalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Balances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBalancesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Balances(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/Balances",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Balances(ctx, req.(*QueryBalancesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1795,6 +2239,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Classes_Handler,
 		},
 		{
+			MethodName: "ClassesByAdmin",
+			Handler:    _Query_ClassesByAdmin_Handler,
+		},
+		{
 			MethodName: "ClassInfo",
 			Handler:    _Query_ClassInfo_Handler,
 		},
@@ -1815,6 +2263,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Batches_Handler,
 		},
 		{
+			MethodName: "BatchesByIssuer",
+			Handler:    _Query_BatchesByIssuer_Handler,
+		},
+		{
 			MethodName: "BatchesByClass",
 			Handler:    _Query_BatchesByClass_Handler,
 		},
@@ -1825,6 +2277,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Balance",
 			Handler:    _Query_Balance_Handler,
+		},
+		{
+			MethodName: "Balances",
+			Handler:    _Query_Balances_Handler,
 		},
 		{
 			MethodName: "Supply",
@@ -1841,64 +2297,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "regen/ecocredit/v1/query.proto",
-}
-
-func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Params != nil {
-		{
-			size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintQuery(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
 }
 
 func (m *QueryClassesRequest) Marshal() (dAtA []byte, err error) {
@@ -1952,6 +2350,97 @@ func (m *QueryClassesResponse) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *QueryClassesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Classes) > 0 {
+		for iNdEx := len(m.Classes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Classes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryClassesByAdminRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryClassesByAdminRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryClassesByAdminRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Admin)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryClassesByAdminResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryClassesByAdminResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryClassesByAdminResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2383,6 +2872,97 @@ func (m *QueryBatchesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryBatchesByIssuerRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBatchesByIssuerRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBatchesByIssuerRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Issuer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBatchesByIssuerResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBatchesByIssuerResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBatchesByIssuerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Batches) > 0 {
+		for iNdEx := len(m.Batches) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Batches[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryBatchesByClassRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2596,19 +3176,108 @@ func (m *QueryBalanceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.RetiredAmount) > 0 {
-		i -= len(m.RetiredAmount)
-		copy(dAtA[i:], m.RetiredAmount)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.RetiredAmount)))
+	if m.Balance != nil {
+		{
+			size, err := m.Balance.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBalancesRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBalancesRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBalancesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.TradableAmount) > 0 {
-		i -= len(m.TradableAmount)
-		copy(dAtA[i:], m.TradableAmount)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.TradableAmount)))
+	if len(m.Account) > 0 {
+		i -= len(m.Account)
+		copy(dAtA[i:], m.Account)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Account)))
 		i--
 		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBalancesResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBalancesResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBalancesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Balances) > 0 {
+		for iNdEx := len(m.Balances) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Balances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
 	}
 	return len(dAtA) - i, nil
 }
@@ -2747,6 +3416,64 @@ func (m *QueryCreditTypesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Params != nil {
+		{
+			size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -2758,28 +3485,6 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryParamsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *QueryParamsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Params != nil {
-		l = m.Params.Size()
-		n += 1 + l + sovQuery(uint64(l))
-	}
-	return n
-}
-
 func (m *QueryClassesRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2794,6 +3499,42 @@ func (m *QueryClassesRequest) Size() (n int) {
 }
 
 func (m *QueryClassesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Classes) > 0 {
+		for _, e := range m.Classes {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryClassesByAdminRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryClassesByAdminResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2972,6 +3713,42 @@ func (m *QueryBatchesResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryBatchesByIssuerRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBatchesByIssuerResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Batches) > 0 {
+		for _, e := range m.Batches {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryBatchesByClassRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3057,12 +3834,44 @@ func (m *QueryBalanceResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.TradableAmount)
+	if m.Balance != nil {
+		l = m.Balance.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBalancesRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Account)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = len(m.RetiredAmount)
-	if l > 0 {
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBalancesResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Balances) > 0 {
+		for _, e := range m.Balances {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3126,147 +3935,33 @@ func (m *QueryCreditTypesResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryParamsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Params != nil {
+		l = m.Params.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func sovQuery(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Params == nil {
-				m.Params = &Params{}
-			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *QueryClassesRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -3381,6 +4076,244 @@ func (m *QueryClassesResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryClassesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Classes", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Classes = append(m.Classes, &ClassInfo{})
+			if err := m.Classes[len(m.Classes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryClassesByAdminRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryClassesByAdminRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryClassesByAdminRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryClassesByAdminResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryClassesByAdminResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryClassesByAdminResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4522,6 +5455,244 @@ func (m *QueryBatchesResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryBatchesByIssuerRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBatchesByIssuerRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBatchesByIssuerRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBatchesByIssuerResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBatchesByIssuerResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBatchesByIssuerResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Batches", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Batches = append(m.Batches, &BatchInfo{})
+			if err := m.Batches[len(m.Batches)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryBatchesByClassRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5073,7 +6244,93 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Balance", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Balance == nil {
+				m.Balance = &BatchBalance{}
+			}
+			if err := m.Balance.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBalancesRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBalancesRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBalancesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -5101,13 +6358,13 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TradableAmount = string(dAtA[iNdEx:postIndex])
+			m.Account = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -5117,23 +6374,147 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthQuery
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLengthQuery
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBalancesResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBalancesResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBalancesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Balances", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Balances = append(m.Balances, &BatchBalance{})
+			if err := m.Balances[len(m.Balances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -5494,6 +6875,142 @@ func (m *QueryCreditTypesResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.CreditTypes = append(m.CreditTypes, &CreditType{})
 			if err := m.CreditTypes[len(m.CreditTypes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Params == nil {
+				m.Params = &Params{}
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
