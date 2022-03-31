@@ -65,7 +65,6 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(cost)
 	coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
 	if bal.IsLT(coinCost) {
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
