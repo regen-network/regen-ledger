@@ -26,7 +26,7 @@ service Msg {
   // MintBatch issues new token in a given batch.
   // The issuer must be the account who created (or delegated using x/authz),
   // the batch.
-  // The request will fail if the batch is sealed.
+  // The request will fail if the batch is locked.
   // NOTE: this method is only for bridge purpose. It must not be used
   // for issuing native credits on Regen. More specifically, we
   // enable minting more credits in an existing batch, when the batch
@@ -143,9 +143,9 @@ message MsgCreateBatch {
   // quantified and verified.
   google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
 
-  // If seal is set to true, we will seal the batch and disable the
-  // future minting. Setting seal=false doesn't make any effect.
-  bool seal = 7;
+  // If unlocked is set to true, we will seal the batch and disable the
+  // future minting.
+  bool unlocked = 7;
 }
 
 // BatchIssuance represents the issuance of some credits in a batch to a
@@ -195,9 +195,10 @@ message MsgMintBatch {
   // reference note for accounting, will be passed to an event
   string note = 4;
 
-  // seal tells if it's possible to mint new credits in the future.
-  // Once the sealed is set to true, it can't be toggled any more.
-  bool seal = 5;
+  // If unlocked=true keeps the batch unlocked for future minting.
+  // Othrwise it will lock the batch after the mint.
+  // Will throw an error if the batch is already locked.
+  bool unlocked = 5;
 
   message OriginTx {
     // type of the transaction originating the mint process. Eg: Polygon,

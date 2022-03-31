@@ -141,9 +141,9 @@ message BatchInfo {
   // authorized to issue more credits if sealed=false.
   string issuer = 8;
 
-  // sealed tells if it's possible to mint new credits in the future.
-  // Once the sealed is set to true, it can't be toggled any more.
-  bool sealed = 9;
+  // locked tells if it's possible to mint new credits in the future.
+  // Once the locked is set to true, it can't be toggled any more.
+  bool locked = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
