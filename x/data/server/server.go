@@ -12,6 +12,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/server/lookup"
 )
 
+var _ data.MsgServer = serverImpl{}
+var _ data.QueryServer = serverImpl{}
+
 var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
 		{Id: 1, ProtoFileName: api.File_regen_data_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},

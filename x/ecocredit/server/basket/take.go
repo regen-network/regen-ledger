@@ -4,14 +4,15 @@ import (
 	"context"
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettypes.MsgTakeResponse, error) {
@@ -47,13 +48,13 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, err
 	}
 
-	amountBasketTokensDec, err := math.NewDecFromString(msg.Amount)
+	amountBasketCreditsDec, err := math.NewDecFromString(msg.Amount)
 	if err != nil {
 		return nil, err
 	}
 
 	multiplier := math.NewDecFinite(1, int32(basket.Exponent))
-	amountCreditsNeeded, err := amountBasketTokensDec.QuoExact(multiplier)
+	amountCreditsNeeded, err := amountBasketCreditsDec.QuoExact(multiplier)
 	if err != nil {
 		return nil, err
 	}
@@ -165,13 +166,14 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementLocation string) error {
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	store := sdkCtx.KVStore(k.storeKey)
+	batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, batchDenom)
+	if err != nil {
+		return err
+	}
 	if !retire {
-		err := ecocredit.AddAndSetDecimal(store, ecocredit.TradableBalanceKey(owner, ecocredit.BatchDenomT(batchDenom)), amount)
-		if err != nil {
+		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
 			return err
 		}
-
 		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
@@ -179,21 +181,12 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			BasketDenom:    basketDenom,
 		})
 	} else {
-		err := ecocredit.AddAndSetDecimal(store, ecocredit.RetiredBalanceKey(owner, ecocredit.BatchDenomT(batchDenom)), amount)
-		if err != nil {
+		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
 			return err
 		}
-
-		err = ecocredit.AddAndSetDecimal(store, ecocredit.RetiredSupplyKey(ecocredit.BatchDenomT(batchDenom)), amount)
-		if err != nil {
+		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Id, amount); err != nil {
 			return err
 		}
-
-		err = ecocredit.SubAndSetDecimal(store, ecocredit.TradableSupplyKey(ecocredit.BatchDenomT(batchDenom)), amount)
-		if err != nil {
-			return err
-		}
-
 		err = sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:     owner.String(),
 			BatchDenom:    batchDenom,
@@ -203,7 +196,6 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		if err != nil {
 			return err
 		}
-
 		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
 			Retirer:    owner.String(),
 			BatchDenom: batchDenom,

@@ -749,6 +749,19 @@ func (this BatchInfoStartDateIndexKey) WithStartDate(start_date *timestamppb.Tim
 	return this
 }
 
+type BatchInfoIssuerIndexKey struct {
+	vs []interface{}
+}
+
+func (x BatchInfoIssuerIndexKey) id() uint32            { return 4 }
+func (x BatchInfoIssuerIndexKey) values() []interface{} { return x.vs }
+func (x BatchInfoIssuerIndexKey) batchInfoIndexKey()    {}
+
+func (this BatchInfoIssuerIndexKey) WithIssuer(issuer []byte) BatchInfoIssuerIndexKey {
+	this.vs = []interface{}{issuer}
+	return this
+}
+
 type batchInfoTable struct {
 	table ormtable.AutoIncrementTable
 }

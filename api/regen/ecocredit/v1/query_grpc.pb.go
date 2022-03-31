@@ -24,6 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type QueryClient interface {
 	// Classes queries for all credit classes with pagination.
 	Classes(ctx context.Context, in *QueryClassesRequest, opts ...grpc.CallOption) (*QueryClassesResponse, error)
+	// ClassesByAdmin queries for all credit classes with a specific admin
+	// address.
+	ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
@@ -34,6 +37,8 @@ type QueryClient interface {
 	ProjectInfo(ctx context.Context, in *QueryProjectInfoRequest, opts ...grpc.CallOption) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries all batches issued from a given issuer address.
+	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
 	// BatchInfo queries for information on a credit batch.
@@ -63,6 +68,15 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 func (c *queryClient) Classes(ctx context.Context, in *QueryClassesRequest, opts ...grpc.CallOption) (*QueryClassesResponse, error) {
 	out := new(QueryClassesResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Classes", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error) {
+	out := new(QueryClassesByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassesByAdmin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,6 +122,15 @@ func (c *queryClient) ProjectInfo(ctx context.Context, in *QueryProjectInfoReque
 func (c *queryClient) Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error) {
 	out := new(QueryBatchesResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Batches", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error) {
+	out := new(QueryBatchesByIssuerResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByIssuer", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -183,6 +206,9 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 type QueryServer interface {
 	// Classes queries for all credit classes with pagination.
 	Classes(context.Context, *QueryClassesRequest) (*QueryClassesResponse, error)
+	// ClassesByAdmin queries for all credit classes with a specific admin
+	// address.
+	ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error)
 	// ClassInfo queries for information on a credit class.
 	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
 	// ClassIssuers queries for the addresses of the issuers for a credit class.
@@ -193,6 +219,8 @@ type QueryServer interface {
 	ProjectInfo(context.Context, *QueryProjectInfoRequest) (*QueryProjectInfoResponse, error)
 	// Batches queries for all batches in the given project with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
+	// BatchesByIssuer queries all batches issued from a given issuer address.
+	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
 	// BatchInfo queries for information on a credit batch.
@@ -219,6 +247,9 @@ type UnimplementedQueryServer struct {
 func (UnimplementedQueryServer) Classes(context.Context, *QueryClassesRequest) (*QueryClassesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Classes not implemented")
 }
+func (UnimplementedQueryServer) ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAdmin not implemented")
+}
 func (UnimplementedQueryServer) ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassInfo not implemented")
 }
@@ -233,6 +264,9 @@ func (UnimplementedQueryServer) ProjectInfo(context.Context, *QueryProjectInfoRe
 }
 func (UnimplementedQueryServer) Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batches not implemented")
+}
+func (UnimplementedQueryServer) BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchesByIssuer not implemented")
 }
 func (UnimplementedQueryServer) BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchesByClass not implemented")
@@ -282,6 +316,24 @@ func _Query_Classes_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Classes(ctx, req.(*QueryClassesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassesByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassesByAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassesByAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ClassesByAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassesByAdmin(ctx, req.(*QueryClassesByAdminRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -372,6 +424,24 @@ func _Query_Batches_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Batches(ctx, req.(*QueryBatchesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BatchesByIssuer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchesByIssuerRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BatchesByIssuer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BatchesByIssuer",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BatchesByIssuer(ctx, req.(*QueryBatchesByIssuerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -514,6 +584,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_Classes_Handler,
 		},
 		{
+			MethodName: "ClassesByAdmin",
+			Handler:    _Query_ClassesByAdmin_Handler,
+		},
+		{
 			MethodName: "ClassInfo",
 			Handler:    _Query_ClassInfo_Handler,
 		},
@@ -532,6 +606,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Batches",
 			Handler:    _Query_Batches_Handler,
+		},
+		{
+			MethodName: "BatchesByIssuer",
+			Handler:    _Query_BatchesByIssuer_Handler,
 		},
 		{
 			MethodName: "BatchesByClass",

@@ -3,29 +3,26 @@ package core
 import (
 	"context"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // CreditTypes queries the list of allowed types that credit classes can have.
 func (k Keeper) CreditTypes(ctx context.Context, _ *core.QueryCreditTypesRequest) (*core.QueryCreditTypesResponse, error) {
-	creditTypes := make([]*core.CreditType, 0)
-	it, err := k.stateStore.CreditTypeTable().List(ctx, api.CreditTypePrimaryKey{})
-	if err != nil {
-		return nil, err
-	}
-	defer it.Close()
-	for it.Next() {
-		ct, err := it.Value()
-		if err != nil {
-			return nil, err
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	var params ecocredit.Params
+	k.paramsKeeper.GetParamSet(sdkCtx, &params)
+
+	cTypes := make([]*core.CreditType, len(params.CreditTypes))
+	for i, ct := range params.CreditTypes {
+		cTypes[i] = &core.CreditType{
+			Abbreviation: ct.Abbreviation,
+			Name:         ct.Name,
+			Unit:         ct.Unit,
+			Precision:    ct.Precision,
 		}
-		var cType core.CreditType
-		if err = ormutil.PulsarToGogoSlow(ct, &cType); err != nil {
-			return nil, err
-		}
-		creditTypes = append(creditTypes, &cType)
 	}
-	return &core.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
+	return &core.QueryCreditTypesResponse{CreditTypes: cTypes}, nil
 }
