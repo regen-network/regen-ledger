@@ -235,8 +235,4 @@ message BatchSupply {
   // cancelled, effectively undoing the issuance. The sum of total_amount and
   // amount_cancelled will always equal the original credit issuance amount.
   string cancelled_amount = 4;
-
-  // escrowed_amount is the amount of credits in the batch that have been
-  // locked up in escrow for use in the marketplace.
-  string escrowed_amount = 5;
 }

@@ -166,11 +166,10 @@ func TestSell_Invalid(t *testing.T) {
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
 func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
-		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
-		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
+		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount)
 	assert.NilError(t, err)
-	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed, supBeforeTradable, supAfterTradable,
-		supBeforeEscrowed, supAfterEscrowed := decs[0], decs[1], decs[2], decs[3], decs[4], decs[5], decs[6], decs[7]
+
+	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed := decs[0], decs[1], decs[2], decs[3]
 
 	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
 	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
@@ -181,16 +180,6 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 	calculatedEscrow, err := balBeforeEscrowed.Add(orderAmt)
 	assert.NilError(t, err)
 	assert.Check(t, calculatedEscrow.Equal(balAfterEscrowed), "calculated: %s, actual: %s", calculatedEscrow.String(), balAfterEscrowed.String())
-
-	// check the resulting tradable supply -> tradableBefore - orderAmt = tradableAfter
-	calculatedTSupply, err := supBeforeTradable.Sub(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedTSupply.Equal(supAfterTradable))
-
-	// check the resulting escrowed supply -> escrowedBefore + orderAmt = escrowedAfter
-	calculatedESupply, err := supBeforeEscrowed.Add(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedESupply.Equal(supAfterEscrowed))
 }
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
@@ -230,6 +219,5 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		BatchId:        1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
-		EscrowedAmount: "0",
 	}))
 }
