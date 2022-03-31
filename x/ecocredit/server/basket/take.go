@@ -5,13 +5,12 @@ import (
 	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -172,10 +171,9 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		return err
 	}
 	if !retire {
-		if err = k.addAndSaveBalance(ctx, owner, batch.Id, amount); err != nil {
+		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
 			return err
 		}
-
 		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
@@ -183,10 +181,10 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			BasketDenom:    basketDenom,
 		})
 	} else {
-		if err := k.retireAndSaveBalance(ctx, owner, batch.Id, amount); err != nil {
+		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
 			return err
 		}
-		if err := k.retireSupply(ctx, batch.Id, amount); err != nil {
+		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Id, amount); err != nil {
 			return err
 		}
 		err = sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
@@ -205,89 +203,4 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			Location:   retirementLocation,
 		})
 	}
-}
-
-func (k Keeper) addAndSaveBalance(ctx context.Context, user sdk.AccAddress, batchId uint64, amount math.Dec) error {
-	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, user, batchId)
-	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			userBal = &ecoApi.BatchBalance{
-				Address:  user,
-				BatchId:  batchId,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
-	}
-	tradable, err := math.NewDecFromString(userBal.Tradable)
-	if err != nil {
-		return err
-	}
-	newTradable, err := math.SafeAddBalance(tradable, amount)
-	if err != nil {
-		return err
-	}
-	userBal.Tradable = newTradable.String()
-	return k.coreStore.BatchBalanceTable().Save(ctx, userBal)
-}
-
-func (k Keeper) retireAndSaveBalance(ctx context.Context, user sdk.AccAddress, batchId uint64, amount math.Dec) error {
-	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, user, batchId)
-	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			userBal = &ecoApi.BatchBalance{
-				Address:  user,
-				BatchId:  batchId,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
-	}
-	retired, err := math.NewDecFromString(userBal.Retired)
-	if err != nil {
-		return err
-	}
-	newRetired, err := math.SafeAddBalance(retired, amount)
-	if err != nil {
-		return err
-	}
-	userBal.Retired = newRetired.String()
-	return k.coreStore.BatchBalanceTable().Save(ctx, userBal)
-}
-
-func (k Keeper) retireSupply(ctx context.Context, batchId uint64, amount math.Dec) error {
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, batchId)
-	if err != nil {
-		return err
-	}
-	tradable, err := math.NewDecFromString(supply.TradableAmount)
-	if err != nil {
-		return err
-	}
-
-	retired, err := math.NewDecFromString(supply.RetiredAmount)
-	if err != nil {
-		return err
-	}
-
-	tradable, err = math.SafeSubBalance(tradable, amount)
-	if err != nil {
-		return err
-	}
-
-	retired, err = math.SafeAddBalance(retired, amount)
-	if err != nil {
-		return err
-	}
-
-	supply.TradableAmount = tradable.String()
-	supply.RetiredAmount = retired.String()
-
-	return k.coreStore.BatchSupplyTable().Update(ctx, supply)
 }
