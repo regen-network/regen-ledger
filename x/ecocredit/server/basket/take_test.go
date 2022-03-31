@@ -277,7 +277,6 @@ func (s takeSuite) getSupply(batchDenom string) *ecoApi.BatchSupply {
 			TradableAmount:  "0",
 			RetiredAmount:   "0",
 			CancelledAmount: "0",
-			EscrowedAmount:  "0",
 		}
 	} else {
 		assert.NilError(s.t, err)
@@ -291,7 +290,6 @@ func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
 		TradableAmount:  amount,
 		RetiredAmount:   "0",
 		CancelledAmount: "0",
-		EscrowedAmount:  "0",
 	}))
 }
 
