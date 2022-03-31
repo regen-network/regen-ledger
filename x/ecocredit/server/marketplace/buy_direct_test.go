@@ -57,13 +57,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, true, "")
 	assert.NilError(t, err)
 
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
@@ -121,13 +115,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	assert.NilError(t, err)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-NY")
 	assert.NilError(t, err)
 
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
@@ -184,13 +172,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	assert.NilError(t, err)
 
 	purchaseAmt := math.NewDecFromInt64(10)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-OR")
 	assert.NilError(t, err)
 
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
@@ -240,67 +222,31 @@ func TestBuy_Invalid(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 
 	// sell order not found
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 532}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), 532, "10", &ask, false, "US-CA")
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// exceeds decimal precision
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10.23958230958", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10.3235235235", &ask, false, "US-OR")
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
 
 	// mismatch auto retire settings
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &ask, true, "")
 	assert.ErrorContains(t, err, "cannot disable auto retire")
 
 	// cannot buy more credits than available
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "11", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "11", &ask, false, "US-WA")
 	assert.ErrorContains(t, err, "cannot purchase 11 credits from a sell order that has 10 credits")
 
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &wrongDenom, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
-	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &wrongDenom, false, "US-CO")
+	assert.ErrorContains(t, err, "price per credit denom does not match ask price denom")
 
 	// bidding more than in the bank
 	inBank := sdk.NewInt64Coin("ufoo", 10)
 	biddingWith := sdk.NewInt64Coin("ufoo", 100)
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &biddingWith, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &biddingWith, false, "US-NV")
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
 }
 
@@ -323,6 +269,18 @@ func assertSupplyEscrowedAmounts(t *testing.T, supplyBefore, supplyAfter *ecocre
 	assert.Check(t, afterSupply.Equal(expectedAmt))
 	assert.Check(t, afterSupplyEscrowed.Equal(expectedEscrowed))
 
+}
+
+func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, pricePerCredit *sdk.Coin, disableAutoRetire bool,
+	retirementLocation string) (*marketplace.MsgBuyDirectResponse, error) {
+	return s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer:              buyer,
+		SellOrderId:        sellOrderId,
+		Quantity:           qty,
+		PricePerCredit:     pricePerCredit,
+		DisableAutoRetire:  disableAutoRetire,
+		RetirementLocation: retirementLocation,
+	})
 }
 
 // getSupplyDecimals extracts the decimal form for the supplies

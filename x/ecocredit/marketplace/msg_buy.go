@@ -49,7 +49,7 @@ func (m *MsgBuy) ValidateBasic() error {
 
 		if !order.DisableAutoRetire {
 			if err := core.ValidateLocation(order.RetirementLocation); err != nil {
-				// ValidateLocation returns an sdkerrors.ErrInvalidRequest, so we can just wrap it here
+				// ValidateLocation returns a sdkerrors.ErrInvalidRequest, so we can just wrap it here
 				return sdkerrors.Wrap(err, "a valid retirement location is required when DisableAutoRetire is false")
 			}
 		}

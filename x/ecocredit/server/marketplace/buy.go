@@ -10,7 +10,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,83 +22,13 @@ import (
 // Currently, only the former is supported. Calls to this function with anything other than
 // MsgBuy_Order_Selection_SellOrderId will fail.
 func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.MsgBuyResponse, error) {
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, order := range req.Orders {
-		switch selection := order.Selection.Sum.(type) {
-		case *marketplace.MsgBuy_Order_Selection_SellOrderId:
-			sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, selection.SellOrderId)
-			if err != nil {
-				return nil, fmt.Errorf("sell order %d: %w", selection.SellOrderId, err)
-			}
-			if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
-					"from a sell order that does not disable auto retire")
-			}
-			batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
-			if err != nil {
-
-				return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
-			}
-			ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
-			if err != nil {
-				return nil, err
-			}
-			creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
-			if err != nil {
-				return nil, err
-			}
-
-			// check that bid price and ask price denoms match
-			market, err := k.stateStore.MarketTable().Get(ctx, sellOrder.MarketId)
-			if err != nil {
-				return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
-			}
-			if order.BidPrice.Denom != market.BankDenom {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
-					" %s, expected %s", order.BidPrice.Denom, market.BankDenom)
-			}
-			// check that bid price >= sell price
-			sellOrderPricePerCredit, ok := sdk.NewIntFromString(sellOrder.AskPrice)
-			if !ok {
-				return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
-			}
-			sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderPricePerCredit}
-			if sellOrderPricePerCredit.GT(order.BidPrice.Amount) {
-				return nil, ErrBidTooLow.Wrapf("sell order ask: %v, bid: %v", sellOrderPriceCoin, order.BidPrice)
-			}
-
-			// check address has the total cost (price per * order quantity)
-			bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-			cost, err := getTotalCost(sellOrderPricePerCredit, order.Quantity)
-			if err != nil {
-				return nil, err
-			}
-			coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
-			if bal.IsLT(coinCost) {
-				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
-					"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal)
-			}
-
-			// fill the order, updating balances and the sell order in state
-			if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, false, !order.DisableAutoRetire, order.RetirementLocation, batch.BatchDenom); err != nil {
-				return nil, fmt.Errorf("error updating balances: %w", err)
-			}
-		case *marketplace.MsgBuy_Order_Selection_Filter:
-			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
-			// verify expiration is in the future
-			//if order.Expiration.Before(sdkCtx.BlockTime()) {
-			//	return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
-			//}
-		default:
-			return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
-		}
-	}
-	return &marketplace.MsgBuyResponse{}, nil
+	return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
+	//sdkCtx := sdk.UnwrapSDKContext(ctx)
+	//buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return &marketplace.MsgBuyResponse{}, nil
 }
 
 // fillOrder moves credits according to the order. it will:
@@ -108,7 +37,8 @@ func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec, cost sdk.Coin, canPartialFill, autoRetire bool, retireLocation, batchDenom string) error {
+func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec,
+	cost sdk.Coin, canPartialFill, autoRetire bool, retireLocation, batchDenom string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
 	if err != nil {
