@@ -12,8 +12,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-var _ data.QueryServer = serverImpl{}
-
 func (s serverImpl) getID(ctx context.Context, iri string) ([]byte, error) {
 	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
 	id := s.iriIDTable.GetID(store, []byte(iri))
