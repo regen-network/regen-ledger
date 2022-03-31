@@ -23,7 +23,7 @@ service Msg {
   // be distributed to recipients in either tradable or retired form.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
-  // MintBatch issues new token in a given batch respecting the maximum supply.
+  // MintBatch issues new token in a given batch.
   // Currently the issuer must be the Credit Class issuer, or an address
   // autorized by him. The request will fail if the batch enable_future_minting
   // was previously set to false.

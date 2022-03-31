@@ -141,12 +141,6 @@ message BatchInfo {
   // the future. Once the enable_future_minting is set to false, it can't be
   // toggled any more.
   bool enable_future_minting = 8;
-
-  // maximum amount of credits that can be minted. Optional, when empty then
-  // there is no maximal supply. When the supply (tradeable_amount +
-  // retired_amount + escrowed_amount) equals to max_credits the no more credits
-  // can be minted. Zero is not a correct value.
-  string max_credits = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
