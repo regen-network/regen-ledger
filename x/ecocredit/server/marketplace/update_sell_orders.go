@@ -3,6 +3,7 @@ package marketplace
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -11,7 +12,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -44,7 +44,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 // applySellOrderUpdates applies the updates to the order.
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var creditType *ecocredit.CreditType
+	var creditType *core.CreditType
 	event := marketplace.EventUpdateSellOrder{}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
@@ -136,7 +136,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 }
 
 // getCreditTypeFromBatchId gets the credit type given a batch id.
-func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocredit.CreditType, error) {
+func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*core.CreditType, error) {
 	batch, err := k.coreStore.BatchInfoTable().Get(ctx, id)
 	if err != nil {
 		return nil, err
