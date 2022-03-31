@@ -1,6 +1,8 @@
 package v3
 
 import (
+	"context"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -8,11 +10,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	orm "github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
-
-// TODO: add projects info
-const projectsJSON = `{"projects":[{"issuer":"cosmos154hmhstk3gpkv2ndec8zkjkc5c3svutcqcswne","class_id":"A00","metadata":"hello","project_location":"AB-CDE FG1 345","project_id":"A0"}]}`
 
 func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	cdc codec.Codec, ss api.StateStore) error {
@@ -20,7 +18,7 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	if err != nil {
 		return err
 	}
-	
+
 	classInfoTable := classInfoTableBuilder.Build()
 	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &BatchInfo{}, cdc)
 	if err != nil {
@@ -28,7 +26,7 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	batchInfoTable := batchInfoTableBuilder.Build()
 
-	creditTypeSeqTableBuilder, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
+	creditTypeSeqTableBuilder, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &CreditTypeSeq{}, cdc)
 	if err != nil {
 		return err
 	}
@@ -111,8 +109,17 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	// migrate projects
-	// TODO: manually add projects for existing credit classes
-	projects := []api.ProjectInfo{}
+	// TODO: update with actual projects
+	projects := []api.ProjectInfo{
+		{
+			Id:              1,
+			Name:            "P0",
+			ClassId:         1,
+			Admin:           sdk.AccAddress("cosmos154hmhstk3gpkv2ndec8zkjkc5c3svutcqcswne"),
+			ProjectLocation: "AB-CDE FG1 345",
+			Metadata:        "hello",
+		},
+	}
 
 	var pID uint64 = 1
 	for _, p := range projects {
@@ -129,11 +136,28 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 
 		projectIDsMap[classIDsMap[p.ClassId]] = pID
+
+		// add project sequence
+		seq, err := ss.ProjectSequenceTable().Get(ctx, p.ClassId)
+		if err != nil {
+			if orm.ErrNotFound.Is(err) {
+				ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+					ClassId:       p.ClassId,
+					NextProjectId: 1,
+				})
+				return err
+			}
+		} else {
+			if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+				ClassId:       p.ClassId,
+				NextProjectId: seq.NextProjectId + 1,
+			}); err != nil {
+				return err
+			}
+		}
+
 		pID++
 	}
-
-	// TODO: migrate sequence
-	ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{})
 
 	// migrate batches
 	batchIDsMap := make(map[string]uint64)
@@ -172,8 +196,23 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	store := sdkCtx.KVStore(storeKey)
+	if err = migrateBalances(store, ss, ctx, batchIDsMap); err != nil {
+		return err
+	}
+
+	if err = migrateSupply(store, ss, ctx, batchIDsMap); err != nil {
+		return err
+	}
+
+	// TODO: migrate params #729
+
+	return nil
+}
+
+// migrateBalances migrates ecocredit tradable and retired balances to orm v1
+func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]uint64) error {
 	// migrate tradable balances
-	IterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) (bool, error) {
+	if err := IterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) (bool, error) {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
 			return true, err
@@ -188,10 +227,12 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 
 		return false, nil
-	})
+	}); err != nil {
+		return err
+	}
 
 	// migrate retired balances
-	IterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) (bool, error) {
+	err := IterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) (bool, error) {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
 			return false, err
@@ -224,8 +265,13 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return false, nil
 	})
 
+	return err
+}
+
+// migrateSupply migrates tradable and retired supply to orm v1
+func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]uint64) error {
 	// migrate tradable supply
-	IterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
+	if err := IterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
 		if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
 			BatchId:        batchIDsMap[denom],
 			TradableAmount: supply,
@@ -234,10 +280,12 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 
 		return false, nil
-	})
+	}); err != nil {
+		return err
+	}
 
 	// migrate retired supply
-	IterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
+	err := IterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
 		bs, err := ss.BatchSupplyTable().Get(ctx, batchIDsMap[denom])
 		if err != nil {
 			if orm.ErrNotFound.Is(err) {
@@ -262,5 +310,5 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return false, nil
 	})
 
-	return nil
+	return err
 }

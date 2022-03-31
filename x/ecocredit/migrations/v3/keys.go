@@ -3,8 +3,6 @@ package v3
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
-
-	orm "github.com/regen-network/regen-ledger/orm"
 )
 
 const (
@@ -16,22 +14,6 @@ const (
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
 )
-
-type BatchDenomT string
-
-var _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}
-
-// PrimaryKeyFields returns the fields of the object that will make up the
-// primary key for ClassInfo.
-func (m *ClassInfo) PrimaryKeyFields() []interface{} {
-	return []interface{}{m.ClassId}
-}
-
-// PrimaryKeyFields returns the fields of the object that will make up the
-// primary key for BatchInfo.
-func (m *BatchInfo) PrimaryKeyFields() []interface{} {
-	return []interface{}{m.BatchDenom}
-}
 
 // TradableBalanceKey creates the index key for recipient address and batch-denom
 func TradableBalanceKey(acc sdk.AccAddress, denom BatchDenomT) []byte {
