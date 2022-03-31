@@ -2,10 +2,9 @@ package basket_test
 
 import (
 	"context"
-	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
+	"github.com/regen-network/gocuke"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -19,6 +18,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
+	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
@@ -26,13 +26,14 @@ import (
 )
 
 type baseSuite struct {
-	t               *testing.T
+	t               gocuke.TestingT
 	db              ormdb.ModuleDB
-	stateStore      api.StateStore
 	ctx             context.Context
 	k               basket.Keeper
 	ctrl            *gomock.Controller
 	addr            sdk.AccAddress
+	stateStore      api.StateStore
+	ecocreditStore  ecocreditApi.StateStore
 	bankKeeper      *mocks2.MockBankKeeper
 	ecocreditKeeper *mocks.MockEcocreditKeeper
 	storeKey        *sdk.KVStoreKey
@@ -40,13 +41,15 @@ type baseSuite struct {
 	distKeeper      *mocks2.MockDistributionKeeper
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
 	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
+	assert.NilError(t, err)
+	s.ecocreditStore, err = ecocreditApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
@@ -69,10 +72,4 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
-}
-
-// this is an example of how we will unit test the basket functionality with mocks
-func TestKeeperExample(t *testing.T) {
-	s := setupBase(t)
-	require.NotNil(t, s.k)
 }

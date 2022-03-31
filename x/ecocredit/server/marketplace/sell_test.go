@@ -70,7 +70,7 @@ func TestSell_Valid(t *testing.T) {
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
-	assertCoinsEscrowed(t, balanceBefore, balanceAfter, supplyBefore, supplyAfter, math.NewDecFromInt64(20))
+	assertCreditsEscrowed(t, balanceBefore, balanceAfter, supplyBefore, supplyAfter, math.NewDecFromInt64(20))
 }
 
 func TestSell_CreatesMarket(t *testing.T) {
@@ -163,8 +163,8 @@ func TestSell_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "expiration must be in the future")
 }
 
-// assertCoinsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCoinsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
+// assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
+func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
 		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount,
 		supplyBefore.EscrowedAmount, supplyAfter.EscrowedAmount)
