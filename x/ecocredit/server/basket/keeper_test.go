@@ -2,10 +2,9 @@ package basket_test
 
 import (
 	"context"
-	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/require"
+	"github.com/regen-network/gocuke"
 	"gotest.tools/v3/assert"
 
 	"github.com/tendermint/tendermint/libs/log"
@@ -21,27 +20,29 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
 type baseSuite struct {
-	t            *testing.T
+	t            gocuke.TestingT
 	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	coreStore    ecoApi.StateStore
 	ctx          context.Context
 	k            basket.Keeper
 	ctrl         *gomock.Controller
 	addr         sdk.AccAddress
-	bankKeeper   *mocks2.MockBankKeeper
+	stateStore   api.StateStore
+	coreStore    ecocreditApi.StateStore
 	paramsKeeper *mocks2.MockParamKeeper
+	bankKeeper   *mocks2.MockBankKeeper
+	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 	distKeeper   *mocks2.MockDistributionKeeper
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -49,11 +50,13 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.stateStore, err = api.NewStateStore(s.db)
 	assert.NilError(t, err)
+	s.coreStore, err = ecocreditApi.NewStateStore(s.db)
+	assert.NilError(t, err)
 
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
-	storeKey := sdk.NewKVStoreKey("test")
-	cms.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	s.storeKey = sdk.NewKVStoreKey("test")
+	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
@@ -71,10 +74,4 @@ func setupBase(t *testing.T) *baseSuite {
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
-}
-
-// this is an example of how we will unit test the basket functionality with mocks
-func TestKeeperExample(t *testing.T) {
-	s := setupBase(t)
-	require.NotNil(t, s.k)
 }

@@ -130,7 +130,7 @@ func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	}
 
 	if value.Cmp(x) == -1 {
-		return ErrInsufficientFunds
+		return ErrInsufficientCredits
 	}
 
 	value, err = math.SafeSubBalance(value, x)

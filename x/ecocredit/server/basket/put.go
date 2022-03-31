@@ -56,7 +56,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		// update the user and basket balances
 		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
 			if sdkerrors.ErrInsufficientFunds.Is(err) {
-				return nil, ErrInsufficientCredits
+				return nil, ecocredit.ErrInsufficientCredits
 			}
 			return nil, err
 		}
@@ -155,7 +155,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Id)
 	if err != nil {
-		return ecocredit.ErrInsufficientFunds.Wrapf("could not get batch %s balance for %s", batchInfo.BatchDenom, sender.String())
+		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batchInfo.BatchDenom, sender.String())
 	}
 	tradable, err := regenmath.NewPositiveDecFromString(userBal.Tradable)
 	if err != nil {
@@ -163,7 +163,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	}
 	newTradable, err := regenmath.SafeSubBalance(tradable, amt)
 	if err != nil {
-		return ecocredit.ErrInsufficientFunds.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
+		return ecocredit.ErrInsufficientCredits.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
 	}
 	userBal.Tradable = newTradable.String()
 	if err = k.coreStore.BatchBalanceTable().Update(ctx, userBal); err != nil {

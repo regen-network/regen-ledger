@@ -141,7 +141,7 @@ func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocr
 	if err != nil {
 		return nil, err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

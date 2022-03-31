@@ -22,7 +22,7 @@ func assertHasBalance(ctx context.Context, store ecoApi.StateStore, acc sdk.AccA
 		return err
 	}
 	if tradableBalance.Cmp(qty) == -1 {
-		return ecocredit.ErrInsufficientFunds.Wrapf("cannot create a sell order of %s credits with a balance of %s", qty.String(), res.Tradable)
+		return ecocredit.ErrInsufficientCredits.Wrapf("cannot create a sell order of %s credits with a balance of %s", qty.String(), res.Tradable)
 	}
 	return nil
 }
