@@ -238,16 +238,6 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 	}
-
-	supplyEscrowed, err := math.NewDecFromString(supply.EscrowedAmount)
-	if err != nil {
-		return err
-	}
-	supplyEscrowed, err = math.SafeSubBalance(supplyEscrowed, purchaseQty)
-	if err != nil {
-		return err
-	}
-	supply.EscrowedAmount = supplyEscrowed.String()
 	if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 		return err
 	}
