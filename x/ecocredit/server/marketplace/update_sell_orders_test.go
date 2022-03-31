@@ -59,7 +59,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	actualEscrowChange, err := math.NewDecFromString("3.5032")
 	assert.NilError(t, err)
 
-	assertCoinsEscrowed(t, balBefore, balAfter, supBefore, supAfter, actualEscrowChange)
+	assertCreditsEscrowed(t, balBefore, balAfter, supBefore, supAfter, actualEscrowChange)
 
 	order1, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
