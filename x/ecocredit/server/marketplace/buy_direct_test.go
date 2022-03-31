@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -23,17 +22,9 @@ func TestBuy_ValidTradable(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := ecocredit.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
@@ -82,17 +73,9 @@ func TestBuy_ValidRetired(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := ecocredit.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
@@ -139,17 +122,8 @@ func TestBuy_OrderFilled(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 100)
-	creditType := ecocredit.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
@@ -193,17 +167,8 @@ func TestBuy_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 150)
-	creditType := ecocredit.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
