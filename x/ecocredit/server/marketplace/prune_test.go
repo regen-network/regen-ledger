@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -13,7 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestSell_Prune(t *testing.T) {
@@ -41,9 +41,9 @@ func TestSell_Prune(t *testing.T) {
 	notExpired, err := time.Parse("2006-01-02", "2022-01-01")
 	assert.NilError(t, err)
 
-	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
 		},
