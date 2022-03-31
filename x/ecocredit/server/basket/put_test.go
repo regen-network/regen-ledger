@@ -368,7 +368,7 @@ func TestPutDate(t *testing.T) {
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.tradableCredits = "5"
-	s.classId = "C01"
+	s.classId = "batch"
 	s.creditType = "C"
 }
 
@@ -416,19 +416,16 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	id, err = s.coreStore.ProjectInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ProjectInfo{ClassId: id})
 	assert.NilError(s.t, err)
 
-	err = s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditapi.BatchInfo{
+	id, err = s.coreStore.BatchInfoTable().InsertReturningID(s.ctx, &ecocreditapi.BatchInfo{
 		ProjectId:  id,
 		BatchDenom: s.batchDenom,
 		StartDate:  s.batchStartDate,
 	})
 	assert.NilError(s.t, err)
 
-	batch, err := s.coreStore.BatchInfoTable().GetByBatchDenom(s.ctx, s.batchDenom)
-	assert.NilError(s.t, err)
-
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
 		Address:  s.addr,
-		BatchId:  batch.Id,
+		BatchId:  id,
 		Tradable: s.tradableCredits,
 	})
 	assert.NilError(s.t, err)
