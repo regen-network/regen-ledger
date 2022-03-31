@@ -16,11 +16,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// Buy allows users to purchase credits by either directly specifying a sell order, or
-// defining a set of filters with attributes to match against.
-//
-// Currently, only the former is supported. Calls to this function with anything other than
-// MsgBuy_Order_Selection_SellOrderId will fail.
+// Buy creates a buy order to be used in the order-book.
 func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.MsgBuyResponse, error) {
 	return nil, sdkerrors.ErrInvalidRequest.Wrap("only direct buy orders are enabled at this time")
 	//sdkCtx := sdk.UnwrapSDKContext(ctx)

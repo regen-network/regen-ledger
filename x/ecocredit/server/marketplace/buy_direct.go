@@ -12,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// BuyDirect allows for the purchase of credits directly from sell orders.
 func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*marketplace.MsgBuyDirectResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
@@ -24,7 +25,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 	}
 	if req.DisableAutoRetire && !sellOrder.DisableAutoRetire {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
-			"from a sell order that does not disable auto retire")
+			"from a sell order that does not have auto retire disabled")
 	}
 	batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
 	if err != nil {
@@ -55,7 +56,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 	}
 	sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderPricePerCredit}
 	if sellOrderPricePerCredit.GT(req.PricePerCredit.Amount) {
-		return nil, ErrBidTooLow.Wrapf("sell order ask: %v, bid: %v", sellOrderPriceCoin, req.PricePerCredit)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, req.PricePerCredit)
 	}
 
 	// check address has the total cost (price per * order quantity)
