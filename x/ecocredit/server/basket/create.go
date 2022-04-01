@@ -8,15 +8,17 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
-	fee := k.ecocreditKeeper.GetCreateBasketFee(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	var params core.Params
+	k.paramsKeeper.GetParamSet(sdkCtx, &params)
+	fee := params.BasketFee
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 	}
@@ -25,11 +27,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	err = k.distKeeper.FundCommunityPool(sdkCtx.Context, fee, sender)
+	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, sender)
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(ctx, k.ecocreditKeeper, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
+	if err = validateCreditType(params.CreditTypes, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
 	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
@@ -49,7 +51,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = k.indexAllowedClasses(sdkCtx, id, msg.AllowedClasses); err != nil {
+	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err
 	}
 
@@ -66,7 +68,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		})
 	}
 
-	k.bankKeeper.SetDenomMetaData(sdkCtx.Context, banktypes.Metadata{
+	k.bankKeeper.SetDenomMetaData(sdkCtx, banktypes.Metadata{
 		DenomUnits:  denomUnits,
 		Description: msg.Description,
 		Base:        denom,
@@ -75,7 +77,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Symbol:      msg.Name,
 	})
 
-	err = sdkCtx.Context.EventManager().EmitTypedEvent(&basket.EventCreate{
+	err = sdkCtx.EventManager().EmitTypedEvent(&basket.EventCreate{
 		BasketDenom: denom,
 		Curator:     msg.Curator,
 	})
@@ -85,13 +87,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
 // it's precision is bigger then the requested exponent.
-func validateCreditType(sdkCtx context.Context, k EcocreditKeeper, creditTypeAbbr string, exponent uint32) error {
-	res, err := k.CreditTypes(sdkCtx, &ecocredit.QueryCreditTypesRequest{})
-	if err != nil {
-		return err
-	}
-
-	for _, c := range res.CreditTypes {
+func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, exponent uint32) error {
+	for _, c := range creditTypes {
 		if c.Abbreviation == creditTypeAbbr {
 			if c.Precision > exponent {
 				return sdkerrors.ErrInvalidRequest.Wrapf(
@@ -106,20 +103,27 @@ func validateCreditType(sdkCtx context.Context, k EcocreditKeeper, creditTypeAbb
 	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", creditTypeAbbr)
 }
 
-func (k Keeper) indexAllowedClasses(sdkCtx types.Context, basketID uint64, allowedClasses []string) error {
+// indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
+// the class into the BasketClass table.
+func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, class := range allowedClasses {
-		if !k.ecocreditKeeper.HasClassInfo(sdkCtx, class) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("credit class %q doesn't exist", class)
+		classInfo, err := k.coreStore.ClassInfoTable().GetByName(ctx, class)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}
 
-		ctx := sdk.WrapSDKContext(sdkCtx.Context)
-		err := k.stateStore.BasketClassTable().Insert(ctx,
+		if classInfo.CreditType != creditTypeAbbr {
+			return sdkerrors.ErrInvalidRequest.Wrapf("basket specified credit type %s, but class %s is of type %s",
+				creditTypeAbbr, class, classInfo.CreditType)
+		}
+
+		if err := k.stateStore.BasketClassTable().Insert(ctx,
 			&api.BasketClass{
 				BasketId: basketID,
 				ClassId:  class,
 			},
-		)
-		if err != nil {
+		); err != nil {
 			return err
 		}
 

@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-  api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -22,7 +22,7 @@ func assertHasBalance(ctx context.Context, store ecoApi.StateStore, acc sdk.AccA
 		return err
 	}
 	if tradableBalance.Cmp(qty) == -1 {
-		return ecocredit.ErrInsufficientFunds.Wrapf("cannot create a sell order of %s credits with a balance of %s", qty.String(), res.Tradable)
+		return ecocredit.ErrInsufficientCredits.Wrapf("cannot create a sell order of %s credits with a balance of %s", qty.String(), res.Tradable)
 	}
 	return nil
 }

@@ -3457,14 +3457,17 @@ type ContentHash struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Raw specifies "raw" data which does not specify a deterministic, canonical encoding.
-	// Users of these hashes MUST maintain a copy of the hashed data which is preserved bit by bit.
-	// All other content encodings specify a deterministic, canonical encoding allowing implementations to
-	// choose from a variety of alternative formats for transport and encoding while maintaining the guarantee
-	// that the canonical hash will not change. The media type for "raw" data is defined by the MediaType enum.
+	// Raw specifies "raw" data which does not specify a deterministic, canonical
+	// encoding. Users of these hashes MUST maintain a copy of the hashed data
+	// which is preserved bit by bit. All other content encodings specify a
+	// deterministic, canonical encoding allowing implementations to choose from a
+	// variety of alternative formats for transport and encoding while maintaining
+	// the guarantee that the canonical hash will not change. The media type for
+	// "raw" data is defined by the MediaType enum.
 	Raw *ContentHash_Raw `protobuf:"bytes,1,opt,name=raw,proto3" json:"raw,omitempty"`
 	// Graph specifies graph data that conforms to the RDF data model.
-	// The canonicalization algorithm used for an RDF graph is specified by GraphCanonicalizationAlgorithm.
+	// The canonicalization algorithm used for an RDF graph is specified by
+	// GraphCanonicalizationAlgorithm.
 	Graph *ContentHash_Graph `protobuf:"bytes,2,opt,name=graph,proto3" json:"graph,omitempty"`
 }
 
@@ -3646,7 +3649,8 @@ type ContentHash_Raw struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// hash represents the hash of the data based on the specified digest_algorithm.
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
@@ -3701,11 +3705,13 @@ type ContentHash_Graph struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// hash represents the hash of the data based on the specified digest_algorithm.
+	// hash represents the hash of the data based on the specified
+	// digest_algorithm.
 	Hash []byte `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
-	// graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm.
+	// graph_canonicalization_algorithm represents the RDF graph
+	// canonicalization algorithm.
 	CanonicalizationAlgorithm GraphCanonicalizationAlgorithm `protobuf:"varint,3,opt,name=canonicalization_algorithm,json=canonicalizationAlgorithm,proto3,enum=regen.data.v1.GraphCanonicalizationAlgorithm" json:"canonicalization_algorithm,omitempty"`
 	// merkle_tree is the merkle tree type used for the graph hash, if any.
 	MerkleTree GraphMerkleTree `protobuf:"varint,4,opt,name=merkle_tree,json=merkleTree,proto3,enum=regen.data.v1.GraphMerkleTree" json:"merkle_tree,omitempty"`

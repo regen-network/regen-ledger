@@ -1,4 +1,4 @@
-Feature: Create Basket
+Feature: Create
 
   Scenario: basket fee exceeds minimum basket fee
     When user tries to create a basket

@@ -60,7 +60,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Id)
 	if err != nil {
 		if err == ormerrors.NotFound {
-			return ecocredit.ErrInsufficientFunds.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
+			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
 		}
 		return err
 	}

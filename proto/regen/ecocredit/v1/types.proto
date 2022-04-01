@@ -17,14 +17,20 @@ message Params {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
+  // basket_fee is the fixed fee charged on creation of a new basket
+  repeated cosmos.base.v1beta1.Coin basket_fee = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
   // allowed_class_creators is an allowlist defining the addresses with
   // the required permissions to create credit classes
-  repeated string allowed_class_creators = 2;
+  repeated string allowed_class_creators = 3;
 
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation
-  bool allowlist_enabled = 3;
+  bool allowlist_enabled = 4;
 
   // credit_types is a list of definitions for credit types
-  repeated CreditType credit_types = 4;
+  repeated CreditType credit_types = 5;
 }
