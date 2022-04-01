@@ -2,8 +2,10 @@ package v3
 
 import (
 	"context"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -11,6 +13,11 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	orm "github.com/regen-network/regen-ledger/orm"
 )
+
+type batchMapT struct {
+	Id              uint64
+	AmountCancelled string
+}
 
 func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	cdc codec.Codec, ss api.StateStore) error {
@@ -32,7 +39,7 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
 
-	// migrate credit classes
+	// migrate credit classes to ORM v1
 	classItr, err := classInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -41,7 +48,6 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 	classIDsMap := make(map[uint64]string)
 	projectIDsMap := make(map[string]uint64)
-	var classID uint64 = 1
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
@@ -57,18 +63,18 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 		dest := api.ClassInfo{
-			Id:         classID,
 			Name:       classInfo.ClassId,
 			Admin:      admin,
 			Metadata:   string(classInfo.Metadata),
 			CreditType: classInfo.CreditType.Abbreviation,
 		}
-		classIDsMap[classID] = classInfo.ClassId
-		if err := ss.ClassInfoTable().Insert(ctx, &dest); err != nil {
+		classID, err := ss.ClassInfoTable().InsertReturningID(ctx, &dest)
+		if err != nil {
 			return err
 		}
+		classIDsMap[classID] = classInfo.ClassId
 
-		// migrate class issuers
+		// migrate class issuers to ORM v1
 		for _, issuer := range classInfo.Issuers {
 			addr, err := sdk.AccAddressFromBech32(issuer)
 			if err != nil {
@@ -83,10 +89,9 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			}
 		}
 
-		classID++
 	}
 
-	// migrate credit type sequence
+	// migrate credit type sequence to ORM v1
 	cItr, err := creditTypeSeqTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -102,72 +107,76 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 			return err
 		}
-		ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
+		if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
 			CreditType:  ctype.Abbreviation,
 			NextClassId: ctype.SeqNumber,
-		})
+		}); err != nil {
+			return err
+		}
 	}
 
 	// migrate projects
-	// TODO: update with actual projects
+	// TODO: update with actual data
 	projects := []api.ProjectInfo{
 		{
-			Id:              1,
-			Name:            "P0",
+			Name:            "P01",
 			ClassId:         1,
 			Admin:           sdk.AccAddress("cosmos154hmhstk3gpkv2ndec8zkjkc5c3svutcqcswne"),
 			ProjectLocation: "AB-CDE FG1 345",
-			Metadata:        "hello",
+			Metadata:        "metadata",
 		},
 	}
 
-	var pID uint64 = 1
+	projectSeqMap := make(map[uint64]uint64)
 	for _, p := range projects {
 		dest := api.ProjectInfo{
-			Id:              pID,
 			Name:            p.Name,
 			Admin:           p.Admin,
 			ClassId:         p.ClassId,
 			ProjectLocation: p.ProjectLocation,
 			Metadata:        p.Metadata,
 		}
-		if err := ss.ProjectInfoTable().Insert(ctx, &dest); err != nil {
+		pID, err := ss.ProjectInfoTable().InsertReturningID(ctx, &dest)
+		if err != nil {
 			return err
 		}
 
 		projectIDsMap[classIDsMap[p.ClassId]] = pID
-
-		// add project sequence
-		seq, err := ss.ProjectSequenceTable().Get(ctx, p.ClassId)
-		if err != nil {
-			if orm.ErrNotFound.Is(err) {
-				ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-					ClassId:       p.ClassId,
-					NextProjectId: 1,
-				})
-				return err
-			}
+		if v, ok := projectSeqMap[p.ClassId]; ok {
+			projectSeqMap[p.ClassId] = v + 1
 		} else {
-			if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-				ClassId:       p.ClassId,
-				NextProjectId: seq.NextProjectId + 1,
-			}); err != nil {
-				return err
-			}
+			projectSeqMap[p.ClassId] = 2
 		}
 
-		pID++
 	}
 
-	// migrate batches
-	batchIDsMap := make(map[string]uint64)
+	// add project sequence
+	keys := make([]int, 0, len(projectSeqMap))
+	for k := range projectSeqMap {
+		keys = append(keys, int(k))
+	}
+	sort.Ints(keys)
+
+	for _, k := range keys {
+		key := uint64(k)
+		err = ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+			ClassId:       key,
+			NextProjectId: projectSeqMap[key],
+		})
+		if err != nil {
+			return err
+		}
+	}
+
+	// migrate credit batches to ORM v1
+	batchIDsMap := make(map[string]batchMapT)
+	batchSeqMap := make(map[uint64]uint64)
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
 	}
 	defer batchItr.Close()
 
-	var batchID uint64 = 1
 	for {
 		var batchInfo BatchInfo
 		if _, err := batchItr.LoadNext(&batchInfo); err != nil {
@@ -178,7 +187,6 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 
 		bInfo := api.BatchInfo{
-			Id:           batchID,
 			ProjectId:    projectIDsMap[batchInfo.ClassId],
 			BatchDenom:   batchInfo.BatchDenom,
 			Metadata:     string(batchInfo.Metadata),
@@ -187,12 +195,42 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			IssuanceDate: nil, // TODO: add issuance date
 		}
 
-		if err := ss.BatchInfoTable().Insert(ctx, &bInfo); err != nil {
+		bID, err := ss.BatchInfoTable().InsertReturningID(ctx, &bInfo)
+		if err != nil {
 			return err
 		}
 
-		batchIDsMap[bInfo.BatchDenom] = batchID
-		batchID++
+		batchIDsMap[bInfo.BatchDenom] = batchMapT{
+			Id:              bID,
+			AmountCancelled: batchInfo.AmountCancelled,
+		}
+
+		if v, ok := batchSeqMap[bInfo.ProjectId]; ok {
+			batchSeqMap[bInfo.ProjectId] = v + 1
+		} else {
+			batchSeqMap[bInfo.ProjectId] = 2
+		}
+	}
+
+	// add batch sequence
+	keys1 := make([]int, 0, len(batchSeqMap))
+	for k := range batchSeqMap {
+		keys1 = append(keys1, int(k))
+	}
+	sort.Ints(keys1)
+
+	for _, k := range keys1 {
+		pInfo, err := ss.ProjectInfoTable().Get(ctx, uint64(k))
+		if err != nil {
+			return err
+		}
+
+		if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
+			ProjectId:   pInfo.Name,
+			NextBatchId: batchSeqMap[uint64(k)],
+		}); err != nil {
+			return err
+		}
 	}
 
 	store := sdkCtx.KVStore(storeKey)
@@ -204,14 +242,14 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
-	// TODO: migrate params #729
+	// TODO: migrate params if needed #729
 
 	return nil
 }
 
 // migrateBalances migrates ecocredit tradable and retired balances to orm v1
-func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]uint64) error {
-	// migrate tradable balances
+func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]batchMapT) error {
+	// migrate tradable balances to ORM v1
 	if err := IterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) (bool, error) {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
@@ -220,7 +258,7 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 
 		if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 			Address:  addr,
-			BatchId:  batchIDsMap[denom],
+			BatchId:  batchIDsMap[denom].Id,
 			Tradable: balance,
 		}); err != nil {
 			return true, err
@@ -231,31 +269,32 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 		return err
 	}
 
-	// migrate retired balances
+	// migrate retired balances to ORM v1
 	err := IterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) (bool, error) {
 		addr, err := sdk.AccAddressFromBech32(address)
 		if err != nil {
 			return false, err
 		}
 
-		b, err := ss.BatchBalanceTable().Get(ctx, addr, batchIDsMap[denom])
+		b, err := ss.BatchBalanceTable().Get(ctx, addr, batchIDsMap[denom].Id)
 		if err != nil {
-			if orm.ErrNotFound.Is(err) {
+			if ormerrors.IsNotFound(err) {
 				if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 					Address: addr,
-					BatchId: batchIDsMap[denom],
+					BatchId: batchIDsMap[denom].Id,
 					Retired: balance,
 				}); err != nil {
 					return true, err
 				}
+				return false, nil
 			}
-
 			return true, err
+
 		}
 
 		if err := ss.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			Address:  addr,
-			BatchId:  batchIDsMap[denom],
+			BatchId:  batchIDsMap[denom].Id,
 			Tradable: b.Tradable,
 			Retired:  balance,
 		}); err != nil {
@@ -269,12 +308,13 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 }
 
 // migrateSupply migrates tradable and retired supply to orm v1
-func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]uint64) error {
-	// migrate tradable supply
+func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Context, batchIDsMap map[string]batchMapT) error {
+	// migrate tradable supply to ORM v1
 	if err := IterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
 		if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
-			BatchId:        batchIDsMap[denom],
-			TradableAmount: supply,
+			BatchId:         batchIDsMap[denom].Id,
+			CancelledAmount: batchIDsMap[denom].AmountCancelled,
+			TradableAmount:  supply,
 		}); err != nil {
 			return false, err
 		}
@@ -284,25 +324,29 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 		return err
 	}
 
-	// migrate retired supply
+	// migrate retired supply to ORM v1
 	err := IterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
-		bs, err := ss.BatchSupplyTable().Get(ctx, batchIDsMap[denom])
+		bs, err := ss.BatchSupplyTable().Get(ctx, batchIDsMap[denom].Id)
 		if err != nil {
-			if orm.ErrNotFound.Is(err) {
+			if ormerrors.IsNotFound(err) {
 				if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
-					BatchId:       batchIDsMap[denom],
-					RetiredAmount: supply,
+					BatchId:         batchIDsMap[denom].Id,
+					CancelledAmount: batchIDsMap[denom].AmountCancelled,
+					RetiredAmount:   supply,
 				}); err != nil {
 					return false, err
 				}
+				return false, nil
 			}
-			return false, err
+			return true, err
+
 		}
 
 		if err := ss.BatchSupplyTable().Update(ctx, &api.BatchSupply{
-			BatchId:        batchIDsMap[denom],
-			RetiredAmount:  supply,
-			TradableAmount: bs.TradableAmount,
+			BatchId:         batchIDsMap[denom].Id,
+			CancelledAmount: batchIDsMap[denom].AmountCancelled,
+			RetiredAmount:   supply,
+			TradableAmount:  bs.TradableAmount,
 		}); err != nil {
 			return false, err
 		}
