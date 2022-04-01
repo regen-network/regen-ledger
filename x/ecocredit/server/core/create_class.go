@@ -27,7 +27,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	}
 
 	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var params ecocredit.Params
+	var params core.Params
 	k.paramsKeeper.GetParamSet(sdkCtx, &params)
 	if params.AllowlistEnabled && !k.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())

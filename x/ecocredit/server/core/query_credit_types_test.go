@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -14,8 +13,8 @@ func TestQuery_CreditTypes(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "foobar", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{{Name: "foobar", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// base query should return all types
