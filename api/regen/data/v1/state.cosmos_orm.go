@@ -326,6 +326,19 @@ func (this DataAttestorIdAttestorIndexKey) WithIdAttestor(id []byte, attestor []
 	return this
 }
 
+type DataAttestorAttestorIndexKey struct {
+	vs []interface{}
+}
+
+func (x DataAttestorAttestorIndexKey) id() uint32            { return 1 }
+func (x DataAttestorAttestorIndexKey) values() []interface{} { return x.vs }
+func (x DataAttestorAttestorIndexKey) dataAttestorIndexKey() {}
+
+func (this DataAttestorAttestorIndexKey) WithAttestor(attestor []byte) DataAttestorAttestorIndexKey {
+	this.vs = []interface{}{attestor}
+	return this
+}
+
 type dataAttestorTable struct {
 	table ormtable.Table
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -44,17 +43,9 @@ func TestBuy_ValidTradable(t *testing.T) {
 	// sell order ask price: 10ufoo, buy order of 3 credits -> 10 * 3 = 30ufoo
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, true, "")
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, false)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -94,16 +85,9 @@ func TestBuy_ValidRetired(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-NY")
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -142,16 +126,9 @@ func TestBuy_OrderFilled(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(10)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-OR")
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// order was filled, so sell order should no longer exist
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, sellOrderId)
@@ -248,27 +225,6 @@ func TestBuy_Decimal(t *testing.T) {
 	assert.NilError(t, err)
 }
 
-func assertSupplyEscrowedAmounts(t *testing.T, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
-	var beforeSupply, beforeSupplyEscrowed math.Dec
-	var afterSupply, afterSupplyEscrowed math.Dec
-	if didRetire {
-		_, beforeSupply, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
-		_, afterSupply, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
-	} else {
-		beforeSupply, _, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
-		afterSupply, _, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
-	}
-
-	expectedAmt, err := beforeSupply.Add(amount)
-	assert.NilError(t, err)
-	expectedEscrowed, err := beforeSupplyEscrowed.Sub(amount)
-	assert.NilError(t, err)
-
-	assert.Check(t, afterSupply.Equal(expectedAmt))
-	assert.Check(t, afterSupplyEscrowed.Equal(expectedEscrowed))
-
-}
-
 func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, pricePerCredit *sdk.Coin, disableAutoRetire bool,
 	retirementLocation string) (*marketplace.MsgBuyDirectResponse, error) {
 	return s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
@@ -279,16 +235,4 @@ func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, price
 		DisableAutoRetire:  disableAutoRetire,
 		RetirementLocation: retirementLocation,
 	})
-}
-
-// getSupplyDecimals extracts the decimal form for the supplies
-func getSupplyDecimals(t *testing.T, supply *ecocreditv1.BatchSupply) (tradable, retired, escrowed math.Dec) {
-	var err error
-	tradable, err = math.NewDecFromString(supply.TradableAmount)
-	assert.NilError(t, err)
-	retired, err = math.NewDecFromString(supply.RetiredAmount)
-	assert.NilError(t, err)
-	escrowed, err = math.NewDecFromString(supply.EscrowedAmount)
-	assert.NilError(t, err)
-	return
 }

@@ -139,31 +139,5 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	bal.Tradable = newTradable.String()
 	bal.Escrowed = newEscrowed.String()
 
-	if err = k.coreStore.BatchBalanceTable().Update(ctx, bal); err != nil {
-		return err
-	}
-
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, batchId)
-	if err != nil {
-		return err
-	}
-	supTradable, err := math.NewDecFromString(supply.TradableAmount)
-	if err != nil {
-		return err
-	}
-	supEscrow, err := math.NewDecFromString(supply.EscrowedAmount)
-	if err != nil {
-		return err
-	}
-	supTradable, err = math.SafeSubBalance(supTradable, sellQty)
-	if err != nil {
-		return err
-	}
-	supEscrow, err = math.SafeAddBalance(supEscrow, sellQty)
-	if err != nil {
-		return err
-	}
-	supply.EscrowedAmount = supEscrow.String()
-	supply.TradableAmount = supTradable.String()
-	return k.coreStore.BatchSupplyTable().Save(ctx, supply)
+	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
 }
