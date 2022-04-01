@@ -1,9 +1,13 @@
 package v3_test
 
 import (
-	fmt "fmt"
 	"testing"
-	time "time"
+
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
@@ -16,11 +20,6 @@ import (
 	orm "github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"gotest.tools/v3/assert"
 )
 
 func TestMigrations(t *testing.T) {
@@ -73,8 +72,8 @@ func TestMigrations(t *testing.T) {
 
 	startDate := sdkCtx.BlockTime().UTC()
 	endDate := startDate.AddDate(2, 0, 0)
-	bd1 := FormatDenom("C01", 1, &startDate, &endDate)
-	bd2 := FormatDenom("C01", 2, &startDate, &endDate)
+	bd1, _ := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
+	bd2, _ := ecocredit.FormatDenom("C01", 2, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd1,
@@ -220,22 +219,4 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, bs.TradableAmount, "610")
 	require.Equal(t, bs.RetiredAmount, "390")
 	require.Equal(t, bs.CancelledAmount, "0")
-}
-
-func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) string {
-	return fmt.Sprintf(
-		"%s-%s-%s-%03d",
-
-		// Class ID string
-		classId,
-
-		// Start Date as YYYYMMDD
-		startDate.Format("20060102"),
-
-		// End Date as YYYYMMDD
-		endDate.Format("20060102"),
-
-		// Batch sequence number padded to at least three digits
-		batchSeqNo,
-	)
 }

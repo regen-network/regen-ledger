@@ -288,8 +288,8 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 				}
 				return false, nil
 			}
-			return true, err
 
+			return true, err
 		}
 
 		if err := ss.BatchBalanceTable().Update(ctx, &api.BatchBalance{
