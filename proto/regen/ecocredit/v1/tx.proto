@@ -143,7 +143,7 @@ message MsgCreateBatch {
   // quantified and verified.
   google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
 
-  // If unlocked is set to true, we will seal the batch and disable the
+  // If unlocked is set to false, we will seal the batch and disable the
   // future minting.
   bool unlocked = 7;
 }
