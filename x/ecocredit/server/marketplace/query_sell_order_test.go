@@ -3,16 +3,15 @@ package marketplace
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -22,7 +21,7 @@ func TestQuery_SellOrder(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",

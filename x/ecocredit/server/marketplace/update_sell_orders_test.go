@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -16,7 +15,7 @@ import (
 
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -29,8 +28,8 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(4)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(6)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -80,9 +79,9 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(4)
+		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(6)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -128,8 +127,8 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	_, _, unauthorized := testdata.KeyTestPubAddr()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(4)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -157,8 +156,8 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}, {Denom: "ubar"}}
+	}).Times(5)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -186,7 +185,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	orderBefore, err = s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
-	// can update price with new denom
+	// can update price with new denom in allowed ask denoms
 	askUpdate = sdk.NewInt64Coin("ubar", 18)
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
@@ -210,8 +209,8 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(1)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(2)
 
 	future := time.Date(2077, 1, 1, 1, 1, 1, 1, time.Local)
 	middle := time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local)
@@ -255,6 +254,25 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "expiration must be in the future")
+}
+
+func TestSellOrder_InvalidDenom(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	invalidAsk := sdk.NewInt64Coin("ubar", 10)
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(2)
+	expiration := time.Now()
+	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.addr.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &invalidAsk, DisableAutoRetire: false, Expiration: &expiration},
+		},
+	})
+	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
 }
 
 func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecoApi.StateStore, batchId uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
