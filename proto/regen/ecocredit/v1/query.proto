@@ -14,22 +14,27 @@ service Query {
 
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes";
+    option (google.api.http).get = "/regen/ecocredit/v1/classes";
+  }
+
+  // ClassesByAdmin queries for all credit classes with a specific admin
+  // address.
+  rpc ClassesByAdmin(QueryClassesByAdminRequest)
+      returns (QueryClassesByAdminResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/classes/admin/{admin}";
   }
 
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/classes/{class_id}";
+    option (google.api.http).get = "/regen/ecocredit/v1/classes/{class_id}";
   }
 
   // ClassIssuers queries for the addresses of the issuers for a credit class.
-  rpc ClassIssuers(QueryClassIssuersRequest) returns (QueryClassIssuersResponse) {
+  rpc ClassIssuers(QueryClassIssuersRequest)
+      returns (QueryClassIssuersResponse) {
     option (google.api.http).get =
-      "/regen/ecocredit/v1/classes/{class_id}/issuers";
+        "/regen/ecocredit/v1/classes/{class_id}/issuers";
   }
-
 
   // Projects queries for all projects within a class with pagination.
   rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
@@ -39,8 +44,7 @@ service Query {
 
   // ClassInfo queries for information on a project.
   rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{project_id}";
+    option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
   }
 
   // Batches queries for all batches in the given project with pagination.
@@ -49,16 +53,23 @@ service Query {
         "/regen/ecocredit/v1/projects/{project_id}/batches";
   }
 
-  // BatchesByClass queries all batches issued from a given class.
-  rpc BatchesByClass(QueryBatchesByClassRequest) returns (QueryBatchesByClassResponse) {
+  // BatchesByIssuer queries all batches issued from a given issuer address.
+  rpc BatchesByIssuer(QueryBatchesByIssuerRequest)
+      returns (QueryBatchesByIssuerResponse) {
     option (google.api.http).get =
-      "/regen/ecocredit/v1/classes/{class_id}/batches";
+        "/regen/ecocredit/v1/batches/issuer/{issuer}";
+  }
+
+  // BatchesByClass queries all batches issued from a given class.
+  rpc BatchesByClass(QueryBatchesByClassRequest)
+      returns (QueryBatchesByClassResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/classes/{class_id}/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}";
+    option (google.api.http).get = "/regen/ecocredit/v1/batches/{batch_denom}";
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
@@ -66,6 +77,11 @@ service Query {
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1/batches/{batch_denom}/balance/{account}";
+  }
+
+  // Balances queries all credit balances the given account holds.
+  rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{account}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
@@ -77,24 +93,13 @@ service Query {
   // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/credit-types";
+    option (google.api.http).get = "/regen/ecocredit/v1/credit-types";
   }
 
   // Params queries the ecocredit module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/params";
+    option (google.api.http).get = "/regen/ecocredit/v1/params";
   }
-}
-
-// QueryParamsRequest is the Query/Params request type.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is the Query/Params response type.
-message QueryParamsResponse {
-  // params defines the parameters of the ecocredit module.
-  Params params = 1;
 }
 
 // QueryClassesRequest is the Query/Classes request type.
@@ -105,6 +110,25 @@ message QueryClassesRequest {
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryClassesByAdminRequest is the Query/ClassesByAdmin request type.
+message QueryClassesByAdminRequest {
+
+  // admin is the address of the admin of the class.
+  string admin = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
+message QueryClassesByAdminResponse {
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -177,7 +201,6 @@ message QueryProjectInfoResponse {
   ProjectInfo info = 1;
 }
 
-
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
 
@@ -190,6 +213,26 @@ message QueryBatchesRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
+
+  // batches are the fetched credit batches within the project.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBatchesByIssuerRequest is the Query/BatchesByIssuer request type.
+message QueryBatchesByIssuerRequest {
+
+  // issuer is the address that issued the batch
+  string issuer = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
+message QueryBatchesByIssuerResponse {
 
   // batches are the fetched credit batches within the project.
   repeated BatchInfo batches = 1;
@@ -244,12 +287,29 @@ message QueryBalanceRequest {
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
+  // balance is the balance of the given account.
+  BatchBalance balance = 1;
+}
 
-  // tradable_amount is the decimal number of tradable credits.
-  string tradable_amount = 1;
+// QueryBalancesRequest is the Query/Balances request type.
+message QueryBalancesRequest {
 
-  // retired_amount is the decimal number of retired credits.
-  string retired_amount = 2;
+  // account is the address of the account whose balance is being queried.
+  string account = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBalancesResponse is the Query/Balances response type.
+message QueryBalancesResponse {
+
+  // balances are a list of balances from different credit batches that the
+  // account holds.
+  repeated BatchBalance balances = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
@@ -282,4 +342,13 @@ message QueryCreditTypesRequest {}
 message QueryCreditTypesResponse {
   // list of credit types
   repeated CreditType credit_types = 1;
+}
+
+// QueryParamsRequest is the Query/Params request type.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the Query/Params response type.
+message QueryParamsResponse {
+  // params defines the parameters of the ecocredit module.
+  Params params = 1;
 }

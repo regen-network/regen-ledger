@@ -86,7 +86,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	for _, iri := range iris {
-		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorDataCmd(),
+		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorCmd(),
 			append(
 				[]string{
 					iri,
@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
 					iri,
@@ -108,10 +108,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		)
 		s.Require().NoError(err)
 
-		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAttestCmd(),
 			append(
 				[]string{
-					iris[0],
+					iri,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, account2.String()),
 				},
 				commonFlags...,
@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
-				"http://foo.bar",
+				"https://foo.bar",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 			},
 			commonFlags...,
@@ -131,26 +131,66 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	cmd := client.QueryResolverInfoCmd()
-	out, err := cli.ExecTestCLICmd(val1.ClientCtx, cmd, []string{"http://foo.bar", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
+	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
+		append(
+			[]string{
+				"https://foo.bar",
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+		),
+	)
 	s.Require().NoError(err)
-	var rInfo data.QueryResolverInfoResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &rInfo))
-	s.resolverID = rInfo.Id
+
+	var resolverInfo data.QueryResolverInfoResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resolverInfo))
+	s.resolverID = resolverInfo.Id
 
 	content := []byte("abcdefg")
 	_, chs := s.createDataContent(content)
-
 	s.iri, err = chs.Data[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
 	bz, err := val1.ClientCtx.Codec.MarshalJSON(chs)
 	s.Require().NoError(err)
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	cmd = client.MsgRegisterResolverCmd()
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, cmd, append(
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
 			fmt.Sprintf("%d", s.resolverID),
+			filePath,
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+		},
+		commonFlags...,
+	))
+	s.Require().NoError(err)
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+		append(
+			[]string{
+				"https://bar.baz",
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+			},
+			commonFlags...,
+		),
+	)
+	s.Require().NoError(err)
+
+	out2, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
+		append(
+			[]string{
+				"https://bar.baz",
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+			},
+		),
+	)
+	s.Require().NoError(err)
+
+	var resolverInfo2 data.QueryResolverInfoResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &resolverInfo2))
+
+	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
+		[]string{
+			fmt.Sprintf("%d", resolverInfo2.Id),
 			filePath,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 		},
@@ -164,7 +204,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.network.Cleanup()
 }
 
-func (s *IntegrationTestSuite) TestTxAnchorData() {
+func (s *IntegrationTestSuite) TestTxAnchor() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
@@ -201,7 +241,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 		},
 	}
 
-	cmd := client.MsgAnchorDataCmd()
+	cmd := client.MsgAnchorCmd()
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			args := []string{tc.iri}
@@ -217,7 +257,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxSignData() {
+func (s *IntegrationTestSuite) TestTxAttest() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.FromAddress = val.Address
@@ -231,13 +271,13 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 	}
 	// first we anchor some data
 	iri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
-	cmd := client.MsgAnchorDataCmd()
+	cmd := client.MsgAnchorCmd()
 	args := []string{iri}
 	args = append(args, commonFlags...)
 	_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 	require.NoError(err)
 
-	cmd = client.MsgSignDataCmd()
+	cmd = client.MsgAttestCmd()
 
 	testCases := []struct {
 		name   string
@@ -266,7 +306,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 			name:   "bad extension",
 			iri:    "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.png",
 			expErr: true,
-			errMsg: "invalid iri: expected extension .rdf for graph data, got .png",
+			errMsg: "invalid iri: invalid extension .png for graph data, expected .rdf",
 		},
 	}
 
@@ -317,7 +357,7 @@ func (s *IntegrationTestSuite) TestDefineResolverCmd() {
 		},
 		{
 			"valid test",
-			"http:foo.bar",
+			"https://foo.bar",
 			false,
 			"",
 		},
@@ -423,12 +463,10 @@ func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.
 	digest := hash.Sum(nil)
 
 	ch := data.ContentHash{
-		Sum: &data.ContentHash_Graph_{
-			Graph: &data.ContentHash_Graph{
-				Hash:                      digest,
-				DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			},
+		Graph: &data.ContentHash_Graph{
+			Hash:                      digest,
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 		},
 	}
 

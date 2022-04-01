@@ -9,8 +9,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 service Query {
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/classes";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/classes";
   }
 
   // ClassInfo queries for information on a credit class.
@@ -47,14 +46,12 @@ service Query {
   // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/credit-types";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/credit-types";
   }
 
   // Params queries the ecocredit module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/params";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/params";
   }
 }
 

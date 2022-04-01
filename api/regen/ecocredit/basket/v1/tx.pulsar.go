@@ -3727,8 +3727,8 @@ type MsgCreate struct {
 	// exponent is the exponent that will be used for converting credits to basket
 	// tokens and for bank denom metadata. It also limits the precision of
 	// credit amounts when putting credits into a basket. An exponent of 6 will
-	// mean that 10^6 units of a basket token will be issued for 1.0 credits and that
-	// this should be displayed as one unit in user interfaces. It also means
+	// mean that 10^6 units of a basket token will be issued for 1.0 credits and
+	// that this should be displayed as one unit in user interfaces. It also means
 	// that the maximum precision of credit amounts is 6 decimal places so that
 	// the need to round is eliminated. The exponent must be >= the precision of
 	// the credit type at the time the basket is created and be of one of the

@@ -26,9 +26,12 @@ type MsgClient interface {
 	Sell(ctx context.Context, in *MsgSell, opts ...grpc.CallOption) (*MsgSellResponse, error)
 	// UpdateSellOrders updates existing sell orders.
 	UpdateSellOrders(ctx context.Context, in *MsgUpdateSellOrders, opts ...grpc.CallOption) (*MsgUpdateSellOrdersResponse, error)
+	// CancelSellOrder cancels a sell order and returns the funds from escrow.
+	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
 }
 
@@ -52,6 +55,15 @@ func (c *msgClient) Sell(ctx context.Context, in *MsgSell, opts ...grpc.CallOpti
 func (c *msgClient) UpdateSellOrders(ctx context.Context, in *MsgUpdateSellOrders, opts ...grpc.CallOption) (*MsgUpdateSellOrdersResponse, error) {
 	out := new(MsgUpdateSellOrdersResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/UpdateSellOrders", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error) {
+	out := new(MsgCancelSellOrderResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/CancelSellOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,9 +96,12 @@ type MsgServer interface {
 	Sell(context.Context, *MsgSell) (*MsgSellResponse, error)
 	// UpdateSellOrders updates existing sell orders.
 	UpdateSellOrders(context.Context, *MsgUpdateSellOrders) (*MsgUpdateSellOrdersResponse, error)
+	// CancelSellOrder cancels a sell order and returns the funds from escrow.
+	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
+	// AllowAskDenom is a governance operation which authorizes a new ask denom to
+	// be used in sell orders
 	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
@@ -100,6 +115,9 @@ func (UnimplementedMsgServer) Sell(context.Context, *MsgSell) (*MsgSellResponse,
 }
 func (UnimplementedMsgServer) UpdateSellOrders(context.Context, *MsgUpdateSellOrders) (*MsgUpdateSellOrdersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateSellOrders not implemented")
+}
+func (UnimplementedMsgServer) CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelSellOrder not implemented")
 }
 func (UnimplementedMsgServer) Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Buy not implemented")
@@ -156,6 +174,24 @@ func _Msg_UpdateSellOrders_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_CancelSellOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCancelSellOrder)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CancelSellOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.marketplace.v1.Msg/CancelSellOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CancelSellOrder(ctx, req.(*MsgCancelSellOrder))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Buy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgBuy)
 	if err := dec(in); err != nil {
@@ -206,6 +242,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateSellOrders",
 			Handler:    _Msg_UpdateSellOrders_Handler,
+		},
+		{
+			MethodName: "CancelSellOrder",
+			Handler:    _Msg_CancelSellOrder_Handler,
 		},
 		{
 			MethodName: "Buy",

@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -51,18 +52,21 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
+	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	rowID, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
-		ProjectId:  projectInfo.Id,
-		BatchDenom: batchDenom,
-		Metadata:   req.Metadata,
-		StartDate:  startDate,
-		EndDate:    endDate,
+		ProjectId:    projectInfo.Id,
+		Issuer:       issuer,
+		BatchDenom:   batchDenom,
+		Metadata:     req.Metadata,
+		StartDate:    startDate,
+		EndDate:      endDate,
+		IssuanceDate: issuanceDate,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	creditType, err := GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batchDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +74,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 	for _, issuance := range req.Issuance {
-		decs, err := GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +119,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
+		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateBatch issuance iteration")
 	}
 
 	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
@@ -139,6 +143,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		TotalAmount:     totalAmount.String(),
 		StartDate:       startDate.String(),
 		EndDate:         endDate.String(),
+		IssuanceDate:    issuanceDate.String(),
 		ProjectLocation: projectInfo.ProjectLocation,
 		ProjectId:       projectInfo.Name,
 	}); err != nil {
