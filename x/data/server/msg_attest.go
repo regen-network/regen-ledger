@@ -20,6 +20,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		return nil, err
 	}
 
+	var entries []*data.AttestorEntry
 	for _, attestor := range request.Attestors {
 		addr, err := sdk.AccAddressFromBech32(attestor)
 		if err != nil {
@@ -30,12 +31,8 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		if err != nil {
 			return nil, err
 		} else if exists {
+			// an attestor attesting to the same piece of date is a no-op
 			continue
-		}
-
-		timestamp := &timestamppb.Timestamp{
-			Seconds: timestamp.Seconds,
-			Nanos:   timestamp.Nanos,
 		}
 
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
@@ -50,19 +47,23 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			return nil, err
 		}
 
+		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
+			Iri:       iri,
+			Attestor:  attestor,
+			Timestamp: timestamp,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		entries = append(entries, &data.AttestorEntry{
+			Iri:       iri,
+			Attestor:  addr.String(),
+			Timestamp: timestamp,
+		})
+
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
 	}
 
-	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
-		Iri:       iri,
-		Attestors: request.Attestors,
-		Timestamp: timestamp,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &data.MsgAttestResponse{
-		Timestamp: timestamp,
-	}, nil
+	return &data.MsgAttestResponse{Entries: entries}, nil
 }

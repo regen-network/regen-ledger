@@ -158,13 +158,17 @@ message ContentEntry {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestorEntry is a attestor entry wrapping a attestor address and timestamp
+// AttestorEntry is an attestor entry wrapping a attestor address and timestamp
 message AttestorEntry {
-  // attestor is the address of the attestor.
-  string attestor = 1;
+  // iri is the content IRI of the data attested to.
+  string iri = 1;
 
-  // timestamp is the Timestamp of the attestation.
-  google.protobuf.Timestamp timestamp = 2;
+  // attestor is the addresses of the account that has attested
+  // to the validity of the data.
+  string attestor = 2;
+
+  // timestamp is the timestamp at which the data was attested to.
+  google.protobuf.Timestamp timestamp = 3;
 }
 
 // ContentHashes contains list of content ContentHash.

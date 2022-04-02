@@ -3,10 +3,12 @@ package testsuite
 import (
 	"context"
 	"crypto"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -18,6 +20,7 @@ type IntegrationTestSuite struct {
 	fixture        testutil.Fixture
 
 	ctx         context.Context
+	sdkCtx      sdk.Context
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress
@@ -35,6 +38,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
+	s.sdkCtx = s.ctx.(types.Context).WithBlockTime(time.Now())
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
 	require.GreaterOrEqual(len(s.fixture.Signers()), 2)
@@ -83,6 +87,10 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
+
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
@@ -143,19 +151,23 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Empty(attestorsByHash.Attestors)
 
 	// can attest to data
-	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr1.String()},
 		Hash:      graphHash,
 	})
 	require.NoError(err)
 
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
 	// attesting to the same data twice is a no-op
-	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	attestRes, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr1.String()},
 		Hash:      graphHash,
 	})
 	require.NoError(err)
-	require.Equal(attestRes1.Timestamp, attestRes2.Timestamp)
+	require.Nil(attestRes.Entries)
 
 	// can query attestors by iri
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
@@ -220,6 +232,10 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
+
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{

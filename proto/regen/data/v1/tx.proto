@@ -90,8 +90,9 @@ message MsgAttest {
 
 // MsgAttestResponse is the Msg/Attest response type.
 message MsgAttestResponse {
-  // timestamp is the timestamp at which the data was attested to.
-  google.protobuf.Timestamp timestamp = 1;
+  // entries are the attestor entries including the attestor, the IRI, and
+  // the timestamp.
+  repeated AttestorEntry entries = 1;
 }
 
 // MsgDefineResolver is the Msg/DefineResolver request type.

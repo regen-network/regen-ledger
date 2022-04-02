@@ -14,13 +14,13 @@ message EventAnchor {
 
 // EventAttest is an event emitted when data is attested to on chain.
 message EventAttest {
-  // iri is the data IRI
+  // iri is the content IRI of the data attested to.
   string iri = 1;
 
-  // attestors are the addresses of the accounts which have attested
+  // attestor is the addresses of the account that has attested
   // to the validity of the data.
-  repeated string attestors = 2;
+  string attestor = 2;
 
-    // timestamp is the timestamp at which the data was attested to.
+  // timestamp is the timestamp at which the data was attested to.
   google.protobuf.Timestamp timestamp = 3;
 }
