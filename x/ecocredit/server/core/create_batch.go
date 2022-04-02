@@ -55,6 +55,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
 	rowID, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
 		ProjectId:    projectInfo.Id,
+		Issuer:       issuer,
 		BatchDenom:   batchDenom,
 		Metadata:     req.Metadata,
 		StartDate:    startDate,

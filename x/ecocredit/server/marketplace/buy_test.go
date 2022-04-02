@@ -8,9 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -27,7 +26,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
 	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -36,8 +35,8 @@ func TestBuy_ValidTradable(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -53,9 +52,6 @@ func TestBuy_ValidTradable(t *testing.T) {
 	// sell order ask price: 10ufoo, buy order of 3 credits -> 10 * 3 = 30ufoo
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
@@ -65,11 +61,6 @@ func TestBuy_ValidTradable(t *testing.T) {
 		},
 	})
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, false)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -92,7 +83,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -101,8 +92,8 @@ func TestBuy_ValidRetired(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -117,9 +108,6 @@ func TestBuy_ValidRetired(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
@@ -129,10 +117,6 @@ func TestBuy_ValidRetired(t *testing.T) {
 		},
 	})
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// sell order should now have quantity 10 - 3 -> 7
 	sellOrder, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -155,7 +139,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 100)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -164,8 +148,8 @@ func TestBuy_OrderFilled(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -180,9 +164,6 @@ func TestBuy_OrderFilled(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
-	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-
 	purchaseAmt := math.NewDecFromInt64(10)
 	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: buyerAddr.String(),
@@ -192,10 +173,6 @@ func TestBuy_OrderFilled(t *testing.T) {
 		},
 	})
 	assert.NilError(t, err)
-
-	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
-	assert.NilError(t, err)
-	assertSupplyEscrowedAmounts(t, supplyBefore, supplyAfter, purchaseAmt, true)
 
 	// order was filled, so sell order should no longer exist
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, sellOrderId)
@@ -215,7 +192,7 @@ func TestBuy_Invalid(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 150)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -224,8 +201,8 @@ func TestBuy_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -302,37 +279,4 @@ func TestBuy_Invalid(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
-}
-
-func assertSupplyEscrowedAmounts(t *testing.T, supplyBefore, supplyAfter *ecocreditv1.BatchSupply, amount math.Dec, didRetire bool) {
-	var beforeSupply, beforeSupplyEscrowed math.Dec
-	var afterSupply, afterSupplyEscrowed math.Dec
-	if didRetire {
-		_, beforeSupply, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
-		_, afterSupply, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
-	} else {
-		beforeSupply, _, beforeSupplyEscrowed = getSupplyDecimals(t, supplyBefore)
-		afterSupply, _, afterSupplyEscrowed = getSupplyDecimals(t, supplyAfter)
-	}
-
-	expectedAmt, err := beforeSupply.Add(amount)
-	assert.NilError(t, err)
-	expectedEscrowed, err := beforeSupplyEscrowed.Sub(amount)
-	assert.NilError(t, err)
-
-	assert.Check(t, afterSupply.Equal(expectedAmt))
-	assert.Check(t, afterSupplyEscrowed.Equal(expectedEscrowed))
-
-}
-
-// getSupplyDecimals extracts the decimal form for the supplies
-func getSupplyDecimals(t *testing.T, supply *ecocreditv1.BatchSupply) (tradable, retired, escrowed math.Dec) {
-	var err error
-	tradable, err = math.NewDecFromString(supply.TradableAmount)
-	assert.NilError(t, err)
-	retired, err = math.NewDecFromString(supply.RetiredAmount)
-	assert.NilError(t, err)
-	escrowed, err = math.NewDecFromString(supply.EscrowedAmount)
-	assert.NilError(t, err)
-	return
 }
