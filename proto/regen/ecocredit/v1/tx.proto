@@ -24,7 +24,7 @@ service Msg {
   // be distributed to recipients in either tradable or retired form.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
-  // MintBatch issues new token in a given batch.
+  // MintBatchCredits issues new token in a given batch.
   // The issuer must be the account who created (or delegated using x/authz),
   // the batch.
   // The request will fail if the batch is not open.
@@ -32,7 +32,8 @@ service Msg {
   // for issuing native credits on Regen. More specifically, we
   // enable minting more credits in an existing batch, when the batch
   // represents a vintage originally registered in another chain.
-  rpc MintBatch(MsgMintBatch) returns (MsgMintBatchResponse);
+  rpc MintBatchCredits(MsgMintBatchCredits)
+      returns (MsgMintBatchCreditsResponse);
 
   // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
@@ -189,8 +190,8 @@ message MsgCreateBatchResponse {
   string batch_denom = 1;
 }
 
-// MsgMintBatch is a request type for MintBatch Msg RPC.
-message MsgMintBatch {
+// MsgMintBatchCredits is a request type for MintBatchCredits Msg RPC.
+message MsgMintBatchCredits {
   // Issuer must equal to the batch.issuer address.
   // Signer of the msg.
   string issuer = 1;
@@ -214,8 +215,8 @@ message MsgMintBatch {
   string note = 6;
 }
 
-// MsgMintBatchResponse is the Msg/MintBatch response type.
-message MsgMintBatchResponse {}
+// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
+message MsgMintBatchCreditsResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {

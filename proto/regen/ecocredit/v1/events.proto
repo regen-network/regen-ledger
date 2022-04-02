@@ -75,7 +75,7 @@ message EventCreateBatch {
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
-message EventMintBatch {
+message EventMintBatchCredits {
 
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 1;

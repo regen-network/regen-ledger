@@ -138,7 +138,7 @@ message BatchInfo {
   google.protobuf.Timestamp issuance_date = 7;
 
   // issuer is an account address which created the batch and which is
-  // authorized to issue more credits if open=true.
+  // authorized to mint more credits if open=true.
   string issuer = 8;
 
   // open tells if it's possible to mint new credits in the future.
