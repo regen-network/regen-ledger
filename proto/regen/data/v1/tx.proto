@@ -65,7 +65,7 @@ message MsgAnchor {
 
 // MsgAnchor is the Msg/Anchor response type.
 message MsgAnchorResponse {
-  // timestamp is the timestamp of the block at which the data was anchored.
+  // timestamp is the timestamp at which the data was anchored.
   google.protobuf.Timestamp timestamp = 1;
 
   // iri is the IRI of the data that was anchored.
@@ -89,7 +89,10 @@ message MsgAttest {
 }
 
 // MsgAttestResponse is the Msg/Attest response type.
-message MsgAttestResponse {}
+message MsgAttestResponse {
+  // timestamp is the timestamp at which the data was attested to.
+  google.protobuf.Timestamp timestamp = 1;
+}
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {

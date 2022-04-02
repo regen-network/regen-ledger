@@ -33,6 +33,11 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			continue
 		}
 
+		timestamp := &timestamppb.Timestamp{
+			Seconds: timestamp.Seconds,
+			Nanos:   timestamp.Nanos,
+		}
+
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
 			Id:       id,
 			Attestor: addr,
@@ -51,10 +56,13 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
 		Iri:       iri,
 		Attestors: request.Attestors,
+		Timestamp: timestamp,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgAttestResponse{}, nil
+	return &data.MsgAttestResponse{
+		Timestamp: timestamp,
+	}, nil
 }

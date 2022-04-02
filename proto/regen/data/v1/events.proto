@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package regen.data.v1;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // EventAnchor is an event emitted when data is anchored on chain.
@@ -18,4 +20,7 @@ message EventAttest {
   // attestors are the addresses of the accounts which have attested
   // to the validity of the data.
   repeated string attestors = 2;
+
+    // timestamp is the timestamp at which the data was attested to.
+  google.protobuf.Timestamp timestamp = 3;
 }

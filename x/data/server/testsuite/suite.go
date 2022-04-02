@@ -84,9 +84,6 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 
-	// set original timestamp
-	ts := anchorRes1.Timestamp
-
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
@@ -95,7 +92,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
-	require.Equal(ts, anchorRes2.Timestamp)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
 	// can query data by iri
 	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
@@ -104,7 +101,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(dataByIRI)
 	require.NotNil(dataByIRI.Entry)
-	require.Equal(ts, dataByIRI.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
 
 	// can query data by hash
 	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
@@ -113,7 +110,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(dataByHash)
 	require.NotNil(dataByHash.Entry)
-	require.Equal(ts, dataByHash.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
 
 	// can query iri by hash
 	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
@@ -145,21 +142,20 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.Empty(attestorsByHash.Attestors)
 
-	// TODO: should attesting to data return a timestamp?
-
 	// can attest to data
-	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	attestRes1, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr1.String()},
 		Hash:      graphHash,
 	})
 	require.NoError(err)
 
 	// attesting to the same data twice is a no-op
-	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
+	attestRes2, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
 		Attestors: []string{s.addr1.String()},
 		Hash:      graphHash,
 	})
 	require.NoError(err)
+	require.Equal(attestRes1.Timestamp, attestRes2.Timestamp)
 
 	// can query attestors by iri
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
@@ -225,9 +221,6 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 
-	// set original timestamp
-	ts := anchorRes1.Timestamp
-
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.addr1.String(),
@@ -236,7 +229,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
-	require.Equal(ts, anchorRes2.Timestamp)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
 	// can query data by iri
 	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
@@ -245,7 +238,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(dataByIRI)
 	require.NotNil(dataByIRI.Entry)
-	require.Equal(ts, dataByIRI.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
 
 	// can query data by hash
 	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
@@ -254,7 +247,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(dataByHash)
 	require.NotNil(dataByHash.Entry)
-	require.Equal(ts, dataByHash.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
 
 	// can query iri by hash
 	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
