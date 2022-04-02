@@ -315,8 +315,8 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		var projectID string
 		for _, project := range projects {
-			if project.Issuer == issuer.Address.String() {
-				projectID = project.ProjectId
+			if sdk.AccAddress(project.Admin).String() == issuer.Address.String() {
+				projectID = project.Name
 				break
 			}
 		}
@@ -381,8 +381,9 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
+		admin := sdk.AccAddress(project.Admin).String()
 		balres, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    project.Issuer,
+			Account:    admin,
 			BatchDenom: batch.BatchDenom,
 		})
 		if err != nil {
@@ -404,15 +405,11 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		recipient, _ := simtypes.RandomAcc(r, accs)
-		if project.Issuer == recipient.Address.String() {
+		if admin == recipient.Address.String() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "sender & recipient are same"), nil, nil
 		}
 
-		addr, err := sdk.AccAddressFromBech32(project.Issuer)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
-		}
-
+		addr := sdk.AccAddress(project.Admin)
 		acc, found := simtypes.FindAccount(accs, addr)
 		if !found {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "account not found"), nil, nil
@@ -445,7 +442,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &core.MsgSend{
-			Sender:    project.Issuer,
+			Sender:    admin,
 			Recipient: recipient.Address.String(),
 			Credits: []*core.MsgSend_SendCredits{
 				{
@@ -499,8 +496,9 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
+		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    project.Issuer,
+			Account:    admin,
 			BatchDenom: batch.BatchDenom,
 		})
 		if err != nil {
@@ -517,7 +515,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		randSub := math.NewDecFromInt64(int64(simtypes.RandIntBetween(r, 1, 10)))
-		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, project.Issuer, TypeMsgRetire)
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, admin, TypeMsgRetire)
 		if spendable == nil {
 			return op, nil, err
 		}
@@ -583,13 +581,9 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, project.Issuer, TypeMsgCancel)
-		if spendable == nil {
-			return op, nil, err
-		}
-
+		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    project.Issuer,
+			Account:    admin,
 			BatchDenom: batch.BatchDenom,
 		})
 		if err != nil {
@@ -606,13 +600,18 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &ecocredit.MsgCancel{
-			Holder: project.Issuer,
+			Holder: admin,
 			Credits: []*ecocredit.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.BatchDenom,
 					Amount:     balanceRes.Balance.Tradable,
 				},
 			},
+		}
+
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, admin, TypeMsgCancel)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		txCtx := simulation.OperationInput{
@@ -740,11 +739,32 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
+		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Name})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
+		}
+		classIssuers := issuersRes.Issuers
+
+		var addIssuers []string
+		var removeIssuers []string
+
 		issuers := randomIssuers(r, accs)
+		for _, i := range classIssuers {
+			if utils.Contains(issuers, i) {
+				removeIssuers = append(removeIssuers, i)
+			} else {
+				addIssuers = append(addIssuers, i)
+			}
+		}
+
+		if len(removeIssuers) == 0 {
+			addIssuers = issuers
+		}
 		msg := &core.MsgUpdateClassIssuers{
-			Admin:   admin.String(),
-			ClassId: class.Name,
-			Issuers: issuers,
+			Admin:         admin.String(),
+			ClassId:       class.Name,
+			AddIssuers:    addIssuers,
+			RemoveIssuers: removeIssuers,
 		}
 
 		txCtx := simulation.OperationInput{
