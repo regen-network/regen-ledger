@@ -256,6 +256,12 @@ message BatchOrigTx {
   // the id of an originating transaction or opeartion.
   string tx_id = 1;
 
+  // type of the transaction originating the mint process. Eg: Polygon,
+  // Ethereum, Verra,
+  string typ = 2;
+
+  string note = 3;
+
   // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 2;
+  string batch_denom = 4;
 }
