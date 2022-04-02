@@ -9,7 +9,7 @@ import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/data/server/lookup"
+	"github.com/regen-network/regen-ledger/x/data/server/hasher"
 )
 
 var _ data.MsgServer = serverImpl{}
@@ -24,12 +24,12 @@ var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 
 type serverImpl struct {
 	storeKey   sdk.StoreKey
-	iriIDTable lookup.Table
+	iriHasher  hasher.Hasher
 	stateStore api.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
-	tbl, err := lookup.NewTable([]byte{IriIDTablePrefix})
+	hasher, err := hasher.NewHasher([]byte{IriIDHashPrefix})
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 
 	return serverImpl{
 		storeKey:   storeKey,
-		iriIDTable: tbl,
+		iriHasher:  hasher,
 		stateStore: stateStore,
 	}
 }

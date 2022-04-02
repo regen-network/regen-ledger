@@ -37,14 +37,33 @@ func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, 
 		return "", nil, nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	store := sdkCtx.KVStore(s.storeKey)
-	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
+	dataId := &api.DataID{Iri: ""}
+
+	for collisions := 0; dataId.Iri != iri; collisions++ {
+
+		id = s.iriHasher.CreateID([]byte(iri), collisions)
+
+		dataId, err = s.stateStore.DataIDTable().Get(ctx, id)
+		if err != nil {
+			if !ormerrors.IsNotFound(err) {
+				return "", nil, nil, err
+			} else {
+				dataId = &api.DataID{
+					Id:  id,
+					Iri: iri,
+				}
+				err := s.stateStore.DataIDTable().Insert(ctx, dataId)
+				if err != nil {
+					return "", nil, nil, err
+				}
+			}
+		}
+
+		// consume additional gas whenever we verify the hash and attempt to generate an ID
+		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data hash verification")
+	}
 
 	timestamp, err = s.anchorAndGetTimestamp(ctx, id, iri)
-
-	// consume additional gas whenever we verify the provided hash
-	sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data hash verification")
 
 	return iri, id, timestamp, err
 }

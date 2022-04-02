@@ -14,14 +14,12 @@ import (
 
 // ByIRI queries data based on its ContentHash.
 func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
-	id, err := s.getID(ctx, request.Iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
 
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
-	entry, err := s.getEntry(ctx, store, id)
+	entry, err := s.getEntry(ctx, dataId.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +40,12 @@ func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest
 		return nil, err
 	}
 
-	id, err := s.getID(ctx, iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, err
 	}
 
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
-	entry, err := s.getEntry(ctx, store, id)
+	entry, err := s.getEntry(ctx, dataId.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +76,6 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		return nil, err
 	}
 
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
 	var entries []*data.ContentEntry
 	for it.Next() {
 		dataAttestor, err := it.Value()
@@ -89,7 +83,7 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 			return nil, err
 		}
 
-		entry, err := s.getEntry(ctx, store, dataAttestor.Id)
+		entry, err := s.getEntry(ctx, dataAttestor.Id)
 		if err != nil {
 			return nil, err
 		}
