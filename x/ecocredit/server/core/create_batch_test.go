@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -28,10 +27,10 @@ func TestCreateBatch_Valid(t *testing.T) {
 	s.ctx = types.WrapSDKContext(s.sdkCtx)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()
@@ -93,10 +92,10 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()

@@ -13,7 +13,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -22,7 +22,7 @@ var (
 	batchDenom = "C01-20200101-20200201-001"
 	start, end = timestamppb.Now(), timestamppb.Now()
 	ask        = sdk.NewInt64Coin("ufoo", 10)
-	creditType = ecocredit.CreditType{Name: "carbon", Abbreviation: "C", Unit: "tonnes", Precision: 6}
+	creditType = core.CreditType{Name: "carbon", Abbreviation: "C", Unit: "tonnes", Precision: 6}
 )
 
 func TestSellOrders(t *testing.T) {
