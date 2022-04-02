@@ -106,7 +106,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		params := res.Params
 		spendable := bk.SpendableCoins(sdkCtx, curator.Address)
-		if !spendable.IsAllGTE(params.BasketCreationFee) {
+		if !spendable.IsAllGTE(params.BasketFee) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "not enough balance"), nil, nil
 		}
 
@@ -133,7 +133,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		msg := &basket.MsgCreate{
 			Name:              simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 8)),
 			Description:       simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 3, 256)),
-			Fee:               params.BasketCreationFee,
+			Fee:               params.BasketFee,
 			DisableAutoRetire: r.Float32() < 0.5,
 			Curator:           curator.Address.String(),
 			Exponent:          utils.RandomExponent(r, precision),
@@ -233,7 +233,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var ownerAddr string
 		var owner simtypes.Account
 		for _, class := range classes {
-			if class.CreditType.Abbreviation == rBasket.CreditTypeAbbrev && len(class.Issuers) > 0 {
+			if class.CreditType == rBasket.CreditTypeAbbrev && len(class.Issuers) > 0 {
 				if ownerAddr == "" {
 					bechAddr, err := sdk.AccAddressFromBech32(class.Issuers[0])
 					if err != nil {
@@ -273,7 +273,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			for _, projectInfo := range resProjects.GetProjects() {
 
-				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.ProjectId})
+				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.Name})
 				if err != nil {
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 				}
@@ -289,7 +289,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 						}
 
-						tradableAmount := balanceRes.TradableAmount
+						tradableAmount := balanceRes.Balance.Tradable
 						if tradableAmount != "0" {
 							d, err := math.NewPositiveDecFromString(tradableAmount)
 							if err != nil {
@@ -479,8 +479,8 @@ func min(x, y int) int {
 	return x
 }
 
-func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient ecocredit.QueryClient) (*ecocredit.CreditType, error) {
-	res, err := qryClient.CreditTypes(ctx, &ecocredit.QueryCreditTypesRequest{})
+func randomCreditType(r *rand.Rand, ctx regentypes.Context, qryClient core.QueryClient) (*core.CreditType, error) {
+	res, err := qryClient.CreditTypes(ctx, &core.QueryCreditTypesRequest{})
 	if err != nil {
 		return nil, err
 	}
