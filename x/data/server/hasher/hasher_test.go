@@ -7,9 +7,9 @@ import (
 	"math"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/tendermint/tendermint/libs/rand"
 )
 

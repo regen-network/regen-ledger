@@ -4,6 +4,7 @@ import (
 	"context"
 
 	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/regen-network/regen-ledger/x/data"
 )
 

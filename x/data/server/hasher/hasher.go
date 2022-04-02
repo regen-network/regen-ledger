@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"hash"
 	"hash/fnv"
-
-	"github.com/cosmos/cosmos-sdk/store/mem"
 )
 
 // Hasher generates a unique binary identifier for a longer piece of binary data
@@ -70,7 +68,7 @@ type HashOptions struct {
 	// MinLength is the minimum number of hash bytes that will be used to create a lookup identifier.
 	MinLength int
 
-	// Prefix is an optional prefix to be pre-pended to all KVStore keys.
+	// Prefix is an optional prefix to be pre-pended to all keys.
 	Prefix []byte
 }
 
@@ -82,7 +80,6 @@ type hasher struct {
 	prefixLen int
 	hashLen   int
 	initLen   int
-	store     *mem.Store
 }
 
 func (t hasher) CreateID(value []byte, collisions int) []byte {

@@ -59,7 +59,7 @@ func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, 
 			}
 		}
 
-		// consume additional gas whenever we verify the hash and attempt to generate an ID
+		// consume additional gas whenever we verify the hash and create an ID
 		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data hash verification")
 	}
 
