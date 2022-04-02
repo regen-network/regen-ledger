@@ -80,18 +80,9 @@ message EventMintBatchCredits {
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 1;
 
-  // issuer is the account address of the issuer of the credit batch.
-  string issuer = 2;
-
-  // amount is the number of credits minted.
-  string amount = 3;
-
   // A reference to a transaction or an event referencing the transaction
   // which caused the transfer from other chain or registry.
-  OriginTx origin_tx = 4;
-
-  // reference note for accounting, will be passed to an event
-  string note = 5;
+  OriginTx origin_tx = 2;
 }
 
 // EventReceive is an event emitted when credits are received either via

@@ -39,7 +39,7 @@ message Params {
 // related to an action on Regen Ledger.
 message OriginTx {
   // type of the transaction originating the mint process. Eg: Polygon,
-  // Ethereum, Verra,
+  // Ethereum, Verra...
   string typ = 1;
   // the id of a transaction based on a type (tx id, serial number)
   string id = 2;
