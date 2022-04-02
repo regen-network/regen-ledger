@@ -244,3 +244,18 @@ message BatchSupply {
   // locked up in escrow for use in the marketplace.
   string escrowed_amount = 5;
 }
+
+// BatchOrigTx will index batch mint operations using orig tx ID to handle
+// potential double minting errors
+message BatchOrigTx {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 11,
+    primary_key : {fields : "tx_id"}
+  };
+
+  // the id of an originating transaction or opeartion.
+  string tx_id = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
+}
