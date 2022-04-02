@@ -3,9 +3,9 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -67,9 +67,8 @@ service Query {
 
   // Balances queries all credit balances the given account holds.
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
-        option (google.api.http).get =
-        "/regen/ecocredit/v1/balances/{account}";
-}
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{account}";
+  }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
@@ -261,7 +260,8 @@ message QueryBalancesRequest {
 // QueryBalancesResponse is the Query/Balances response type.
 message QueryBalancesResponse {
 
-  // balances are a list of balances from different credit batches that the account holds.
+  // balances are a list of balances from different credit batches that the
+  // account holds.
   repeated BatchBalance balances = 1;
 
   // pagination defines the pagination in the response.
