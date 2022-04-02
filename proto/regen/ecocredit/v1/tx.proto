@@ -146,6 +146,12 @@ message MsgCreateBatch {
   // If open is true we will enable future minting.
   // Otherwise we will seal the batch and disable the future minting.
   bool open = 7;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 8;
 }
 
 // BatchIssuance represents the issuance of some credits in a batch to a
@@ -199,14 +205,16 @@ message MsgMintBatch {
   // Othrwise we will seal the batch after the mint.
   // Throws an error if the batch is already sealed.
   bool open = 5;
+}
 
-  message OriginTx {
-    // type of the transaction originating the mint process. Eg: Polygon,
-    // Ethereum, Verra,
-    string typ = 1;
-    // the id of a transaction based on a type (tx id, serial number)
-    string id = 2;
-  }
+// OriginTx is a reference to an external transaction or an operation
+// related to an action on Regen Ledger.
+message OriginTx {
+  // type of the transaction originating the mint process. Eg: Polygon,
+  // Ethereum, Verra,
+  string typ = 1;
+  // the id of a transaction based on a type (tx id, serial number)
+  string id = 2;
 }
 
 // MsgMintBatchResponse is the Msg/MintBatch response type.
