@@ -138,12 +138,12 @@ message BatchInfo {
   google.protobuf.Timestamp issuance_date = 7;
 
   // issuer is an account address which created the batch and which is
-  // authorized to issue more credits if sealed=false.
+  // authorized to issue more credits if open=true.
   string issuer = 8;
 
-  // locked tells if it's possible to mint new credits in the future.
-  // Once the locked is set to true, it can't be toggled any more.
-  bool locked = 9;
+  // open tells if it's possible to mint new credits in the future.
+  // Once `open` is set to false, it can't be toggled any more.
+  bool open = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
