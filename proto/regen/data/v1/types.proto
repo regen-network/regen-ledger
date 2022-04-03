@@ -151,20 +151,21 @@ message ContentEntry {
   // hash is the content hash of the anchored data.
   ContentHash hash = 1;
 
-  // iri is the content IRI of the anchored data.
+  // iri is the IRI of the anchored data.
   string iri = 2;
 
-  // timestamp is the Timestamp of the anchored data.
+  // timestamp is the timestamp of the anchored data.
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestorEntry is an attestor entry wrapping a attestor address and timestamp
+// AttestorEntry is an attestor entry including the attestor, the IRI,
+// and the timestamp.
 message AttestorEntry {
-  // iri is the content IRI of the data attested to.
+  // iri is the IRI of the data attested to.
   string iri = 1;
 
-  // attestor is the addresses of the account that has attested
-  // to the validity of the data.
+  // attestor is the address of the account that has attested
+  // to the veracity of the data.
   string attestor = 2;
 
   // timestamp is the timestamp at which the data was attested to.

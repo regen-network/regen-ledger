@@ -26,8 +26,8 @@ func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.
 	}
 
 	return &data.MsgAnchorResponse{
-		Timestamp: timestamp,
 		Iri:       iri,
+		Timestamp: timestamp,
 	}, nil
 }
 
@@ -73,7 +73,10 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 				return nil, err
 			}
 
-			return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{Iri: iri})
+			return timestamp, sdkCtx.EventManager().EmitTypedEvent(&data.EventAnchor{
+				Iri:       iri,
+				Timestamp: timestamp,
+			})
 		}
 	}
 

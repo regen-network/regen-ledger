@@ -152,22 +152,18 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// can attest to data
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr1.String()},
-		Hash:      graphHash,
+		Attestor: s.addr1.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
-
-	// update block time
-	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// attesting to the same data twice is a no-op
 	attestRes, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr1.String()},
-		Hash:      graphHash,
+		Attestor: s.addr1.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
-	require.Nil(attestRes.Entries)
+	require.Nil(attestRes.NewEntries)
 
 	// can query attestors by iri
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
@@ -196,8 +192,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// another attestor can attest
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr2.String()},
-		Hash:      graphHash,
+		Attestor: s.addr2.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 

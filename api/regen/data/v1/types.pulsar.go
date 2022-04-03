@@ -3577,9 +3577,9 @@ type ContentEntry struct {
 
 	// hash is the content hash of the anchored data.
 	Hash *ContentHash `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
-	// iri is the content IRI of the anchored data.
+	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
-	// timestamp is the Timestamp of the anchored data.
+	// timestamp is the timestamp of the anchored data.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
@@ -3624,16 +3624,17 @@ func (x *ContentEntry) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// AttestorEntry is an attestor entry wrapping a attestor address and timestamp
+// AttestorEntry is an attestor entry including the attestor, the IRI,
+// and the timestamp.
 type AttestorEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the content IRI of the data attested to.
+	// iri is the IRI of the data attested to.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestor is the addresses of the account that has attested
-	// to the validity of the data.
+	// attestor is the address of the account that has attested
+	// to the veracity of the data.
 	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	// timestamp is the timestamp at which the data was attested to.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`

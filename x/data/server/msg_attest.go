@@ -15,14 +15,15 @@ import (
 func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.MsgAttestResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	iri, id, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
-	if err != nil {
-		return nil, err
-	}
+	var newEntries []*data.AttestorEntry
 
-	var entries []*data.AttestorEntry
-	for _, attestor := range request.Attestors {
-		addr, err := sdk.AccAddressFromBech32(attestor)
+	for _, hash := range request.Hashes {
+		iri, id, timestamp, err := s.anchorAndGetIRI(ctx, hash)
+		if err != nil {
+			return nil, err
+		}
+
+		addr, err := sdk.AccAddressFromBech32(request.Attestor)
 		if err != nil {
 			return nil, err
 		}
@@ -49,14 +50,14 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 
 		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
 			Iri:       iri,
-			Attestor:  attestor,
+			Attestor:  request.Attestor,
 			Timestamp: timestamp,
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		entries = append(entries, &data.AttestorEntry{
+		newEntries = append(newEntries, &data.AttestorEntry{
 			Iri:       iri,
 			Attestor:  addr.String(),
 			Timestamp: timestamp,
@@ -65,5 +66,5 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
 	}
 
-	return &data.MsgAttestResponse{Entries: entries}, nil
+	return &data.MsgAttestResponse{NewEntries: newEntries}, nil
 }
