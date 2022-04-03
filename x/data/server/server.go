@@ -12,6 +12,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/server/hasher"
 )
 
+const (
+	IriHashPrefix byte = iota
+	ORMStatePrefix
+)
+
 var _ data.MsgServer = serverImpl{}
 var _ data.QueryServer = serverImpl{}
 
@@ -29,7 +34,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
-	hasher, err := hasher.NewHasher([]byte{IriIDHashPrefix})
+	hasher, err := hasher.NewHasher([]byte{IriHashPrefix})
 	if err != nil {
 		panic(err)
 	}

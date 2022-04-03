@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			name:      "invalid iri",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "not found",
+			expErrMsg: "invalid IRI",
 		},
 		{
 			name:   "valid",
