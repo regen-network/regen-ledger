@@ -6,7 +6,6 @@ package data
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -27,8 +26,6 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type EventAnchor struct {
 	// iri is the IRI of the data anchored on chain.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// timestamp is the timestamp at which the data was anchored on chain.
-	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *EventAnchor) Reset()         { *m = EventAnchor{} }
@@ -71,22 +68,13 @@ func (m *EventAnchor) GetIri() string {
 	return ""
 }
 
-func (m *EventAnchor) GetTimestamp() *types.Timestamp {
-	if m != nil {
-		return m.Timestamp
-	}
-	return nil
-}
-
 // EventAttest is an event emitted when data is attested to on chain.
 type EventAttest struct {
-	// iri is the content IRI of the data attested to.
+	// iri is the IRI of the data attested to.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestor is the address of the account that has attested
-	// to the validity of the data.
+	// attestor is the address of the account that has attested to the veracity of
+	// the data.
 	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
-	// timestamp is the timestamp at which the data was attested to.
-	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *EventAttest) Reset()         { *m = EventAttest{} }
@@ -136,13 +124,6 @@ func (m *EventAttest) GetAttestor() string {
 	return ""
 }
 
-func (m *EventAttest) GetTimestamp() *types.Timestamp {
-	if m != nil {
-		return m.Timestamp
-	}
-	return nil
-}
-
 func init() {
 	proto.RegisterType((*EventAnchor)(nil), "regen.data.v1.EventAnchor")
 	proto.RegisterType((*EventAttest)(nil), "regen.data.v1.EventAttest")
@@ -151,23 +132,19 @@ func init() {
 func init() { proto.RegisterFile("regen/data/v1/events.proto", fileDescriptor_3e110e0930a307df) }
 
 var fileDescriptor_3e110e0930a307df = []byte{
-	// 243 bytes of a gzipped FileDescriptorProto
+	// 184 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2a, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x49, 0x2c, 0x49, 0xd4, 0x2f, 0x33, 0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29,
 	0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0xe2, 0x05, 0xcb, 0xe9, 0x81, 0xe4, 0xf4, 0xca, 0x0c,
-	0xa5, 0xe4, 0xd3, 0xf3, 0xf3, 0xd3, 0x73, 0x52, 0xf5, 0xc1, 0x92, 0x49, 0xa5, 0x69, 0xfa, 0x25,
-	0x99, 0xb9, 0xa9, 0xc5, 0x25, 0x89, 0xb9, 0x05, 0x10, 0xf5, 0x4a, 0x91, 0x5c, 0xdc, 0xae, 0x20,
-	0xfd, 0x8e, 0x79, 0xc9, 0x19, 0xf9, 0x45, 0x42, 0x02, 0x5c, 0xcc, 0x99, 0x45, 0x99, 0x12, 0x8c,
-	0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x20, 0xa6, 0x90, 0x05, 0x17, 0x27, 0x5c, 0x8f, 0x04, 0x93, 0x02,
-	0xa3, 0x06, 0xb7, 0x91, 0x94, 0x1e, 0xc4, 0x54, 0x3d, 0x98, 0xa9, 0x7a, 0x21, 0x30, 0x15, 0x41,
-	0x08, 0xc5, 0x4a, 0xa5, 0x30, 0xa3, 0x4b, 0x4a, 0x52, 0x8b, 0x4b, 0xb0, 0x18, 0x2d, 0xc5, 0xc5,
-	0x91, 0x08, 0x96, 0xcb, 0x2f, 0x02, 0x9b, 0xcc, 0x19, 0x04, 0xe7, 0xa3, 0x5a, 0xcb, 0x4c, 0x82,
-	0xb5, 0x4e, 0x6e, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3,
-	0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0xa5, 0x93, 0x9e,
-	0x59, 0x92, 0x51, 0x9a, 0xa4, 0x97, 0x9c, 0x9f, 0xab, 0x0f, 0x0e, 0x26, 0xdd, 0xbc, 0xd4, 0x92,
-	0xf2, 0xfc, 0xa2, 0x6c, 0x28, 0x2f, 0x27, 0x35, 0x25, 0x3d, 0xb5, 0x48, 0xbf, 0x02, 0x1c, 0xb2,
-	0x49, 0x6c, 0x60, 0x6b, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x1e, 0xce, 0x88, 0x46, 0x6e,
-	0x01, 0x00, 0x00,
+	0x95, 0xe4, 0xb9, 0xb8, 0x5d, 0x41, 0xd2, 0x8e, 0x79, 0xc9, 0x19, 0xf9, 0x45, 0x42, 0x02, 0x5c,
+	0xcc, 0x99, 0x45, 0x99, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0x20, 0xa6, 0x92, 0x35, 0x4c,
+	0x41, 0x49, 0x49, 0x6a, 0x71, 0x09, 0xa6, 0x02, 0x21, 0x29, 0x2e, 0x8e, 0x44, 0xb0, 0x5c, 0x7e,
+	0x91, 0x04, 0x13, 0x58, 0x18, 0xce, 0x77, 0x72, 0x3b, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39,
+	0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63,
+	0x39, 0x86, 0x28, 0x9d, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4, 0xfc, 0x5c, 0x7d, 0xb0,
+	0x8b, 0x74, 0xf3, 0x52, 0x4b, 0xca, 0xf3, 0x8b, 0xb2, 0xa1, 0xbc, 0x9c, 0xd4, 0x94, 0xf4, 0xd4,
+	0x22, 0xfd, 0x0a, 0xb0, 0x27, 0x92, 0xd8, 0xc0, 0x6e, 0x37, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff,
+	0x83, 0x85, 0x5e, 0x98, 0xd9, 0x00, 0x00, 0x00,
 }
 
 func (m *EventAnchor) Marshal() (dAtA []byte, err error) {
@@ -190,18 +167,6 @@ func (m *EventAnchor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		{
-			size, err := m.Timestamp.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.Iri) > 0 {
 		i -= len(m.Iri)
 		copy(dAtA[i:], m.Iri)
@@ -232,18 +197,6 @@ func (m *EventAttest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		{
-			size, err := m.Timestamp.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.Attestor) > 0 {
 		i -= len(m.Attestor)
 		copy(dAtA[i:], m.Attestor)
@@ -282,10 +235,6 @@ func (m *EventAnchor) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if m.Timestamp != nil {
-		l = m.Timestamp.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	return n
 }
 
@@ -301,10 +250,6 @@ func (m *EventAttest) Size() (n int) {
 	}
 	l = len(m.Attestor)
 	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.Timestamp != nil {
-		l = m.Timestamp.Size()
 		n += 1 + l + sovEvents(uint64(l))
 	}
 	return n
@@ -376,42 +321,6 @@ func (m *EventAnchor) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Iri = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
-			}
-			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -526,42 +435,6 @@ func (m *EventAttest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Attestor = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
-			}
-			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

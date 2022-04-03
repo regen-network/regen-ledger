@@ -7,23 +7,20 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	reflect "reflect"
 	sync "sync"
 )
 
 var (
-	md_EventAnchor           protoreflect.MessageDescriptor
-	fd_EventAnchor_iri       protoreflect.FieldDescriptor
-	fd_EventAnchor_timestamp protoreflect.FieldDescriptor
+	md_EventAnchor     protoreflect.MessageDescriptor
+	fd_EventAnchor_iri protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_events_proto_init()
 	md_EventAnchor = File_regen_data_v1_events_proto.Messages().ByName("EventAnchor")
 	fd_EventAnchor_iri = md_EventAnchor.Fields().ByName("iri")
-	fd_EventAnchor_timestamp = md_EventAnchor.Fields().ByName("timestamp")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAnchor)(nil)
@@ -97,12 +94,6 @@ func (x *fastReflection_EventAnchor) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
-	if x.Timestamp != nil {
-		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_EventAnchor_timestamp, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -120,8 +111,6 @@ func (x *fastReflection_EventAnchor) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.data.v1.EventAnchor.iri":
 		return x.Iri != ""
-	case "regen.data.v1.EventAnchor.timestamp":
-		return x.Timestamp != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
@@ -140,8 +129,6 @@ func (x *fastReflection_EventAnchor) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.data.v1.EventAnchor.iri":
 		x.Iri = ""
-	case "regen.data.v1.EventAnchor.timestamp":
-		x.Timestamp = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
@@ -161,9 +148,6 @@ func (x *fastReflection_EventAnchor) Get(descriptor protoreflect.FieldDescriptor
 	case "regen.data.v1.EventAnchor.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.EventAnchor.timestamp":
-		value := x.Timestamp
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
@@ -186,8 +170,6 @@ func (x *fastReflection_EventAnchor) Set(fd protoreflect.FieldDescriptor, value 
 	switch fd.FullName() {
 	case "regen.data.v1.EventAnchor.iri":
 		x.Iri = value.Interface().(string)
-	case "regen.data.v1.EventAnchor.timestamp":
-		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
@@ -208,11 +190,6 @@ func (x *fastReflection_EventAnchor) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAnchor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAnchor.timestamp":
-		if x.Timestamp == nil {
-			x.Timestamp = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
 	case "regen.data.v1.EventAnchor.iri":
 		panic(fmt.Errorf("field iri of message regen.data.v1.EventAnchor is not mutable"))
 	default:
@@ -230,9 +207,6 @@ func (x *fastReflection_EventAnchor) NewField(fd protoreflect.FieldDescriptor) p
 	switch fd.FullName() {
 	case "regen.data.v1.EventAnchor.iri":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.EventAnchor.timestamp":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAnchor"))
@@ -306,10 +280,6 @@ func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.Timestamp != nil {
-			l = options.Size(x.Timestamp)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -338,20 +308,6 @@ func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Timestamp != nil {
-			encoded, err := options.Marshal(x.Timestamp)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x12
 		}
 		if len(x.Iri) > 0 {
 			i -= len(x.Iri)
@@ -441,42 +397,6 @@ func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 				}
 				x.Iri = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Timestamp == nil {
-					x.Timestamp = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -513,10 +433,9 @@ func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventAttest           protoreflect.MessageDescriptor
-	fd_EventAttest_iri       protoreflect.FieldDescriptor
-	fd_EventAttest_attestor  protoreflect.FieldDescriptor
-	fd_EventAttest_timestamp protoreflect.FieldDescriptor
+	md_EventAttest          protoreflect.MessageDescriptor
+	fd_EventAttest_iri      protoreflect.FieldDescriptor
+	fd_EventAttest_attestor protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -524,7 +443,6 @@ func init() {
 	md_EventAttest = File_regen_data_v1_events_proto.Messages().ByName("EventAttest")
 	fd_EventAttest_iri = md_EventAttest.Fields().ByName("iri")
 	fd_EventAttest_attestor = md_EventAttest.Fields().ByName("attestor")
-	fd_EventAttest_timestamp = md_EventAttest.Fields().ByName("timestamp")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAttest)(nil)
@@ -604,12 +522,6 @@ func (x *fastReflection_EventAttest) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
-	if x.Timestamp != nil {
-		value := protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
-		if !f(fd_EventAttest_timestamp, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -629,8 +541,6 @@ func (x *fastReflection_EventAttest) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Iri != ""
 	case "regen.data.v1.EventAttest.attestor":
 		return x.Attestor != ""
-	case "regen.data.v1.EventAttest.timestamp":
-		return x.Timestamp != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -651,8 +561,6 @@ func (x *fastReflection_EventAttest) Clear(fd protoreflect.FieldDescriptor) {
 		x.Iri = ""
 	case "regen.data.v1.EventAttest.attestor":
 		x.Attestor = ""
-	case "regen.data.v1.EventAttest.timestamp":
-		x.Timestamp = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -675,9 +583,6 @@ func (x *fastReflection_EventAttest) Get(descriptor protoreflect.FieldDescriptor
 	case "regen.data.v1.EventAttest.attestor":
 		value := x.Attestor
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.EventAttest.timestamp":
-		value := x.Timestamp
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -702,8 +607,6 @@ func (x *fastReflection_EventAttest) Set(fd protoreflect.FieldDescriptor, value 
 		x.Iri = value.Interface().(string)
 	case "regen.data.v1.EventAttest.attestor":
 		x.Attestor = value.Interface().(string)
-	case "regen.data.v1.EventAttest.timestamp":
-		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -724,11 +627,6 @@ func (x *fastReflection_EventAttest) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAttest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAttest.timestamp":
-		if x.Timestamp == nil {
-			x.Timestamp = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.Timestamp.ProtoReflect())
 	case "regen.data.v1.EventAttest.iri":
 		panic(fmt.Errorf("field iri of message regen.data.v1.EventAttest is not mutable"))
 	case "regen.data.v1.EventAttest.attestor":
@@ -750,9 +648,6 @@ func (x *fastReflection_EventAttest) NewField(fd protoreflect.FieldDescriptor) p
 		return protoreflect.ValueOfString("")
 	case "regen.data.v1.EventAttest.attestor":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.EventAttest.timestamp":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -830,10 +725,6 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.Timestamp != nil {
-			l = options.Size(x.Timestamp)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -862,20 +753,6 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.Timestamp != nil {
-			encoded, err := options.Marshal(x.Timestamp)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x1a
 		}
 		if len(x.Attestor) > 0 {
 			i -= len(x.Attestor)
@@ -1004,42 +881,6 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 				}
 				x.Attestor = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.Timestamp == nil {
-					x.Timestamp = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Timestamp); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1096,8 +937,6 @@ type EventAnchor struct {
 
 	// iri is the IRI of the data anchored on chain.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// timestamp is the timestamp at which the data was anchored on chain.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (x *EventAnchor) Reset() {
@@ -1127,26 +966,17 @@ func (x *EventAnchor) GetIri() string {
 	return ""
 }
 
-func (x *EventAnchor) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
 // EventAttest is an event emitted when data is attested to on chain.
 type EventAttest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the content IRI of the data attested to.
+	// iri is the IRI of the data attested to.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestor is the address of the account that has attested
-	// to the validity of the data.
+	// attestor is the address of the account that has attested to the veracity of
+	// the data.
 	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
-	// timestamp is the timestamp at which the data was attested to.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (x *EventAttest) Reset() {
@@ -1183,46 +1013,30 @@ func (x *EventAttest) GetAttestor() string {
 	return ""
 }
 
-func (x *EventAttest) GetTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.Timestamp
-	}
-	return nil
-}
-
 var File_regen_data_v1_events_proto protoreflect.FileDescriptor
 
 var file_regen_data_v1_events_proto_rawDesc = []byte{
 	0x0a, 0x1a, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x2f,
 	0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x1a, 0x1f, 0x67, 0x6f, 0x6f,
-	0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d,
-	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x59, 0x0a, 0x0b,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x69,
-	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x38, 0x0a,
-	0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69,
-	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x75, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x61, 0x74, 0x74, 0x65,
-	0x73, 0x74, 0x6f, 0x72, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
-	0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74,
-	0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0xb6,
-	0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74,
-	0x61, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74,
-	0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44,
-	0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0x1f, 0x0a, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72,
+	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x3b, 0x0a, 0x0b,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69,
+	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x1a, 0x0a,
+	0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x42, 0xb6, 0x01, 0x0a, 0x11, 0x63, 0x6f,
+	0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42,
+	0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
+	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02,
+	0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74,
+	0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74,
+	0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74,
+	0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1239,18 +1053,15 @@ func file_regen_data_v1_events_proto_rawDescGZIP() []byte {
 
 var file_regen_data_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_regen_data_v1_events_proto_goTypes = []interface{}{
-	(*EventAnchor)(nil),           // 0: regen.data.v1.EventAnchor
-	(*EventAttest)(nil),           // 1: regen.data.v1.EventAttest
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*EventAnchor)(nil), // 0: regen.data.v1.EventAnchor
+	(*EventAttest)(nil), // 1: regen.data.v1.EventAttest
 }
 var file_regen_data_v1_events_proto_depIdxs = []int32{
-	2, // 0: regen.data.v1.EventAnchor.timestamp:type_name -> google.protobuf.Timestamp
-	2, // 1: regen.data.v1.EventAttest.timestamp:type_name -> google.protobuf.Timestamp
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_regen_data_v1_events_proto_init() }

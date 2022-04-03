@@ -49,9 +49,8 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		}
 
 		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
-			Iri:       iri,
-			Attestor:  request.Attestor,
-			Timestamp: timestamp,
+			Iri:      iri,
+			Attestor: request.Attestor,
 		})
 		if err != nil {
 			return nil, err

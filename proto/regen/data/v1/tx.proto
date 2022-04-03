@@ -59,7 +59,7 @@ message MsgAnchor {
   // can simply be an intermediary providing services.
   string sender = 1;
 
-  // hash is the content hash for the data being anchored.
+  // hash is the content hash for the data to anchor.
   ContentHash hash = 2;
 }
 
@@ -68,19 +68,16 @@ message MsgAnchorResponse {
   // iri is the IRI of the data that was anchored.
   string iri = 1;
 
-    // timestamp is the timestamp at which the data was anchored.
+  // timestamp is the timestamp at which the data was anchored.
   google.protobuf.Timestamp timestamp = 2;
-
 }
 
 // MsgAttest is the Msg/Attest request type.
 message MsgAttest {
-  option (gogoproto.goproto_getters) = false;
-
-  // attestor is the addresses of the account attesting to the validity of
-  // the data. By making an Attest request, the attestor is attesting to the
-  // veracity of the data referenced by the IRI. The precise meaning of this
-  // may vary depending on the underlying data.
+  // attestor is the addresses of the account attesting to the veracity of the
+  // data. By making an Attest request, the attestor is attesting to the
+  // veracity of the data referenced by the IRI. The precise meaning of this may
+  // vary depending on the underlying data.
   string attestor = 1;
 
   // hashes are the content hashes for anchored data. Only RDF graph data can be
