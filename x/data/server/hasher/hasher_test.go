@@ -78,7 +78,8 @@ func testHasher(t *testing.T, h Hasher, k int) {
 		}
 		if c > 1 {
 			totalCollisions += 1
-		} else if c > 2 {
+		}
+		if c > 2 {
 			secondaryCollisions += 1
 		}
 	}
