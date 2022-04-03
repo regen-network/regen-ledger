@@ -233,22 +233,33 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var ownerAddr string
 		var owner simtypes.Account
 		for _, class := range classes {
-			if class.CreditType == rBasket.CreditTypeAbbrev && len(class.Issuers) > 0 {
+			if class.CreditType == rBasket.CreditTypeAbbrev {
+				issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{
+					ClassId: class.Name,
+				})
+				if err != nil {
+					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
+				}
+				issuers := issuersRes.Issuers
+				if len(issuers) == 0 {
+					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no class issuers"), nil, nil
+				}
+
 				if ownerAddr == "" {
-					bechAddr, err := sdk.AccAddressFromBech32(class.Issuers[0])
+					bechAddr, err := sdk.AccAddressFromBech32(issuers[0])
 					if err != nil {
 						return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 					}
 
 					acc, found := simtypes.FindAccount(accs, bechAddr)
 					if found {
-						ownerAddr = class.Issuers[0]
+						ownerAddr = issuers[0]
 						owner = acc
 						classInfoList = append(classInfoList, *class)
 						max++
 					}
 				} else {
-					if utils.Contains(class.Issuers, ownerAddr) {
+					if utils.Contains(issuers, ownerAddr) {
 						classInfoList = append(classInfoList, *class)
 						max++
 					}
