@@ -48,6 +48,7 @@ func testHasher(t *testing.T, h Hasher, k int) {
 	n := int(math.Pow10(k))
 	data := make([][]byte, n)
 	values := map[string]bool{}
+	ids := map[int][]byte{}
 	totalCollisions := 0
 	secondaryCollisions := 0
 
@@ -65,34 +66,39 @@ func testHasher(t *testing.T, h Hasher, k int) {
 		data[i] = value
 		values[valueStr] = true
 
-		id := []byte(nil)
-
-		for c := 0; ; c++ {
-			id = hasher.CreateID(value, c)
+		c := 0
+		for ; ; c++ {
+			id := hasher.CreateID(value, c)
 			v := store.Get(id)
 			if len(v) == 0 {
+				ids[i] = id
 				store.Set(id, value)
 				break
 			}
-			totalCollisions += 1
-			if c > 1 {
-				secondaryCollisions += 1
-			}
 		}
-
-		newId := []byte(nil)
-		store = mem.NewStore()
-
-		for c := 0; ; c++ {
-			newId = hasher.CreateID(value, c)
-			v := store.Get(newId)
-			if len(v) == 0 {
-				store.Set(newId, value)
-				break
-			}
-			require.Equal(t, id, newId)
+		if c > 1 {
+			totalCollisions += 1
+		} else if c > 2 {
+			secondaryCollisions += 1
 		}
 	}
 
 	t.Logf("total collisions: %d / %.0e, secondary collisions: %d, collision rate: %.4f%%", totalCollisions, float64(n), secondaryCollisions, float64(totalCollisions)/float64(n)*100.0)
+
+	store = mem.NewStore()
+
+	for i := 0; i < n; i++ {
+		id := ids[i]
+		value := data[i]
+
+		for c := 0; ; c++ {
+			newId := hasher.CreateID(value, c)
+			v := store.Get(newId)
+			if len(v) == 0 {
+				store.Set(newId, value)
+				require.Equal(t, id, newId)
+				break
+			}
+		}
+	}
 }

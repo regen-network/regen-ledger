@@ -82,12 +82,7 @@ type hasher struct {
 	initLen   int
 }
 
-func (t hasher) CreateID(value []byte, collisions int) []byte {
-	id := t.createID(value, collisions)
-	return id
-}
-
-func (t hasher) createID(value []byte, collisions int) (id []byte) {
+func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 	hasher := t.newHash()
 	_, err := hasher.Write(value)
 	if err != nil {
