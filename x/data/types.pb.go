@@ -462,13 +462,13 @@ func (m *ContentEntry) GetTimestamp() *types.Timestamp {
 	return nil
 }
 
-// AttestorEntry is an attestor entry including the attestor, the IRI,
-// and the timestamp.
+// AttestorEntry is an attestor entry including the attestor, the IRI, and the
+// timestamp.
 type AttestorEntry struct {
 	// iri is the IRI of the data attested to.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestor is the address of the account that has attested
-	// to the veracity of the data.
+	// attestor is the address of the account that has attested to the veracity of
+	// the data.
 	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
 	// timestamp is the timestamp at which the data was attested to.
 	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`

@@ -158,14 +158,14 @@ message ContentEntry {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// AttestorEntry is an attestor entry including the attestor, the IRI,
-// and the timestamp.
+// AttestorEntry is an attestor entry including the attestor, the IRI, and the
+// timestamp.
 message AttestorEntry {
   // iri is the IRI of the data attested to.
   string iri = 1;
 
-  // attestor is the address of the account that has attested
-  // to the veracity of the data.
+  // attestor is the address of the account that has attested to the veracity of
+  // the data.
   string attestor = 2;
 
   // timestamp is the timestamp at which the data was attested to.
