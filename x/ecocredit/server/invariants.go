@@ -4,174 +4,142 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
 // RegisterInvariants registers the ecocredit module invariants.
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
-	ir.RegisterRoute(ecocredit.ModuleName, "tradable-supply", s.tradableSupplyInvariant())
-	ir.RegisterRoute(ecocredit.ModuleName, "retired-supply", s.retiredSupplyInvariant())
+	ir.RegisterRoute(ecocredit.ModuleName, "batch-supply", s.batchSupplyInvariant())
 	s.basketKeeper.RegisterInvariants(ir)
 }
 
-func (s serverImpl) tradableSupplyInvariant() sdk.Invariant {
+func (s serverImpl) batchSupplyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		store := ctx.KVStore(s.storeKey)
 		goCtx := sdk.WrapSDKContext(ctx)
-		basketBalances := s.getBasketBalanceMap(goCtx)
-		return tradableSupplyInvariant(store, basketBalances)
-	}
-}
-
-func (s serverImpl) getBasketBalanceMap(ctx context.Context) map[string]math.Dec {
-	res, err := s.basketKeeper.Baskets(ctx, &baskettypes.QueryBasketsRequest{})
-	if err != nil {
-		panic(err)
-	}
-	batchBalances := make(map[string]math.Dec) // map of a basket batch_denom to balance
-	for _, basket := range res.Baskets {
-		res, err := s.basketKeeper.BasketBalances(ctx, &baskettypes.QueryBasketBalancesRequest{BasketDenom: basket.BasketDenom})
+		basketBalances, err := s.basketKeeper.GetBasketBalanceMap(goCtx)
 		if err != nil {
-			panic(err)
+			return err.Error(), true
 		}
-		for _, bal := range res.Balances {
-			amount, err := math.NewDecFromString(bal.Balance)
-			if err != nil {
-				panic(err)
-			}
-			if existingBal, ok := batchBalances[bal.BatchDenom]; ok {
-				existingBal, err = existingBal.Add(amount)
-				if err != nil {
-					panic(err)
-				}
-				batchBalances[bal.BatchDenom] = existingBal
-			} else {
-				batchBalances[bal.BatchDenom] = amount
-			}
-		}
+
+		return BatchSupplyInvariant(goCtx, s.coreKeeper, basketBalances)
 	}
-	return batchBalances
 }
 
-func tradableSupplyInvariant(store types.KVStore, basketBalances map[string]math.Dec) (string, bool) {
+func BatchSupplyInvariant(ctx context.Context, k core.Keeper, basketBalances map[uint64]math.Dec) (string, bool) {
 	var (
 		msg    string
 		broken bool
 	)
 	// sum of tradeable eco credits with credits locked in baskets
-	sumBatchSupplies := make(map[string]math.Dec) // map batch denom => balance
+	sumBatchSupplies := make(map[uint64]math.Dec) // map batch id => balance
+	calRetiredSupplies := make(map[uint64]math.Dec)
+	itr, err := k.BatchBalanceIterator(ctx)
+	if err != nil {
+		return err.Error(), true
+	}
+	defer itr.Close()
 
-	ecocredit.IterateBalances(store, ecocredit.TradableBalancePrefix, func(_, denom, b string) bool {
-		balance, err := math.NewNonNegativeDecFromString(b)
+	for itr.Next() {
+		bb, err := itr.Value()
+		if err != nil {
+			return err.Error(), true
+		}
+
+		// tradable balance
+		balance, err := math.NewNonNegativeDecFromString(bb.Tradable)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing tradable balance %v", err)
 		}
-		if supply, ok := sumBatchSupplies[denom]; ok {
+		if supply, ok := sumBatchSupplies[bb.BatchId]; ok {
 			supply, err := math.SafeAddBalance(supply, balance)
 			if err != nil {
 				broken = true
 				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
 			}
-			sumBatchSupplies[denom] = supply
+			sumBatchSupplies[bb.BatchId] = supply
 		} else {
-			sumBatchSupplies[denom] = balance
+			sumBatchSupplies[bb.BatchId] = balance
 		}
 
-		return false
-	})
-
-	for denom, amt := range basketBalances {
-		if amount, ok := sumBatchSupplies[denom]; ok {
-			amount, err := math.SafeAddBalance(amount, amt)
-			if err != nil {
-				panic(err)
-			}
-			sumBatchSupplies[denom] = amount
-		} else {
-			panic("unknown denom in basket")
-		}
-	}
-
-	if err := ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom string, s string) (bool, error) {
-		supply, err := math.NewNonNegativeDecFromString(s)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("error while parsing tradable supply for denom: %s", denom)
-		}
-		if s1, ok := sumBatchSupplies[denom]; ok {
-			if supply.Cmp(s1) != 0 {
-				broken = true
-				msg += fmt.Sprintf("tradable supply is incorrect for %s credit batch, expected %v, got %v", denom, supply, s1)
-			}
-		} else {
-			broken = true
-			msg += fmt.Sprintf("tradable supply is not found for %s credit batch", denom)
-		}
-		return false, nil
-	}); err != nil {
-		msg = fmt.Sprintf("error querying credit batch tradable supply %v", err)
-	}
-
-	return msg, broken
-}
-
-func (s serverImpl) retiredSupplyInvariant() sdk.Invariant {
-	return func(ctx sdk.Context) (string, bool) {
-		store := ctx.KVStore(s.storeKey)
-		return retiredSupplyInvariant(store)
-	}
-}
-
-func retiredSupplyInvariant(store types.KVStore) (string, bool) {
-	var (
-		msg    string
-		broken bool
-	)
-	calRetiredSupplies := make(map[string]math.Dec)
-	ecocredit.IterateBalances(store, ecocredit.RetiredBalancePrefix, func(_, denom, b string) bool {
-		balance, err := math.NewNonNegativeDecFromString(b)
+		// retired balance
+		balance, err = math.NewNonNegativeDecFromString(bb.Retired)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing retired balance %v", err)
 		}
-		if supply, ok := calRetiredSupplies[denom]; ok {
+		if supply, ok := calRetiredSupplies[bb.BatchId]; ok {
 			supply, err := math.SafeAddBalance(balance, supply)
 			if err != nil {
 				broken = true
 				msg += fmt.Sprintf("error adding credit batch retired supply %v", err)
 			}
-			calRetiredSupplies[denom] = supply
+			calRetiredSupplies[bb.BatchId] = supply
 		} else {
-			calRetiredSupplies[denom] = balance
+			calRetiredSupplies[bb.BatchId] = balance
 		}
-		return false
-	})
+	}
 
-	if err := ecocredit.IterateSupplies(store, ecocredit.RetiredSupplyPrefix, func(denom, s string) (bool, error) {
-		supply, err := math.NewNonNegativeDecFromString(s)
+	for id, amt := range basketBalances {
+		if amount, ok := sumBatchSupplies[id]; ok {
+			amount, err := math.SafeAddBalance(amount, amt)
+			if err != nil {
+				panic(err)
+			}
+			sumBatchSupplies[id] = amount
+		} else {
+			return "unknown denom in basket", true
+		}
+	}
+
+	sItr, err := k.BatchSupplyIterator(ctx)
+	if err != nil {
+		return msg + err.Error(), true
+	}
+	defer sItr.Close()
+
+	for sItr.Next() {
+		bs, err := sItr.Value()
+		if err != nil {
+			return msg + err.Error(), true
+		}
+
+		// tradable supply invariant check
+		tSupply, err := math.NewNonNegativeDecFromString(bs.TradableAmount)
 		if err != nil {
 			broken = true
-			msg += fmt.Sprintf("error while parsing reired supply for denom: %s", denom)
+			msg += fmt.Sprintf("error while parsing tradable supply for denom: %d", bs.BatchId)
 		}
-		if s1, ok := calRetiredSupplies[denom]; ok {
-			if supply.Cmp(s1) != 0 {
+		if s1, ok := sumBatchSupplies[bs.BatchId]; ok {
+			if tSupply.Cmp(s1) != 0 {
 				broken = true
-				msg += fmt.Sprintf("retired supply is incorrect for %s credit batch, expected %v, got %v", denom, supply, s1)
+				msg += fmt.Sprintf("tradable supply is incorrect for %d credit batch, expected %v, got %v", bs.BatchId, tSupply, s1)
 			}
 		} else {
 			broken = true
-			msg += fmt.Sprintf("retired supply is not found for %s credit batch", denom)
+			msg += fmt.Sprintf("tradable supply is not found for %d credit batch", bs.BatchId)
 		}
 
-		return false, nil
-	}); err != nil {
-		msg = fmt.Sprintf("error querying credit batch supply %v", err)
+		// retired supply invariant check
+		supply, err := math.NewNonNegativeDecFromString(bs.RetiredAmount)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing reired supply for denom: %d", bs.BatchId)
+		}
+		if s1, ok := calRetiredSupplies[bs.BatchId]; ok {
+			if supply.Cmp(s1) != 0 {
+				broken = true
+				msg += fmt.Sprintf("retired supply is incorrect for %d credit batch, expected %v, got %v", bs.BatchId, supply, s1)
+			}
+		} else {
+			broken = true
+			msg += fmt.Sprintf("retired supply is not found for %d credit batch", bs.BatchId)
+		}
+
 	}
 
 	return msg, broken
