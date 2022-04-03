@@ -23,8 +23,8 @@ The data module also enables the creation and management of data resolvers. When
 1. **[Concepts](01_concepts.md)**
 2. **[State](02_state.md)**
 3. **[Msg Service](03_messages.md)**
-4. **[Events](04_events.md)**
-5. **[Client](05_client.md)**
+4. **[Events](05_events.md)**
+5. **[Client](06_client.md)**
 
 ## Protobuf
 

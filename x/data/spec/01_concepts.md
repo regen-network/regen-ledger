@@ -1,9 +1,25 @@
 # Concepts
 
-## Data Anchoring
+### Anchor
 
-Proving that a piece of data was known to exist at a certain point in time. This can also be referred to as "secure timestamping".
+Anchoring data is a way to prove a piece of data was known to exist at a certain point in time. This can also be referred to as "secure timestamping".
 
-## Data Signing
+### Attest
 
-Asserting to the veracity and validity of a piece of data. Signing implies that the contents of the data are generally accepted to be true by the signer.
+Attesting to data is a way to validate a piece of data. Attesting to data implies that the contents of the data are accepted to be true by the attestor.
+
+### Resolver
+
+...
+
+### IRI
+
+...
+
+### Raw Data
+
+...
+
+### Graph Data
+
+...
