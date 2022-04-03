@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
