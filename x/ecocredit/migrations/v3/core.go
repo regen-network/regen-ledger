@@ -90,6 +90,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			}
 		}
 
+		// delete class info from old store
+		if err := classInfoTable.Delete(sdkCtx, &ClassInfo{ClassId: classInfo.ClassId}); err != nil {
+			return err
+		}
 	}
 
 	// migrate credit type sequence to ORM v1
@@ -112,6 +116,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			CreditType:  ctype.Abbreviation,
 			NextClassId: ctype.SeqNumber,
 		}); err != nil {
+			return err
+		}
+
+		// delete credit type sequence from old store
+		if err := creditTypeSeqTable.Delete(sdkCtx, &ctype); err != nil {
 			return err
 		}
 	}
@@ -211,6 +220,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		} else {
 			batchSeqMap[bInfo.ProjectId] = 2
 		}
+
+		// delete credit batch from old store
+		if err := batchInfoTable.Delete(sdkCtx, &batchInfo); err != nil {
+			return err
+		}
 	}
 
 	// add batch sequence
@@ -265,6 +279,9 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 			return true, err
 		}
 
+		// delete tradable balance from old store
+		store.Delete(TradableBalanceKey(addr, BatchDenomT(denom)))
+
 		return false, nil
 	}); err != nil {
 		return err
@@ -302,6 +319,9 @@ func migrateBalances(store storetypes.KVStore, ss api.StateStore, ctx context.Co
 			return true, err
 		}
 
+		// delete retired balance from old store
+		store.Delete(RetiredBalanceKey(addr, BatchDenomT(denom)))
+
 		return false, nil
 	})
 
@@ -319,6 +339,9 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 		}); err != nil {
 			return false, err
 		}
+
+		// delete tradable supply from old store
+		store.Delete(TradableSupplyKey(BatchDenomT(denom)))
 
 		return false, nil
 	}); err != nil {
@@ -351,6 +374,9 @@ func migrateSupply(store storetypes.KVStore, ss api.StateStore, ctx context.Cont
 		}); err != nil {
 			return false, err
 		}
+
+		// delete retired supply from old store
+		store.Delete(RetiredSupplyKey(BatchDenomT(denom)))
 
 		return false, nil
 	})
