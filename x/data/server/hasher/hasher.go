@@ -19,16 +19,13 @@ type Hasher interface {
 // 4-bytes of the FNV-1a 64-bit, non-cryptographic hash. In the case of a collision, more bytes
 // of the hash will be used for disambiguation but this happens in a minority of cases except
 // for massively large data sets.
-func NewHasher(prefix []byte) (Hasher, error) {
-	return NewHasherWithOptions(HashOptions{
-		Prefix: prefix,
-	})
+func NewHasher() (Hasher, error) {
+	return NewHasherWithOptions(HashOptions{})
 }
 
 // NewHasherWithOptions creates a Hash with custom options. Most users should just use NewHasher
 // with the default values.
 func NewHasherWithOptions(options HashOptions) (Hasher, error) {
-	prefixLen := len(options.Prefix)
 	minLength := options.MinLength
 	if minLength == 0 {
 		minLength = 4
@@ -46,17 +43,13 @@ func NewHasherWithOptions(options HashOptions) (Hasher, error) {
 		return nil, fmt.Errorf("option MinLength %d is greater than hash length %d", minLength, hashLen)
 	}
 
-	bufLen := prefixLen + hashLen + binary.MaxVarintLen64
-	initLen := prefixLen + minLength
+	bufLen := hashLen + binary.MaxVarintLen64
 
 	return hasher{
-		minLen:    minLength,
-		bufLen:    bufLen,
-		initLen:   initLen,
-		newHash:   newHash,
-		prefix:    options.Prefix,
-		prefixLen: prefixLen,
-		hashLen:   hashLen,
+		minLen:  minLength,
+		bufLen:  bufLen,
+		newHash: newHash,
+		hashLen: hashLen,
 	}, nil
 }
 
@@ -67,19 +60,13 @@ type HashOptions struct {
 
 	// MinLength is the minimum number of hash bytes that will be used to create a lookup identifier.
 	MinLength int
-
-	// Prefix is an optional prefix to be pre-pended to all keys.
-	Prefix []byte
 }
 
 type hasher struct {
-	minLen    int
-	bufLen    int
-	newHash   func() hash.Hash
-	prefix    []byte
-	prefixLen int
-	hashLen   int
-	initLen   int
+	minLen  int
+	bufLen  int
+	newHash func() hash.Hash
+	hashLen int
 }
 
 func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
@@ -91,9 +78,8 @@ func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 	}
 	hashBz := hasher.Sum(nil)
 
-	id = make([]byte, t.initLen, t.bufLen)
-	copy(id, t.prefix)
-	copy(id[len(t.prefix):], hashBz[:t.minLen])
+	id = make([]byte, t.minLen, t.bufLen)
+	copy(id[:], hashBz[:t.minLen])
 
 	// Deal with collisions by appending the equivalent number of bytes
 	// from hashBz. If using this method will exceed hash length, append
@@ -102,10 +88,9 @@ func (t hasher) CreateID(value []byte, collisions int) (id []byte) {
 	if t.minLen+collisions < t.hashLen {
 		id = append(id, hashBz[collisions])
 	} else {
-		preLen := t.prefixLen + t.hashLen
 		id = id[:t.bufLen]
-		n := binary.PutUvarint(id[preLen:], uint64(collisions))
-		id = id[:preLen+n]
+		n := binary.PutUvarint(id[t.hashLen:], uint64(collisions))
+		id = id[:t.hashLen+n]
 	}
 
 	return id

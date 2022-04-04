@@ -15,7 +15,7 @@ import (
 
 func TestHasher(t *testing.T) {
 	// test default case with good params
-	hasher, err := NewHasher(nil)
+	hasher, err := NewHasher()
 	require.NoError(t, err)
 	testHasher(t, hasher, 5)
 
@@ -38,8 +38,8 @@ type sixteenBitHash struct {
 
 func (h sixteenBitHash) Sum(b []byte) []byte {
 	bz := h.Hash.Sum(b)
-	// just return b + the first two bytes
-	return bz[:len(b)+2]
+	// just return b + the first three bytes
+	return bz[:len(b)+3]
 }
 
 func testHasher(t *testing.T, h Hasher, k int) {

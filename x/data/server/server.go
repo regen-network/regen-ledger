@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	IriHashPrefix byte = iota
-	ORMStatePrefix
+	ORMPrefix byte = iota
 )
 
 var _ data.MsgServer = serverImpl{}
@@ -24,7 +23,7 @@ var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
 		{Id: 1, ProtoFileName: api.File_regen_data_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
 	},
-	Prefix: []byte{ORMStatePrefix},
+	Prefix: []byte{ORMPrefix},
 }
 
 type serverImpl struct {
@@ -34,7 +33,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
-	hasher, err := hasher.NewHasher([]byte{IriHashPrefix})
+	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
 	}
