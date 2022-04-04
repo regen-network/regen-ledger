@@ -3,12 +3,13 @@ package marketplace
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/math"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/regen-network/regen-ledger/types/math"
 )
 
 func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
