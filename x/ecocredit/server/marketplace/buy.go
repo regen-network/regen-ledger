@@ -179,6 +179,8 @@ func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) 
 	if err != nil {
 		return sdk.Int{}, err
 	}
+
+	// divide by 1 to clear anything to the right of the decimal, so we can convert to sdk.Int
 	amountDec, err = amountDec.QuoInteger(math.NewDecFromInt64(1))
 	if err != nil {
 		return sdk.Int{}, err
