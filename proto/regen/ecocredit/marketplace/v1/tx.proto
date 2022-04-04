@@ -25,7 +25,7 @@ service Msg {
   // Buy creates credit buy orders.
   rpc Buy(MsgBuy) returns (MsgBuyResponse);
 
-  // BuyDirect purchase credits directly from the specified sell order.
+  // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
 
   // AllowAskDenom is a governance operation which authorizes a new ask denom to
@@ -190,7 +190,7 @@ message MsgBuyDirect {
   string buyer = 1;
 
   // sell_order_id is the sell order ID against which the buyer is trying
-  // to buy
+  // to buy.
   uint64 sell_order_id = 2;
 
   // quantity is the quantity of credits to buy.
