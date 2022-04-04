@@ -45,9 +45,9 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 	if err != nil {
 		return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 	}
-	if req.PricePerCredit.Denom != market.BankDenom {
+	if req.BidPrice.Denom != market.BankDenom {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit denom does not match ask price denom: "+
-			" %s, expected %s", req.PricePerCredit.Denom, market.BankDenom)
+			" %s, expected %s", req.BidPrice.Denom, market.BankDenom)
 	}
 	// check that bid price >= sell price
 	sellOrderPricePerCredit, ok := sdk.NewIntFromString(sellOrder.AskPrice)
@@ -55,12 +55,12 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
 	}
 	sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderPricePerCredit}
-	if sellOrderPricePerCredit.GT(req.PricePerCredit.Amount) {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, req.PricePerCredit)
+	if sellOrderPricePerCredit.GT(req.BidPrice.Amount) {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, req.BidPrice)
 	}
 
 	// check address has the total cost (price per * order quantity)
-	bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, req.PricePerCredit.Denom)
+	bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, req.BidPrice.Denom)
 	cost, err := getTotalCost(sellOrderPricePerCredit, creditOrderQty)
 	if err != nil {
 		return nil, err

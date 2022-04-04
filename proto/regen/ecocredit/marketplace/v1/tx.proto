@@ -196,8 +196,8 @@ message MsgBuyDirect {
   // quantity is the quantity of credits to buy.
   string quantity = 3;
 
-  // price_per_credit is the price the buyer is willing to pay per credit.
-  cosmos.base.v1beta1.Coin price_per_credit = 4;
+  // bid_price is the price the buyer is willing to pay per credit.
+  cosmos.base.v1beta1.Coin bid_price = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled. If it is set
   // to true the credits will not auto-retire and can be resold assuming that

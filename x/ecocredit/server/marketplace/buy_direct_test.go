@@ -231,7 +231,7 @@ func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, price
 		Buyer:              buyer,
 		SellOrderId:        sellOrderId,
 		Quantity:           qty,
-		PricePerCredit:     pricePerCredit,
+		BidPrice:           pricePerCredit,
 		DisableAutoRetire:  disableAutoRetire,
 		RetirementLocation: retirementLocation,
 	})

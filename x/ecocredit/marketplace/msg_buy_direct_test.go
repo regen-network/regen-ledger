@@ -81,7 +81,7 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 				Buyer:              tt.fields.Buyer,
 				SellOrderId:        tt.fields.SellOrderId,
 				Quantity:           tt.fields.Quantity,
-				PricePerCredit:     tt.fields.PricePerCredit,
+				BidPrice:           tt.fields.PricePerCredit,
 				DisableAutoRetire:  tt.fields.DisableAutoRetire,
 				RetirementLocation: tt.fields.RetirementLocation,
 			}

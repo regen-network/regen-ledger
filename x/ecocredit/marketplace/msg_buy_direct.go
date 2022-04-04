@@ -27,10 +27,10 @@ func (m MsgBuyDirect) ValidateBasic() error {
 			return sdkerrors.Wrapf(err, "when DisableAutoRetire is false, a valid retirement location must be provided")
 		}
 	}
-	if m.PricePerCredit == nil {
+	if m.BidPrice == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("must specify price per credit")
 	}
-	return m.PricePerCredit.Validate()
+	return m.BidPrice.Validate()
 }
 
 func (m MsgBuyDirect) GetSigners() []types.AccAddress {
