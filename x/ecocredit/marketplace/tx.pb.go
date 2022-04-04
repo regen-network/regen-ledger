@@ -715,7 +715,7 @@ type MsgBuyDirect struct {
 	// buyer is the address of the credit buyer.
 	Buyer string `protobuf:"bytes,1,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	// sell_order_id is the sell order ID against which the buyer is trying
-	// to buy
+	// to buy.
 	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 	// quantity is the quantity of credits to buy.
 	Quantity string `protobuf:"bytes,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
@@ -1065,7 +1065,7 @@ type MsgClient interface {
 	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
-	// BuyDirect purchase credits directly from the specified sell order.
+	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
 	// AllowAskDenom is a governance operation which authorizes a new ask denom to
 	// be used in sell orders
@@ -1144,7 +1144,7 @@ type MsgServer interface {
 	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
-	// BuyDirect purchase credits directly from the specified sell order.
+	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
 	// AllowAskDenom is a governance operation which authorizes a new ask denom to
 	// be used in sell orders

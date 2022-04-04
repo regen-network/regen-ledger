@@ -8519,7 +8519,7 @@ type MsgBuyDirect struct {
 	// buyer is the address of the credit buyer.
 	Buyer string `protobuf:"bytes,1,opt,name=buyer,proto3" json:"buyer,omitempty"`
 	// sell_order_id is the sell order ID against which the buyer is trying
-	// to buy
+	// to buy.
 	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 	// quantity is the quantity of credits to buy.
 	Quantity string `protobuf:"bytes,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
