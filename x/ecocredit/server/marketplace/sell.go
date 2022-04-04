@@ -52,7 +52,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 
-		if !isDenomAllowed(ctx, order.AskPrice.Denom, k.paramsKeeper) {
+		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
 		}
 
