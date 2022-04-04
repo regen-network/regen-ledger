@@ -28,7 +28,6 @@ import (
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -106,7 +105,8 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
+	params := coretypes.DefaultParams()
+	err = server.MergeLegacyJSONIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -135,9 +135,8 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return err
 	}
 
-	var data ecocredit.GenesisState
-
-	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&data)))
+	var params coretypes.Params
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return err
 	}
@@ -146,11 +145,11 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return nil
 	}
 
-	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &params); err != nil {
+		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return data.Validate()
+	return params.Validate()
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
@@ -168,7 +167,7 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	ecocredit.RegisterLegacyAminoCodec(cdc)
-	basket.RegisterLegacyAminoCodec(cdc)
+	baskettypes.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
 	marketplacetypes.RegisterLegacyAminoCodec(cdc)
 }

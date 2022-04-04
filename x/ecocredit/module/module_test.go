@@ -1,6 +1,7 @@
 package module
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,6 +14,8 @@ func TestHybridORMLegacyGenesis(t *testing.T) {
 	cdc := codec.NewProtoCodec(codectypes.NewInterfaceRegistry())
 	bz := m.DefaultGenesis(cdc)
 	require.NotNil(t, bz)
+	fmt.Println(string(bz))
+	require.True(t, false)
 	require.NoError(t, m.ValidateGenesis(cdc, nil, bz))
 
 	require.NoError(t, m.ValidateGenesis(cdc, nil, []byte(`
