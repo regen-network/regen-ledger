@@ -26,6 +26,7 @@ type serverImpl struct {
 	storeKey   sdk.StoreKey
 	iriIDTable lookup.Table
 	stateStore api.StateStore
+	db         ormdb.ModuleDB
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
@@ -48,6 +49,7 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 		storeKey:   storeKey,
 		iriIDTable: tbl,
 		stateStore: stateStore,
+		db:         db,
 	}
 }
 
@@ -55,4 +57,6 @@ func RegisterServices(configurator servermodule.Configurator) {
 	impl := newServer(configurator.ModuleKey())
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+
 }

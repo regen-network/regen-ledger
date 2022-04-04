@@ -7,6 +7,8 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -44,10 +46,38 @@ func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runt
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }
 
-func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage { return nil }
+func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage {
+	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		panic(err)
+	}
 
-func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
-	return nil
+	jsonTarget := ormjson.NewRawMessageTarget()
+	err = db.DefaultJSON(jsonTarget)
+	if err != nil {
+		panic(err)
+	}
+
+	bz, err := jsonTarget.JSON()
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
+}
+
+func (a Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+	db, err := ormdb.NewModuleDB(&server.ModuleSchema, ormdb.ModuleDBOptions{})
+	if err != nil {
+		return err
+	}
+
+	jsonSource, err := ormjson.NewRawMessageSource(bz)
+	if err != nil {
+		return err
+	}
+
+	return db.ValidateJSON(jsonSource)
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
