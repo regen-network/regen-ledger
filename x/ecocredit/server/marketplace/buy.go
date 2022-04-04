@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -176,7 +177,11 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 // getTotalCost calculates the cost of the order by multiplying the price per credit, and the amount of credits
 // desired in the order.
 func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) {
-	amountDec, err := amtCredits.Mul(math.NewDecFromInt64(pricePerCredit.Int64()))
+	multiplier, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
+	if err != nil {
+		return sdk.Int{}, err
+	}
+	amountDec, err := amtCredits.Mul(multiplier)
 	if err != nil {
 		return sdk.Int{}, err
 	}
@@ -185,10 +190,12 @@ func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) 
 		return sdk.Int{}, err
 	}
 
-	amountNeededI64, err := amountDec.Int64()
-	if err != nil {
-		return sdk.Int{}, err
+	amtNeededStr := amountDec.String()
+
+	amtNeeded, ok := sdk.NewIntFromString(amtNeededStr)
+	if !ok {
+		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", amtNeededStr, sdk.Int{})
 	}
 
-	return sdk.NewInt(amountNeededI64), nil
+	return amtNeeded, nil
 }
