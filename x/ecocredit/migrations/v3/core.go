@@ -19,7 +19,8 @@ type batchMapT struct {
 	AmountCancelled string
 }
 
-func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
+// MigrateState performs in-place store migrations from v3.0 to v4.0.
+func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	cdc codec.Codec, ss api.StateStore) error {
 	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ClassInfo{}, cdc)
 	if err != nil {
@@ -46,8 +47,8 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	defer classItr.Close()
 
-	classIDsMap := make(map[uint64]string)
-	projectIDsMap := make(map[string]uint64)
+	classIDsMap := make(map[uint64]string)   // map of a credit classID to className
+	projectIDsMap := make(map[string]uint64) // map of a credit className to projectID
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
@@ -117,7 +118,7 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 	// migrate projects
 	// TODO: update with actual data
-	projects := []api.ProjectInfo{
+	projects := []*api.ProjectInfo{
 		{
 			Name:            "P01",
 			ClassId:         1,
@@ -127,7 +128,7 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		},
 	}
 
-	projectSeqMap := make(map[uint64]uint64)
+	projectSeqMap := make(map[uint64]uint64) // map of a credit classID to project sequence
 	for _, p := range projects {
 		dest := api.ProjectInfo{
 			Name:            p.Name,
@@ -169,8 +170,8 @@ func MigrateStore(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	// migrate credit batches to ORM v1
-	batchIDsMap := make(map[string]batchMapT)
-	batchSeqMap := make(map[uint64]uint64)
+	batchIDsMap := make(map[string]batchMapT) // map of a batch denom to batch-id and amount cancelled
+	batchSeqMap := make(map[uint64]uint64)    // map of a project-id to batch sequence
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err

@@ -132,7 +132,7 @@ func TestMigrations(t *testing.T) {
 	ss, err := api.NewStateStore(ormdb)
 	require.Nil(t, err)
 
-	err = v3.MigrateStore(sdkCtx, ecocreditKey, cdc, ss)
+	err = v3.MigrateState(sdkCtx, ecocreditKey, cdc, ss)
 	require.NoError(t, err)
 
 	ctx := sdk.WrapSDKContext(sdkCtx)
