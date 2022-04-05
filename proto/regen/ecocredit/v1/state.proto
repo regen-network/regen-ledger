@@ -117,7 +117,8 @@ message BatchInfo {
   // id is an auto-incrementing integer to succinctly identify the batch
   uint64 id = 1;
 
-  // issuer is the address that issued the batch
+  // issuer is the address that created the batch and which is
+  // authorized to mint more credits if open=true.
   bytes issuer = 2;
 
   // project_id is the unique ID of the project this batch belongs to.
@@ -141,13 +142,9 @@ message BatchInfo {
   // issuance_date is the timestamp when the credit batch was issued.
   google.protobuf.Timestamp issuance_date = 8;
 
-  // issuer is an account address which created the batch and which is
-  // authorized to mint more credits if open=true.
-  string issuer = 9;
-
   // open tells if it's possible to mint new credits in the future.
   // Once `open` is set to false, it can't be toggled any more.
-  bool open = 10;
+  bool open = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
