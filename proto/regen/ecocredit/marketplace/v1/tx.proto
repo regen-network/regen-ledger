@@ -189,26 +189,32 @@ message MsgBuyDirect {
   // buyer is the address of the credit buyer.
   string buyer = 1;
 
-  // sell_order_id is the sell order ID against which the buyer is trying
-  // to buy.
-  uint64 sell_order_id = 2;
+  // orders is a list of orders for ecocredits.
+  repeated Order orders = 2;
 
-  // quantity is the quantity of credits to buy.
-  string quantity = 3;
+  // Order contains the information needed to purchase an ecocredit.
+  message Order {
+    // sell_order_id is the sell order ID against which the buyer is trying
+    // to buy.
+    uint64 sell_order_id = 2;
 
-  // bid_price is the price the buyer is willing to pay per credit.
-  cosmos.base.v1beta1.Coin bid_price = 4;
+    // quantity is the quantity of credits to buy.
+    string quantity = 3;
 
-  // disable_auto_retire allows auto-retirement to be disabled. If it is set
-  // to true the credits will not auto-retire and can be resold assuming that
-  // the corresponding sell order has auto-retirement disabled. If the sell
-  // order hasn't disabled auto-retirement and the buy order tries to disable
-  // it, that buy order will fail.
-  bool disable_auto_retire = 5;
+    // bid_price is the price the buyer is willing to pay per credit.
+    cosmos.base.v1beta1.Coin bid_price = 4;
 
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if disable_auto_retire is false.
-  string retirement_location = 6;
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set
+    // to true the credits will not auto-retire and can be resold assuming that
+    // the corresponding sell order has auto-retirement disabled. If the sell
+    // order hasn't disabled auto-retirement and the buy order tries to disable
+    // it, that buy order will fail.
+    bool disable_auto_retire = 5;
+
+    // retirement_location is the optional retirement location for the credits
+    // which will be used only if disable_auto_retire is false.
+    string retirement_location = 6;
+  }
 }
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.

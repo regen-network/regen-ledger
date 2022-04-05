@@ -78,12 +78,16 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := MsgBuyDirect{
-				Buyer:              tt.fields.Buyer,
-				SellOrderId:        tt.fields.SellOrderId,
-				Quantity:           tt.fields.Quantity,
-				BidPrice:           tt.fields.PricePerCredit,
-				DisableAutoRetire:  tt.fields.DisableAutoRetire,
-				RetirementLocation: tt.fields.RetirementLocation,
+				Buyer: tt.fields.Buyer,
+				Orders: []*MsgBuyDirect_Order{
+					{
+						SellOrderId:        tt.fields.SellOrderId,
+						Quantity:           tt.fields.Quantity,
+						BidPrice:           tt.fields.PricePerCredit,
+						DisableAutoRetire:  tt.fields.DisableAutoRetire,
+						RetirementLocation: tt.fields.RetirementLocation,
+					},
+				},
 			}
 			err := m.ValidateBasic()
 			if len(tt.errMsg) == 0 {

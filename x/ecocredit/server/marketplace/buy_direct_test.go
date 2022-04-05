@@ -228,11 +228,15 @@ func TestBuy_Decimal(t *testing.T) {
 func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, pricePerCredit *sdk.Coin, disableAutoRetire bool,
 	retirementLocation string) (*marketplace.MsgBuyDirectResponse, error) {
 	return s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
-		Buyer:              buyer,
-		SellOrderId:        sellOrderId,
-		Quantity:           qty,
-		BidPrice:           pricePerCredit,
-		DisableAutoRetire:  disableAutoRetire,
-		RetirementLocation: retirementLocation,
+		Buyer: buyer,
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId:        sellOrderId,
+				Quantity:           qty,
+				BidPrice:           pricePerCredit,
+				DisableAutoRetire:  disableAutoRetire,
+				RetirementLocation: retirementLocation,
+			},
+		},
 	})
 }

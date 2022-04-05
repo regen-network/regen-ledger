@@ -16,21 +16,27 @@ func (m MsgBuyDirect) ValidateBasic() error {
 	if _, err := types.AccAddressFromBech32(m.Buyer); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	if m.SellOrderId == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("0 is not a valid sell order id")
-	}
-	if _, err := math.NewDecFromString(m.Quantity); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	if !m.DisableAutoRetire {
-		if err := core.ValidateLocation(m.RetirementLocation); err != nil {
-			return sdkerrors.Wrapf(err, "when DisableAutoRetire is false, a valid retirement location must be provided")
+	for _, order := range m.Orders {
+		if order.SellOrderId == 0 {
+			return sdkerrors.ErrInvalidRequest.Wrap("0 is not a valid sell order id")
+		}
+		if _, err := math.NewDecFromString(order.Quantity); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+		if !order.DisableAutoRetire {
+			if err := core.ValidateLocation(order.RetirementLocation); err != nil {
+				return sdkerrors.Wrapf(err, "when DisableAutoRetire is false, a valid retirement location must be provided")
+			}
+		}
+		if order.BidPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("must specify price per credit")
+		}
+		if err := order.BidPrice.Validate(); err != nil {
+			return err
 		}
 	}
-	if m.BidPrice == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("must specify price per credit")
-	}
-	return m.BidPrice.Validate()
+
+	return nil
 }
 
 func (m MsgBuyDirect) GetSigners() []types.AccAddress {

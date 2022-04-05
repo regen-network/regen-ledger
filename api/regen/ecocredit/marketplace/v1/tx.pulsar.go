@@ -6146,25 +6146,68 @@ func (x *fastReflection_MsgBuyResponse) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_MsgBuyDirect_2_list)(nil)
+
+type _MsgBuyDirect_2_list struct {
+	list *[]*MsgBuyDirect_Order
+}
+
+func (x *_MsgBuyDirect_2_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_MsgBuyDirect_2_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_MsgBuyDirect_2_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*MsgBuyDirect_Order)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_MsgBuyDirect_2_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*MsgBuyDirect_Order)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_MsgBuyDirect_2_list) AppendMutable() protoreflect.Value {
+	v := new(MsgBuyDirect_Order)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_MsgBuyDirect_2_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_MsgBuyDirect_2_list) NewElement() protoreflect.Value {
+	v := new(MsgBuyDirect_Order)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_MsgBuyDirect_2_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
-	md_MsgBuyDirect                     protoreflect.MessageDescriptor
-	fd_MsgBuyDirect_buyer               protoreflect.FieldDescriptor
-	fd_MsgBuyDirect_sell_order_id       protoreflect.FieldDescriptor
-	fd_MsgBuyDirect_quantity            protoreflect.FieldDescriptor
-	fd_MsgBuyDirect_bid_price           protoreflect.FieldDescriptor
-	fd_MsgBuyDirect_disable_auto_retire protoreflect.FieldDescriptor
-	fd_MsgBuyDirect_retirement_location protoreflect.FieldDescriptor
+	md_MsgBuyDirect        protoreflect.MessageDescriptor
+	fd_MsgBuyDirect_buyer  protoreflect.FieldDescriptor
+	fd_MsgBuyDirect_orders protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_tx_proto_init()
 	md_MsgBuyDirect = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgBuyDirect")
 	fd_MsgBuyDirect_buyer = md_MsgBuyDirect.Fields().ByName("buyer")
-	fd_MsgBuyDirect_sell_order_id = md_MsgBuyDirect.Fields().ByName("sell_order_id")
-	fd_MsgBuyDirect_quantity = md_MsgBuyDirect.Fields().ByName("quantity")
-	fd_MsgBuyDirect_bid_price = md_MsgBuyDirect.Fields().ByName("bid_price")
-	fd_MsgBuyDirect_disable_auto_retire = md_MsgBuyDirect.Fields().ByName("disable_auto_retire")
-	fd_MsgBuyDirect_retirement_location = md_MsgBuyDirect.Fields().ByName("retirement_location")
+	fd_MsgBuyDirect_orders = md_MsgBuyDirect.Fields().ByName("orders")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgBuyDirect)(nil)
@@ -6238,33 +6281,9 @@ func (x *fastReflection_MsgBuyDirect) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.SellOrderId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.SellOrderId)
-		if !f(fd_MsgBuyDirect_sell_order_id, value) {
-			return
-		}
-	}
-	if x.Quantity != "" {
-		value := protoreflect.ValueOfString(x.Quantity)
-		if !f(fd_MsgBuyDirect_quantity, value) {
-			return
-		}
-	}
-	if x.BidPrice != nil {
-		value := protoreflect.ValueOfMessage(x.BidPrice.ProtoReflect())
-		if !f(fd_MsgBuyDirect_bid_price, value) {
-			return
-		}
-	}
-	if x.DisableAutoRetire != false {
-		value := protoreflect.ValueOfBool(x.DisableAutoRetire)
-		if !f(fd_MsgBuyDirect_disable_auto_retire, value) {
-			return
-		}
-	}
-	if x.RetirementLocation != "" {
-		value := protoreflect.ValueOfString(x.RetirementLocation)
-		if !f(fd_MsgBuyDirect_retirement_location, value) {
+	if len(x.Orders) != 0 {
+		value := protoreflect.ValueOfList(&_MsgBuyDirect_2_list{list: &x.Orders})
+		if !f(fd_MsgBuyDirect_orders, value) {
 			return
 		}
 	}
@@ -6285,16 +6304,8 @@ func (x *fastReflection_MsgBuyDirect) Has(fd protoreflect.FieldDescriptor) bool 
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		return x.Buyer != ""
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		return x.SellOrderId != uint64(0)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		return x.Quantity != ""
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		return x.BidPrice != nil
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		return x.DisableAutoRetire != false
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		return x.RetirementLocation != ""
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		return len(x.Orders) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6313,16 +6324,8 @@ func (x *fastReflection_MsgBuyDirect) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		x.Buyer = ""
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		x.SellOrderId = uint64(0)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		x.Quantity = ""
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		x.BidPrice = nil
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		x.DisableAutoRetire = false
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		x.RetirementLocation = ""
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		x.Orders = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6342,21 +6345,12 @@ func (x *fastReflection_MsgBuyDirect) Get(descriptor protoreflect.FieldDescripto
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		value := x.Buyer
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		value := x.SellOrderId
-		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		value := x.Quantity
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		value := x.BidPrice
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		value := x.DisableAutoRetire
-		return protoreflect.ValueOfBool(value)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		value := x.RetirementLocation
-		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		if len(x.Orders) == 0 {
+			return protoreflect.ValueOfList(&_MsgBuyDirect_2_list{})
+		}
+		listValue := &_MsgBuyDirect_2_list{list: &x.Orders}
+		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6379,16 +6373,10 @@ func (x *fastReflection_MsgBuyDirect) Set(fd protoreflect.FieldDescriptor, value
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		x.Buyer = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		x.SellOrderId = value.Uint()
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		x.Quantity = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		x.BidPrice = value.Message().Interface().(*v1beta1.Coin)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		x.DisableAutoRetire = value.Bool()
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		x.RetirementLocation = value.Interface().(string)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		lv := value.List()
+		clv := lv.(*_MsgBuyDirect_2_list)
+		x.Orders = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6409,21 +6397,14 @@ func (x *fastReflection_MsgBuyDirect) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgBuyDirect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		if x.BidPrice == nil {
-			x.BidPrice = new(v1beta1.Coin)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		if x.Orders == nil {
+			x.Orders = []*MsgBuyDirect_Order{}
 		}
-		return protoreflect.ValueOfMessage(x.BidPrice.ProtoReflect())
+		value := &_MsgBuyDirect_2_list{list: &x.Orders}
+		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		panic(fmt.Errorf("field buyer of message regen.ecocredit.marketplace.v1.MsgBuyDirect is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.MsgBuyDirect is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		panic(fmt.Errorf("field quantity of message regen.ecocredit.marketplace.v1.MsgBuyDirect is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		panic(fmt.Errorf("field disable_auto_retire of message regen.ecocredit.marketplace.v1.MsgBuyDirect is not mutable"))
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		panic(fmt.Errorf("field retirement_location of message regen.ecocredit.marketplace.v1.MsgBuyDirect is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6439,17 +6420,9 @@ func (x *fastReflection_MsgBuyDirect) NewField(fd protoreflect.FieldDescriptor) 
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.buyer":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.sell_order_id":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.quantity":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price":
-		m := new(v1beta1.Coin)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.disable_auto_retire":
-		return protoreflect.ValueOfBool(false)
-	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.retirement_location":
-		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.orders":
+		list := []*MsgBuyDirect_Order{}
+		return protoreflect.ValueOfList(&_MsgBuyDirect_2_list{list: &list})
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect"))
@@ -6523,23 +6496,11 @@ func (x *fastReflection_MsgBuyDirect) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.SellOrderId != 0 {
-			n += 1 + runtime.Sov(uint64(x.SellOrderId))
-		}
-		l = len(x.Quantity)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.BidPrice != nil {
-			l = options.Size(x.BidPrice)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.DisableAutoRetire {
-			n += 2
-		}
-		l = len(x.RetirementLocation)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if len(x.Orders) > 0 {
+			for _, e := range x.Orders {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -6570,48 +6531,21 @@ func (x *fastReflection_MsgBuyDirect) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.RetirementLocation) > 0 {
-			i -= len(x.RetirementLocation)
-			copy(dAtA[i:], x.RetirementLocation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementLocation)))
-			i--
-			dAtA[i] = 0x32
-		}
-		if x.DisableAutoRetire {
-			i--
-			if x.DisableAutoRetire {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
+		if len(x.Orders) > 0 {
+			for iNdEx := len(x.Orders) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Orders[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x12
 			}
-			i--
-			dAtA[i] = 0x28
-		}
-		if x.BidPrice != nil {
-			encoded, err := options.Marshal(x.BidPrice)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if len(x.Quantity) > 0 {
-			i -= len(x.Quantity)
-			copy(dAtA[i:], x.Quantity)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Quantity)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if x.SellOrderId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
-			i--
-			dAtA[i] = 0x10
 		}
 		if len(x.Buyer) > 0 {
 			i -= len(x.Buyer)
@@ -6701,6 +6635,566 @@ func (x *fastReflection_MsgBuyDirect) ProtoMethods() *protoiface.Methods {
 				}
 				x.Buyer = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Orders", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Orders = append(x.Orders, &MsgBuyDirect_Order{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Orders[len(x.Orders)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgBuyDirect_Order                     protoreflect.MessageDescriptor
+	fd_MsgBuyDirect_Order_sell_order_id       protoreflect.FieldDescriptor
+	fd_MsgBuyDirect_Order_quantity            protoreflect.FieldDescriptor
+	fd_MsgBuyDirect_Order_bid_price           protoreflect.FieldDescriptor
+	fd_MsgBuyDirect_Order_disable_auto_retire protoreflect.FieldDescriptor
+	fd_MsgBuyDirect_Order_retirement_location protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_tx_proto_init()
+	md_MsgBuyDirect_Order = File_regen_ecocredit_marketplace_v1_tx_proto.Messages().ByName("MsgBuyDirect").Messages().ByName("Order")
+	fd_MsgBuyDirect_Order_sell_order_id = md_MsgBuyDirect_Order.Fields().ByName("sell_order_id")
+	fd_MsgBuyDirect_Order_quantity = md_MsgBuyDirect_Order.Fields().ByName("quantity")
+	fd_MsgBuyDirect_Order_bid_price = md_MsgBuyDirect_Order.Fields().ByName("bid_price")
+	fd_MsgBuyDirect_Order_disable_auto_retire = md_MsgBuyDirect_Order.Fields().ByName("disable_auto_retire")
+	fd_MsgBuyDirect_Order_retirement_location = md_MsgBuyDirect_Order.Fields().ByName("retirement_location")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgBuyDirect_Order)(nil)
+
+type fastReflection_MsgBuyDirect_Order MsgBuyDirect_Order
+
+func (x *MsgBuyDirect_Order) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgBuyDirect_Order)(x)
+}
+
+func (x *MsgBuyDirect_Order) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgBuyDirect_Order_messageType fastReflection_MsgBuyDirect_Order_messageType
+var _ protoreflect.MessageType = fastReflection_MsgBuyDirect_Order_messageType{}
+
+type fastReflection_MsgBuyDirect_Order_messageType struct{}
+
+func (x fastReflection_MsgBuyDirect_Order_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgBuyDirect_Order)(nil)
+}
+func (x fastReflection_MsgBuyDirect_Order_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgBuyDirect_Order)
+}
+func (x fastReflection_MsgBuyDirect_Order_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgBuyDirect_Order
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgBuyDirect_Order) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgBuyDirect_Order
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgBuyDirect_Order) Type() protoreflect.MessageType {
+	return _fastReflection_MsgBuyDirect_Order_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgBuyDirect_Order) New() protoreflect.Message {
+	return new(fastReflection_MsgBuyDirect_Order)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgBuyDirect_Order) Interface() protoreflect.ProtoMessage {
+	return (*MsgBuyDirect_Order)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgBuyDirect_Order) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_MsgBuyDirect_Order_sell_order_id, value) {
+			return
+		}
+	}
+	if x.Quantity != "" {
+		value := protoreflect.ValueOfString(x.Quantity)
+		if !f(fd_MsgBuyDirect_Order_quantity, value) {
+			return
+		}
+	}
+	if x.BidPrice != nil {
+		value := protoreflect.ValueOfMessage(x.BidPrice.ProtoReflect())
+		if !f(fd_MsgBuyDirect_Order_bid_price, value) {
+			return
+		}
+	}
+	if x.DisableAutoRetire != false {
+		value := protoreflect.ValueOfBool(x.DisableAutoRetire)
+		if !f(fd_MsgBuyDirect_Order_disable_auto_retire, value) {
+			return
+		}
+	}
+	if x.RetirementLocation != "" {
+		value := protoreflect.ValueOfString(x.RetirementLocation)
+		if !f(fd_MsgBuyDirect_Order_retirement_location, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgBuyDirect_Order) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		return x.SellOrderId != uint64(0)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		return x.Quantity != ""
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		return x.BidPrice != nil
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		return x.DisableAutoRetire != false
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		return x.RetirementLocation != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgBuyDirect_Order) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		x.SellOrderId = uint64(0)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		x.Quantity = ""
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		x.BidPrice = nil
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		x.DisableAutoRetire = false
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		x.RetirementLocation = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgBuyDirect_Order) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		value := x.SellOrderId
+		return protoreflect.ValueOfUint64(value)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		value := x.Quantity
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		value := x.BidPrice
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		value := x.DisableAutoRetire
+		return protoreflect.ValueOfBool(value)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		value := x.RetirementLocation
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgBuyDirect_Order) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		x.SellOrderId = value.Uint()
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		x.Quantity = value.Interface().(string)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		x.BidPrice = value.Message().Interface().(*v1beta1.Coin)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		x.DisableAutoRetire = value.Bool()
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		x.RetirementLocation = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgBuyDirect_Order) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		if x.BidPrice == nil {
+			x.BidPrice = new(v1beta1.Coin)
+		}
+		return protoreflect.ValueOfMessage(x.BidPrice.ProtoReflect())
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		panic(fmt.Errorf("field quantity of message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		panic(fmt.Errorf("field disable_auto_retire of message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order is not mutable"))
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		panic(fmt.Errorf("field retirement_location of message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgBuyDirect_Order) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.sell_order_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.quantity":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price":
+		m := new(v1beta1.Coin)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.disable_auto_retire":
+		return protoreflect.ValueOfBool(false)
+	case "regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.retirement_location":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.MsgBuyDirect.Order does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgBuyDirect_Order) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.MsgBuyDirect.Order", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgBuyDirect_Order) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgBuyDirect_Order) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgBuyDirect_Order) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgBuyDirect_Order) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgBuyDirect_Order)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
+		}
+		l = len(x.Quantity)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.BidPrice != nil {
+			l = options.Size(x.BidPrice)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.DisableAutoRetire {
+			n += 2
+		}
+		l = len(x.RetirementLocation)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgBuyDirect_Order)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.RetirementLocation) > 0 {
+			i -= len(x.RetirementLocation)
+			copy(dAtA[i:], x.RetirementLocation)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementLocation)))
+			i--
+			dAtA[i] = 0x32
+		}
+		if x.DisableAutoRetire {
+			i--
+			if x.DisableAutoRetire {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.BidPrice != nil {
+			encoded, err := options.Marshal(x.BidPrice)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.Quantity) > 0 {
+			i -= len(x.Quantity)
+			copy(dAtA[i:], x.Quantity)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Quantity)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
+			i--
+			dAtA[i] = 0x10
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgBuyDirect_Order)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgBuyDirect_Order: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgBuyDirect_Order: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
 			case 2:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
@@ -8518,22 +9012,8 @@ type MsgBuyDirect struct {
 
 	// buyer is the address of the credit buyer.
 	Buyer string `protobuf:"bytes,1,opt,name=buyer,proto3" json:"buyer,omitempty"`
-	// sell_order_id is the sell order ID against which the buyer is trying
-	// to buy.
-	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
-	// quantity is the quantity of credits to buy.
-	Quantity string `protobuf:"bytes,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	// bid_price is the price the buyer is willing to pay per credit.
-	BidPrice *v1beta1.Coin `protobuf:"bytes,4,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled. If it is set
-	// to true the credits will not auto-retire and can be resold assuming that
-	// the corresponding sell order has auto-retirement disabled. If the sell
-	// order hasn't disabled auto-retirement and the buy order tries to disable
-	// it, that buy order will fail.
-	DisableAutoRetire bool `protobuf:"varint,5,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// retirement_location is the optional retirement location for the credits
-	// which will be used only if disable_auto_retire is false.
-	RetirementLocation string `protobuf:"bytes,6,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
+	// orders is a list of orders for ecocredits.
+	Orders []*MsgBuyDirect_Order `protobuf:"bytes,2,rep,name=orders,proto3" json:"orders,omitempty"`
 }
 
 func (x *MsgBuyDirect) Reset() {
@@ -8563,39 +9043,11 @@ func (x *MsgBuyDirect) GetBuyer() string {
 	return ""
 }
 
-func (x *MsgBuyDirect) GetSellOrderId() uint64 {
+func (x *MsgBuyDirect) GetOrders() []*MsgBuyDirect_Order {
 	if x != nil {
-		return x.SellOrderId
-	}
-	return 0
-}
-
-func (x *MsgBuyDirect) GetQuantity() string {
-	if x != nil {
-		return x.Quantity
-	}
-	return ""
-}
-
-func (x *MsgBuyDirect) GetBidPrice() *v1beta1.Coin {
-	if x != nil {
-		return x.BidPrice
+		return x.Orders
 	}
 	return nil
-}
-
-func (x *MsgBuyDirect) GetDisableAutoRetire() bool {
-	if x != nil {
-		return x.DisableAutoRetire
-	}
-	return false
-}
-
-func (x *MsgBuyDirect) GetRetirementLocation() string {
-	if x != nil {
-		return x.RetirementLocation
-	}
-	return ""
 }
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
@@ -8980,6 +9432,85 @@ func (x *MsgBuy_Order) GetExpiration() *timestamppb.Timestamp {
 	return nil
 }
 
+// Order contains the information needed to purchase an ecocredit.
+type MsgBuyDirect_Order struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// sell_order_id is the sell order ID against which the buyer is trying
+	// to buy.
+	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
+	// quantity is the quantity of credits to buy.
+	Quantity string `protobuf:"bytes,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
+	// bid_price is the price the buyer is willing to pay per credit.
+	BidPrice *v1beta1.Coin `protobuf:"bytes,4,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
+	// disable_auto_retire allows auto-retirement to be disabled. If it is set
+	// to true the credits will not auto-retire and can be resold assuming that
+	// the corresponding sell order has auto-retirement disabled. If the sell
+	// order hasn't disabled auto-retirement and the buy order tries to disable
+	// it, that buy order will fail.
+	DisableAutoRetire bool `protobuf:"varint,5,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
+	// retirement_location is the optional retirement location for the credits
+	// which will be used only if disable_auto_retire is false.
+	RetirementLocation string `protobuf:"bytes,6,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
+}
+
+func (x *MsgBuyDirect_Order) Reset() {
+	*x = MsgBuyDirect_Order{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgBuyDirect_Order) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgBuyDirect_Order) ProtoMessage() {}
+
+// Deprecated: Use MsgBuyDirect_Order.ProtoReflect.Descriptor instead.
+func (*MsgBuyDirect_Order) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP(), []int{8, 0}
+}
+
+func (x *MsgBuyDirect_Order) GetSellOrderId() uint64 {
+	if x != nil {
+		return x.SellOrderId
+	}
+	return 0
+}
+
+func (x *MsgBuyDirect_Order) GetQuantity() string {
+	if x != nil {
+		return x.Quantity
+	}
+	return ""
+}
+
+func (x *MsgBuyDirect_Order) GetBidPrice() *v1beta1.Coin {
+	if x != nil {
+		return x.BidPrice
+	}
+	return nil
+}
+
+func (x *MsgBuyDirect_Order) GetDisableAutoRetire() bool {
+	if x != nil {
+		return x.DisableAutoRetire
+	}
+	return false
+}
+
+func (x *MsgBuyDirect_Order) GetRetirementLocation() string {
+	if x != nil {
+		return x.RetirementLocation
+	}
+	return ""
+}
+
 var File_regen_ecocredit_marketplace_v1_tx_proto protoreflect.FileDescriptor
 
 var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
@@ -9087,98 +9618,104 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc = []byte{
 	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x34, 0x0a, 0x0e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79,
 	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x0d, 0x62, 0x75, 0x79, 0x5f,
 	0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x04, 0x52,
-	0x0b, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x73, 0x22, 0xfd, 0x01, 0x0a,
+	0x0b, 0x62, 0x75, 0x79, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x73, 0x22, 0xd3, 0x02, 0x0a,
 	0x0c, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x12, 0x14, 0x0a,
 	0x05, 0x62, 0x75, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x62, 0x75,
-	0x79, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65,
-	0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c,
-	0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x71, 0x75, 0x61, 0x6e, 0x74,
-	0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x71, 0x75, 0x61, 0x6e, 0x74,
-	0x69, 0x74, 0x79, 0x12, 0x36, 0x0a, 0x09, 0x62, 0x69, 0x64, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69,
-	0x6e, 0x52, 0x08, 0x62, 0x69, 0x64, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x2e, 0x0a, 0x13, 0x64,
-	0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x6f, 0x5f, 0x72, 0x65, 0x74, 0x69,
-	0x72, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c,
-	0x65, 0x41, 0x75, 0x74, 0x6f, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x2f, 0x0a, 0x13, 0x72,
-	0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65,
-	0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x16, 0x0a, 0x14,
-	0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x8c, 0x01, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f,
-	0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f,
-	0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x12, 0x23, 0x0a, 0x0d, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x5f, 0x64, 0x65,
-	0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x64, 0x69, 0x73, 0x70, 0x6c,
-	0x61, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
-	0x65, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
-	0x65, 0x6e, 0x74, 0x22, 0x1a, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41,
-	0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32,
-	0xbf, 0x05, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x60, 0x0a, 0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12,
-	0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x1a, 0x2f, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c,
-	0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x10, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x12, 0x33,
+	0x79, 0x65, 0x72, 0x12, 0x4a, 0x0a, 0x06, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x2e, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x06, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x1a,
+	0xe0, 0x01, 0x0a, 0x05, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65, 0x6c,
+	0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1a, 0x0a,
+	0x08, 0x71, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x71, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x36, 0x0a, 0x09, 0x62, 0x69, 0x64,
+	0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52, 0x08, 0x62, 0x69, 0x64, 0x50, 0x72, 0x69, 0x63,
+	0x65, 0x12, 0x2e, 0x0a, 0x13, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x75, 0x74,
+	0x6f, 0x5f, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11,
+	0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x52, 0x65, 0x74, 0x69, 0x72,
+	0x65, 0x12, 0x2f, 0x0a, 0x13, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12,
+	0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0x16, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65,
+	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x8c, 0x01, 0x0a, 0x10, 0x4d,
+	0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12,
+	0x21, 0x0a, 0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x72, 0x6f, 0x6f, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x23, 0x0a, 0x0d, 0x64, 0x69, 0x73, 0x70,
+	0x6c, 0x61, 0x79, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0c, 0x64, 0x69, 0x73, 0x70, 0x6c, 0x61, 0x79, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x1a, 0x0a,
+	0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52,
+	0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x22, 0x1a, 0x0a, 0x18, 0x4d, 0x73, 0x67,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xbf, 0x05, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x60, 0x0a,
+	0x04, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x1a, 0x2f,
 	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
 	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64,
-	0x65, 0x72, 0x73, 0x1a, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65,
-	0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x81, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f,
-	0x72, 0x64, 0x65, 0x72, 0x12, 0x32, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x4d, 0x73, 0x67, 0x53, 0x65, 0x6c, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x84, 0x01, 0x0a, 0x10, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72,
+	0x64, 0x65, 0x72, 0x73, 0x12, 0x33, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
 	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
-	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53,
-	0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x1a, 0x3a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e,
-	0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x03, 0x42, 0x75, 0x79, 0x12, 0x26, 0x2e, 0x72, 0x65,
+	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53,
+	0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x1a, 0x3b, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x81, 0x01, 0x0a, 0x0f, 0x43, 0x61, 0x6e, 0x63, 0x65,
+	0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x32, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x43,
+	0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x1a, 0x3a,
+	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64,
+	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x03, 0x42, 0x75,
+	0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75,
+	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x09, 0x42, 0x75, 0x79,
+	0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
+	0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69,
+	0x72, 0x65, 0x63, 0x74, 0x1a, 0x34, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65,
+	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x0d, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30, 0x2e, 0x72, 0x65,
 	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61,
 	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67,
-	0x42, 0x75, 0x79, 0x1a, 0x2e, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x09, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
-	0x12, 0x2c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76,
-	0x31, 0x2e, 0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x1a, 0x34,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x0d, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b,
-	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x30, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
-	0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41,
-	0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x38, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f,
-	0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61,
-	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
-	0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
-	0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
-	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
-	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x1a, 0x38, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
+	0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xa0, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07,
+	0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
+	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
+	0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76,
+	0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e,
+	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
+	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a,
+	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -9193,7 +9730,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_marketplace_v1_tx_proto_rawDescData
 }
 
-var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgSell)(nil),                     // 0: regen.ecocredit.marketplace.v1.MsgSell
 	(*MsgSellResponse)(nil),             // 1: regen.ecocredit.marketplace.v1.MsgSellResponse
@@ -9210,39 +9747,41 @@ var file_regen_ecocredit_marketplace_v1_tx_proto_goTypes = []interface{}{
 	(*MsgSell_Order)(nil),               // 12: regen.ecocredit.marketplace.v1.MsgSell.Order
 	(*MsgUpdateSellOrders_Update)(nil),  // 13: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	(*MsgBuy_Order)(nil),                // 14: regen.ecocredit.marketplace.v1.MsgBuy.Order
-	(*v1beta1.Coin)(nil),                // 15: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil),       // 16: google.protobuf.Timestamp
-	(*Filter)(nil),                      // 17: regen.ecocredit.marketplace.v1.Filter
+	(*MsgBuyDirect_Order)(nil),          // 15: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order
+	(*v1beta1.Coin)(nil),                // 16: cosmos.base.v1beta1.Coin
+	(*timestamppb.Timestamp)(nil),       // 17: google.protobuf.Timestamp
+	(*Filter)(nil),                      // 18: regen.ecocredit.marketplace.v1.Filter
 }
 var file_regen_ecocredit_marketplace_v1_tx_proto_depIdxs = []int32{
 	12, // 0: regen.ecocredit.marketplace.v1.MsgSell.orders:type_name -> regen.ecocredit.marketplace.v1.MsgSell.Order
 	13, // 1: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.updates:type_name -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update
 	14, // 2: regen.ecocredit.marketplace.v1.MsgBuy.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuy.Order
-	15, // 3: regen.ecocredit.marketplace.v1.MsgBuyDirect.bid_price:type_name -> cosmos.base.v1beta1.Coin
-	15, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
-	16, // 5: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
-	15, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
-	16, // 7: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
-	17, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
-	15, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
-	16, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
-	0,  // 11: regen.ecocredit.marketplace.v1.Msg.Sell:input_type -> regen.ecocredit.marketplace.v1.MsgSell
-	2,  // 12: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:input_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
-	4,  // 13: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:input_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrder
-	6,  // 14: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
-	8,  // 15: regen.ecocredit.marketplace.v1.Msg.BuyDirect:input_type -> regen.ecocredit.marketplace.v1.MsgBuyDirect
-	10, // 16: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
-	1,  // 17: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
-	3,  // 18: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
-	5,  // 19: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:output_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse
-	7,  // 20: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
-	9,  // 21: regen.ecocredit.marketplace.v1.Msg.BuyDirect:output_type -> regen.ecocredit.marketplace.v1.MsgBuyDirectResponse
-	11, // 22: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
-	17, // [17:23] is the sub-list for method output_type
-	11, // [11:17] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	15, // 3: regen.ecocredit.marketplace.v1.MsgBuyDirect.orders:type_name -> regen.ecocredit.marketplace.v1.MsgBuyDirect.Order
+	16, // 4: regen.ecocredit.marketplace.v1.MsgSell.Order.ask_price:type_name -> cosmos.base.v1beta1.Coin
+	17, // 5: regen.ecocredit.marketplace.v1.MsgSell.Order.expiration:type_name -> google.protobuf.Timestamp
+	16, // 6: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
+	17, // 7: regen.ecocredit.marketplace.v1.MsgUpdateSellOrders.Update.new_expiration:type_name -> google.protobuf.Timestamp
+	18, // 8: regen.ecocredit.marketplace.v1.MsgBuy.Order.filter:type_name -> regen.ecocredit.marketplace.v1.Filter
+	16, // 9: regen.ecocredit.marketplace.v1.MsgBuy.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
+	17, // 10: regen.ecocredit.marketplace.v1.MsgBuy.Order.expiration:type_name -> google.protobuf.Timestamp
+	16, // 11: regen.ecocredit.marketplace.v1.MsgBuyDirect.Order.bid_price:type_name -> cosmos.base.v1beta1.Coin
+	0,  // 12: regen.ecocredit.marketplace.v1.Msg.Sell:input_type -> regen.ecocredit.marketplace.v1.MsgSell
+	2,  // 13: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:input_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrders
+	4,  // 14: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:input_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrder
+	6,  // 15: regen.ecocredit.marketplace.v1.Msg.Buy:input_type -> regen.ecocredit.marketplace.v1.MsgBuy
+	8,  // 16: regen.ecocredit.marketplace.v1.Msg.BuyDirect:input_type -> regen.ecocredit.marketplace.v1.MsgBuyDirect
+	10, // 17: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:input_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenom
+	1,  // 18: regen.ecocredit.marketplace.v1.Msg.Sell:output_type -> regen.ecocredit.marketplace.v1.MsgSellResponse
+	3,  // 19: regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders:output_type -> regen.ecocredit.marketplace.v1.MsgUpdateSellOrdersResponse
+	5,  // 20: regen.ecocredit.marketplace.v1.Msg.CancelSellOrder:output_type -> regen.ecocredit.marketplace.v1.MsgCancelSellOrderResponse
+	7,  // 21: regen.ecocredit.marketplace.v1.Msg.Buy:output_type -> regen.ecocredit.marketplace.v1.MsgBuyResponse
+	9,  // 22: regen.ecocredit.marketplace.v1.Msg.BuyDirect:output_type -> regen.ecocredit.marketplace.v1.MsgBuyDirectResponse
+	11, // 23: regen.ecocredit.marketplace.v1.Msg.AllowAskDenom:output_type -> regen.ecocredit.marketplace.v1.MsgAllowAskDenomResponse
+	18, // [18:24] is the sub-list for method output_type
+	12, // [12:18] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_marketplace_v1_tx_proto_init() }
@@ -9432,6 +9971,18 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 				return nil
 			}
 		}
+		file_regen_ecocredit_marketplace_v1_tx_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgBuyDirect_Order); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -9439,7 +9990,7 @@ func file_regen_ecocredit_marketplace_v1_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_marketplace_v1_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   15,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
