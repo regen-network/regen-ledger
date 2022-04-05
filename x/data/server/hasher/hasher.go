@@ -4,7 +4,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
-	"hash/fnv"
+
+	"golang.org/x/crypto/blake2b"
 )
 
 // Hasher generates a unique binary identifier for a longer piece of binary data
@@ -16,7 +17,7 @@ type Hasher interface {
 }
 
 // NewHasher creates a new hasher instance. Default parameters are currently set to use the first
-// 4-bytes of the FNV-1a 64-bit, non-cryptographic hash. In the case of a collision, more bytes
+// 4-bytes of the 64-bit BLAKE2b, non-cryptographic hash. In the case of a collision, more bytes
 // of the hash will be used for disambiguation but this happens in a minority of cases except
 // for massively large data sets.
 func NewHasher() (Hasher, error) {
@@ -34,7 +35,11 @@ func NewHasherWithOptions(options HashOptions) (Hasher, error) {
 	newHash := options.NewHash
 	if newHash == nil {
 		newHash = func() hash.Hash {
-			return fnv.New64a()
+			hash, err := blake2b.New512(nil)
+			if err != nil {
+				panic(err) // an error should not occur creating a hash
+			}
+			return hash
 		}
 	}
 

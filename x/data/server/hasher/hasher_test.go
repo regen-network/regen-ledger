@@ -3,11 +3,11 @@ package hasher
 import (
 	"fmt"
 	"hash"
-	"hash/fnv"
 	"math"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/blake2b"
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/tendermint/tendermint/libs/rand"
@@ -23,8 +23,12 @@ func TestHasher(t *testing.T) {
 	hasher, err = NewHasherWithOptions(HashOptions{
 		MinLength: 1,
 		NewHash: func() hash.Hash {
+			hash, err := blake2b.New(16, nil)
+			if err != nil {
+				panic(err) // an error should not occur creating a hash
+			}
 			return sixteenBitHash{
-				fnv.New32(),
+				hash,
 			}
 		},
 	})

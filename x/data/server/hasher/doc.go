@@ -9,7 +9,7 @@ efficiency.
 
 Shortened identifiers are generated using the idempotent Hasher.CreateID method.
 
-Using the default algorithm which uses the first 4 bytes of a 64-bit FNV-1a hash and then
+Using the default algorithm which uses the first 4 bytes of a 64-bit BLAKE2b hash and then
 increases the length in the case of collisions. Identifiers will be 4 bytes long in the vast
 majority of cases and will sometimes be 5 and rarely 6 bytes long. In some extremely rare
 cases (which have not appeared in tests), identifiers may be longer.
