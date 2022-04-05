@@ -23,7 +23,7 @@ func TestHasher(t *testing.T) {
 	hasher, err = NewHasherWithOptions(HashOptions{
 		MinLength: 1,
 		NewHash: func() hash.Hash {
-			hash, err := blake2b.New(16, nil)
+			hash, err := blake2b.New(8, nil)
 			if err != nil {
 				panic(err) // an error should not occur creating a hash
 			}

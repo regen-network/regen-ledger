@@ -35,7 +35,7 @@ func NewHasherWithOptions(options HashOptions) (Hasher, error) {
 	newHash := options.NewHash
 	if newHash == nil {
 		newHash = func() hash.Hash {
-			hash, err := blake2b.New512(nil)
+			hash, err := blake2b.New(8, nil)
 			if err != nil {
 				panic(err) // an error should not occur creating a hash
 			}
