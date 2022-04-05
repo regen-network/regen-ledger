@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -23,8 +22,8 @@ func TestRetire_Valid(t *testing.T) {
 	// retired: 10.5
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// starting balance -> 10.5 tradable, 10.5 retired
@@ -68,8 +67,8 @@ func TestRetire_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 
 	// out of precision

@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestSell_Prune(t *testing.T) {
@@ -23,15 +23,15 @@ func TestSell_Prune(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
 		Precision:    6,
 	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
@@ -41,9 +41,9 @@ func TestSell_Prune(t *testing.T) {
 	notExpired, err := time.Parse("2006-01-02", "2022-01-01")
 	assert.NilError(t, err)
 
-	res, err := s.k.Sell(s.ctx, &v1.MsgSell{
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*v1.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
 		},

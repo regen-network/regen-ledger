@@ -117,7 +117,8 @@ message BatchInfo {
   // id is an auto-incrementing integer to succinctly identify the batch
   uint64 id = 1;
 
-  // issuer is the address that issued the batch
+  // issuer is the address that created the batch and which is
+  // authorized to mint more credits if open=true.
   bytes issuer = 2;
 
   // project_id is the unique ID of the project this batch belongs to.
@@ -140,6 +141,10 @@ message BatchInfo {
 
   // issuance_date is the timestamp when the credit batch was issued.
   google.protobuf.Timestamp issuance_date = 8;
+
+  // open tells if it's possible to mint new credits in the future.
+  // Once `open` is set to false, it can't be toggled any more.
+  bool open = 9;
 }
 
 // ClassSequence is a sequence number for creating credit class identifiers for
@@ -235,4 +240,26 @@ message BatchSupply {
   // cancelled, effectively undoing the issuance. The sum of total_amount and
   // amount_cancelled will always equal the original credit issuance amount.
   string cancelled_amount = 4;
+}
+
+// BatchOrigTx will index batch mint operations using orig tx ID to handle
+// potential double minting errors
+message BatchOrigTx {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 11,
+    primary_key : {fields : "tx_id"}
+  };
+
+  // the id of an originating transaction or opeartion.
+  string tx_id = 1;
+
+  // type of the transaction originating the mint process. Eg: Polygon,
+  // Ethereum, Verra...
+  string typ = 2;
+
+  // reference note for accounting, will be passed to an event
+  string note = 3;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 4;
 }

@@ -14,7 +14,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -25,7 +25,7 @@ func TestSell_CancelOrder(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	expir := time.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -34,8 +34,8 @@ func TestSell_CancelOrder(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(1)
 
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -70,7 +70,7 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	start, end := timestamppb.Now(), timestamppb.Now()
 	expir := time.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -79,8 +79,8 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(1)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()

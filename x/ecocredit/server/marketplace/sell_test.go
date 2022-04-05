@@ -13,7 +13,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
@@ -24,7 +24,7 @@ func TestSell_Valid(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -33,8 +33,8 @@ func TestSell_Valid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -80,7 +80,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ubar", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -88,8 +88,8 @@ func TestSell_CreatesMarket(t *testing.T) {
 	}
 	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(1)
 
 	// market shouldn't exist before sell call
@@ -119,7 +119,7 @@ func TestSell_Invalid(t *testing.T) {
 	batchDenom := "C01-20200101-20200201-001"
 	start, end := timestamppb.Now(), timestamppb.Now()
 	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := ecocredit.CreditType{
+	creditType := core.CreditType{
 		Name:         "carbon",
 		Abbreviation: "C",
 		Unit:         "tonnes",
@@ -128,8 +128,8 @@ func TestSell_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *ecocredit.Params) {
-		p.CreditTypes = []*ecocredit.CreditType{&creditType}
+	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
 	}).Times(2)
 
 	// invalid batch
@@ -183,7 +183,7 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 }
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
-func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType ecocredit.CreditType) {
+func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
