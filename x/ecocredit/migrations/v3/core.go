@@ -47,8 +47,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	defer classItr.Close()
 
-	classIDsMap := make(map[uint64]string)   // map of a credit classID to className
-	projectIDsMap := make(map[string]uint64) // map of a credit className to projectID
+	classIDNameMap := make(map[uint64]string) // map of a credit classID to className
+	classNameIDMap := make(map[string]uint64) // map of a credit className to classID
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
@@ -73,7 +73,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		classIDsMap[classID] = classInfo.ClassId
+		classIDNameMap[classID] = classInfo.ClassId
+		classNameIDMap[classInfo.ClassId] = classID
 
 		// migrate class issuers to ORM v1
 		for _, issuer := range classInfo.Issuers {
@@ -125,62 +126,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		}
 	}
 
-	// migrate projects
-	// TODO: update with actual data
-	projects := []*api.ProjectInfo{
-		{
-			Name:            "P01",
-			ClassId:         1,
-			Admin:           sdk.AccAddress("cosmos154hmhstk3gpkv2ndec8zkjkc5c3svutcqcswne"),
-			ProjectLocation: "AB-CDE FG1 345",
-			Metadata:        "metadata",
-		},
-	}
-
-	projectSeqMap := make(map[uint64]uint64) // map of a credit classID to project sequence
-	for _, p := range projects {
-		dest := api.ProjectInfo{
-			Name:            p.Name,
-			Admin:           p.Admin,
-			ClassId:         p.ClassId,
-			ProjectLocation: p.ProjectLocation,
-			Metadata:        p.Metadata,
-		}
-		pID, err := ss.ProjectInfoTable().InsertReturningID(ctx, &dest)
-		if err != nil {
-			return err
-		}
-
-		projectIDsMap[classIDsMap[p.ClassId]] = pID
-		if v, ok := projectSeqMap[p.ClassId]; ok {
-			projectSeqMap[p.ClassId] = v + 1
-		} else {
-			projectSeqMap[p.ClassId] = 2
-		}
-
-	}
-
-	// add project sequence
-	keys := make([]int, 0, len(projectSeqMap))
-	for k := range projectSeqMap {
-		keys = append(keys, int(k))
-	}
-	sort.Ints(keys)
-
-	for _, k := range keys {
-		key := uint64(k)
-		err = ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-			ClassId:       key,
-			NextProjectId: projectSeqMap[key],
-		})
-		if err != nil {
-			return err
-		}
-	}
-
-	// migrate credit batches to ORM v1
+	// migrate credit batches to ORM v1 and create projects for existing credit classes
 	batchIDsMap := make(map[string]batchMapT) // map of a batch denom to batch-id and amount cancelled
 	batchSeqMap := make(map[uint64]uint64)    // map of a project-id to batch sequence
+	projectSeqMap := make(map[uint64]uint64)  // map of a credit classID to project sequence
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -196,8 +145,60 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
+		admin, err := sdk.AccAddressFromBech32(batchInfo.Issuer)
+		if err != nil {
+			return err
+		}
+		pItr, err := ss.ProjectInfoTable().List(ctx, api.ProjectInfoAdminIndexKey{}.WithAdmin(admin.Bytes()))
+		if err != nil {
+			return err
+		}
+
+		projectExists := false
+		var projectID uint64
+		for pItr.Next() {
+			pInfo, err := pItr.Value()
+			if err != nil {
+				return err
+			}
+
+			if pInfo.ClassId == classNameIDMap[batchInfo.ClassId] {
+				projectExists = true
+				projectID = pInfo.Id
+				break
+			}
+
+		}
+		pItr.Close()
+
+		if !projectExists {
+			classID := classNameIDMap[batchInfo.ClassId]
+			var projectSeq uint64 = 1
+			if val, ok := projectSeqMap[classID]; ok {
+				projectSeqMap[classID] = val + 1
+				projectSeq = val
+			} else {
+				projectSeqMap[classID] = 2
+			}
+
+			name := FormatProjectID(batchInfo.ClassId, projectSeq)
+			id, err := ss.ProjectInfoTable().InsertReturningID(ctx,
+				&api.ProjectInfo{
+					Name:            name,
+					Admin:           admin,
+					ClassId:         classID,
+					ProjectLocation: batchInfo.ProjectLocation,
+					Metadata:        "", // TODO: add metadata
+				},
+			)
+			if err != nil {
+				return err
+			}
+			projectID = id
+		}
+
 		bInfo := api.BatchInfo{
-			ProjectId:    projectIDsMap[batchInfo.ClassId],
+			ProjectId:    projectID,
 			BatchDenom:   batchInfo.BatchDenom,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
@@ -223,6 +224,24 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 		// delete credit batch from old store
 		if err := batchInfoTable.Delete(sdkCtx, &batchInfo); err != nil {
+			return err
+		}
+	}
+
+	// add project sequence
+	keys := make([]int, 0, len(projectSeqMap))
+	for k := range projectSeqMap {
+		keys = append(keys, int(k))
+	}
+	sort.Ints(keys)
+
+	for _, k := range keys {
+		key := uint64(k)
+		err = ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+			ClassId:       key,
+			NextProjectId: projectSeqMap[key],
+		})
+		if err != nil {
 			return err
 		}
 	}

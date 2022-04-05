@@ -162,7 +162,7 @@ func (a Module) GetTxCmd() *cobra.Command {
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
-func (Module) ConsensusVersion() uint64 { return 3 }
+func (Module) ConsensusVersion() uint64 { return 2 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}

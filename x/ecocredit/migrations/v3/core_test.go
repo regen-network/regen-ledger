@@ -17,7 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	orm "github.com/regen-network/regen-ledger/orm"
+	regenorm "github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
@@ -40,16 +40,16 @@ func TestMigrations(t *testing.T) {
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	store := sdkCtx.KVStore(ecocreditKey)
 
-	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(v3.ClassInfoTablePrefix, ecocreditKey, &v3.ClassInfo{}, cdc)
+	classInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.ClassInfoTablePrefix, ecocreditKey, &v3.ClassInfo{}, cdc)
 	require.NoError(t, err)
 
 	classInfoTable := classInfoTableBuilder.Build()
-	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(v3.BatchInfoTablePrefix, ecocreditKey, &v3.BatchInfo{}, cdc)
+	batchInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.BatchInfoTablePrefix, ecocreditKey, &v3.BatchInfo{}, cdc)
 	require.NoError(t, err)
 
 	batchInfoTable := batchInfoTableBuilder.Build()
 
-	creditTypeSeqTableBuilder, err := orm.NewPrimaryKeyTableBuilder(v3.CreditTypeSeqTablePrefix, ecocreditKey, &v3.CreditTypeSeq{}, cdc)
+	creditTypeSeqTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.CreditTypeSeqTablePrefix, ecocreditKey, &v3.CreditTypeSeq{}, cdc)
 	require.NoError(t, err)
 
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
@@ -74,6 +74,7 @@ func TestMigrations(t *testing.T) {
 	endDate := startDate.AddDate(2, 0, 0)
 	bd1, _ := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
 	bd2, _ := ecocredit.FormatDenom("C01", 2, &startDate, &endDate)
+	bd3, _ := ecocredit.FormatDenom("C01", 3, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd1,
@@ -90,6 +91,18 @@ func TestMigrations(t *testing.T) {
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd2,
+		Issuer:          issuer2.String(),
+		TotalAmount:     "1000",
+		Metadata:        []byte("metadata"),
+		AmountCancelled: "0",
+		StartDate:       &startDate,
+		EndDate:         &endDate,
+		ProjectLocation: "AB-CDE FG1 345",
+	})
+	require.NoError(t, err)
+	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
+		ClassId:         "C01",
+		BatchDenom:      bd3,
 		Issuer:          issuer2.String(),
 		TotalAmount:     "1000",
 		Metadata:        []byte("metadata"),
@@ -164,18 +177,18 @@ func TestMigrations(t *testing.T) {
 	res1, err := ss.ProjectInfoTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
-	require.Equal(t, res1.Name, "P01")
-	require.Equal(t, res1.Metadata, "metadata")
+	require.Equal(t, res1.Name, "C0101")
+	require.Equal(t, res1.Metadata, "")
 	require.Equal(t, res1.ProjectLocation, "AB-CDE FG1 345")
 	require.Equal(t, res1.ClassId, uint64(1))
-	require.Equal(t, res1.Admin, sdk.AccAddress("cosmos154hmhstk3gpkv2ndec8zkjkc5c3svutcqcswne").Bytes())
+	require.NotNil(t, res1.Admin)
 
 	// verify project sequence
 	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
 	require.Equal(t, res2.ClassId, uint64(1))
-	require.Equal(t, res2.NextProjectId, uint64(2))
+	require.Equal(t, res2.NextProjectId, uint64(3))
 
 	// verify class sequence table migration
 	res3, err := ss.ClassSequenceTable().Get(ctx, "C")
@@ -185,11 +198,19 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, res3.NextClassId, uint64(3))
 
 	// verify batch sequence table migration
-	res4, err := ss.BatchSequenceTable().Get(ctx, "P01")
+	// project C0101 contains one credit batch ==> expected nextBatchId is 2
+	res4, err := ss.BatchSequenceTable().Get(ctx, "C0101")
+	require.NoError(t, err)
+	require.NotNil(t, res4)
+	require.Equal(t, res4.NextBatchId, uint64(2))
+	require.Equal(t, res4.ProjectId, "C0101")
+
+	// projectC0102 contains two credit batches ==> expected nextBatchId is 3
+	res4, err = ss.BatchSequenceTable().Get(ctx, "C0102")
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.NextBatchId, uint64(3))
-	require.Equal(t, res4.ProjectId, "P01")
+	require.Equal(t, res4.ProjectId, "C0102")
 
 	// verify tradable and retired balance migration
 	// recipient1 balance -> tradable: 550 , retired: 350
@@ -219,4 +240,16 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, bs.TradableAmount, "610")
 	require.Equal(t, bs.RetiredAmount, "390")
 	require.Equal(t, bs.CancelledAmount, "0")
+
+	// verify old state is deleted
+	require.False(t, classInfoTable.Has(sdkCtx, regenorm.RowID("C01")))
+
+	require.False(t, batchInfoTable.Has(sdkCtx, regenorm.RowID(bd1)))
+
+	bz := store.Get(tradableBKey1)
+	require.Nil(t, bz)
+
+	bz = store.Get(tradableSKey1)
+	require.Nil(t, bz)
+
 }

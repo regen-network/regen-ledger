@@ -1,6 +1,8 @@
 package v3
 
 import (
+	fmt "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 )
@@ -88,4 +90,13 @@ func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 	}
 
 	return nil
+}
+
+// Calculate the ID to use for a new project, based on the class id and
+// the project sequence number.
+//
+// The initial version has format:
+// <class id><project seq no>
+func FormatProjectID(classID string, projectSeqNo uint64) string {
+	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
 }

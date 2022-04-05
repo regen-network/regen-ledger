@@ -546,6 +546,19 @@ func (this ProjectInfoClassIdNameIndexKey) WithClassIdName(class_id uint64, name
 	return this
 }
 
+type ProjectInfoAdminIndexKey struct {
+	vs []interface{}
+}
+
+func (x ProjectInfoAdminIndexKey) id() uint32            { return 3 }
+func (x ProjectInfoAdminIndexKey) values() []interface{} { return x.vs }
+func (x ProjectInfoAdminIndexKey) projectInfoIndexKey()  {}
+
+func (this ProjectInfoAdminIndexKey) WithAdmin(admin []byte) ProjectInfoAdminIndexKey {
+	this.vs = []interface{}{admin}
+	return this
+}
+
 type projectInfoTable struct {
 	table ormtable.AutoIncrementTable
 }
