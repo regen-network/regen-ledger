@@ -27,13 +27,18 @@ service Msg {
   // MintBatchCredits issues new token in a given batch.
   // The issuer must be the account who created (or delegated using x/authz),
   // the batch.
-  // The request will fail if the batch is not open.
+  // The request will fail if the batch is not open (is sealed).
   // NOTE: this method is only for bridge purpose. It must not be used
   // for issuing native credits on Regen. More specifically, we
   // enable minting more credits in an existing batch, when the batch
   // represents a vintage originally registered in another chain.
   rpc MintBatchCredits(MsgMintBatchCredits)
       returns (MsgMintBatchCreditsResponse);
+
+  // MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
+  // can't issue more credits. Once batch is sealed it can't be toggled any
+  // more. Only batch creator can seal a batch.
+  rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
 
   // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
@@ -202,21 +207,26 @@ message MsgMintBatchCredits {
   // issuance are the credits issued in the batch.
   repeated BatchIssuance issuance = 3;
 
-  // open=true keeps the batch unlocked for future minting.
-  // Othrwise we will seal the batch after the mint.
-  // Throws an error if the batch is already sealed.
-  bool open = 4;
-
   // A reference to a transaction or an event referencing the transaction
   // which caused the transfer from other chain or registry.
-  OriginTx origin_tx = 5;
+  OriginTx origin_tx = 4;
 
   // reference note for accounting, will be passed to an event
-  string note = 6;
+  string note = 5;
+}
+
+// MsgSealBatch request type for MsgSealBatch RPC.
+message MsgSealBatch {
+  // Issuer must equal to the batch.issuer address.
+  // Signer of the msg.
+  string issuer = 1;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
 message MsgMintBatchCreditsResponse {}
+
+// MsgSealBatchResponse is the Msg/SealBatch response type.
+message MsgSealBatchResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
