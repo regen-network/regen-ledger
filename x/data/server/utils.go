@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 
-	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -29,10 +29,7 @@ func (s serverImpl) getEntry(ctx context.Context, store sdk.KVStore, id []byte) 
 		return nil, err
 	}
 
-	timestamp := &gogotypes.Timestamp{
-		Seconds: dataAnchor.Timestamp.Seconds,
-		Nanos:   dataAnchor.Timestamp.Nanos,
-	}
+	timestamp := types.ProtobufToGogoTimestamp(dataAnchor.Timestamp)
 
 	iri := string(s.iriIDTable.GetValue(store, id))
 	contentHash, err := data.ParseIRI(iri)
