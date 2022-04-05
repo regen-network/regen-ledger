@@ -4,7 +4,7 @@ import (
 	"context"
 
 	gogotypes "github.com/gogo/protobuf/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -63,11 +63,8 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 			}
 
 			err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{
-				Id: id,
-				Timestamp: &timestamppb.Timestamp{
-					Seconds: timestamp.Seconds,
-					Nanos:   timestamp.Nanos,
-				},
+				Id:        id,
+				Timestamp: types.GogoToProtobufTimestamp(timestamp),
 			})
 			if err != nil {
 				return nil, err
@@ -77,10 +74,5 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 		}
 	}
 
-	timestamp := &gogotypes.Timestamp{
-		Seconds: dataAnchor.Timestamp.Seconds,
-		Nanos:   dataAnchor.Timestamp.Nanos,
-	}
-
-	return timestamp, nil
+	return types.ProtobufToGogoTimestamp(dataAnchor.Timestamp), nil
 }
