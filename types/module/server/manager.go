@@ -205,7 +205,7 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 	return res
 }
 
-// InitGenesis performs state migrations for registered modules.
+// RunMigrations performs state migrations for registered modules.
 func (mm *Manager) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
 	for _, h := range mm.migrationHandlers {
 		if h == nil {
