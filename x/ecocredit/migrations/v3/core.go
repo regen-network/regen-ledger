@@ -26,8 +26,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	if err != nil {
 		return err
 	}
-
 	classInfoTable := classInfoTableBuilder.Build()
+
 	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &BatchInfo{}, cdc)
 	if err != nil {
 		return err
