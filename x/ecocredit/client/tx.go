@@ -10,13 +10,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/spf13/cobra"
+	"sigs.k8s.io/yaml"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
@@ -46,6 +48,8 @@ func TxCmd(name string) *cobra.Command {
 		TxSellCmd(),
 		TxUpdateSellOrdersCmd(),
 		TxBuyCmd(),
+		marketplace.TxBuyDirect(),
+		marketplace.TxBuyDirectBatch(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
