@@ -25,6 +25,7 @@ func (m MsgBuy) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBuy) ValidateBasic() error {
+	return sdkerrors.ErrNotSupported.Wrap("filtered buy orders are not suported at this time")
 	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -49,7 +50,7 @@ func (m *MsgBuy) ValidateBasic() error {
 
 		if !order.DisableAutoRetire {
 			if err := core.ValidateLocation(order.RetirementLocation); err != nil {
-				// ValidateLocation returns an sdkerrors.ErrInvalidRequest, so we can just wrap it here
+				// ValidateLocation returns a sdkerrors.ErrInvalidRequest, so we can just wrap it here
 				return sdkerrors.Wrap(err, "a valid retirement location is required when DisableAutoRetire is false")
 			}
 		}

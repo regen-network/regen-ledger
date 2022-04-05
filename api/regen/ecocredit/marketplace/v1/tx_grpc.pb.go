@@ -30,6 +30,8 @@ type MsgClient interface {
 	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption) (*MsgBuyResponse, error)
+	// BuyDirect purchases credits directly from the specified sell order.
+	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
 	// AllowAskDenom is a governance operation which authorizes a new ask denom to
 	// be used in sell orders
 	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
@@ -79,6 +81,15 @@ func (c *msgClient) Buy(ctx context.Context, in *MsgBuy, opts ...grpc.CallOption
 	return out, nil
 }
 
+func (c *msgClient) BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error) {
+	out := new(MsgBuyDirectResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/BuyDirect", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error) {
 	out := new(MsgAllowAskDenomResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/AllowAskDenom", in, out, opts...)
@@ -100,6 +111,8 @@ type MsgServer interface {
 	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// Buy creates credit buy orders.
 	Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error)
+	// BuyDirect purchases credits directly from the specified sell order.
+	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
 	// AllowAskDenom is a governance operation which authorizes a new ask denom to
 	// be used in sell orders
 	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
@@ -121,6 +134,9 @@ func (UnimplementedMsgServer) CancelSellOrder(context.Context, *MsgCancelSellOrd
 }
 func (UnimplementedMsgServer) Buy(context.Context, *MsgBuy) (*MsgBuyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Buy not implemented")
+}
+func (UnimplementedMsgServer) BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyDirect not implemented")
 }
 func (UnimplementedMsgServer) AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowAskDenom not implemented")
@@ -210,6 +226,24 @@ func _Msg_Buy_Handler(srv interface{}, ctx context.Context, dec func(interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_BuyDirect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBuyDirect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).BuyDirect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.marketplace.v1.Msg/BuyDirect",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).BuyDirect(ctx, req.(*MsgBuyDirect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AllowAskDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAllowAskDenom)
 	if err := dec(in); err != nil {
@@ -250,6 +284,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Buy",
 			Handler:    _Msg_Buy_Handler,
+		},
+		{
+			MethodName: "BuyDirect",
+			Handler:    _Msg_BuyDirect_Handler,
 		},
 		{
 			MethodName: "AllowAskDenom",
