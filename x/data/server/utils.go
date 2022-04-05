@@ -3,12 +3,12 @@ package server
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 

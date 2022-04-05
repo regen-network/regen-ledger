@@ -5,6 +5,7 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/require"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
