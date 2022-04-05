@@ -3,13 +3,12 @@ package server
 import (
 	"context"
 
-	gogotypes "github.com/gogo/protobuf/types"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -96,12 +95,9 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		}
 
 		entries = append(entries, &data.ContentEntry{
-			Hash: contentHash,
-			Iri:  dataId.Iri,
-			Timestamp: &gogotypes.Timestamp{
-				Seconds: dataAnchor.Timestamp.Seconds,
-				Nanos:   dataAnchor.Timestamp.Nanos,
-			},
+			Hash:      contentHash,
+			Iri:       dataId.Iri,
+			Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 		})
 	}
 
@@ -128,11 +124,8 @@ func (s serverImpl) getEntry(ctx context.Context, ch *data.ContentHash, iri stri
 	}
 
 	return &data.ContentEntry{
-		Hash: ch,
-		Iri:  iri,
-		Timestamp: &gogotypes.Timestamp{
-			Seconds: dataAnchor.Timestamp.Seconds,
-			Nanos:   dataAnchor.Timestamp.Nanos,
-		},
+		Hash:      ch,
+		Iri:       iri,
+		Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 	}, nil
 }

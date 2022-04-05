@@ -3,11 +3,10 @@ package server
 import (
 	"context"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -34,12 +33,9 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		}
 
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
-			Id:       id,
-			Attestor: addr,
-			Timestamp: &timestamppb.Timestamp{
-				Seconds: timestamp.Seconds,
-				Nanos:   timestamp.Nanos,
-			},
+			Id:        id,
+			Attestor:  addr,
+			Timestamp: types.GogoToProtobufTimestamp(timestamp),
 		})
 		if err != nil {
 			return nil, err
