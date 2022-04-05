@@ -37,7 +37,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
 		ProjectId: "PRO",
-		Issuance: []*core.MsgCreateBatch_BatchIssuance{
+		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
 				TradableAmount: "10",
@@ -102,7 +102,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
 		ProjectId: "PRO",
-		Issuance: []*core.MsgCreateBatch_BatchIssuance{
+		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
 				TradableAmount: "10.1234567891111",

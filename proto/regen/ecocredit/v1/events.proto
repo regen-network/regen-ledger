@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package regen.ecocredit.v1;
 
+import "regen/ecocredit/v1/types.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
 // EventCreateClass is an event emitted when a credit class is created.
@@ -63,6 +65,24 @@ message EventCreateBatch {
 
   // project_id is the unique ID of the project this batch belongs to.
   string project_id = 9;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  OriginTx origin_tx = 10;
+
+  // reference note for accounting, will be passed to an event
+  string note = 11;
+}
+
+// EventCreateBatch is an event emitted when a credit batch is created.
+message EventMintBatchCredits {
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 1;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  OriginTx origin_tx = 2;
 }
 
 // EventReceive is an event emitted when credits are received either via
