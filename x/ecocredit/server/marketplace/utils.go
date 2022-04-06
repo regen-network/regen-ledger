@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -199,12 +198,10 @@ func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) 
 		return sdk.Int{}, err
 	}
 
-	costStr := cost.String()
-
-	costInt, ok := sdk.NewIntFromString(costStr)
-	if !ok {
-		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", costStr, sdk.Int{})
+	costBigI, err := cost.BigInt()
+	if err != nil {
+		return sdk.Int{}, err
 	}
 
-	return costInt, nil
+	return sdk.NewIntFromBigInt(costBigI), nil
 }
