@@ -30,4 +30,4 @@ The data module also enables the creation and management of data resolvers. When
 
 For a complete list of the Protobuf definitions, see the following documentation:
 
-- [regen.data.v1](https://buf.build/regen/regen-ledger/docs/main/regen.data.v1)
+- [regen.data.v1](https://buf.build/regen/regen-ledger/docs/main:regen.data.v1)
