@@ -6,22 +6,23 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc"
+
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/grpc"
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 type FixtureFactory struct {
