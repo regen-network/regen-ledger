@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -207,7 +208,14 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 
 // RunMigrations performs state migrations for registered modules.
 func (mm *Manager) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
-	for _, h := range mm.migrationHandlers {
+	keys := make([]string, 0, len(mm.migrationHandlers))
+	for k := range mm.migrationHandlers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		h := mm.migrationHandlers[k]
 		if h == nil {
 			continue
 		}

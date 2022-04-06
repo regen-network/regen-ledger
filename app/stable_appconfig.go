@@ -65,7 +65,8 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	// 	return nil, err
 	// }
 
-	// run x/ecocredit state migrations
+	// TODO: set `AllowedAskedDenoms` ecocredit param #969
+	// // run x/ecocredit state migrations
 	// if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
 	// 	return nil, err
 	// }
