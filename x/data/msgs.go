@@ -43,6 +43,10 @@ func (m *MsgAttest) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
+	if len(m.Hashes) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("hashes cannot be empty")
+	}
+
 	for _, hash := range m.Hashes {
 		if hash == nil {
 			return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")

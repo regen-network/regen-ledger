@@ -110,6 +110,14 @@ func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 			"empty address string is not allowed: invalid address",
 		},
 		{
+			"empty content hashes",
+			fields{
+				Attestor: addr.String(),
+				Hashes:   []*ContentHash_Graph{},
+			},
+			"hashes cannot be empty: invalid request",
+		},
+		{
 			"invalid content hash",
 			fields{
 				Attestor: addr.String(),
