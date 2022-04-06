@@ -22,9 +22,6 @@ service Msg {
   // CancelSellOrder cancels a sell order and returns the funds from escrow.
   rpc CancelSellOrder(MsgCancelSellOrder) returns (MsgCancelSellOrderResponse);
 
-  // Buy creates credit buy orders.
-  rpc Buy(MsgBuy) returns (MsgBuyResponse);
-
   // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
 

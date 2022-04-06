@@ -183,27 +183,28 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 // getTotalCost calculates the cost of the order by multiplying the price per credit, and the amount of credits
 // desired in the order.
 func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) {
-	multiplier, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
+	unitPrice, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
 	if err != nil {
 		return sdk.Int{}, err
 	}
-	amountDec, err := amtCredits.Mul(multiplier)
+	cost, err := amtCredits.Mul(unitPrice)
 	if err != nil {
 		return sdk.Int{}, err
 	}
 
+	// TODO: update with Dec ToInt function #987
 	// divide by 1 to clear anything to the right of the decimal, so we can convert to sdk.Int
-	amountDec, err = amountDec.QuoInteger(math.NewDecFromInt64(1))
+	cost, err = cost.QuoInteger(math.NewDecFromInt64(1))
 	if err != nil {
 		return sdk.Int{}, err
 	}
 
-	amtNeededStr := amountDec.String()
+	costStr := cost.String()
 
-	amtNeeded, ok := sdk.NewIntFromString(amtNeededStr)
+	costInt, ok := sdk.NewIntFromString(costStr)
 	if !ok {
-		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", amtNeededStr, sdk.Int{})
+		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", costStr, sdk.Int{})
 	}
 
-	return amtNeeded, nil
+	return costInt, nil
 }
