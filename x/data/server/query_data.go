@@ -8,20 +8,19 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // ByIRI queries data based on its ContentHash.
 func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
-	id, err := s.getID(ctx, request.Iri)
+	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err
 	}
 
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
-	entry, err := s.getEntry(ctx, store, id)
+	entry, err := s.getEntry(ctx, contentHash, request.Iri)
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +41,7 @@ func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest
 		return nil, err
 	}
 
-	id, err := s.getID(ctx, iri)
-	if err != nil {
-		return nil, err
-	}
-
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
-	entry, err := s.getEntry(ctx, store, id)
+	entry, err := s.getEntry(ctx, request.ContentHash, iri)
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +72,6 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		return nil, err
 	}
 
-	store := sdk.UnwrapSDKContext(ctx).KVStore(s.storeKey)
-
 	var entries []*data.ContentEntry
 	for it.Next() {
 		dataAttestor, err := it.Value()
@@ -89,12 +79,26 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 			return nil, err
 		}
 
-		entry, err := s.getEntry(ctx, store, dataAttestor.Id)
+		dataId, err := s.stateStore.DataIDTable().Get(ctx, dataAttestor.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		entries = append(entries, entry)
+		contentHash, err := data.ParseIRI(dataId.Iri)
+		if err != nil {
+			return nil, err
+		}
+
+		dataAnchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataAttestor.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		entries = append(entries, &data.ContentEntry{
+			Hash:      contentHash,
+			Iri:       dataId.Iri,
+			Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+		})
 	}
 
 	pageRes, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
@@ -105,5 +109,23 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 	return &data.QueryByAttestorResponse{
 		Entries:    entries,
 		Pagination: pageRes,
+	}, nil
+}
+
+func (s serverImpl) getEntry(ctx context.Context, ch *data.ContentHash, iri string) (*data.ContentEntry, error) {
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
+	if err != nil {
+		return nil, err
+	}
+
+	dataAnchor, err := s.stateStore.DataAnchorTable().Get(ctx, dataId.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.ContentEntry{
+		Hash:      ch,
+		Iri:       iri,
+		Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 	}, nil
 }
