@@ -17,6 +17,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	basketsims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/basket"
+	marketplacesims "github.com/regen-network/regen-ledger/x/ecocredit/simulation/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation/utils"
 )
 
@@ -129,8 +130,6 @@ func WeightedOperations(
 		},
 	)
 
-	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
-
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
@@ -170,7 +169,11 @@ func WeightedOperations(
 		),
 	}
 
-	return append(ops, basketOps...)
+	basketOps := basketsims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
+	marketplaceOps := marketplacesims.WeightedOperations(appParams, cdc, ak, bk, qryClient, basketQryClient)
+
+	ops = append(ops, basketOps...)
+	return append(ops, marketplaceOps...)
 }
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
