@@ -52,14 +52,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 
-		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
-		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//if !has {
-		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
-		//}
+		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
+		}
 
 		var expiration *timestamppb.Timestamp
 		if order.Expiration != nil {
