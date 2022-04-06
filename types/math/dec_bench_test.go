@@ -21,13 +21,19 @@ func BenchmarkSdkIntTrim(b *testing.B) {
 
 	b.Run("quo-integer", func(b *testing.B) {
 		for n := 0; n < b.N; n++ {
-			naiveSdkIntTrim(d)
+			sdkIntTrimQuo(d)
+		}
+	})
+
+	b.Run("string", func(b *testing.B) {
+		for n := 0; n < b.N; n++ {
+			sdkIntTrimNaive(d)
 		}
 	})
 
 }
 
-func naiveSdkIntTrim(d Dec) sdk.Int {
+func sdkIntTrimQuo(d Dec) sdk.Int {
 	d, err := d.QuoInteger(NewDecFromInt64(1))
 	if err != nil {
 		panic(err)
@@ -38,4 +44,18 @@ func naiveSdkIntTrim(d Dec) sdk.Int {
 		panic(err)
 	}
 	return sdk.NewIntFromBigInt(i)
+}
+
+func sdkIntTrimNaive(d Dec) sdk.Int {
+	d, err := d.QuoInteger(NewDecFromInt64(1))
+	if err != nil {
+		panic(err)
+	}
+
+	s := d.String()
+	i, ok := sdk.NewIntFromString(s)
+	if !ok {
+		panic("can't convert from string")
+	}
+	return i
 }
