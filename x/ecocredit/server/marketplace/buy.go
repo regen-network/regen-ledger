@@ -59,16 +59,16 @@ func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.
 			if err != nil {
 				return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 			}
-			if order.BidPrice.Denom != market.BankDenom {
+			if order.BidPrice.Denom != market.BaseCurrency {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
-					" %s, expected %s", order.BidPrice.Denom, market.BankDenom)
+					" %s, expected %s", order.BidPrice.Denom, market.BaseCurrency)
 			}
 			// check that bid price >= sell price
 			sellOrderPricePerCredit, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 			if !ok {
 				return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
 			}
-			sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderPricePerCredit}
+			sellOrderPriceCoin := sdk.Coin{Denom: market.BaseCurrency, Amount: sellOrderPricePerCredit}
 			if sellOrderPricePerCredit.GT(order.BidPrice.Amount) {
 				return nil, ErrBidTooLow.Wrapf("sell order ask: %v, bid: %v", sellOrderPriceCoin, order.BidPrice)
 			}
@@ -79,10 +79,10 @@ func (k Keeper) Buy(ctx context.Context, req *marketplace.MsgBuy) (*marketplace.
 			if err != nil {
 				return nil, err
 			}
-			coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
+			coinCost := sdk.Coin{Amount: cost, Denom: market.BaseCurrency}
 			if bal.IsLT(coinCost) {
 				return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
-					"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal)
+					"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskPrice, market.BaseCurrency, coinCost, bal)
 			}
 
 			// fill the order, updating balances and the sell order in state

@@ -93,15 +93,15 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
-func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
-	market, err := k.stateStore.MarketTable().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
+func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, baseCurrency string) (uint64, error) {
+	market, err := k.stateStore.MarketTable().GetByCreditTypeBaseCurrency(ctx, creditTypeAbbrev, baseCurrency)
 	switch err {
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
 		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
-			BankDenom:         bankDenom,
+			BaseCurrency:         baseCurrency,
 			PrecisionModifier: 0,
 		})
 	default:

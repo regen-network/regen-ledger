@@ -77,7 +77,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	}).Times(2)
 
 	// market shouldn't exist before sell call
-	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
+	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBaseCurrency(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
@@ -90,7 +90,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 
 	// market should exist now
-	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
+	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBaseCurrency(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, true, has)
 }
@@ -180,7 +180,7 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 }
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
-func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+func testSellSetup(t *testing.T, s *baseSuite, batchDenom, baseCurrency, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: batchDenom,
@@ -196,12 +196,12 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	}))
 	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
-		BankDenom:         bankDenom,
+		BaseCurrency:         baseCurrency,
 		PrecisionModifier: 0,
 	}))
 	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
 	//assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
-	//	BankDenom:    bankDenom,
+	//	BaseCurrency:    baseCurrency,
 	//	DisplayDenom: displayDenom,
 	//	Exponent:     1,
 	//}))
