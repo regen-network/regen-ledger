@@ -42,6 +42,7 @@ message DataAttestor {
   option (cosmos.orm.v1alpha1.table) = {
     id : 3
     primary_key : {fields : "id,attestor"}
+    index : {id : 1, fields : "attestor"}
   };
 
   // id is the compact data ID.
