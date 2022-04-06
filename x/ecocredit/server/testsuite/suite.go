@@ -99,7 +99,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
-// TODO: reimpl this test
 // TODO: reimpl after full submodule integration
 //func (s *IntegrationTestSuite) TestBasketScenario() {
 //	require := s.Require()
