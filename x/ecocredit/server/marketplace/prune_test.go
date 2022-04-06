@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -19,20 +18,12 @@ import (
 func TestSell_Prune(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
+	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(4)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
 	assert.NilError(t, err)

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types/math"
@@ -22,22 +21,14 @@ func TestBuy_ValidTradable(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -79,22 +70,14 @@ func TestBuy_ValidRetired(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -135,22 +118,14 @@ func TestBuy_OrderFilled(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 100)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -188,21 +163,13 @@ func TestBuy_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 150)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{

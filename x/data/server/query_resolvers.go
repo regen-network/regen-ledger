@@ -14,7 +14,7 @@ import (
 
 // ResolversByIRI queries resolvers based on IRI.
 func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResolversByIRIRequest) (*data.QueryResolversByIRIResponse, error) {
-	id, err := s.getID(ctx, request.Iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 
 	it, err := s.stateStore.DataResolverTable().List(
 		ctx,
-		api.DataResolverPrimaryKey{}.WithId(id),
+		api.DataResolverPrimaryKey{}.WithId(dataId.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 		return nil, err
 	}
 
-	id, err := s.getID(ctx, iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 
 	it, err := s.stateStore.DataResolverTable().List(
 		ctx,
-		api.DataResolverPrimaryKey{}.WithId(id),
+		api.DataResolverPrimaryKey{}.WithId(dataId.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {
