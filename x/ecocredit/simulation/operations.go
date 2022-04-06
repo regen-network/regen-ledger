@@ -860,9 +860,9 @@ func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
 	return issuers
 }
 
-func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.MsgCreateBatch_BatchIssuance {
+func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.BatchIssuance {
 	numIssuances := simtypes.RandIntBetween(r, 3, 10)
-	res := make([]*core.MsgCreateBatch_BatchIssuance, numIssuances)
+	res := make([]*core.BatchIssuance, numIssuances)
 
 	for i := 0; i < numIssuances; i++ {
 		recipient := accs[i]
@@ -871,7 +871,7 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.MsgCre
 		if retiredAmount > 0 {
 			retirementLocation = "AD"
 		}
-		res[i] = &core.MsgCreateBatch_BatchIssuance{
+		res[i] = &core.BatchIssuance{
 			Recipient:          recipient.Address.String(),
 			TradableAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
 			RetiredAmount:      fmt.Sprintf("%d", retiredAmount),

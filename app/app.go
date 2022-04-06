@@ -391,7 +391,9 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.BankKeeper,
 		app.DistrKeeper,
 	)
-	newModules := []moduletypes.Module{ecocreditModule, data.Module{}}
+
+	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
+	newModules := []moduletypes.Module{ecocreditModule, dataModule}
 	err := app.smm.RegisterModules(newModules)
 	if err != nil {
 		panic(err)
@@ -538,8 +540,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			// authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry), // enable after updating sdk version v0.46
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
-			// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
-			// ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+			data.NewModule(app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
 
