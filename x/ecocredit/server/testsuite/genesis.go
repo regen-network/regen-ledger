@@ -7,6 +7,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,64 +24,62 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require := s.Require()
 	ctx := s.genesisCtx
 	admin1 := s.signers[0]
-	admin2 := s.signers[1].String()
-	issuer1 := s.signers[2].String()
-	issuer2 := s.signers[3].String()
-	addr1 := s.signers[4].String()
+	admin2 := s.signers[1]
+	issuer1 := s.signers[2]
+	issuer2 := s.signers[3]
+	addr1 := s.signers[4]
 
 	// Set the param set to empty values to properly test init
 	var ecocreditParams ecocredit.Params
 	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
 
-	classInfo := []*ecocredit.ClassInfo{
+	classInfo := []*core.ClassInfo{
 		{
-			ClassId:  "BIO01",
-			Admin:    admin1.String(),
-			Issuers:  []string{issuer1, issuer2},
-			Metadata: []byte("credit class metadata"),
+			Name:       "BIO01",
+			Admin:      admin1,
+			CreditType: "BIO",
+			Metadata:   "credit class metadata",
 		},
 		{
-			ClassId:  "BIO02",
-			Admin:    admin2,
-			Issuers:  []string{issuer2, addr1},
-			Metadata: []byte("credit class metadata"),
-		},
-	}
-
-	projectInfo := []*ecocredit.ProjectInfo{
-		{
-			ProjectId:       "P01",
-			ClassId:         "BIO01",
-			Issuer:          issuer1,
-			ProjectLocation: "AQ",
-			Metadata:        []byte("project metadata"),
-		},
-		{
-			ProjectId:       "P02",
-			ClassId:         "BIO02",
-			Issuer:          issuer2,
-			ProjectLocation: "AQ",
-			Metadata:        []byte("project metadata"),
+			Name:       "BIO02",
+			CreditType: "BIO",
+			Admin:      admin2,
+			Metadata:   "credit class metadata",
 		},
 	}
 
-	batchInfo := []*ecocredit.BatchInfo{
+	projectInfo := []*core.ProjectInfo{
 		{
-			ProjectId:   "P01",
-			BatchDenom:  "BIO01-00000000-00000000-001",
-			TotalAmount: "100",
-			Metadata:    []byte("batch metadata"),
+			Name:            "P01",
+			ClassId:         1,
+			Admin:           issuer1,
+			ProjectLocation: "AQ",
+			Metadata:        "project metadata",
+		},
+		{
+			Name:            "P02",
+			ClassId:         2,
+			Admin:           issuer2,
+			ProjectLocation: "AQ",
+			Metadata:        "project metadata",
+		},
+	}
+
+	batchInfo := []*core.BatchInfo{
+		{
+			ProjectId:  1,
+			BatchDenom: "BIO01-00000000-00000000-001",
+			Metadata:   "batch metadata",
 		}, {
-			ProjectId:   "P02",
-			BatchDenom:  "BIO02-00000000-00000000-001",
-			TotalAmount: "100",
-			Metadata:    []byte("batch metadata"),
+			ProjectId:  2,
+			BatchDenom: "BIO02-00000000-00000000-001",
+			Metadata:   "batch metadata",
 		},
 	}
 
 	balances := []*ecocredit.Balance{
 		{
-			Address:         addr1,
+			Address:         addr1.String(),
 			BatchDenom:      "BIO01-00000000-00000000-001",
 			TradableBalance: "90.003",
 			RetiredBalance:  "9.997",
@@ -103,13 +102,13 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	genesisState := &ecocredit.GenesisState{
-		Params:        ecocredit.DefaultParams(),
-		Sequences:     sequences,
-		ClassInfo:     classInfo,
-		BatchInfo:     batchInfo,
-		Balances:      balances,
-		Supplies:      supplies,
-		ProjectInfo:   projectInfo,
+		Params:    ecocredit.DefaultParams(),
+		Sequences: sequences,
+		//	ClassInfo:     classInfo, TODO: fix this!
+		//BatchInfo:     batchInfo, TODO: FIX THIS!
+		Balances: balances,
+		Supplies: supplies,
+		//ProjectInfo:   projectInfo, TODO: FIX THIS!
 		ProjectSeqNum: 2,
 	}
 	require.NoError(s.initGenesisState(ctx, genesisState))
@@ -119,23 +118,23 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
 
 	for _, info := range classInfo {
-		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
-			ClassId: info.ClassId,
+		res, err := s.queryClient.ClassInfo(ctx, &core.QueryClassInfoRequest{
+			ClassId: info.Name,
 		})
 		require.NoError(err)
 		s.assetClassInfoEqual(res.Info, info)
 	}
 
 	for _, info := range projectInfo {
-		res, err := s.queryClient.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{
-			ProjectId: info.ProjectId,
+		res, err := s.queryClient.ProjectInfo(ctx, &core.QueryProjectInfoRequest{
+			ProjectId: info.Name,
 		})
 		require.NoError(err)
 		s.assetProjectInfoEqual(res.Info, info)
 	}
 
 	for _, info := range batchInfo {
-		res, err := s.queryClient.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{
+		res, err := s.queryClient.BatchInfo(ctx, &core.QueryBatchInfoRequest{
 			BatchDenom: info.BatchDenom,
 		})
 		require.NoError(err)
@@ -143,19 +142,19 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	for _, balance := range balances {
-		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
+		res, err := s.queryClient.Balance(ctx, &core.QueryBalanceRequest{
 			Account:    balance.Address,
 			BatchDenom: balance.BatchDenom,
 		})
 		require.NoError(err)
 		require.NotNil(res)
 
-		require.Equal(res.TradableAmount, balance.TradableBalance)
-		require.Equal(res.RetiredAmount, balance.RetiredBalance)
+		require.Equal(res.Balance.Tradable, balance.TradableBalance)
+		require.Equal(res.Balance.Retired, balance.RetiredBalance)
 	}
 
 	for _, supply := range supplies {
-		res, err := s.queryClient.Supply(ctx, &ecocredit.QuerySupplyRequest{
+		res, err := s.queryClient.Supply(ctx, &core.QuerySupplyRequest{
 			BatchDenom: supply.BatchDenom,
 		})
 		require.NoError(err)
@@ -218,25 +217,19 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 	return err
 }
 
-func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {
-	require := s.Require()
-	require.Equal(q.ClassId, other.ClassId)
-	require.Equal(q.Admin, other.Admin)
-	require.Equal(q.Issuers, other.Issuers)
-	require.Equal(q.Metadata, other.Metadata)
-}
-
-func (s *IntegrationTestSuite) assetProjectInfoEqual(q, other *ecocredit.ProjectInfo) {
+func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *core.ClassInfo) {
 	require := s.Require()
 	require.Equal(q, other)
 }
 
-func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
+func (s *IntegrationTestSuite) assetProjectInfoEqual(q, other *core.ProjectInfo) {
 	require := s.Require()
-	require.Equal(q.ProjectId, other.ProjectId)
-	require.Equal(q.BatchDenom, other.BatchDenom)
-	require.Equal(q.Metadata, other.Metadata)
-	require.Equal(q.TotalAmount, other.TotalAmount)
+	require.Equal(q, other)
+}
+
+func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *core.BatchInfo) {
+	require := s.Require()
+	require.Equal(q, other)
 }
 
 type GenesisTestSuite struct {

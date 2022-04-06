@@ -2,8 +2,13 @@ package testsuite
 
 import (
 	"context"
+	"testing"
 	"time"
 
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	types2 "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -17,7 +22,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 )
@@ -32,9 +36,10 @@ type IntegrationTestSuite struct {
 
 	sdkCtx            sdk.Context
 	ctx               context.Context
-	msgClient         ecocredit.MsgClient
+	msgClient         core.MsgClient
+	marketServer      marketServer
 	basketServer      basketServer
-	queryClient       ecocredit.QueryClient
+	queryClient       core.QueryClient
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
 	basketFee         sdk.Coin
@@ -46,6 +51,11 @@ type IntegrationTestSuite struct {
 
 	genesisCtx types.Context
 	blockTime  time.Time
+}
+
+type marketServer struct {
+	marketplace.QueryClient
+	marketplace.MsgClient
 }
 
 type basketServer struct {
@@ -78,32 +88,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
-	ecocreditParams := ecocredit.DefaultParams()
-	// Add biodiversity credit type for testing credit type sequence numbers
-	ecocreditParams.CreditTypes = append(
-		ecocreditParams.CreditTypes,
-		&ecocredit.CreditType{
-			Name:         "biodiversity",
-			Abbreviation: "BIO",
-			Unit:         "hectare",
-			Precision:    6,
-		},
-		&ecocredit.CreditType{
-			Name:         "bazcredits",
-			Abbreviation: "BAZ",
-			Unit:         "FooBarBaz",
-			Precision:    6,
-		},
-	)
+	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin(basketFeeDenom, 20)
-	ecocreditParams.BasketCreationFee = sdk.NewCoins(s.basketFee)
+	ecocreditParams.BasketFee = sdk.NewCoins(s.basketFee)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
 	s.basketServer = basketServer{basket.NewQueryClient(s.fixture.QueryConn()), basket.NewMsgClient(s.fixture.TxConn())}
-	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
-	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
+	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
+	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
@@ -304,30 +298,30 @@ func (s *IntegrationTestSuite) TestUpdateClassAdmin() {
 	issuer2 := s.signers[2].String()
 	newAdmin := s.signers[3].String()
 
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1, issuer2}, Metadata: nil, CreditTypeName: "carbon"})
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*core.DefaultCreditClassFeeTokens.Int64())))
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1, issuer2}, Metadata: "", CreditTypeAbbrev: "C"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
 	classID := createClsRes.ClassId
 
 	testCases := []struct {
 		name   string
-		msg    ecocredit.MsgUpdateClassAdmin
+		msg    core.MsgUpdateClassAdmin
 		expErr bool
 	}{
 		{
 			name:   "invalid: not admin",
-			msg:    ecocredit.MsgUpdateClassAdmin{ClassId: classID, Admin: issuer1, NewAdmin: newAdmin},
+			msg:    core.MsgUpdateClassAdmin{ClassId: classID, Admin: issuer1, NewAdmin: newAdmin},
 			expErr: true,
 		},
 		{
 			name:   "invalid: bad classID",
-			msg:    ecocredit.MsgUpdateClassAdmin{ClassId: "foobarbaz", Admin: admin.String(), NewAdmin: newAdmin},
+			msg:    core.MsgUpdateClassAdmin{ClassId: "foobarbaz", Admin: admin.String(), NewAdmin: newAdmin},
 			expErr: true,
 		},
 		{
 			name:   "valid",
-			msg:    ecocredit.MsgUpdateClassAdmin{ClassId: classID, Admin: admin.String(), NewAdmin: newAdmin},
+			msg:    core.MsgUpdateClassAdmin{ClassId: classID, Admin: admin.String(), NewAdmin: newAdmin},
 			expErr: false,
 		},
 	}
@@ -343,7 +337,7 @@ func (s *IntegrationTestSuite) TestUpdateClassAdmin() {
 			s.Require().NoError(err)
 			s.Require().NotNil(updateRes)
 
-			res, err := s.queryClient.ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classID})
+			res, err := s.queryClient.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: classID})
 			s.Require().NoError(err)
 			s.Require().NotNil(res)
 
@@ -358,30 +352,31 @@ func (s *IntegrationTestSuite) TestUpdateClassIssuers() {
 	issuer2 := s.signers[2].String()
 	issuer3 := s.signers[3].String()
 
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*core.DefaultCreditClassFeeTokens.Int64())))
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: "", CreditTypeAbbrev: "C"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
 	classID := createClsRes.ClassId
 
+	// TODO: FIX THIS TEST
 	testCases := []struct {
 		name   string
-		msg    ecocredit.MsgUpdateClassIssuers
+		msg    core.MsgUpdateClassIssuers
 		expErr bool
 	}{
 		{
 			name:   "invalid: not admin",
-			msg:    ecocredit.MsgUpdateClassIssuers{ClassId: classID, Admin: issuer1, Issuers: []string{issuer1}},
+			msg:    core.MsgUpdateClassIssuers{ClassId: classID, Admin: issuer1, AddIssuers: []string{issuer1}},
 			expErr: true,
 		},
 		{
 			name:   "invalid: bad classID",
-			msg:    ecocredit.MsgUpdateClassIssuers{ClassId: "foobarbaz", Admin: admin.String(), Issuers: []string{}},
+			msg:    core.MsgUpdateClassIssuers{ClassId: "foobarbaz", Admin: admin.String(), AddIssuers: []string{}},
 			expErr: true,
 		},
 		{
 			name:   "valid",
-			msg:    ecocredit.MsgUpdateClassIssuers{ClassId: classID, Admin: admin.String(), Issuers: []string{issuer2, issuer3}},
+			msg:    core.MsgUpdateClassIssuers{ClassId: classID, Admin: admin.String(), RemoveIssuers: []string{issuer2, issuer3}},
 			expErr: false,
 		},
 	}
@@ -397,11 +392,11 @@ func (s *IntegrationTestSuite) TestUpdateClassIssuers() {
 			s.Require().NoError(err)
 			s.Require().NotNil(updateRes)
 
-			res, err := s.queryClient.ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classID})
+			res, err := s.queryClient.ClassIssuers(s.ctx, &core.QueryClassIssuersRequest{ClassId: classID})
 			s.Require().NoError(err)
 			s.Require().NotNil(res)
 
-			s.Require().Equal(res.Info.Issuers, tc.msg.Issuers)
+			s.Require().Contains(tc.msg.AddIssuers, res.Issuers)
 
 		})
 	}
@@ -411,30 +406,30 @@ func (s *IntegrationTestSuite) TestUpdateClassMetadata() {
 	admin := s.signers[0]
 	issuer1 := s.signers[3].String()
 
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: nil, CreditTypeName: "carbon"})
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*core.DefaultCreditClassFeeTokens.Int64())))
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin.String(), Issuers: []string{issuer1}, Metadata: "", CreditTypeAbbrev: "C"})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
 	classID := createClsRes.ClassId
 
 	testCases := []struct {
 		name   string
-		msg    ecocredit.MsgUpdateClassMetadata
+		msg    core.MsgUpdateClassMetadata
 		expErr bool
 	}{
 		{
 			name:   "invalid: not admin",
-			msg:    ecocredit.MsgUpdateClassMetadata{ClassId: classID, Admin: issuer1, Metadata: []byte("hello")},
+			msg:    core.MsgUpdateClassMetadata{ClassId: classID, Admin: issuer1, Metadata: "hello"},
 			expErr: true,
 		},
 		{
 			name:   "invalid: bad classID",
-			msg:    ecocredit.MsgUpdateClassMetadata{ClassId: "foobarbaz", Admin: admin.String()},
+			msg:    core.MsgUpdateClassMetadata{ClassId: "foobarbaz", Admin: admin.String()},
 			expErr: true,
 		},
 		{
 			name:   "valid",
-			msg:    ecocredit.MsgUpdateClassMetadata{ClassId: classID, Admin: admin.String(), Metadata: []byte("hello world")},
+			msg:    core.MsgUpdateClassMetadata{ClassId: classID, Admin: admin.String(), Metadata: "hello world"},
 			expErr: false,
 		},
 	}
@@ -450,7 +445,7 @@ func (s *IntegrationTestSuite) TestUpdateClassMetadata() {
 			s.Require().NoError(err)
 			s.Require().NotNil(updateRes)
 
-			res, err := s.queryClient.ClassInfo(s.ctx, &ecocredit.QueryClassInfoRequest{ClassId: classID})
+			res, err := s.queryClient.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: classID})
 			s.Require().NoError(err)
 			s.Require().NotNil(res)
 
@@ -471,17 +466,17 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr5 := s.signers[7].String()
 
 	// create class with insufficient funds and it should fail
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Admin:          admin.String(),
-		Issuers:        []string{issuer1, issuer2},
-		Metadata:       nil,
-		CreditTypeName: "carbon",
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+		Admin:            admin.String(),
+		Issuers:          []string{issuer1, issuer2},
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	})
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64())))
+	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*core.DefaultCreditClassFeeTokens.Int64())))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -489,29 +484,29 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expectedClassID string
 	}{
 		{
-			creditType:      "carbon",
+			creditType:      "C",
 			expectedClassID: "C01",
 		},
 		{
-			creditType:      "biodiversity",
+			creditType:      "BIO",
 			expectedClassID: "BIO04",
 		},
 		{
-			creditType:      "biodiversity",
+			creditType:      "BIO",
 			expectedClassID: "BIO05",
 		},
 		{
-			creditType:      "carbon",
+			creditType:      "C",
 			expectedClassID: "C02",
 		},
 	}
 
 	for _, tc := range createClassTestCases {
-		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-			Admin:          admin.String(),
-			Issuers:        []string{issuer1, issuer2},
-			Metadata:       nil,
-			CreditTypeName: tc.creditType,
+		createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+			Admin:            admin.String(),
+			Issuers:          []string{issuer1, issuer2},
+			Metadata:         "",
+			CreditTypeAbbrev: tc.creditType,
 		})
 		s.Require().NoError(err)
 		s.Require().NotNil(createClsRes)
@@ -520,10 +515,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	// create project
-	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
+	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		ClassId:         "C01",
 		Issuer:          issuer1,
-		Metadata:        []byte("metadata"),
+		Metadata:        "metadata",
 		ProjectLocation: "AQ",
 		ProjectId:       "P03",
 	})
@@ -544,12 +539,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 	time2 := time.Now()
 
 	// Batch creation should succeed with StartDate before EndDate, and valid data
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    issuer1,
 		ProjectId: "P03",
 		StartDate: &time1,
 		EndDate:   &time2,
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
+		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:          addr1,
 				TradableAmount:     t0,
@@ -581,45 +576,45 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NotEmpty(batchDenom)
 
 	// query balances
-	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr1,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t0, queryBalanceRes.TradableAmount)
-	s.Require().Equal(r0, queryBalanceRes.RetiredAmount)
+	s.Require().Equal(t0, queryBalanceRes.Balance.Tradable)
+	s.Require().Equal(r0, queryBalanceRes.Balance.Retired)
 
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr2,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t1, queryBalanceRes.TradableAmount)
-	s.Require().Equal(r1, queryBalanceRes.RetiredAmount)
+	s.Require().Equal(t1, queryBalanceRes.Balance.Tradable)
+	s.Require().Equal(r1, queryBalanceRes.Balance.Retired)
 
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr4,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t2, queryBalanceRes.TradableAmount)
-	s.Require().Equal(r2, queryBalanceRes.RetiredAmount)
+	s.Require().Equal(t2, queryBalanceRes.Balance.Tradable)
+	s.Require().Equal(r2, queryBalanceRes.Balance.Retired)
 
 	// if we didn't issue tradable or retired balances, they'll be default to zero.
-	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr5,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal("0", queryBalanceRes.TradableAmount)
-	s.Require().Equal("0", queryBalanceRes.RetiredAmount)
+	s.Require().Equal("0", queryBalanceRes.Balance.Tradable)
+	s.Require().Equal("0", queryBalanceRes.Balance.Retired)
 
 	// query supply
-	querySupplyRes, err := s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
+	querySupplyRes, err := s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 	s.Require().NoError(err)
 	s.Require().NotNil(querySupplyRes)
 	s.Require().Equal(tSupply0, querySupplyRes.TradableSupply)
@@ -703,9 +698,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	for _, tc := range cancelCases {
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Cancel(s.ctx, &ecocredit.MsgCancel{
+			_, err := s.msgClient.Cancel(s.ctx, &core.MsgCancel{
 				Holder: tc.holder,
-				Credits: []*ecocredit.MsgCancel_CancelCredits{
+				Credits: []*core.MsgCancel_CancelCredits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toCancel,
@@ -720,28 +715,30 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 					Account:    tc.holder,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradable, queryBalanceRes.TradableAmount)
-				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
+				s.Require().Equal(tc.expTradable, queryBalanceRes.Balance.Tradable)
+				s.Require().Equal(tc.expRetired, queryBalanceRes.Balance.Retired)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
-
+				s.Require().Equal(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
+				total := addDecimalString(s.T(), querySupplyRes.TradableSupply, querySupplyRes.RetiredSupply)
+				s.Require().Equal(tc.expTotalAmount, total)
 				// query batchInfo
-				queryBatchInfoRes, err := s.queryClient.BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: batchDenom})
+				queryBatchInfoRes, err := s.queryClient.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBatchInfoRes)
-				s.Require().Equal(tc.expTotalAmount, queryBatchInfoRes.Info.TotalAmount)
-				s.Require().Equal(tc.expAmountCancelled, queryBatchInfoRes.Info.AmountCancelled)
+				// TODO: query supply and get total amount
+				//s.Require().Equal(tc.expTotalAmount, queryBatchInfoRes.Info.TotalAmount)
 			}
 		})
 	}
@@ -842,9 +839,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range retireCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetire{
+			_, err := s.msgClient.Retire(s.ctx, &core.MsgRetire{
 				Holder: addr1,
-				Credits: []*ecocredit.MsgRetire_RetireCredits{
+				Credits: []*core.MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toRetire,
@@ -860,17 +857,17 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 					Account:    addr1,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradable, queryBalanceRes.TradableAmount)
-				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
+				s.Require().Equal(tc.expTradable, queryBalanceRes.Balance.Tradable)
+				s.Require().Equal(tc.expRetired, queryBalanceRes.Balance.Retired)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
@@ -993,10 +990,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range sendCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSend{
+			_, err := s.msgClient.Send(s.ctx, &core.MsgSend{
 				Sender:    addr2,
 				Recipient: addr3,
-				Credits: []*ecocredit.MsgSend_SendCredits{
+				Credits: []*core.MsgSend_SendCredits{
 					{
 						BatchDenom:         batchDenom,
 						TradableAmount:     tc.sendTradable,
@@ -1013,27 +1010,27 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NoError(err)
 
 				// query sender balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 					Account:    addr2,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradableSender, queryBalanceRes.TradableAmount)
-				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.RetiredAmount)
+				s.Require().Equal(tc.expTradableSender, queryBalanceRes.Balance.Tradable)
+				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.Balance.Retired)
 
 				// query recipient balance
-				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 					Account:    addr3,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradableRecipient, queryBalanceRes.TradableAmount)
-				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.RetiredAmount)
+				s.Require().Equal(tc.expTradableRecipient, queryBalanceRes.Balance.Tradable)
+				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.Balance.Retired)
 
 				// query supply
-				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
+				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
 				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
@@ -1093,17 +1090,17 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range allowlistCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowedClassCreators, tc.allowlist)
-			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
+			s.paramSpace.Set(s.sdkCtx, core.KeyAllowedClassCreators, tc.allowlist)
+			s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the creator account
-			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
+			s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFeeTokens)))
 
-			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-				Admin:          tc.creatorAcc.String(),
-				Issuers:        []string{issuer1, issuer2},
-				CreditTypeName: "carbon",
-				Metadata:       nil,
+			createClsRes, err = s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+				Admin:            tc.creatorAcc.String(),
+				Issuers:          []string{issuer1, issuer2},
+				CreditTypeAbbrev: "C",
+				Metadata:         "",
 			})
 			if tc.wantErr {
 				s.Require().Error(err)
@@ -1116,62 +1113,62 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	// Disable credit class allowlist for credit type tests
-	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, false)
+	s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, false)
 
 	/****   TEST CREDIT TYPES   ****/
 	creditTypeCases := []struct {
 		name        string
-		creditTypes []*ecocredit.CreditType
-		msg         ecocredit.MsgCreateClass
+		creditTypes []*core.CreditType
+		msg         core.MsgCreateClass
 		wantErr     bool
 	}{
 		{
 			name: "valid eco credit creation",
-			creditTypes: []*ecocredit.CreditType{
+			creditTypes: []*core.CreditType{
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
-			msg: ecocredit.MsgCreateClass{
-				Admin:          s.signers[0].String(),
-				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:       nil,
-				CreditTypeName: "carbon",
+			msg: core.MsgCreateClass{
+				Admin:            s.signers[0].String(),
+				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:         "",
+				CreditTypeAbbrev: "carbon",
 			},
 			wantErr: false,
 		},
 		{
 			name: "invalid request - not a valid credit type",
-			creditTypes: []*ecocredit.CreditType{
+			creditTypes: []*core.CreditType{
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
-			msg: ecocredit.MsgCreateClass{
-				Admin:          s.signers[0].String(),
-				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:       nil,
-				CreditTypeName: "biodiversity",
+			msg: core.MsgCreateClass{
+				Admin:            s.signers[0].String(),
+				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:         "",
+				CreditTypeAbbrev: "BIO",
 			},
 			wantErr: true,
 		},
 		{
 			name: "request with strange font should be valid",
-			creditTypes: []*ecocredit.CreditType{
+			creditTypes: []*core.CreditType{
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
-			msg: ecocredit.MsgCreateClass{
-				Admin:          s.signers[0].String(),
-				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:       nil,
-				CreditTypeName: "cArBoN",
+			msg: core.MsgCreateClass{
+				Admin:            s.signers[0].String(),
+				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:         "",
+				CreditTypeAbbrev: "C",
 			},
 			wantErr: false,
 		},
 		{
 			name:        "empty credit types should error",
-			creditTypes: []*ecocredit.CreditType{},
-			msg: ecocredit.MsgCreateClass{
-				Admin:          s.signers[0].String(),
-				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:       nil,
-				CreditTypeName: "carbon",
+			creditTypes: []*core.CreditType{},
+			msg: core.MsgCreateClass{
+				Admin:            s.signers[0].String(),
+				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:         "",
+				CreditTypeAbbrev: "C",
 			},
 			wantErr: true,
 		},
@@ -1182,12 +1179,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 		s.Run(tc.name, func() {
 			require := s.Require()
-			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
+			s.paramSpace.Set(s.sdkCtx, core.KeyCreditTypes, tc.creditTypes)
 			admin, err := sdk.AccAddressFromBech32(tc.msg.Admin)
 			require.NoError(err)
 
 			// fund the admin account so tx will go through
-			s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", ecocredit.DefaultCreditClassFeeTokens)))
+			s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFeeTokens)))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)
@@ -1200,15 +1197,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	// reset the space to avoid corrupting other tests
-	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
+	s.paramSpace.Set(s.sdkCtx, core.KeyCreditTypes, core.DefaultParams().CreditTypes)
 
 	coinPrice := sdk.NewInt64Coin("stake", 1000000)
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 
-	createSellOrder, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
+	// TODO: fix this, it needs to call the marketplace msg client
+	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: addr3,
-		Orders: []*ecocredit.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
@@ -1229,12 +1227,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
 
 	expectedBuyOrderIds := []uint64{1}
-	selection := &ecocredit.MsgBuy_Order_Selection{
-		Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 2},
+	selection := &marketplace.MsgBuy_Order_Selection{
+		Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 2},
 	}
-	createBuyOrder, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
+	createBuyOrder, err := s.marketServer.Buy(s.ctx, &marketplace.MsgBuy{
 		Buyer: admin.String(),
-		Orders: []*ecocredit.MsgBuy_Order{
+		Orders: []*marketplace.MsgBuy_Order{
 			{
 				Selection:          selection,
 				Quantity:           "1.0",
@@ -1249,16 +1247,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(expectedBuyOrderIds, createBuyOrder.BuyOrderIds)
 }
 
-func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.AccAddress, creditType, tradableAmount, startStr, endStr string) (string, string) {
+func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.AccAddress, creditTypeAbbrev, tradableAmount, startStr, endStr string) (string, string) {
 	require := s.Require()
 	// fund the account so this doesn't fail
 	s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 20000000)))
 
-	cRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Admin:          admin.String(),
-		Issuers:        []string{admin.String()},
-		Metadata:       nil,
-		CreditTypeName: creditType,
+	cRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
+		Admin:            admin.String(),
+		Issuers:          []string{admin.String()},
+		Metadata:         "",
+		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(err)
 	classId := cRes.ClassId
@@ -1266,22 +1264,33 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	require.NoError(err)
 	end, err := time.Parse("2006-04-02", endStr)
 	require.NoError(err)
-	pRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
+	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:          admin.String(),
 		ClassId:         classId,
-		Metadata:        nil,
+		Metadata:        "",
 		ProjectLocation: "US-NY",
 	})
 	require.NoError(err)
-	bRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+	bRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    admin.String(),
 		ProjectId: pRes.ProjectId,
-		Issuance:  []*ecocredit.MsgCreateBatch_BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
-		Metadata:  nil,
+		Issuance:  []*core.BatchIssuance{{Recipient: recipient.String(), TradableAmount: tradableAmount}},
+		Metadata:  "",
 		StartDate: &start,
 		EndDate:   &end,
 	})
 	require.NoError(err)
 	batchDenom := bRes.BatchDenom
 	return classId, batchDenom
+}
+
+func addDecimalString(t *testing.T, d1, d2 string) math.Dec {
+	dec1, err := math.NewDecFromString(d1)
+	require.NoError(t, err)
+	dec2, err := math.NewDecFromString(d2)
+	require.NoError(t, err)
+
+	result, err := dec1.Add(dec2)
+	require.NoError(t, err)
+	return result
 }

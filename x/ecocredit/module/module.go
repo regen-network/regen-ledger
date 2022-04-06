@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -22,7 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
@@ -53,7 +54,7 @@ func NewModule(
 	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
+		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
@@ -75,7 +76,6 @@ func (a Module) Name() string {
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
-	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
@@ -88,7 +88,6 @@ func (a *Module) RegisterServices(configurator servermodule.Configurator) {
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
-	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
@@ -167,7 +166,6 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	ecocredit.RegisterLegacyAminoCodec(cdc)
 	basket.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
 	marketplacetypes.RegisterLegacyAminoCodec(cdc)

@@ -3,7 +3,8 @@ package testsuite
 import (
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
@@ -11,7 +12,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryClassesRequest
+		request   *core.QueryClassesRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -23,7 +24,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 		},
 		{
 			"valid request",
-			&ecocredit.QueryClassesRequest{},
+			&core.QueryClassesRequest{},
 			false,
 			"",
 		},
@@ -47,7 +48,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryClassInfoRequest
+		request   *core.QueryClassInfoRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -59,7 +60,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		},
 		{
 			"empty class-ID",
-			&ecocredit.QueryClassInfoRequest{
+			&core.QueryClassInfoRequest{
 				ClassId: "",
 			},
 			true,
@@ -67,7 +68,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		},
 		{
 			"credit class not found",
-			&ecocredit.QueryClassInfoRequest{
+			&core.QueryClassInfoRequest{
 				ClassId: "123",
 			},
 			true,
@@ -75,7 +76,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		},
 		{
 			"valid test case",
-			&ecocredit.QueryClassInfoRequest{
+			&core.QueryClassInfoRequest{
 				ClassId: "BIO01",
 			},
 			false,
@@ -101,7 +102,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBatchesRequest
+		request   *core.QueryBatchesRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -113,13 +114,13 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		},
 		{
 			"empty project id",
-			&ecocredit.QueryBatchesRequest{},
+			&core.QueryBatchesRequest{},
 			true,
 			"invalid project id",
 		},
 		{
 			"valid test case",
-			&ecocredit.QueryBatchesRequest{
+			&core.QueryBatchesRequest{
 				ProjectId: "P01",
 			},
 			false,
@@ -145,7 +146,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBatchInfoRequest
+		request   *core.QueryBatchInfoRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -157,13 +158,13 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		},
 		{
 			"empty batch denom",
-			&ecocredit.QueryBatchInfoRequest{},
+			&core.QueryBatchInfoRequest{},
 			true,
 			"invalid denom",
 		},
 		{
 			"batch not found",
-			&ecocredit.QueryBatchInfoRequest{
+			&core.QueryBatchInfoRequest{
 				BatchDenom: "A00-00000000-00000000-000",
 			},
 			true,
@@ -171,7 +172,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		},
 		{
 			"valid request",
-			&ecocredit.QueryBatchInfoRequest{
+			&core.QueryBatchInfoRequest{
 				BatchDenom: "BIO01-00000000-00000000-001",
 			},
 			false,
@@ -197,7 +198,7 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBalanceRequest
+		request   *core.QueryBalanceRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -209,13 +210,13 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QueryBalanceRequest{},
+			&core.QueryBalanceRequest{},
 			true,
 			"invalid denom",
 		},
 		{
 			"with address",
-			&ecocredit.QueryBalanceRequest{
+			&core.QueryBalanceRequest{
 				Account: s.signers[0].String(),
 			},
 			true,
@@ -223,7 +224,7 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 		},
 		{
 			"invalid denom",
-			&ecocredit.QueryBalanceRequest{
+			&core.QueryBalanceRequest{
 				Account:    s.signers[0].String(),
 				BatchDenom: "invalid-batch",
 			},
@@ -232,7 +233,7 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 		},
 		{
 			"valid request",
-			&ecocredit.QueryBalanceRequest{
+			&core.QueryBalanceRequest{
 				BatchDenom: "C01-20210823-20210823-001",
 				Account:    s.signers[3].String(),
 			},
@@ -259,7 +260,7 @@ func (s *IntegrationTestSuite) TestCreditTypeQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryCreditTypesRequest
+		request   *core.QueryCreditTypesRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -271,7 +272,7 @@ func (s *IntegrationTestSuite) TestCreditTypeQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QueryCreditTypesRequest{},
+			&core.QueryCreditTypesRequest{},
 			false,
 			"",
 		},
@@ -295,7 +296,7 @@ func (s *IntegrationTestSuite) TestSellOrderQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QuerySellOrderRequest
+		request   *marketplace.QuerySellOrderRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -307,13 +308,13 @@ func (s *IntegrationTestSuite) TestSellOrderQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QuerySellOrderRequest{},
+			&marketplace.QuerySellOrderRequest{},
 			true,
 			"not found",
 		},
 		{
 			"invalid order id",
-			&ecocredit.QuerySellOrderRequest{
+			&marketplace.QuerySellOrderRequest{
 				SellOrderId: 99,
 			},
 			true,
@@ -321,7 +322,7 @@ func (s *IntegrationTestSuite) TestSellOrderQuery() {
 		},
 		{
 			"valid request",
-			&ecocredit.QuerySellOrderRequest{
+			&marketplace.QuerySellOrderRequest{
 				SellOrderId: 1,
 			},
 			false,
@@ -331,7 +332,7 @@ func (s *IntegrationTestSuite) TestSellOrderQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.SellOrder(s.ctx, tc.request)
+			_, err := s.marketServer.SellOrder(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -347,7 +348,7 @@ func (s *IntegrationTestSuite) TestSellOrdersQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QuerySellOrdersRequest
+		request   *marketplace.QuerySellOrdersRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -359,7 +360,7 @@ func (s *IntegrationTestSuite) TestSellOrdersQuery() {
 		},
 		{
 			"valid request",
-			&ecocredit.QuerySellOrdersRequest{},
+			&marketplace.QuerySellOrdersRequest{},
 			false,
 			"",
 		},
@@ -367,7 +368,7 @@ func (s *IntegrationTestSuite) TestSellOrdersQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.SellOrders(s.ctx, tc.request)
+			_, err := s.marketServer.SellOrders(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -383,7 +384,7 @@ func (s *IntegrationTestSuite) TestSellOrdersByAddressQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QuerySellOrdersByAddressRequest
+		request   *marketplace.QuerySellOrdersByAddressRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -395,13 +396,13 @@ func (s *IntegrationTestSuite) TestSellOrdersByAddressQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QuerySellOrdersByAddressRequest{},
+			&marketplace.QuerySellOrdersByAddressRequest{},
 			true,
 			"empty address string is not allowed",
 		},
 		{
 			"valid request",
-			&ecocredit.QuerySellOrdersByAddressRequest{
+			&marketplace.QuerySellOrdersByAddressRequest{
 				Address: s.signers[3].String(),
 			},
 			false,
@@ -411,7 +412,7 @@ func (s *IntegrationTestSuite) TestSellOrdersByAddressQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.SellOrdersByAddress(s.ctx, tc.request)
+			_, err := s.marketServer.SellOrdersByAddress(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -427,7 +428,7 @@ func (s *IntegrationTestSuite) TestSellOrdersByBatchDenomQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QuerySellOrdersByBatchDenomRequest
+		request   *marketplace.QuerySellOrdersByBatchDenomRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -439,13 +440,13 @@ func (s *IntegrationTestSuite) TestSellOrdersByBatchDenomQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QuerySellOrdersByBatchDenomRequest{},
+			&marketplace.QuerySellOrdersByBatchDenomRequest{},
 			true,
 			"invalid denom",
 		},
 		{
 			"valid request",
-			&ecocredit.QuerySellOrdersByBatchDenomRequest{
+			&marketplace.QuerySellOrdersByBatchDenomRequest{
 				BatchDenom: "A00-00000000-00000000-000",
 			},
 			false,
@@ -455,7 +456,7 @@ func (s *IntegrationTestSuite) TestSellOrdersByBatchDenomQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.SellOrdersByBatchDenom(s.ctx, tc.request)
+			_, err := s.marketServer.SellOrdersByBatchDenom(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -471,7 +472,7 @@ func (s *IntegrationTestSuite) TestBuyOrderQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBuyOrderRequest
+		request   *marketplace.QueryBuyOrderRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -483,13 +484,13 @@ func (s *IntegrationTestSuite) TestBuyOrderQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QueryBuyOrderRequest{},
+			&marketplace.QueryBuyOrderRequest{},
 			true,
 			"not found",
 		},
 		{
 			"invalid order id",
-			&ecocredit.QueryBuyOrderRequest{
+			&marketplace.QueryBuyOrderRequest{
 				BuyOrderId: 99,
 			},
 			true,
@@ -508,7 +509,7 @@ func (s *IntegrationTestSuite) TestBuyOrderQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.BuyOrder(s.ctx, tc.request)
+			_, err := s.marketServer.BuyOrder(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -524,7 +525,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBuyOrdersRequest
+		request   *marketplace.QueryBuyOrdersRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -536,7 +537,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersQuery() {
 		},
 		{
 			"valid request",
-			&ecocredit.QueryBuyOrdersRequest{},
+			&marketplace.QueryBuyOrdersRequest{},
 			false,
 			"",
 		},
@@ -544,7 +545,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.BuyOrders(s.ctx, tc.request)
+			_, err := s.marketServer.BuyOrders(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
@@ -560,7 +561,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersByAddressQuery() {
 
 	testCases := []struct {
 		name      string
-		request   *ecocredit.QueryBuyOrdersByAddressRequest
+		request   *marketplace.QueryBuyOrdersByAddressRequest
 		expectErr bool
 		errMsg    string
 	}{
@@ -572,13 +573,13 @@ func (s *IntegrationTestSuite) TestBuyOrdersByAddressQuery() {
 		},
 		{
 			"empty request",
-			&ecocredit.QueryBuyOrdersByAddressRequest{},
+			&marketplace.QueryBuyOrdersByAddressRequest{},
 			true,
 			"empty address string is not allowed",
 		},
 		{
 			"valid request",
-			&ecocredit.QueryBuyOrdersByAddressRequest{
+			&marketplace.QueryBuyOrdersByAddressRequest{
 				Address: s.signers[3].String(),
 			},
 			false,
@@ -588,43 +589,7 @@ func (s *IntegrationTestSuite) TestBuyOrdersByAddressQuery() {
 
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.BuyOrdersByAddress(s.ctx, tc.request)
-			if tc.expectErr {
-				require.Error(err)
-				require.Contains(err.Error(), tc.errMsg)
-			} else {
-				require.NoError(err)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestAllowedAskDenomsQuery() {
-	require := s.Require()
-
-	testCases := []struct {
-		name      string
-		request   *ecocredit.QueryAllowedAskDenomsRequest
-		expectErr bool
-		errMsg    string
-	}{
-		{
-			"nil request",
-			nil,
-			true,
-			"empty request",
-		},
-		{
-			"valid request",
-			&ecocredit.QueryAllowedAskDenomsRequest{},
-			false,
-			"",
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
-			_, err := s.queryClient.AllowedAskDenoms(s.ctx, tc.request)
+			_, err := s.marketServer.BuyOrdersByAddress(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
