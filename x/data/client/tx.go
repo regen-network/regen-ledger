@@ -92,10 +92,6 @@ Attest to the veracity of more than one entry using a comma-separated (no spaces
 
 			attestor := clientCtx.GetFromAddress()
 
-			if len(args[0]) == 0 {
-				return sdkerrors.ErrInvalidRequest.Wrap("at least one iri is required")
-			}
-
 			var hashes []*data.ContentHash_Graph
 
 			iris := strings.Split(args[0], ",")
