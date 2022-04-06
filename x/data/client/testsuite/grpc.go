@@ -23,7 +23,7 @@ func (s *IntegrationTestSuite) TestQueryByIRI() {
 			"invalid IRI",
 			fmt.Sprintf("%s/regen/data/v1/by-iri/%s", val.APIAddress, "foo"),
 			true,
-			"key not found",
+			"not found",
 		},
 		{
 			"valid request",
@@ -175,7 +175,7 @@ func (s *IntegrationTestSuite) TestQueryAttestors() {
 			"invalid attestor",
 			fmt.Sprintf("%s/regen/data/v1/attestors/%s", val.APIAddress, "foo"),
 			true,
-			"key not found",
+			"not found",
 			0,
 		},
 		{
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 			"invalid iri",
 			fmt.Sprintf("%s/regen/data/v1/resolvers/%s", val.APIAddress, "foo"),
 			true,
-			"key not found",
+			"not found",
 			0,
 		},
 		{
