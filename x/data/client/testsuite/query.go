@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			name:      "invalid iri",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "key not found",
+			expErrMsg: "invalid IRI",
 		},
 		{
 			name:   "valid",
@@ -230,7 +230,7 @@ func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 			name:      "invalid attestor",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "key not found",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid",
@@ -344,7 +344,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			name:      "invalid iri",
 			args:      []string{"abcd"},
 			expErr:    true,
-			expErrMsg: "can't find",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid test",

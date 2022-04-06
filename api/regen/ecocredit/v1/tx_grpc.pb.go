@@ -31,6 +31,19 @@ type MsgClient interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
+	// MintBatchCredits issues new token in a given batch.
+	// The issuer must be the account who created (or delegated using x/authz),
+	// the batch.
+	// The request will fail if the batch is not open (is sealed).
+	// NOTE: this method is only for bridge purpose. It must not be used
+	// for issuing native credits on Regen. More specifically, we
+	// enable minting more credits in an existing batch, when the batch
+	// represents a vintage originally registered in another chain.
+	MintBatchCredits(ctx context.Context, in *MsgMintBatchCredits, opts ...grpc.CallOption) (*MsgMintBatchCreditsResponse, error)
+	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
+	// can't issue more credits. Once batch is sealed it can't be toggled any
+	// more. Only batch creator can seal a batch.
+	SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error)
 	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
@@ -77,6 +90,24 @@ func (c *msgClient) CreateProject(ctx context.Context, in *MsgCreateProject, opt
 func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
 	out := new(MsgCreateBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/CreateBatch", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) MintBatchCredits(ctx context.Context, in *MsgMintBatchCredits, opts ...grpc.CallOption) (*MsgMintBatchCreditsResponse, error) {
+	out := new(MsgMintBatchCreditsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/MintBatchCredits", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SealBatch(ctx context.Context, in *MsgSealBatch, opts ...grpc.CallOption) (*MsgSealBatchResponse, error) {
+	out := new(MsgSealBatchResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/SealBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -150,6 +181,19 @@ type MsgServer interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
+	// MintBatchCredits issues new token in a given batch.
+	// The issuer must be the account who created (or delegated using x/authz),
+	// the batch.
+	// The request will fail if the batch is not open (is sealed).
+	// NOTE: this method is only for bridge purpose. It must not be used
+	// for issuing native credits on Regen. More specifically, we
+	// enable minting more credits in an existing batch, when the batch
+	// represents a vintage originally registered in another chain.
+	MintBatchCredits(context.Context, *MsgMintBatchCredits) (*MsgMintBatchCreditsResponse, error)
+	// MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
+	// can't issue more credits. Once batch is sealed it can't be toggled any
+	// more. Only batch creator can seal a batch.
+	SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error)
 	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
@@ -180,6 +224,12 @@ func (UnimplementedMsgServer) CreateProject(context.Context, *MsgCreateProject) 
 }
 func (UnimplementedMsgServer) CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
+}
+func (UnimplementedMsgServer) MintBatchCredits(context.Context, *MsgMintBatchCredits) (*MsgMintBatchCreditsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MintBatchCredits not implemented")
+}
+func (UnimplementedMsgServer) SealBatch(context.Context, *MsgSealBatch) (*MsgSealBatchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SealBatch not implemented")
 }
 func (UnimplementedMsgServer) Send(context.Context, *MsgSend) (*MsgSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
@@ -262,6 +312,42 @@ func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatch))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_MintBatchCredits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgMintBatchCredits)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MintBatchCredits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/MintBatchCredits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MintBatchCredits(ctx, req.(*MsgMintBatchCredits))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SealBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSealBatch)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SealBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/SealBatch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SealBatch(ctx, req.(*MsgSealBatch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -392,6 +478,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBatch",
 			Handler:    _Msg_CreateBatch_Handler,
+		},
+		{
+			MethodName: "MintBatchCredits",
+			Handler:    _Msg_MintBatchCredits_Handler,
+		},
+		{
+			MethodName: "SealBatch",
+			Handler:    _Msg_SealBatch_Handler,
 		},
 		{
 			MethodName: "Send",

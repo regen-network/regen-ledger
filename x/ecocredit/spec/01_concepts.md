@@ -8,7 +8,7 @@ A credit class is the primary abstraction for an ecosystem service credit. Each 
 
 Each credit class also has an admin (an address with permission to update the credit class) and a list of approved issuers (addresses with permission to issue credit batches under the credit class).
 
-For more information about the properties of a credit class, see [ClassInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.ClassInfo).
+For more information about the properties of a credit class, see [ClassInfo](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.ClassInfo).
 
 ### Project
 
@@ -16,7 +16,7 @@ A project describes the high-level on-chain information for a project implementi
 
 Over a project's lifecycle, it's expected that many credit batches will be issued at different points in time (e.g. at the conclusion of each monitoring period). To ensure that only legitimate projects are registered on-chain, projects can only be created by an issuer for the given credit class.
 
-For more information about the properties of a project, see [ProjectInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.ProjectInfo).
+For more information about the properties of a project, see [ProjectInfo](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.ProjectInfo).
 
 ### Credit Type
 
@@ -26,7 +26,7 @@ The credit type abbreviation is used to construct the credit class ID. For examp
 
 The list of allowed credit types is managed via on-chain governance. Adding a new credit type to the list requires a parameter change proposal.
 
-For more information about the properties of a credit type, see [CreditType](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.CreditType).
+For more information about the properties of a credit type, see [CreditType](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.CreditType).
 
 ### Credit Class Creator Allowlist
 
@@ -48,7 +48,7 @@ Each credit batch has a unique ID (i.e. denomination) that starts with the abbre
 
 Each credit batch is associated with an on-chain project, linking information about the on-the-ground project implementing the methodologies defined within the credit class. Additional information about a credit batch can be attached to the metadata field. When credits are issued, they can be issued in a tradable or retired state. The credit batch also tracks the total number of active credits (tradable and retired credits) and the total number of cancelled credits.
 
-For more information about the properties of a credit batch, see [BatchInfo](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1#regen.ecocredit.v1.BatchInfo).
+For more information about the properties of a credit batch, see [BatchInfo](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchInfo).
 
 ### Credits
 
@@ -72,7 +72,7 @@ Cancelled credits are credit that cannot be transferred or retired. Credits are 
 
 A basket is an abstraction for different types of credits that meet a defined criteria. Credits can be put into a basket in exchange for an equivalent amount of basket tokens. The basket criteria can be set to only accept a specific credit type, credit classes, and credit batches that meet a specific date criteria (e.g. credit batches with a minimum start date, credit batches with a start date within a duration of time, or credit batches with a start date year within a number of years into the past). Basket tokens can be returned to the basket at any time in exchange for the equivalent amount of credits.
 
-For more information about the properties of a basket, see [Basket](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Basket).
+For more information about the properties of a basket, see [Basket](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Basket).
 
 ### Basket Tokens
 
@@ -88,7 +88,7 @@ The ecocredit module supports marketplace functionality using a simple storefron
 
 A sell order is an order to sell credits and is created by the owner of the credits. The seller sets the quantity of credits and the asking price. The asking price must use an approved token denomination listed within the on-chain parameter. When a sell order is created, the credits are held in escrow. The seller has the option to auto-retire the credits upon being sold and the option to allow for partial fills. The seller can update or cancel the order at any time. When a sell order is cancelled the credits are returned from escrow.
 
-For more information about the properties of a sell order, see [SellOrder](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.SellOrder).
+For more information about the properties of a sell order, see [SellOrder](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.SellOrder).
 
 ### Direct Buy Order
 
@@ -98,7 +98,7 @@ A direct buy order is an order to buy credits from a specific sell order. The bu
 
 An allowed denom is a token denomination that has been approved to use within a sell order. A seller can only provide an ask price in a token denomination that is included in an on-chain parameter set through an on-chain governance process.
 
-For more information about the properties of an allowed denom, see [AllowedDenom](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.AllowedDenom).
+For more information about the properties of an allowed denom, see [AllowedDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.AllowedDenom).
 
 <br/>
 
