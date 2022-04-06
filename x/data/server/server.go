@@ -30,9 +30,11 @@ type serverImpl struct {
 	storeKey   sdk.StoreKey
 	iriHasher  hasher.Hasher
 	stateStore api.StateStore
+	bankKeeper    data.BankKeeper
+	accountKeeper data.AccountKeeper
 }
 
-func newServer(storeKey sdk.StoreKey) serverImpl {
+func newServer(storeKey sdk.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
@@ -49,14 +51,18 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 	}
 
 	return serverImpl{
-		storeKey:   storeKey,
-		iriHasher:  hasher,
-		stateStore: stateStore,
+		storeKey:      storeKey,
+		iriHasher:     hasher,
+		stateStore:    stateStore,
+		bankKeeper:    bk,
+		accountKeeper: ak,
 	}
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey())
+func RegisterServices(configurator servermodule.Configurator, ak data.AccountKeeper, bk data.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), ak, bk)
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)
+
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }
