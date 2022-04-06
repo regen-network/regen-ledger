@@ -36,9 +36,12 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *Integratio
 func (s *IntegrationTestSuite) SetupSuite() {
 	require := s.Require()
 
+	blockTime, err := time.Parse("2006-01-02", "2022-01-01")
+	require.NoError(err)
+
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
-	s.sdkCtx = s.ctx.(types.Context).WithBlockTime(time.Now())
+	s.sdkCtx = s.ctx.(types.Context).WithBlockTime(blockTime)
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
 	require.GreaterOrEqual(len(s.fixture.Signers()), 2)
@@ -47,7 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	content := []byte("xyzabc123")
 	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(content)
+	_, err = hash.Write(content)
 	require.NoError(err)
 	digest := hash.Sum(nil)
 
