@@ -318,9 +318,9 @@ type AllowedDenomTable interface {
 	Update(ctx context.Context, allowedDenom *AllowedDenom) error
 	Save(ctx context.Context, allowedDenom *AllowedDenom) error
 	Delete(ctx context.Context, allowedDenom *AllowedDenom) error
-	Has(ctx context.Context, bank_denom string) (found bool, err error)
+	Has(ctx context.Context, base_currency string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, bank_denom string) (*AllowedDenom, error)
+	Get(ctx context.Context, base_currency string) (*AllowedDenom, error)
 	HasByDisplayDenom(ctx context.Context, display_denom string) (found bool, err error)
 	// GetByDisplayDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetByDisplayDenom(ctx context.Context, display_denom string) (*AllowedDenom, error)
@@ -349,18 +349,18 @@ type AllowedDenomIndexKey interface {
 }
 
 // primary key starting index..
-type AllowedDenomPrimaryKey = AllowedDenomBankDenomIndexKey
+type AllowedDenomPrimaryKey = AllowedDenomBaseCurrencyIndexKey
 
-type AllowedDenomBankDenomIndexKey struct {
+type AllowedDenomBaseCurrencyIndexKey struct {
 	vs []interface{}
 }
 
-func (x AllowedDenomBankDenomIndexKey) id() uint32            { return 0 }
-func (x AllowedDenomBankDenomIndexKey) values() []interface{} { return x.vs }
-func (x AllowedDenomBankDenomIndexKey) allowedDenomIndexKey() {}
+func (x AllowedDenomBaseCurrencyIndexKey) id() uint32            { return 0 }
+func (x AllowedDenomBaseCurrencyIndexKey) values() []interface{} { return x.vs }
+func (x AllowedDenomBaseCurrencyIndexKey) allowedDenomIndexKey() {}
 
-func (this AllowedDenomBankDenomIndexKey) WithBankDenom(bank_denom string) AllowedDenomBankDenomIndexKey {
-	this.vs = []interface{}{bank_denom}
+func (this AllowedDenomBaseCurrencyIndexKey) WithBaseCurrency(base_currency string) AllowedDenomBaseCurrencyIndexKey {
+	this.vs = []interface{}{base_currency}
 	return this
 }
 
@@ -397,13 +397,13 @@ func (this allowedDenomTable) Delete(ctx context.Context, allowedDenom *AllowedD
 	return this.table.Delete(ctx, allowedDenom)
 }
 
-func (this allowedDenomTable) Has(ctx context.Context, bank_denom string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, bank_denom)
+func (this allowedDenomTable) Has(ctx context.Context, base_currency string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, base_currency)
 }
 
-func (this allowedDenomTable) Get(ctx context.Context, bank_denom string) (*AllowedDenom, error) {
+func (this allowedDenomTable) Get(ctx context.Context, base_currency string) (*AllowedDenom, error) {
 	var allowedDenom AllowedDenom
-	found, err := this.table.PrimaryKey().Get(ctx, &allowedDenom, bank_denom)
+	found, err := this.table.PrimaryKey().Get(ctx, &allowedDenom, base_currency)
 	if err != nil {
 		return nil, err
 	}
@@ -472,9 +472,9 @@ type MarketTable interface {
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*Market, error)
-	HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error)
-	// GetByCreditTypeBankDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error)
+	HasByCreditTypeBaseCurrency(ctx context.Context, credit_type string, base_currency string) (found bool, err error)
+	// GetByCreditTypeBaseCurrency returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByCreditTypeBaseCurrency(ctx context.Context, credit_type string, base_currency string) (*Market, error)
 	List(ctx context.Context, prefixKey MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	ListRange(ctx context.Context, from, to MarketIndexKey, opts ...ormlist.Option) (MarketIterator, error)
 	DeleteBy(ctx context.Context, prefixKey MarketIndexKey) error
@@ -515,21 +515,21 @@ func (this MarketIdIndexKey) WithId(id uint64) MarketIdIndexKey {
 	return this
 }
 
-type MarketCreditTypeBankDenomIndexKey struct {
+type MarketCreditTypeBaseCurrencyIndexKey struct {
 	vs []interface{}
 }
 
-func (x MarketCreditTypeBankDenomIndexKey) id() uint32            { return 1 }
-func (x MarketCreditTypeBankDenomIndexKey) values() []interface{} { return x.vs }
-func (x MarketCreditTypeBankDenomIndexKey) marketIndexKey()       {}
+func (x MarketCreditTypeBaseCurrencyIndexKey) id() uint32            { return 1 }
+func (x MarketCreditTypeBaseCurrencyIndexKey) values() []interface{} { return x.vs }
+func (x MarketCreditTypeBaseCurrencyIndexKey) marketIndexKey()       {}
 
-func (this MarketCreditTypeBankDenomIndexKey) WithCreditType(credit_type string) MarketCreditTypeBankDenomIndexKey {
+func (this MarketCreditTypeBaseCurrencyIndexKey) WithCreditType(credit_type string) MarketCreditTypeBaseCurrencyIndexKey {
 	this.vs = []interface{}{credit_type}
 	return this
 }
 
-func (this MarketCreditTypeBankDenomIndexKey) WithCreditTypeBankDenom(credit_type string, bank_denom string) MarketCreditTypeBankDenomIndexKey {
-	this.vs = []interface{}{credit_type, bank_denom}
+func (this MarketCreditTypeBaseCurrencyIndexKey) WithCreditTypeBaseCurrency(credit_type string, base_currency string) MarketCreditTypeBaseCurrencyIndexKey {
+	this.vs = []interface{}{credit_type, base_currency}
 	return this
 }
 
@@ -573,18 +573,18 @@ func (this marketTable) Get(ctx context.Context, id uint64) (*Market, error) {
 	return &market, nil
 }
 
-func (this marketTable) HasByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (found bool, err error) {
+func (this marketTable) HasByCreditTypeBaseCurrency(ctx context.Context, credit_type string, base_currency string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		credit_type,
-		bank_denom,
+		base_currency,
 	)
 }
 
-func (this marketTable) GetByCreditTypeBankDenom(ctx context.Context, credit_type string, bank_denom string) (*Market, error) {
+func (this marketTable) GetByCreditTypeBaseCurrency(ctx context.Context, credit_type string, base_currency string) (*Market, error) {
 	var market Market
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &market,
 		credit_type,
-		bank_denom,
+		base_currency,
 	)
 	if err != nil {
 		return nil, err
