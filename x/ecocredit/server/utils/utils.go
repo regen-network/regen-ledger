@@ -13,16 +13,17 @@ import (
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
+func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string, creditTypes []*core.CreditType) (core.CreditType, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
 	if err != nil {
 		return core.CreditType{}, err
 	}
-	p := &core.Params{}
-	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditType, p.CreditTypes)
+	if len(creditTypes) == 0 {
+		k.Get(sdkCtx, core.KeyCreditTypes, creditTypes)
+	}
+	return GetCreditType(classInfo.CreditType, creditTypes)
 }
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.

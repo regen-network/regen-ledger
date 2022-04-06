@@ -3,6 +3,7 @@ package marketplace
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -25,13 +26,14 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	}
 
 	sellOrderIds := make([]uint64, len(req.Orders))
-
+	var creditTypes []*core.CreditType
+	k.paramsKeeper.Get(sdkCtx, core.KeyCreditTypes, creditTypes)
 	for i, order := range req.Orders {
 		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom, creditTypes)
 		if err != nil {
 			return nil, err
 		}

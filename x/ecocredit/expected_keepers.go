@@ -45,5 +45,8 @@ type DistributionKeeper interface {
 }
 
 type ParamKeeper interface {
+	// GetParamSet loads the entire module's parameters into ps
 	GetParamSet(ctx sdk.Context, ps types.ParamSet)
+	// Get gets one param and loads it into ptr
+	Get(ctx sdk.Context, key []byte, ptr interface{})
 }
