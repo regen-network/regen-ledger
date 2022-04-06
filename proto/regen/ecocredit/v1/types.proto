@@ -34,7 +34,8 @@ message Params {
   // credit_types is a list of definitions for credit types
   repeated CreditType credit_types = 5;
 
-  // allowed_ask_denoms is a list of denoms (and display information) allowed to be used in sell order ask prices.
+  // allowed_ask_denoms is a list of denoms (and display information) allowed to
+  // be used in sell order ask prices.
   repeated AskDenom allowed_ask_denoms = 6;
 }
 
@@ -50,4 +51,14 @@ message AskDenom {
   // exponent is the exponent that relates the denom to the display_denom and is
   // informational
   uint32 exponent = 3;
+}
+
+// OriginTx is a reference to an external transaction or an operation
+// related to an action on Regen Ledger.
+message OriginTx {
+  // type of the transaction originating the mint process. Eg: Polygon,
+  // Ethereum, Verra...
+  string typ = 1;
+  // the id of a transaction based on a type (tx id, serial number)
+  string id = 2;
 }

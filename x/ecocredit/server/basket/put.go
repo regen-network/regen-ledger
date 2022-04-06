@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -115,11 +113,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
 
-		timestamp := timestamppb.Timestamp{
-			Seconds: batchInfo.StartDate.Seconds,
-			Nanos:   batchInfo.StartDate.Nanos,
-		}
-		startDate := timestamp.AsTime()
+		startDate := batchInfo.StartDate.AsTime()
 		if startDate.Before(minStartDate) {
 			return errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
 				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.AsTime().String(), minStartDate.String())
