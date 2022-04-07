@@ -17,3 +17,10 @@ func TestServer(t *testing.T) {
 	s := testsuite.NewIntegrationTestSuite(ff)
 	suite.Run(t, s)
 }
+
+func TestGenesis(t *testing.T) {
+	ff := server.NewFixtureFactory(t, 2)
+	ff.SetModules([]module.Module{datamodule.Module{}})
+	s := testsuite.NewGenesisTestSuite(ff)
+	suite.Run(t, s)
+}
