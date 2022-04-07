@@ -7,6 +7,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
@@ -21,5 +22,6 @@ func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtyp
 		s.accountKeeper, s.bankKeeper,
 		queryClient,
 		basketQryClient,
+		marketplace.NewQueryClient(key),
 	)
 }

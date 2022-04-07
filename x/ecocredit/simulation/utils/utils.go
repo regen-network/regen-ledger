@@ -97,3 +97,33 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 
 	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
 }
+
+func GetRandomClass(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
+	classes, err := GetAndShuffleClasses(ctx, r, qryClient)
+	if err != nil {
+		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	if len(classes) == 0 {
+		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit class found"), nil
+	}
+
+	return classes[0], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+}
+
+func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
+	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accAddr, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	account, found := simtypes.FindAccount(accs, accAddr)
+	if !found {
+		return nil, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "account not found"), nil
+	}
+
+	spendable := bk.SpendableCoins(ctx, accAddr)
+	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+
+}

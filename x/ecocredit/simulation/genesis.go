@@ -70,8 +70,8 @@ func genCreditTypes(r *rand.Rand) []*core.CreditType {
 	}
 }
 
-func genCreditTypesLegacy(r *rand.Rand) []*ecocredit.CreditType {
-	return []*ecocredit.CreditType{
+func genCreditTypesLegacy(r *rand.Rand) []*core.CreditType {
+	return []*core.CreditType{
 		{
 			Name:         "carbon",
 			Abbreviation: "C",
@@ -241,7 +241,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		creditClassFee       sdk.Coins
 		allowedClassCreators []string
 		allowListEnabled     bool
-		creditTypes          []*ecocredit.CreditType
+		creditTypes          []*core.CreditType
 		basketCreationFee    sdk.Coins
 	)
 
@@ -272,39 +272,39 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	// classes
-	var classes []*ecocredit.ClassInfo
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, class, &classes, simState.Rand,
-		func(r *rand.Rand) { classes = genClasses(r, simState.Accounts, creditTypes) },
-	)
+	// var classes []*ecocredit.ClassInfo
+	// simState.AppParams.GetOrGenerate(
+	// 	simState.Cdc, class, &classes, simState.Rand,
+	// 	func(r *rand.Rand) { classes = genClasses(r, simState.Accounts, creditTypes) },
+	// )
 
-	// projects
-	var projects []*ecocredit.ProjectInfo
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, project, &projects, simState.Rand,
-		func(r *rand.Rand) { projects = genProjects(r, classes) },
-	)
+	// // projects
+	// var projects []*ecocredit.ProjectInfo
+	// simState.AppParams.GetOrGenerate(
+	// 	simState.Cdc, project, &projects, simState.Rand,
+	// 	func(r *rand.Rand) { projects = genProjects(r, classes) },
+	// )
 
-	// batches
-	var batches []*ecocredit.BatchInfo
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, batch, &batches, simState.Rand,
-		func(r *rand.Rand) { batches = genBatches(r, projects) },
-	)
+	// // batches
+	// var batches []*ecocredit.BatchInfo
+	// simState.AppParams.GetOrGenerate(
+	// 	simState.Cdc, batch, &batches, simState.Rand,
+	// 	func(r *rand.Rand) { batches = genBatches(r, projects) },
+	// )
 
-	// balances
-	var balances []*ecocredit.Balance
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, balance, &balances, simState.Rand,
-		func(r *rand.Rand) { balances = genBalances(r, projects, batches, creditTypes) },
-	)
+	// // balances
+	// var balances []*ecocredit.Balance
+	// simState.AppParams.GetOrGenerate(
+	// 	simState.Cdc, balance, &balances, simState.Rand,
+	// 	func(r *rand.Rand) { balances = genBalances(r, projects, batches, creditTypes) },
+	// )
 
-	// supplies
-	var supplies []*ecocredit.Supply
-	simState.AppParams.GetOrGenerate(
-		simState.Cdc, supply, &supplies, simState.Rand,
-		func(r *rand.Rand) { supplies = genSupplies(r, projects, batches, balances, creditTypes) },
-	)
+	// // supplies
+	// var supplies []*ecocredit.Supply
+	// simState.AppParams.GetOrGenerate(
+	// 	simState.Cdc, supply, &supplies, simState.Rand,
+	// 	func(r *rand.Rand) { supplies = genSupplies(r, projects, batches, balances, creditTypes) },
+	// )
 
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, "basket_fee", &basketCreationFee, simState.Rand,
@@ -313,31 +313,15 @@ func RandomizedGenState(simState *module.SimulationState) {
 		},
 	)
 
-	ecocreditGenesis := ecocredit.GenesisState{
-		Params: ecocredit.Params{
-			CreditClassFee:       creditClassFee,
-			AllowedClassCreators: allowedClassCreators,
-			AllowlistEnabled:     allowListEnabled,
-			CreditTypes:          creditTypes,
-			BasketCreationFee:    basketCreationFee,
-		},
-		ClassInfo: classes,
-		BatchInfo: batches,
-		Balances:  balances,
-		Supplies:  supplies,
-		Sequences: []*ecocredit.CreditTypeSeq{
-			{
-				Abbreviation: "C",
-				SeqNumber:    4,
-			},
-			{
-				Abbreviation: "BIO",
-				SeqNumber:    4,
-			},
-		},
+	params := core.Params{
+		CreditClassFee:       creditClassFee,
+		AllowedClassCreators: allowedClassCreators,
+		AllowlistEnabled:     allowListEnabled,
+		CreditTypes:          creditTypes,
+		BasketFee:            basketCreationFee,
 	}
 
-	bz := simState.Cdc.MustMarshalJSON(&ecocreditGenesis)
+	bz := simState.Cdc.MustMarshalJSON(&params)
 	var out bytes.Buffer
 	if err := json.Indent(&out, bz, "", " "); err != nil {
 		panic(err)
@@ -346,7 +330,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", out.String())
 
 	wrapper := map[string]json.RawMessage{
-		proto.MessageName(&ecocreditGenesis): bz,
+		proto.MessageName(&core.Params{}): bz,
 	}
 
 	bz, err := json.Marshal(wrapper)

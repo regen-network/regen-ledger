@@ -262,7 +262,7 @@ func RegisterServices(
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
-	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	return impl
 }
