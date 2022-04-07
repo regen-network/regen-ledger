@@ -56,26 +56,7 @@ func setCustomOrderEndBlocker() []string {
 	return []string{}
 }
 
-func (app *RegenApp) registerUpgradeHandlers() {
-
-	// const upgradeName = "v4.0.0"
-	// app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-	// toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// TODO: set `AllowedAskedDenoms` ecocredit param #969
-	// // run x/ecocredit state migrations
-	// if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
-	// 	return nil, err
-	// }
-	// toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
-
-	// return toVersion, nil
-	// })
-
-}
+func (app *RegenApp) registerUpgradeHandlers() {}
 
 func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
 	return ante.NewAnteHandler(

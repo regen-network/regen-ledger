@@ -162,7 +162,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 
-			if pInfo.ClassId == classNameIDMap[batchInfo.ClassId] {
+			if pInfo.ClassId == classNameIDMap[batchInfo.ClassId] && pInfo.ProjectLocation == batchInfo.ProjectLocation {
 				projectExists = true
 				projectID = pInfo.Id
 				break
