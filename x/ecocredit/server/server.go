@@ -22,9 +22,9 @@ import (
 )
 
 type serverImpl struct {
-	basketKeeper basket.Keeper
-	coreKeeper   core.Keeper
-	marketKeeper marketplace.Keeper
+	basketKeeper      basket.Keeper
+	coreKeeper        core.Keeper
+	marketplaceKeeper marketplace.Keeper
 
 	storeKey sdk.StoreKey
 
@@ -53,7 +53,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	coreStore, basketStore, marketStore := getStateStores(s.db)
 	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, distKeeper, s.paramSpace)
 	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace)
-	s.marketKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
+	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
 
 	return s
 }
@@ -89,8 +89,8 @@ func RegisterServices(
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
 	coretypes.RegisterQueryServer(configurator.QueryServer(), impl.coreKeeper)
 
-	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.marketKeeper)
-	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketKeeper)
+	marketplacetypes.RegisterMsgServer(configurator.MsgServer(), impl.marketplaceKeeper)
+	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
