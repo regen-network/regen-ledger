@@ -5,7 +5,6 @@ package regen.ecocredit.marketplace.v1;
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
-import "regen/ecocredit/marketplace/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
@@ -122,63 +121,6 @@ message MsgCancelSellOrder {
 
 // MsgCancelSellOrder is the Msg/CancelSellOrder response type.
 message MsgCancelSellOrderResponse {}
-
-// MsgBuy is the Msg/Buy request type.
-message MsgBuy {
-
-  // buyer is the address of the credit buyer.
-  string buyer = 1;
-
-  // orders are the new buy orders.
-  repeated Order orders = 2;
-
-  // Order is a buy order.
-  message Order {
-
-    // filter selects credits to buy based upon the specified filter
-    // criteria.
-    Filter filter = 1;
-
-    // quantity is the quantity of credits to buy. If the quantity of credits
-    // available is less than this amount the order will be partially filled
-    // unless disable_partial_fill is true.
-    string quantity = 2;
-
-    // bid price is the bid price for this buy order. A credit unit will be
-    // settled at a purchase price that is no more than the bid price. The
-    // buy order will fail if the buyer does not have enough funds available
-    // to complete the purchase.
-    cosmos.base.v1beta1.Coin bid_price = 3;
-
-    // disable_auto_retire allows auto-retirement to be disabled. If it is set
-    // to true the credits will not auto-retire and can be resold assuming that
-    // the corresponding sell order has auto-retirement disabled. If the sell
-    // order hasn't disabled auto-retirement and the buy order tries to disable
-    // it, that buy order will fail.
-    bool disable_auto_retire = 4;
-
-    // disable_partial_fill disables the default behavior of partially filling
-    // buy orders if the requested quantity is not available.
-    bool disable_partial_fill = 5;
-
-    // retirement_location is the optional retirement location for the credits
-    // which will be used only if disable_auto_retire is false.
-    string retirement_location = 6;
-
-    // expiration is the optional timestamp when the buy order expires. When the
-    // expiration time is reached, the buy order is removed from state.
-    google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
-  }
-}
-
-// MsgBuyResponse is the Msg/Buy response type.
-message MsgBuyResponse {
-
-  // buy_order_ids are the buy order IDs of the newly created buy orders. Buy
-  // orders may not settle instantaneously, but rather in batches at specified
-  // batch epoch times.
-  repeated uint64 buy_order_ids = 1;
-}
 
 // MsgBuyDirect is the Msg/BuyDirect request type.
 message MsgBuyDirect {
