@@ -7,7 +7,6 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/gogo/protobuf/proto"
-	"github.com/pkg/errors"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -58,26 +57,6 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	}
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
-
-	if err := s.creditTypeSeqTable.Import(ctx, genesisState.Sequences, 0); err != nil {
-		return nil, errors.Wrap(err, "sequences")
-	}
-
-	if err := s.classInfoTable.Import(ctx, genesisState.ClassInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "class-info")
-	}
-
-	if err := s.projectInfoTable.Import(ctx, genesisState.ProjectInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "project-info")
-	}
-
-	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeqNum); err != nil {
-		return nil, errors.Wrap(err, "project seq")
-	}
-
-	if err := s.batchInfoTable.Import(ctx, genesisState.BatchInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "batch-info")
-	}
 
 	store := ctx.KVStore(s.storeKey)
 	if err := setBalanceAndSupply(store, genesisState.Balances); err != nil {
@@ -181,25 +160,6 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	s.paramSpace.GetParamSet(ctx.Context, &params)
 
 	store := ctx.KVStore(s.storeKey)
-	var classInfo []*ecocredit.ClassInfo
-	if _, err := s.classInfoTable.Export(ctx, &classInfo); err != nil {
-		return nil, errors.Wrap(err, "class-info")
-	}
-
-	var projectInfo []*ecocredit.ProjectInfo
-	if _, err := s.projectInfoTable.Export(ctx, &projectInfo); err != nil {
-		return nil, errors.Wrap(err, "project-info")
-	}
-
-	var batchInfo []*ecocredit.BatchInfo
-	if _, err := s.batchInfoTable.Export(ctx, &batchInfo); err != nil {
-		return nil, errors.Wrap(err, "batch-info")
-	}
-
-	var sequences []*ecocredit.CreditTypeSeq
-	if _, err := s.creditTypeSeqTable.Export(ctx, &sequences); err != nil {
-		return nil, errors.Wrap(err, "batch-info")
-	}
 
 	suppliesMap := make(map[string]*ecocredit.Supply)
 	ecocredit.IterateSupplies(store, ecocredit.TradableSupplyPrefix, func(denom, supply string) (bool, error) {
@@ -264,17 +224,17 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		index++
 	}
 
-	gs := &ecocredit.GenesisState{
-		Params:      params,
-		ClassInfo:   classInfo,
-		BatchInfo:   batchInfo,
-		Sequences:   sequences,
-		Balances:    balances,
-		Supplies:    supplies,
-		ProjectInfo: projectInfo,
-	}
-
-	gs.ProjectSeqNum = s.projectInfoSeq.CurVal(ctx)
+	/*
+		gs := &ecocredit.GenesisState{
+			Params:      params,
+			ClassInfo:   classInfo,
+			BatchInfo:   batchInfo,
+			Sequences:   sequences,
+			Balances:    balances,
+			Supplies:    supplies,
+			ProjectInfo: projectInfo,
+		}
+	*/
 
 	jsonTarget := ormjson.NewRawMessageTarget()
 	err := s.db.ExportJSON(ctx, jsonTarget)
@@ -282,10 +242,12 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, err
 	}
 
-	err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
-	if err != nil {
-		return nil, err
-	}
+	/*
+		err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
+		if err != nil {
+			return nil, err
+		}
+	*/
 
 	return jsonTarget.JSON()
 }
