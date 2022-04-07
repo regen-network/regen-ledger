@@ -33,6 +33,14 @@ func TestServer(t *testing.T) {
 	suite.Run(t, s)
 }
 
+/*
+func TestGenesis(t *testing.T) {
+	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)
+	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
+	suite.Run(t, s)
+}
+*/
+
 func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper, *mocks.MockDistributionKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
