@@ -27,13 +27,15 @@ var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 }
 
 type serverImpl struct {
-	storeKey   sdk.StoreKey
-	iriHasher  hasher.Hasher
-	stateStore api.StateStore
-	db         ormdb.ModuleDB
+	storeKey      sdk.StoreKey
+	iriHasher     hasher.Hasher
+	stateStore    api.StateStore
+	db            ormdb.ModuleDB
+	bankKeeper    data.BankKeeper
+	accountKeeper data.AccountKeeper
 }
 
-func newServer(storeKey sdk.StoreKey) serverImpl {
+func newServer(storeKey sdk.StoreKey, ak data.AccountKeeper, bk data.BankKeeper) serverImpl {
 	hasher, err := hasher.NewHasher()
 	if err != nil {
 		panic(err)
@@ -50,17 +52,20 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 	}
 
 	return serverImpl{
-		storeKey:   storeKey,
-		iriHasher:  hasher,
-		stateStore: stateStore,
-		db:         db,
+		storeKey:      storeKey,
+		iriHasher:     hasher,
+		stateStore:    stateStore,
+		db:            db,
+		bankKeeper:    bk,
+		accountKeeper: ak,
 	}
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey())
+func RegisterServices(configurator servermodule.Configurator, ak data.AccountKeeper, bk data.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), ak, bk)
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)
-	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }

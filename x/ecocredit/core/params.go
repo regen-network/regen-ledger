@@ -19,6 +19,7 @@ var (
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
+	KeyAllowedAskDenoms         = []byte("AllowedAskDenoms")
 )
 
 // TODO: remove after we open governance changes for precision
@@ -39,6 +40,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
 		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketFee, validateBasketCreationFee),
+		paramtypes.NewParamSetPair(KeyAllowedAskDenoms, &p.AllowedAskDenoms, validateAllowedAskDenoms),
 	}
 }
 
@@ -64,7 +66,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	return nil
+	return validateAllowedAskDenoms(p.AllowedAskDenoms)
 }
 
 func validateCreditClassFee(i interface{}) error {
@@ -179,14 +181,28 @@ func validateBasketCreationFee(i interface{}) error {
 	return nil
 }
 
+func validateAllowedAskDenoms(i interface{}) error {
+	v, ok := i.([]*AskDenom)
+	if !ok {
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T, expected: %T", i, []*AskDenom{})
+	}
+	for _, askDenom := range v {
+		if err := sdk.ValidateDenom(askDenom.Denom); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // NewParams creates a new Params object.
-func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
+func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType, allowedAskDenoms []*AskDenom) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		CreditTypes:          creditTypes,
 		BasketFee:            basketCreationFee,
+		AllowedAskDenoms:     allowedAskDenoms,
 	}
 }
 
@@ -203,6 +219,13 @@ func DefaultParams() Params {
 				Abbreviation: "C",
 				Unit:         "metric ton CO2 equivalent",
 				Precision:    PRECISION,
+			},
+		},
+		[]*AskDenom{
+			{
+				Denom:        "uregen",
+				DisplayDenom: "regen",
+				Exponent:     18,
 			},
 		},
 	)
