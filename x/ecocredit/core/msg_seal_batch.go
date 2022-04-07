@@ -3,31 +3,35 @@ package core
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 var _ legacytx.LegacyMsg = &MsgSealBatch{}
 
 // Route implements the LegacyMsg interface.
-func (m MsgSealBatch) Route() string {
-	panic("implement me")
-}
+func (m MsgSealBatch) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type implements the LegacyMsg interface.
-func (m MsgSealBatch) Type() string {
-	panic("implement me")
-}
+func (m MsgSealBatch) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.
 func (m MsgSealBatch) GetSignBytes() []byte {
-	panic("implement me")
+	return sdk.MustSortJSON(ecocredit.ModuleCdc.MustMarshalJSON(&m))
 }
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSealBatch) ValidateBasic() error {
-	panic("implement me")
+	_, err := sdk.AccAddressFromBech32(m.Issuer)
+	if err != nil {
+		return sdkerrors.Wrap(err, "malformed issuer address")
+	}
+	return nil
 }
 
 // GetSigners returns the expected signers for MsgSealBatch.
 func (m *MsgSealBatch) GetSigners() []sdk.AccAddress {
-	panic("implement me")
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
+	return []sdk.AccAddress{addr}
 }
