@@ -18,7 +18,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func (s *IntegrationTestSuite) TestInitExportGenesis() {
@@ -121,7 +120,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
 
 	for _, info := range classInfo {
-		res, err := s.queryClient.ClassInfo(ctx, &core.QueryClassInfoRequest{
+		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
 			ClassId: info.ClassId,
 		})
 		require.NoError(err)
@@ -129,7 +128,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	for _, info := range projectInfo {
-		res, err := s.queryClient.ProjectInfo(ctx, &core.QueryProjectInfoRequest{
+		res, err := s.queryClient.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{
 			ProjectId: info.ProjectId,
 		})
 		require.NoError(err)
@@ -137,7 +136,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	for _, info := range batchInfo {
-		res, err := s.queryClient.BatchInfo(ctx, &core.QueryBatchInfoRequest{
+		res, err := s.queryClient.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{
 			BatchDenom: info.BatchDenom,
 		})
 		require.NoError(err)
@@ -145,19 +144,19 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	for _, balance := range balances {
-		res, err := s.queryClient.Balance(ctx, &core.QueryBalanceRequest{
+		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
 			Account:    balance.Address,
 			BatchDenom: balance.BatchDenom,
 		})
 		require.NoError(err)
 		require.NotNil(res)
 
-		require.Equal(res.Balance.Tradable, balance.TradableBalance)
-		require.Equal(res.Balance.Retired, balance.RetiredBalance)
+		require.Equal(res.TradableAmount, balance.TradableBalance)
+		require.Equal(res.RetiredAmount, balance.RetiredBalance)
 	}
 
 	for _, supply := range supplies {
-		res, err := s.queryClient.Supply(ctx, &core.QuerySupplyRequest{
+		res, err := s.queryClient.Supply(ctx, &ecocredit.QuerySupplyRequest{
 			BatchDenom: supply.BatchDenom,
 		})
 		require.NoError(err)
