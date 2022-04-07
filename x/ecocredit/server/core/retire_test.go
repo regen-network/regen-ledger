@@ -21,8 +21,8 @@ func TestRetire_Valid(t *testing.T) {
 	// tradable: 10.5
 	// retired: 10.5
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -56,6 +56,11 @@ func TestRetire_Invalid(t *testing.T) {
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	}).Times(3)
+
 	// invalid batch denom
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Holder: s.addr.String(),
@@ -65,11 +70,6 @@ func TestRetire_Invalid(t *testing.T) {
 		Location: "US-NY",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
 
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{

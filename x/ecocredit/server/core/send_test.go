@@ -16,10 +16,10 @@ func TestSend_Valid(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2) // this will be called for each batchDenom we send
+	}).Times(1)
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
@@ -64,8 +64,8 @@ func TestSend_Errors(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 

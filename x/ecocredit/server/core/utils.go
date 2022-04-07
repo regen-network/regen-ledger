@@ -5,6 +5,7 @@ import (
 
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,6 +23,11 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sd
 		return sdkerrors.ErrUnauthorized.Wrapf("%s is not an issuer for the class", addr)
 	}
 	return nil
+}
+
+func (k Keeper) getClassFromBatchDenom(ctx context.Context, batchDenom string) (*ecoApi.ClassInfo, error) {
+	classId := core.GetClassIdFromBatchDenom(batchDenom)
+	return k.stateStore.ClassInfoTable().GetByName(ctx, classId)
 }
 
 // AddAndSaveBalance adds 'amt' to the addr's tradable balance.

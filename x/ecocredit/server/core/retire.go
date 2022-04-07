@@ -2,32 +2,36 @@ package core
 
 import (
 	"context"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Retire credits to the specified location.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
+	ctMap := utils.GetCreditTypeMap(sdkCtx, k.paramsKeeper)
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		class, err := k.getClassFromBatchDenom(ctx, batch.BatchDenom)
 		if err != nil {
 			return nil, err
+		}
+		creditType, ok := ctMap[class.CreditType]
+		if !ok {
+			return nil, fmt.Errorf("could not find credit type %s", class.CreditType)
 		}
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {

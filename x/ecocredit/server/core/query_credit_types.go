@@ -12,6 +12,6 @@ import (
 func (k Keeper) CreditTypes(ctx context.Context, _ *core.QueryCreditTypesRequest) (*core.QueryCreditTypesResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var params core.Params
-	k.paramsKeeper.GetParamSet(sdkCtx, &params)
+	k.paramsKeeper.Get(sdkCtx, core.KeyCreditTypes, &params)
 	return &core.QueryCreditTypesResponse{CreditTypes: params.CreditTypes}, nil
 }

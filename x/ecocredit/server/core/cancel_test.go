@@ -16,8 +16,8 @@ func TestCancel_Valid(t *testing.T) {
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -53,8 +53,8 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -76,8 +76,8 @@ func TestCancel_BadPrecision(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -97,6 +97,11 @@ func TestCancel_InvalidBatch(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
+
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	}).Times(1)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Holder: s.addr.String(),

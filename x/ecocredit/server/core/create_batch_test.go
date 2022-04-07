@@ -26,10 +26,8 @@ func TestCreateBatch_Valid(t *testing.T) {
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
 	s.ctx = types.WrapSDKContext(s.sdkCtx)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
@@ -91,10 +89,8 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 

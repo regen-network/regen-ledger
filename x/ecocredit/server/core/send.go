@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
@@ -9,7 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -18,12 +18,13 @@ import (
 // Send sends credits to a recipient.
 // Send also retires credits if the amount to retire is specified in the request.
 func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sender, _ := sdk.AccAddressFromBech32(req.Sender)
 	recipient, _ := sdk.AccAddressFromBech32(req.Recipient)
 
+	ctMap := utils.GetCreditTypeMap(sdkCtx, k.paramsKeeper)
 	for _, credit := range req.Credits {
-		err := k.sendEcocredits(ctx, credit, recipient, sender)
+		err := k.sendEcocredits(ctx, credit, recipient, sender, ctMap)
 		if err != nil {
 			return nil, err
 		}
@@ -42,14 +43,15 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 	return &core.MsgSendResponse{}, nil
 }
 
-func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
+func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress, creditTypeMap map[string]*core.CreditType) error {
 	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
-	if err != nil {
-		return err
+	class, err := k.getClassFromBatchDenom(ctx, batch.BatchDenom)
+	creditType, ok := creditTypeMap[class.CreditType]
+	if !ok {
+		return fmt.Errorf("could not find credit type %s", class.CreditType)
 	}
 	precision := creditType.Precision
 

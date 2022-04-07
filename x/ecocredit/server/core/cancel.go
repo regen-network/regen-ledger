@@ -2,34 +2,38 @@ package core
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCancelResponse, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	holder, err := sdk.AccAddressFromBech32(req.Holder)
 	if err != nil {
 		return nil, err
 	}
 
+	creditTypeMap := utils.GetCreditTypeMap(sdkCtx, k.paramsKeeper)
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		class, err := k.getClassFromBatchDenom(ctx, batch.BatchDenom)
 		if err != nil {
 			return nil, err
+		}
+		creditType, ok := creditTypeMap[class.CreditType]
+		if !ok {
+			return nil, fmt.Errorf("unexpected error: could not find credit type %s", class.CreditType)
 		}
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
