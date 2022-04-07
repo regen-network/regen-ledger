@@ -105,7 +105,8 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
+	legacyParams := coretypes.DefaultParams()
+	err = server.MergeLegacyJSONIntoTarget(cdc, &legacyParams, jsonTarget)
 	if err != nil {
 		panic(err)
 	}

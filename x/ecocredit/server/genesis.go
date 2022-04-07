@@ -18,6 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // NOTE: currently we have ORM + non-ORM genesis in parallel. We will remove
@@ -37,36 +38,37 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	var genesisState ecocredit.GenesisState
-	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
+	var params core.Params
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return nil, err
 	}
 
 	if r == nil { // r is nil when theres no table data, so we can just unmarshal the data given
 		bz := bytes.NewBuffer(data)
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &genesisState)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &params)
 		if err != nil {
 			return nil, err
 		}
 	} else { // r is not nil, so there is table data and we can just use r.
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &params)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
+	s.paramSpace.SetParamSet(ctx.Context, &params)
+	/*
+		store := ctx.KVStore(s.storeKey)
 
-	store := ctx.KVStore(s.storeKey)
-	if err := setBalanceAndSupply(store, genesisState.Balances); err != nil {
-		return nil, err
-	}
+			if err := setBalanceAndSupply(store, genesisState.Balances); err != nil {
+				return nil, err
+			}
 
-	if err := validateSupplies(store, genesisState.Supplies); err != nil {
-		return nil, err
-	}
-
+			if err := validateSupplies(store, genesisState.Supplies); err != nil {
+				return nil, err
+			}
+	*/
 	return []abci.ValidatorUpdate{}, nil
 }
 
@@ -156,7 +158,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 // ExportGenesis will dump the ecocredit module state into a serializable GenesisState.
 func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawMessage, error) {
 	// Get Params from the store and put them in the genesis state
-	var params ecocredit.Params
+	var params core.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
 
 	store := ctx.KVStore(s.storeKey)
