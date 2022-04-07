@@ -30,6 +30,7 @@ type serverImpl struct {
 	storeKey      sdk.StoreKey
 	iriHasher     hasher.Hasher
 	stateStore    api.StateStore
+	db            ormdb.ModuleDB
 	bankKeeper    data.BankKeeper
 	accountKeeper data.AccountKeeper
 }
@@ -54,6 +55,7 @@ func newServer(storeKey sdk.StoreKey, ak data.AccountKeeper, bk data.BankKeeper)
 		storeKey:      storeKey,
 		iriHasher:     hasher,
 		stateStore:    stateStore,
+		db:            db,
 		bankKeeper:    bk,
 		accountKeeper: ak,
 	}
@@ -64,5 +66,6 @@ func RegisterServices(configurator servermodule.Configurator, ak data.AccountKee
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)
 
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }
