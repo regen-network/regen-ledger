@@ -31,6 +31,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
@@ -53,7 +54,7 @@ func NewModule(
 	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
+		paramSpace = paramSpace.WithKeyTable(core.ParamKeyTable())
 	}
 
 	return &Module{

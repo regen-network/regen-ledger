@@ -39,7 +39,7 @@ func genCreditClassFee(r *rand.Rand) sdk.Coins {
 
 // genAllowedClassCreators generate random set of creators
 func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []string {
-	n := simtypes.RandIntBetween(r, 1, len(accs))
+	n := simtypes.RandIntBetween(r, 1, 10)
 	creators := make([]string, n)
 
 	for i := 0; i < n; i++ {
@@ -337,6 +337,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println(string(bz))
 
 	simState.GenState[ecocredit.ModuleName] = bz
 }

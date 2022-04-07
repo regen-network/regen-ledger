@@ -474,6 +474,14 @@ func randomClasses(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient) ([
 		return nil, err
 	}
 
+	if len(classes) == 0 {
+		return []string{}, nil
+	}
+
+	if len(classes) == 1 {
+		return []string{classes[0].Name}, nil
+	}
+
 	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
 	classIds := make([]string, max)
 	for i := 0; i < max; i++ {

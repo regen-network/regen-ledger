@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -200,10 +201,13 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
-		if spendable.IsAllLTE(params.CreditClassFee) {
+
+		classFee := simtypes.RandSubsetCoins(r, spendable)
+		if spendable.IsAllLTE(params.CreditClassFee) && classFee.IsAllLT(params.CreditClassFee) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
 		}
 
+		f := sdk.NewCoin(sdk.DefaultBondDenom, classFee.AmountOf(sdk.DefaultBondDenom))
 		creditTypes := []string{"C", "BIO"}
 
 		msg := &core.MsgCreateClass{
@@ -211,6 +215,7 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Issuers:          issuers,
 			Metadata:         simtypes.RandStringOfLength(r, 10),
 			CreditTypeAbbrev: creditTypes[r.Intn(len(creditTypes))],
+			Fee:              &f,
 		}
 
 		txCtx := simulation.OperationInput{
@@ -310,6 +315,10 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		ctx := regentypes.Context{Context: sdkCtx}
 		res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{})
 		if err != nil {
+			if ormerrors.IsNotFound(err) {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "no projects"), nil, nil
+			}
+
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, err.Error()), nil, err
 		}
 
