@@ -79,7 +79,7 @@ func (s *attestSuite) TheDataIsAttestedTo() {
 
 	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId.Id, s.attestor)
 	require.NoError(s.t, err)
-	require.Equal(s.t, s.attestor, dataAttestor.Attestor)
+	require.Equal(s.t, s.attestor.Bytes(), dataAttestor.Attestor)
 	require.Equal(s.t, s.sdkCtx.BlockTime(), dataAttestor.Timestamp.AsTime())
 }
 

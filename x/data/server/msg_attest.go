@@ -4,9 +4,10 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -17,7 +18,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 	var newEntries []*data.AttestorEntry
 
 	for _, hash := range request.Hashes {
-		iri, id, timestamp, err := s.anchorAndGetIRI(ctx, hash)
+		iri, id, _, err := s.anchorAndGetIRI(ctx, hash)
 		if err != nil {
 			return nil, err
 		}
@@ -35,10 +36,12 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			continue
 		}
 
+		timestamp := timestamppb.New(sdkCtx.BlockTime())
+
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
 			Id:        id,
 			Attestor:  addr,
-			Timestamp: types.GogoToProtobufTimestamp(timestamp),
+			Timestamp: timestamp,
 		})
 		if err != nil {
 			return nil, err
@@ -55,7 +58,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 		newEntries = append(newEntries, &data.AttestorEntry{
 			Iri:       iri,
 			Attestor:  addr.String(),
-			Timestamp: timestamp,
+			Timestamp: types.ProtobufToGogoTimestamp(timestamp),
 		})
 
 		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
