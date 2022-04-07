@@ -188,7 +188,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 					Admin:           admin,
 					ClassId:         classID,
 					ProjectLocation: batchInfo.ProjectLocation,
-					Metadata:        "", // TODO: add metadata
+					Metadata:        "",
 				},
 			)
 			if err != nil {
@@ -203,7 +203,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
-			IssuanceDate: nil, // TODO: add issuance date
+			IssuanceDate: nil,
 		}
 
 		bID, err := ss.BatchInfoTable().InsertReturningID(ctx, &bInfo)
@@ -275,8 +275,6 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	if err = migrateSupply(store, ss, ctx, batchIDsMap); err != nil {
 		return err
 	}
-
-	// TODO: migrate params if needed #729
 
 	return nil
 }

@@ -208,6 +208,7 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 
 // RunMigrations performs state migrations for registered modules.
 func (mm *Manager) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
+	// sorting migration handlers map to prevent non-determinism
 	keys := make([]string, 0, len(mm.migrationHandlers))
 	for k := range mm.migrationHandlers {
 		keys = append(keys, k)
