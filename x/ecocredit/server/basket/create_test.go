@@ -24,21 +24,26 @@ func TestFeeToLow(t *testing.T) {
 	s := setupBase(t)
 	minFee := sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(100)))
 
-	// no fee specified should fail
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.BasketFee = minFee
-	}).Times(4)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyBasketCreationFee, gmAny).Do(func(_, _ interface{}, p *sdk.Coins) {
+		*p = minFee
+	}).Times(2)
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(0)
 
 	// no fee
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Fee: nil,
+		Curator: s.addr.String(),
+		Fee:     nil,
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
 
 	// fee too low
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Fee: sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(20))),
+		Curator: s.addr.String(),
+		Fee:     sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(20))),
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
 }
@@ -47,18 +52,20 @@ func TestInvalidCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.BasketFee = sdk.Coins{basketFee}
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(4)
+	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyBasketCreationFee, gmAny).Do(func(_, _ interface{}, p *sdk.Coins) {
+		*p = basketFee
+	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// non-existent credit type should fail
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "F",
-		Fee:              sdk.Coins{basketFee},
+		Fee:              basketFee,
 	})
 	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
 
@@ -67,7 +74,7 @@ func TestInvalidCreditType(t *testing.T) {
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         2,
-		Fee:              sdk.Coins{basketFee},
+		Fee:              basketFee,
 	})
 	assert.ErrorContains(t, err, "exponent")
 }
@@ -76,13 +83,13 @@ func TestDuplicateDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	fee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
+	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
 	mc := baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "foo",
-		Fee:              sdk.Coins{fee},
+		Fee:              fee,
 	}
 	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
@@ -90,11 +97,13 @@ func TestDuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.BasketFee = sdk.Coins{fee}
-		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
-	}).Times(2)
-	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyBasketCreationFee, gmAny).Do(func(_, _ interface{}, p *sdk.Coins) {
+		*p = fee
+	}).Times(1)
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(1)
 
 	_, err = s.k.Create(s.ctx, &mc)
 	assert.ErrorContains(t, err, "unique")
@@ -107,13 +116,15 @@ func TestInvalidClass(t *testing.T) {
 		Name:       "bar",
 		CreditType: "BIO",
 	}))
-	mockAny := gomock.Any()
+	gmAny := gomock.Any()
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
-	s.paramsKeeper.EXPECT().Get(mockAny, mockAny, mockAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.BasketFee = basketFee
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(4)
-	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyBasketCreationFee, gmAny).Do(func(_, _ interface{}, p *sdk.Coins) {
+		*p = basketFee
+	}).Times(2)
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// class doesn't exist
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -143,11 +154,17 @@ func TestValidBasket(t *testing.T) {
 	s := setupBase(t)
 	gmAny := gomock.Any()
 	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
-	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 	seconds := time.Hour * 24 * 356 * 5
 	dateCriteria := &baskettypes.DateCriteria{
 		StartDateWindow: gogotypes.DurationProto(seconds),
 	}
+	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyBasketCreationFee, gmAny).Do(func(_, _ interface{}, p *sdk.Coins) {
+		*p = fee
+	}).Times(1)
 	s.bankKeeper.EXPECT().SetDenomMetaData(gmAny,
 		banktypes.Metadata{
 			Name:        "foo",
@@ -170,10 +187,6 @@ func TestValidBasket(t *testing.T) {
 		Metadata:   "",
 		CreditType: "C",
 	}))
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.BasketFee = fee
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(2)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),

@@ -16,10 +16,10 @@ import (
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var params core.Params
-	k.paramsKeeper.Get(sdkCtx, core.KeyCreditTypes, &params)
-	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &params)
-	fee := params.BasketFee
+	var creditTypes []*core.CreditType
+	var fee sdk.Coins
+	k.paramsKeeper.Get(sdkCtx, core.KeyCreditTypes, &creditTypes)
+	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &fee)
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(params.CreditTypes, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
+	if err = validateCreditType(creditTypes, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
 	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)

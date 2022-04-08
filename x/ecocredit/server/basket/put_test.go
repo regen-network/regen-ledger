@@ -35,8 +35,8 @@ func TestPut_Valid(t *testing.T) {
 	insertClassInfo(t, s, "C01", "C")
 	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(2)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(2)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 
 	// can put 3 credits in basket
@@ -86,8 +86,8 @@ func TestPut_InvalidDecimal(t *testing.T) {
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
 	insertClassInfo(t, s, "C01", "C")
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 
 	// can put all credits in basket
@@ -108,8 +108,8 @@ func TestPut_BatchNotFound(t *testing.T) {
 	userStartingBalance, _ := math.NewDecFromInt64(10), math.NewDecFromInt64(0)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 
 	// can put all credits in basket
@@ -133,8 +133,8 @@ func TestPut_YearsIntoPast(t *testing.T) {
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(currentTime)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 
 	// too long ago should fail
@@ -176,8 +176,8 @@ func TestPut_MinStartDate(t *testing.T) {
 	batchDenom, classId := "C01-0000000-0000000-001", "C01"
 	currentTime, err := time.Parse("2006", "2020")
 	assert.NilError(t, err)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 	// make a basket with min start date as 2020
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{MinStartDate: timestamppb.New(currentTime)}, []string{classId})
@@ -221,8 +221,8 @@ func TestPut_Window(t *testing.T) {
 	batchDenom, classId := "C01-0000000-0000000-001", "C01"
 	currentTime, err := time.Parse("2006", "2020")
 	assert.NilError(t, err)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 
 	// make a basket with StartDateWindow of 1 year. with block time forced to 2020, this means only credits 2019 and up are accepted.
@@ -272,8 +272,8 @@ func TestPut_InsufficientCredits(t *testing.T) {
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
 	insertClassInfo(t, s, classId, "C")
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 
 	// can put 3 credits in basket
@@ -296,8 +296,8 @@ func TestPut_ClassNotAccepted(t *testing.T) {
 	insertBatch(t, s, batchDenom, timestamppb.Now())
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 	// can put 3 credits in basket
 	_, err := s.k.Put(s.ctx, &basket.MsgPut{
@@ -320,8 +320,8 @@ func TestPut_BadCreditType(t *testing.T) {
 	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
 	insertClassInfo(t, s, "C01", "F")
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 	_, err := s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addr.String(),
@@ -487,8 +487,8 @@ func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
 	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
 	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 
 	s.bankKeeper.EXPECT().

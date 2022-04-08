@@ -53,9 +53,9 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 
 // GetCreditTypes fetches the credit type slice from param state.
 func GetCreditTypes(sdkCtx sdk.Context, pk ecocredit.ParamKeeper) []*core.CreditType {
-	var params core.Params
-	pk.Get(sdkCtx, core.KeyCreditTypes, &params)
-	return params.CreditTypes
+	var creditTypes []*core.CreditType
+	pk.Get(sdkCtx, core.KeyCreditTypes, &creditTypes)
+	return creditTypes
 }
 
 // GetCreditTypeMap fetches credit types from param state and converts the slice to a map with the
