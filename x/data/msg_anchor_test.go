@@ -13,7 +13,7 @@ type msgAnchorSuite struct {
 	err error
 }
 
-func TestAnchorMsg(t *testing.T) {
+func TestMsgAnchor(t *testing.T) {
 	gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature").Run()
 }
 
@@ -40,5 +40,9 @@ func (s *msgAnchorSuite) TheMessageIsValidated() {
 }
 
 func (s *msgAnchorSuite) AnErrorOf(a string) {
-	require.EqualError(s.t, s.err, a)
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
+	}
 }
