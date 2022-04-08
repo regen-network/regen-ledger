@@ -10,7 +10,7 @@ func BenchmarkSdkIntTrim(b *testing.B) {
 	s := "12345678901234567890.12345678901234567890"
 	d, err := NewDecFromString(s)
 	if err != nil {
-		b.Error("can't converet test number")
+		b.Error("can't convert test number")
 	}
 
 	b.Run("exp", func(b *testing.B) {
