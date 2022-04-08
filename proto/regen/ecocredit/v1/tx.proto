@@ -5,6 +5,7 @@ package regen.ecocredit.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "regen/ecocredit/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 
@@ -22,6 +23,22 @@ service Msg {
   // This will create a new batch denom with a fixed supply. Issued credits can
   // be distributed to recipients in either tradable or retired form.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
+
+  // MintBatchCredits issues new token in a given batch.
+  // The issuer must be the account who created (or delegated using x/authz),
+  // the batch.
+  // The request will fail if the batch is not open (is sealed).
+  // NOTE: this method is only for bridge purpose. It must not be used
+  // for issuing native credits on Regen. More specifically, we
+  // enable minting more credits in an existing batch, when the batch
+  // represents a vintage originally registered in another chain.
+  rpc MintBatchCredits(MsgMintBatchCredits)
+      returns (MsgMintBatchCreditsResponse);
+
+  // MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
+  // can't issue more credits. Once batch is sealed it can't be toggled any
+  // more. Only batch creator can seal a batch.
+  rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
 
   // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
@@ -133,30 +150,43 @@ message MsgCreateBatch {
   // quantified and verified.
   google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
 
-  // BatchIssuance represents the issuance of some credits in a batch to a
-  // single recipient.
-  message BatchIssuance {
+  // If open is true we will enable future minting.
+  // Otherwise we will seal the batch and disable the future minting.
+  bool open = 7;
 
-    // recipient is the account of the recipient.
-    string recipient = 1;
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 8;
 
-    // tradable_amount is the number of credits in this issuance that can be
-    // traded by this recipient. Decimal values are acceptable.
-    string tradable_amount = 2;
+  // reference note for accounting, will be passed to an event
+  string note = 9;
+}
 
-    // retired_amount is the number of credits in this issuance that are
-    // effectively retired by the issuer on receipt. Decimal values are
-    // acceptable.
-    string retired_amount = 3;
+// BatchIssuance represents the issuance of some credits in a batch to a
+// single recipient.
+message BatchIssuance {
 
-    // retirement_location is the location of the beneficiary or buyer of the
-    // retired credits. This must be provided if retired_amount is positive. It
-    // is a string of the form
-    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-    // fields conforming to ISO 3166-2, and postal-code being up to 64
-    // alphanumeric characters.
-    string retirement_location = 4;
-  }
+  // recipient is the account of the recipient.
+  string recipient = 1;
+
+  // tradable_amount is the number of credits in this issuance that can be
+  // traded by this recipient. Decimal values are acceptable.
+  string tradable_amount = 2;
+
+  // retired_amount is the number of credits in this issuance that are
+  // effectively retired by the issuer on receipt. Decimal values are
+  // acceptable.
+  string retired_amount = 3;
+
+  // retirement_location is the location of the beneficiary or buyer of the
+  // retired credits. This must be provided if retired_amount is positive. It
+  // is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string retirement_location = 4;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -164,6 +194,39 @@ message MsgCreateBatchResponse {
   // batch_denom is the unique denomination ID of the newly created batch.
   string batch_denom = 1;
 }
+
+// MsgMintBatchCredits is a request type for MintBatchCredits Msg RPC.
+message MsgMintBatchCredits {
+  // Issuer must equal to the batch.issuer address.
+  // Signer of the msg.
+  string issuer = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
+
+  // issuance are the credits issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  OriginTx origin_tx = 4;
+
+  // reference note for accounting, will be passed to an event
+  string note = 5;
+}
+
+// MsgSealBatch request type for MsgSealBatch RPC.
+message MsgSealBatch {
+  // Issuer must equal to the batch.issuer address.
+  // Signer of the msg.
+  string issuer = 1;
+}
+
+// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
+message MsgMintBatchCreditsResponse {}
+
+// MsgSealBatchResponse is the Msg/SealBatch response type.
+message MsgSealBatchResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
