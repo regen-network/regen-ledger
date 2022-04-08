@@ -34,12 +34,12 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 		return err
 	}
 	if len(m.Note) > 512 {
-		errBadReq.Wrap("note must not be longer than 512 characters")
+		return errBadReq.Wrap("note must not be longer than 512 characters")
 	}
 	if err = validateBatchIssuances(m.Issuance); err != nil {
 		return err
 	}
-	if err = validateOriginTx(m.OriginTx); err != nil {
+	if err = validateOriginTx(m.OriginTx, true); err != nil {
 		return err
 	}
 
@@ -88,8 +88,11 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 
 var reOriginTxNote = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{1,64}$`)
 
-func validateOriginTx(o *OriginTx) error {
+func validateOriginTx(o *OriginTx, required bool) error {
 	if o == nil {
+		if required {
+			return errBadReq.Wrap("origin_tx is required")
+		}
 		return nil
 	}
 	if !reOriginTxNote.MatchString(o.Typ) {

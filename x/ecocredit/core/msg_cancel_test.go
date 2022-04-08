@@ -22,7 +22,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -33,7 +33,7 @@ func TestMsgCancel(t *testing.T) {
 			src: MsgCancel{
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -45,7 +45,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -74,7 +74,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 					},
 				},
 			},
@@ -85,7 +85,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "abc",
 					},
 				},

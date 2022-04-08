@@ -23,7 +23,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "A00-00000000-00000000-000",
+						BatchDenom:         batchDenom,
 						TradableAmount:     "10",
 						RetiredAmount:      "10",
 						RetirementLocation: "ST-UVW XY Z12",
@@ -143,7 +143,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:     "A00-00000000-00000000-000",
+						BatchDenom:     batchDenom,
 						TradableAmount: "10",
 						RetiredAmount:  "0",
 					},

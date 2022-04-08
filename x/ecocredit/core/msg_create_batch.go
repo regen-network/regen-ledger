@@ -49,7 +49,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if err := validateBatchIssuances(m.Issuance); err != nil {
 		return err
 	}
-	if err := validateOriginTx(m.OriginTx); err != nil {
+	if err := validateOriginTx(m.OriginTx, false); err != nil {
 		return err
 	}
 

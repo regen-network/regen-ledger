@@ -22,7 +22,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -34,7 +34,7 @@ func TestMsgRetire(t *testing.T) {
 			src: MsgRetire{
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -47,7 +47,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -79,7 +79,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 					},
 				},
 				Location: "AB-CDE FG1 345",
@@ -91,7 +91,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "abc",
 					},
 				},
@@ -104,7 +104,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -116,7 +116,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
