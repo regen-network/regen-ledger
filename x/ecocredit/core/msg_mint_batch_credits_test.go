@@ -15,7 +15,16 @@ func TestMsgMintBatchCredits(t *testing.T) {
 	tcs := []struct {
 		name string
 		m    MsgMintBatchCredits
-	}{}
+		err  string
+	}{
+		{"invalid issuer", m},
+	}
+	for _, tc := range tcs {
+		err := tcs.m.ValidateBasic()
+		if tc.err == "" {
+			require.NoErro(err, tc.name)
+		}
+	}
 	// 	msg := MsgSealBatch{}
 	// 	require.Error(msg.ValidateBasic(), "empty issuer")
 
