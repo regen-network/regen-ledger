@@ -4,28 +4,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestSell_Prune(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(4)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(4)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
 	assert.NilError(t, err)
@@ -34,14 +25,13 @@ func TestSell_Prune(t *testing.T) {
 	notExpired, err := time.Parse("2006-01-02", "2022-01-01")
 	assert.NilError(t, err)
 
-	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	sellOrderIds := s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
 		},
 	})
-	assert.NilError(t, err)
 
 	// setup block time so the orders expire
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
@@ -65,9 +55,9 @@ func TestSell_Prune(t *testing.T) {
 	// we can reuse this function and pass the negated amount to get our desired behavior.
 	assertCreditsEscrowed(t, balBefore, balAfter, supBefore, supAfter, math.NewDecFromInt64(-10))
 
-	assert.Equal(t, 2, len(res.SellOrderIds))
-	shouldBeExpired := res.SellOrderIds[0]
-	shouldBeValid := res.SellOrderIds[1]
+	assert.Equal(t, 2, len(sellOrderIds))
+	shouldBeExpired := sellOrderIds[0]
+	shouldBeValid := sellOrderIds[1]
 
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldBeExpired)
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())

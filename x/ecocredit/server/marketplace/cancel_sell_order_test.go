@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"gotest.tools/v3/assert"
 
@@ -12,7 +11,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -21,28 +19,19 @@ func TestSell_CancelOrder(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(2)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
-
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 	supBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
-	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	sellOrderId := s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
-	})
-	assert.NilError(t, err)
+	})[0]
 
-	_, err = s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{SellOrderId: res.SellOrderIds[0], Seller: s.addr.String()})
+	_, err = s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{SellOrderId: sellOrderId, Seller: s.addr.String()})
 	assert.NilError(t, err)
 
 	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -59,28 +48,18 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(2)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
-
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 
-	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	sellOrderId := s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
-	})
-	assert.NilError(t, err)
+	})[0]
 
-	_, err = s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{
+	_, err := s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{
 		Seller:      otherAddr.String(),
-		SellOrderId: res.SellOrderIds[0],
+		SellOrderId: sellOrderId,
 	})
 	assert.ErrorContains(t, err, sdkerrors.ErrUnauthorized.Error())
 }

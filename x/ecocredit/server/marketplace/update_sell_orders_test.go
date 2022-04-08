@@ -26,25 +26,25 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(6)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(6)
 	expiration := time.Now()
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
 		},
 	})
-	assert.NilError(t, err)
 
 	balBefore, supBefore := getBalanceAndSupply(t, s.ctx, s.coreStore, 1, s.addr)
 
-	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(2)
+	_, err := s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "10", DisableAutoRetire: true},
@@ -79,25 +79,24 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(6)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(6)
 	expiration := time.Now()
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
 		},
 	})
-	assert.NilError(t, err)
 
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(2)
 	// cannot update sell order that does not exist
-	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+	_, err := s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 25, NewQuantity: "3"},
@@ -129,24 +128,22 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(4)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(4)
 	expiration := time.Now()
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
 		},
 	})
-	assert.NilError(t, err)
+
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(1)
 
 	// cannot edit the sell order with this address
-	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+	_, err := s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: unauthorized.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "1"},
@@ -159,25 +156,26 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(5)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(5)
 	expiration := time.Now()
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 		},
 	})
-	assert.NilError(t, err)
+
+	askUpdate := sdk.NewInt64Coin(ask.Denom, 25)
+
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: askUpdate.Denom}}
+	}).Times(3)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(1)
 
 	orderBefore, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	// can update price of same denom
-	askUpdate := sdk.NewInt64Coin(ask.Denom, 25)
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
@@ -208,6 +206,16 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 
 	assert.Equal(t, order.AskPrice, askUpdate.Amount.String())
 	assert.Equal(t, order.MarketId, orderBefore.MarketId+1)
+
+	invalidAskPrice := sdk.NewInt64Coin("invalid", 200)
+	// CANNOT update price with new denom NOT in allowed denoms
+	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+		Owner: s.addr.String(),
+		Updates: []*marketplace.MsgUpdateSellOrders_Update{
+			{SellOrderId: 1, NewAskPrice: &invalidAskPrice},
+		},
+	})
+	assert.ErrorContains(t, err, "invalid cannot be used in sell orders: invalid request")
 }
 
 func TestUpdateSellOrder_Expiration(t *testing.T) {
@@ -215,31 +223,27 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(2)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
-
 	future := time.Date(2077, 1, 1, 1, 1, 1, 1, time.Local)
 	middle := time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local)
 	past := time.Date(1970, 1, 1, 1, 1, 1, 1, time.Local)
 
 	// create a sell order - expiration does not matter at this point, as the block time has not been set yet.
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+	s.insertSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &past},
 		},
 	})
-	assert.NilError(t, err)
 
 	s.sdkCtx = s.sdkCtx.WithBlockTime(middle)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+	}).Times(3)
+
 	// should work with future time
-	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
+	_, err := s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewExpiration: &future},
@@ -264,27 +268,6 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "expiration must be in the future")
-}
-
-func TestSellOrder_InvalidDenom(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
-	invalidAsk := sdk.NewInt64Coin("ubar", 10)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
-		*p = []*core.CreditType{&creditType}
-	}).Times(2)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
-		*p = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
-	expiration := time.Now()
-	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
-		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &invalidAsk, DisableAutoRetire: false, Expiration: &expiration},
-		},
-	})
-	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
 }
 
 func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecoApi.StateStore, batchId uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
