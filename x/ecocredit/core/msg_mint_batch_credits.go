@@ -66,7 +66,7 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 		}
 		if i.TradableAmount != "" {
 			if _, err := math.NewNonNegativeDecFromString(i.TradableAmount); err != nil {
-				return errBadReq.Wrapf("issuance[%d].tradeable_amount; %v", idx, err)
+				return errBadReq.Wrapf("issuance[%d].tradable_amount; %v", idx, err)
 			}
 		}
 
