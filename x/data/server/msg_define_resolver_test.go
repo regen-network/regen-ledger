@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -31,8 +32,11 @@ func (s *defineResolverSuite) AValidResolverUrl() {
 	s.resolverUrl = "https://foo.bar"
 }
 
-func (s *defineResolverSuite) AnInvalidResolverUrl() {
-	s.resolverUrl = "foo.bar"
+func (s *defineResolverSuite) AResolverEntryWithTheSameUrlAlreadyExists() {
+	err := s.server.stateStore.ResolverInfoTable().Insert(s.ctx, &api.ResolverInfo{
+		Url: s.resolverUrl,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *defineResolverSuite) AUserAttemptsToDefineAResolver() {
