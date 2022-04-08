@@ -47,7 +47,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 			return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 		}
 		if order.BidPrice.Denom != market.BankDenom {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit denom does not match ask price denom: "+
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
 				" %s, expected %s", order.BidPrice.Denom, market.BankDenom)
 		}
 		// check that bid price >= sell price
