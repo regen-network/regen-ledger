@@ -4,13 +4,13 @@ import (
 	"context"
 
 	gogotypes "github.com/gogo/protobuf/types"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -26,8 +26,8 @@ func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.
 	}
 
 	return &data.MsgAnchorResponse{
-		Timestamp: timestamp,
 		Iri:       iri,
+		Timestamp: timestamp,
 	}, nil
 }
 
@@ -37,16 +37,46 @@ func (s serverImpl) anchorAndGetIRI(ctx context.Context, ch ToIRI) (iri string, 
 		return "", nil, nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	store := sdkCtx.KVStore(s.storeKey)
-	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
+	id, err = s.getOrCreateDataId(ctx, iri)
+	if err != nil {
+		return "", nil, nil, err
+	}
 
 	timestamp, err = s.anchorAndGetTimestamp(ctx, id, iri)
-
-	// consume additional gas whenever we verify the provided hash
-	sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data hash verification")
+	if err != nil {
+		return "", nil, nil, err
+	}
 
 	return iri, id, timestamp, err
+}
+
+func (s serverImpl) getOrCreateDataId(ctx context.Context, iri string) (id []byte, err error) {
+	dataId := &api.DataID{Iri: ""}
+
+	for collisions := 0; dataId.Iri != iri; collisions++ {
+		id = s.iriHasher.CreateID([]byte(iri), collisions)
+
+		dataId, err = s.stateStore.DataIDTable().Get(ctx, id)
+		if err != nil {
+			if !ormerrors.IsNotFound(err) {
+				return nil, err
+			} else {
+				dataId = &api.DataID{
+					Id:  id,
+					Iri: iri,
+				}
+				err = s.stateStore.DataIDTable().Insert(ctx, dataId)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		// consume additional gas whenever we create or verify the data ID
+		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "create/verify data id")
+	}
+
+	return id, nil
 }
 
 func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
@@ -63,11 +93,8 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 			}
 
 			err = s.stateStore.DataAnchorTable().Insert(ctx, &api.DataAnchor{
-				Id: id,
-				Timestamp: &timestamppb.Timestamp{
-					Seconds: timestamp.Seconds,
-					Nanos:   timestamp.Nanos,
-				},
+				Id:        id,
+				Timestamp: types.GogoToProtobufTimestamp(timestamp),
 			})
 			if err != nil {
 				return nil, err
@@ -77,10 +104,5 @@ func (s serverImpl) anchorAndGetTimestamp(ctx context.Context, id []byte, iri st
 		}
 	}
 
-	timestamp := &gogotypes.Timestamp{
-		Seconds: dataAnchor.Timestamp.Seconds,
-		Nanos:   dataAnchor.Timestamp.Nanos,
-	}
-
-	return timestamp, nil
+	return types.ProtobufToGogoTimestamp(dataAnchor.Timestamp), nil
 }

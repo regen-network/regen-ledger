@@ -11,11 +11,12 @@ import (
 
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient ecocredit.QueryClient) ([]*ecocredit.ClassInfo, error) {
+func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient) ([]*core.ClassInfo, error) {
 	ctx := regentypes.Context{Context: sdkCtx}
-	res, err := qryClient.Classes(ctx, &ecocredit.QueryClassesRequest{})
+	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
 	if err != nil {
 		return nil, err
 	}

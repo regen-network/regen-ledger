@@ -39,26 +39,29 @@ func (m MsgAnchor) GetSignBytes() []byte {
 }
 
 func (m *MsgAttest) ValidateBasic() error {
-	for _, addr := range m.Attestors {
-		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
-			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	if _, err := sdk.AccAddressFromBech32(m.Attestor); err != nil {
+		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+	}
+
+	if len(m.Hashes) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("hashes cannot be empty")
+	}
+
+	for _, hash := range m.Hashes {
+		if hash == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
+		}
+		err := hash.Validate()
+		if err != nil {
+			return err
 		}
 	}
-	if m.Hash == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
-	}
-	return m.Hash.Validate()
+	return nil
 }
 
 func (m *MsgAttest) GetSigners() []sdk.AccAddress {
-	addrs := make([]sdk.AccAddress, len(m.Attestors))
-
-	for i, attestor := range m.Attestors {
-		addr, _ := sdk.AccAddressFromBech32(attestor)
-		addrs[i] = addr
-	}
-
-	return addrs
+	addr, _ := sdk.AccAddressFromBech32(m.Attestor)
+	return []sdk.AccAddress{addr}
 }
 
 // Route implements the LegacyMsg interface.

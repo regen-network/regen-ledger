@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
@@ -54,42 +53,45 @@ service Msg {
 
 // MsgAnchor is the Msg/Anchor request type.
 message MsgAnchor {
-  // sender is the address of the sender of the transaction.
-  // The sender in Anchor is not attesting to the veracity of the underlying
-  // data. They can simply be an intermediary providing services.
+  // sender is the address of the sender of the transaction. The sender in
+  // Anchor is not attesting to the veracity of the underlying data. They
+  // can simply be an intermediary providing services.
   string sender = 1;
 
-  // hash is the hash-based identifier for the anchored content.
+  // hash is the content hash for the data to anchor.
   ContentHash hash = 2;
 }
 
 // MsgAnchor is the Msg/Anchor response type.
 message MsgAnchorResponse {
-  // timestamp is the timestamp of the block at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 1;
-
   // iri is the IRI of the data that was anchored.
-  string iri = 2;
+  string iri = 1;
+
+  // timestamp is the timestamp at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // MsgAttest is the Msg/Attest request type.
 message MsgAttest {
-  option (gogoproto.goproto_getters) = false;
-
-  // attestors are the addresses of the accounts attesting to the validity of
-  // the data. By making an Attest request, the attestors are attesting to the
-  // veracity of the data referenced by the cid. The precise meaning of this may
+  // attestor is the addresses of the account attesting to the veracity of the
+  // data. By making an Attest request, the attestor is attesting to the
+  // veracity of the data referenced by the IRI. The precise meaning of this may
   // vary depending on the underlying data.
-  repeated string attestors = 1;
+  string attestor = 1;
 
-  // hash is the hash-based identifier for the anchored content. Only RDF graph
-  // data can be signed as its data model is intended to specifically convey
-  // semantic meaning.
-  ContentHash.Graph hash = 2;
+  // hashes are the content hashes for anchored data. Only RDF graph data can be
+  // signed as its data model is intended to specifically convey semantic
+  // meaning.
+  repeated ContentHash.Graph hashes = 2;
 }
 
 // MsgAttestResponse is the Msg/Attest response type.
-message MsgAttestResponse {}
+message MsgAttestResponse {
+  // new_entries are the new attestor entries including the attestor, the IRI,
+  // and the timestamp. If the attestor attests to the same piece of data, the
+  // entry will not be updated and not included in the response.
+  repeated AttestorEntry new_entries = 1;
+}
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {

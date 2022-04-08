@@ -14,7 +14,7 @@ import (
 
 // AttestorsByIRI queries attestors based on IRI.
 func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttestorsByIRIRequest) (*data.QueryAttestorsByIRIResponse, error) {
-	id, err := s.getID(ctx, request.Iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttes
 
 	it, err := s.stateStore.DataAttestorTable().List(
 		ctx,
-		api.DataAttestorIdAttestorIndexKey{}.WithId(id),
+		api.DataAttestorIdAttestorIndexKey{}.WithId(dataId.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAtte
 		return nil, err
 	}
 
-	id, err := s.getID(ctx, iri)
+	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, iri)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (s serverImpl) AttestorsByHash(ctx context.Context, request *data.QueryAtte
 
 	it, err := s.stateStore.DataAttestorTable().List(
 		ctx,
-		api.DataAttestorIdAttestorIndexKey{}.WithId(id),
+		api.DataAttestorIdAttestorIndexKey{}.WithId(dataId.Id),
 		ormlist.Paginate(pg),
 	)
 	if err != nil {

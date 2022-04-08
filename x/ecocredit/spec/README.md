@@ -60,6 +60,6 @@ The marketplace submodule enables the creation and management of sell orders for
 
 For a complete list of the Protobuf definitions, see the following documentation:
 
-- [regen.ecocredit.v1](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.v1)
-- [regen.ecocredit.basket.v1](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.basket.v1)
-- [regen.ecocredit.marketplace.v1](https://buf.build/regen/regen-ledger/docs/main/regen.ecocredit.marketplace.v1)
+- [regen.ecocredit.v1](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1)
+- [regen.ecocredit.basket.v1](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1)
+- [regen.ecocredit.marketplace.v1](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1)
