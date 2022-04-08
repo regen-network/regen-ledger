@@ -47,7 +47,7 @@ const (
 var validMetadataBytes = []byte{0x1}
 
 func RunCLITests(t *testing.T, cfg network.Config) {
-	suite.Run(t, NewIntegrationTestSuite(cfg))
+	// suite.Run(t, NewIntegrationTestSuite(cfg))
 
 	// setup another cfg for testing ecocredit enabled class creators list.
 	genesisState := ecocredit.DefaultGenesisState()
@@ -55,7 +55,7 @@ func RunCLITests(t *testing.T, cfg network.Config) {
 	bz, err := cfg.Codec.MarshalJSON(genesisState)
 	require.NoError(t, err)
 	cfg.GenesisState[ecocredit.ModuleName] = bz
-	suite.Run(t, NewAllowListEnabledTestSuite(cfg))
+	// suite.Run(t, NewAllowListEnabledTestSuite(cfg))
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
