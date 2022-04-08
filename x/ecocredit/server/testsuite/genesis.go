@@ -1,226 +1,94 @@
 package testsuite
 
 import (
-	"bytes"
 	"encoding/json"
 	"time"
 
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
+	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
-func (s *IntegrationTestSuite) TestInitExportGenesis() {
+func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require := s.Require()
 	ctx := s.genesisCtx
-	admin1 := s.signers[0]
-	admin2 := s.signers[1]
-	issuer1 := s.signers[2]
-	issuer2 := s.signers[3]
-	addr1 := s.signers[4]
-
-	startDate := time.Unix(10000, 10000).UTC()
-	endDate := time.Unix(10000, 10050).UTC()
 
 	// Set the param set to empty values to properly test init
 	var ecocreditParams core.Params
 	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
 
-	classIssuers := []*core.ClassIssuer{
-		{
-			ClassId: 1,
-			Issuer:  issuer1.Bytes(),
-		},
-		{
-			ClassId: 1,
-			Issuer:  issuer2.Bytes(),
-		},
-		{
-			ClassId: 2,
-			Issuer:  issuer2.Bytes(),
-		},
-		{
-			ClassId: 2,
-			Issuer:  addr1.Bytes(),
-		},
-	}
+	defaultParams := core.DefaultParams()
+	paramsJSON, err := s.fixture.Codec().MarshalJSON(&defaultParams)
+	require.NoError(err)
 
-	classInfo := []*core.ClassInfo{
-		{
-			Id:         1,
-			Admin:      admin1.Bytes(),
-			Metadata:   "credit class metadata",
-			Name:       "BIO001",
-			CreditType: "BIO",
-		},
-		{
-			Id:         2,
-			CreditType: "BIO",
-			Name:       "BIO02",
-			Admin:      admin2,
-			Metadata:   "credit class metadata",
-		},
-	}
+	classIssuersJSON := `[
+	{"class_id":"1","issuer":"1ygCfmJaPVMIvVEcpx6r+2gpurM="},
+	{"class_id":"1","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
+	{"class_id":"2","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
+	{"class_id":"2","issuer":"lEjmu9Vooa24qp9vCMIlXGrMZoU="}
+	]`
 
-	projectInfo := []*core.ProjectInfo{
-		{
-			Id:              1,
-			Name:            "P01",
-			ClassId:         1,
-			ProjectLocation: "AQ",
-			Metadata:        "project metadata",
-			Admin:           issuer1.Bytes(),
-		},
-		{
-			Id:              2,
-			Name:            "P02",
-			Admin:           issuer2.Bytes(),
-			ClassId:         2,
-			ProjectLocation: "AQ",
-			Metadata:        "project metadata",
-		},
-	}
+	classInfoJSON := `[
+		{"name":"BIO001","admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=","metadata":"credit class metadata","credit_type":"BIO"},
+		{"name":"BIO02","admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=","metadata":"credit class metadata","credit_type":"BIO"}	
+	]`
 
-	batchInfo := []*core.BatchInfo{
-		{
-			ProjectId:    1,
-			BatchDenom:   "BIO01-00000000-00000000-001",
-			Metadata:     "batch metadata",
-			Id:           1,
-			Issuer:       issuer1.Bytes(),
-			IssuanceDate: gogotypes.TimestampNow(),
-		}, {
-			ProjectId:    1,
-			BatchDenom:   "BIO02-00000000-00000000-001",
-			Metadata:     "batch metadata",
-			IssuanceDate: gogotypes.TimestampNow(),
-		},
-	}
+	projectInfoJSON := `[
+		{"name":"P01","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_id":"1","project_location":"AQ","metadata":"project metadata"},
+		{"name":"P02","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_id":"2","project_location":"AQ","metadata":"project metadata"}	
+	]`
 
-	balances := []*core.BatchBalance{
-		{
-			Address:  addr1,
-			BatchId:  1,
-			Tradable: "90.003",
-			Retired:  "9.997",
-		},
-	}
+	batchInfoJSON := `[
+	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_id":"1","batch_denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
+	{"issuer":null,"project_id":"1","batch_denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
+	]`
 
-	supplies := []*core.BatchSupply{
-		{
-			BatchId:        1,
-			TradableAmount: "90.003",
-			RetiredAmount:  "9.997",
-		},
-	}
+	batchBalancesJSON := `[
+	{"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=","batch_id":"1","tradable":"90.003","retired":"9.997","escrowed":""}
+	]`
 
-	sequences := []*core.ClassSequence{
-		{
-			CreditType:  "BIO",
-			NextClassId: 3,
-		},
-	}
+	batchSupplyJSON := `[
+		{"batch_id":"1","tradable_amount":"90.003","retired_amount":"9.997","cancelled_amount":""}
+	]`
 
-	jsonTarget := ormjson.NewRawMessageTarget()
-	err = server.MergeLegacyJSONIntoTarget(cdc, &params, jsonTarget)
-	if err != nil {
-		panic(err)
-	}
+	classSeqJSON := `[{"credit_type":"BIO","next_class_id":"3"}]`
+	batchSeqJSON := `[{"project_id":"P01","next_batch_id":"3"}]`
+	projectSeqJSON := `[{"class_id":"1","next_project_id":"3"}]`
 
-	bz, err := jsonTarget.JSON()
-	if err != nil {
-		panic(err)
-	}
-	// genesisState := &ecocredit.GenesisState{
-	// 	Params:        ecocredit.DefaultParams(),
-	// 	Sequences:     sequences,
-	// 	ClassInfo:     classInfo,
-	// 	BatchInfo:     batchInfo,
-	// 	Balances:      balances,
-	// 	Supplies:      supplies,
-	// 	ProjectInfo:   projectInfo,
-	// 	ProjectSeqNum: 2,
-	// }
-	require.NoError(s.initGenesisState(ctx, genesisState))
+	wrapper := map[string]json.RawMessage{}
+	wrapper[gogoproto.MessageName(&core.ClassInfo{})] = []byte(classInfoJSON)
+	wrapper[gogoproto.MessageName(&core.ClassIssuer{})] = []byte(classIssuersJSON)
+	wrapper[gogoproto.MessageName(&core.ProjectInfo{})] = []byte(projectInfoJSON)
+	wrapper[gogoproto.MessageName(&core.BatchInfo{})] = []byte(batchInfoJSON)
+	wrapper[gogoproto.MessageName(&core.BatchBalance{})] = []byte(batchBalancesJSON)
+	wrapper[gogoproto.MessageName(&core.BatchSupply{})] = []byte(batchSupplyJSON)
+	wrapper[gogoproto.MessageName(&core.ClassSequence{})] = []byte(classSeqJSON)
+	wrapper[gogoproto.MessageName(&core.BatchSequence{})] = []byte(batchSeqJSON)
+	wrapper[gogoproto.MessageName(&core.ProjectSequence{})] = []byte(projectSeqJSON)
+	wrapper[gogoproto.MessageName(&core.Params{})] = []byte(paramsJSON)
 
-	exportedGenesisState := s.exportGenesisState(ctx)
-	require.Equal(genesisState.Params, exportedGenesisState.Params)
-	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
+	bz, err := json.Marshal(wrapper)
+	require.NoError(err)
+	wrapper = map[string]json.RawMessage{}
+	wrapper["ecocredit"] = bz
 
-	for _, info := range classInfo {
-		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
-			ClassId: info.ClassId,
-		})
-		require.NoError(err)
-		s.assetClassInfoEqual(res.Info, info)
-	}
+	_, err = s.fixture.InitGenesis(s.genesisCtx.Context, wrapper)
+	require.NoError(err)
 
-	for _, info := range projectInfo {
-		res, err := s.queryClient.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{
-			ProjectId: info.ProjectId,
-		})
-		require.NoError(err)
-		s.assetProjectInfoEqual(res.Info, info)
-	}
-
-	for _, info := range batchInfo {
-		res, err := s.queryClient.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{
-			BatchDenom: info.BatchDenom,
-		})
-		require.NoError(err)
-		s.assetBatchInfoEqual(res.Info, info)
-	}
-
-	for _, balance := range balances {
-		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
-			Account:    balance.Address,
-			BatchDenom: balance.BatchDenom,
-		})
-		require.NoError(err)
-		require.NotNil(res)
-
-		require.Equal(res.TradableAmount, balance.TradableBalance)
-		require.Equal(res.RetiredAmount, balance.RetiredBalance)
-	}
-
-	for _, supply := range supplies {
-		res, err := s.queryClient.Supply(ctx, &ecocredit.QuerySupplyRequest{
-			BatchDenom: supply.BatchDenom,
-		})
-		require.NoError(err)
-		require.NotNil(res)
-		tSupply, err := math.NewNonNegativeDecFromString(res.TradableSupply)
-		require.NoError(err)
-		rSupply, err := math.NewNonNegativeDecFromString(res.RetiredSupply)
-		require.NoError(err)
-		require.Equal(tSupply.String(), supply.TradableSupply)
-		require.Equal(rSupply.String(), supply.RetiredSupply)
-	}
-
-	exported := s.exportGenesisState(ctx)
-	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
-	require.Equal(genesisState.Params, exported.Params)
-	require.Equal(genesisState.ClassInfo, exported.ClassInfo)
-	require.Equal(genesisState.BatchInfo, exported.BatchInfo)
-	require.Equal(genesisState.Balances, exported.Balances)
-	require.Equal(genesisState.Supplies, exported.Supplies)
+	exported := s.exportGenesisState(s.genesisCtx)
+	require.NotNil(exported)
 
 }
 
-func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
+func (s *GenesisTestSuite) exportGenesisState(ctx types.Context) map[string]json.RawMessage {
 	require := s.Require()
 	exported, err := s.fixture.ExportGenesis(ctx.Context)
 	require.NoError(err)
@@ -229,56 +97,7 @@ func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.G
 	err = json.Unmarshal(exported[ecocredit.ModuleName], &wrapper)
 	require.NoError(err)
 
-	var exportedGenesisState ecocredit.GenesisState
-	legacyGenesisBz, ok := wrapper[proto.MessageName(&ecocredit.GenesisState{})]
-	if ok {
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(
-			bytes.NewReader(legacyGenesisBz),
-			&exportedGenesisState,
-		)
-		require.NoError(err)
-	}
-
-	return exportedGenesisState
-}
-
-func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState *ecocredit.GenesisState) error {
-	cdc := s.fixture.Codec()
-	require := s.Require()
-	genesisBytes, err := cdc.MarshalJSON(genesisState)
-	require.NoError(err)
-
-	wrapper := map[string]json.RawMessage{
-		proto.MessageName(&ecocredit.GenesisState{}): genesisBytes,
-	}
-
-	bz, err := json.Marshal(wrapper)
-	require.NoError(err)
-
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: bz}
-	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-	return err
-}
-
-func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {
-	require := s.Require()
-	require.Equal(q.ClassId, other.ClassId)
-	require.Equal(q.Admin, other.Admin)
-	require.Equal(q.Issuers, other.Issuers)
-	require.Equal(q.Metadata, other.Metadata)
-}
-
-func (s *IntegrationTestSuite) assetProjectInfoEqual(q, other *ecocredit.ProjectInfo) {
-	require := s.Require()
-	require.Equal(q, other)
-}
-
-func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
-	require := s.Require()
-	require.Equal(q.ProjectId, other.ProjectId)
-	require.Equal(q.BatchDenom, other.BatchDenom)
-	require.Equal(q.Metadata, other.Metadata)
-	require.Equal(q.TotalAmount, other.TotalAmount)
+	return wrapper
 }
 
 type GenesisTestSuite struct {
@@ -312,110 +131,4 @@ func (s *GenesisTestSuite) SetupSuite() {
 
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 8)
-}
-
-func (s *GenesisTestSuite) TestInvalidGenesis() {
-	require := s.Require()
-
-	ctx := s.genesisCtx
-	admin1 := s.signers[0]
-	admin2 := s.signers[1].String()
-	issuer1 := s.signers[2].String()
-	issuer2 := s.signers[3].String()
-	addr1 := s.signers[4].String()
-
-	// Set the param set to empty values to properly test init
-	var ecocreditParams ecocredit.Params
-	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
-
-	classInfo := []*ecocredit.ClassInfo{
-		{
-			ClassId:  "BIO01",
-			Admin:    admin1.String(),
-			Issuers:  []string{issuer1, issuer2},
-			Metadata: []byte("credit class metadata"),
-		},
-		{
-			ClassId:  "BIO02",
-			Admin:    admin2,
-			Issuers:  []string{issuer2, addr1},
-			Metadata: []byte("credit class metadata"),
-		},
-	}
-
-	projectInfo := []*ecocredit.ProjectInfo{
-		{
-			ProjectId:       "P01",
-			ClassId:         "BIO01",
-			Issuer:          issuer1,
-			ProjectLocation: "AQ",
-			Metadata:        []byte("project metadata"),
-		},
-		{
-			ProjectId:       "P02",
-			ClassId:         "BIO02",
-			Issuer:          issuer2,
-			ProjectLocation: "AQ",
-			Metadata:        []byte("project metadata"),
-		},
-	}
-
-	batchInfo := []*ecocredit.BatchInfo{
-		{
-			ProjectId:   "P01",
-			BatchDenom:  "BIO01-00000000-00000000-001",
-			TotalAmount: "100",
-			Metadata:    []byte("batch metadata"),
-		}, {
-			ProjectId:   "P02",
-			BatchDenom:  "BIO02-00000000-00000000-001",
-			TotalAmount: "100",
-			Metadata:    []byte("batch metadata"),
-		},
-	}
-
-	balances := []*ecocredit.Balance{
-		{
-			Address:         addr1,
-			BatchDenom:      "BIO01-00000000-00000000-001",
-			TradableBalance: "90.003",
-			RetiredBalance:  "9.997",
-		},
-	}
-
-	supplies := []*ecocredit.Supply{
-		{
-			BatchDenom:     "BIO01-00000000-00000000-001",
-			TradableSupply: "101.000",
-			RetiredSupply:  "9.997",
-		},
-	}
-
-	sequences := []*ecocredit.CreditTypeSeq{
-		{
-			Abbreviation: "BIO",
-			SeqNumber:    3,
-		},
-	}
-
-	genesisState := &ecocredit.GenesisState{
-		Params:        ecocredit.DefaultParams(),
-		Sequences:     sequences,
-		ClassInfo:     classInfo,
-		BatchInfo:     batchInfo,
-		Balances:      balances,
-		Supplies:      supplies,
-		ProjectInfo:   projectInfo,
-		ProjectSeqNum: 2,
-	}
-	cdc := s.fixture.Codec()
-	genesisBytes, err := cdc.MarshalJSON(genesisState)
-	require.NoError(err)
-
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
-	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-
-	require.Error(err)
-	require.Contains(err.Error(), "supply is incorrect for BIO01-00000000-00000000-001 credit batch")
-
 }

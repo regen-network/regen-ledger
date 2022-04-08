@@ -30,6 +30,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
@@ -52,7 +53,7 @@ func NewModule(
 	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
+		paramSpace = paramSpace.WithKeyTable(core.ParamKeyTable())
 	}
 
 	return &Module{
@@ -106,7 +107,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	}
 
 	params := coretypes.DefaultParams()
-	err = server.MergeLegacyJSONIntoTarget(cdc, &params, jsonTarget)
+	err = server.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
