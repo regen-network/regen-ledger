@@ -10,7 +10,7 @@ import (
 func TestMsgMsgSealBatch(t *testing.T) {
 	t.Parallel()
 	require := require.New(t)
-	_, _, addr1 := testdata.KeyTestPubAddr()
+	issuer := genAddress()
 
 	msg := MsgSealBatch{}
 	require.Error(msg.ValidateBasic(), "empty issuer")
@@ -18,6 +18,6 @@ func TestMsgMsgSealBatch(t *testing.T) {
 	msg = MsgSealBatch{Issuer: "abc"}
 	require.Error(msg.ValidateBasic(), "invalid issuer")
 
-	msg = MsgSealBatch{Issuer: addr1.String()}
+	msg = MsgSealBatch{Issuer: issuer}
 	require.NoError(msg.ValidateBasic(), "valid issuer")
 }

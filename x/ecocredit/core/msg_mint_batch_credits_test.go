@@ -10,27 +10,24 @@ import (
 func TestMsgMintBatchCredits(t *testing.T) {
 	t.Parallel()
 	require := require.New(t)
-	_, _, addr1 := testdata.KeyTestPubAddr()
+	issuer := genAddress()
 
 	tcs := []struct {
 		name string
 		m    MsgMintBatchCredits
 		err  string
 	}{
-		{"invalid issuer", m},
+		{"invalid issuer", MsgMintBatchCredits{Issuer: "invalid"}, "issuer"},
+		{"invalid denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}, ""},
+
+		{"good", MsgMintBatchCredits{Issuer: issuer}, ""},
 	}
 	for _, tc := range tcs {
-		err := tcs.m.ValidateBasic()
+		err := tc.m.ValidateBasic()
 		if tc.err == "" {
-			require.NoErro(err, tc.name)
+			require.NoError(err, tc.name)
+		} else {
+			require.ErrorContains(err, tc.err, tc.name)
 		}
 	}
-	// 	msg := MsgSealBatch{}
-	// 	require.Error(msg.ValidateBasic(), "empty issuer")
-
-	// 	msg = MsgSealBatch{Issuer: "abc"}
-	// 	require.Error(msg.ValidateBasic(), "invalid issuer")
-
-	// 	msg = MsgSealBatch{Issuer: addr1.String()}
-	// 	require.NoError(msg.ValidateBasic(), "valid issuer")
 }
