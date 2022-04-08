@@ -32,7 +32,7 @@ type orderOptions struct {
 	retirementLocation string
 }
 
-// fillOrder moves credits according to the order. it will:
+// fillOrder moves credits and coins according to the order. It will:
 // - update a sell order, removing it if quantity becomes 0 as a result of this purchase.
 // - remove the purchaseQty from the seller's escrowed balance.
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
