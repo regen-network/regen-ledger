@@ -135,8 +135,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			Recipient:      buyerAcc.String(),
 			BatchDenom:     opts.batchDenom,
 			TradableAmount: purchaseQty.String(),
-			RetiredAmount:  "",
-			BasketDenom:    "",
+			RetiredAmount:  "0",
 		}); err != nil {
 			return err
 		}
