@@ -14,7 +14,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
@@ -50,11 +49,11 @@ func RunCLITests(t *testing.T, cfg network.Config) {
 	// suite.Run(t, NewIntegrationTestSuite(cfg))
 
 	// setup another cfg for testing ecocredit enabled class creators list.
-	genesisState := ecocredit.DefaultGenesisState()
-	genesisState.Params.AllowlistEnabled = true
-	bz, err := cfg.Codec.MarshalJSON(genesisState)
-	require.NoError(t, err)
-	cfg.GenesisState[ecocredit.ModuleName] = bz
+	// genesisState := ecocredit.DefaultGenesisState()
+	// genesisState.Params.AllowlistEnabled = true
+	// bz, err := cfg.Codec.MarshalJSON(genesisState)
+	// require.NoError(t, err)
+	// cfg.GenesisState[ecocredit.ModuleName] = bz
 	// suite.Run(t, NewAllowListEnabledTestSuite(cfg))
 }
 
