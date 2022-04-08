@@ -25,7 +25,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(3)
@@ -74,7 +74,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(3)
@@ -122,7 +122,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(3)
@@ -167,10 +167,10 @@ func TestBuy_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).AnyTimes()
+	}).Times(6)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),

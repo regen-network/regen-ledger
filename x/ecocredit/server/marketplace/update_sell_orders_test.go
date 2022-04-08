@@ -26,7 +26,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(6)
@@ -78,7 +78,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(6)
@@ -125,7 +125,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(4)
@@ -154,7 +154,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}, {Denom: "ubar"}}
 	}).Times(5)
@@ -207,7 +207,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
@@ -261,7 +261,7 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
