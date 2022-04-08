@@ -2,22 +2,21 @@ package server
 
 import (
 	"testing"
-
-	"github.com/regen-network/gocuke"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 type attestSuite struct {
 	*baseSuite
-	chg      *data.ContentHash_Graph
+	ch       *data.ContentHash
 	attestor sdk.AccAddress
 	err      error
+	id       []byte
 }
 
 func TestAttest(t *testing.T) {
@@ -29,60 +28,88 @@ func (s *attestSuite) Before(t gocuke.TestingT) {
 	s.attestor = s.addrs[0]
 }
 
-func (s *attestSuite) AGraphDataContentHash() {
-	s.chg = &data.ContentHash_Graph{
-		Hash:                      make([]byte, 32),
-		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+func (s *attestSuite) AValidContentHash() {
+	s.ch = &data.ContentHash{
+		Graph: &data.ContentHash_Graph{
+			Hash:                      make([]byte, 32),
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		},
 	}
 }
 
-func (s *attestSuite) TheDataHasBeenAnchored() {
-	iri, err := s.chg.ToIRI()
+func (s *attestSuite) AnInvalidContentHash() {
+	s.ch = &data.ContentHash{
+		Graph: &data.ContentHash_Graph{
+			Hash:                      make([]byte, 16),
+			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		},
+	}
+}
+
+func (s *attestSuite) TheDataHasBeenAnchoredAtBlockTime(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
 	require.NoError(s.t, err)
 
-	id := s.server.iriHasher.CreateID([]byte(iri), 0)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
-	err = s.server.stateStore.DataIDTable().Insert(s.ctx, &api.DataID{
-		Id:  id,
-		Iri: iri,
+	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
+		Sender: s.attestor.String(),
+		Hash:   s.ch,
 	})
-	require.NoError(s.t, err)
-
-	err = s.server.stateStore.DataAnchorTable().Insert(s.ctx, &api.DataAnchor{
-		Id:        id,
-		Timestamp: &timestamppb.Timestamp{},
-	})
-	require.NoError(s.t, err)
 }
 
 func (s *attestSuite) TheDataHasNotBeenAnchored() {
-	// skip
+	// no-op
 }
 
-func (s *attestSuite) AUserAttemptsToAttestToTheData() {
+func (s *attestSuite) AUserAttemptsToAttestToTheDataAtBlockTime(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor: s.attestor.String(),
-		Hashes:   []*data.ContentHash_Graph{s.chg},
+		Hashes:   []*data.ContentHash_Graph{s.ch.GetGraph()},
 	})
 }
 
 func (s *attestSuite) TheDataIsAttestedTo() {
 	require.NoError(s.t, s.err)
+}
 
-	iri, err := s.chg.ToIRI()
+func (s *attestSuite) TheDataIsNotAttestedTo() {
+	require.Error(s.t, s.err)
+}
+
+func (s *attestSuite) ADataIdEntryIsCreated() {
+	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
 
 	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
 	require.NoError(s.t, err)
+	require.NotNil(s.t, dataId)
 
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId.Id, s.attestor)
-	require.NoError(s.t, err)
-	require.Equal(s.t, s.attestor.Bytes(), dataAttestor.Attestor)
-	require.Equal(s.t, s.sdkCtx.BlockTime(), dataAttestor.Timestamp.AsTime())
+	s.id = dataId.Id
 }
 
-func (s *attestSuite) TheDataIsNotAttestedTo() {
-	require.Error(s.t, s.err)
+func (s *attestSuite) ADataAnchorEntryIsCreatedAndTheTimestampIsEqualTo(a string) {
+	anchorTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, s.id)
+	require.NoError(s.t, err)
+	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
+}
+
+func (s *attestSuite) ADataAttestorEntryIsCreatedAndTheTimestampIsEqualTo(a string) {
+	attestTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, s.id, s.attestor)
+	require.NoError(s.t, err)
+	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
 }

@@ -25,7 +25,14 @@ func TestDefineResolver(t *testing.T) {
 func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.manager = s.addrs[0]
+}
+
+func (s *defineResolverSuite) AValidResolverUrl() {
 	s.resolverUrl = "https://foo.bar"
+}
+
+func (s *defineResolverSuite) AnInvalidResolverUrl() {
+	s.resolverUrl = "foo.bar"
 }
 
 func (s *defineResolverSuite) AUserAttemptsToDefineAResolver() {
@@ -35,6 +42,16 @@ func (s *defineResolverSuite) AUserAttemptsToDefineAResolver() {
 	})
 }
 
-func (s *defineResolverSuite) TheResolverIsCreated() {
+func (s *defineResolverSuite) TheResolverIsDefined() {
 	require.NoError(s.t, s.err)
+}
+
+func (s *defineResolverSuite) TheResolverIsNotDefined() {
+	require.Error(s.t, s.err)
+}
+
+func (s *defineResolverSuite) AResolverInfoEntryIsCreatedAndTheManagerIsEqualToTheUserAddress() {
+	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, 1)
+	require.NoError(s.t, err)
+	require.Equal(s.t, s.manager.Bytes(), dataResolver.Manager)
 }

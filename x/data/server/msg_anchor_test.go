@@ -16,6 +16,7 @@ type anchorSuite struct {
 	ch     *data.ContentHash
 	sender sdk.AccAddress
 	err    error
+	id     []byte
 }
 
 func TestAnchor(t *testing.T) {
@@ -27,7 +28,7 @@ func (s *anchorSuite) Before(t gocuke.TestingT) {
 	s.sender = s.addrs[0]
 }
 
-func (s *anchorSuite) ARawDataContentHash() {
+func (s *anchorSuite) AValidContentHash() {
 	s.ch = &data.ContentHash{
 		Raw: &data.ContentHash_Raw{
 			Hash:            make([]byte, 32),
@@ -36,23 +37,20 @@ func (s *anchorSuite) ARawDataContentHash() {
 	}
 }
 
-func (s *anchorSuite) AGraphDataContentHash() {
+func (s *anchorSuite) AnInvalidContentHash() {
 	s.ch = &data.ContentHash{
-		Graph: &data.ContentHash_Graph{
-			Hash:                      make([]byte, 32),
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+		Raw: &data.ContentHash_Raw{
+			Hash:            make([]byte, 16),
+			DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		},
 	}
 }
 
 func (s *anchorSuite) AUserAttemptsToAnchorTheData() {
-	res, err := s.server.Anchor(s.ctx, &data.MsgAnchor{
+	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender: s.sender.String(),
 		Hash:   s.ch,
 	})
-	require.NoError(s.t, err)
-	require.NotNil(s.t, res)
 }
 
 func (s *anchorSuite) TheDataIsAnchored() {
@@ -63,7 +61,7 @@ func (s *anchorSuite) TheDataIsNotAnchored() {
 	require.Error(s.t, s.err)
 }
 
-func (s *anchorSuite) TheAnchoredDataIsEqualToTheDataSubmitted() {
+func (s *anchorSuite) ADataIdEntryIsCreated() {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -72,10 +70,12 @@ func (s *anchorSuite) TheAnchoredDataIsEqualToTheDataSubmitted() {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataId)
 
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
+	s.id = dataId.Id
+}
+
+func (s *anchorSuite) ADataAnchorEntryIsCreatedAndTheTimestampIsEqualToTheBlockTime() {
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
-
-	require.Equal(s.t, dataId.Id, dataAnchor.Id)
 	require.Equal(s.t, s.sdkCtx.BlockTime(), dataAnchor.Timestamp.AsTime())
 }

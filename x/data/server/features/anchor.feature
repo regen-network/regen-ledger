@@ -1,13 +1,13 @@
 Feature: Anchor
 
-  Scenario: raw data is anchored
-    Given a raw data content hash
+  Scenario: data is anchored when provided a valid content hash
+    Given a valid content hash
     When a user attempts to anchor the data
     Then the data is anchored
-    And the anchored data is equal to the data submitted
+    And a data id entry is created
+    And a data anchor entry is created and the timestamp is equal to the block time
 
-  Scenario: graph data is anchored
-    Given a graph data content hash
+  Scenario: data is not anchored when provided an invalid content hash
+    Given an invalid content hash
     When a user attempts to anchor the data
-    Then the data is anchored
-    And the anchored data is equal to the data submitted
+    Then the data is not anchored
