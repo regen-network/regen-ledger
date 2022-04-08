@@ -17,8 +17,8 @@ func TestSend_Valid(t *testing.T) {
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
@@ -65,8 +65,8 @@ func TestSend_Errors(t *testing.T) {
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 
 	// test sending more than user balance

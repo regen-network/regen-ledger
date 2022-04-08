@@ -17,8 +17,8 @@ func TestCancel_Valid(t *testing.T) {
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// Supply -> tradable: 10.5 , retired: 10.5
@@ -54,8 +54,8 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
@@ -77,8 +77,8 @@ func TestCancel_BadPrecision(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
@@ -99,8 +99,8 @@ func TestCancel_InvalidBatch(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(foo interface{}, bar interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{

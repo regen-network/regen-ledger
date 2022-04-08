@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -13,7 +13,7 @@ import (
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
+func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
@@ -53,9 +53,9 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 
 // GetCreditTypes fetches the credit type slice from param state.
 func GetCreditTypes(sdkCtx sdk.Context, pk ecocredit.ParamKeeper) []*core.CreditType {
-	var params core.Params
-	pk.Get(sdkCtx, core.KeyCreditTypes, &params)
-	return params.CreditTypes
+	var creditTypes []*core.CreditType
+	pk.Get(sdkCtx, core.KeyCreditTypes, &creditTypes)
+	return creditTypes
 }
 
 // GetCreditTypeMap fetches credit types from param state and converts the slice to a map with the
@@ -67,4 +67,10 @@ func GetCreditTypeMap(sdkCtx sdk.Context, pk ecocredit.ParamKeeper) map[string]*
 		ctMap[ct.Abbreviation] = ct
 	}
 	return ctMap
+}
+
+// GetClassFromBatchDenom fetches ClassInfo from the classID embedded in batch denom.
+func GetClassFromBatchDenom(ctx context.Context, batchDenom string, store api.StateStore) (*api.ClassInfo, error) {
+	classId := core.GetClassIdFromBatchDenom(batchDenom)
+	return store.ClassInfoTable().GetByName(ctx, classId)
 }

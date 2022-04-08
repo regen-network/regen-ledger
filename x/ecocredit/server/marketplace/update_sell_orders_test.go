@@ -26,9 +26,11 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(6)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(6)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -78,9 +80,11 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(6)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(6)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -125,9 +129,11 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(4)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(4)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -154,9 +160,11 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}, {Denom: "ubar"}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(5)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(5)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -207,9 +215,11 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	future := time.Date(2077, 1, 1, 1, 1, 1, 1, time.Local)
@@ -261,9 +271,11 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{

@@ -22,9 +22,11 @@ func TestSell_CancelOrder(t *testing.T) {
 	expir := time.Now()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -59,9 +61,11 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()

@@ -2,9 +2,11 @@ package marketplace
 
 import (
 	"context"
+	"fmt"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,15 +27,20 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	}
 
 	sellOrderIds := make([]uint64, len(req.Orders))
-
+	ctMap := utils.GetCreditTypeMap(sdkCtx, k.paramsKeeper)
+	allowedDenomSet := k.getAllowedDenomSet(sdkCtx)
 	for i, order := range req.Orders {
 		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+		class, err := utils.GetClassFromBatchDenom(ctx, batch.BatchDenom, k.coreStore)
 		if err != nil {
 			return nil, err
+		}
+		ct, ok := ctMap[class.CreditType]
+		if !ok {
+			return nil, fmt.Errorf("could not find credit type %s", class.CreditType)
 		}
 		marketId, err := k.getOrCreateMarketId(ctx, ct.Abbreviation, order.AskPrice.Denom)
 		if err != nil {
@@ -52,8 +59,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 
-		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
+		if _, ok := allowedDenomSet[order.AskPrice.Denom]; !ok {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
+
 		}
 
 		var expiration *timestamppb.Timestamp

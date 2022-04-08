@@ -23,9 +23,11 @@ func TestSell_Valid(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(4)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(4)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -71,9 +73,11 @@ func TestSell_CreatesMarket(t *testing.T) {
 	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: newCoin.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: newCoin.Denom}}
 	}).Times(2)
 
 	// market shouldn't exist before sell call
@@ -103,9 +107,11 @@ func TestSell_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	// invalid batch
@@ -144,9 +150,11 @@ func TestSell_InvalidDenom(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	sellTime := time.Now()

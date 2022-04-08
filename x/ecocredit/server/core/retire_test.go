@@ -22,8 +22,8 @@ func TestRetire_Valid(t *testing.T) {
 	// retired: 10.5
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// starting balance -> 10.5 tradable, 10.5 retired
@@ -57,8 +57,8 @@ func TestRetire_Invalid(t *testing.T) {
 	_, _, batchDenom := s.setupClassProjectBatch(t)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(3)
 
 	// invalid batch denom

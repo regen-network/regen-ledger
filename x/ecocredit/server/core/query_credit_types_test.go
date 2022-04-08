@@ -13,8 +13,8 @@ func TestQuery_CreditTypes(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(any interface{}, any2 interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "foobar", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(any interface{}, any2 interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "foobar", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	// base query should return all types

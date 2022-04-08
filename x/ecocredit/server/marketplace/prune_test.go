@@ -20,9 +20,11 @@ func TestSell_Prune(t *testing.T) {
 	s := setupBase(t)
 	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{&creditType}
+	}).Times(4)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.AskDenom) {
+		*p = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(4)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")

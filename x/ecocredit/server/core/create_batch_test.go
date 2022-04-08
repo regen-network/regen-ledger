@@ -27,8 +27,8 @@ func TestCreateBatch_Valid(t *testing.T) {
 	s.ctx = types.WrapSDKContext(s.sdkCtx)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()
@@ -90,8 +90,8 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *[]*core.CreditType) {
+		*p = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
 	start, end := time.Now(), time.Now()
