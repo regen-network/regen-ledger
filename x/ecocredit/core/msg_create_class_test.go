@@ -113,6 +113,16 @@ func TestMsgCreateClass(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid duplicate issuer": {
+			src: MsgCreateClass{
+				Admin:            addr1.String(),
+				Issuers:          []string{addr1.String(), addr2.String(), addr1.String()},
+				CreditTypeAbbrev: "C",
+				Metadata:         "hello",
+				Fee:              validFee,
+			},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {

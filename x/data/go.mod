@@ -14,7 +14,7 @@ require (
 	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
 	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
