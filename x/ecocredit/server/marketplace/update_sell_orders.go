@@ -25,6 +25,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		return nil, err
 	}
 
+	allowedDenomSet := k.getAllowedDenomSet(sdk.UnwrapSDKContext(ctx))
 	for _, update := range req.Updates {
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
@@ -34,7 +35,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		if !seller.Equals(sellOrderAddr) {
 			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Owner, sellOrderAddr.String())
 		}
-		if err = k.applySellOrderUpdates(ctx, sellOrder, update); err != nil {
+		if err = k.applySellOrderUpdates(ctx, sellOrder, update, allowedDenomSet); err != nil {
 			return nil, err
 		}
 	}
@@ -42,7 +43,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 }
 
 // applySellOrderUpdates applies the updates to the order.
-func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
+func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update, denomSet map[string]struct{}) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *core.CreditType
 	event := marketplace.EventUpdateSellOrder{}
@@ -55,7 +56,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		if err != nil {
 			return err
 		}
-		if !isDenomAllowed(sdkCtx, update.NewAskPrice.Denom, k.paramsKeeper) {
+		if _, ok := denomSet[update.NewAskPrice.Denom]; !ok {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s cannot be used in sell orders", update.NewAskPrice.Denom)
 		}
 		if market.BankDenom != update.NewAskPrice.Denom {

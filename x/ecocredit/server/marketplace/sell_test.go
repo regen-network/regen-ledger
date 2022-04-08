@@ -23,10 +23,12 @@ func TestSell_Valid(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(4)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(1)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -71,10 +73,12 @@ func TestSell_CreatesMarket(t *testing.T) {
 	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: newCoin.Denom}}
-	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: newCoin.Denom}}
+	}).Times(1)
 
 	// market shouldn't exist before sell call
 	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
@@ -95,7 +99,6 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.Equal(t, true, has)
 }
 
-// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
@@ -103,10 +106,12 @@ func TestSell_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyCreditTypes, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(3)
+	s.paramsKeeper.EXPECT().Get(gmAny, core.KeyAllowedAskDenoms, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 
 	// invalid batch
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -144,10 +149,12 @@ func TestSell_InvalidDenom(t *testing.T) {
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, ct *[]*core.CreditType) {
+		*ct = []*core.CreditType{&creditType}
+	}).Times(1)
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, aad *[]*core.AskDenom) {
+		*aad = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(1)
 
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
