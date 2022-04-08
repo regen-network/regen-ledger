@@ -2,6 +2,7 @@ package basket
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -13,6 +14,7 @@ import (
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -35,6 +37,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	ctMap := utils.GetCreditTypeMap(sdkCtx, k.paramsKeeper)
 	for _, credit := range req.Credits {
 		// get credit batch info
 		batchInfo, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
@@ -43,11 +46,16 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		}
 
 		// validate that the credit batch adheres to the basket's specifications
-		if err := k.canBasketAcceptCredit(ctx, basket, batchInfo); err != nil {
+		creditTypeAbbrev, err := k.canBasketAcceptCredit(ctx, basket, batchInfo)
+		if err != nil {
 			return nil, err
 		}
+		creditType, ok := ctMap[creditTypeAbbrev]
+		if !ok {
+			return nil, fmt.Errorf("could not find credit type %s", creditTypeAbbrev)
+		}
 		// get the amount of credits in dec
-		amt, err := regenmath.NewPositiveFixedDecFromString(credit.Amount, basket.Exponent)
+		amt, err := regenmath.NewPositiveFixedDecFromString(credit.Amount, creditType.Precision)
 		if err != nil {
 			return nil, err
 		}
@@ -94,7 +102,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecoApi.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecoApi.BatchInfo) (string, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -115,7 +123,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 
 		startDate := batchInfo.StartDate.AsTime()
 		if startDate.Before(minStartDate) {
-			return errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
+			return "", errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
 				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.AsTime().String(), minStartDate.String())
 		}
 
@@ -126,22 +134,22 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	// check credit class match
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if !found {
-		return errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
+		return "", errInvalidReq.Wrapf("credit class %s is not allowed in this basket", classId)
 	}
 
 	// check credit type match
 	class, err := k.coreStore.ClassInfoTable().GetByName(ctx, classId)
 	if err != nil {
-		return err
+		return "", err
 	}
 	if class.CreditType != basket.CreditTypeAbbrev {
-		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditType)
+		return "", errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditType)
 	}
 
-	return nil
+	return class.CreditType, nil
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance

@@ -26,9 +26,9 @@ func TestFeeToLow(t *testing.T) {
 
 	// no fee specified should fail
 	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.BasketFee = minFee
-	}).Times(2)
+	}).Times(4)
 
 	// no fee
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -48,10 +48,10 @@ func TestInvalidCreditType(t *testing.T) {
 	s := setupBase(t)
 	gmAny := gomock.Any()
 	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{basketFee}
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(2)
+	}).Times(4)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// non-existent credit type should fail
@@ -90,10 +90,10 @@ func TestDuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{fee}
 		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
-	}).Times(1)
+	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 
 	_, err = s.k.Create(s.ctx, &mc)
@@ -109,10 +109,10 @@ func TestInvalidClass(t *testing.T) {
 	}))
 	mockAny := gomock.Any()
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
-	s.paramsKeeper.EXPECT().GetParamSet(mockAny, mockAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(mockAny, mockAny, mockAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.BasketFee = basketFee
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(2)
+	}).Times(4)
 	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
 
 	// class doesn't exist
@@ -170,10 +170,10 @@ func TestValidBasket(t *testing.T) {
 		Metadata:   "",
 		CreditType: "C",
 	}))
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, p *core.Params) {
 		p.BasketFee = fee
 		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
-	}).Times(1)
+	}).Times(2)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),

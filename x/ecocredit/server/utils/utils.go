@@ -8,21 +8,20 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
 func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
 	if err != nil {
 		return core.CreditType{}, err
 	}
-	p := &core.Params{}
-	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditType, p.CreditTypes)
+	creditTypes := GetCreditTypes(sdkCtx, k)
+	return GetCreditType(classInfo.CreditType, creditTypes)
 }
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
@@ -50,4 +49,22 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
+}
+
+// GetCreditTypes fetches the credit type slice from param state.
+func GetCreditTypes(sdkCtx sdk.Context, pk ecocredit.ParamKeeper) []*core.CreditType {
+	var params core.Params
+	pk.Get(sdkCtx, core.KeyCreditTypes, &params)
+	return params.CreditTypes
+}
+
+// GetCreditTypeMap fetches credit types from param state and converts the slice to a map with the
+// credit type abbreviation as the key.
+func GetCreditTypeMap(sdkCtx sdk.Context, pk ecocredit.ParamKeeper) map[string]*core.CreditType {
+	cTypes := GetCreditTypes(sdkCtx, pk)
+	ctMap := make(map[string]*core.CreditType, len(cTypes))
+	for _, ct := range cTypes {
+		ctMap[ct.Abbreviation] = ct
+	}
+	return ctMap
 }
