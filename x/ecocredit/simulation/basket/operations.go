@@ -165,6 +165,10 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
+			if strings.Contains(err.Error(), "basket specified credit type") {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
+			}
+
 			if strings.Contains(err.Error(), "unique key violation") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}

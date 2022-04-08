@@ -767,8 +767,8 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, "empty issuers"), nil, nil
 		}
 
-		for _, i := range classIssuers {
-			if utils.Contains(issuers, i) {
+		for _, i := range issuers {
+			if utils.Contains(classIssuers, i) {
 				removeIssuers = append(removeIssuers, i)
 			} else {
 				addIssuers = append(addIssuers, i)
