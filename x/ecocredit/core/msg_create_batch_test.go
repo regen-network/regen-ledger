@@ -4,15 +4,16 @@ import (
 	"testing"
 	"time"
 
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgCreateBatch(t *testing.T) {
 	t.Parallel()
-	issuer := genAddress()
-	addr2 := genAddress()
+	issuer := testutil.GenAddress()
+	addr2 := testutil.GenAddress()
 
 	startDate := time.Unix(10000, 10000).UTC()
 	endDate := time.Unix(10000, 10050).UTC()

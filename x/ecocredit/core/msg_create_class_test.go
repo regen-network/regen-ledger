@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
@@ -19,8 +19,8 @@ var (
 func TestMsgCreateClass(t *testing.T) {
 	t.Parallel()
 
-	_, _, addr1 := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
+	addr1 := testutil.GenAddress()
+	addr2 := testutil.GenAddress()
 
 	validFee := &sdk.Coin{
 		Denom:  "regen",
@@ -33,8 +33,8 @@ func TestMsgCreateClass(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
-				Issuers:          []string{addr1.String(), addr2.String()},
+				Admin:            addr1,
+				Issuers:          []string{addr1, addr2},
 				CreditTypeAbbrev: "C",
 				Metadata:         "hello",
 				Fee:              validFee,
@@ -43,9 +43,9 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"valid msg without metadata": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1.String(), addr2.String()},
+				Issuers:          []string{addr1, addr2},
 				Fee:              validFee,
 			},
 			expErr: false,
@@ -56,14 +56,14 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid without issuers": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{"xyz", "xyz1"},
 			},
@@ -73,31 +73,31 @@ func TestMsgCreateClass(t *testing.T) {
 			src: MsgCreateClass{
 				Admin:            "wrongAdmin",
 				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1.String(), addr2.String()},
+				Issuers:          []string{addr1, addr2},
 			},
 			expErr: true,
 		},
 		"invalid with no credit type": {
 			src: MsgCreateClass{
-				Admin:   addr1.String(),
-				Issuers: []string{addr1.String(), addr2.String()},
+				Admin:   addr1,
+				Issuers: []string{addr1, addr2},
 			},
 			expErr: true,
 		},
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1.String(), addr2.String()},
+				Issuers:          []string{addr1, addr2},
 				Metadata:         simtypes.RandStringOfLength(r, 288),
 			},
 			expErr: true,
 		},
 		"invalid bad fee denom": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1.String()},
+				Issuers:          []string{addr1},
 				Metadata:         "foo",
 				Fee:              &sdk.Coin{Denom: "k,vm.zkx,cvzxk", Amount: sdk.NewInt(10)},
 			},
@@ -105,9 +105,9 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid bad fee amount": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
+				Admin:            addr1,
 				CreditTypeAbbrev: "C",
-				Issuers:          []string{addr1.String()},
+				Issuers:          []string{addr1},
 				Metadata:         "foo",
 				Fee:              &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(0)},
 			},

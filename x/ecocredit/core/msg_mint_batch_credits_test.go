@@ -1,17 +1,18 @@
 package core
 
 import (
-	fmt "fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/thanhpk/randstr"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgMintBatchCredits(t *testing.T) {
 	t.Parallel()
 	require := require.New(t)
-	issuer := genAddress()
+	issuer := testutil.GenAddress()
 
 	tcs := []struct {
 		name string
@@ -21,7 +22,8 @@ func TestMsgMintBatchCredits(t *testing.T) {
 		{"invalid issuer", MsgMintBatchCredits{Issuer: "invalid"}, "issuer"},
 		{"invalid denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}, "invalid denom"},
 		{"invalid note",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)}, "note must"},
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)},
+			"note must"},
 		{"missing origin tx",
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}, "origin_tx is required"},
 
@@ -37,4 +39,8 @@ func TestMsgMintBatchCredits(t *testing.T) {
 			require.ErrorContains(err, tc.err, tc.name)
 		}
 	}
+}
+
+func TestValidateOriginTx(t *testing.T) {
+
 }

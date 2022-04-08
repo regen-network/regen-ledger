@@ -5,13 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgRetire(t *testing.T) {
 	t.Parallel()
 
-	_, _, addr1 := testdata.KeyTestPubAddr()
+	addr1 := testutil.GenAddress()
 
 	tests := map[string]struct {
 		src    MsgRetire
@@ -19,7 +19,7 @@ func TestMsgRetire(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
@@ -57,14 +57,14 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without credits": {
 			src: MsgRetire{
-				Holder:   addr1.String(),
+				Holder:   addr1,
 				Location: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						Amount: "10",
@@ -76,7 +76,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without Credits.Amount": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
@@ -88,7 +88,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
@@ -101,7 +101,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg without location": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
@@ -113,7 +113,7 @@ func TestMsgRetire(t *testing.T) {
 		},
 		"invalid msg with wrong location": {
 			src: MsgRetire{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
