@@ -13,7 +13,7 @@ var _ legacytx.LegacyMsg = &MsgSealBatch{}
 // Route implements the LegacyMsg interface.
 func (m MsgSealBatch) Route() string { return sdk.MsgTypeURL(&m) }
 
-// Type implements the LegacyMsg interface.
+// Type implements the LegacyMsg interface. x
 func (m MsgSealBatch) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes implements the LegacyMsg interface.

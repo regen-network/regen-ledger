@@ -3,9 +3,8 @@ package core
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMsgSend(t *testing.T) {
