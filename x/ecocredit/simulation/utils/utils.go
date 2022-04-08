@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -101,11 +102,10 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 func GetRandomClass(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
 	classes, err := GetAndShuffleClasses(ctx, r, qryClient)
 	if err != nil {
+		if ormerrors.IsNotFound(err) {
+			return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit classes"), nil
+		}
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
-	}
-
-	if len(classes) == 0 {
-		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit class found"), nil
 	}
 
 	return classes[0], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
