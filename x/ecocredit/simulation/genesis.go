@@ -16,6 +16,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Simulation parameter constants
@@ -52,7 +53,24 @@ func genAllowListEnabled(r *rand.Rand) bool {
 	return r.Int63n(101) <= 90
 }
 
-func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
+func genCreditTypes(r *rand.Rand) []*core.CreditType {
+	return []*core.CreditType{
+		{
+			Name:         "carbon",
+			Abbreviation: "C",
+			Unit:         "metric ton CO2 equivalent",
+			Precision:    6,
+		},
+		{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "ton",
+			Precision:    6, // TODO: randomize precision, precision is currently locked to 6
+		},
+	}
+}
+
+func genCreditTypesLegacy(r *rand.Rand) []*ecocredit.CreditType {
 	return []*ecocredit.CreditType{
 		{
 			Name:         "carbon",
@@ -250,7 +268,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, typeCreditTypes, &creditTypes, simState.Rand,
-		func(r *rand.Rand) { creditTypes = genCreditTypes(r) },
+		func(r *rand.Rand) { creditTypes = genCreditTypesLegacy(r) },
 	)
 
 	// classes
