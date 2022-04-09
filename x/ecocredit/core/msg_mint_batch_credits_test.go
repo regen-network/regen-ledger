@@ -16,20 +16,22 @@ func TestMsgMintBatchCredits(t *testing.T) {
 
 	tcs := []struct {
 		name string
-		m    MsgMintBatchCredits
 		err  string
+		m    MsgMintBatchCredits
 	}{
-		{"invalid issuer", MsgMintBatchCredits{Issuer: "invalid"}, "issuer"},
-		{"invalid denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}, "invalid denom"},
-		{"invalid note",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)},
-			"note must"},
-		{"missing origin tx",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}, "origin_tx is required"},
+		{"invalid issuer", "issuer", MsgMintBatchCredits{Issuer: "invalid"}},
+		{"invalid denom", "invalid denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
+		{"invalid note", "note must",
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)}},
+		{"missing origin tx", "origin_tx is required",
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}},
 
-		{"good-no-note", MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx, Issuance: batchIssuances}, ""},
-		{"good-note", MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx, Note: randstr.String(300),
-			Issuance: batchIssuances}, ""},
+		{"good-no-note", "",
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx,
+				Issuance: batchIssuances}},
+		{"good-note", "",
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx,
+				Note: randstr.String(300), Issuance: batchIssuances}},
 	}
 	for _, tc := range tcs {
 		err := tc.m.ValidateBasic()
