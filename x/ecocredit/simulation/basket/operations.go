@@ -249,6 +249,10 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no class issuers"), nil, nil
 				}
 
+				if !utils.Contains(issuers, rBasket.Curator) {
+					continue
+				}
+
 				if ownerAddr == "" {
 					bechAddr, err := sdk.AccAddressFromBech32(issuers[0])
 					if err != nil {

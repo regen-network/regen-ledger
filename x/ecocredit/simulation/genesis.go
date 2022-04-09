@@ -50,7 +50,7 @@ func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []string {
 }
 
 func genAllowListEnabled(r *rand.Rand) bool {
-	return r.Int63n(101) <= 90
+	return r.Int63n(101) <= 20
 }
 
 func genCreditTypes(r *rand.Rand) []*core.CreditType {
