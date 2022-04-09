@@ -33,7 +33,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 		creditType, ok := creditTypeMap[class.CreditType]
 		if !ok {
-			return nil, fmt.Errorf("unexpected error: could not find credit type %s", class.CreditType)
+			return nil, sdkerrors.ErrNotFound.Wrapf("could not find credit type %s", class.CreditType)
 		}
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {

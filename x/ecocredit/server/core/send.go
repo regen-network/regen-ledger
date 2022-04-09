@@ -51,7 +51,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	class, err := k.getClassFromBatchDenom(ctx, batch.BatchDenom)
 	creditType, ok := creditTypeMap[class.CreditType]
 	if !ok {
-		return fmt.Errorf("could not find credit type %s", class.CreditType)
+		return sdkerrors.ErrNotFound.Wrapf("could not find credit type %s", class.CreditType)
 	}
 	precision := creditType.Precision
 

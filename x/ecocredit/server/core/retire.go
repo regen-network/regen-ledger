@@ -31,7 +31,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}
 		creditType, ok := ctMap[class.CreditType]
 		if !ok {
-			return nil, fmt.Errorf("could not find credit type %s", class.CreditType)
+			return nil, sdkerrors.ErrNotFound.Wrapf("could not find credit type %s", class.CreditType)
 		}
 		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
 		if err != nil {
