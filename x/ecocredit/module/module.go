@@ -150,7 +150,12 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return params.Validate()
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	return core.ValidateGenesis(jsonSource)
+
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
