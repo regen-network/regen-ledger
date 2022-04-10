@@ -39,11 +39,18 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.CreditTypeAbbrev) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
 	}
+
+	duplicateMap := make(map[string]bool)
 	for _, issuer := range m.Issuers {
 
 		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
+
+		if _, ok := duplicateMap[issuer]; ok {
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate issuer %s", issuer)
+		}
+		duplicateMap[issuer] = true
 	}
 
 	if m.Fee != nil {
