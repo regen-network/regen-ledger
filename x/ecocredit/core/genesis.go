@@ -2,12 +2,11 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
-	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	dbm "github.com/tendermint/tm-db"
 
@@ -19,49 +18,59 @@ import (
 // Validate performs basic validation for each credit-batch,
 // it returns an error if credit-batch tradable or retired supply
 // does not match the sum of all tradable or retired balances
-func ValidateGenesis(bz ormjson.ReadSource) error {
-	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	cms.MountStoreWithDB(sdk.NewKVStoreKey(ecocredit.ModuleName), sdk.StoreTypeIAVL, db)
-	if err := cms.LoadLatestVersion(); err != nil {
+func ValidateGenesis(data json.RawMessage, params Params) error {
+	if err := params.Validate(); err != nil {
 		return err
 	}
 
+	db := dbm.NewMemDB()
 	backend := ormtable.NewBackend(ormtable.BackendOptions{
 		CommitmentStore: db,
 		IndexStore:      db,
 	})
 
-	ormCtx := ormtable.WrapContextDefault(backend)
-	// sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	if err != nil {
 		return err
 	}
 
+	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(ormdb)
 	if err != nil {
 		return err
 	}
 
-	if err := ormdb.ImportJSON(ormCtx, bz); err != nil {
+	jsonSource, err := ormjson.NewRawMessageSource(data)
+	if err != nil {
+		return err
+	}
+
+	err = ormdb.ImportJSON(ormCtx, jsonSource)
+	if err != nil {
 		return err
 	}
 
 	abbrevToPrecision := make(map[string]uint32)
-	creditItr, err := ss.CreditTypeTable().List(ormCtx, api.CreditTypePrimaryKey{})
+	for _, ct := range params.CreditTypes {
+		abbrevToPrecision[ct.Abbreviation] = ct.Precision
+	}
+
+	cItr, err := ss.ClassInfoTable().List(ormCtx, api.ClassInfoPrimaryKey{})
 	if err != nil {
 		return err
 	}
-	defer creditItr.Close()
+	defer cItr.Close()
 
-	for creditItr.Next() {
-		cType, err := creditItr.Value()
+	// make sure credit type exist for class abbreviation in params
+	for cItr.Next() {
+		class, err := cItr.Value()
 		if err != nil {
 			return err
 		}
 
-		abbrevToPrecision[cType.Abbreviation] = cType.Precision
+		if _, ok := abbrevToPrecision[class.CreditType]; !ok {
+			return sdkerrors.ErrNotFound.Wrapf("credit type not exist for %s abbreviation", class.CreditType)
+		}
 	}
 
 	classIds := make(map[uint64]uint64) // map of projectID to classID
@@ -142,7 +151,7 @@ func ValidateGenesis(bz ormjson.ReadSource) error {
 			}
 		}
 		if batchSupply.RetiredAmount != "" {
-			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, decimalPlaces[batchSupply.BatchId])
+			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, decimalPlaces[batchSupply.BatchId])
 			if err != nil {
 				return err
 			}
@@ -182,6 +191,10 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 		balance, err := bbItr.Value()
 		if err != nil {
 			return err
+		}
+
+		if _, ok := decimalPlaces[balance.BatchId]; !ok {
+			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchId)
 		}
 
 		if balance.Tradable != "" {
