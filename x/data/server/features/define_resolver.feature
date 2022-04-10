@@ -1,13 +1,13 @@
 Feature: Define Resolver
 
-  Scenario: resolver is defined and a resolver info entry is created
+  Scenario: a resolver is defined when a resolver is unique
     Given a valid resolver url
-    When a user attempts to define a resolver
-    Then the resolver is defined
-    And a resolver info entry is created and the manager is equal to the user address
+    When alice attempts to define the resolver
+    Then no error is returned
+    And the resolver info entry exists and alice is the manager
 
-  Scenario: resolver is not defined when a resolver with the same url already exists
+  Scenario: an error is returned when a resolver with the same url has been defined
     Given a valid resolver url
-    And a resolver entry with the same url already exists
-    When a user attempts to define a resolver
-    Then the resolver is not defined
+    And alice has defined the resolver
+    When alice attempts to define the resolver
+    Then an error is returned
