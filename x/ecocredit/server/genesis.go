@@ -65,30 +65,10 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, err
 	}
 
-	err = MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	err = core.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		return nil, err
 	}
 
 	return jsonTarget.JSON()
-}
-
-// MergeParamsIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeParamsIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
-	if err != nil {
-		return err
-	}
-
-	bz, err := cdc.MarshalJSON(message)
-	if err != nil {
-		return err
-	}
-
-	_, err = w.Write(bz)
-	if err != nil {
-		return err
-	}
-
-	return w.Close()
 }

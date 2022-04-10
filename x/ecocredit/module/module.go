@@ -107,7 +107,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	}
 
 	params := coretypes.DefaultParams()
-	err = server.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	err = core.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		panic(err)
 	}

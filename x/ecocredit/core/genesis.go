@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gogo/protobuf/proto"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -241,4 +244,24 @@ func validateSupply(calSupply, supply map[uint64]math.Dec) error {
 		}
 	}
 	return nil
+}
+
+// MergeParamsIntoTarget merges params message into the ormjson.WriteTarget.
+func MergeParamsIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
+	if err != nil {
+		return err
+	}
+
+	bz, err := cdc.MarshalJSON(message)
+	if err != nil {
+		return err
+	}
+
+	_, err = w.Write(bz)
+	if err != nil {
+		return err
+	}
+
+	return w.Close()
 }
