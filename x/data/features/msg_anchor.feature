@@ -1,6 +1,6 @@
 Feature: MsgAnchor
 
-  Scenario Outline: validate sender
+  Scenario Outline: sender must be valid
     Given a sender of "<sender>"
     And a valid content hash
     When the message is validated

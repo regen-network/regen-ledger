@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -28,10 +29,10 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			return nil, err
 		}
 
-		exists, err := s.stateStore.DataAttestorTable().Has(ctx, id, addr)
+		found, err := s.stateStore.DataAttestorTable().Has(ctx, id, addr)
 		if err != nil {
 			return nil, err
-		} else if exists {
+		} else if found {
 			// an attestor attesting to the same piece of date is a no-op
 			continue
 		}

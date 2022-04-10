@@ -1,6 +1,6 @@
 Feature: MsgRegisterResolver
 
-  Scenario Outline: validate manager address
+  Scenario Outline: manager must be valid
     Given a manager of "<manager>"
     And a valid resolver id
     And a valid list of data
@@ -13,7 +13,7 @@ Feature: MsgRegisterResolver
     | foo                                           | decoding bech32 failed: invalid bech32 string length 3: invalid address |
     | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                                                                         |
 
-  Scenario Outline: validate resolver id
+  Scenario Outline: resolver id must be valid
     Given a valid manager
     And a resolver id of "<id>"
     And a valid list of data

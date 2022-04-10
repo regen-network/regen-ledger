@@ -1,6 +1,6 @@
 Feature: MsgAttest
 
-  Scenario Outline: validate attestor
+  Scenario Outline: attestor must be valid
     Given an attestor of "<attestor>"
     And a valid content hash
     When the message is validated

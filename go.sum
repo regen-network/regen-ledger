@@ -846,8 +846,9 @@ github.com/regen-network/cosmos-proto v0.3.1 h1:rV7iM4SSFAagvy8RiyhiACbWEGotmqzy
 github.com/regen-network/cosmos-proto v0.3.1/go.mod h1:jO0sVX6a1B36nmE8C9xBFXpNwWejXC7QqCOnH3O0+YM=
 github.com/regen-network/cosmos-sdk v0.45.0-regen-1 h1:NCXi5HqcIg/dLW6n+niFJ5AmudgWxoODldrzW8fCWrg=
 github.com/regen-network/cosmos-sdk v0.45.0-regen-1/go.mod h1:3u9K1P67wuSfLNPtKF/E4y01/hb50xhqGYEtobkT56I=
-github.com/regen-network/gocuke v0.6.0 h1:33I/Omwnhav+1gRYJnb82AcYuPXz6/yhk3y//oEnxGw=
 github.com/regen-network/gocuke v0.6.0/go.mod h1:+i/R+pDBMLx1M7rL3fV7FC18gzyVTdGu3rNLUSOzHIo=
+github.com/regen-network/gocuke v0.6.1 h1:SEsXbZDg7/DXpy/hPsLbVvfdObpK13PsJ8Pq3ko+S4s=
+github.com/regen-network/gocuke v0.6.1/go.mod h1:+i/R+pDBMLx1M7rL3fV7FC18gzyVTdGu3rNLUSOzHIo=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
 github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=

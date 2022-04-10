@@ -1,6 +1,6 @@
 Feature: MsgDefineResolver
 
-  Scenario Outline: validate manager
+  Scenario Outline: manager must be valid
     Given a manager of "<manager>"
     And a valid resolver url
     When the message is validated
@@ -12,7 +12,7 @@ Feature: MsgDefineResolver
     | foo                                           | decoding bech32 failed: invalid bech32 string length 3: invalid address |
     | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                                                                         |
 
-  Scenario Outline: validate resolver url
+  Scenario Outline: resolver url must be valid
     Given a valid manager
     And a resolver url of "<url>"
     When the message is validated

@@ -10,9 +10,9 @@ import (
 	datamodule "github.com/regen-network/regen-ledger/x/data/module"
 )
 
-func TestServer(t *testing.T) {
+func TestGenesis(t *testing.T) {
 	ff := server.NewFixtureFactory(t, 2)
 	ff.SetModules([]module.Module{datamodule.Module{}})
-	s := NewIntegrationTestSuite(ff)
+	s := NewGenesisTestSuite(ff)
 	suite.Run(t, s)
 }

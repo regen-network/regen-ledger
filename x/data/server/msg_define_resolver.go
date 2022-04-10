@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -21,7 +22,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		Manager: manager,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("resolver with url %s already exists", msg.ResolverUrl)
 	}
 
 	return &data.MsgDefineResolverResponse{ResolverId: id}, nil

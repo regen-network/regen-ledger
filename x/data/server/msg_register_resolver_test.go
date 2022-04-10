@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/regen-network/gocuke"
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -86,12 +86,12 @@ func (s *registerResolverSuite) BobAttemptsToRegisterDataToTheResolver() {
 	})
 }
 
-func (s *registerResolverSuite) NoErrorIsReturned() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *registerResolverSuite) AnErrorIsReturned() {
-	require.Error(s.t, s.err)
+func (s *registerResolverSuite) AnErrorOf(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
+	}
 }
 
 func (s *registerResolverSuite) TheDataAnchorEntryExists() {
@@ -120,13 +120,4 @@ func (s *registerResolverSuite) TheDataResolverEntryExists() {
 	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId.Id, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
-}
-
-func (s *registerResolverSuite) AResolverWithIdDoesNotExist(a string) {
-	id, err := strconv.ParseUint(a, 10, 32)
-	require.NoError(s.t, err)
-
-	found, err := s.server.stateStore.ResolverInfoTable().Has(s.ctx, id)
-	require.NoError(s.t, err)
-	require.False(s.t, found)
 }

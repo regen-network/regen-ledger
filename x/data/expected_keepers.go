@@ -17,7 +17,7 @@ type AccountKeeper interface {
 	SetAccount(sdk.Context, authtypes.AccountI)
 }
 
-// BankKeeper defines the expected interface needed to send coins and retrieve account balances.
+// BankKeeper defines the expected interface needed to burn and send coins and to retrieve account balances.
 type BankKeeper interface {
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins

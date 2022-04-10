@@ -4,9 +4,10 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -74,8 +75,12 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 	})
 }
 
-func (s *attestSuite) NoErrorIsReturned() {
-	require.NoError(s.t, s.err)
+func (s *attestSuite) AnErrorOf(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
+	}
 }
 
 func (s *attestSuite) TheDataIdEntryExists() {

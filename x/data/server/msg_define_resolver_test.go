@@ -8,7 +8,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -28,42 +27,32 @@ func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addrs[0]
 }
 
-func (s *defineResolverSuite) AValidResolverUrl() {
-	s.url = "https://foo.bar"
-}
-
-func (s *defineResolverSuite) AResolverEntryWithTheSameUrlAlreadyExists() {
-	err := s.server.stateStore.ResolverInfoTable().Insert(s.ctx, &api.ResolverInfo{
-		Url: s.url,
-	})
-	require.NoError(s.t, err)
-}
-
-func (s *defineResolverSuite) AliceHasDefinedTheResolver() {
+func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
-		ResolverUrl: s.url,
+		ResolverUrl: a,
 	})
 	require.NoError(s.t, err)
 }
 
-func (s *defineResolverSuite) AliceAttemptsToDefineTheResolver() {
+func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
-		ResolverUrl: s.url,
+		ResolverUrl: a,
 	})
 }
 
-func (s *defineResolverSuite) NoErrorIsReturned() {
-	require.NoError(s.t, s.err)
+func (s *defineResolverSuite) AnErrorOf(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
+	}
 }
 
-func (s *defineResolverSuite) AnErrorIsReturned() {
-	require.Error(s.t, s.err)
-}
-
-func (s *defineResolverSuite) TheResolverInfoEntryExistsAndAliceIsTheManager() {
+func (s *defineResolverSuite) TheResolverInfoEntryExistsWithUrl(a string) {
 	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, 1)
 	require.NoError(s.t, err)
+	require.Equal(s.t, a, dataResolver.Url)
 	require.Equal(s.t, s.alice.Bytes(), dataResolver.Manager)
 }

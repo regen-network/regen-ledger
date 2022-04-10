@@ -62,8 +62,12 @@ func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
 	})
 }
 
-func (s *anchorSuite) NoErrorIsReturned() {
-	require.NoError(s.t, s.err)
+func (s *anchorSuite) AnErrorOf(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
+	}
 }
 
 func (s *anchorSuite) TheDataIdEntryExists() {
