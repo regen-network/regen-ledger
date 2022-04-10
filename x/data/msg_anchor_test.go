@@ -1,7 +1,6 @@
 package data
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -23,20 +22,7 @@ func (s *msgAnchorSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgAnchor{}
 }
 
-func (s *msgAnchorSuite) ASenderOf(a string) {
-	s.msg.Sender = a
-}
-
-func (s *msgAnchorSuite) AContentHashOf(a string) {
-	s.msg.Hash = &ContentHash{
-		Raw: &ContentHash_Raw{
-			Hash:            make([]byte, 32),
-			DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		},
-	}
-}
-
-func (s *msgAnchorSuite) AValidSenderAddress() {
+func (s *msgAnchorSuite) AValidSender() {
 	s.msg.Sender = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
 }
 
@@ -49,19 +35,12 @@ func (s *msgAnchorSuite) AValidContentHash() {
 	}
 }
 
-func (s *msgAnchorSuite) ARawContentHashOfBytesLengthAndDigestAlgorithm(a string, b string) {
-	length, err := strconv.Atoi(a)
-	require.NoError(s.t, err)
+func (s *msgAnchorSuite) ASenderOf(a string) {
+	s.msg.Sender = a
+}
 
-	digest, err := strconv.Atoi(b)
-	require.NoError(s.t, err)
-
-	s.msg.Hash = &ContentHash{
-		Raw: &ContentHash_Raw{
-			Hash:            make([]byte, length),
-			DigestAlgorithm: DigestAlgorithm(digest),
-		},
-	}
+func (s *msgAnchorSuite) AnEmptyContentHash() {
+	s.msg.Hash = nil
 }
 
 func (s *msgAnchorSuite) TheMessageIsValidated() {

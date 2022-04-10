@@ -1,8 +1,9 @@
-Feature: MsgDefineResolver
+Feature: MsgRegisterResolver
 
-  Scenario Outline: validate manager
+  Scenario Outline: validate manager address
     Given a manager of "<manager>"
-    And a valid resolver url
+    And a valid resolver id
+    And a valid list of data
     When the message is validated
     Then an error of "<error>"
 
@@ -12,13 +13,23 @@ Feature: MsgDefineResolver
     | foo                                           | decoding bech32 failed: invalid bech32 string length 3: invalid address |
     | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                                                                         |
 
-  Scenario Outline: validate resolver url
+  Scenario Outline: validate resolver id
     Given a valid manager
-    And a resolver url of "<url>"
+    And a resolver id of "<id>"
+    And a valid list of data
     When the message is validated
     Then an error of "<error>"
 
     Examples:
-    | url             | error                                 |
-    | foo             | invalid resolver url: invalid request |
-    | https://foo.bar |                                       |
+    | id | error                                |
+    | 0  | invalid resolver id: invalid request |
+    | 1  |                                      |
+
+  Scenario: data cannot be empty
+    Given a valid manager
+    And a valid resolver id
+    And an empty list of data
+    When the message is validated
+    Then an error of "data cannot be empty: invalid request"
+
+  # Note: see ./types_content_hash.feature for content hash validation

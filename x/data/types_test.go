@@ -1,371 +1,93 @@
 package data
 
 import (
+	"strconv"
 	"testing"
 
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )
 
-func TestContentHash_Validate(t *testing.T) {
-	tests := []struct {
-		name string
-		ch   ContentHash
-		err  string
-	}{
-		{
-			"invalid empty",
-			ContentHash{},
-			"content hash must be one of raw type or graph type: invalid request",
-		},
-		{
-			"invalid both types",
-			ContentHash{
-				Raw: &ContentHash_Raw{
-					Hash:            make([]byte, 32),
-					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
-				},
-				Graph: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
-				},
-			},
-			"content hash must be one of raw type or graph type: invalid request",
-		},
-		{
-			"valid raw type",
-			ContentHash{
-				Raw: &ContentHash_Raw{
-					Hash:            make([]byte, 32),
-					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				},
-			},
-			"",
-		},
-		{
-			"valid graph type",
-			ContentHash{
-				Graph: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-				},
-			},
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.ch.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
+type contentHash struct {
+	t   gocuke.TestingT
+	ch  *ContentHash
+	err error
+}
+
+func TestTypes(t *testing.T) {
+	gocuke.NewRunner(t, &contentHash{}).Path("./features/types_content_hash.feature").Run()
+}
+
+func (s *contentHash) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
+func (s *contentHash) AnEmptyContentHash() {
+	s.ch = &ContentHash{}
+}
+
+func (s *contentHash) AnEmptyRawContentHash() {
+	s.ch = &ContentHash{
+		Raw: &ContentHash_Raw{},
 	}
 }
 
-func TestContentHash_Raw_Validate(t *testing.T) {
-	tests := []struct {
-		name string
-		chr  *ContentHash_Raw
-		err  string
-	}{
-		{
-			"invalid digest unknown",
-			&ContentHash_Raw{
-				DigestAlgorithm: -1,
-			},
-			"invalid or unknown data.DigestAlgorithm -1: invalid request",
-		},
-		{
-			"invalid digest unspecified",
-			&ContentHash_Raw{
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED,
-			},
-			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request",
-		},
-		{
-			"invalid hash empty",
-			&ContentHash_Raw{
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 0: invalid request",
-		},
-		{
-			"invalid hash length",
-			&ContentHash_Raw{
-				Hash:            make([]byte, 16),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 16: invalid request",
-		},
-		{
-			"invalid media unknown",
-			&ContentHash_Raw{
-				Hash:            make([]byte, 32),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       -1,
-			},
-			"unknown data.RawMediaType -1: invalid request",
-		},
-		{
-			"valid media unspecified",
-			&ContentHash_Raw{
-				Hash:            make([]byte, 32),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-			"",
-		},
-		{
-			"valid",
-			&ContentHash_Raw{
-				Hash:            make([]byte, 32),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				MediaType:       RawMediaType_RAW_MEDIA_TYPE_PDF,
-			},
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.chr.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
+func (s *contentHash) AnEmptyGraphContentHash() {
+	s.ch = &ContentHash{
+		Graph: &ContentHash_Graph{},
 	}
 }
 
-func TestContentHash_Graph_Validate(t *testing.T) {
-	tests := []struct {
-		name string
-		chg  *ContentHash_Graph
-		err  string
-	}{
-		{
-			"invalid digest unknown",
-			&ContentHash_Graph{
-				DigestAlgorithm: -1,
-			},
-			"invalid or unknown data.DigestAlgorithm -1: invalid request",
+func (s *contentHash) ARawContentHashOf(a string, b string, c string) {
+	length, err := strconv.Atoi(a)
+	require.NoError(s.t, err)
+
+	digest, err := strconv.Atoi(b)
+	require.NoError(s.t, err)
+
+	media, err := strconv.Atoi(c)
+	require.NoError(s.t, err)
+
+	s.ch = &ContentHash{
+		Raw: &ContentHash_Raw{
+			Hash:            make([]byte, length),
+			DigestAlgorithm: DigestAlgorithm(digest),
+			MediaType:       RawMediaType(media),
 		},
-		{
-			"invalid digest unspecified",
-			&ContentHash_Graph{
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED,
-			},
-			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request",
-		},
-		{
-			"invalid hash empty",
-			&ContentHash_Graph{
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 0: invalid request",
-		},
-		{
-			"invalid hash length",
-			&ContentHash_Graph{
-				Hash:            make([]byte, 16),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 16: invalid request",
-		},
-		{
-			"invalid canonical unknown",
-			&ContentHash_Graph{
-				Hash:                      make([]byte, 32),
-				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: -1,
-			},
-			"unknown data.GraphCanonicalizationAlgorithm -1: invalid request",
-		},
-		{
-			"invalid canonical unspecified",
-			&ContentHash_Graph{
-				Hash:                      make([]byte, 32),
-				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-			},
-			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
-		},
-		{
-			"invalid merkle unknown",
-			&ContentHash_Graph{
-				Hash:                      make([]byte, 32),
-				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-				MerkleTree:                -1,
-			},
-			"unknown data.GraphMerkleTree -1: invalid request",
-		},
-		{
-			"valid",
-			&ContentHash_Graph{
-				Hash:                      make([]byte, 32),
-				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			},
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.chg.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
 	}
 }
 
-func TestDigestAlgorithm_Validate(t *testing.T) {
-	tests := []struct {
-		name string
-		da   DigestAlgorithm
-		hash []byte
-		err  string
-	}{
-		{
-			"invalid unknown",
-			-1,
-			make([]byte, 32),
-			"invalid or unknown data.DigestAlgorithm -1: invalid request",
-		},
-		{
-			"invalid unspecified",
-			DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED,
-			make([]byte, 32),
-			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request",
-		},
-		{
-			"invalid hash length",
-			DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			make([]byte, 16),
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 16: invalid request",
-		},
+func (s *contentHash) AGraphContentHashOf(a string, b string, c string, d string) {
+	length, err := strconv.Atoi(a)
+	require.NoError(s.t, err)
 
-		{
-			"valid",
-			DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			make([]byte, 32),
-			"",
+	digest, err := strconv.Atoi(b)
+	require.NoError(s.t, err)
+
+	canon, err := strconv.Atoi(c)
+	require.NoError(s.t, err)
+
+	merkle, err := strconv.Atoi(d)
+	require.NoError(s.t, err)
+
+	s.ch = &ContentHash{
+		Graph: &ContentHash_Graph{
+			Hash:                      make([]byte, length),
+			DigestAlgorithm:           DigestAlgorithm(digest),
+			CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm(canon),
+			MerkleTree:                GraphMerkleTree(merkle),
 		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.da.Validate(tt.hash)
-			if err != nil {
-				require.EqualError(t, err, tt.err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
 	}
 }
 
-func TestRawMediaType_Validate(t *testing.T) {
-	tests := []struct {
-		name    string
-		rmt     RawMediaType
-		wantErr string
-	}{
-
-		{
-			"invalid unknown",
-			-1,
-			"unknown data.RawMediaType -1: invalid request",
-		},
-		{
-			"valid unspecified",
-			RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
-			"",
-		},
-		{
-			"valid",
-			RawMediaType_RAW_MEDIA_TYPE_PDF,
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.rmt.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *contentHash) TheContentHashIsValidated() {
+	s.err = s.ch.Validate()
 }
 
-func TestGraphCanonicalizationAlgorithm_Validate(t *testing.T) {
-	tests := []struct {
-		name    string
-		gca     GraphCanonicalizationAlgorithm
-		wantErr string
-	}{
-		{
-			"invalid unknown",
-			-1,
-			"unknown data.GraphCanonicalizationAlgorithm -1: invalid request",
-		},
-		{
-			"invalid unspecified",
-			GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
-		},
-		{
-			"valid",
-			GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.gca.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
-}
-
-func TestGraphMerkleTree_Validate(t *testing.T) {
-	tests := []struct {
-		name    string
-		gmt     GraphMerkleTree
-		wantErr string
-	}{
-		{
-			"invalid unknown",
-			-1,
-			"unknown data.GraphMerkleTree -1: invalid request",
-		},
-		{
-			"valid",
-			GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
-			"",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := tt.gmt.Validate()
-			if err != nil {
-				require.EqualError(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-			}
-		})
+func (s *contentHash) AnErrorOf(a string) {
+	if a == "" {
+		require.NoError(s.t, s.err)
+	} else {
+		require.EqualError(s.t, s.err, a)
 	}
 }

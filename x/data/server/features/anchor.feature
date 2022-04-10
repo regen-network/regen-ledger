@@ -14,3 +14,5 @@ Feature: Anchor
     Then no error is returned
     And the data id entry exists
     Then the data anchor entry exists and the timestamp is equal to "2020-01-01"
+
+  # Note: see ../features/types_content_hash.feature for content hash validation

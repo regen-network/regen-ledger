@@ -16,9 +16,11 @@ func (m *MsgAnchor) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
+
 	if m.Hash == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
 	}
+
 	return m.Hash.Validate()
 }
 
@@ -107,14 +109,21 @@ func (m *MsgRegisterResolver) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Manager); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
+
+	if m.ResolverId < 1 {
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid resolver id")
+	}
+
 	if len(m.Data) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("data cannot be empty")
 	}
+
 	for _, hash := range m.Data {
 		if err := hash.Validate(); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 

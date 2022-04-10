@@ -27,3 +27,5 @@ Feature: Register Resolver
     And alice has defined a resolver
     When bob attempts to register data to the resolver
     Then an error is returned
+
+  # Note: see ../features/types_content_hash.feature for content hash validation

@@ -11,3 +11,5 @@ Feature: Define Resolver
     And alice has defined the resolver
     When alice attempts to define the resolver
     Then an error is returned
+
+  # Note: see ../features/msg_define_resolver.feature for resolver url validation

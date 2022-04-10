@@ -22,20 +22,20 @@ func (s *msgDefineResolverSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgDefineResolver{}
 }
 
+func (s *msgDefineResolverSuite) AValidManager() {
+	s.msg.Manager = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+}
+
+func (s *msgDefineResolverSuite) AValidResolverUrl() {
+	s.msg.ResolverUrl = "https://foo.bar"
+}
+
 func (s *msgDefineResolverSuite) AManagerOf(a string) {
 	s.msg.Manager = a
 }
 
 func (s *msgDefineResolverSuite) AResolverUrlOf(a string) {
 	s.msg.ResolverUrl = a
-}
-
-func (s *msgDefineResolverSuite) AValidManagerAddress() {
-	s.msg.Manager = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
-}
-
-func (s *msgDefineResolverSuite) AValidResolverUrl() {
-	s.msg.ResolverUrl = "https://foo.bar"
 }
 
 func (s *msgDefineResolverSuite) TheMessageIsValidated() {
