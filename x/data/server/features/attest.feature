@@ -17,7 +17,7 @@ Feature: Attest
     And the data anchor entry exists and the timestamp is equal to "2020-01-01"
     And the data attestor entry exists and the timestamp is equal to "2020-01-01"
 
-  Scenario: an attestor entry is not updated when the same address attests to the same data
+  Scenario: data attestor entry is not updated when the same address attests to the same data
     Given a valid content hash
     And alice has attested to the data at block time "2020-01-01"
     When alice attempts to attest to the data at block time "2020-01-02"

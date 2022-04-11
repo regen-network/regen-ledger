@@ -20,5 +20,6 @@ Feature: MsgDefineResolver
 
     Examples:
     | url             | error                                 |
+    |                 | invalid resolver url: invalid request |
     | foo             | invalid resolver url: invalid request |
     | https://foo.bar |                                       |
