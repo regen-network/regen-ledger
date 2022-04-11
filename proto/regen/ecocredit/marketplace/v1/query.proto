@@ -39,25 +39,6 @@ service Query {
         "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
   }
 
-  // BuyOrder queries a buy order by its id
-  rpc BuyOrder(QueryBuyOrderRequest) returns (QueryBuyOrderResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/buy-orders/id/{buy_order_id}";
-  }
-
-  // BuyOrders queries a paginated list of all buy orders
-  rpc BuyOrders(QueryBuyOrdersRequest) returns (QueryBuyOrdersResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/buy-orders";
-  }
-
-  // BuyOrdersByAddress queries a paginated list of buy orders by creator
-  // address
-  rpc BuyOrdersByAddress(QueryBuyOrdersByAddressRequest)
-      returns (QueryBuyOrdersByAddressResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/buy-orders/address/{address}";
-  }
-
   // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
   // sell order
   rpc AllowedDenoms(QueryAllowedDenomsRequest)
@@ -131,55 +112,6 @@ message QuerySellOrdersByAddressResponse {
 
   // sell_orders is a list of sell orders.
   repeated SellOrder sell_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryBuyOrderRequest is the Query/BuyOrder request type.
-message QueryBuyOrderRequest {
-  // buy_order_id is the id of the buy order.
-  uint64 buy_order_id = 1;
-}
-
-// QueryBuyOrderResponse is the Query/BuyOrder response type.
-message QueryBuyOrderResponse {
-  // buy_order contains all information related to a buy order.
-  BuyOrder buy_order = 1;
-}
-
-// QueryBuyOrdersRequest is the Query/BuyOrders request type.
-message QueryBuyOrdersRequest {
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-// QueryBuyOrdersResponse is the Query/BuyOrders response type.
-message QueryBuyOrdersResponse {
-
-  // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
-message QueryBuyOrdersByAddressRequest {
-
-  // address of the buy order creator
-  string address = 1;
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response
-// type.
-message QueryBuyOrdersByAddressResponse {
-
-  // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
