@@ -2,7 +2,6 @@ package core_test
 
 import (
 	"encoding/json"
-	fmt "fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -145,7 +144,7 @@ func TestGenesisValidate(t *testing.T) {
 			},
 			defaultParams,
 			true,
-			formatCreditTypeParamError(core.CreditType{"badbadnotgood", "C", "metric ton CO2 equivalent", 6}).Error(),
+			"does not match param type",
 		},
 		{
 			"invalid: non-existent abbreviation",
@@ -232,10 +231,4 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
-}
-
-var defaultCreditTypes = core.DefaultParams().CreditTypes
-
-func formatCreditTypeParamError(ct core.CreditType) error {
-	return fmt.Errorf("credit type %+v does not match param type %+v: invalid type", ct, *defaultCreditTypes[0])
 }
