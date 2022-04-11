@@ -27,6 +27,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
+// TODO: uncomment after clean up legacy code https://github.com/regen-network/regen-ledger/issues/995
 // func TestServer(t *testing.T) {
 // 	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
 // 	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)

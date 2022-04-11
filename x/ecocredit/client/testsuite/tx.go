@@ -46,6 +46,7 @@ const (
 var validMetadataBytes = []byte{0x1}
 
 func RunCLITests(t *testing.T, cfg network.Config) {
+	// TODO: uncomment after CLI v1 integration https://github.com/regen-network/regen-ledger/issues/876
 	// suite.Run(t, NewIntegrationTestSuite(cfg))
 
 	// setup another cfg for testing ecocredit enabled class creators list.
