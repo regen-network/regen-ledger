@@ -61,11 +61,6 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			expiration = timestamppb.New(*order.Expiration)
 		}
 
-		var expiration *timestamppb.Timestamp
-		if order.Expiration != nil {
-			expiration = timestamppb.New(*order.Expiration)
-		}
-
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
 			BatchId:           batch.Id,

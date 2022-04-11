@@ -165,7 +165,7 @@ Required Flags:
 				return err
 			}
 
-			templateIssuance := &core.MsgCreateBatch_BatchIssuance{
+			templateIssuance := &core.BatchIssuance{
 				Recipient:          "recipient-address",
 				TradableAmount:     "tradable-amount",
 				RetiredAmount:      "retired-amount",
@@ -177,7 +177,7 @@ Required Flags:
 				return err
 			}
 
-			issuances := make([]*core.MsgCreateBatch_BatchIssuance, numIssuances)
+			issuances := make([]*core.BatchIssuance, numIssuances)
 			for i := range issuances {
 				issuances[i] = templateIssuance
 			}
@@ -260,7 +260,7 @@ Parameters:
                                     "retirement_location": "ST-UVW XY Z12",
                                   },
                                 ],
-                                "metadata":         "AQI=",
+                                "metadata":         "metadata",
                                 "start_date":       "1990-01-01",
                                 "end_date":         "1995-10-31",
                                 "project_location": "AB-CDE FG1 345",
