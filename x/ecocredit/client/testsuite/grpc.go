@@ -5,8 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func (s *IntegrationTestSuite) TestGetClasses() {
@@ -20,19 +19,19 @@ func (s *IntegrationTestSuite) TestGetClasses() {
 	}{
 		{
 			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1/class", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
 			true,
 			0,
 		},
 		{
 			"valid query",
-			fmt.Sprintf("%s/regen/ecocredit/v1/classes", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes", val.APIAddress),
 			false,
 			4,
 		},
 		{
 			"valid query pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1/classes?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes?pagination.limit=2", val.APIAddress),
 			false,
 			2,
 		},
@@ -45,7 +44,7 @@ func (s *IntegrationTestSuite) TestGetClasses() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var classes core.QueryClassesResponse
+			var classes ecocredit.QueryClassesResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &classes)
 
 			if tc.expErr {
@@ -71,21 +70,21 @@ func (s *IntegrationTestSuite) TestGetClass() {
 	}{
 		{
 			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1/class", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
 			true,
 			"Not Implemented",
 			"",
 		},
 		{
 			"class not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1/classes/%s", val.APIAddress, "C999"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C999"),
 			true,
 			"not found",
 			"",
 		},
 		{
 			"valid class-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1/classes/%s", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C01"),
 			false,
 			"",
 			"C01",
@@ -99,7 +98,7 @@ func (s *IntegrationTestSuite) TestGetClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var class core.QueryClassInfoResponse
+			var class ecocredit.QueryClassInfoResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &class)
 
 			if tc.expErr {
@@ -107,7 +106,7 @@ func (s *IntegrationTestSuite) TestGetClass() {
 			} else {
 				require.NoError(err)
 				require.NotNil(class.Info)
-				require.Contains(class.Info.Name, tc.classID)
+				require.Contains(class.Info.ClassId, tc.classID)
 			}
 		})
 	}
@@ -125,28 +124,28 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 	}{
 		{
 			"invalid project-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1/projects/%s/batches", val.APIAddress, "abc-d"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "abc-d"),
 			0,
 			true,
-			"not found",
+			"invalid project id",
 		},
 		{
 			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1/projects/%s/batches", val.APIAddress, "P02"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P02"),
 			0,
 			false,
 			"",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1/projects/%s/batches", val.APIAddress, "P01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P01"),
 			4,
 			false,
 			"",
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1/projects/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
 			2,
 			false,
 			"",
@@ -160,7 +159,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var batches core.QueryBatchesResponse
+			var batches ecocredit.QueryBatchesResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batches)
 
 			if tc.expErr {
@@ -183,28 +182,28 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 		url       string
 		expErr    bool
 		errMsg    string
-		projectID uint64
+		projectID string
 	}{
 		{
 			"invalid batch denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "C999"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C999"),
 			true,
 			"invalid denom",
-			0,
+			"",
 		},
 		{
 			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
 			true,
 			"not found",
-			0,
+			"",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
 			false,
 			"",
-			1,
+			"P01",
 		},
 	}
 
@@ -215,7 +214,7 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var batch core.QueryBatchInfoResponse
+			var batch ecocredit.QueryBatchInfoResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batch)
 
 			if tc.expErr {
@@ -234,11 +233,11 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 	val := s.network.Validators[0]
 
-	url := fmt.Sprintf("%s/regen/ecocredit/v1/credit-types", val.APIAddress)
+	url := fmt.Sprintf("%s/regen/ecocredit/v1alpha2/credit-types", val.APIAddress)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
-	var creditTypes core.QueryCreditTypesResponse
+	var creditTypes ecocredit.QueryCreditTypesResponse
 	err = val.ClientCtx.Codec.UnmarshalJSON(resp, &creditTypes)
 
 	require.NoError(err)
@@ -258,19 +257,19 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 	}{
 		{
 			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
 			true,
-			"not found",
+			"invalid denom",
 		},
 		{
 			"invalid account address",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
 			true,
 			"decoding bech32 failed",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
 			false,
 			"",
 		},
@@ -283,7 +282,7 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var balance core.QueryBalanceResponse
+			var balance ecocredit.QueryBalanceResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &balance)
 
 			if tc.expErr {
@@ -310,13 +309,13 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 	}{
 		{
 			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/supply", val.APIAddress, "abcd"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "abcd"),
 			true,
-			"not found",
+			"invalid denom",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
 			false,
 			"",
 		},
@@ -329,7 +328,7 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var supply core.QuerySupplyResponse
+			var supply ecocredit.QuerySupplyResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &supply)
 
 			if tc.expErr {
@@ -345,19 +344,18 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 	}
 }
 
-// TODO: migrate params to ORM #854
-// func (s *IntegrationTestSuite) TestGRPCQueryParams() {
-// 	val := s.network.Validators[0]
-// 	require := s.Require()
+func (s *IntegrationTestSuite) TestGRPCQueryParams() {
+	val := s.network.Validators[0]
+	require := s.Require()
 
-// 	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1/params", val.APIAddress))
-// 	require.NoError(err)
+	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha2/params", val.APIAddress))
+	require.NoError(err)
 
-// 	var params core.QueryParamsResponse
-// 	require.NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &params))
+	var params ecocredit.QueryParamsResponse
+	require.NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &params))
 
-// 	s.Require().Equal(core.DefaultParams(), *params.Params)
-// }
+	s.Require().Equal(ecocredit.DefaultParams(), *params.Params)
+}
 
 func (s *IntegrationTestSuite) TestGetSellOrder() {
 	val := s.network.Validators[0]
@@ -370,13 +368,13 @@ func (s *IntegrationTestSuite) TestGetSellOrder() {
 	}{
 		{
 			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/id/%s", val.APIAddress, "99"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "99"),
 			true,
 			"not found",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/id/%s", val.APIAddress, "1"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
 			false,
 			"",
 		},
@@ -389,7 +387,7 @@ func (s *IntegrationTestSuite) TestGetSellOrder() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var sellOrder marketplace.QuerySellOrderResponse
+			var sellOrder ecocredit.QuerySellOrderResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrder)
 
 			if tc.expErr {
@@ -415,14 +413,14 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders?pagination.limit=2", val.APIAddress),
 			false,
 			"",
 			2,
@@ -436,7 +434,7 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var sellOrders marketplace.QuerySellOrdersResponse
+			var sellOrders ecocredit.QuerySellOrdersResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
 
 			if tc.expErr {
@@ -464,21 +462,21 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 	}{
 		{
 			"invalid denom",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
 			true,
-			"could not get batch with denom foo",
+			"invalid denom",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
 			false,
 			"",
 			2,
@@ -492,7 +490,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var sellOrders marketplace.QuerySellOrdersByBatchDenomResponse
+			var sellOrders ecocredit.QuerySellOrdersByBatchDenomResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
 
 			if tc.expErr {
@@ -519,21 +517,21 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 	}{
 		{
 			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s", val.APIAddress, "abc"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, "abc"),
 			true,
 			"invalid request",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			2,
@@ -547,7 +545,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var sellOrders marketplace.QuerySellOrdersByAddressResponse
+			var sellOrders ecocredit.QuerySellOrdersByAddressResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
 
 			if tc.expErr {
@@ -573,7 +571,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrder() {
 	}{
 		{
 			"not found",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/id/%s", val.APIAddress, "99"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "99"),
 			true,
 			"not found",
 		},
@@ -593,7 +591,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrder() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var buyOrder marketplace.QueryBuyOrderResponse
+			var buyOrder ecocredit.QueryBuyOrderResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrder)
 
 			if tc.expErr {
@@ -619,14 +617,14 @@ func (s *IntegrationTestSuite) TestGetBuyOrders() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders?pagination.limit=2", val.APIAddress),
 			false,
 			"",
 			2,
@@ -640,7 +638,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrders() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var buyOrders marketplace.QueryBuyOrdersResponse
+			var buyOrders ecocredit.QueryBuyOrdersResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
 
 			if tc.expErr {
@@ -669,21 +667,21 @@ func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
 	}{
 		{
 			"invalid address",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s", val.APIAddress, "abc"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, "abc"),
 			true,
 			"invalid request",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, addr),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
 			false,
 			"",
 			2,
@@ -697,7 +695,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var buyOrders marketplace.QueryBuyOrdersByAddressResponse
+			var buyOrders ecocredit.QueryBuyOrdersByAddressResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
 
 			if tc.expErr {
@@ -725,14 +723,14 @@ func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/ask-denoms", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/marketplace/v1/ask-denoms", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
 			false,
 			"",
 			2,
@@ -746,7 +744,7 @@ func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var askDenoms marketplace.QueryAllowedDenomsResponse
+			var askDenoms ecocredit.QueryAllowedAskDenomsResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &askDenoms)
 
 			if tc.expErr {
@@ -754,7 +752,7 @@ func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
 				require.Contains(string(resp), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(askDenoms.AllowedDenoms)
+				require.NotNil(askDenoms.AskDenoms)
 				// TODO: AllowAskDenom not yet implemented #624
 				//require.Len(askDenoms.AskDenoms, tc.expItems)
 			}

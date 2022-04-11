@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )

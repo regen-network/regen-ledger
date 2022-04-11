@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -9,8 +10,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
@@ -66,12 +65,12 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassesResponse
+				var res ecocredit.QueryClassesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				classIDs := make([]string, len(res.Classes))
 				for i, class := range res.Classes {
-					classIDs[i] = class.Name
+					classIDs[i] = class.ClassId
 				}
 
 				s.Require().Equal(tc.expectedClasses, classIDs)
@@ -90,7 +89,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		args              []string
 		expectErr         bool
 		expectedErrMsg    string
-		expectedClassInfo *core.ClassInfo
+		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -112,14 +111,15 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		},
 		{
 			name:      "valid credit class",
-			args:      []string{s.classInfo.Name},
+			args:      []string{s.classInfo.ClassId},
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
-				Id:         s.classInfo.Id,
-				Name:       s.classInfo.Name,
+			expectedClassInfo: &ecocredit.ClassInfo{
+				ClassId:    s.classInfo.ClassId,
 				Admin:      s.classInfo.Admin,
+				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
 				CreditType: s.classInfo.CreditType,
+				NumBatches: 4,
 			},
 		},
 	}
@@ -134,7 +134,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassInfoResponse
+				var res ecocredit.QueryClassInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedClassInfo, res.Info)
 			}
@@ -173,10 +173,10 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "invalid project id",
 		},
 		{
-			name:           "existing project no batches",
-			args:           []string{"P02"},
-			expectErr:      true,
-			expectedErrMsg: "not found",
+			name:                "existing project no batches",
+			args:                []string{"P02"},
+			expectErr:           false,
+			expectedBatchDenoms: []string{},
 		},
 		{
 			name:      "no pagination flags",
@@ -226,7 +226,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesResponse
+				var res ecocredit.QueryBatchesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				batchDenoms := make([]string, len(res.Batches))
@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		args              []string
 		expectErr         bool
 		expectedErrMsg    string
-		expectedBatchInfo *core.BatchInfo
+		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
 			name:           "missing args",
@@ -294,13 +294,9 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchInfoResponse
+				var res ecocredit.QueryBatchInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedBatchInfo.Id, res.Info.Id)
-				s.Require().Equal(tc.expectedBatchInfo.BatchDenom, res.Info.BatchDenom)
-				s.Require().Equal(tc.expectedBatchInfo.ProjectId, res.Info.ProjectId)
-				s.Require().Equal(tc.expectedBatchInfo.StartDate, res.Info.StartDate)
-				s.Require().Equal(tc.expectedBatchInfo.EndDate, res.Info.EndDate)
+				s.Require().Equal(tc.expectedBatchInfo, res.Info)
 			}
 		})
 	}
@@ -335,7 +331,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			name:           "invalid credit batch",
 			args:           []string{"abcde", s.network.Validators[0].Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "not found",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch and invalid account",
@@ -370,7 +366,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBalanceResponse
+				var res ecocredit.QueryBalanceResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedTradableAmount, res.TradableAmount)
 				s.Require().Equal(tc.expectedRetiredAmount, res.RetiredAmount)
@@ -429,7 +425,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QuerySupplyResponse
+				var res ecocredit.QuerySupplyResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedTradableSupply, res.TradableSupply)
 				s.Require().Equal(tc.expectedRetiredSupply, res.RetiredSupply)
@@ -447,14 +443,14 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 		args               []string
 		expectErr          bool
 		expectedErrMsg     string
-		expectedCreditType []*core.CreditType
+		expectedCreditType []*ecocredit.CreditType
 	}{
 		{
 			name:               "should give credit type",
 			args:               []string{},
 			expectErr:          false,
 			expectedErrMsg:     "",
-			expectedCreditType: []*core.CreditType{&core.CreditType{Abbreviation: s.classInfo.CreditType}},
+			expectedCreditType: []*ecocredit.CreditType{s.classInfo.CreditType},
 		},
 	}
 
@@ -468,7 +464,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryCreditTypesResponse
+				var res ecocredit.QueryCreditTypesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedCreditType, res.CreditTypes)
 			}
@@ -476,23 +472,22 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 	}
 }
 
-// TODO: migrate Params to ORM #854
-// func (s *IntegrationTestSuite) TestQueryParams() {
-// 	val := s.network.Validators[0]
-// 	clientCtx := val.ClientCtx
-// 	clientCtx.OutputFormat = "JSON"
-// 	require := s.Require()
+func (s *IntegrationTestSuite) TestQueryParams() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
 
-// 	cmd := coreclient.QueryParamsCmd()
-// 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-// 	require.NoError(err)
+	cmd := coreclient.QueryParamsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
 
-// 	var params core.QueryParamsResponse
-// 	err = json.Unmarshal(out.Bytes(), &params)
-// 	require.NoError(err)
+	var params ecocredit.QueryParamsResponse
+	err = json.Unmarshal(out.Bytes(), &params)
+	require.NoError(err)
 
-// 	require.Equal(core.DefaultParams(), *params.Params)
-// }
+	require.Equal(ecocredit.DefaultParams(), *params.Params)
+}
 
 func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	val := s.network.Validators[0]
@@ -503,7 +498,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrder  *marketplace.SellOrder
+		expOrder  *ecocredit.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -542,7 +537,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QuerySellOrderResponse
+				var res ecocredit.QuerySellOrderResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrder, res.SellOrder)
 			}
@@ -559,7 +554,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.SellOrder
+		expOrders []*ecocredit.SellOrder
 	}{
 		{
 			name:      "too many args",
@@ -586,7 +581,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QuerySellOrdersResponse
+				var res ecocredit.QuerySellOrdersResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.SellOrders)
 			}
@@ -603,7 +598,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.SellOrder
+		expOrders []*ecocredit.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -642,7 +637,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QuerySellOrdersByAddressResponse
+				var res ecocredit.QuerySellOrdersByAddressResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.SellOrders)
 			}
@@ -659,7 +654,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.SellOrder
+		expOrders []*ecocredit.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -698,7 +693,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QuerySellOrdersByBatchDenomResponse
+				var res ecocredit.QuerySellOrdersByBatchDenomResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.SellOrders)
 			}
@@ -715,7 +710,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrder() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrder  *marketplace.BuyOrder
+		expOrder  *ecocredit.BuyOrder
 	}{
 		{
 			name:      "missing args",
@@ -761,7 +756,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrder() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QueryBuyOrderResponse
+				var res ecocredit.QueryBuyOrderResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrder, res.BuyOrder)
 			}
@@ -778,7 +773,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrders() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.BuyOrder
+		expOrders []*ecocredit.BuyOrder
 	}{
 		{
 			name:      "too many args",
@@ -828,7 +823,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrders() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QueryBuyOrdersResponse
+				var res ecocredit.QueryBuyOrdersResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.BuyOrders)
 			}
@@ -845,7 +840,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrdersByAddress() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*marketplace.BuyOrder
+		expOrders []*ecocredit.BuyOrder
 	}{
 		{
 			name:      "missing args",
@@ -907,7 +902,7 @@ func (s *IntegrationTestSuite) TestQueryBuyOrdersByAddress() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QueryBuyOrdersByAddressResponse
+				var res ecocredit.QueryBuyOrdersByAddressResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.BuyOrders)
 			}
@@ -924,7 +919,7 @@ func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expDenoms []*marketplace.AllowedDenom
+		expDenoms []*ecocredit.AskDenom
 	}{
 		{
 			name:      "too many args",
@@ -958,9 +953,9 @@ func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QueryAllowedDenomsResponse
+				var res ecocredit.QueryAllowedAskDenomsResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expDenoms, res.AllowedDenoms)
+				s.Require().Equal(tc.expDenoms, res.AskDenoms)
 			}
 		})
 	}
@@ -1008,7 +1003,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryProjectsResponse
+				var res ecocredit.QueryProjectsResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Len(res.Projects, tc.expLen)
 			}
@@ -1047,7 +1042,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 			name:      "invalid project id ",
 			args:      []string{"A@a@"},
 			expErr:    true,
-			expErrMsg: "not found",
+			expErrMsg: "invalid project id",
 		},
 		{
 			name:      "not found",
@@ -1073,7 +1068,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 			} else {
 				require.NoError(err, out.String())
 
-				var res core.QueryProjectInfoResponse
+				var res ecocredit.QueryProjectInfoResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(project, res.Info)
 			}
