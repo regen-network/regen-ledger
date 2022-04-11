@@ -19,6 +19,9 @@ func TestMsgMsgSealBatch(t *testing.T) {
 	msg = MsgSealBatch{Issuer: "abc"}
 	require.Error(msg.ValidateBasic(), "invalid issuer")
 
-	msg = MsgSealBatch{Issuer: issuer}
+	msg = MsgSealBatch{Issuer: "abc", BatchDenom: "ABC"}
+	require.Error(msg.ValidateBasic(), "invalid denom")
+
+	msg = MsgSealBatch{Issuer: issuer, BatchDenom: batchDenom}
 	require.NoError(msg.ValidateBasic(), "valid issuer")
 }
