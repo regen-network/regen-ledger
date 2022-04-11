@@ -6,8 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/spf13/cobra"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -24,7 +25,8 @@ func TxBuyDirect() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire]",
 		Short: "Buy ecocredits from a specific sell order",
-		Long: "Purchase ecocredits from a specific sell order. AutoRetire can be set to true to retire the credits immediately upon purchase." +
+		Long: "Purchase ecocredits from a specific sell order. DisableAutoRetire can be set to false to retire the credits immediately upon purchase." +
+			"When set to true, credits will be received in a tradable state, IF AND ONLY IF the sell order also has auto retire disabled. " +
 			"NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.",
 		Example: "regen tx ecocredit buy-direct 194 300 40regen true --retirement-location=US-NY",
 		Args:    cobra.ExactArgs(4),
@@ -74,8 +76,8 @@ func TxBuyDirect() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(FlagRetirementLocation, "", "the location to use for retirement when auto retire is true.")
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
 
@@ -84,7 +86,10 @@ func TxBuyDirectBatch() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "buy-direct-batch [name_of_file.json]",
 		Short: "Buy ecocredits from multiple sell orders",
-		Long:  "Directly buy ecocredits from different sell orders using a json file.",
+		Long: "Batch purchase ecocredits using a json file. DisableAutoRetire can be set to false to " +
+			"retire the credits immediately upon purchase. When set to true, credits will be received in a tradable state, " +
+			"IF AND ONLY IF the sell order also has auto retire disabled. NOTE: The bid price is the price paid PER credit. " +
+			"The total cost will be quantity * bid_price.",
 		Example: strings.TrimSpace(`regen tx ecocredit buy-direct-batch batch.json
 		where batch.json has the following form:
 		[
