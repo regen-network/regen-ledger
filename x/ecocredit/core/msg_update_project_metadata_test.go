@@ -12,7 +12,7 @@ import (
 )
 
 func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
-	addr := sdk.AccAddress("addr1---------------------").String()
+	addr := sdk.AccAddress("addr1").String()
 	type fields struct {
 		Admin       string
 		NewMetadata string
