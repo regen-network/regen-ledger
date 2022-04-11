@@ -186,7 +186,7 @@ func TestBuy_Invalid(t *testing.T) {
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &wrongDenom, false, "US-CO")
-	assert.ErrorContains(t, err, "price per credit denom does not match ask price denom")
+	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
 
 	// bidding more than in the bank
 	inBank := sdk.NewInt64Coin("ufoo", 10)

@@ -189,18 +189,5 @@ func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) 
 	if err != nil {
 		return sdk.Int{}, err
 	}
-
-	// TODO: update with Dec ToInt function #987
-	// divide by 1 to clear anything to the right of the decimal, so we can convert to sdk.Int
-	cost, err = cost.QuoInteger(math.NewDecFromInt64(1))
-	if err != nil {
-		return sdk.Int{}, err
-	}
-
-	costBigI, err := cost.BigInt()
-	if err != nil {
-		return sdk.Int{}, err
-	}
-
-	return sdk.NewIntFromBigInt(costBigI), nil
+	return cost.SdkIntTrim(), nil
 }
