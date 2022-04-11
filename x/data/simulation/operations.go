@@ -154,21 +154,12 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		privateKeys, accNumbers, sequences, attestorsAddrs := attestorsWithAccInfos(r, sdkCtx, ak, accs)
-		if len(privateKeys) == 0 {
-			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "no accounts"), nil, nil
-		}
+		attestor, _ := simtypes.RandomAcc(r, accs)
 
-		accAddr0, err := sdk.AccAddressFromBech32(attestorsAddrs[0])
-		if err != nil {
-			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, err.Error()), nil, err
-		}
-
-		acc, _ := simtypes.FindAccount(accs, accAddr0)
-		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
+		spendable := bk.SpendableCoins(sdkCtx, attestor.Address)
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
 		if err != nil {
-			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "fee error"), nil, err
+			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "fee error"), nil, err
 		}
 
 		content := []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 100)))
@@ -180,20 +171,22 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 
 		digest := hash.Sum(nil)
 		msg := &data.MsgAttest{
-			Attestors: attestorsAddrs,
-			Hash:      getGraph(digest),
+			Attestor: attestor.Address.String(),
+			Hashes:   []*data.ContentHash_Graph{getGraph(digest)},
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+
+		account := ak.GetAccount(sdkCtx, attestor.Address)
 		tx, err := helpers.GenTx(
 			txGen,
 			[]sdk.Msg{msg},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			accNumbers,
-			sequences,
-			privateKeys...,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			attestor.PrivKey,
 		)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgAttest, "unable to generate mock tx"), nil, err
