@@ -39,11 +39,7 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 	if err = validateBatchIssuances(m.Issuance); err != nil {
 		return err
 	}
-	if err = validateOriginTx(m.OriginTx, true); err != nil {
-		return err
-	}
-
-	return nil
+	return validateOriginTx(m.OriginTx, true)
 }
 
 // GetSigners returns the expected signers for MsgMintBatchCredits.
