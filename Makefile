@@ -405,3 +405,10 @@ localnet-stop:
 .PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
 
 include sims.mk
+
+###############################################################################
+###                                Generate                                 ###
+###############################################################################
+
+generate:
+	find . -name 'go.mod' -type f -execdir sh -c 'go generate ./...' \;

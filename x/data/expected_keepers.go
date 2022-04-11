@@ -5,6 +5,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
+//go:generate mockgen -source=expected_keepers.go -package mocks -destination mocks/expected_keepers.go
+
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
 type AccountKeeper interface {
 	// NewAccount returns a new account with the next account number. Does not save the new account to the store.
