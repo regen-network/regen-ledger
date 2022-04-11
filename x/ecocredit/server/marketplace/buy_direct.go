@@ -48,7 +48,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 		if order.BidPrice.Denom != market.BankDenom {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
-				" %s, expected %s", order.BidPrice.Denom, market.BankDenom)
+				"%s, expected %s", order.BidPrice.Denom, market.BankDenom)
 		}
 		// check that bid price >= sell price
 		sellOrderAskPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
