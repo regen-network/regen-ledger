@@ -60,9 +60,9 @@ type MsgClient interface {
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
 	// UpdateProjectAdmin updates the project admin address
-	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdmin, error)
+	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
-	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadata, error)
+	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
 }
 
 type msgClient struct {
@@ -172,8 +172,8 @@ func (c *msgClient) UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassM
 	return out, nil
 }
 
-func (c *msgClient) UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdmin, error) {
-	out := new(MsgUpdateProjectAdmin)
+func (c *msgClient) UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error) {
+	out := new(MsgUpdateProjectAdminResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateProjectAdmin", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -181,8 +181,8 @@ func (c *msgClient) UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProject
 	return out, nil
 }
 
-func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadata, error) {
-	out := new(MsgUpdateProjectMetadata)
+func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error) {
+	out := new(MsgUpdateProjectMetadataResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/UpdateProjectMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -232,9 +232,9 @@ type MsgServer interface {
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
 	// UpdateProjectAdmin updates the project admin address
-	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdmin, error)
+	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
-	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadata, error)
+	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -275,10 +275,10 @@ func (UnimplementedMsgServer) UpdateClassIssuers(context.Context, *MsgUpdateClas
 func (UnimplementedMsgServer) UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassMetadata not implemented")
 }
-func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdmin, error) {
+func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectAdmin not implemented")
 }
-func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadata, error) {
+func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
