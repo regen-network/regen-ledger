@@ -47,13 +47,6 @@ func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
 			errMsg: ecocredit.ErrMaxLimit.Error(),
 		},
 		{
-			name: "no metadata",
-			fields: fields{
-				Admin: addr,
-			},
-			errMsg: sdkerrors.ErrInvalidRequest.Wrap("metadata cannot be empty").Error(),
-		},
-		{
 			name: "invalid project id",
 			fields: fields{
 				Admin:       addr,

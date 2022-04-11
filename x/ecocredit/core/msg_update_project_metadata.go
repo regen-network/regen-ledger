@@ -14,11 +14,7 @@ func (m MsgUpdateProjectMetadata) ValidateBasic() error {
 	if _, err := types.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	metadataLen := len(m.NewMetadata)
-	if metadataLen == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("metadata cannot be empty")
-	}
-	if metadataLen > MaxMetadataLength {
+	if len(m.NewMetadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrapf("create project metadata: max length is %d", MaxMetadataLength)
 	}
 	if err := ValidateProjectID(m.ProjectId); err != nil {
