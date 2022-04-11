@@ -2,9 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,27 +10,19 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// assertHasBalance checks that the account has `qty` credits from the given batch id.
-func assertHasBalance(ctx context.Context, store ecoApi.StateStore, acc sdk.AccAddress, batchId uint64, qty math.Dec) error {
-	res, err := store.BatchBalanceTable().Get(ctx, acc, batchId)
-	if err != nil {
-		return err
-	}
-	tradableBalance, err := math.NewDecFromString(res.Tradable)
-	if err != nil {
-		return err
-	}
-	if tradableBalance.Cmp(qty) == -1 {
-		return ecocredit.ErrInsufficientCredits.Wrapf("cannot create a sell order of %s credits with a balance of %s", qty.String(), res.Tradable)
-	}
-	return nil
-}
-
 // isDenomAllowed checks if the denom is allowed to be used in orders.
-func isDenomAllowed(ctx context.Context, store api.StateStore, denom string) (bool, error) {
-	return store.AllowedDenomTable().Has(ctx, denom)
+func isDenomAllowed(ctx sdk.Context, denom string, pk ecocredit.ParamKeeper) bool {
+	var params core.Params
+	pk.GetParamSet(ctx, &params)
+	for _, askDenom := range params.AllowedAskDenoms {
+		if askDenom.Denom == denom {
+			return true
+		}
+	}
+	return false
 }
 
 type orderOptions struct {
@@ -43,7 +32,7 @@ type orderOptions struct {
 	retirementLocation string
 }
 
-// fillOrder moves credits according to the order. it will:
+// fillOrder moves credits and coins according to the order. It will:
 // - update a sell order, removing it if quantity becomes 0 as a result of this purchase.
 // - remove the purchaseQty from the seller's escrowed balance.
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
@@ -146,8 +135,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			Recipient:      buyerAcc.String(),
 			BatchDenom:     opts.batchDenom,
 			TradableAmount: purchaseQty.String(),
-			RetiredAmount:  "",
-			BasketDenom:    "",
+			RetiredAmount:  "0",
 		}); err != nil {
 			return err
 		}
@@ -193,27 +181,13 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 // getTotalCost calculates the cost of the order by multiplying the price per credit, and the amount of credits
 // desired in the order.
 func getTotalCost(pricePerCredit sdk.Int, amtCredits math.Dec) (sdk.Int, error) {
-	multiplier, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
+	unitPrice, err := math.NewPositiveFixedDecFromString(pricePerCredit.String(), amtCredits.NumDecimalPlaces())
 	if err != nil {
 		return sdk.Int{}, err
 	}
-	amountDec, err := amtCredits.Mul(multiplier)
+	cost, err := amtCredits.Mul(unitPrice)
 	if err != nil {
 		return sdk.Int{}, err
 	}
-
-	// divide by 1 to clear anything to the right of the decimal, so we can convert to sdk.Int
-	amountDec, err = amountDec.QuoInteger(math.NewDecFromInt64(1))
-	if err != nil {
-		return sdk.Int{}, err
-	}
-
-	amtNeededStr := amountDec.String()
-
-	amtNeeded, ok := sdk.NewIntFromString(amtNeededStr)
-	if !ok {
-		return sdk.Int{}, fmt.Errorf("could not convert %s to %T", amtNeededStr, sdk.Int{})
-	}
-
-	return amtNeeded, nil
+	return cost.SdkIntTrim(), nil
 }

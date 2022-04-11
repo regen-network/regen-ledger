@@ -28,7 +28,8 @@ func TestBuy_ValidTradable(t *testing.T) {
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -71,7 +72,8 @@ func TestBuy_ValidRetired(t *testing.T) {
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -112,7 +114,8 @@ func TestBuy_OrderFilled(t *testing.T) {
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -150,6 +153,7 @@ func TestBuy_Invalid(t *testing.T) {
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -182,7 +186,7 @@ func TestBuy_Invalid(t *testing.T) {
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &wrongDenom, false, "US-CO")
-	assert.ErrorContains(t, err, "price per credit denom does not match ask price denom")
+	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
 
 	// bidding more than in the bank
 	inBank := sdk.NewInt64Coin("ufoo", 10)
@@ -203,7 +207,8 @@ func TestBuy_Decimal(t *testing.T) {
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),

@@ -32,13 +32,6 @@ type QueryClient interface {
 	// SellOrdersByAddress queries a paginated list of all sell orders from a
 	// specific address
 	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
-	// BuyOrder queries a buy order by its id
-	BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error)
-	// BuyOrders queries a paginated list of all buy orders
-	BuyOrders(ctx context.Context, in *QueryBuyOrdersRequest, opts ...grpc.CallOption) (*QueryBuyOrdersResponse, error)
-	// BuyOrdersByAddress queries a paginated list of buy orders by creator
-	// address
-	BuyOrdersByAddress(ctx context.Context, in *QueryBuyOrdersByAddressRequest, opts ...grpc.CallOption) (*QueryBuyOrdersByAddressResponse, error)
 	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
 	// sell order
 	AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedDenomsResponse, error)
@@ -88,33 +81,6 @@ func (c *queryClient) SellOrdersByAddress(ctx context.Context, in *QuerySellOrde
 	return out, nil
 }
 
-func (c *queryClient) BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error) {
-	out := new(QueryBuyOrderResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/BuyOrder", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) BuyOrders(ctx context.Context, in *QueryBuyOrdersRequest, opts ...grpc.CallOption) (*QueryBuyOrdersResponse, error) {
-	out := new(QueryBuyOrdersResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/BuyOrders", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) BuyOrdersByAddress(ctx context.Context, in *QueryBuyOrdersByAddressRequest, opts ...grpc.CallOption) (*QueryBuyOrdersByAddressResponse, error) {
-	out := new(QueryBuyOrdersByAddressResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/BuyOrdersByAddress", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *queryClient) AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedDenomsResponse, error) {
 	out := new(QueryAllowedDenomsResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/AllowedDenoms", in, out, opts...)
@@ -138,13 +104,6 @@ type QueryServer interface {
 	// SellOrdersByAddress queries a paginated list of all sell orders from a
 	// specific address
 	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
-	// BuyOrder queries a buy order by its id
-	BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error)
-	// BuyOrders queries a paginated list of all buy orders
-	BuyOrders(context.Context, *QueryBuyOrdersRequest) (*QueryBuyOrdersResponse, error)
-	// BuyOrdersByAddress queries a paginated list of buy orders by creator
-	// address
-	BuyOrdersByAddress(context.Context, *QueryBuyOrdersByAddressRequest) (*QueryBuyOrdersByAddressResponse, error)
 	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
 	// sell order
 	AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error)
@@ -166,15 +125,6 @@ func (UnimplementedQueryServer) SellOrdersByBatchDenom(context.Context, *QuerySe
 }
 func (UnimplementedQueryServer) SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByAddress not implemented")
-}
-func (UnimplementedQueryServer) BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BuyOrder not implemented")
-}
-func (UnimplementedQueryServer) BuyOrders(context.Context, *QueryBuyOrdersRequest) (*QueryBuyOrdersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BuyOrders not implemented")
-}
-func (UnimplementedQueryServer) BuyOrdersByAddress(context.Context, *QueryBuyOrdersByAddressRequest) (*QueryBuyOrdersByAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BuyOrdersByAddress not implemented")
 }
 func (UnimplementedQueryServer) AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedDenoms not implemented")
@@ -264,60 +214,6 @@ func _Query_SellOrdersByAddress_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_BuyOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBuyOrderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).BuyOrder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/BuyOrder",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BuyOrder(ctx, req.(*QueryBuyOrderRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_BuyOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBuyOrdersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).BuyOrders(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/BuyOrders",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BuyOrders(ctx, req.(*QueryBuyOrdersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_BuyOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBuyOrdersByAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).BuyOrdersByAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/BuyOrdersByAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BuyOrdersByAddress(ctx, req.(*QueryBuyOrdersByAddressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_AllowedDenoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryAllowedDenomsRequest)
 	if err := dec(in); err != nil {
@@ -358,18 +254,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SellOrdersByAddress",
 			Handler:    _Query_SellOrdersByAddress_Handler,
-		},
-		{
-			MethodName: "BuyOrder",
-			Handler:    _Query_BuyOrder_Handler,
-		},
-		{
-			MethodName: "BuyOrders",
-			Handler:    _Query_BuyOrders_Handler,
-		},
-		{
-			MethodName: "BuyOrdersByAddress",
-			Handler:    _Query_BuyOrdersByAddress_Handler,
 		},
 		{
 			MethodName: "AllowedDenoms",

@@ -40,8 +40,13 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 		},
 		{
 			name: "valid retirement location",
-			fields: fields{Buyer: addr.String(), SellOrderId: 1, Quantity: "45", PricePerCredit: &validCoin,
-				DisableAutoRetire: false, RetirementLocation: "US-NY"},
+			fields: fields{
+				Buyer:              addr.String(),
+				SellOrderId:        1,
+				Quantity:           "45",
+				PricePerCredit:     &validCoin,
+				DisableAutoRetire:  false,
+				RetirementLocation: "US-NY"},
 		},
 		{
 			name:   "invalid addr",
@@ -49,29 +54,48 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 			errMsg: sdkerrors.ErrInvalidAddress.Error(),
 		},
 		{
-			name:   "invalid order id",
-			fields: fields{Buyer: addr.String(), SellOrderId: 0},
+			name: "invalid order id",
+			fields: fields{
+				Buyer:       addr.String(),
+				SellOrderId: 0},
 			errMsg: "0 is not a valid sell order id",
 		},
 		{
-			name:   "invalid quantity",
-			fields: fields{Buyer: addr.String(), SellOrderId: 1, Quantity: "45.3xyz"},
+			name: "invalid quantity",
+			fields: fields{
+				Buyer:       addr.String(),
+				SellOrderId: 1,
+				Quantity:    "45.3xyz"},
 			errMsg: math.ErrInvalidDecString.Error(),
 		},
 		{
-			name:   "no price per credit",
-			fields: fields{Buyer: addr.String(), SellOrderId: 1, Quantity: "45", DisableAutoRetire: true, PricePerCredit: nil},
+			name: "no price per credit",
+			fields: fields{
+				Buyer:             addr.String(),
+				SellOrderId:       1,
+				Quantity:          "45",
+				DisableAutoRetire: true,
+				PricePerCredit:    nil},
 			errMsg: "must specify price per credit",
 		},
 		{
 			name: "invalid coin",
-			fields: fields{Buyer: addr.String(), SellOrderId: 1, Quantity: "45", DisableAutoRetire: true,
-				PricePerCredit: &sdk.Coin{Denom: "foo3=21.", Amount: sdk.NewInt(3)}},
+			fields: fields{
+				Buyer:             addr.String(),
+				SellOrderId:       1,
+				Quantity:          "45",
+				DisableAutoRetire: true,
+				PricePerCredit:    &sdk.Coin{Denom: "foo3=21.", Amount: sdk.NewInt(3)}},
 			errMsg: "invalid denom",
 		},
 		{
-			name:   "no retirement location when AutoRetiring",
-			fields: fields{Buyer: addr.String(), SellOrderId: 1, Quantity: "45", PricePerCredit: &validCoin, DisableAutoRetire: false},
+			name: "no retirement location when AutoRetiring",
+			fields: fields{
+				Buyer:             addr.String(),
+				SellOrderId:       1,
+				Quantity:          "45",
+				PricePerCredit:    &validCoin,
+				DisableAutoRetire: false},
 			errMsg: "when DisableAutoRetire is false, a valid retirement location must be provided",
 		},
 	}

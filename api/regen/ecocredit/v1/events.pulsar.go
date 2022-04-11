@@ -1119,6 +1119,8 @@ var (
 	fd_EventCreateBatch_issuance_date    protoreflect.FieldDescriptor
 	fd_EventCreateBatch_project_location protoreflect.FieldDescriptor
 	fd_EventCreateBatch_project_id       protoreflect.FieldDescriptor
+	fd_EventCreateBatch_origin_tx        protoreflect.FieldDescriptor
+	fd_EventCreateBatch_note             protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -1133,6 +1135,8 @@ func init() {
 	fd_EventCreateBatch_issuance_date = md_EventCreateBatch.Fields().ByName("issuance_date")
 	fd_EventCreateBatch_project_location = md_EventCreateBatch.Fields().ByName("project_location")
 	fd_EventCreateBatch_project_id = md_EventCreateBatch.Fields().ByName("project_id")
+	fd_EventCreateBatch_origin_tx = md_EventCreateBatch.Fields().ByName("origin_tx")
+	fd_EventCreateBatch_note = md_EventCreateBatch.Fields().ByName("note")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventCreateBatch)(nil)
@@ -1254,6 +1258,18 @@ func (x *fastReflection_EventCreateBatch) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
+	if x.OriginTx != nil {
+		value := protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
+		if !f(fd_EventCreateBatch_origin_tx, value) {
+			return
+		}
+	}
+	if x.Note != "" {
+		value := protoreflect.ValueOfString(x.Note)
+		if !f(fd_EventCreateBatch_note, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -1287,6 +1303,10 @@ func (x *fastReflection_EventCreateBatch) Has(fd protoreflect.FieldDescriptor) b
 		return x.ProjectLocation != ""
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
 		return x.ProjectId != ""
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		return x.OriginTx != nil
+	case "regen.ecocredit.v1.EventCreateBatch.note":
+		return x.Note != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1321,6 +1341,10 @@ func (x *fastReflection_EventCreateBatch) Clear(fd protoreflect.FieldDescriptor)
 		x.ProjectLocation = ""
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
 		x.ProjectId = ""
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		x.OriginTx = nil
+	case "regen.ecocredit.v1.EventCreateBatch.note":
+		x.Note = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1364,6 +1388,12 @@ func (x *fastReflection_EventCreateBatch) Get(descriptor protoreflect.FieldDescr
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
 		value := x.ProjectId
 		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		value := x.OriginTx
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "regen.ecocredit.v1.EventCreateBatch.note":
+		value := x.Note
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1402,6 +1432,10 @@ func (x *fastReflection_EventCreateBatch) Set(fd protoreflect.FieldDescriptor, v
 		x.ProjectLocation = value.Interface().(string)
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
 		x.ProjectId = value.Interface().(string)
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		x.OriginTx = value.Message().Interface().(*OriginTx)
+	case "regen.ecocredit.v1.EventCreateBatch.note":
+		x.Note = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1422,6 +1456,11 @@ func (x *fastReflection_EventCreateBatch) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventCreateBatch) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		if x.OriginTx == nil {
+			x.OriginTx = new(OriginTx)
+		}
+		return protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
 	case "regen.ecocredit.v1.EventCreateBatch.class_id":
 		panic(fmt.Errorf("field class_id of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
@@ -1440,6 +1479,8 @@ func (x *fastReflection_EventCreateBatch) Mutable(fd protoreflect.FieldDescripto
 		panic(fmt.Errorf("field project_location of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
 		panic(fmt.Errorf("field project_id of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
+	case "regen.ecocredit.v1.EventCreateBatch.note":
+		panic(fmt.Errorf("field note of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1470,6 +1511,11 @@ func (x *fastReflection_EventCreateBatch) NewField(fd protoreflect.FieldDescript
 	case "regen.ecocredit.v1.EventCreateBatch.project_location":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.EventCreateBatch.project_id":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.EventCreateBatch.origin_tx":
+		m := new(OriginTx)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "regen.ecocredit.v1.EventCreateBatch.note":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -1576,6 +1622,14 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if x.OriginTx != nil {
+			l = options.Size(x.OriginTx)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Note)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1604,6 +1658,27 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Note) > 0 {
+			i -= len(x.Note)
+			copy(dAtA[i:], x.Note)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Note)))
+			i--
+			dAtA[i] = 0x5a
+		}
+		if x.OriginTx != nil {
+			encoded, err := options.Marshal(x.OriginTx)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x52
 		}
 		if len(x.ProjectId) > 0 {
 			i -= len(x.ProjectId)
@@ -2005,6 +2080,573 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 				}
 				x.ProjectId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 10:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OriginTx", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.OriginTx == nil {
+					x.OriginTx = &OriginTx{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.OriginTx); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 11:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Note", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Note = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventMintBatchCredits             protoreflect.MessageDescriptor
+	fd_EventMintBatchCredits_batch_denom protoreflect.FieldDescriptor
+	fd_EventMintBatchCredits_origin_tx   protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_v1_events_proto_init()
+	md_EventMintBatchCredits = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventMintBatchCredits")
+	fd_EventMintBatchCredits_batch_denom = md_EventMintBatchCredits.Fields().ByName("batch_denom")
+	fd_EventMintBatchCredits_origin_tx = md_EventMintBatchCredits.Fields().ByName("origin_tx")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventMintBatchCredits)(nil)
+
+type fastReflection_EventMintBatchCredits EventMintBatchCredits
+
+func (x *EventMintBatchCredits) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventMintBatchCredits)(x)
+}
+
+func (x *EventMintBatchCredits) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventMintBatchCredits_messageType fastReflection_EventMintBatchCredits_messageType
+var _ protoreflect.MessageType = fastReflection_EventMintBatchCredits_messageType{}
+
+type fastReflection_EventMintBatchCredits_messageType struct{}
+
+func (x fastReflection_EventMintBatchCredits_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventMintBatchCredits)(nil)
+}
+func (x fastReflection_EventMintBatchCredits_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventMintBatchCredits)
+}
+func (x fastReflection_EventMintBatchCredits_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventMintBatchCredits
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventMintBatchCredits) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventMintBatchCredits
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventMintBatchCredits) Type() protoreflect.MessageType {
+	return _fastReflection_EventMintBatchCredits_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventMintBatchCredits) New() protoreflect.Message {
+	return new(fastReflection_EventMintBatchCredits)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventMintBatchCredits) Interface() protoreflect.ProtoMessage {
+	return (*EventMintBatchCredits)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventMintBatchCredits) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.BatchDenom != "" {
+		value := protoreflect.ValueOfString(x.BatchDenom)
+		if !f(fd_EventMintBatchCredits_batch_denom, value) {
+			return
+		}
+	}
+	if x.OriginTx != nil {
+		value := protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
+		if !f(fd_EventMintBatchCredits_origin_tx, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventMintBatchCredits) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		return x.BatchDenom != ""
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		return x.OriginTx != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventMintBatchCredits) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		x.BatchDenom = ""
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		x.OriginTx = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventMintBatchCredits) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		value := x.BatchDenom
+		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		value := x.OriginTx
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventMintBatchCredits) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		x.BatchDenom = value.Interface().(string)
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		x.OriginTx = value.Message().Interface().(*OriginTx)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventMintBatchCredits) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		if x.OriginTx == nil {
+			x.OriginTx = new(OriginTx)
+		}
+		return protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.v1.EventMintBatchCredits is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventMintBatchCredits) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.v1.EventMintBatchCredits.batch_denom":
+		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.v1.EventMintBatchCredits.origin_tx":
+		m := new(OriginTx)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMintBatchCredits"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.v1.EventMintBatchCredits does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventMintBatchCredits) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.EventMintBatchCredits", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventMintBatchCredits) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventMintBatchCredits) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventMintBatchCredits) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventMintBatchCredits) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventMintBatchCredits)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.BatchDenom)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.OriginTx != nil {
+			l = options.Size(x.OriginTx)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventMintBatchCredits)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.OriginTx != nil {
+			encoded, err := options.Marshal(x.OriginTx)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.BatchDenom) > 0 {
+			i -= len(x.BatchDenom)
+			copy(dAtA[i:], x.BatchDenom)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BatchDenom)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventMintBatchCredits)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventMintBatchCredits: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventMintBatchCredits: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.BatchDenom = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OriginTx", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.OriginTx == nil {
+					x.OriginTx = &OriginTx{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.OriginTx); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2070,7 +2712,7 @@ func (x *EventReceive) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventReceive) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[3]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2806,7 +3448,7 @@ func (x *EventRetire) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventRetire) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[4]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3416,7 +4058,7 @@ func (x *EventCancel) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventCancel) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[5]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3964,7 +4606,7 @@ func (x *EventClassAdminUpdated) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventClassAdminUpdated) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[6]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4604,7 +5246,7 @@ func (x *EventClassIssuersUpdated) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventClassIssuersUpdated) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[7]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5180,7 +5822,7 @@ func (x *EventClassMetadataUpdated) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventClassMetadataUpdated) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[8]
+	mi := &file_regen_ecocredit_v1_events_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5855,6 +6497,11 @@ type EventCreateBatch struct {
 	ProjectLocation string `protobuf:"bytes,8,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
 	// project_id is the unique ID of the project this batch belongs to.
 	ProjectId string `protobuf:"bytes,9,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// A reference to a transaction or an event referencing the transaction
+	// which caused the transfer from other chain or registry.
+	OriginTx *OriginTx `protobuf:"bytes,10,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+	// reference note for accounting, will be passed to an event
+	Note string `protobuf:"bytes,11,opt,name=note,proto3" json:"note,omitempty"`
 }
 
 func (x *EventCreateBatch) Reset() {
@@ -5940,6 +6587,67 @@ func (x *EventCreateBatch) GetProjectId() string {
 	return ""
 }
 
+func (x *EventCreateBatch) GetOriginTx() *OriginTx {
+	if x != nil {
+		return x.OriginTx
+	}
+	return nil
+}
+
+func (x *EventCreateBatch) GetNote() string {
+	if x != nil {
+		return x.Note
+	}
+	return ""
+}
+
+// EventCreateBatch is an event emitted when a credit batch is created.
+type EventMintBatchCredits struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// batch_denom is the unique ID of credit batch.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// A reference to a transaction or an event referencing the transaction
+	// which caused the transfer from other chain or registry.
+	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+}
+
+func (x *EventMintBatchCredits) Reset() {
+	*x = EventMintBatchCredits{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventMintBatchCredits) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventMintBatchCredits) ProtoMessage() {}
+
+// Deprecated: Use EventMintBatchCredits.ProtoReflect.Descriptor instead.
+func (*EventMintBatchCredits) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *EventMintBatchCredits) GetBatchDenom() string {
+	if x != nil {
+		return x.BatchDenom
+	}
+	return ""
+}
+
+func (x *EventMintBatchCredits) GetOriginTx() *OriginTx {
+	if x != nil {
+		return x.OriginTx
+	}
+	return nil
+}
+
 // EventReceive is an event emitted when credits are received either via
 // creation of a new batch, transfer of credits, or taking credits from a
 // basket. Each batch_denom created, transferred or taken from a basket will
@@ -5971,7 +6679,7 @@ type EventReceive struct {
 func (x *EventReceive) Reset() {
 	*x = EventReceive{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[3]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -5985,7 +6693,7 @@ func (*EventReceive) ProtoMessage() {}
 
 // Deprecated: Use EventReceive.ProtoReflect.Descriptor instead.
 func (*EventReceive) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{3}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EventReceive) GetSender() string {
@@ -6057,7 +6765,7 @@ type EventRetire struct {
 func (x *EventRetire) Reset() {
 	*x = EventRetire{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[4]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6071,7 +6779,7 @@ func (*EventRetire) ProtoMessage() {}
 
 // Deprecated: Use EventRetire.ProtoReflect.Descriptor instead.
 func (*EventRetire) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{4}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *EventRetire) GetRetirer() string {
@@ -6122,7 +6830,7 @@ type EventCancel struct {
 func (x *EventCancel) Reset() {
 	*x = EventCancel{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[5]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6136,7 +6844,7 @@ func (*EventCancel) ProtoMessage() {}
 
 // Deprecated: Use EventCancel.ProtoReflect.Descriptor instead.
 func (*EventCancel) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{5}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *EventCancel) GetCanceller() string {
@@ -6178,7 +6886,7 @@ type EventClassAdminUpdated struct {
 func (x *EventClassAdminUpdated) Reset() {
 	*x = EventClassAdminUpdated{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[6]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6192,7 +6900,7 @@ func (*EventClassAdminUpdated) ProtoMessage() {}
 
 // Deprecated: Use EventClassAdminUpdated.ProtoReflect.Descriptor instead.
 func (*EventClassAdminUpdated) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{6}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EventClassAdminUpdated) GetClassName() string {
@@ -6235,7 +6943,7 @@ type EventClassIssuersUpdated struct {
 func (x *EventClassIssuersUpdated) Reset() {
 	*x = EventClassIssuersUpdated{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[7]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6249,7 +6957,7 @@ func (*EventClassIssuersUpdated) ProtoMessage() {}
 
 // Deprecated: Use EventClassIssuersUpdated.ProtoReflect.Descriptor instead.
 func (*EventClassIssuersUpdated) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{7}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *EventClassIssuersUpdated) GetClassName() string {
@@ -6291,7 +6999,7 @@ type EventClassMetadataUpdated struct {
 func (x *EventClassMetadataUpdated) Reset() {
 	*x = EventClassMetadataUpdated{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[8]
+		mi := &file_regen_ecocredit_v1_events_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6305,7 +7013,7 @@ func (*EventClassMetadataUpdated) ProtoMessage() {}
 
 // Deprecated: Use EventClassMetadataUpdated.ProtoReflect.Descriptor instead.
 func (*EventClassMetadataUpdated) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{8}
+	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *EventClassMetadataUpdated) GetClassName() string {
@@ -6335,7 +7043,9 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x0a, 0x1f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
 	0x74, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x12, 0x12, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x22, 0x43, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x72,
+	0x69, 0x74, 0x2e, 0x76, 0x31, 0x1a, 0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x43, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x72,
 	0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61,
 	0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61,
 	0x73, 0x73, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20,
@@ -6348,7 +7058,7 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49,
 	0x64, 0x12, 0x29, 0x0a, 0x10, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6c, 0x6f, 0x63,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f,
-	0x6a, 0x65, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xb2, 0x02, 0x0a,
+	0x6a, 0x65, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x81, 0x03, 0x0a,
 	0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63,
 	0x68, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b,
@@ -6368,73 +7078,85 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64,
 	0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49,
-	0x64, 0x22, 0xd8, 0x01, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x63, 0x65, 0x69,
-	0x76, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65,
-	0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72,
-	0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63,
-	0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62,
-	0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61,
-	0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69,
-	0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73,
-	0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x7c, 0x0a, 0x0b,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x72,
-	0x65, 0x74, 0x69, 0x72, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x72, 0x65,
-	0x74, 0x69, 0x72, 0x65, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64,
-	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63,
-	0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1a,
-	0x0a, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x64, 0x0a, 0x0b, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x61, 0x6e,
-	0x63, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x61,
-	0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68,
-	0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61,
-	0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
-	0x22, 0x71, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x6c,
-	0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x6c, 0x64,
-	0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x6c,
-	0x64, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1b, 0x0a, 0x09, 0x6e, 0x65, 0x77, 0x5f, 0x61, 0x64,
-	0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6e, 0x65, 0x77, 0x41, 0x64,
-	0x6d, 0x69, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64,
-	0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12,
-	0x23, 0x0a, 0x0d, 0x61, 0x64, 0x64, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
-	0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x64, 0x64, 0x65, 0x64, 0x49, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x73, 0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x5f,
-	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0e, 0x72,
-	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x22, 0x80, 0x01,
-	0x0a, 0x19, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x63,
-	0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x6f, 0x6c,
-	0x64, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x6f, 0x6c, 0x64, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x21, 0x0a,
-	0x0c, 0x6e, 0x65, 0x77, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0b, 0x6e, 0x65, 0x77, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0x42, 0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74,
-	0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65,
-	0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x64, 0x12, 0x39, 0x0a, 0x09, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x0a,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e,
+	0x54, 0x78, 0x52, 0x08, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x6f, 0x74, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65,
+	0x22, 0x73, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74,
+	0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74,
+	0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x39, 0x0a, 0x09, 0x6f, 0x72,
+	0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x76, 0x31, 0x2e, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x52, 0x08, 0x6f, 0x72, 0x69,
+	0x67, 0x69, 0x6e, 0x54, 0x78, 0x22, 0xd8, 0x01, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52,
+	0x65, 0x63, 0x65, 0x69, 0x76, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x1c,
+	0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x27, 0x0a,
+	0x0f, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65,
+	0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65,
+	0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d,
+	0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x21, 0x0a,
+	0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x22, 0x7c, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12,
+	0x18, 0x0a, 0x07, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74,
+	0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x64,
+	0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x12, 0x1c, 0x0a,
+	0x09, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x1f, 0x0a, 0x0b, 0x62,
+	0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x71, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x1d,
+	0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a,
+	0x09, 0x6f, 0x6c, 0x64, 0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x6f, 0x6c, 0x64, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1b, 0x0a, 0x09, 0x6e, 0x65,
+	0x77, 0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6e,
+	0x65, 0x77, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61,
+	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e,
+	0x61, 0x6d, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x61, 0x64, 0x64, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73,
+	0x75, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x64, 0x64, 0x65,
+	0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f,
+	0x76, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
+	0x09, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72,
+	0x73, 0x22, 0x80, 0x01, 0x0a, 0x19, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12,
+	0x1d, 0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21,
+	0x0a, 0x0c, 0x6f, 0x6c, 0x64, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6f, 0x6c, 0x64, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x12, 0x21, 0x0a, 0x0c, 0x6e, 0x65, 0x77, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6e, 0x65, 0x77, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0x42, 0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42,
+	0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
+	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02,
+	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6449,24 +7171,28 @@ func file_regen_ecocredit_v1_events_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_v1_events_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_regen_ecocredit_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_regen_ecocredit_v1_events_proto_goTypes = []interface{}{
 	(*EventCreateClass)(nil),          // 0: regen.ecocredit.v1.EventCreateClass
 	(*EventCreateProject)(nil),        // 1: regen.ecocredit.v1.EventCreateProject
 	(*EventCreateBatch)(nil),          // 2: regen.ecocredit.v1.EventCreateBatch
-	(*EventReceive)(nil),              // 3: regen.ecocredit.v1.EventReceive
-	(*EventRetire)(nil),               // 4: regen.ecocredit.v1.EventRetire
-	(*EventCancel)(nil),               // 5: regen.ecocredit.v1.EventCancel
-	(*EventClassAdminUpdated)(nil),    // 6: regen.ecocredit.v1.EventClassAdminUpdated
-	(*EventClassIssuersUpdated)(nil),  // 7: regen.ecocredit.v1.EventClassIssuersUpdated
-	(*EventClassMetadataUpdated)(nil), // 8: regen.ecocredit.v1.EventClassMetadataUpdated
+	(*EventMintBatchCredits)(nil),     // 3: regen.ecocredit.v1.EventMintBatchCredits
+	(*EventReceive)(nil),              // 4: regen.ecocredit.v1.EventReceive
+	(*EventRetire)(nil),               // 5: regen.ecocredit.v1.EventRetire
+	(*EventCancel)(nil),               // 6: regen.ecocredit.v1.EventCancel
+	(*EventClassAdminUpdated)(nil),    // 7: regen.ecocredit.v1.EventClassAdminUpdated
+	(*EventClassIssuersUpdated)(nil),  // 8: regen.ecocredit.v1.EventClassIssuersUpdated
+	(*EventClassMetadataUpdated)(nil), // 9: regen.ecocredit.v1.EventClassMetadataUpdated
+	(*OriginTx)(nil),                  // 10: regen.ecocredit.v1.OriginTx
 }
 var file_regen_ecocredit_v1_events_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	10, // 0: regen.ecocredit.v1.EventCreateBatch.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
+	10, // 1: regen.ecocredit.v1.EventMintBatchCredits.origin_tx:type_name -> regen.ecocredit.v1.OriginTx
+	2,  // [2:2] is the sub-list for method output_type
+	2,  // [2:2] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_v1_events_proto_init() }
@@ -6474,6 +7200,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 	if File_regen_ecocredit_v1_events_proto != nil {
 		return
 	}
+	file_regen_ecocredit_v1_types_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_regen_ecocredit_v1_events_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventCreateClass); i {
@@ -6512,7 +7239,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventReceive); i {
+			switch v := v.(*EventMintBatchCredits); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6524,7 +7251,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventRetire); i {
+			switch v := v.(*EventReceive); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6536,7 +7263,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventCancel); i {
+			switch v := v.(*EventRetire); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6548,7 +7275,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventClassAdminUpdated); i {
+			switch v := v.(*EventCancel); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6560,7 +7287,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventClassIssuersUpdated); i {
+			switch v := v.(*EventClassAdminUpdated); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6572,6 +7299,18 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_v1_events_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventClassIssuersUpdated); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_v1_events_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventClassMetadataUpdated); i {
 			case 0:
 				return &v.state
@@ -6590,7 +7329,7 @@ func file_regen_ecocredit_v1_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_v1_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
