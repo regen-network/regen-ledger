@@ -59,6 +59,9 @@ type MsgClient interface {
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
+	// NewCreditType is a governance only method that adds a new credit type to
+	// the chain.
+	NewCreditType(ctx context.Context, in *MsgNewCreditType, opts ...grpc.CallOption) (*MsgNewCreditTypeResponse, error)
 }
 
 type msgClient struct {
@@ -168,6 +171,15 @@ func (c *msgClient) UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassM
 	return out, nil
 }
 
+func (c *msgClient) NewCreditType(ctx context.Context, in *MsgNewCreditType, opts ...grpc.CallOption) (*MsgNewCreditTypeResponse, error) {
+	out := new(MsgNewCreditTypeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/NewCreditType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -209,6 +221,9 @@ type MsgServer interface {
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
 	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
+	// NewCreditType is a governance only method that adds a new credit type to
+	// the chain.
+	NewCreditType(context.Context, *MsgNewCreditType) (*MsgNewCreditTypeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -248,6 +263,9 @@ func (UnimplementedMsgServer) UpdateClassIssuers(context.Context, *MsgUpdateClas
 }
 func (UnimplementedMsgServer) UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateClassMetadata not implemented")
+}
+func (UnimplementedMsgServer) NewCreditType(context.Context, *MsgNewCreditType) (*MsgNewCreditTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewCreditType not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -460,6 +478,24 @@ func _Msg_UpdateClassMetadata_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_NewCreditType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgNewCreditType)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).NewCreditType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/NewCreditType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).NewCreditType(ctx, req.(*MsgNewCreditType))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -510,6 +546,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateClassMetadata",
 			Handler:    _Msg_UpdateClassMetadata_Handler,
+		},
+		{
+			MethodName: "NewCreditType",
+			Handler:    _Msg_NewCreditType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

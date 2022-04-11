@@ -5,6 +5,7 @@ package regen.ecocredit.v1;
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
@@ -63,6 +64,10 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
+
+  // NewCreditType is a governance only method that adds a new credit type to
+  // the chain.
+  rpc NewCreditType(MsgNewCreditType) returns (MsgNewCreditTypeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -379,3 +384,14 @@ message MsgUpdateClassMetadata {
 
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+// MsgNewCreditType is the Msg/NewCreditType request type.
+message MsgNewCreditType {
+  // root_address should be the governance address.
+  string root_address = 1;
+  // credit_type is the credit type to add.
+  CreditType credit_type = 2;
+}
+
+// MsgNewCreditTypeResponse is the Msg/NewCreditType response type.
+message MsgNewCreditTypeResponse {}
