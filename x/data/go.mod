@@ -14,11 +14,11 @@ require (
 	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
+	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 	google.golang.org/grpc v1.44.0
-	google.golang.org/protobuf v1.27.1
 	gotest.tools/v3 v3.1.0
 )
 
@@ -115,11 +115,11 @@ require (
 	github.com/tendermint/tm-db v0.6.7 // indirect
 	github.com/zondax/hid v0.9.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
-	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272 // indirect
 	golang.org/x/net v0.0.0-20211005001312-d4b1ae081e3b // indirect
 	golang.org/x/sys v0.0.0-20211004093028-2c5d950f24ef // indirect
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
