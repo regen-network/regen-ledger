@@ -29,7 +29,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:          addr2.String(),
 						TradableAmount:     "1000",
@@ -65,7 +65,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:          addr2.String(),
 						RetiredAmount:      "50",
@@ -81,7 +81,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:      addr2.String(),
 						TradableAmount: "abc",
@@ -96,7 +96,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient: addr2.String(),
 					},
@@ -110,7 +110,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:     addr2.String(),
 						RetiredAmount: "abc",
@@ -125,7 +125,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:          addr2.String(),
 						RetiredAmount:      "50",
@@ -141,7 +141,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:     addr2.String(),
 						RetiredAmount: "50",
@@ -202,7 +202,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						Recipient:          "wrongRecipient",
 						RetiredAmount:      "50",
@@ -218,7 +218,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
+				Issuance: []*BatchIssuance{
 					{
 						RetiredAmount:      "50",
 						RetirementLocation: "ST-UVW XY Z12",

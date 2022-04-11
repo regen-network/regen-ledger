@@ -13,62 +13,81 @@ service Query {
 
   // GroupInfo queries group info based on group id.
   rpc GroupInfo(QueryGroupInfoRequest) returns (QueryGroupInfoResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/info";
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/groups/{group_id}/info";
   }
 
   // GroupAccountInfo queries group account info based on group account address.
-  rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/accounts/{address}";
+  rpc GroupAccountInfo(QueryGroupAccountInfoRequest)
+      returns (QueryGroupAccountInfoResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/groups/accounts/{address}";
   }
   // GroupMembers queries members of a group
-  rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/members";
+  rpc GroupMembers(QueryGroupMembersRequest)
+      returns (QueryGroupMembersResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/groups/{group_id}/members";
   }
 
   // GroupsByAdmin queries groups by admin address.
-  rpc GroupsByAdmin(QueryGroupsByAdminRequest) returns (QueryGroupsByAdminResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/admins/{admin}";
+  rpc GroupsByAdmin(QueryGroupsByAdminRequest)
+      returns (QueryGroupsByAdminResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/groups/admins/{admin}";
   }
 
   // GroupAccountsByGroup queries group accounts by group id.
-  rpc GroupAccountsByGroup(QueryGroupAccountsByGroupRequest) returns (QueryGroupAccountsByGroupResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/accounts";
+  rpc GroupAccountsByGroup(QueryGroupAccountsByGroupRequest)
+      returns (QueryGroupAccountsByGroupResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/groups/{group_id}/accounts";
   }
-  
+
   // GroupsByAdmin queries group accounts by admin address.
-  rpc GroupAccountsByAdmin(QueryGroupAccountsByAdminRequest) returns (QueryGroupAccountsByAdminResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/admins/{admin}/accounts";
+  rpc GroupAccountsByAdmin(QueryGroupAccountsByAdminRequest)
+      returns (QueryGroupAccountsByAdminResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/admins/{admin}/accounts";
   }
-  
+
   // Proposal queries a proposal based on proposal id.
   rpc Proposal(QueryProposalRequest) returns (QueryProposalResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}";
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/proposals/{proposal_id}";
   }
 
   // ProposalsByGroupAccount queries proposals based on group account address.
-  rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest) returns (QueryProposalsByGroupAccountResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/group-accounts/{address}/proposals";
+  rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest)
+      returns (QueryProposalsByGroupAccountResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/group-accounts/{address}/proposals";
   }
-  
+
   // VoteByProposalVoter queries a vote by proposal id and voter.
-  rpc VoteByProposalVoter(QueryVoteByProposalVoterRequest) returns (QueryVoteByProposalVoterResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}/votes/{voter}";
+  rpc VoteByProposalVoter(QueryVoteByProposalVoterRequest)
+      returns (QueryVoteByProposalVoterResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/proposals/{proposal_id}/votes/{voter}";
   }
 
   // VotesByProposal queries a vote by proposal.
-  rpc VotesByProposal(QueryVotesByProposalRequest) returns (QueryVotesByProposalResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}/votes";
+  rpc VotesByProposal(QueryVotesByProposalRequest)
+      returns (QueryVotesByProposalResponse) {
+    option (google.api.http).get =
+        "/regen/group/v1alpha1/proposals/{proposal_id}/votes";
   }
 
   // VotesByVoter queries a vote by voter.
-  rpc VotesByVoter(QueryVotesByVoterRequest) returns (QueryVotesByVoterResponse) {
+  rpc VotesByVoter(QueryVotesByVoterRequest)
+      returns (QueryVotesByVoterResponse) {
     option (google.api.http).get = "/regen/group/v1alpha1/voters/{voter}";
   }
 }
 
 // QueryGroupInfoRequest is the Query/GroupInfo request type.
 message QueryGroupInfoRequest {
-  
+
   // group_id is the unique ID of the group.
   uint64 group_id = 1;
 }
@@ -76,8 +95,8 @@ message QueryGroupInfoRequest {
 // QueryGroupInfoResponse is the Query/GroupInfo response type.
 message QueryGroupInfoResponse {
 
-    // info is the GroupInfo for the group.
-    GroupInfo info = 1;
+  // info is the GroupInfo for the group.
+  GroupInfo info = 1;
 }
 
 // QueryGroupAccountInfoRequest is the Query/GroupAccountInfo request type.
@@ -90,8 +109,8 @@ message QueryGroupAccountInfoRequest {
 // QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
 message QueryGroupAccountInfoResponse {
 
-    // info is the GroupAccountInfo for the group account.
-    GroupAccountInfo info = 1;
+  // info is the GroupAccountInfo for the group account.
+  GroupAccountInfo info = 1;
 }
 
 // QueryGroupMembersRequest is the Query/GroupMembersRequest request type.
@@ -134,9 +153,10 @@ message QueryGroupsByAdminResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request
+// type.
 message QueryGroupAccountsByGroupRequest {
-  
+
   // group_id is the unique ID of the group account's group.
   uint64 group_id = 1;
 
@@ -144,19 +164,22 @@ message QueryGroupAccountsByGroupRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response
+// type.
 message QueryGroupAccountsByGroupResponse {
 
-  // group_accounts are the group accounts info associated with the provided group.
+  // group_accounts are the group accounts info associated with the provided
+  // group.
   repeated GroupAccountInfo group_accounts = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request
+// type.
 message QueryGroupAccountsByAdminRequest {
-  
+
   // admin is the admin address of the group account.
   string admin = 1;
 
@@ -164,7 +187,8 @@ message QueryGroupAccountsByAdminRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response
+// type.
 message QueryGroupAccountsByAdminResponse {
 
   // group_accounts are the group accounts info with provided admin.
@@ -188,7 +212,8 @@ message QueryProposalResponse {
   Proposal proposal = 1;
 }
 
-// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
+// QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount
+// request type.
 message QueryProposalsByGroupAccountRequest {
 
   // address is the group account address related to proposals.
@@ -198,7 +223,8 @@ message QueryProposalsByGroupAccountRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount response type.
+// QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount
+// response type.
 message QueryProposalsByGroupAccountResponse {
 
   // proposals are the proposals with given group account.
@@ -208,17 +234,19 @@ message QueryProposalsByGroupAccountResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request
+// type.
 message QueryVoteByProposalVoterRequest {
 
   // proposal_id is the unique ID of a proposal.
   uint64 proposal_id = 1;
-  
+
   // voter is a proposal voter account address.
   string voter = 2;
 }
 
-// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response
+// type.
 message QueryVoteByProposalVoterResponse {
 
   // vote is the vote with given proposal_id and voter.
@@ -230,7 +258,7 @@ message QueryVotesByProposalRequest {
 
   // proposal_id is the unique ID of a proposal.
   uint64 proposal_id = 1;
-  
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }

@@ -3,9 +3,12 @@ package testsuite
 import (
 	"context"
 	"crypto"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -17,6 +20,7 @@ type IntegrationTestSuite struct {
 	fixture        testutil.Fixture
 
 	ctx         context.Context
+	sdkCtx      sdk.Context
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress
@@ -32,8 +36,12 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *Integratio
 func (s *IntegrationTestSuite) SetupSuite() {
 	require := s.Require()
 
+	blockTime, err := time.Parse("2006-01-02", "2022-01-01")
+	require.NoError(err)
+
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
+	s.sdkCtx = s.ctx.(types.Context).WithBlockTime(blockTime)
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
 	require.GreaterOrEqual(len(s.fixture.Signers()), 2)
@@ -42,7 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	content := []byte("xyzabc123")
 	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(content)
+	_, err = hash.Write(content)
 	require.NoError(err)
 	digest := hash.Sum(nil)
 
@@ -51,14 +59,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
 	}
-	s.hash1 = &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
+	s.hash1 = &data.ContentHash{Graph: graphHash}
 
 	rawHash := &data.ContentHash_Raw{
 		Hash:            digest,
 		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
+		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 	}
-	s.hash2 = &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
+	s.hash2 = &data.ContentHash{Raw: rawHash}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -83,8 +91,9 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 
-	// set original timestamp
-	ts := anchorRes1.Timestamp
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
@@ -94,7 +103,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
-	require.Equal(ts, anchorRes2.Timestamp)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
 	// can query data by iri
 	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
@@ -103,7 +112,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(dataByIRI)
 	require.NotNil(dataByIRI.Entry)
-	require.Equal(ts, dataByIRI.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
 
 	// can query data by hash
 	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
@@ -112,7 +121,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(dataByHash)
 	require.NotNil(dataByHash.Entry)
-	require.Equal(ts, dataByHash.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
 
 	// can query iri by hash
 	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
@@ -144,21 +153,20 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.Empty(attestorsByHash.Attestors)
 
-	// TODO: should attesting to data return a timestamp?
-
 	// can attest to data
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr1.String()},
-		Hash:      graphHash,
+		Attestor: s.addr1.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 
 	// attesting to the same data twice is a no-op
-	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr1.String()},
-		Hash:      graphHash,
+	attestRes, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
+		Attestor: s.addr1.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
+	require.Nil(attestRes.NewEntries)
 
 	// can query attestors by iri
 	attestorsByIri, err = s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
@@ -187,8 +195,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// another attestor can attest
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestors: []string{s.addr2.String()},
-		Hash:      graphHash,
+		Attestor: s.addr2.String(),
+		Hashes:   []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 
@@ -224,8 +232,9 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NotNil(anchorRes1)
 	require.Equal(iri, anchorRes1.Iri)
 
-	// set original timestamp
-	ts := anchorRes1.Timestamp
+	// update block time
+	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
@@ -235,7 +244,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(anchorRes2)
 	require.Equal(iri, anchorRes2.Iri)
-	require.Equal(ts, anchorRes2.Timestamp)
+	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
 	// can query data by iri
 	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
@@ -244,7 +253,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(dataByIRI)
 	require.NotNil(dataByIRI.Entry)
-	require.Equal(ts, dataByIRI.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
 
 	// can query data by hash
 	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
@@ -253,7 +262,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(dataByHash)
 	require.NotNil(dataByHash.Entry)
-	require.Equal(ts, dataByHash.Entry.Timestamp)
+	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
 
 	// can query iri by hash
 	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{

@@ -3,7 +3,6 @@ package marketplace
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,8 +10,9 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // UpdateSellOrders updates the sellOrder with the provided values.
@@ -44,7 +44,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 // applySellOrderUpdates applies the updates to the order.
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var creditType *ecocredit.CreditType
+	var creditType *core.CreditType
 	event := marketplace.EventUpdateSellOrder{}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
@@ -55,14 +55,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		if err != nil {
 			return err
 		}
-		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
-		//has, err := isDenomAllowed(ctx, k.stateStore, update.AskPrice.Denom)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//if !has {
-		//	return nil, ecocredit.ErrInvalidRequest.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
-		//}
+		if !isDenomAllowed(sdkCtx, update.NewAskPrice.Denom, k.paramsKeeper) {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s cannot be used in sell orders", update.NewAskPrice.Denom)
+		}
 		if market.BankDenom != update.NewAskPrice.Denom {
 			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {
@@ -136,12 +131,12 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 }
 
 // getCreditTypeFromBatchId gets the credit type given a batch id.
-func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecocredit.CreditType, error) {
+func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*core.CreditType, error) {
 	batch, err := k.coreStore.BatchInfoTable().Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

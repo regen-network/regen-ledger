@@ -54,11 +54,12 @@ message EventUpdateSellOrder {
   // new_ask_price is the new ask price for this sell order
   cosmos.base.v1beta1.Coin new_ask_price = 5;
 
-  // disable_auto_retire updates the disable_auto_retire field in the sell order.
+  // disable_auto_retire updates the disable_auto_retire field in the sell
+  // order.
   bool disable_auto_retire = 6;
 
-  // new_expiration is an optional timestamp when the sell order expires. When the
-  // expiration time is reached, the sell order is removed from state.
+  // new_expiration is an optional timestamp when the sell order expires. When
+  // the expiration time is reached, the sell order is removed from state.
   google.protobuf.Timestamp new_expiration = 7 [ (gogoproto.stdtime) = true ];
 }
 
@@ -68,7 +69,8 @@ message EventBuyOrderCreated {
   // buy_order_id is the unique ID of buy order.
   uint64 buy_order_id = 1;
 
-  // sell_order_id is the sell order ID against which the buyer is trying to buy.
+  // sell_order_id is the sell order ID against which the buyer is trying to
+  // buy.
   uint64 sell_order_id = 2;
 
   // quantity is the quantity of credits to buy. If the quantity of credits
@@ -82,8 +84,8 @@ message EventBuyOrderCreated {
   // to complete the purchase.
   cosmos.base.v1beta1.Coin bid_price = 4;
 
-  // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
-  // the credits will not auto-retire and can be resold assuming that the
+  // disable_auto_retire allows auto-retirement to be disabled. If it is set to
+  // true the credits will not auto-retire and can be resold assuming that the
   // corresponding sell order has auto-retirement disabled. If the sell order
   // hasn't disabled auto-retirement and the buy order tries to disable it,
   // that buy order will fail.

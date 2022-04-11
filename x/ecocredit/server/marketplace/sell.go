@@ -31,7 +31,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.params, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -52,14 +52,14 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 			return nil, err
 		}
 
-		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
-		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//if !has {
-		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
-		//}
+		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
+		}
+
+		var expiration *timestamppb.Timestamp
+		if order.Expiration != nil {
+			expiration = timestamppb.New(*order.Expiration)
+		}
 
 		var expiration *timestamppb.Timestamp
 		if order.Expiration != nil {
@@ -139,31 +139,5 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	bal.Tradable = newTradable.String()
 	bal.Escrowed = newEscrowed.String()
 
-	if err = k.coreStore.BatchBalanceTable().Update(ctx, bal); err != nil {
-		return err
-	}
-
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, batchId)
-	if err != nil {
-		return err
-	}
-	supTradable, err := math.NewDecFromString(supply.TradableAmount)
-	if err != nil {
-		return err
-	}
-	supEscrow, err := math.NewDecFromString(supply.EscrowedAmount)
-	if err != nil {
-		return err
-	}
-	supTradable, err = math.SafeSubBalance(supTradable, sellQty)
-	if err != nil {
-		return err
-	}
-	supEscrow, err = math.SafeAddBalance(supEscrow, sellQty)
-	if err != nil {
-		return err
-	}
-	supply.EscrowedAmount = supEscrow.String()
-	supply.TradableAmount = supTradable.String()
-	return k.coreStore.BatchSupplyTable().Save(ctx, supply)
+	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
 }

@@ -16,7 +16,7 @@ require (
 	github.com/rs/zerolog v1.26.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tendermint/tendermint v0.34.15
 	github.com/tendermint/tm-db v0.6.7
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
@@ -144,8 +144,6 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.45.0-regen-1
 
 replace github.com/regen-network/regen-ledger/types => ./types
-
-replace github.com/regen-network/regen-ledger/orm => ./orm
 
 replace github.com/regen-network/regen-ledger/x/data => ./x/data
 

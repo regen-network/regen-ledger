@@ -7969,7 +7969,8 @@ type MsgAllowAskDenom struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// root_address is the address of the governance account which can authorize ask denoms
+	// root_address is the address of the governance account which can authorize
+	// ask denoms
 	RootAddress string `protobuf:"bytes,1,opt,name=root_address,json=rootAddress,proto3" json:"root_address,omitempty"`
 	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
 	Denom string `protobuf:"bytes,2,opt,name=denom,proto3" json:"denom,omitempty"`
@@ -8150,10 +8151,11 @@ type MsgUpdateSellOrders_Update struct {
 	NewQuantity string `protobuf:"bytes,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	// new_ask_price is the new ask price for this sell order
 	NewAskPrice *v1beta1.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
-	// disable_auto_retire updates the disable_auto_retire field in the sell order.
+	// disable_auto_retire updates the disable_auto_retire field in the sell
+	// order.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// new_expiration is an optional timestamp when the sell order expires. When the
-	// expiration time is reached, the sell order is removed from state.
+	// new_expiration is an optional timestamp when the sell order expires. When
+	// the expiration time is reached, the sell order is removed from state.
 	NewExpiration *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=new_expiration,json=newExpiration,proto3" json:"new_expiration,omitempty"`
 }
 
@@ -8229,11 +8231,11 @@ type MsgBuy_Order struct {
 	// buy order will fail if the buyer does not have enough funds available
 	// to complete the purchase.
 	BidPrice *v1beta1.Coin `protobuf:"bytes,3,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
-	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
-	// the credits will not auto-retire and can be resold assuming that the
-	// corresponding sell order has auto-retirement disabled. If the sell order
-	// hasn't disabled auto-retirement and the buy order tries to disable it,
-	// that buy order will fail.
+	// disable_auto_retire allows auto-retirement to be disabled. If it is set
+	// to true the credits will not auto-retire and can be resold assuming that
+	// the corresponding sell order has auto-retirement disabled. If the sell
+	// order hasn't disabled auto-retirement and the buy order tries to disable
+	// it, that buy order will fail.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 	// disable_partial_fill disables the default behavior of partially filling
 	// buy orders if the requested quantity is not available.
@@ -8375,14 +8377,15 @@ type isMsgBuy_Order_Selection_Sum interface {
 }
 
 type MsgBuy_Order_Selection_SellOrderId struct {
-	// sell_order_id is the sell order ID against which the buyer is trying to buy.
-	// When sell_order_id is set, this is known as a direct buy order because it
-	// is placed directly against a specific sell order.
+	// sell_order_id is the sell order ID against which the buyer is trying
+	// to buy. When sell_order_id is set, this is known as a direct buy
+	// order because it is placed directly against a specific sell order.
 	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3,oneof"`
 }
 
 type MsgBuy_Order_Selection_Filter struct {
-	// filter selects credits to buy based upon the specified filter criteria.
+	// filter selects credits to buy based upon the specified filter
+	// criteria.
 	Filter *Filter `protobuf:"bytes,2,opt,name=filter,proto3,oneof"`
 }
 

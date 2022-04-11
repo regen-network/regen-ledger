@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package regen.data.v1;
 
-import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "regen/data/v1/types.proto";
 
@@ -21,10 +20,10 @@ service Msg {
 
   // Attest allows for digital signing of an arbitrary piece of data on the
   // blockchain. By attesting to data, the attestor is making a statement about
-  // the veracity of the data itself. It is like signing a legal document, meaning
-  // that I agree to all conditions and to the best of my knowledge everything
-  // is true. When anchoring data, the sender is not attesting to the veracity
-  // of the data, they are simply communicating that it exists.
+  // the veracity of the data itself. It is like signing a legal document,
+  // meaning that I agree to all conditions and to the best of my knowledge
+  // everything is true. When anchoring data, the sender is not attesting to the
+  // veracity of the data, they are simply communicating that it exists.
   //
   // On-chain signatures have the following benefits:
   // - on-chain identities can be managed using different cryptographic keys
@@ -36,10 +35,11 @@ service Msg {
   //
   // Attest implicitly calls Anchor if the data was not already anchored.
   //
-  // Attest can be called multiple times for the same content hash with different
-  // attestors and those attestors will be appended to the list of attestors. If
-  // the same attestor attempts to attest to the same piece of data, the attestor
-  // will be ignored and a new attestation with a new timestamp will not be added.
+  // Attest can be called multiple times for the same content hash with
+  // different attestors and those attestors will be appended to the list of
+  // attestors. If the same attestor attempts to attest to the same piece of
+  // data, the attestor will be ignored and a new attestation with a new
+  // timestamp will not be added.
   rpc Attest(MsgAttest) returns (MsgAttestResponse);
 
   // DefineResolver defines a resolver URL and assigns it a new integer ID
@@ -47,46 +47,51 @@ service Msg {
   rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
 
   // RegisterResolver registers data content hashes
-  rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
+  rpc RegisterResolver(MsgRegisterResolver)
+      returns (MsgRegisterResolverResponse);
 }
 
 // MsgAnchor is the Msg/Anchor request type.
 message MsgAnchor {
-  // sender is the address of the sender of the transaction.
-  // The sender in Anchor is not attesting to the veracity of the underlying
-  // data. They can simply be an intermediary providing services.
+  // sender is the address of the sender of the transaction. The sender in
+  // Anchor is not attesting to the veracity of the underlying data. They
+  // can simply be an intermediary providing services.
   string sender = 1;
 
-  // hash is the hash-based identifier for the anchored content.
+  // hash is the content hash for the data to anchor.
   ContentHash hash = 2;
 }
 
 // MsgAnchor is the Msg/Anchor response type.
 message MsgAnchorResponse {
-  // timestamp is the timestamp of the block at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 1;
-
   // iri is the IRI of the data that was anchored.
-  string iri = 2;
+  string iri = 1;
+
+  // timestamp is the timestamp at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 2;
 }
 
 // MsgAttest is the Msg/Attest request type.
 message MsgAttest {
-  option (gogoproto.goproto_getters) = false;
+  // attestor is the addresses of the account attesting to the veracity of the
+  // data. By making an Attest request, the attestor is attesting to the
+  // veracity of the data referenced by the IRI. The precise meaning of this may
+  // vary depending on the underlying data.
+  string attestor = 1;
 
-  // attestors are the addresses of the accounts attesting to the validity of the data.
-  // By making an Attest request, the attestors are attesting to the veracity
-  // of the data referenced by the cid. The precise meaning of this may vary
-  // depending on the underlying data.
-  repeated string attestors = 1;
-
-  // hash is the hash-based identifier for the anchored content. Only RDF graph
-  // data can be signed as its data model is intended to specifically convey semantic meaning.
-  ContentHash.Graph hash = 2;
+  // hashes are the content hashes for anchored data. Only RDF graph data can be
+  // signed as its data model is intended to specifically convey semantic
+  // meaning.
+  repeated ContentHash.Graph hashes = 2;
 }
 
 // MsgAttestResponse is the Msg/Attest response type.
-message MsgAttestResponse {}
+message MsgAttestResponse {
+  // new_entries are the new attestor entries including the attestor, the IRI,
+  // and the timestamp. If the attestor attests to the same piece of data, the
+  // entry will not be updated and not included in the response.
+  repeated AttestorEntry new_entries = 1;
+}
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 message MsgDefineResolver {
@@ -106,7 +111,8 @@ message MsgDefineResolver {
 
 // MsgDefineResolverResponse is the Msg/DefineResolver response type.
 message MsgDefineResolverResponse {
-  // resolver_id is the integer ID of the resolver to be used in MsgRegisterResolver.
+  // resolver_id is the integer ID of the resolver to be used in
+  // MsgRegisterResolver.
   uint64 resolver_id = 1;
 }
 
