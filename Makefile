@@ -411,4 +411,4 @@ include sims.mk
 ###############################################################################
 
 generate:
-	find . -name 'go.mod' -type f -execdir sh -c 'go generate ./...' \;
+	find . -name 'go.mod' -type f -execdir go generate ./... \;
