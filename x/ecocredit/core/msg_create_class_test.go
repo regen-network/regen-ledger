@@ -115,8 +115,8 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid duplicate issuer": {
 			src: MsgCreateClass{
-				Admin:            addr1.String(),
-				Issuers:          []string{addr1.String(), addr2.String(), addr1.String()},
+				Admin:            addr1,
+				Issuers:          []string{addr1, addr2, addr1},
 				CreditTypeAbbrev: "C",
 				Metadata:         "hello",
 				Fee:              validFee,
