@@ -240,36 +240,3 @@ func QueryBuyOrdersByAddressCmd() *cobra.Command {
 
 	return cmd
 }
-
-// QueryAllowedDenomsCmd returns a query command that retrieves all allowed ask denoms with pagination.
-func QueryAllowedDenomsCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "allowed-denoms",
-		Short: "List all allowed denoms with pagination",
-		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := sdkclient.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			client := marketplace.NewQueryClient(ctx)
-			pagination, err := sdkclient.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := client.AllowedDenoms(cmd.Context(), &marketplace.QueryAllowedDenomsRequest{
-				Pagination: pagination,
-			})
-			if err != nil {
-				return err
-			}
-
-			return ctx.PrintProto(res)
-		},
-	}
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "allowed-denoms")
-
-	return cmd
-}

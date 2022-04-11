@@ -263,9 +263,3 @@ Parameters:
 
 	return cmd
 }
-
-// TxAllowAskDenomCmd returns a transaction command which authorizes a new ask denom.
-func TxAllowAskDenomCmd() *cobra.Command {
-	// TODO: implement
-	return &cobra.Command{}
-}

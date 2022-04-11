@@ -910,57 +910,6 @@ func (s *IntegrationTestSuite) TestQueryBuyOrdersByAddress() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expDenoms []*ecocredit.AskDenom
-	}{
-		{
-			name:      "too many args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 0 arg(s), received 1",
-		},
-		// TODO: AllowAskDenom not yet implemented #624
-		//{
-		//	name:      "valid",
-		//	args:      []string{},
-		//	expErr:    false,
-		//	expErrMsg: "",
-		//	expDenoms: []*ecocredit.AskDenom{
-		//		{
-		//			Denom:        "regen",
-		//			DisplayDenom: "uregen",
-		//			Exponent:     6,
-		//		},
-		//	},
-		//},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := marketplaceclient.QueryAllowedDenomsCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res ecocredit.QueryAllowedAskDenomsResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expDenoms, res.AskDenoms)
-			}
-		})
-	}
-}
-
 func (s *IntegrationTestSuite) TestQueryProjects() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
