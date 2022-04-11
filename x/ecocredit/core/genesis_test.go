@@ -177,7 +177,6 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: invalid supply",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.CreditTypes":[{"abbreviation":"C","name":"carbon","unit":"metric ton CO2 equivalent","precision":6}],
 					"regen.ecocredit.v1.ClassInfo":[{"name":"1","admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=","metadata":"meta-data","credit_type":"C"}],
 					"regen.ecocredit.v1.ProjectInfo":[{"name":"01","admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=","class_id":"1","project_location":"AQ","metadata":"meta-data"}],
 					"regen.ecocredit.v1.BatchInfo":[{"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=","project_id":"1","batch_denom":"1/2","metadata":"meta-data","start_date":null,"end_date":null,"issuance_date":null}],
@@ -189,137 +188,36 @@ func TestGenesisValidate(t *testing.T) {
 			true,
 			"supply is incorrect for 1 credit batch, expected 10, got 200: invalid coins",
 		},
-		// {
-		// 	"valid test case",
-		// 	func() *ecocredit.GenesisState {
-		// 		genesisState := ecocredit.DefaultGenesisState()
-		// 		genesisState.ClassInfo = []*ecocredit.ClassInfo{
-		// 			{
-		// 				ClassId:    "1",
-		// 				Admin:      addr1.String(),
-		// 				Issuers:    []string{addr1.String(), addr2.String()},
-		// 				Metadata:   []byte("meta-data"),
-		// 				CreditType: genesisState.Params.CreditTypes[0],
-		// 			},
-		// 		}
-		// 		genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
-		// 			{
-		// 				ProjectId:       "01",
-		// 				ClassId:         "1",
-		// 				Issuer:          addr1.String(),
-		// 				Metadata:        []byte("meta-data"),
-		// 				ProjectLocation: "AQ",
-		// 			},
-		// 		}
-		// 		genesisState.BatchInfo = []*ecocredit.BatchInfo{
-		// 			{
-		// 				ProjectId:   "01",
-		// 				BatchDenom:  "1/2",
-		// 				TotalAmount: "1000",
-		// 				Metadata:    []byte("meta-data"),
-		// 			},
-		// 		}
-		// 		genesisState.Balances = []*ecocredit.Balance{
-		// 			{
-		// 				Address:         addr2.String(),
-		// 				BatchDenom:      "1/2",
-		// 				TradableBalance: "100.123",
-		// 				RetiredBalance:  "100.123",
-		// 			},
-		// 			{
-		// 				Address:         addr1.String(),
-		// 				BatchDenom:      "1/2",
-		// 				TradableBalance: "100.123",
-		// 				RetiredBalance:  "100.123",
-		// 			},
-		// 		}
-		// 		genesisState.Supplies = []*ecocredit.Supply{
-		// 			{
-		// 				BatchDenom:     "1/2",
-		// 				TradableSupply: "200.246",
-		// 				RetiredSupply:  "200.246",
-		// 			},
-		// 		}
-		// 		return genesisState
-		// 	},
-		// 	false,
-		// 	"",
-		// },
-		// {
-		// 	"valid test case, multiple classes",
-		// 	func() *ecocredit.GenesisState {
-		// 		genesisState := ecocredit.DefaultGenesisState()
-		// 		genesisState.ClassInfo = []*ecocredit.ClassInfo{
-		// 			{
-		// 				ClassId:    "1",
-		// 				Admin:      addr1.String(),
-		// 				Issuers:    []string{addr1.String(), addr2.String()},
-		// 				Metadata:   []byte("meta-data"),
-		// 				CreditType: genesisState.Params.CreditTypes[0],
-		// 			},
-		// 			{
-		// 				ClassId:    "2",
-		// 				Admin:      addr2.String(),
-		// 				Issuers:    []string{addr1.String(), addr2.String()},
-		// 				Metadata:   []byte("meta-data"),
-		// 				CreditType: genesisState.Params.CreditTypes[0],
-		// 			},
-		// 		}
-		// 		genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
-		// 			{
-		// 				ProjectId:       "01",
-		// 				ClassId:         "1",
-		// 				Issuer:          addr1.String(),
-		// 				Metadata:        []byte("meta-data"),
-		// 				ProjectLocation: "AQ",
-		// 			},
-		// 		}
-		// 		genesisState.BatchInfo = []*ecocredit.BatchInfo{
-		// 			{
-		// 				ProjectId:   "01",
-		// 				BatchDenom:  "1/2",
-		// 				TotalAmount: "1000",
-		// 				Metadata:    []byte("meta-data"),
-		// 			},
-		// 			{
-		// 				ProjectId:       "01",
-		// 				BatchDenom:      "2/2",
-		// 				AmountCancelled: "0",
-		// 				TotalAmount:     "1000",
-		// 				Metadata:        []byte("meta-data"),
-		// 			},
-		// 		}
-		// 		genesisState.Balances = []*ecocredit.Balance{
-		// 			{
-		// 				Address:         addr2.String(),
-		// 				BatchDenom:      "1/2",
-		// 				TradableBalance: "100.123",
-		// 				RetiredBalance:  "100.123",
-		// 			},
-		// 			{
-		// 				Address:         addr1.String(),
-		// 				BatchDenom:      "2/2",
-		// 				TradableBalance: "100.123",
-		// 				RetiredBalance:  "100.123",
-		// 			},
-		// 		}
-		// 		genesisState.Supplies = []*ecocredit.Supply{
-		// 			{
-		// 				BatchDenom:     "1/2",
-		// 				TradableSupply: "100.123",
-		// 				RetiredSupply:  "100.123",
-		// 			},
-		// 			{
-		// 				BatchDenom:     "2/2",
-		// 				TradableSupply: "100.123",
-		// 				RetiredSupply:  "100.123",
-		// 			},
-		// 		}
-		// 		return genesisState
-		// 	},
-		// 	false,
-		// 	"",
-		// },
+		{
+			"valid test case",
+			func() json.RawMessage {
+				return json.RawMessage(`{
+				"regen.ecocredit.v1.ClassInfo":[{"name":"1","admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","metadata":"meta-data","credit_type":"C"}],
+				"regen.ecocredit.v1.ProjectInfo":[{"name":"01","admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","class_id":"1","project_location":"AQ","metadata":"meta-data"}],
+				"regen.ecocredit.v1.BatchInfo":[{"issuer":null,"project_id":"1","batch_denom":"1/2","metadata":"meta-data","start_date":null,"end_date":null,"issuance_date":null}],
+				"regen.ecocredit.v1.BatchBalance":[{"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=","batch_id":"1","tradable":"100.123","retired":"100.123","escrowed":""},{"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","batch_id":"1","tradable":"100.123","retired":"100.123","escrowed":""}],
+				"regen.ecocredit.v1.BatchSupply":[{"batch_id":"1","tradable_amount":"200.246","retired_amount":"200.246","cancelled_amount":""}]
+			}`)
+			},
+			defaultParams,
+			false,
+			"",
+		},
+		{
+			"valid test case, multiple classes",
+			func() json.RawMessage {
+				return json.RawMessage(`{
+					"regen.ecocredit.v1.ClassInfo":[{"name":"1","admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","metadata":"meta-data","credit_type":"C"},{"name":"2","admin":"Ak5WDUYGfdv4gNMF500MFF86NWA=","metadata":"meta-data","credit_type":"C"}],
+					"regen.ecocredit.v1.ProjectInfo":[{"name":"01","admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","class_id":"1","project_location":"AQ","metadata":"meta-data"},{"name":"03","admin":"Ak5WDUYGfdv4gNMF500MFF86NWA=","class_id":"2","project_location":"AQ","metadata":"meta-data"}],
+					"regen.ecocredit.v1.BatchInfo":[{"issuer":null,"project_id":"1","batch_denom":"1/2","metadata":"meta-data","start_date":null,"end_date":null,"issuance_date":null},{"issuer":null,"project_id":"2","batch_denom":"2/2","metadata":"meta-data","start_date":null,"end_date":null,"issuance_date":null}],
+					"regen.ecocredit.v1.BatchBalance":[{"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=","batch_id":"1","tradable":"100.123","retired":"100.123","escrowed":""},{"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=","batch_id":"2","tradable":"100.123","retired":"100.123","escrowed":""}],
+					"regen.ecocredit.v1.BatchSupply":[{"batch_id":"1","tradable_amount":"100.123","retired_amount":"100.123","cancelled_amount":""},{"batch_id":"2","tradable_amount":"100.123","retired_amount":"100.123","cancelled_amount":""}]
+				}`)
+			},
+			defaultParams,
+			false,
+			"",
+		},
 	}
 
 	for _, tc := range testCases {
