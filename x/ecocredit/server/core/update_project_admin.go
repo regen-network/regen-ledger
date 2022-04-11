@@ -10,7 +10,7 @@ import (
 )
 
 // UpdateProjectAdmin updates the project admin.
-func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProjectAdmin) (*core.MsgUpdateProjectAdmin, error) {
+func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProjectAdmin) (*core.MsgUpdateProjectAdminResponse, error) {
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -33,5 +33,5 @@ func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProje
 		return nil, err
 	}
 
-	return &core.MsgUpdateProjectAdmin{}, nil
+	return &core.MsgUpdateProjectAdminResponse{}, nil
 }

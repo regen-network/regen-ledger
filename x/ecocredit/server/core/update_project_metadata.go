@@ -9,7 +9,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdateProjectMetadata) (*core.MsgUpdateProjectMetadata, error) {
+// UpdateProjectMetadata updates the project metadata.
+func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdateProjectMetadata) (*core.MsgUpdateProjectMetadataResponse, error) {
 	admin, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
@@ -26,5 +27,5 @@ func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdatePr
 		return nil, err
 	}
 
-	return &core.MsgUpdateProjectMetadata{}, nil
+	return &core.MsgUpdateProjectMetadataResponse{}, nil
 }
