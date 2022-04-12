@@ -404,17 +404,11 @@ localnet-stop:
 
 .PHONY: localnet-start localnet-stop localnet-build-nodes localnet-build-env
 
-
 include sims.mk
 
-regen-mocks:
-	go install github.com/golang/mock/mockgen@latest
+###############################################################################
+###                                Generate                                 ###
+###############################################################################
 
-	mkdir -p x/ecocredit/server/core/mocks
-	mockgen -source=x/ecocredit/server/core/keeper.go -package mocks -destination x/ecocredit/server/core/mocks/keeper.go
-	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
-
-	mkdir -p x/ecocredit/server/basket/mocks
-	mockgen -source=x/ecocredit/server/basket/keeper.go -package mocks -destination x/ecocredit/server/basket/mocks/keeper.go
-	mockgen -source=x/ecocredit/expected_keepers.go -package mocks -destination x/ecocredit/mocks/expected_keepers.go
-.PHONY: regen-mocks
+generate:
+	find . -name 'go.mod' -type f -execdir go generate ./... \;
