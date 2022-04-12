@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/utils"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -84,7 +84,7 @@ Parameters:
 
 				// parse and set expiration
 				if order.Expiration != "" {
-					expiration, err := utils.ParseDate("expiration", order.Expiration)
+					expiration, err := types.ParseDate("expiration", order.Expiration)
 					if err != nil {
 						return err
 					}
@@ -160,9 +160,11 @@ Parameters:
 				}
 
 				if o.Expiration != "" {
-					if err := utils.ParseAndSetDate(&orders[i].Expiration, "expiration", o.Expiration); err != nil {
+					tm, err := types.ParseDate("expiration", o.Expiration)
+					if err != nil {
 						return err
 					}
+					orders[i].Expiration = &tm
 				}
 			}
 
@@ -243,9 +245,11 @@ Parameters:
 				}
 
 				if u.NewExpiration != "" {
-					if err := utils.ParseAndSetDate(&updates[i].NewExpiration, "expiration", u.NewExpiration); err != nil {
+					tm, err := types.ParseDate("expiration", u.NewExpiration)
+					if err != nil {
 						return err
 					}
+					updates[i].NewExpiration = &tm
 				}
 			}
 

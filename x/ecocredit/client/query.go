@@ -46,9 +46,6 @@ func QueryCmd(name string) *cobra.Command {
 		marketplacecli.QuerySellOrdersCmd(),
 		marketplacecli.QuerySellOrdersByAddressCmd(),
 		marketplacecli.QuerySellOrdersByBatchDenomCmd(),
-		marketplacecli.QueryBuyOrderCmd(),
-		marketplacecli.QueryBuyOrdersCmd(),
-		marketplacecli.QueryBuyOrdersByAddressCmd(),
 	)
 	return cmd
 }

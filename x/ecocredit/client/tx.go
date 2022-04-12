@@ -17,10 +17,10 @@ import (
 	"github.com/spf13/cobra"
 	"sigs.k8s.io/yaml"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/utils"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -185,7 +185,7 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			startDate, err := utils.ParseDate("start_date", startDateStr)
+			startDate, err := types.ParseDate("start_date", startDateStr)
 			if err != nil {
 				return err
 			}
@@ -194,7 +194,7 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			endDate, err := utils.ParseDate("end_date", endDateStr)
+			endDate, err := types.ParseDate("end_date", endDateStr)
 			if err != nil {
 				return err
 			}
