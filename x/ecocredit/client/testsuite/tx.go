@@ -17,13 +17,13 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -158,9 +158,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err, out.String())
 
-	startDate, err := utils.ParseDate("start date", "2021-01-01")
+	startDate, err := types.ParseDate("start date", "2021-01-01")
 	s.Require().NoError(err)
-	endDate, err := utils.ParseDate("end date", "2021-02-01")
+	endDate, err := types.ParseDate("end date", "2021-02-01")
 	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
@@ -500,9 +500,9 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	invalidJsonFile := testutil.WriteToNewTempFile(s.T(), "{asdljdfklfklksdflk}")
 
 	// Create a valid MsgCreateBatch
-	startDate, err := utils.ParseDate("start date", "2021-01-01")
+	startDate, err := types.ParseDate("start date", "2021-01-01")
 	s.Require().NoError(err)
-	endDate, err := utils.ParseDate("end date", "2021-02-01")
+	endDate, err := types.ParseDate("end date", "2021-02-01")
 	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
@@ -1422,7 +1422,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
-	expiration, err := utils.ParseDate("expiration", "2024-01-01")
+	expiration, err := types.ParseDate("expiration", "2024-01-01")
 	s.Require().NoError(err)
 
 	testCases := []struct {
@@ -1594,7 +1594,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
-	expiration, err := utils.ParseDate("expiration", "2026-01-01")
+	expiration, err := types.ParseDate("expiration", "2026-01-01")
 	s.Require().NoError(err)
 
 	testCases := []struct {
