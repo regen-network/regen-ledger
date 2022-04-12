@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -23,23 +24,26 @@ type registerResolverSuite struct {
 }
 
 func TestRegisterResolver(t *testing.T) {
-	gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature").Run()
+	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature")
+	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*registerResolverSuite).AContentHashOf)
+	runner.Run()
 }
 
 func (s *registerResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
+}
+
+func (s *registerResolverSuite) AliceIsTheManager() {
 	s.alice = s.addrs[0]
+}
+
+func (s *registerResolverSuite) BobIsNotTheManager() {
 	s.bob = s.addrs[1]
 }
 
-func (s *registerResolverSuite) AValidContentHash() {
-	s.ch = &data.ContentHash{
-		Graph: &data.ContentHash_Graph{
-			Hash:                      make([]byte, 32),
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		},
-	}
+func (s *registerResolverSuite) AContentHashOf(a gocuke.DocString) {
+	err := json.Unmarshal([]byte(a.Content), &s.ch)
+	require.NoError(s.t, err)
 }
 
 func (s *registerResolverSuite) AliceHasAnchoredTheData() {
@@ -49,9 +53,9 @@ func (s *registerResolverSuite) AliceHasAnchoredTheData() {
 	})
 }
 
-func (s *registerResolverSuite) AliceHasDefinedAResolver() {
+func (s *registerResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 	id, err := s.server.stateStore.ResolverInfoTable().InsertReturningID(s.ctx, &api.ResolverInfo{
-		Url:     "https://foo.bar",
+		Url:     a,
 		Manager: s.alice,
 	})
 	require.NoError(s.t, err)

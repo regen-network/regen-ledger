@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -17,26 +18,25 @@ type attestSuite struct {
 	alice sdk.AccAddress
 	ch    *data.ContentHash
 	err   error
-	id    []byte
 }
 
 func TestAttest(t *testing.T) {
-	gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature").Run()
+	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature")
+	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*attestSuite).AContentHashOf)
+	runner.Run()
 }
 
 func (s *attestSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
+}
+
+func (s *attestSuite) AliceIsTheAttestor() {
 	s.alice = s.addrs[0]
 }
 
-func (s *attestSuite) AValidContentHash() {
-	s.ch = &data.ContentHash{
-		Graph: &data.ContentHash_Graph{
-			Hash:                      make([]byte, 32),
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		},
-	}
+func (s *attestSuite) AContentHashOf(a gocuke.DocString) {
+	err := json.Unmarshal([]byte(a.Content), &s.ch)
+	require.NoError(s.t, err)
 }
 
 func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
@@ -75,15 +75,10 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 	})
 }
 
-func (s *attestSuite) AnErrorOf(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
-}
+func (s *attestSuite) TheDataAnchorEntryExistsAndTheTimestampIsEqualTo(a string) {
+	anchorTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
 
-func (s *attestSuite) TheDataIdEntryExists() {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -92,14 +87,7 @@ func (s *attestSuite) TheDataIdEntryExists() {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataId)
 
-	s.id = dataId.Id
-}
-
-func (s *attestSuite) TheDataAnchorEntryExistsAndTheTimestampIsEqualTo(a string) {
-	anchorTime, err := time.Parse("2006-01-02", a)
-	require.NoError(s.t, err)
-
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, s.id)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
 	require.NoError(s.t, err)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
@@ -108,7 +96,15 @@ func (s *attestSuite) TheDataAttestorEntryExistsAndTheTimestampIsEqualTo(a strin
 	attestTime, err := time.Parse("2006-01-02", a)
 	require.NoError(s.t, err)
 
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, s.id, s.alice)
+	iri, err := s.ch.ToIRI()
+	require.NoError(s.t, err)
+	require.NotNil(s.t, iri)
+
+	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	require.NoError(s.t, err)
+	require.NotNil(s.t, dataId)
+
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId.Id, s.alice)
 	require.NoError(s.t, err)
 	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
 }

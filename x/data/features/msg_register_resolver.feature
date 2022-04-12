@@ -26,7 +26,7 @@ Feature: MsgRegisterResolver
     }
     """
     When the message is validated
-    Then an error of "resolver id cannot be empty"
+    Then an error of "resolver id cannot be empty: invalid request"
 
   Scenario: an error is returned if data is empty
     Given a message of

@@ -1,8 +1,10 @@
 Feature: Define Resolver
 
+  Background: the message has been validated
+    Given alice is the manager
+
   Scenario: a resolver is defined when the resolver url is unique
     When alice attempts to define a resolver with url "https://foo.bar"
-    Then an error of ""
     And the resolver info entry exists with url "https://foo.bar"
 
   Scenario: an error is returned when a resolver with the same url has been defined
