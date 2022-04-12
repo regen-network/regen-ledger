@@ -15,8 +15,8 @@ message GenesisState {
 
 // GenesisContentEntry is a genesis content entry
 message GenesisContentEntry {
-  // hash is the ContentHash
-  ContentHash hash = 1;
+  // content_hash is the ContentHash
+  ContentHash content_hash = 1;
 
   // timestamp is the anchor Timestamp
   google.protobuf.Timestamp timestamp = 2;

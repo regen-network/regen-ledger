@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	content := []byte("abcdefg")
 	_, chs := s.createDataContent(content)
-	s.iri, err = chs.Data[0].GetGraph().ToIRI()
+	s.iri, err = chs.ContentHashes[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
 	bz, err := val1.ClientCtx.Codec.MarshalJSON(chs)
@@ -473,5 +473,5 @@ func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.
 	iri, err := ch.GetGraph().ToIRI()
 	require.NoError(err)
 
-	return iri, &data.ContentHashes{Data: []*data.ContentHash{&ch}}
+	return iri, &data.ContentHashes{ContentHashes: []*data.ContentHash{&ch}}
 }
