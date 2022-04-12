@@ -18,9 +18,14 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-// Validate performs basic validation for each credit-batch,
-// it returns an error if credit-batch tradable or retired supply
-// does not match the sum of all tradable or retired balances
+// ValidateGenesis performs basic validation for the following:
+// - params are valid param types with valid properties
+// - the credit type referenced in each credit class exists
+// - the credit class referenced in each project exists
+// - the tradable amount of each credit batch complies with the credit type precision
+// - the retired amount of each credit batch complies with the credit type precision
+// - the calculated total amount of each credit batch matches the total supply
+// An error is returned if any of these validation checks fail.
 func ValidateGenesis(data json.RawMessage, params Params) error {
 	if err := params.Validate(); err != nil {
 		return err
