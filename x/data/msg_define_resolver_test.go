@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -14,7 +15,9 @@ type msgDefineResolverSuite struct {
 }
 
 func TestMsgDefineResolver(t *testing.T) {
-	gocuke.NewRunner(t, &msgDefineResolverSuite{}).Path("./features/msg_define_resolver.feature").Run()
+	runner := gocuke.NewRunner(t, &msgDefineResolverSuite{}).Path("./features/msg_define_resolver.feature")
+	runner.Step(`a message of "((?:[^\"]|\")*)"`, (*msgDefineResolverSuite).AMessageOf)
+	runner.Run()
 }
 
 func (s *msgDefineResolverSuite) Before(t gocuke.TestingT) {
@@ -22,12 +25,9 @@ func (s *msgDefineResolverSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgDefineResolver{}
 }
 
-func (s *msgDefineResolverSuite) AManagerOf(a string) {
-	s.msg.Manager = a
-}
-
-func (s *msgDefineResolverSuite) AResolverUrlOf(a string) {
-	s.msg.ResolverUrl = a
+func (s *msgDefineResolverSuite) AMessageOf(a gocuke.DocString) {
+	err := json.Unmarshal([]byte(a.Content), &s.msg)
+	require.NoError(s.t, err)
 }
 
 func (s *msgDefineResolverSuite) TheMessageIsValidated() {

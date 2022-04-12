@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"strconv"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -17,7 +16,7 @@ type msgRegisterResolverSuite struct {
 
 func TestMsgRegisterResolver(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgRegisterResolverSuite{}).Path("./features/msg_register_resolver.feature")
-	runner.Step(`data of "((?:[^\"]|\")*)"`, (*msgRegisterResolverSuite).ContentHashesOf)
+	runner.Step(`a message of "((?:[^\"]|\")*)"`, (*msgRegisterResolverSuite).AMessageOf)
 	runner.Run()
 }
 
@@ -26,27 +25,9 @@ func (s *msgRegisterResolverSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgRegisterResolver{}
 }
 
-func (s *msgRegisterResolverSuite) AManagerOf(a string) {
-	s.msg.Manager = a
-}
-
-func (s *msgRegisterResolverSuite) AResolverIdOf(a string) {
-	id, err := strconv.ParseUint(a, 10, 32)
+func (s *msgRegisterResolverSuite) AMessageOf(a gocuke.DocString) {
+	err := json.Unmarshal([]byte(a.Content), &s.msg)
 	require.NoError(s.t, err)
-
-	s.msg.ResolverId = id
-}
-
-func (s *msgRegisterResolverSuite) ContentHashesOf(a string) {
-	if a == "" {
-		s.msg.Data = nil
-	} else {
-		var data []*ContentHash
-		err := json.Unmarshal([]byte(a), &data)
-		require.NoError(s.t, err)
-
-		s.msg.Data = data
-	}
 }
 
 func (s *msgRegisterResolverSuite) TheMessageIsValidated() {

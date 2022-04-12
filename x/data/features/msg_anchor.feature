@@ -1,16 +1,49 @@
 Feature: MsgAnchor
 
-  Scenario Outline: validate message
-    Given a sender of "<sender>"
-    And a hash of "<hash>"
+  Scenario: an error is returned if sender is empty
+    Given a message of
+    """
+    {
+      "sender": ""
+    }
+    """
     When the message is validated
-    Then an error of "<error>"
+    Then an error of "empty address string is not allowed: invalid address"
 
-    Examples:
-    | sender                                        | hash                                                                                     | error                                                                   |
-    |                                               | {"raw": {"hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "digest_algorithm": 1}} | empty address string is not allowed: invalid address                    |
-    | foo                                           | {"raw": {"hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "digest_algorithm": 1}} | decoding bech32 failed: invalid bech32 string length 3: invalid address |
-    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                                                                                          | hash cannot be empty: invalid request                                   |
-    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 | {"raw": {"hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=", "digest_algorithm": 1}} |                                                                         |
+  Scenario: an error is returned if sender is not a valid address
+    Given a message of
+    """
+    {
+      "sender": "foo"
+    }
+    """
+    When the message is validated
+    Then an error of "decoding bech32 failed: invalid bech32 string length 3: invalid address"
+
+  Scenario: an error is returned if hash is empty
+    Given a message of
+    """
+    {
+      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+    }
+    """
+    When the message is validated
+    Then an error of "hash cannot be empty: invalid request"
+
+  Scenario: no error is returned if sender and hash are valid
+    Given a message of
+    """
+    {
+      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "hash": {
+        "raw": {
+          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "digest_algorithm": 1
+        }
+      }
+    }
+    """
+    When the message is validated
+    Then an error of ""
 
   # Note: see ./types_content_hash.feature for content hash validation

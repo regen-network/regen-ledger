@@ -16,7 +16,7 @@ type msgAttestSuite struct {
 
 func TestMsgAttest(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgAttestSuite{}).Path("./features/msg_attest.feature")
-	runner.Step(`hashes of "((?:[^\"]|\")*)"`, (*msgAttestSuite).AGraphContentHashOf)
+	runner.Step(`a message of "((?:[^\"]|\")*)"`, (*msgAttestSuite).AMessageOf)
 	runner.Run()
 }
 
@@ -25,20 +25,9 @@ func (s *msgAttestSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgAttest{}
 }
 
-func (s *msgAttestSuite) AnAttestorOf(a string) {
-	s.msg.Attestor = a
-}
-
-func (s *msgAttestSuite) AGraphContentHashOf(a string) {
-	if a == "" {
-		s.msg.Hashes = nil
-	} else {
-		var hashes []*ContentHash_Graph
-		err := json.Unmarshal([]byte(a), &hashes)
-		require.NoError(s.t, err)
-
-		s.msg.Hashes = hashes
-	}
+func (s *msgAttestSuite) AMessageOf(a gocuke.DocString) {
+	err := json.Unmarshal([]byte(a.Content), &s.msg)
+	require.NoError(s.t, err)
 }
 
 func (s *msgAttestSuite) TheMessageIsValidated() {
