@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -14,7 +15,9 @@ type msgAttestSuite struct {
 }
 
 func TestMsgAttest(t *testing.T) {
-	gocuke.NewRunner(t, &msgAttestSuite{}).Path("./features/msg_attest.feature").Run()
+	runner := gocuke.NewRunner(t, &msgAttestSuite{}).Path("./features/msg_attest.feature")
+	runner.Step(`hashes of "((?:[^\"]|\")*)"`, (*msgAttestSuite).AGraphContentHashOf)
+	runner.Run()
 }
 
 func (s *msgAttestSuite) Before(t gocuke.TestingT) {
@@ -22,26 +25,20 @@ func (s *msgAttestSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgAttest{}
 }
 
-func (s *msgAttestSuite) AValidAttestor() {
-	s.msg.Attestor = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
-}
-
-func (s *msgAttestSuite) AValidContentHash() {
-	s.msg.Hashes = []*ContentHash_Graph{
-		{
-			Hash:                      make([]byte, 32),
-			DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		},
-	}
-}
-
 func (s *msgAttestSuite) AnAttestorOf(a string) {
 	s.msg.Attestor = a
 }
 
-func (s *msgAttestSuite) AnEmptyListOfContentHashes() {
-	s.msg.Hashes = []*ContentHash_Graph{}
+func (s *msgAttestSuite) AGraphContentHashOf(a string) {
+	if a == "" {
+		s.msg.Hashes = nil
+	} else {
+		var hashes []*ContentHash_Graph
+		err := json.Unmarshal([]byte(a), &hashes)
+		require.NoError(s.t, err)
+
+		s.msg.Hashes = hashes
+	}
 }
 
 func (s *msgAttestSuite) TheMessageIsValidated() {

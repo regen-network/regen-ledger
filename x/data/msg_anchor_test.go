@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/regen-network/gocuke"
@@ -14,7 +15,9 @@ type msgAnchorSuite struct {
 }
 
 func TestMsgAnchor(t *testing.T) {
-	gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature").Run()
+	runner := gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature")
+	runner.Step(`a hash of "((?:[^\"]|\")*)"`, (*msgAnchorSuite).AContentHashOf)
+	runner.Run()
 }
 
 func (s *msgAnchorSuite) Before(t gocuke.TestingT) {
@@ -22,25 +25,20 @@ func (s *msgAnchorSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgAnchor{}
 }
 
-func (s *msgAnchorSuite) AValidSender() {
-	s.msg.Sender = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
-}
-
-func (s *msgAnchorSuite) AValidContentHash() {
-	s.msg.Hash = &ContentHash{
-		Raw: &ContentHash_Raw{
-			Hash:            make([]byte, 32),
-			DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-		},
-	}
-}
-
 func (s *msgAnchorSuite) ASenderOf(a string) {
 	s.msg.Sender = a
 }
 
-func (s *msgAnchorSuite) AnEmptyContentHash() {
-	s.msg.Hash = nil
+func (s *msgAnchorSuite) AContentHashOf(a string) {
+	if a == "" {
+		s.msg.Hash = nil
+	} else {
+		var hash ContentHash
+		err := json.Unmarshal([]byte(a), &hash)
+		require.NoError(s.t, err)
+
+		s.msg.Hash = &hash
+	}
 }
 
 func (s *msgAnchorSuite) TheMessageIsValidated() {

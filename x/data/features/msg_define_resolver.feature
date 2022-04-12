@@ -1,25 +1,15 @@
 Feature: MsgDefineResolver
 
-  Scenario Outline: manager must be valid
+  Scenario Outline: validate message
     Given a manager of "<manager>"
-    And a valid resolver url
-    When the message is validated
-    Then an error of "<error>"
-
-    Examples:
-    | manager                                       | error                                                                   |
-    |                                               | empty address string is not allowed: invalid address                    |
-    | foo                                           | decoding bech32 failed: invalid bech32 string length 3: invalid address |
-    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                                                                         |
-
-  Scenario Outline: resolver url must be valid
-    Given a valid manager
     And a resolver url of "<url>"
     When the message is validated
     Then an error of "<error>"
 
     Examples:
-    | url             | error                                 |
-    |                 | invalid resolver url: invalid request |
-    | foo             | invalid resolver url: invalid request |
-    | https://foo.bar |                                       |
+    | manager                                       | url             | error                                                                   |
+    |                                               | https://foo.bar | empty address string is not allowed: invalid address                    |
+    | foo                                           | https://foo.bar | decoding bech32 failed: invalid bech32 string length 3: invalid address |
+    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 |                 | invalid resolver url: invalid request                                   |
+    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 | foo             | invalid resolver url: invalid request                                   |
+    | cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27 | https://foo.bar |                                                                         |

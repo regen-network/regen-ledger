@@ -1,6 +1,7 @@
 package data
 
 import (
+	"encoding/json"
 	"strconv"
 	"testing"
 
@@ -15,31 +16,14 @@ type msgRegisterResolverSuite struct {
 }
 
 func TestMsgRegisterResolver(t *testing.T) {
-	gocuke.NewRunner(t, &msgRegisterResolverSuite{}).Path("./features/msg_register_resolver.feature").Run()
+	runner := gocuke.NewRunner(t, &msgRegisterResolverSuite{}).Path("./features/msg_register_resolver.feature")
+	runner.Step(`data of "((?:[^\"]|\")*)"`, (*msgRegisterResolverSuite).ContentHashesOf)
+	runner.Run()
 }
 
 func (s *msgRegisterResolverSuite) Before(t gocuke.TestingT) {
 	s.t = t
 	s.msg = &MsgRegisterResolver{}
-}
-
-func (s *msgRegisterResolverSuite) AValidManager() {
-	s.msg.Manager = "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
-}
-
-func (s *msgRegisterResolverSuite) AValidResolverId() {
-	s.msg.ResolverId = 1
-}
-
-func (s *msgRegisterResolverSuite) AValidListOfData() {
-	s.msg.Data = []*ContentHash{
-		{
-			Raw: &ContentHash_Raw{
-				Hash:            make([]byte, 32),
-				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			},
-		},
-	}
 }
 
 func (s *msgRegisterResolverSuite) AManagerOf(a string) {
@@ -53,8 +37,16 @@ func (s *msgRegisterResolverSuite) AResolverIdOf(a string) {
 	s.msg.ResolverId = id
 }
 
-func (s *msgRegisterResolverSuite) AnEmptyListOfData() {
-	s.msg.Data = []*ContentHash{}
+func (s *msgRegisterResolverSuite) ContentHashesOf(a string) {
+	if a == "" {
+		s.msg.Data = nil
+	} else {
+		var data []*ContentHash
+		err := json.Unmarshal([]byte(a), &data)
+		require.NoError(s.t, err)
+
+		s.msg.Data = data
+	}
 }
 
 func (s *msgRegisterResolverSuite) TheMessageIsValidated() {
