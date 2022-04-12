@@ -8,7 +8,8 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
+	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 )
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
@@ -56,7 +57,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryClassesCmd()
+			cmd := coreclient.QueryClassesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -125,7 +126,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryClassInfoCmd()
+			cmd := coreclient.QueryClassInfoCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -217,7 +218,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryBatchesCmd()
+			cmd := coreclient.QueryBatchesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -285,7 +286,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryBatchInfoCmd()
+			cmd := coreclient.QueryBatchInfoCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -357,7 +358,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryBalanceCmd()
+			cmd := coreclient.QueryBalanceCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -416,7 +417,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySupplyCmd()
+			cmd := coreclient.QuerySupplyCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -455,7 +456,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryCreditTypesCmd()
+			cmd := coreclient.QueryCreditTypesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -477,7 +478,7 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	cmd := client.QueryParamsCmd()
+	cmd := coreclient.QueryParamsCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
@@ -528,7 +529,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySellOrderCmd()
+			cmd := marketplaceclient.QuerySellOrderCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -572,7 +573,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySellOrdersCmd()
+			cmd := marketplaceclient.QuerySellOrdersCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -628,7 +629,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySellOrdersByAddressCmd()
+			cmd := marketplaceclient.QuerySellOrdersByAddressCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -684,7 +685,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QuerySellOrdersByBatchDenomCmd()
+			cmd := marketplaceclient.QuerySellOrdersByBatchDenomCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -695,266 +696,6 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 				var res ecocredit.QuerySellOrdersByBatchDenomResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expOrders, res.SellOrders)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryBuyOrder() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expOrder  *ecocredit.BuyOrder
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid buy order",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "invalid buy order",
-		},
-		// TODO: filtered buy orders required #623
-		//{
-		//	name:      "valid",
-		//	args:      []string{"1"},
-		//	expErr:    false,
-		//	expErrMsg: "",
-		//	expOrder: &ecocredit.BuyOrder{
-		//		BuyOrderId:        1,
-		//		Buyer:             val.Address.String(),
-		//		Quantity:          "1",
-		//		BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//		DisableAutoRetire: false,
-		//	},
-		//},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryBuyOrderCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res ecocredit.QueryBuyOrderResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expOrder, res.BuyOrder)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryBuyOrders() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expOrders []*ecocredit.BuyOrder
-	}{
-		{
-			name:      "too many args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 0 arg(s), received 1",
-		},
-		// TODO: filtered buy orders required #623
-		//{
-		//	name:      "valid",
-		//	args:      []string{},
-		//	expErr:    false,
-		//	expErrMsg: "",
-		//	expOrders: []*ecocredit.BuyOrder{
-		//		{
-		//			BuyOrderId:        1,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//		{
-		//			BuyOrderId:        2,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//		{
-		//			BuyOrderId:        3,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//	},
-		//},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryBuyOrdersCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res ecocredit.QueryBuyOrdersResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expOrders, res.BuyOrders)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryBuyOrdersByAddress() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expOrders []*ecocredit.BuyOrder
-	}{
-		{
-			name:      "missing args",
-			args:      []string{},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:      "too many args",
-			args:      []string{"foo", "bar"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:      "invalid address",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "invalid request",
-		},
-		// TODO: filtered buy orders required #623
-		//{
-		//	name:      "valid",
-		//	args:      []string{val.Address.String()},
-		//	expErr:    false,
-		//	expErrMsg: "",
-		//	expOrders: []*ecocredit.BuyOrder{
-		//		{
-		//			BuyOrderId:        1,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//		{
-		//			BuyOrderId:        2,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//		{
-		//			BuyOrderId:        3,
-		//			Buyer:             val.Address.String(),
-		//			Quantity:          "1",
-		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-		//			DisableAutoRetire: false,
-		//		},
-		//	},
-		//},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryBuyOrdersByAddressCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res ecocredit.QueryBuyOrdersByAddressResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expOrders, res.BuyOrders)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expDenoms []*ecocredit.AskDenom
-	}{
-		{
-			name:      "too many args",
-			args:      []string{"foo"},
-			expErr:    true,
-			expErrMsg: "Error: accepts 0 arg(s), received 1",
-		},
-		// TODO: AllowAskDenom not yet implemented #624
-		//{
-		//	name:      "valid",
-		//	args:      []string{},
-		//	expErr:    false,
-		//	expErrMsg: "",
-		//	expDenoms: []*ecocredit.AskDenom{
-		//		{
-		//			Denom:        "regen",
-		//			DisplayDenom: "uregen",
-		//			Exponent:     6,
-		//		},
-		//	},
-		//},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			cmd := client.QueryAllowedAskDenomsCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if tc.expErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expErrMsg)
-			} else {
-				s.Require().NoError(err, out.String())
-
-				var res ecocredit.QueryAllowedAskDenomsResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expDenoms, res.AskDenoms)
 			}
 		})
 	}
@@ -994,7 +735,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryProjectsCmd()
+			cmd := coreclient.QueryProjectsCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -1017,7 +758,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	cmd := client.QueryProjectsCmd()
+	cmd := coreclient.QueryProjectsCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{"C01"})
 	require.NoError(err)
 	var res ecocredit.QueryProjectsResponse
@@ -1059,7 +800,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryProjectInfoCmd()
+			cmd := coreclient.QueryProjectInfoCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
