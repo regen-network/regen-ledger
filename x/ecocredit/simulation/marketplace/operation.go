@@ -3,6 +3,7 @@ package marketplace
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -22,7 +23,7 @@ import (
 // Simulation operation weights constants
 const (
 	OpWeightMsgAllowAskDenom   = "op_weight_msg_allow_sdk_denom"
-	OpWeightMsgBuy             = "op_weight_msg_buy"
+	OpWeightMsgBuy             = "op_weight_msg_buy_direct"
 	OpWeightMsgSell            = "op_weight_msg_sell"
 	OpWeightMsgUpdateSellOrder = "op_weight_msg_update_sell_order"
 	OpWeightMsgCancelSellOrder = "op_weight_msg_cancel_sell_order"
@@ -31,7 +32,7 @@ const (
 // basket operations weights
 const (
 	WeightAllowAskDenom   = 100
-	WeightBuy             = 100
+	WeightBuyDirect       = 100
 	WeightSell            = 100
 	WeightUpdateSellOrder = 100
 	WeightCancelSellOrder = 100
@@ -40,7 +41,7 @@ const (
 // ecocredit message types
 var (
 	TypeMsgAllowAskDenom   = marketplace.MsgAllowAskDenom{}.Route()
-	TypeMsgBuy             = marketplace.MsgBuy{}.Route()
+	TypeMsgBuyDirect       = marketplace.MsgBuyDirect{}.Route()
 	TypeMsgSell            = marketplace.MsgSell{}.Route()
 	TypeMsgUpdateSellOrder = marketplace.MsgUpdateSellOrders{}.Route()
 	TypeMsgCancelSellOrder = marketplace.MsgCancelSellOrder{}.Route()
@@ -53,7 +54,7 @@ func WeightedOperations(
 
 	var (
 		weightMsgAllowAskDenom   int
-		weightMsgBuy             int
+		weightMsgBuyDirect       int
 		weightMsgSell            int
 		weightMsgUpdateSellOrder int
 		weightMsgCancelSellOrder int
@@ -65,9 +66,9 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuy, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
 		func(_ *rand.Rand) {
-			weightMsgBuy = WeightBuy
+			weightMsgBuyDirect = WeightBuyDirect
 		},
 	)
 
@@ -91,12 +92,8 @@ func WeightedOperations(
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
-			weightMsgAllowAskDenom,
-			SimulateMsgAllowAskDenom(ak, bk, qryClient),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgBuy,
-			SimulateMsgBuy(ak, bk, qryClient),
+			weightMsgBuyDirect,
+			SimulateMsgBuyDirect(ak, bk, qryClient, mktQryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSell,
@@ -113,25 +110,69 @@ func WeightedOperations(
 	}
 }
 
-// SimulateMsgAllowAskDenom generates a Marketplace/MsgAllowAskDenom with random values.
-func SimulateMsgAllowAskDenom(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient) simtypes.Operation {
+// SimulateMsgBuyDirect generates a Marketplace/MsgBuyDirect with random values.
+func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		buyer, _ := simtypes.RandomAcc(r, accs)
+		buyerAddr := buyer.Address.String()
 
-		return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgAllowAskDenom, "not yet implemented"), nil, nil
-	}
-}
+		ctx := regentypes.Context{Context: sdkCtx}
+		result, err := mktQryClient.SellOrders(ctx, &marketplace.QuerySellOrdersRequest{})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, err.Error()), nil, err
+		}
 
-// SimulateMsgBuy generates a Marketplace/MsgBuy with random values.
-func SimulateMsgBuy(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
-	qryClient core.QueryClient) simtypes.Operation {
-	return func(
-		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		sellOrders := result.SellOrders
+		if len(sellOrders) == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, "no sell orders"), nil, nil
+		}
 
-		return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuy, ""), nil, nil
+		max := 1
+		if len(sellOrders) > 1 {
+			max = simtypes.RandIntBetween(r, 2, len(sellOrders))
+		}
+
+		buyOrders := make([]*marketplace.MsgBuyDirect_Order, max)
+		for i := 0; i < max; i++ {
+			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 2, 100))))
+			buyOrders[i] = &marketplace.MsgBuyDirect_Order{
+				SellOrderId:        sellOrders[i].Id,
+				Quantity:           sellOrders[i].Quantity,
+				BidPrice:           &bidPrice,
+				DisableAutoRetire:  sellOrders[i].DisableAutoRetire,
+				RetirementLocation: "AQ",
+			}
+		}
+
+		msg := &marketplace.MsgBuyDirect{
+			Buyer:  buyerAddr,
+			Orders: buyOrders,
+		}
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, buyerAddr, TypeMsgSell)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simapp.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 
 	}
 }
@@ -260,9 +301,22 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 		for i := 0; i < max; i++ {
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
 			exp := simtypes.RandTimestamp(r)
+			q, err := strconv.Atoi(orders[i].Quantity)
+			if err != nil {
+				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, nil
+			}
+
+			newQuantity := simtypes.RandIntBetween(r, 1, q)
 			updatedOrders[i] = &marketplace.MsgUpdateSellOrders_Update{
-				SellOrderId:       orders[i].Id,
-				NewQuantity:       "1", //TODO: add new quantity
+				SellOrderId: orders[i].Id,
+				NewQuantity: func() string {
+					// 30% chance of new quantity set to 0
+					if r.Int63n(101) <= 30 {
+						return "0"
+					} else {
+						return fmt.Sprintf("%d", newQuantity)
+					}
+				}(),
 				NewAskPrice:       &askPrice,
 				DisableAutoRetire: r.Int63n(101) <= 30,
 				NewExpiration:     &exp,
@@ -320,7 +374,6 @@ func SimulateMsgCancelSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 
 		// select random order
 		order := orders[r.Intn(len(orders))]
-
 		msg := &marketplace.MsgCancelSellOrder{
 			Seller:      ownerAddr,
 			SellOrderId: order.Id,
