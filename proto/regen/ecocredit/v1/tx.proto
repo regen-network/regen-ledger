@@ -246,35 +246,6 @@ message MsgSealBatch {
 // MsgSealBatchResponse is the Msg/SealBatch response type.
 message MsgSealBatchResponse {}
 
-// MsgMintPendingBatchCredits is the Msg/MintPendingBatchCredits request type.
-message MsgMintPendingBatchCredits {
-
-  // issuer is the address of the credit class issuer who is being requested
-  // to approve the batch issuance.
-  string issuer = 1;
-
-  // batch_denom identifies the batch that the credits should be issued to.
-  // The transaction will fail if the batch is not open
-  string batch_denom = 2;
-
-  // issuance are the credits proposed by the user to be issued in the batch.
-  repeated BatchIssuance issuance = 4;
-
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from other chain or registry.
-  // If not set (null), it means that the batch originate in Regen Ledger
-  // (doesn't come from external registry).
-  OriginTx origin_tx = 7;
-
-  // reference note for accounting, will be passed to an event
-  string note = 8;
-}
-
-// MsgMintPendingBatchCreditsResponse is the Msg/MintPendingBatchCredits response type.
-message MsgMintPendingBatchCreditsResponse {
-  uint64 pending_issuance_id = 1;
-}
-
 // MsgCreatePendingBatch is the Msg/CreatePendingBatch request type.
 message MsgCreatePendingBatch {
 
@@ -363,9 +334,39 @@ message MsgApprovePendingBatches {
 // MsgApprovePendingBatchResponse is the Msg/ApproveBatchCredits response type.
 message MsgApprovePendingBatchesResponse {}
 
+// MsgMintPendingBatchCredits is the Msg/MintPendingBatchCredits request type.
+message MsgMintPendingBatchCredits {
+
+  // issuer is the address of the credit class issuer who is being requested
+  // to approve the batch issuance.
+  string issuer = 1;
+
+  // batch_denom identifies the batch that the credits should be issued to.
+  // The transaction will fail if the batch is not open
+  string batch_denom = 2;
+
+  // issuance are the credits proposed by the user to be issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 4;
+
+  // reference note for accounting, will be passed to an event
+  string note = 5;
+}
+
+// MsgMintPendingBatchCreditsResponse is the Msg/MintPendingBatchCredits response type.
+message MsgMintPendingBatchCreditsResponse {
+  uint64 pending_issuance_id = 1;
+}
+
+
 // MsgApproveBatchCredits is the Msg/ApproveBatchCredits request type.
 message MsgApprovePendingIssuances {
-  repeated uint64 pending_issuance_id = 2;
+  repeated uint64 pending_issuance_id = 1;
 }
 
 // MsgApprovePendingIssuancseResponse is the Msg/ApprovePendingIssuances response type.
