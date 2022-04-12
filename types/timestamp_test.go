@@ -3,6 +3,7 @@ package types_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/require"
