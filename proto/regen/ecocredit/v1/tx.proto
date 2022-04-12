@@ -363,8 +363,8 @@ message MsgApprovePendingIssuance {
   uint64 pending_issuance_id = 2;
 }
 
-// MsgApproveBatchCreditsResponse is the Msg/ApproveBatchCredits response type.
-message MsgApproveBatchCreditsResponse {}
+// MsgApprovePendingIssuanceResponse is the Msg/ApprovePendingIssuance response type.
+message MsgApprovePendingIssuanceResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
