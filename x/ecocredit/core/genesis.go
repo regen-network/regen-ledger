@@ -58,7 +58,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		return err
 	}
 
-	abbrevToPrecision := make(map[string]uint32)
+	abbrevToPrecision := make(map[string]uint32) // map of credit abbreviation to precision
 	for _, ct := range params.CreditTypes {
 		abbrevToPrecision[ct.Abbreviation] = ct.Precision
 	}
@@ -81,7 +81,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		}
 	}
 
-	classIds := make(map[uint64]uint64) // map of projectID to classID
+	projectIdToClassId := make(map[uint64]uint64) // map of projectID to classID
 	pItr, err := ss.ProjectInfoTable().List(ormCtx, api.ProjectInfoPrimaryKey{})
 	if err != nil {
 		return err
@@ -89,61 +89,54 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	defer pItr.Close()
 
 	for pItr.Next() {
-		val, err := pItr.Value()
+		project, err := pItr.Value()
 		if err != nil {
 			return err
 		}
 
-		if _, exists := classIds[val.Id]; exists {
+		if _, exists := projectIdToClassId[project.Id]; exists {
 			continue
 		}
-		classIds[val.Id] = val.ClassId
+		projectIdToClassId[project.Id] = project.ClassId
 	}
 
-	decimalPlaces := make(map[uint64]uint32) // map of batchID to precision
+	batchIdToPrecision := make(map[uint64]uint32) // map of batchID to precision
 	bItr, err := ss.BatchInfoTable().List(ormCtx, api.BatchInfoPrimaryKey{})
 	if err != nil {
 		return err
 	}
 	defer bItr.Close()
 
+	// create index batchID => precision for faster lookup
 	for bItr.Next() {
 		batch, err := bItr.Value()
 		if err != nil {
 			return err
 		}
 
-		if _, exists := decimalPlaces[batch.Id]; exists {
+		if _, exists := batchIdToPrecision[batch.Id]; exists {
 			continue
 		}
 
-		cItr, err := ss.ClassInfoTable().List(ormCtx, api.ClassInfoPrimaryKey{})
+		class, err := ss.ClassInfoTable().Get(ormCtx, projectIdToClassId[batch.ProjectId])
 		if err != nil {
 			return err
 		}
 
-		for cItr.Next() {
-			class, err := cItr.Value()
-			if err != nil {
-				return err
-			}
-
-			if class.Id == classIds[batch.ProjectId] {
-				decimalPlaces[batch.Id] = abbrevToPrecision[class.CreditType]
-			}
+		if class.Id == projectIdToClassId[batch.ProjectId] {
+			batchIdToPrecision[batch.Id] = abbrevToPrecision[class.CreditType]
 		}
-
-		cItr.Close()
 	}
 
-	calSupplies := make(map[uint64]math.Dec) // map of batchID to calculated supply
-	supplies := make(map[uint64]math.Dec)    // map of batchID to actual supply
+	batchIdToCalSupply := make(map[uint64]math.Dec) // map of batchID to calculated supply
+	batchIdToSupply := make(map[uint64]math.Dec)    // map of batchID to actual supply
 	bsItr, err := ss.BatchSupplyTable().List(ormCtx, api.BatchSupplyPrimaryKey{})
 	if err != nil {
 		return err
 	}
 	defer bsItr.Close()
 
+	// calculate total supply for each credit batch (tradable + retired supply)
 	for bsItr.Next() {
 		batchSupply, err := bsItr.Value()
 		if err != nil {
@@ -153,13 +146,13 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		tSupply := math.NewDecFromInt64(0)
 		rSupply := math.NewDecFromInt64(0)
 		if batchSupply.TradableAmount != "" {
-			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, decimalPlaces[batchSupply.BatchId])
+			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, batchIdToPrecision[batchSupply.BatchId])
 			if err != nil {
 				return err
 			}
 		}
 		if batchSupply.RetiredAmount != "" {
-			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, decimalPlaces[batchSupply.BatchId])
+			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, batchIdToPrecision[batchSupply.BatchId])
 			if err != nil {
 				return err
 			}
@@ -170,15 +163,16 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			return err
 		}
 
-		supplies[batchSupply.BatchId] = total
+		batchIdToSupply[batchSupply.BatchId] = total
 	}
 
 	// calculate credit batch supply from genesis tradable and retired balances
-	if err := calculateSupply(ormCtx, decimalPlaces, ss, calSupplies); err != nil {
+	if err := calculateSupply(ormCtx, batchIdToPrecision, ss, batchIdToCalSupply); err != nil {
 		return err
 	}
 
-	if err := validateSupply(calSupplies, supplies); err != nil {
+	// verify calculated total amount of each credit batch matches the total supply
+	if err := validateSupply(batchIdToCalSupply, batchIdToSupply); err != nil {
 		return err
 	}
 
@@ -241,13 +235,14 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 func validateSupply(calSupply, supply map[uint64]math.Dec) error {
 	for denom, cs := range calSupply {
 		if s, ok := supply[denom]; ok {
-			if s.Cmp(cs) != 0 {
+			if s.Cmp(cs) != math.EqualTo {
 				return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %d credit batch, expected %v, got %v", denom, s, cs)
 			}
 		} else {
 			return sdkerrors.ErrNotFound.Wrapf("supply is not found for %d credit batch", denom)
 		}
 	}
+
 	return nil
 }
 
