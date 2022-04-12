@@ -6,10 +6,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
-func NewCreditTypeProposalHandler(k core.Keeper) govtypes.Handler {
+func NewCreditTypeProposalHandler(k Keeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
 		case *coretypes.CreditTypeProposal:
@@ -20,6 +19,6 @@ func NewCreditTypeProposalHandler(k core.Keeper) govtypes.Handler {
 	}
 }
 
-func handleCreditTypeProposal(ctx sdk.Context, k core.Keeper, proposal *coretypes.CreditTypeProposal) error {
+func handleCreditTypeProposal(ctx sdk.Context, k Keeper, proposal *coretypes.CreditTypeProposal) error {
 	return k.NewCreditType(ctx, proposal)
 }

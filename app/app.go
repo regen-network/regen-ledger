@@ -97,6 +97,7 @@ import (
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
@@ -403,6 +404,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		panic(err)
 	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
+
+	govRouter.AddRoute(core.RouterKey, ecocredit.NewCreditTypeProposalHandler(ecocreditModule.Keeper))
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 

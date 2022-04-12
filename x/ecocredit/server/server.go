@@ -7,8 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -79,6 +80,10 @@ type serverImpl struct {
 	marketplaceKeeper marketplace.Keeper
 
 	db ormdb.ModuleDB
+}
+
+func (s serverImpl) NewCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.NewCreditType(ctx, ctp)
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
