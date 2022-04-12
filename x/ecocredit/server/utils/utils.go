@@ -3,6 +3,8 @@ package utils
 import (
 	"context"
 
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -50,4 +52,10 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
+}
+
+// IsGovAddr returns weather or not the passed addr is the governance module address
+func IsGovAddr(ak ecocredit.AccountKeeper, addr types.AccAddress) bool {
+	govAddr := ak.GetModuleAddress(govtypes.ModuleName)
+	return govAddr.Equals(addr)
 }

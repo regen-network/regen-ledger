@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1;
+
+import "regen/ecocredit/v1/state.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
+
+// CreditTypeProposal is a gov Content type for adding a credit type.
+message CreditTypeProposal {
+  option (gogoproto.goproto_stringer) = false;
+
+  string title = 1;
+  string description = 2;
+  CreditType credit_type = 3;
+}
