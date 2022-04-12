@@ -102,6 +102,13 @@ message MsgCreateClass {
   // acceptable fees for creating a credit class can be found in the governance
   // parameters for the ecocredit module.
   cosmos.base.v1beta1.Coin fee = 5;
+
+  // allow_pending_issuances enables permissionless creation of pending
+  // batches & batch issuances. For use in credit classes that have
+  // bridged assets, and also credit classes that want to allow for
+  // users to propose credit issaunces for a specific project (e.g.
+  // from the project developer).
+  boolean allow_pending_issuances = 6;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
