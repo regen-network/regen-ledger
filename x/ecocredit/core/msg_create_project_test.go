@@ -3,15 +3,15 @@ package core
 import (
 	"testing"
 
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgCreateProject(t *testing.T) {
 	t.Parallel()
-	_, _, addr1 := testdata.KeyTestPubAddr()
+	issuer := testutil.GenAddress()
 
 	testCases := []struct {
 		name   string
@@ -21,7 +21,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"valid msg with project id",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "A00",
 				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
@@ -32,7 +32,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"valid msg without project id",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "A00",
 				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
@@ -53,7 +53,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid project id",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "A00",
 				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
@@ -64,7 +64,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid class id",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "ABCD",
 				Metadata:        "hello",
 				ProjectLocation: "AB-CDE FG1 345",
@@ -75,7 +75,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid project location",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "A01",
 				Metadata:        "hello",
 				ProjectLocation: "abcd",
@@ -86,7 +86,7 @@ func TestMsgCreateProject(t *testing.T) {
 		{
 			"invalid: metadata is too large",
 			MsgCreateProject{
-				Issuer:          addr1.String(),
+				Issuer:          issuer,
 				ClassId:         "A01",
 				Metadata:        simtypes.RandStringOfLength(r, 288),
 				ProjectLocation: "AB-CDE FG1 345",
