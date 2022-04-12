@@ -1,11 +1,13 @@
 package basket
 
 import (
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
+
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func TestMsgPut_ValidateBasic(t *testing.T) {
