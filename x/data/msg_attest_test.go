@@ -16,7 +16,7 @@ type msgAttestSuite struct {
 
 func TestMsgAttest(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgAttestSuite{}).Path("./features/msg_attest.feature")
-	runner.Step(`a message of "((?:[^\"]|\")*)"`, (*msgAttestSuite).AMessageOf)
+	runner.Step(`the message "((?:[^\"]|\")*)"`, (*msgAttestSuite).TheMessage)
 	runner.Run()
 }
 
@@ -25,7 +25,7 @@ func (s *msgAttestSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgAttest{}
 }
 
-func (s *msgAttestSuite) AMessageOf(a gocuke.DocString) {
+func (s *msgAttestSuite) TheMessage(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.msg)
 	require.NoError(s.t, err)
 }
@@ -34,7 +34,7 @@ func (s *msgAttestSuite) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *msgAttestSuite) AnErrorOf(a string) {
+func (s *msgAttestSuite) ExpectTheError(a string) {
 	if a == "" {
 		require.NoError(s.t, s.err)
 	} else {

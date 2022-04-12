@@ -16,7 +16,7 @@ type msgRegisterResolverSuite struct {
 
 func TestMsgRegisterResolver(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgRegisterResolverSuite{}).Path("./features/msg_register_resolver.feature")
-	runner.Step(`a message of "((?:[^\"]|\")*)"`, (*msgRegisterResolverSuite).AMessageOf)
+	runner.Step(`the message "((?:[^\"]|\")*)"`, (*msgRegisterResolverSuite).TheMessage)
 	runner.Run()
 }
 
@@ -25,7 +25,7 @@ func (s *msgRegisterResolverSuite) Before(t gocuke.TestingT) {
 	s.msg = &MsgRegisterResolver{}
 }
 
-func (s *msgRegisterResolverSuite) AMessageOf(a gocuke.DocString) {
+func (s *msgRegisterResolverSuite) TheMessage(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.msg)
 	require.NoError(s.t, err)
 }
@@ -34,7 +34,7 @@ func (s *msgRegisterResolverSuite) TheMessageIsValidated() {
 	s.err = s.msg.ValidateBasic()
 }
 
-func (s *msgRegisterResolverSuite) AnErrorOf(a string) {
+func (s *msgRegisterResolverSuite) ExpectTheError(a string) {
 	if a == "" {
 		require.NoError(s.t, s.err)
 	} else {

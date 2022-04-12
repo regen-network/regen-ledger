@@ -51,7 +51,7 @@ func (s *defineResolverSuite) TheResolverInfoEntryExistsWithUrl(a string) {
 	require.Equal(s.t, s.alice.Bytes(), dataResolver.Manager)
 }
 
-func (s *defineResolverSuite) AnErrorOf(a string) {
+func (s *defineResolverSuite) ExpectTheError(a string) {
 	if a == "" {
 		require.NoError(s.t, s.err)
 	} else {

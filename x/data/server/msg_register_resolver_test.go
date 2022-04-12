@@ -24,7 +24,7 @@ type registerResolverSuite struct {
 
 func TestRegisterResolver(t *testing.T) {
 	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature")
-	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*registerResolverSuite).AContentHashOf)
+	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*registerResolverSuite).TheContentHash)
 	runner.Run()
 }
 
@@ -40,7 +40,7 @@ func (s *registerResolverSuite) BobIsNotTheManager() {
 	s.bob = s.addrs[1]
 }
 
-func (s *registerResolverSuite) AContentHashOf(a gocuke.DocString) {
+func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.ch)
 	require.NoError(s.t, err)
 }
@@ -89,7 +89,7 @@ func (s *registerResolverSuite) BobAttemptsToRegisterDataToTheResolver() {
 	})
 }
 
-func (s *registerResolverSuite) AnErrorOf(a string) {
+func (s *registerResolverSuite) ExpectTheError(a string) {
 	if a == "" {
 		require.NoError(s.t, s.err)
 	} else {

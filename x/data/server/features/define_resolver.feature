@@ -10,6 +10,6 @@ Feature: Define Resolver
   Scenario: an error is returned when a resolver with the same url has been defined
     Given alice has defined a resolver with url "https://foo.bar"
     When alice attempts to define a resolver with url "https://foo.bar"
-    Then an error of "resolver URL already exists"
+    Then expect the error "resolver URL already exists"
 
   # Note: see ../features/msg_define_resolver.feature for resolver url validation

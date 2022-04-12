@@ -22,7 +22,7 @@ type attestSuite struct {
 
 func TestAttest(t *testing.T) {
 	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature")
-	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*attestSuite).AContentHashOf)
+	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*attestSuite).TheContentHash)
 	runner.Run()
 }
 
@@ -34,7 +34,7 @@ func (s *attestSuite) AliceIsTheAttestor() {
 	s.alice = s.addrs[0]
 }
 
-func (s *attestSuite) AContentHashOf(a gocuke.DocString) {
+func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.ch)
 	require.NoError(s.t, err)
 }

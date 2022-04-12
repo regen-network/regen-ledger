@@ -16,7 +16,7 @@ type contentHash struct {
 
 func TestTypes(t *testing.T) {
 	runner := gocuke.NewRunner(t, &contentHash{}).Path("./features/types_content_hash.feature")
-	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*contentHash).AContentHashOf)
+	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*contentHash).TheContentHash)
 	runner.Run()
 }
 
@@ -24,7 +24,7 @@ func (s *contentHash) Before(t gocuke.TestingT) {
 	s.t = t
 }
 
-func (s *contentHash) AContentHashOf(a gocuke.DocString) {
+func (s *contentHash) TheContentHash(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.ch)
 	require.NoError(s.t, err)
 }
@@ -33,7 +33,7 @@ func (s *contentHash) TheContentHashIsValidated() {
 	s.err = s.ch.Validate()
 }
 
-func (s *contentHash) AnErrorOf(a string) {
+func (s *contentHash) ExpectTheError(a string) {
 	if a == "" {
 		require.NoError(s.t, s.err)
 	} else {

@@ -22,7 +22,7 @@ type anchorSuite struct {
 
 func TestAnchor(t *testing.T) {
 	runner := gocuke.NewRunner(t, &anchorSuite{}).Path("./features/anchor.feature")
-	runner.Step(`a content hash of "((?:[^\"]|\")*)"`, (*anchorSuite).AContentHashOf)
+	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*anchorSuite).TheContentHash)
 	runner.Run()
 }
 
@@ -34,7 +34,7 @@ func (s *anchorSuite) AliceIsTheSender() {
 	s.alice = s.addrs[0]
 }
 
-func (s *anchorSuite) AContentHashOf(a gocuke.DocString) {
+func (s *anchorSuite) TheContentHash(a gocuke.DocString) {
 	err := json.Unmarshal([]byte(a.Content), &s.ch)
 	require.NoError(s.t, err)
 }

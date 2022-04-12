@@ -2,7 +2,7 @@ Feature: Attest
 
   Background: the message has been validated
     Given alice is the attestor
-    And a content hash of
+    And the content hash
     """
     {
       "graph": {
