@@ -114,7 +114,7 @@ func TestParseDate(t *testing.T) {
 			tm, err := types.ParseDate(tc.date, tc.date)
 			if tc.hasErr {
 				require.Error(err)
-				require.Nil(tm)
+				require.Equal(time.Time{}, tm)
 			} else {
 				require.NoError(err)
 				require.NotNil(tm)
