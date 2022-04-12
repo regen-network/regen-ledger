@@ -48,10 +48,15 @@ service Msg {
   // batch for an issuer to approve within a specified amount of time.
   rpc MintPendingBatchCredits(MsgMintPendingBatchCredits) returns (MsgMintPendingBatchCreditsResponse);
 
-  // ApproveBatchCredits approves a pending batch of credits, delivering the credit issuances
-  // to the users specified in the initial MintPendingBatchCredits RPC call. Only the designated
+  // ApprovePendingIssuances approves a pending set of credits against a pre-existing batch
+  // delivering the credit issuances to the users specified in the initial MintPendingBatchCredits RPC
+  // call. Only the designated issuer for a given set of pending batch credits can approve them.
+  rpc ApprovePendingIssuances(MsgApprovePendingIssuances) returns (MsgApprovePendingIssuancesResponse);
+
+  // ApprovePendingBatches approves a pending batch of credits, delivering the credit issuances
+  // to the users specified in the initial CreatePendingBatch RPC call. Only the designated
   // issuer for a given set of pending batch credits can approve them.
-  rpc ApproveBatchCredits(MsgApproveBatchCredits) returns (MsgApproveBatchCreditsResponse);
+  rpc ApprovePendingBatches(MsgApprovePendingBatches) returns (MsgApprovePendingBatchesResponse);
 
   // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
@@ -351,20 +356,20 @@ message MsgCreatePendingBatchResponse {
 }
 
 // MsgApprovePendingBatch is the Msg/ApprovePendingBatch request type.
-message MsgApprovePendingBatch {
-  string batch_denom = 1;
+message MsgApprovePendingBatches {
+  repeated string batch_denom = 1;
 }
 
 // MsgApprovePendingBatchResponse is the Msg/ApproveBatchCredits response type.
-message MsgApprovePendingBatchResponse {}
+message MsgApprovePendingBatchesResponse {}
 
 // MsgApproveBatchCredits is the Msg/ApproveBatchCredits request type.
-message MsgApprovePendingIssuance {
-  uint64 pending_issuance_id = 2;
+message MsgApprovePendingIssuances {
+  repeated uint64 pending_issuance_id = 2;
 }
 
-// MsgApprovePendingIssuanceResponse is the Msg/ApprovePendingIssuance response type.
-message MsgApprovePendingIssuanceResponse {}
+// MsgApprovePendingIssuancseResponse is the Msg/ApprovePendingIssuances response type.
+message MsgApprovePendingIssuancesResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {
