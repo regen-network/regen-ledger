@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"strconv"
+	"strings"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -16,7 +17,13 @@ func QuerySellOrderCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-order [sell_order_id]",
 		Short: "Retrieve information for a given sell order",
-		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(`Retrieve information for a given sell order
+	
+Example:
+$ regen q sell-order 1
+$ regen q sell-order 1 --output json
+		`),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
@@ -48,7 +55,13 @@ func QuerySellOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders",
 		Short: "List all sell orders with pagination",
-		Args:  cobra.ExactArgs(0),
+		Long: strings.TrimSpace(`Retrieve sell orders with pagination
+	
+Example:
+$ regen q sell-orders
+$ regen q sell-orders --pagination.limit 10 --pagination.offset 2
+		`),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
@@ -81,7 +94,14 @@ func QuerySellOrdersByAddressCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders-by-address [address]",
 		Short: "List all sell orders by owner address with pagination",
-		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(
+			`Retrieve sell orders by owner address with pagination
+	
+Example:
+$ regen q sell-orders-by-address regen1fv85...zkfu
+$ regen q sell-orders-by-address regen1fv85...zkfu --pagination.limit 10 --pagination.offset 2
+		`),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {
@@ -115,7 +135,14 @@ func QuerySellOrdersByBatchDenomCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders-by-batch-denom [batch_denom]",
 		Short: "List all sell orders by batch denom with pagination",
-		Args:  cobra.ExactArgs(1),
+		Long: strings.TrimSpace(`
+		Retrieve sell orders by batch by denom with pagination
+	
+Example:
+$ regen q sell-orders-by-batch-denom C01-20210101-20210201-001
+$ regen q sell-orders-by-batch-denom C01-20210101-20210201-001 --pagination.limit 10 --pagination.offset 2
+		`),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := sdkclient.GetClientQueryContext(cmd)
 			if err != nil {

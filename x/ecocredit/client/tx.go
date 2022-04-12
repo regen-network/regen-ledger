@@ -48,7 +48,6 @@ func TxCmd(name string) *cobra.Command {
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
-		marketplacecli.TxBuyCmd(),
 		marketplacecli.TxSellCmd(),
 		marketplacecli.TxUpdateSellOrdersCmd(),
 	)
