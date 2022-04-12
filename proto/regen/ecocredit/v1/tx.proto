@@ -220,6 +220,9 @@ message MsgSealBatch {
   // Issuer must equal to the batch.issuer address.
   // Signer of the msg.
   string issuer = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
