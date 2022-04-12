@@ -3,15 +3,14 @@ package core
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 )
 
 func TestMsgCancel(t *testing.T) {
 	t.Parallel()
 
-	_, _, addr1 := testdata.KeyTestPubAddr()
+	addr1 := testutil.GenAddress()
 
 	tests := map[string]struct {
 		src    MsgCancel
@@ -19,10 +18,10 @@ func TestMsgCancel(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCancel{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -33,7 +32,7 @@ func TestMsgCancel(t *testing.T) {
 			src: MsgCancel{
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -45,7 +44,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "10",
 					},
 				},
@@ -54,13 +53,13 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg without credits": {
 			src: MsgCancel{
-				Holder: addr1.String(),
+				Holder: addr1,
 			},
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgCancel{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgCancel_CancelCredits{
 					{
 						Amount: "10",
@@ -71,10 +70,10 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg without Credits.Amount": {
 			src: MsgCancel{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 					},
 				},
 			},
@@ -82,10 +81,10 @@ func TestMsgCancel(t *testing.T) {
 		},
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgCancel{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: batchDenom,
 						Amount:     "abc",
 					},
 				},

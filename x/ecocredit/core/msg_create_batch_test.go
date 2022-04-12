@@ -4,17 +4,16 @@ import (
 	"testing"
 	"time"
 
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgCreateBatch(t *testing.T) {
 	t.Parallel()
-
-	_, _, addr1 := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
+	issuer := testutil.GenAddress()
+	addr2 := testutil.GenAddress()
 
 	startDate := time.Unix(10000, 10000).UTC()
 	endDate := time.Unix(10000, 10050).UTC()
@@ -25,13 +24,13 @@ func TestMsgCreateBatch(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2.String(),
+						Recipient:          addr2,
 						TradableAmount:     "1000",
 						RetiredAmount:      "50",
 						RetirementLocation: "ST-UVW XY Z12",
@@ -43,7 +42,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"valid msg with minimal fields": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
@@ -61,13 +60,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2.String(),
+						Recipient:          addr2,
 						RetiredAmount:      "50",
 						RetirementLocation: "ST-UVW XY Z12",
 					},
@@ -77,13 +76,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg with wrong Issuance.TradableAmount": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:      addr2.String(),
+						Recipient:      addr2,
 						TradableAmount: "abc",
 					},
 				},
@@ -92,13 +91,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient: addr2.String(),
+						Recipient: addr2,
 					},
 				},
 			},
@@ -106,13 +105,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg with wrong Issuance.RetiredAmount": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:     addr2.String(),
+						Recipient:     addr2,
 						RetiredAmount: "abc",
 					},
 				},
@@ -121,13 +120,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg with wrong Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2.String(),
+						Recipient:          addr2,
 						RetiredAmount:      "50",
 						RetirementLocation: "wrong location",
 					},
@@ -137,13 +136,13 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:     addr2.String(),
+						Recipient:     addr2,
 						RetiredAmount: "50",
 					},
 				},
@@ -161,7 +160,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without class id": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Metadata:  "hello",
@@ -170,7 +169,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without start date": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				EndDate:   &endDate,
 				Metadata:  "hello",
@@ -179,7 +178,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without enddate": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				Metadata:  "hello",
@@ -188,7 +187,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg with enddate < startdate": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &endDate,
 				EndDate:   &startDate,
@@ -198,7 +197,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid with wrong recipient": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
@@ -214,7 +213,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without recipient address": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
@@ -229,7 +228,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
+				Issuer:    issuer,
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,

@@ -12,6 +12,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+var errBadReq = sdkerrors.ErrInvalidRequest
+
 // MaxMetadataLength defines the max length of the metadata bytes field
 // for the credit-class & credit-batch.
 // TODO: This could be used as params once x/params is upgraded to use protobuf
