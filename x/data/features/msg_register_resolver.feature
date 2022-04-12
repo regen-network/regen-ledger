@@ -3,9 +3,7 @@ Feature: MsgRegisterResolver
   Scenario: an error is returned if manager is empty
     Given a message of
     """
-    {
-      "manager": ""
-    }
+    {}
     """
     When the message is validated
     Then an error of "empty address string is not allowed: invalid address"
@@ -28,7 +26,7 @@ Feature: MsgRegisterResolver
     }
     """
     When the message is validated
-    Then an error of "invalid resolver id: invalid request"
+    Then an error of "resolver id cannot be empty"
 
   Scenario: an error is returned if data is empty
     Given a message of
@@ -50,7 +48,7 @@ Feature: MsgRegisterResolver
       "data": [
         {
           "raw": {
-            "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+            "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             "digest_algorithm": 1
           }
         }

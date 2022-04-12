@@ -3,9 +3,7 @@ Feature: MsgAnchor
   Scenario: an error is returned if sender is empty
     Given a message of
     """
-    {
-      "sender": ""
-    }
+    {}
     """
     When the message is validated
     Then an error of "empty address string is not allowed: invalid address"
@@ -37,7 +35,7 @@ Feature: MsgAnchor
       "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "hash": {
         "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           "digest_algorithm": 1
         }
       }

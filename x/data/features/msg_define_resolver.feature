@@ -3,9 +3,7 @@ Feature: MsgDefineResolver
   Scenario: an error is returned if manager is empty
     Given a message of
     """
-    {
-      "manager": ""
-    }
+    {}
     """
     When the message is validated
     Then an error of "empty address string is not allowed: invalid address"

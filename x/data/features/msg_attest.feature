@@ -3,9 +3,7 @@ Feature: MsgAttest
   Scenario: an error is returned if attestor is empty
     Given a message of
     """
-    {
-      "attestor": ""
-    }
+    {}
     """
     When the message is validated
     Then an error of "empty address string is not allowed: invalid address"
@@ -37,7 +35,7 @@ Feature: MsgAttest
       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "hashes": [
         {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           "digest_algorithm": 1,
           "canonicalization_algorithm": 1
         }

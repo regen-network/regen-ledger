@@ -110,8 +110,8 @@ func (m *MsgRegisterResolver) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	if m.ResolverId < 1 {
-		return sdkerrors.ErrInvalidRequest.Wrap("invalid resolver id")
+	if m.ResolverId == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("resolver id cannot be empty")
 	}
 
 	if len(m.Data) == 0 {
