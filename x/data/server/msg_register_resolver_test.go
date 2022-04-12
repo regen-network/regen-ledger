@@ -10,7 +10,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -54,13 +53,13 @@ func (s *registerResolverSuite) AliceHasAnchoredTheData() {
 }
 
 func (s *registerResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
-	id, err := s.server.stateStore.ResolverInfoTable().InsertReturningID(s.ctx, &api.ResolverInfo{
-		Url:     a,
-		Manager: s.alice,
+	res, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
+		Manager:     s.alice.String(),
+		ResolverUrl: a,
 	})
 	require.NoError(s.t, err)
 
-	s.id = id
+	s.id = res.ResolverId
 }
 
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
