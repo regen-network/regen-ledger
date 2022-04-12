@@ -40,8 +40,12 @@ service Msg {
   // more. Only batch creator can seal a batch.
   rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
 
-  // MintPendingBatchCredits creates a pending batch issuance of credits for an issuer to approve
-  // within a specified amount of time.
+  // CreatePendingBatch creates a pending batch (potentially with an issuance of credits)
+  // for an issuer to approve within a specified amount of time.
+  rpc CreatePendingBatch(MsgCreatePendingBatch) returns (MsgCreatePendingBatchResponse);
+
+  // MintPendingBatchCredits creates a pending issuance of credits against a pre-existing
+  // batch for an issuer to approve within a specified amount of time.
   rpc MintPendingBatchCredits(MsgMintPendingBatchCredits) returns (MsgMintPendingBatchCreditsResponse);
 
   // ApproveBatchCredits approves a pending batch of credits, delivering the credit issuances
@@ -244,12 +248,9 @@ message MsgMintPendingBatchCredits {
   // to approve the batch issuance.
   string issuer = 1;
 
-  // batch is either an existing batch_denom, or a new set of BatchInfo to be used
-  // for the new batch, if the batch does not exist yet
-  oneof batch {
-    string batch_denom = 2;
-    PendingBatchInfo batch_info = 3;
-  }
+  // batch_denom identifies the batch that the credits should be issued to.
+  // The transaction will fail if the batch is not open
+  string batch_denom = 2;
 
   // issuance are the credits proposed by the user to be issued in the batch.
   repeated BatchIssuance issuance = 4;
@@ -262,6 +263,35 @@ message MsgMintPendingBatchCredits {
 
   // reference note for accounting, will be passed to an event
   string note = 8;
+}
+
+// MsgMintPendingBatchCreditsResponse is the Msg/MintPendingBatchCredits response type.
+message MsgMintPendingBatchCreditsResponse {
+  uint64 pending_issuance_id = 1;
+}
+
+// MsgCreatePendingBatch is the Msg/CreatePendingBatch request type.
+message MsgCreatePendingBatch {
+
+  // issuer is the address of the credit class issuer who is being requested
+  // to approve the batch issuance.
+  string issuer = 1;
+
+  // batch_info is the batch data provided by the sender (the user
+  // proposing submitting the pending batch request).
+  PendingBatchInfo batch_info = 2;
+
+  // issuance are the credits proposed by the user to be issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 4;
+
+  // reference note for accounting, will be passed to an event
+  string note = 5;
 
   message PendingBatchInfo {
 
@@ -278,11 +308,11 @@ message MsgMintPendingBatchCredits {
 
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified.
-    google.protobuf.Timestamp start_date = 4 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp start_date = 4 [(gogoproto.stdtime) = true];
 
     // end_date is the end of the period during which this credit batch was
     // quantified and verified.
-    google.protobuf.Timestamp end_date = 5 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp end_date = 5 [(gogoproto.stdtime) = true];
 
     // If open is true we will enable future minting.
     // Otherwise we will seal the batch and disable the future minting.
@@ -292,10 +322,10 @@ message MsgMintPendingBatchCredits {
   message PendingProjectInfo {
 
     // class_id is the unique ID of the class within which the project is created.
-    string class_id = 2;
+    string class_id = 1;
 
     // metadata is any arbitrary metadata attached to the project.
-    string metadata = 3;
+    string metadata = 2;
 
     // project_location is the location of the project backing the credits in this
     // batch. It is a string of the form
@@ -303,19 +333,19 @@ message MsgMintPendingBatchCredits {
     // fields conforming to ISO 3166-2, and postal-code being up to 64
     // alphanumeric characters. country-code is required, while sub-national-code
     // and postal-code can be added for increasing precision.
-    string project_location = 4;
+    string project_location = 3;
 
     // project_id is an optional user-specified project ID which can be used
     // instead of an auto-generated ID. If project_id is provided, it must be
     // unique within the credit class and match the regex [A-Za-z0-9]{2,16}
     // or else the operation will fail. If project_id is omitted an ID will
     // automatically be generated.
-    string project_id = 5;
+    string project_id = 4;
   }
 }
 
-// MsgMintPendingBatchCreditsResponse is the Msg/MintPendingBatchCredits response type.
-message MsgMintPendingBatchCreditsResponse {
+// MsgCreatePendingBatchResponse is the Msg/CreatePendingBatch response type.
+message MsgCreatePendingBatchResponse {
   // batch_denom is the unique denomination ID of the newly created batch.
   string batch_denom = 1;
 }
