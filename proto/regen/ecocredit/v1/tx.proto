@@ -350,10 +350,17 @@ message MsgCreatePendingBatchResponse {
   string batch_denom = 1;
 }
 
-// MsgApproveBatchCredits is the Msg/ApproveBatchCredits request type.
-message MsgApproveBatchCredits {
+// MsgApprovePendingBatch is the Msg/ApprovePendingBatch request type.
+message MsgApprovePendingBatch {
   string batch_denom = 1;
-  repeated uint64 pending_issuance_id = 2;
+}
+
+// MsgApprovePendingBatchResponse is the Msg/ApproveBatchCredits response type.
+message MsgApprovePendingBatchResponse {}
+
+// MsgApproveBatchCredits is the Msg/ApproveBatchCredits request type.
+message MsgApprovePendingIssuance {
+  uint64 pending_issuance_id = 2;
 }
 
 // MsgApproveBatchCreditsResponse is the Msg/ApproveBatchCredits response type.
