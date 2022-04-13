@@ -18,7 +18,7 @@ Feature: MsgAnchor
     When the message is validated
     Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
-  Scenario: an error is returned if hash is empty
+  Scenario: an error is returned if content hash is empty
     Given the message
     """
     {
@@ -26,14 +26,14 @@ Feature: MsgAnchor
     }
     """
     When the message is validated
-    Then expect the error "hash cannot be empty: invalid request"
+    Then expect the error "content hash cannot be empty: invalid request"
 
-  Scenario: no error is returned if sender and hash are valid
+  Scenario: no error is returned if sender and content hash are valid
     Given the message
     """
     {
       "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "hash": {
+      "content_hash": {
         "raw": {
           "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           "digest_algorithm": 1

@@ -18,7 +18,7 @@ Feature: MsgAttest
     When the message is validated
     Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
-  Scenario: an error is returned if hash is empty
+  Scenario: an error is returned if content hashes is empty
     Given the message
     """
     {
@@ -26,14 +26,14 @@ Feature: MsgAttest
     }
     """
     When the message is validated
-    Then expect the error "hashes cannot be empty: invalid request"
+    Then expect the error "content hashes cannot be empty: invalid request"
 
-  Scenario: no error is returned if attestor and hash are valid
+  Scenario: no error is returned if attestor and content hashes are valid
     Given the message
     """
     {
       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "hashes": [
+      "content_hashes": [
         {
           "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           "digest_algorithm": 1,

@@ -48,8 +48,8 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 
 func (s *registerResolverSuite) AliceHasAnchoredTheData() {
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.alice.String(),
-		Hash:   s.ch,
+		Sender:      s.alice.String(),
+		ContentHash: s.ch,
 	})
 }
 
@@ -65,9 +65,9 @@ func (s *registerResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:    s.alice.String(),
-		ResolverId: s.id,
-		Data:       []*data.ContentHash{s.ch},
+		Manager:       s.alice.String(),
+		ResolverId:    s.id,
+		ContentHashes: []*data.ContentHash{s.ch},
 	})
 }
 
@@ -76,17 +76,17 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToAResolverWithId(
 	require.NoError(s.t, err)
 
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:    s.alice.String(),
-		ResolverId: id,
-		Data:       []*data.ContentHash{s.ch},
+		Manager:       s.alice.String(),
+		ResolverId:    id,
+		ContentHashes: []*data.ContentHash{s.ch},
 	})
 }
 
 func (s *registerResolverSuite) BobAttemptsToRegisterDataToTheResolver() {
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:    s.bob.String(),
-		ResolverId: s.id,
-		Data:       []*data.ContentHash{s.ch},
+		Manager:       s.bob.String(),
+		ResolverId:    s.id,
+		ContentHashes: []*data.ContentHash{s.ch},
 	})
 }
 

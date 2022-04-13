@@ -47,8 +47,8 @@ func (s *anchorSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.alice.String(),
-		Hash:   s.ch,
+		Sender:      s.alice.String(),
+		ContentHash: s.ch,
 	})
 }
 
@@ -59,8 +59,8 @@ func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.alice.String(),
-		Hash:   s.ch,
+		Sender:      s.alice.String(),
+		ContentHash: s.ch,
 	})
 }
 

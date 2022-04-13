@@ -47,8 +47,8 @@ func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.alice.String(),
-		Hash:   s.ch,
+		Sender:      s.alice.String(),
+		ContentHash: s.ch,
 	})
 }
 
@@ -59,8 +59,8 @@ func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
-		Attestor: s.alice.String(),
-		Hashes:   []*data.ContentHash_Graph{s.ch.GetGraph()},
+		Attestor:      s.alice.String(),
+		ContentHashes: []*data.ContentHash_Graph{s.ch.GetGraph()},
 	})
 }
 
@@ -71,8 +71,8 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
-		Attestor: s.alice.String(),
-		Hashes:   []*data.ContentHash_Graph{s.ch.GetGraph()},
+		Attestor:      s.alice.String(),
+		ContentHashes: []*data.ContentHash_Graph{s.ch.GetGraph()},
 	})
 }
 

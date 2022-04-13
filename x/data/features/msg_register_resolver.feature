@@ -28,7 +28,7 @@ Feature: MsgRegisterResolver
     When the message is validated
     Then expect the error "resolver id cannot be empty: invalid request"
 
-  Scenario: an error is returned if data is empty
+  Scenario: an error is returned if content hashes is empty
     Given the message
     """
     {
@@ -37,15 +37,15 @@ Feature: MsgRegisterResolver
     }
     """
     When the message is validated
-    Then expect the error "data cannot be empty: invalid request"
+    Then expect the error "content hashes cannot be empty: invalid request"
 
-  Scenario: no error is returned if manager and resolver id are valid
+  Scenario: no error is returned if manager, resolver id, and content hashes are valid
     Given the message
     """
     {
       "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "resolver_id": 1,
-      "data": [
+      "content_hashes": [
         {
           "raw": {
             "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
