@@ -35,7 +35,7 @@ Feature: MsgAnchor
       "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "hash": {
         "raw": {
-          "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           "digest_algorithm": 1
         }
       }

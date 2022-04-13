@@ -1,9 +1,9 @@
 package data
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )
@@ -16,17 +16,17 @@ type msgAnchorSuite struct {
 
 func TestMsgAnchor(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgAnchorSuite{}).Path("./features/msg_anchor.feature")
-	runner.Step(`the message "((?:[^\"]|\")*)"`, (*msgAnchorSuite).TheMessage)
+	runner.Step(`^the\s+message\s+"((?:[^\"]|\")*)"`, (*msgAnchorSuite).TheMessage)
 	runner.Run()
 }
 
 func (s *msgAnchorSuite) Before(t gocuke.TestingT) {
 	s.t = t
-	s.msg = &MsgAnchor{}
 }
 
 func (s *msgAnchorSuite) TheMessage(a gocuke.DocString) {
-	err := json.Unmarshal([]byte(a.Content), &s.msg)
+	s.msg = &MsgAnchor{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
 }
 

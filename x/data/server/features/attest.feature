@@ -6,7 +6,7 @@ Feature: Attest
     """
     {
       "graph": {
-        "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
         "digest_algorithm": 1,
         "canonicalization_algorithm": 1
       }

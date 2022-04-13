@@ -1,9 +1,9 @@
 package data
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )
@@ -16,17 +16,17 @@ type msgDefineResolverSuite struct {
 
 func TestMsgDefineResolver(t *testing.T) {
 	runner := gocuke.NewRunner(t, &msgDefineResolverSuite{}).Path("./features/msg_define_resolver.feature")
-	runner.Step(`the message "((?:[^\"]|\")*)"`, (*msgDefineResolverSuite).TheMessage)
+	runner.Step(`^the\s+message\s+"((?:[^\"]|\")*)"`, (*msgDefineResolverSuite).TheMessage)
 	runner.Run()
 }
 
 func (s *msgDefineResolverSuite) Before(t gocuke.TestingT) {
 	s.t = t
-	s.msg = &MsgDefineResolver{}
 }
 
 func (s *msgDefineResolverSuite) TheMessage(a gocuke.DocString) {
-	err := json.Unmarshal([]byte(a.Content), &s.msg)
+	s.msg = &MsgDefineResolver{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
 	require.NoError(s.t, err)
 }
 

@@ -1,10 +1,10 @@
 package server
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -22,7 +22,7 @@ type attestSuite struct {
 
 func TestAttest(t *testing.T) {
 	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature")
-	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*attestSuite).TheContentHash)
+	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*attestSuite).TheContentHash)
 	runner.Run()
 }
 
@@ -35,7 +35,8 @@ func (s *attestSuite) AliceIsTheAttestor() {
 }
 
 func (s *attestSuite) TheContentHash(a gocuke.DocString) {
-	err := json.Unmarshal([]byte(a.Content), &s.ch)
+	s.ch = &data.ContentHash{}
+	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
 }
 

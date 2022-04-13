@@ -35,7 +35,7 @@ Feature: MsgAttest
       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "hashes": [
         {
-          "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           "digest_algorithm": 1,
           "canonicalization_algorithm": 1
         }

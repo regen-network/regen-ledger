@@ -1,9 +1,9 @@
 package data
 
 import (
-	"encoding/json"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,7 @@ type contentHash struct {
 
 func TestTypes(t *testing.T) {
 	runner := gocuke.NewRunner(t, &contentHash{}).Path("./features/types_content_hash.feature")
-	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*contentHash).TheContentHash)
+	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*contentHash).TheContentHash)
 	runner.Run()
 }
 
@@ -25,7 +25,8 @@ func (s *contentHash) Before(t gocuke.TestingT) {
 }
 
 func (s *contentHash) TheContentHash(a gocuke.DocString) {
-	err := json.Unmarshal([]byte(a.Content), &s.ch)
+	s.ch = &ContentHash{}
+	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
 }
 

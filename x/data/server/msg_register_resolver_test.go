@@ -1,10 +1,10 @@
 package server
 
 import (
-	"encoding/json"
 	"strconv"
 	"testing"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
@@ -24,7 +24,7 @@ type registerResolverSuite struct {
 
 func TestRegisterResolver(t *testing.T) {
 	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature")
-	runner.Step(`the content hash "((?:[^\"]|\")*)"`, (*registerResolverSuite).TheContentHash)
+	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*registerResolverSuite).TheContentHash)
 	runner.Run()
 }
 
@@ -41,7 +41,8 @@ func (s *registerResolverSuite) BobIsNotTheManager() {
 }
 
 func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
-	err := json.Unmarshal([]byte(a.Content), &s.ch)
+	s.ch = &data.ContentHash{}
+	err := jsonpb.UnmarshalString(a.Content, s.ch)
 	require.NoError(s.t, err)
 }
 

@@ -48,7 +48,7 @@ Feature: MsgRegisterResolver
       "data": [
         {
           "raw": {
-            "hash": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
             "digest_algorithm": 1
           }
         }
