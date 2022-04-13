@@ -7,14 +7,13 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // prints a query client response
@@ -25,21 +24,21 @@ func print(cctx sdkclient.Context, res proto.Message, err error) error {
 	return cctx.PrintProto(res)
 }
 
-func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context, error) {
+func mkQueryClient(cmd *cobra.Command) (core.QueryClient, sdkclient.Context, error) {
 	ctx, err := sdkclient.GetClientQueryContext(cmd)
 	if err != nil {
 		return nil, sdkclient.Context{}, err
 	}
-	return ecocredit.NewQueryClient(ctx), ctx, err
+	return core.NewQueryClient(ctx), ctx, err
 }
 
-func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
+func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*core.MsgCreateBatch, error) {
 	contents, err := ioutil.ReadFile(batchFile)
 	if err != nil {
 		return nil, err
 	}
 
-	var msg ecocredit.MsgCreateBatch
+	var msg core.MsgCreateBatch
 	err = clientCtx.Codec.UnmarshalJSON(contents, &msg)
 	if err != nil {
 		return nil, err
@@ -58,15 +57,15 @@ var (
 	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, ecocredit.ReBatchDenom))
 )
 
-func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {
+func parseCancelCreditsList(creditsListStr string) ([]*core.MsgCancel_CancelCredits, error) {
 	creditsList, err := parseCreditsList(creditsListStr)
 	if err != nil {
 		return nil, err
 	}
 
-	cancelCreditsList := make([]*ecocredit.MsgCancel_CancelCredits, len(creditsList))
+	cancelCreditsList := make([]*core.MsgCancel_CancelCredits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &ecocredit.MsgCancel_CancelCredits{
+		cancelCreditsList[i] = &core.MsgCancel_CancelCredits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}
@@ -107,25 +106,6 @@ func parseCredits(creditsStr string) (credits, error) {
 		batchDenom: matches[2],
 		amount:     matches[1],
 	}, nil
-}
-
-// ParseDate parses a date using the format yyyy-mm-dd.
-func ParseDate(field string, date string) (time.Time, error) {
-	t, err := time.Parse("2006-01-02", date)
-	if err != nil {
-		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
-	}
-	return t, nil
-}
-
-// parseAndSetDate is as helper function which sets the time do the provided argument if
-// the ParseDate was successful.
-func parseAndSetDate(dest **time.Time, field string, date string) error {
-	t, err := ParseDate(field, date)
-	if err == nil {
-		*dest = &t
-	}
-	return err
 }
 
 // checkDuplicateKey checks duplicate keys in a JSON
