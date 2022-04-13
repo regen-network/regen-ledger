@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -23,7 +25,7 @@ func (k Keeper) NewCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) err
 		Unit:         ct.Unit,
 		Precision:    ct.Precision,
 	}); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("could not insert credit type with abbreviation %s: %s", ct.Abbreviation, err.Error())
+		return fmt.Errorf("could not insert credit type with abbreviation %s: %w", ct.Abbreviation, err)
 	}
 	return nil
 }
