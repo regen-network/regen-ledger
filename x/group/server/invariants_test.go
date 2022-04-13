@@ -3,17 +3,18 @@ package server
 import (
 	"testing"
 
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/require"
+
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -404,22 +405,16 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			},
 			votes: []*group.Vote{
 				{
-					ProposalId: 1,
-					Voter:      addr1.String(),
-					Choice:     group.Choice_CHOICE_YES,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr1.String(),
+					Choice:      group.Choice_CHOICE_YES,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 				{
-					ProposalId: 1,
-					Voter:      addr2.String(),
-					Choice:     group.Choice_CHOICE_NO,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr2.String(),
+					Choice:      group.Choice_CHOICE_NO,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 			},
 			expBroken: false,
@@ -469,22 +464,16 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			},
 			votes: []*group.Vote{
 				{
-					ProposalId: 1,
-					Voter:      addr1.String(),
-					Choice:     group.Choice_CHOICE_YES,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr1.String(),
+					Choice:      group.Choice_CHOICE_YES,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 				{
-					ProposalId: 1,
-					Voter:      addr2.String(),
-					Choice:     group.Choice_CHOICE_YES,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr2.String(),
+					Choice:      group.Choice_CHOICE_YES,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 			},
 			expBroken: true,
@@ -534,22 +523,16 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			},
 			votes: []*group.Vote{
 				{
-					ProposalId: 1,
-					Voter:      addr1.String(),
-					Choice:     group.Choice_CHOICE_YES,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr1.String(),
+					Choice:      group.Choice_CHOICE_YES,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 				{
-					ProposalId: 1,
-					Voter:      addr2.String(),
-					Choice:     group.Choice_CHOICE_ABSTAIN,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
+					ProposalId:  1,
+					Voter:       addr2.String(),
+					Choice:      group.Choice_CHOICE_ABSTAIN,
+					SubmittedAt: *gogotypes.TimestampNow(),
 				},
 			},
 			expBroken: true,

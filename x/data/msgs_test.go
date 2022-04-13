@@ -71,8 +71,8 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
-		Attestors []string
-		Hash      *ContentHash_Graph
+		Attestor string
+		Hashes   []*ContentHash_Graph
 	}
 	tests := []struct {
 		name    string
@@ -80,27 +80,54 @@ func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 		wantErr string
 	}{
 		{
-			"good",
+			"valid message",
 			fields{
-				Attestors: []string{addr.String()},
-				Hash: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				Attestor: addr.String(),
+				Hashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
 				},
 			},
 			"",
 		},
 		{
-			"bad",
+			"invalid attestor",
 			fields{
-				Attestors: nil,
-				Hash: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				Attestor: "",
+				Hashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
+				},
+			},
+			"empty address string is not allowed: invalid address",
+		},
+		{
+			"empty content hashes",
+			fields{
+				Attestor: addr.String(),
+				Hashes:   []*ContentHash_Graph{},
+			},
+			"hashes cannot be empty: invalid request",
+		},
+		{
+			"invalid content hash",
+			fields{
+				Attestor: addr.String(),
+				Hashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
 				},
 			},
 			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
@@ -109,8 +136,8 @@ func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgAttest{
-				Attestors: tt.fields.Attestors,
-				Hash:      tt.fields.Hash,
+				Attestor: tt.fields.Attestor,
+				Hashes:   tt.fields.Hashes,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {
