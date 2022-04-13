@@ -8,6 +8,7 @@ import (
 
 // Keeper defines the expected interface needed to prune expired buy and sell orders.
 type Keeper interface {
+	ProposalKeeper
 	PruneOrders(ctx sdk.Context) error
 }
 
