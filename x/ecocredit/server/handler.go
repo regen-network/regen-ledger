@@ -8,7 +8,7 @@ import (
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func NewCreditTypeProposalHandler(k Keeper) govtypes.Handler {
+func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
 		case *coretypes.CreditTypeProposal:
@@ -19,6 +19,6 @@ func NewCreditTypeProposalHandler(k Keeper) govtypes.Handler {
 	}
 }
 
-func handleCreditTypeProposal(ctx sdk.Context, k Keeper, proposal *coretypes.CreditTypeProposal) error {
+func handleCreditTypeProposal(ctx sdk.Context, k ProposalKeeper, proposal *coretypes.CreditTypeProposal) error {
 	return k.NewCreditType(ctx, proposal)
 }

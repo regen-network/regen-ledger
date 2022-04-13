@@ -27,7 +27,7 @@ import (
 
 type TestSuite struct {
 	module     module.AppModule
-	keeper     Keeper
+	keeper     ProposalKeeper
 	stateStore api.StateStore
 	querier    sdk.Querier
 	handler    govtypes.Handler
