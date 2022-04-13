@@ -22,7 +22,7 @@ func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateSto
 	}
 	p := &core.Params{}
 	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditType, p.CreditTypes)
+	return GetCreditType(classInfo.CreditTypeAbbreviation, p.CreditTypes)
 }
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.

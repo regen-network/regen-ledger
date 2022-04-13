@@ -37,7 +37,7 @@ message ClassInfo {
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1 fields : "name", unique : true}
     index : {id : 2 fields : "admin"}
-    index : {id : 3 fields : "credit_type"}
+    index : {id : 3 fields : "credit_type_abbreviation"}
   };
 
   // id is the unique ID of credit class.
@@ -53,8 +53,8 @@ message ClassInfo {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 4;
 
-  // credit_type is the abbreviation of the credit type.
-  string credit_type = 5;
+  // credit_type_abbreviation is the abbreviation of the credit type.
+  string credit_type_abbreviation = 5;
 }
 
 // ClassIssuers is a JOIN table for Class Info that stores the credit class
@@ -152,11 +152,11 @@ message BatchInfo {
 message ClassSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 6,
-    primary_key : {fields : "credit_type"}
+    primary_key : {fields : "credit_type_abbreviation"}
   };
 
-  // credit_type is the credit type abbreviation
-  string credit_type = 1;
+  // credit_type_abbreviation is the credit type abbreviation
+  string credit_type_abbreviation = 1;
 
   // next_class_id is the next class ID for this credit type
   uint64 next_class_id = 2;

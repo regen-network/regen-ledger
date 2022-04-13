@@ -73,10 +73,10 @@ func setupBase(t *testing.T) *baseSuite {
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string) {
 	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "PRO",

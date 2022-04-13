@@ -22,10 +22,10 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	newAdmin := addrs[0]
 
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 
@@ -47,10 +47,10 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 
 	addr := genAddrs(1)[0]
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 
@@ -79,10 +79,10 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	newAddrs := genAddrs(3) // addrs to add in an update call
 
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 
@@ -150,10 +150,10 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 
 	addr := genAddrs(1)[0]
 	classRowId, err := s.stateStore.ClassInfoTable().InsertReturningID(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
@@ -195,10 +195,10 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	s := setupBase(t)
 
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "foobar",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "foobar",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 
@@ -220,10 +220,10 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 
 	addr := genAddrs(1)[0]
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 

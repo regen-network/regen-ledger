@@ -238,16 +238,16 @@ func (this ClassInfoAdminIndexKey) WithAdmin(admin []byte) ClassInfoAdminIndexKe
 	return this
 }
 
-type ClassInfoCreditTypeIndexKey struct {
+type ClassInfoCreditTypeAbbreviationIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoCreditTypeIndexKey) id() uint32            { return 3 }
-func (x ClassInfoCreditTypeIndexKey) values() []interface{} { return x.vs }
-func (x ClassInfoCreditTypeIndexKey) classInfoIndexKey()    {}
+func (x ClassInfoCreditTypeAbbreviationIndexKey) id() uint32            { return 3 }
+func (x ClassInfoCreditTypeAbbreviationIndexKey) values() []interface{} { return x.vs }
+func (x ClassInfoCreditTypeAbbreviationIndexKey) classInfoIndexKey()    {}
 
-func (this ClassInfoCreditTypeIndexKey) WithCreditType(credit_type string) ClassInfoCreditTypeIndexKey {
-	this.vs = []interface{}{credit_type}
+func (this ClassInfoCreditTypeAbbreviationIndexKey) WithCreditTypeAbbreviation(credit_type_abbreviation string) ClassInfoCreditTypeAbbreviationIndexKey {
+	this.vs = []interface{}{credit_type_abbreviation}
 	return this
 }
 
@@ -857,9 +857,9 @@ type ClassSequenceTable interface {
 	Update(ctx context.Context, classSequence *ClassSequence) error
 	Save(ctx context.Context, classSequence *ClassSequence) error
 	Delete(ctx context.Context, classSequence *ClassSequence) error
-	Has(ctx context.Context, credit_type string) (found bool, err error)
+	Has(ctx context.Context, credit_type_abbreviation string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, credit_type string) (*ClassSequence, error)
+	Get(ctx context.Context, credit_type_abbreviation string) (*ClassSequence, error)
 	List(ctx context.Context, prefixKey ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error)
 	ListRange(ctx context.Context, from, to ClassSequenceIndexKey, opts ...ormlist.Option) (ClassSequenceIterator, error)
 	DeleteBy(ctx context.Context, prefixKey ClassSequenceIndexKey) error
@@ -885,18 +885,18 @@ type ClassSequenceIndexKey interface {
 }
 
 // primary key starting index..
-type ClassSequencePrimaryKey = ClassSequenceCreditTypeIndexKey
+type ClassSequencePrimaryKey = ClassSequenceCreditTypeAbbreviationIndexKey
 
-type ClassSequenceCreditTypeIndexKey struct {
+type ClassSequenceCreditTypeAbbreviationIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassSequenceCreditTypeIndexKey) id() uint32             { return 0 }
-func (x ClassSequenceCreditTypeIndexKey) values() []interface{}  { return x.vs }
-func (x ClassSequenceCreditTypeIndexKey) classSequenceIndexKey() {}
+func (x ClassSequenceCreditTypeAbbreviationIndexKey) id() uint32             { return 0 }
+func (x ClassSequenceCreditTypeAbbreviationIndexKey) values() []interface{}  { return x.vs }
+func (x ClassSequenceCreditTypeAbbreviationIndexKey) classSequenceIndexKey() {}
 
-func (this ClassSequenceCreditTypeIndexKey) WithCreditType(credit_type string) ClassSequenceCreditTypeIndexKey {
-	this.vs = []interface{}{credit_type}
+func (this ClassSequenceCreditTypeAbbreviationIndexKey) WithCreditTypeAbbreviation(credit_type_abbreviation string) ClassSequenceCreditTypeAbbreviationIndexKey {
+	this.vs = []interface{}{credit_type_abbreviation}
 	return this
 }
 
@@ -920,13 +920,13 @@ func (this classSequenceTable) Delete(ctx context.Context, classSequence *ClassS
 	return this.table.Delete(ctx, classSequence)
 }
 
-func (this classSequenceTable) Has(ctx context.Context, credit_type string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, credit_type)
+func (this classSequenceTable) Has(ctx context.Context, credit_type_abbreviation string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, credit_type_abbreviation)
 }
 
-func (this classSequenceTable) Get(ctx context.Context, credit_type string) (*ClassSequence, error) {
+func (this classSequenceTable) Get(ctx context.Context, credit_type_abbreviation string) (*ClassSequence, error) {
 	var classSequence ClassSequence
-	found, err := this.table.PrimaryKey().Get(ctx, &classSequence, credit_type)
+	found, err := this.table.PrimaryKey().Get(ctx, &classSequence, credit_type_abbreviation)
 	if err != nil {
 		return nil, err
 	}

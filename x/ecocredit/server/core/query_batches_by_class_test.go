@@ -14,10 +14,10 @@ func TestQuery_BatchesByClass(t *testing.T) {
 
 	// make a class
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "foo",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "foo",
+		CreditTypeAbbreviation: "C",
 	}))
 	// make some batches under it
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{

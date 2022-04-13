@@ -233,7 +233,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var ownerAddr string
 		var owner simtypes.Account
 		for _, class := range classes {
-			if class.CreditType == rBasket.CreditTypeAbbrev {
+			if class.CreditTypeAbbreviation == rBasket.CreditTypeAbbrev {
 				issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{
 					ClassId: class.Name,
 				})

@@ -312,10 +312,10 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId
 
 func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       name,
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: creditTypeAbb,
+		Name:                   name,
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: creditTypeAbb,
 	}))
 }
 
@@ -408,8 +408,8 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	s.batchStartDate = timestamppb.New(startDate)
 
 	id, err := s.coreStore.ClassInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ClassInfo{
-		Name:       s.classId,
-		CreditType: s.creditType,
+		Name:                   s.classId,
+		CreditTypeAbbreviation: s.creditType,
 	})
 	assert.NilError(s.t, err)
 

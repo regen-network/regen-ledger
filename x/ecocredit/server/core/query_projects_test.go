@@ -18,10 +18,10 @@ func TestQuery_Projects(t *testing.T) {
 
 	// create a class and 2 projects from it
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{

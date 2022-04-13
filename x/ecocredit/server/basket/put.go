@@ -137,8 +137,8 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	if err != nil {
 		return err
 	}
-	if class.CreditType != basket.CreditTypeAbbrev {
-		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditType)
+	if class.CreditTypeAbbreviation != basket.CreditTypeAbbrev {
+		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditTypeAbbreviation)
 	}
 
 	return nil

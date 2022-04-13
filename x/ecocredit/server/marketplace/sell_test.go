@@ -189,10 +189,10 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		EndDate:    end,
 	}))
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       classId,
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: creditType.Abbreviation,
+		Name:                   classId,
+		Admin:                  s.addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: creditType.Abbreviation,
 	}))
 	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,

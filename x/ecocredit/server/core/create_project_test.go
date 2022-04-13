@@ -93,10 +93,10 @@ func TestCreateProject_NoDuplicates(t *testing.T) {
 
 func makeClass(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) {
 	assert.NilError(t, ss.ClassInfoTable().Insert(ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   "C01",
+		Admin:                  addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	}))
 	assert.NilError(t, ss.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
 		ClassId: 1,

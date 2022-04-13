@@ -113,9 +113,9 @@ func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowe
 			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}
 
-		if classInfo.CreditType != creditTypeAbbr {
+		if classInfo.CreditTypeAbbreviation != creditTypeAbbr {
 			return sdkerrors.ErrInvalidRequest.Wrapf("basket specified credit type %s, but class %s is of type %s",
-				creditTypeAbbr, class, classInfo.CreditType)
+				creditTypeAbbr, class, classInfo.CreditTypeAbbreviation)
 		}
 
 		if err := k.stateStore.BasketClassTable().Insert(ctx,

@@ -140,10 +140,10 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (className, projectName string) {
 	className, projectName = "C01", "PRO"
 	cid, err := ss.ClassInfoTable().InsertReturningID(ctx, &api.ClassInfo{
-		Name:       className,
-		Admin:      addr,
-		Metadata:   "",
-		CreditType: "C",
+		Name:                   className,
+		Admin:                  addr,
+		Metadata:               "",
+		CreditTypeAbbreviation: "C",
 	})
 	assert.NilError(t, err)
 	err = ss.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
