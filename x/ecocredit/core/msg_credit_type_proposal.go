@@ -13,7 +13,6 @@ var _ govtypes.Content = &CreditTypeProposal{}
 
 const (
 	ProposalType = "CreditTypeProposal"
-	RouterKey    = ecocredit.ModuleName
 )
 
 func init() {
@@ -24,7 +23,7 @@ func NewCreditTypeProposal(title, description string, ct CreditType) govtypes.Co
 	return &CreditTypeProposal{title, description, &ct}
 }
 
-func (m *CreditTypeProposal) ProposalRoute() string { return RouterKey }
+func (m *CreditTypeProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
 func (m *CreditTypeProposal) ProposalType() string { return ProposalType }
 

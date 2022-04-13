@@ -5,8 +5,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
@@ -35,12 +33,6 @@ type BankKeeper interface {
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
-}
-
-// Keeper defines the expected interface needed to prune expired buy and sell orders.
-type Keeper interface {
-	PruneOrders(ctx sdk.Context) error
-	NewCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error
 }
 
 type DistributionKeeper interface {

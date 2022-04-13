@@ -1,4 +1,4 @@
-package ecocredit
+package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
