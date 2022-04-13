@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
 * [#592](https://github.com/regen-network/regen-ledger/pull/592) fixed `undefined` error msg for creating class
 
+### Changed
+
+* [#1020](https://github.com/regen-network/regen-ledger/pull/1020) Usage of Location (ProjectLocation, RetirementLocation) changed to Jurisdiction
+
 ## [v3.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v3.0.0) - 2022-02-25
 
 ### General
