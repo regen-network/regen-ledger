@@ -5,7 +5,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -47,30 +46,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return err
 	}
 
-	for _, iss := range m.Issuance {
-
-		if _, err := sdk.AccAddressFromBech32(iss.Recipient); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-		}
-
-		if iss.TradableAmount != "" {
-			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
-				return err
-			}
-		}
-
-		if iss.RetiredAmount != "" {
-			retiredAmount, err := math.NewNonNegativeDecFromString(iss.RetiredAmount)
-			if err != nil {
-				return err
-			}
-
-			if !retiredAmount.IsZero() {
-				if err = ValidateLocation(iss.RetirementLocation); err != nil {
-					return err
-				}
-			}
-		}
+	if err := validateBatchIssuances(m.Issuance); err != nil {
+		return err
+	}
+	if err := validateOriginTx(m.OriginTx, false); err != nil {
+		return err
 	}
 
 	return nil

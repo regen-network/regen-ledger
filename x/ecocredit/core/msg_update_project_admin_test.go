@@ -9,8 +9,8 @@ import (
 )
 
 func TestMsgUpdateProjectAdmin_ValidateBasic(t *testing.T) {
-	addr := sdk.AccAddress("addr1-----------------").String()
-	addr2 := sdk.AccAddress("addr2-----------------").String()
+	addr := sdk.AccAddress("addr1").String()
+	addr2 := sdk.AccAddress("addr2").String()
 	type fields struct {
 		Admin     string
 		NewAdmin  string

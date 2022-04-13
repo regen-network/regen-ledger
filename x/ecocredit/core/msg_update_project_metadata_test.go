@@ -12,7 +12,7 @@ import (
 )
 
 func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
-	addr := sdk.AccAddress("addr1---------------------").String()
+	addr := sdk.AccAddress("addr1").String()
 	type fields struct {
 		Admin       string
 		NewMetadata string
@@ -45,13 +45,6 @@ func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
 				NewMetadata: rand.Str(MaxMetadataLength + 1),
 			},
 			errMsg: ecocredit.ErrMaxLimit.Error(),
-		},
-		{
-			name: "no metadata",
-			fields: fields{
-				Admin: addr,
-			},
-			errMsg: sdkerrors.ErrInvalidRequest.Wrap("metadata cannot be empty").Error(),
 		},
 		{
 			name: "invalid project id",

@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -13,6 +12,8 @@ import (
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // QueryCmd returns the parent command for all x/ecocredit query commands.
@@ -37,18 +38,14 @@ func QueryCmd(name string) *cobra.Command {
 		QueryProjectsCmd(),
 		QueryProjectInfoCmd(),
 		QueryParamsCmd(),
-		QuerySellOrderCmd(),
-		QuerySellOrdersCmd(),
-		QuerySellOrdersByAddressCmd(),
-		QuerySellOrdersByBatchDenomCmd(),
-		QueryBuyOrderCmd(),
-		QueryBuyOrdersCmd(),
-		QueryBuyOrdersByAddressCmd(),
-		QueryAllowedAskDenomsCmd(),
 		basketcli.QueryBasketCmd(),
 		basketcli.QueryBasketsCmd(),
 		basketcli.QueryBasketBalanceCmd(),
 		basketcli.QueryBasketBalancesCmd(),
+		marketplacecli.QuerySellOrderCmd(),
+		marketplacecli.QuerySellOrdersCmd(),
+		marketplacecli.QuerySellOrdersByAddressCmd(),
+		marketplacecli.QuerySellOrdersByBatchDenomCmd(),
 	)
 	return cmd
 }
@@ -75,7 +72,7 @@ func QueryClassesCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Classes(cmd.Context(), &ecocredit.QueryClassesRequest{
+			res, err := c.Classes(cmd.Context(), &core.QueryClassesRequest{
 				Pagination: pagination,
 			})
 			return print(ctx, res, err)
@@ -97,7 +94,7 @@ func QueryClassInfoCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.ClassInfo(cmd.Context(), &ecocredit.QueryClassInfoRequest{
+			res, err := c.ClassInfo(cmd.Context(), &core.QueryClassInfoRequest{
 				ClassId: args[0],
 			})
 			return print(ctx, res, err)
@@ -122,7 +119,7 @@ func QueryProjectsCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Projects(cmd.Context(), &ecocredit.QueryProjectsRequest{
+			res, err := c.Projects(cmd.Context(), &core.QueryProjectsRequest{
 				ClassId:    args[0],
 				Pagination: pagination,
 			})
@@ -145,7 +142,7 @@ func QueryProjectInfoCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.ProjectInfo(cmd.Context(), &ecocredit.QueryProjectInfoRequest{
+			res, err := c.ProjectInfo(cmd.Context(), &core.QueryProjectInfoRequest{
 				ProjectId: args[0],
 			})
 			return print(ctx, res, err)
@@ -173,7 +170,7 @@ func QueryBatchesCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Batches(cmd.Context(), &ecocredit.QueryBatchesRequest{
+			res, err := c.Batches(cmd.Context(), &core.QueryBatchesRequest{
 				ProjectId:  args[0],
 				Pagination: pagination,
 			})
@@ -198,7 +195,7 @@ func QueryBatchInfoCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.BatchInfo(cmd.Context(), &ecocredit.QueryBatchInfoRequest{
+			res, err := c.BatchInfo(cmd.Context(), &core.QueryBatchInfoRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -219,7 +216,7 @@ func QueryBalanceCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Balance(cmd.Context(), &ecocredit.QueryBalanceRequest{
+			res, err := c.Balance(cmd.Context(), &core.QueryBalanceRequest{
 				BatchDenom: args[0], Account: args[1],
 			})
 			return print(ctx, res, err)
@@ -240,7 +237,7 @@ func QuerySupplyCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Supply(cmd.Context(), &ecocredit.QuerySupplyRequest{
+			res, err := c.Supply(cmd.Context(), &core.QuerySupplyRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -261,7 +258,7 @@ func QueryCreditTypesCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
+			res, err := c.CreditTypes(cmd.Context(), &core.QueryCreditTypesRequest{})
 			return print(ctx, res, err)
 		},
 	})
@@ -285,194 +282,7 @@ $%s q %s params
 			if err != nil {
 				return err
 			}
-			res, err := c.Params(cmd.Context(), &ecocredit.QueryParamsRequest{})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QuerySellOrderCmd returns a query command that retrieves information for a given sell order.
-func QuerySellOrderCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "sell-order [sell_order_id]",
-		Short: "Retrieve information for a given sell order",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			sellOrderId, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
-			}
-			res, err := c.SellOrder(cmd.Context(), &ecocredit.QuerySellOrderRequest{
-				SellOrderId: sellOrderId,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QuerySellOrdersCmd returns a query command that retrieves all sell orders with pagination.
-func QuerySellOrdersCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "sell-orders",
-		Short: "List all sell orders with pagination",
-		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.SellOrders(cmd.Context(), &ecocredit.QuerySellOrdersRequest{
-				Pagination: pagination,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QuerySellOrdersByAddressCmd returns a query command that retrieves all sell orders by address with pagination.
-func QuerySellOrdersByAddressCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "sell-orders-by-address [address]",
-		Short: "List all sell orders by owner address with pagination",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.SellOrdersByAddress(cmd.Context(), &ecocredit.QuerySellOrdersByAddressRequest{
-				Address:    args[0],
-				Pagination: pagination,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QuerySellOrdersByBatchDenomCmd returns a query command that retrieves all sell orders by batch denom with pagination.
-func QuerySellOrdersByBatchDenomCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "sell-orders-by-batch-denom [batch_denom]",
-		Short: "List all sell orders by batch denom with pagination",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.SellOrdersByBatchDenom(cmd.Context(), &ecocredit.QuerySellOrdersByBatchDenomRequest{
-				BatchDenom: args[0],
-				Pagination: pagination,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QueryBuyOrderCmd returns a query command that retrieves information for a given buy order.
-func QueryBuyOrderCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "buy-order [buy_order_id]",
-		Short: "Retrieve information for a given buy order",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			buyOrderId, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return ecocredit.ErrInvalidBuyOrder.Wrap(err.Error())
-			}
-			res, err := c.BuyOrder(cmd.Context(), &ecocredit.QueryBuyOrderRequest{
-				BuyOrderId: buyOrderId,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QueryBuyOrdersCmd returns a query command that retrieves all buy orders with pagination.
-func QueryBuyOrdersCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "buy-orders",
-		Short: "List all buy orders with pagination",
-		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.BuyOrders(cmd.Context(), &ecocredit.QueryBuyOrdersRequest{
-				Pagination: pagination,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QueryBuyOrdersByAddressCmd returns a query command that retrieves all buy orders by address with pagination.
-func QueryBuyOrdersByAddressCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "buy-orders-by-address [address]",
-		Short: "List all buy orders by buyer address with pagination",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.BuyOrdersByAddress(cmd.Context(), &ecocredit.QueryBuyOrdersByAddressRequest{
-				Address:    args[0],
-				Pagination: pagination,
-			})
-			return print(ctx, res, err)
-		},
-	})
-}
-
-// QueryAllowedAskDenomsCmd returns a query command that retrieves all allowed ask denoms with pagination.
-func QueryAllowedAskDenomsCmd() *cobra.Command {
-	return qflags(&cobra.Command{
-		Use:   "allowed-ask-denoms",
-		Short: "List all allowed ask denoms with pagination",
-		Args:  cobra.ExactArgs(0),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			pagination, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-			res, err := c.AllowedAskDenoms(cmd.Context(), &ecocredit.QueryAllowedAskDenomsRequest{
-				Pagination: pagination,
-			})
+			res, err := c.Params(cmd.Context(), &core.QueryParamsRequest{})
 			return print(ctx, res, err)
 		},
 	})
