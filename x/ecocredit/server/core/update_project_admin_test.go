@@ -22,7 +22,7 @@ func TestUpdateProjectAdmin_Valid(t *testing.T) {
 		ProjectLocation: "US-NY",
 		Metadata:        "hi",
 	}))
-	newAdmin := sdk.AccAddress("addr1--------------------")
+	newAdmin := sdk.AccAddress("addr1")
 
 	_, err := s.k.UpdateProjectAdmin(s.ctx, &core.MsgUpdateProjectAdmin{
 		Admin:     s.addr.String(),
@@ -47,7 +47,7 @@ func TestUpdateProjectAdmin_Unauthorized(t *testing.T) {
 		ProjectLocation: "US-NY",
 		Metadata:        "hi",
 	}))
-	notAdmin := sdk.AccAddress("addr1--------------------")
+	notAdmin := sdk.AccAddress("addr1c")
 
 	_, err := s.k.UpdateProjectAdmin(s.ctx, &core.MsgUpdateProjectAdmin{
 		Admin:     notAdmin.String(),

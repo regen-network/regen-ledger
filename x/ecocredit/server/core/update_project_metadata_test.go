@@ -47,7 +47,7 @@ func TestUpdateProjectMetadata_Unauthorized(t *testing.T) {
 		ProjectLocation: "US-NY",
 		Metadata:        "hi",
 	}))
-	notAdmin := sdk.AccAddress("addr1--------------------")
+	notAdmin := sdk.AccAddress("addr1")
 
 	_, err := s.k.UpdateProjectMetadata(s.ctx, &core.MsgUpdateProjectMetadata{
 		Admin:       notAdmin.String(),
