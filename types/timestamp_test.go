@@ -3,11 +3,14 @@ package types_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/types"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/regen-network/regen-ledger/types"
 )
 
 func TestGogoToProtobufDuration(t *testing.T) {
@@ -92,6 +95,30 @@ func TestProtobufToGogoTimestamp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := types.ProtobufToGogoTimestamp(tt.args.ts); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ProtobufToGogoTimestamp() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseDate(t *testing.T) {
+	tcs := []struct {
+		name   string
+		date   string
+		hasErr bool
+	}{
+		{"good", "2022-01-20", false},
+		{"bad", "01-2021-20", true},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			require := require.New(t)
+			tm, err := types.ParseDate(tc.date, tc.date)
+			if tc.hasErr {
+				require.Error(err)
+				require.Equal(time.Time{}, tm)
+			} else {
+				require.NoError(err)
+				require.NotNil(tm)
 			}
 		})
 	}

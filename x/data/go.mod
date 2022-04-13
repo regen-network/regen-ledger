@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.11
 	github.com/gogo/protobuf v1.3.3
+	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
