@@ -51,8 +51,6 @@ func TxCreditTypeProposalCmd() *cobra.Command {
 				return fmt.Errorf("invalid proposal: %w", err)
 			}
 
-			from := clientCtx.GetFromAddress()
-
 			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
 			if err != nil {
 				return err
@@ -62,7 +60,7 @@ func TxCreditTypeProposalCmd() *cobra.Command {
 				return err
 			}
 			var content types.Content = &proposal
-			msg, err := types.NewMsgSubmitProposal(content, deposit, from)
+			msg, err := types.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
 			if err != nil {
 				return err
 			}
