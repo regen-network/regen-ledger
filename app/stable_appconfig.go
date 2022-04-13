@@ -7,6 +7,10 @@ package app
 
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -20,10 +24,17 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
-	return []module.AppModuleBasic{}
+	return []module.AppModuleBasic{
+		gov.NewAppModuleBasic(
+			paramsclient.ProposalHandler, distrclient.ProposalHandler,
+			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			core.CreditTypeProposalHandler,
+		),
+	}
 }
 
 // setCustomModules registers new modules with the server module manager.

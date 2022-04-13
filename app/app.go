@@ -8,10 +8,6 @@ import (
 	"os"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-
 	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
@@ -100,7 +96,6 @@ import (
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 
@@ -143,11 +138,6 @@ var (
 			authzmodule.AppModuleBasic{},
 			ecocreditmodule.Module{},
 			data.Module{},
-			gov.NewAppModuleBasic(
-				paramsclient.ProposalHandler, distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-				core.CreditTypeProposalHandler,
-			),
 		}, setCustomModuleBasics()...)...,
 	)
 
