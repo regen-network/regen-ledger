@@ -67,8 +67,8 @@ func TestCreditTypeProposal_BasicValid(t *testing.T) {
 		Precision:    6,
 	}
 	err := s.handler(s.sdkCtx, &coretypes.CreditTypeProposal{
-		Title:       "dude wheres my credit type?",
-		Description: "and then?",
+		Title:       "my credit type",
+		Description: "yay",
 		CreditType:  ct,
 	})
 	assert.NilError(t, err)
