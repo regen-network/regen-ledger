@@ -19,10 +19,6 @@ func init() {
 	govtypes.RegisterProposalType(ProposalType)
 }
 
-func NewCreditTypeProposal(title, description string, ct CreditType) govtypes.Content {
-	return &CreditTypeProposal{title, description, &ct}
-}
-
 func (m *CreditTypeProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
 func (m *CreditTypeProposal) ProposalType() string { return ProposalType }
