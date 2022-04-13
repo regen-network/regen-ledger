@@ -11,8 +11,8 @@ import (
 func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
-		Sender string
-		Hash   *ContentHash
+		Sender      string
+		ContentHash *ContentHash
 	}
 	tests := []struct {
 		name    string
@@ -23,7 +23,7 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 			name: "good",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Raw: &ContentHash_Raw{
+				ContentHash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 32),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
@@ -34,16 +34,16 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 		{
 			name: "nil",
 			fields: fields{
-				Sender: addr.String(),
-				Hash:   nil,
+				Sender:      addr.String(),
+				ContentHash: nil,
 			},
-			wantErr: "hash cannot be empty: invalid request",
+			wantErr: "content hash cannot be empty: invalid request",
 		},
 		{
 			name: "bad",
 			fields: fields{
 				Sender: addr.String(),
-				Hash: &ContentHash{Raw: &ContentHash_Raw{
+				ContentHash: &ContentHash{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 31),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 					MediaType:       RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
@@ -55,8 +55,8 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgAnchor{
-				Sender: tt.fields.Sender,
-				Hash:   tt.fields.Hash,
+				Sender:      tt.fields.Sender,
+				ContentHash: tt.fields.ContentHash,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {
@@ -71,8 +71,8 @@ func TestMsgAnchorRequest_ValidateBasic(t *testing.T) {
 func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
-		Attestors []string
-		Hash      *ContentHash_Graph
+		Attestor      string
+		ContentHashes []*ContentHash_Graph
 	}
 	tests := []struct {
 		name    string
@@ -80,27 +80,54 @@ func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 		wantErr string
 	}{
 		{
-			"good",
+			"valid message",
 			fields{
-				Attestors: []string{addr.String()},
-				Hash: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				Attestor: addr.String(),
+				ContentHashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
 				},
 			},
 			"",
 		},
 		{
-			"bad",
+			"invalid attestor",
 			fields{
-				Attestors: nil,
-				Hash: &ContentHash_Graph{
-					Hash:                      make([]byte, 32),
-					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				Attestor: "",
+				ContentHashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
+				},
+			},
+			"empty address string is not allowed: invalid address",
+		},
+		{
+			"empty content hashes",
+			fields{
+				Attestor:      addr.String(),
+				ContentHashes: []*ContentHash_Graph{},
+			},
+			"content hashes cannot be empty: invalid request",
+		},
+		{
+			"invalid content hash",
+			fields{
+				Attestor: addr.String(),
+				ContentHashes: []*ContentHash_Graph{
+					{
+						Hash:                      make([]byte, 32),
+						DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+						CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
+						MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+					},
 				},
 			},
 			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
@@ -109,8 +136,8 @@ func TestMsgAttestRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgAttest{
-				Attestors: tt.fields.Attestors,
-				Hash:      tt.fields.Hash,
+				Attestor:      tt.fields.Attestor,
+				ContentHashes: tt.fields.ContentHashes,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {
@@ -176,7 +203,7 @@ func TestMsgDefineResolver_ValidateBasic(t *testing.T) {
 
 func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
-	validData := []*ContentHash{
+	validContentHashes := []*ContentHash{
 		{
 			Raw: &ContentHash_Raw{
 				Hash:            make([]byte, 32),
@@ -187,8 +214,8 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	}
 
 	type fields struct {
-		Manager string
-		Data    []*ContentHash
+		Manager       string
+		ContentHashes []*ContentHash
 	}
 	tests := []struct {
 		name    string
@@ -198,32 +225,32 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 		{
 			"valid message",
 			fields{
-				Manager: addr.String(),
-				Data:    validData,
+				Manager:       addr.String(),
+				ContentHashes: validContentHashes,
 			},
 			"",
 		},
 		{
 			"invalid manager",
 			fields{
-				Manager: "foo",
-				Data:    validData,
+				Manager:       "foo",
+				ContentHashes: validContentHashes,
 			},
 			"decoding bech32 failed: invalid bech32 string length 3: invalid address",
 		},
 		{
 			"data cannot be empty",
 			fields{
-				Manager: addr.String(),
-				Data:    []*ContentHash{},
+				Manager:       addr.String(),
+				ContentHashes: []*ContentHash{},
 			},
-			"data cannot be empty: invalid request",
+			"content hashes cannot be empty: invalid request",
 		},
 		{
 			"invalid content hash",
 			fields{
 				Manager: addr.String(),
-				Data: []*ContentHash{
+				ContentHashes: []*ContentHash{
 					{
 						Raw: &ContentHash_Raw{
 							Hash:            make([]byte, 31),
@@ -239,8 +266,8 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgRegisterResolver{
-				Manager: tt.fields.Manager,
-				Data:    tt.fields.Data,
+				Manager:       tt.fields.Manager,
+				ContentHashes: tt.fields.ContentHashes,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {

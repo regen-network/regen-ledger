@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types/math"
@@ -22,22 +21,15 @@ func TestBuy_ValidTradable(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -53,13 +45,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, true, "")
 	assert.NilError(t, err)
 
 	// sell order should now have quantity 10 - 3 -> 7
@@ -79,22 +65,15 @@ func TestBuy_ValidRetired(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 30)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -109,13 +88,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-NY")
 	assert.NilError(t, err)
 
 	// sell order should now have quantity 10 - 3 -> 7
@@ -135,22 +108,14 @@ func TestBuy_OrderFilled(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 100)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(3)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -165,13 +130,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(10)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: purchaseAmt.String(), BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, false, "US-OR")
 	assert.NilError(t, err)
 
 	// order was filled, so sell order should no longer exist
@@ -188,21 +147,13 @@ func TestBuy_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
 	userBalance := sdk.NewInt64Coin("ufoo", 150)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).AnyTimes()
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -217,66 +168,80 @@ func TestBuy_Invalid(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 
 	// sell order not found
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 532}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), 532, "10", &ask, false, "US-CA")
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// exceeds decimal precision
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10.23958230958", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10.3235235235", &ask, false, "US-OR")
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
 
 	// mismatch auto retire settings
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &ask, true, "")
 	assert.ErrorContains(t, err, "cannot disable auto retire")
 
 	// cannot buy more credits than available
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "11", BidPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "11", &ask, false, "US-WA")
 	assert.ErrorContains(t, err, "cannot purchase 11 credits from a sell order that has 10 credits")
 
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &wrongDenom, DisableAutoRetire: false, Expiration: &sellExp},
-		},
-	})
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &wrongDenom, false, "US-CO")
 	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
 
 	// bidding more than in the bank
 	inBank := sdk.NewInt64Coin("ufoo", 10)
 	biddingWith := sdk.NewInt64Coin("ufoo", 100)
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
-	_, err = s.k.Buy(s.ctx, &marketplace.MsgBuy{
-		Buyer: buyerAddr.String(),
-		Orders: []*marketplace.MsgBuy_Order{
-			{Selection: &marketplace.MsgBuy_Order_Selection{Sum: &marketplace.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellOrderId}},
-				Quantity: "10", BidPrice: &biddingWith, DisableAutoRetire: false, Expiration: &sellExp},
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &biddingWith, false, "US-NV")
+	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+}
+
+func TestBuy_Decimal(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	_, _, buyerAddr := testdata.KeyTestPubAddr()
+	userCoinBalance := sdk.NewInt64Coin("ufoo", 50)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
+	// make a sell order
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
+	}).Times(3)
+	sellExp := time.Now()
+	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.addr.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})
-	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+	assert.NilError(t, err)
+	sellOrderId := res.SellOrderIds[0]
+
+	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
+
+	purchaseAmt := "3.985321"
+	expectedCost := sdk.NewInt64Coin("ufoo", 39)
+	// sell order ask price: 10ufoo, buy order of 3.215 credits -> 10 * 3.215 = 32.15
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{expectedCost}).Return(nil).Times(1)
+
+	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt, &ask, true, "")
+	assert.NilError(t, err)
+}
+
+func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, pricePerCredit *sdk.Coin, disableAutoRetire bool,
+	retirementLocation string) (*marketplace.MsgBuyDirectResponse, error) {
+	return s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer: buyer,
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId:        sellOrderId,
+				Quantity:           qty,
+				BidPrice:           pricePerCredit,
+				DisableAutoRetire:  disableAutoRetire,
+				RetirementLocation: retirementLocation,
+			},
+		},
+	})
 }

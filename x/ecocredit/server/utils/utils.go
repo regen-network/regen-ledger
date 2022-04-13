@@ -3,13 +3,13 @@ package utils
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.

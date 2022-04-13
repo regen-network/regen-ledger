@@ -79,6 +79,7 @@ message ProjectInfo {
     primary_key : {fields : "id", auto_increment : true}
     index : {id : 1, fields : "name", unique : true}
     index : {id : 2, fields : "class_id,name", unique : true}
+    index : {id : 3, fields : "admin"}
   };
 
   // id is the unique ID of the project.

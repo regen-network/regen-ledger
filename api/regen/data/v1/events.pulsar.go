@@ -432,63 +432,17 @@ func (x *fastReflection_EventAnchor) ProtoMethods() *protoiface.Methods {
 	}
 }
 
-var _ protoreflect.List = (*_EventAttest_2_list)(nil)
-
-type _EventAttest_2_list struct {
-	list *[]string
-}
-
-func (x *_EventAttest_2_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_EventAttest_2_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
-}
-
-func (x *_EventAttest_2_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_EventAttest_2_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_EventAttest_2_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message EventAttest at list field Attestors as it is not of Message kind"))
-}
-
-func (x *_EventAttest_2_list) Truncate(n int) {
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_EventAttest_2_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
-}
-
-func (x *_EventAttest_2_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
-	md_EventAttest           protoreflect.MessageDescriptor
-	fd_EventAttest_iri       protoreflect.FieldDescriptor
-	fd_EventAttest_attestors protoreflect.FieldDescriptor
+	md_EventAttest          protoreflect.MessageDescriptor
+	fd_EventAttest_iri      protoreflect.FieldDescriptor
+	fd_EventAttest_attestor protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_events_proto_init()
 	md_EventAttest = File_regen_data_v1_events_proto.Messages().ByName("EventAttest")
 	fd_EventAttest_iri = md_EventAttest.Fields().ByName("iri")
-	fd_EventAttest_attestors = md_EventAttest.Fields().ByName("attestors")
+	fd_EventAttest_attestor = md_EventAttest.Fields().ByName("attestor")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAttest)(nil)
@@ -562,9 +516,9 @@ func (x *fastReflection_EventAttest) Range(f func(protoreflect.FieldDescriptor, 
 			return
 		}
 	}
-	if len(x.Attestors) != 0 {
-		value := protoreflect.ValueOfList(&_EventAttest_2_list{list: &x.Attestors})
-		if !f(fd_EventAttest_attestors, value) {
+	if x.Attestor != "" {
+		value := protoreflect.ValueOfString(x.Attestor)
+		if !f(fd_EventAttest_attestor, value) {
 			return
 		}
 	}
@@ -585,8 +539,8 @@ func (x *fastReflection_EventAttest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.data.v1.EventAttest.iri":
 		return x.Iri != ""
-	case "regen.data.v1.EventAttest.attestors":
-		return len(x.Attestors) != 0
+	case "regen.data.v1.EventAttest.attestor":
+		return x.Attestor != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -605,8 +559,8 @@ func (x *fastReflection_EventAttest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.data.v1.EventAttest.iri":
 		x.Iri = ""
-	case "regen.data.v1.EventAttest.attestors":
-		x.Attestors = nil
+	case "regen.data.v1.EventAttest.attestor":
+		x.Attestor = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -626,12 +580,9 @@ func (x *fastReflection_EventAttest) Get(descriptor protoreflect.FieldDescriptor
 	case "regen.data.v1.EventAttest.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.EventAttest.attestors":
-		if len(x.Attestors) == 0 {
-			return protoreflect.ValueOfList(&_EventAttest_2_list{})
-		}
-		listValue := &_EventAttest_2_list{list: &x.Attestors}
-		return protoreflect.ValueOfList(listValue)
+	case "regen.data.v1.EventAttest.attestor":
+		value := x.Attestor
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -654,10 +605,8 @@ func (x *fastReflection_EventAttest) Set(fd protoreflect.FieldDescriptor, value 
 	switch fd.FullName() {
 	case "regen.data.v1.EventAttest.iri":
 		x.Iri = value.Interface().(string)
-	case "regen.data.v1.EventAttest.attestors":
-		lv := value.List()
-		clv := lv.(*_EventAttest_2_list)
-		x.Attestors = *clv.list
+	case "regen.data.v1.EventAttest.attestor":
+		x.Attestor = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -678,14 +627,10 @@ func (x *fastReflection_EventAttest) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAttest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.EventAttest.attestors":
-		if x.Attestors == nil {
-			x.Attestors = []string{}
-		}
-		value := &_EventAttest_2_list{list: &x.Attestors}
-		return protoreflect.ValueOfList(value)
 	case "regen.data.v1.EventAttest.iri":
 		panic(fmt.Errorf("field iri of message regen.data.v1.EventAttest is not mutable"))
+	case "regen.data.v1.EventAttest.attestor":
+		panic(fmt.Errorf("field attestor of message regen.data.v1.EventAttest is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -701,9 +646,8 @@ func (x *fastReflection_EventAttest) NewField(fd protoreflect.FieldDescriptor) p
 	switch fd.FullName() {
 	case "regen.data.v1.EventAttest.iri":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.EventAttest.attestors":
-		list := []string{}
-		return protoreflect.ValueOfList(&_EventAttest_2_list{list: &list})
+	case "regen.data.v1.EventAttest.attestor":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.EventAttest"))
@@ -777,11 +721,9 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.Attestors) > 0 {
-			for _, s := range x.Attestors {
-				l = len(s)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		l = len(x.Attestor)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -812,14 +754,12 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Attestors) > 0 {
-			for iNdEx := len(x.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Attestors[iNdEx])
-				copy(dAtA[i:], x.Attestors[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestors[iNdEx])))
-				i--
-				dAtA[i] = 0x12
-			}
+		if len(x.Attestor) > 0 {
+			i -= len(x.Attestor)
+			copy(dAtA[i:], x.Attestor)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Attestor)))
+			i--
+			dAtA[i] = 0x12
 		}
 		if len(x.Iri) > 0 {
 			i -= len(x.Iri)
@@ -911,7 +851,7 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Attestor", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -939,7 +879,7 @@ func (x *fastReflection_EventAttest) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Attestors = append(x.Attestors, string(dAtA[iNdEx:postIndex]))
+				x.Attestor = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -995,7 +935,7 @@ type EventAnchor struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the data IRI
+	// iri is the IRI of the data anchored on chain.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -1032,11 +972,11 @@ type EventAttest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// iri is the data IRI
+	// iri is the IRI of the data attested to.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
-	// attestors are the addresses of the accounts which have attested
-	// to the validity of the data.
-	Attestors []string `protobuf:"bytes,2,rep,name=attestors,proto3" json:"attestors,omitempty"`
+	// attestor is the address of the account that has attested to the veracity of
+	// the data.
+	Attestor string `protobuf:"bytes,2,opt,name=attestor,proto3" json:"attestor,omitempty"`
 }
 
 func (x *EventAttest) Reset() {
@@ -1066,11 +1006,11 @@ func (x *EventAttest) GetIri() string {
 	return ""
 }
 
-func (x *EventAttest) GetAttestors() []string {
+func (x *EventAttest) GetAttestor() string {
 	if x != nil {
-		return x.Attestors
+		return x.Attestor
 	}
-	return nil
+	return ""
 }
 
 var File_regen_data_v1_events_proto protoreflect.FileDescriptor
@@ -1080,23 +1020,23 @@ var file_regen_data_v1_events_proto_rawDesc = []byte{
 	0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x65,
 	0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x22, 0x1f, 0x0a, 0x0b, 0x45,
 	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6e, 0x63, 0x68, 0x6f, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72,
-	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x3d, 0x0a, 0x0b,
+	0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x22, 0x3b, 0x0a, 0x0b,
 	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x69,
-	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x1c, 0x0a,
-	0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09,
-	0x52, 0x09, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x73, 0x42, 0xb6, 0x01, 0x0a, 0x11,
-	0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76,
-	0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31,
-	0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44,
-	0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
-	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44,
-	0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
-	0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61,
-	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x72, 0x69, 0x12, 0x1a, 0x0a,
+	0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x61, 0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x42, 0xb6, 0x01, 0x0a, 0x11, 0x63, 0x6f,
+	0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42,
+	0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
+	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x64, 0x61, 0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02,
+	0x03, 0x52, 0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74,
+	0x61, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74,
+	0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74,
+	0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a,
+	0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

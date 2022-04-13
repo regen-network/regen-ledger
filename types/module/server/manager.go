@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -32,6 +33,7 @@ type Manager struct {
 	weightedOperationsHandlers []WeightedOperationsHandler
 	beginBlockers              []BeginBlockerModule
 	endBlockers                []EndBlockerModule
+	migrationHandlers          map[string]MigrationHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
@@ -59,6 +61,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		},
 		requiredServices:           map[reflect.Type]bool{},
 		weightedOperationsHandlers: []WeightedOperationsHandler{},
+		migrationHandlers:          map[string]MigrationHandler{},
 	}
 }
 
@@ -136,6 +139,10 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			mm.weightedOperationsHandlers = append(mm.weightedOperationsHandlers, cfg.weightedOperationHandler)
 		}
 
+		if cfg.migrationHandler != nil {
+			mm.migrationHandlers[name] = cfg.migrationHandler
+		}
+
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
@@ -197,6 +204,29 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 		panic(err)
 	}
 	return res
+}
+
+// RunMigrations performs state migrations for registered modules.
+func (mm *Manager) RunMigrations(ctx sdk.Context, cdc codec.Codec) error {
+	// sorting migration handlers map to prevent non-determinism
+	keys := make([]string, 0, len(mm.migrationHandlers))
+	for k := range mm.migrationHandlers {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		h := mm.migrationHandlers[k]
+		if h == nil {
+			continue
+		}
+
+		if err := h(ctx, cdc); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func initGenesis(ctx sdk.Context, cdc codec.Codec,
@@ -279,6 +309,7 @@ func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[s
 }
 
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
+type MigrationHandler func(ctx sdk.Context, cdc codec.Codec) error
 
 type configurator struct {
 	sdkmodule.Configurator
@@ -291,9 +322,14 @@ type configurator struct {
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
 	registerInvariantsHandler RegisterInvariantsHandler
+	migrationHandler          MigrationHandler
 }
 
 var _ Configurator = &configurator{}
+
+func (c *configurator) RegisterMigrationHandler(mHandler MigrationHandler) {
+	c.migrationHandler = mHandler
+}
 
 func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
 	c.weightedOperationHandler = operationsHandler
