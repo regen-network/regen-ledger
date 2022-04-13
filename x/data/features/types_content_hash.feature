@@ -8,6 +8,14 @@ Feature: Types
     When the content hash is validated
     Then expect the error "content hash must be one of raw type or graph type: invalid request"
 
+  Scenario: an error is returned if content hash includes both raw type and graph type
+    Given the content hash
+    """
+    {}
+    """
+    When the content hash is validated
+    Then expect the error "content hash must be one of raw type or graph type: invalid request"
+
   Scenario: an error is returned if raw content hash is empty
     Given the content hash
     """
