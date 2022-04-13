@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -232,7 +231,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Metadata:  simtypes.RandStringOfLength(r, 288),
+				Metadata:  string(make([]byte, 288)),
 			},
 			expErr: true,
 		},

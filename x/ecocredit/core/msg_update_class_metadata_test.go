@@ -5,8 +5,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
-
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
 func TestMsgUpdateClassMetadata(t *testing.T) {
@@ -34,7 +32,7 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			expErr: true,
 		},
 		"invalid: metadata too large": {
-			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: simtypes.RandStringOfLength(r, 288)},
+			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: string(make([]byte, 288))},
 			expErr: true,
 		},
 	}
