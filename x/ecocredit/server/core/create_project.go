@@ -50,20 +50,20 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 	}
 
 	if err = k.stateStore.ProjectInfoTable().Insert(ctx, &api.ProjectInfo{
-		Name:            projectID,
-		Admin:           adminAddress,
-		ClassId:         classInfo.Id,
-		ProjectLocation: req.ProjectLocation,
-		Metadata:        req.Metadata,
+		Name:                projectID,
+		Admin:               adminAddress,
+		ClassId:             classInfo.Id,
+		ProjectJurisdiction: req.ProjectJurisdiction,
+		Metadata:            req.Metadata,
 	}); err != nil {
 		return nil, err
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateProject{
-		ProjectId:       projectID,
-		Admin:           adminAddress.String(),
-		ClassId:         classID,
-		ProjectLocation: req.ProjectLocation,
+		ProjectId:           projectID,
+		Admin:               adminAddress.String(),
+		ClassId:             classID,
+		ProjectJurisdiction: req.ProjectJurisdiction,
 	}); err != nil {
 		return nil, err
 	}

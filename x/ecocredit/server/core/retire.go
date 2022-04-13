@@ -87,10 +87,10 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		})
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:    req.Holder,
-			BatchDenom: credit.BatchDenom,
-			Amount:     credit.Amount,
-			Location:   req.Location,
+			Retirer:      req.Holder,
+			BatchDenom:   credit.BatchDenom,
+			Amount:       credit.Amount,
+			Jurisdiction: req.Jurisdiction,
 		}); err != nil {
 			return nil, err
 		}

@@ -99,11 +99,11 @@ func TestTakeMustRetire(t *testing.T) {
 
 	// foo requires RetireOnTake
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.addr.String(),
-		BasketDenom:        "foo",
-		Amount:             "6.0",
-		RetirementLocation: "",
-		RetireOnTake:       false,
+		Owner:                  s.addr.String(),
+		BasketDenom:            "foo",
+		Amount:                 "6.0",
+		RetirementJurisdiction: "",
+		RetireOnTake:           false,
 	})
 	assert.ErrorIs(t, err, basket.ErrCantDisableRetire)
 }
@@ -117,11 +117,11 @@ func TestTakeRetire(t *testing.T) {
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, fooCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.addr.String(),
-		BasketDenom:        "foo",
-		Amount:             "6000000",
-		RetirementLocation: "US",
-		RetireOnTake:       true,
+		Owner:                  s.addr.String(),
+		BasketDenom:            "foo",
+		Amount:                 "6000000",
+		RetirementJurisdiction: "US",
+		RetireOnTake:           true,
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))

@@ -3,8 +3,9 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -93,10 +94,10 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:    recipient.String(),
-				BatchDenom: batchDenom,
-				Amount:     retired.String(),
-				Location:   issuance.RetirementLocation,
+				Retirer:      recipient.String(),
+				BatchDenom:   batchDenom,
+				Amount:       retired.String(),
+				Jurisdiction: issuance.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
 			}
@@ -137,15 +138,15 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
-		ClassId:         classInfo.Name,
-		BatchDenom:      batchDenom,
-		Issuer:          req.Issuer,
-		TotalAmount:     totalAmount.String(),
-		StartDate:       startDate.String(),
-		EndDate:         endDate.String(),
-		IssuanceDate:    issuanceDate.String(),
-		ProjectLocation: projectInfo.ProjectLocation,
-		ProjectId:       projectInfo.Name,
+		ClassId:             classInfo.Name,
+		BatchDenom:          batchDenom,
+		Issuer:              req.Issuer,
+		TotalAmount:         totalAmount.String(),
+		StartDate:           startDate.String(),
+		EndDate:             endDate.String(),
+		IssuanceDate:        issuanceDate.String(),
+		ProjectJurisdiction: projectInfo.ProjectJurisdiction,
+		ProjectId:           projectInfo.Name,
 	}); err != nil {
 		return nil, err
 	}

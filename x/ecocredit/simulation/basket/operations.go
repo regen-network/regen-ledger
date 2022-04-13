@@ -441,11 +441,11 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &basket.MsgTake{
-			Owner:              ownerAddr,
-			BasketDenom:        rBasket.BasketDenom,
-			Amount:             fmt.Sprintf("%d", amt),
-			RetirementLocation: "AQ",
-			RetireOnTake:       !rBasket.DisableAutoRetire,
+			Owner:                  ownerAddr,
+			BasketDenom:            rBasket.BasketDenom,
+			Amount:                 fmt.Sprintf("%d", amt),
+			RetirementJurisdiction: "AQ",
+			RetireOnTake:           !rBasket.DisableAutoRetire,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, owner.Address)

@@ -151,7 +151,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 			Retirer:    to.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     sendAmtRetired.String(),
-			Location:   credit.RetirementLocation,
+			Location:   credit.RetirementJurisdiction,
 		}); err != nil {
 			return err
 		}

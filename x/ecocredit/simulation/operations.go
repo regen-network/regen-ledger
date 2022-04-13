@@ -270,10 +270,10 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		spendable := bk.SpendableCoins(sdkCtx, issuerAcc.GetAddress())
 
 		msg := &core.MsgCreateProject{
-			Issuer:          issuer.Address.String(),
-			ClassId:         classID,
-			Metadata:        simtypes.RandStringOfLength(r, 100),
-			ProjectLocation: "AB-CDE FG1 345",
+			Issuer:              issuer.Address.String(),
+			ClassId:             classID,
+			Metadata:            simtypes.RandStringOfLength(r, 100),
+			ProjectJurisdiction: "AB-CDE FG1 345",
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -446,10 +446,10 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Recipient: recipient.Address.String(),
 			Credits: []*core.MsgSend_SendCredits{
 				{
-					BatchDenom:         batch.BatchDenom,
-					TradableAmount:     fmt.Sprintf("%d", tradable),
-					RetiredAmount:      fmt.Sprintf("%d", retired),
-					RetirementLocation: retirementLocation,
+					BatchDenom:             batch.BatchDenom,
+					TradableAmount:         fmt.Sprintf("%d", tradable),
+					RetiredAmount:          fmt.Sprintf("%d", retired),
+					RetirementJurisdiction: retirementLocation,
 				},
 			},
 		}
@@ -536,7 +536,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					Amount:     randSub.String(),
 				},
 			},
-			Location: "ST-UVW XY Z12",
+			Jurisdiction: "ST-UVW XY Z12",
 		}
 
 		txCtx := simulation.OperationInput{
@@ -872,10 +872,10 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.BatchI
 			retirementLocation = "AD"
 		}
 		res[i] = &core.BatchIssuance{
-			Recipient:          recipient.Address.String(),
-			TradableAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
-			RetiredAmount:      fmt.Sprintf("%d", retiredAmount),
-			RetirementLocation: retirementLocation,
+			Recipient:              recipient.Address.String(),
+			TradableAmount:         fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
+			RetiredAmount:          fmt.Sprintf("%d", retiredAmount),
+			RetirementJurisdiction: retirementLocation,
 		}
 	}
 

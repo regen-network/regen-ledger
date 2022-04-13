@@ -162,7 +162,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 
-			if pInfo.ClassId == classNameIDMap[batchInfo.ClassId] && pInfo.ProjectLocation == batchInfo.ProjectLocation {
+			if pInfo.ClassId == classNameIDMap[batchInfo.ClassId] && pInfo.ProjectJurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
 				projectID = pInfo.Id
 				break
@@ -184,11 +184,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			name := FormatProjectID(batchInfo.ClassId, projectSeq)
 			id, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 				&api.ProjectInfo{
-					Name:            name,
-					Admin:           admin,
-					ClassId:         classID,
-					ProjectLocation: batchInfo.ProjectLocation,
-					Metadata:        "",
+					Name:                name,
+					Admin:               admin,
+					ClassId:             classID,
+					ProjectJurisdiction: batchInfo.ProjectLocation,
+					Metadata:            "",
 				},
 			)
 			if err != nil {

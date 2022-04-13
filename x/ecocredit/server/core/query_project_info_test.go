@@ -17,10 +17,10 @@ func TestQuery_ProjectInfo(t *testing.T) {
 
 	// insert 1 project
 	err := s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name:            "P01",
-		ClassId:         1,
-		ProjectLocation: "US-CA",
-		Metadata:        "",
+		Name:                "P01",
+		ClassId:             1,
+		ProjectJurisdiction: "US-CA",
+		Metadata:            "",
 	})
 	assert.NilError(t, err)
 
