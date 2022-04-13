@@ -8,13 +8,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gogo/protobuf/proto"
+	gogoproto "github.com/gogo/protobuf/proto"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -37,7 +40,11 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		IndexStore:      db,
 	})
 
-	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	ormdb, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{
+		JSONValidator: func(m proto.Message) error {
+			return validateMsg(m)
+		},
+	})
 	if err != nil {
 		return err
 	}
@@ -55,6 +62,10 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 
 	err = ormdb.ImportJSON(ormCtx, jsonSource)
 	if err != nil {
+		return err
+	}
+
+	if err := ormdb.ValidateJSON(jsonSource); err != nil {
 		return err
 	}
 
@@ -166,7 +177,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		batchIdToSupply[batchSupply.BatchId] = total
 	}
 
-	// calculate credit batch supply from genesis tradable and retired balances
+	// calculate credit batch supply from genesis tradable, retired and escrowed balances
 	if err := calculateSupply(ormCtx, batchIdToPrecision, ss, batchIdToCalSupply); err != nil {
 		return err
 	}
@@ -174,6 +185,40 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	// verify calculated total amount of each credit batch matches the total supply
 	if err := validateSupply(batchIdToCalSupply, batchIdToSupply); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func validateMsg(m proto.Message) error {
+	switch m.(type) {
+	case *api.ClassInfo:
+		msg := &ClassInfo{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+
+		return msg.Validate()
+	case *api.ClassIssuer:
+		msg := &ClassIssuer{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+
+		return msg.Validate()
+	case *api.ProjectInfo:
+		msg := &ProjectInfo{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+
+		return msg.Validate()
+	case *api.BatchInfo:
+		msg := &BatchInfo{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
 	}
 
 	return nil
@@ -187,8 +232,9 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 	defer bbItr.Close()
 
 	for bbItr.Next() {
-		tBalance := math.NewDecFromInt64(0)
-		rBalance := math.NewDecFromInt64(0)
+		tradable := math.NewDecFromInt64(0)
+		retired := math.NewDecFromInt64(0)
+		escrowed := math.NewDecFromInt64(0)
 
 		balance, err := bbItr.Value()
 		if err != nil {
@@ -200,20 +246,32 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 		}
 
 		if balance.Tradable != "" {
-			tBalance, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, decimalPlaces[balance.BatchId])
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, decimalPlaces[balance.BatchId])
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Retired != "" {
-			rBalance, err = math.NewNonNegativeFixedDecFromString(balance.Retired, decimalPlaces[balance.BatchId])
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, decimalPlaces[balance.BatchId])
 			if err != nil {
 				return err
 			}
 		}
 
-		total, err := math.Add(tBalance, rBalance)
+		if balance.Escrowed != "" {
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, decimalPlaces[balance.BatchId])
+			if err != nil {
+				return err
+			}
+		}
+
+		total, err := math.Add(tradable, retired)
+		if err != nil {
+			return err
+		}
+
+		total, err = math.Add(total, escrowed)
 		if err != nil {
 			return err
 		}
@@ -247,8 +305,8 @@ func validateSupply(calSupply, supply map[uint64]math.Dec) error {
 }
 
 // MergeParamsIntoTarget merges params message into the ormjson.WriteTarget.
-func MergeParamsIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
+func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(gogoproto.MessageName(message)))
 	if err != nil {
 		return err
 	}
@@ -264,4 +322,94 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message proto.Message, target or
 	}
 
 	return w.Close()
+}
+
+// Validate performs a basic validation of credit class
+func (c ClassInfo) Validate() error {
+	if len(c.Metadata) > ecocredit.MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Admin).String()); err != nil {
+		return sdkerrors.Wrap(err, "admin")
+	}
+
+	if len(c.Name) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class name cannot be empty")
+	}
+
+	if err := ecocredit.ValidateClassID(c.Name); err != nil {
+		return err
+	}
+
+	if len(c.CreditType) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
+	}
+
+	return nil
+}
+
+// Validate performs a basic validation of credit class issuers
+func (c ClassIssuer) Validate() error {
+	if c.ClassId == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be zero")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Issuer).String()); err != nil {
+		return sdkerrors.Wrap(err, "issuer")
+	}
+
+	return nil
+}
+
+// Validate performs a basic validation of project
+func (p ProjectInfo) Validate() error {
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(p.Admin).String()); err != nil {
+		return sdkerrors.Wrap(err, "admin")
+	}
+
+	if p.ClassId == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be zero")
+	}
+
+	if err := ValidateLocation(p.ProjectLocation); err != nil {
+		return err
+	}
+
+	if len(p.Metadata) > ecocredit.MaxMetadataLength {
+		return ecocredit.ErrMaxLimit.Wrap("project metadata")
+	}
+
+	if err := ValidateProjectID(p.Name); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Validate performs a basic validation of credit batch
+func (b BatchInfo) Validate() error {
+	if err := ValidateDenom(b.BatchDenom); err != nil {
+		return err
+	}
+
+	if b.ProjectId == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("project id cannot be zero")
+	}
+
+	if b.StartDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("must provide a start date for the credit batch")
+	}
+	if b.EndDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("must provide an end date for the credit batch")
+	}
+	if b.EndDate.Compare(*b.StartDate) != 1 {
+		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", b.EndDate.String(), b.StartDate.String())
+	}
+
+	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
+		return sdkerrors.Wrap(err, "issuer")
+	}
+
+	return nil
 }
