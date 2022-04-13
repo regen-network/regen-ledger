@@ -147,9 +147,9 @@ type MsgAttest struct {
 	// veracity of the data referenced by the IRI. The precise meaning of this may
 	// vary depending on the underlying data.
 	Attestor string `protobuf:"bytes,1,opt,name=attestor,proto3" json:"attestor,omitempty"`
-	// content_hashes are the content hashes for anchored data. Only RDF graph data
-	// can be signed as its data model is intended to specifically convey semantic
-	// meaning.
+	// content_hashes are the content hashes for anchored data. Only RDF graph
+	// data can be signed as its data model is intended to specifically convey
+	// semantic meaning.
 	ContentHashes []*ContentHash_Graph `protobuf:"bytes,2,rep,name=content_hashes,json=contentHashes,proto3" json:"content_hashes,omitempty"`
 }
 
@@ -364,7 +364,8 @@ type MsgRegisterResolver struct {
 	Manager string `protobuf:"bytes,1,opt,name=manager,proto3" json:"manager,omitempty"`
 	// resolver_id is the ID of a resolver defined with Msg/DefineResolver.
 	ResolverId uint64 `protobuf:"varint,2,opt,name=resolver_id,json=resolverId,proto3" json:"resolver_id,omitempty"`
-	// content_hashes is a list of content hashes which the resolver claims to serve.
+	// content_hashes is a list of content hashes which the resolver claims to
+	// serve.
 	ContentHashes []*ContentHash `protobuf:"bytes,3,rep,name=content_hashes,json=contentHashes,proto3" json:"content_hashes,omitempty"`
 }
 
