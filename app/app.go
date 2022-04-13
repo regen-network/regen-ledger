@@ -403,6 +403,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
+	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts, wasmOpts)
+
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	app.mm = module.NewManager(
@@ -577,6 +579,14 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.ScopedIBCMockKeeper = scopedIBCMockKeeper
 
 	return app
+}
+
+// MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
+// Regenapp. It is useful for tests and clients who do not want to construct the
+// full Regenapp
+func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
+	config := MakeEncodingConfig()
+	return config.Marshaler, config.Amino
 }
 
 // Name returns the name of the App
