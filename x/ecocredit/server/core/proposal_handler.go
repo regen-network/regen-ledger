@@ -1,4 +1,4 @@
-package server
+package core
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -7,6 +7,11 @@ import (
 
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
+
+// ProposalKeeper defines the expected interface for ecocredit module proposals.
+type ProposalKeeper interface {
+	NewCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error
+}
 
 func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
