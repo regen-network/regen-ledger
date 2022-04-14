@@ -13,7 +13,7 @@ message CreditType {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
     primary_key : {fields : "row_id", auto_increment : true}
-    index : {fields : "abbreviation", unique : true}
+    index : {fields : "abbrev", unique : true}
     index : {id : 1, fields : "name", unique : true}
   };
 
