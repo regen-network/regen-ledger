@@ -352,7 +352,8 @@ message QueryParamsResponse {
   Params params = 1;
 }
 
-// ClassInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+// ClassInfoEntry is the human readable credit class information (i.e. addresses
+// are presented as strings rather than bytes).
 message ClassInfoEntry {
   // id is the unique string identifier of the credit class.
   string id = 1;
@@ -363,11 +364,13 @@ message ClassInfoEntry {
   // metadata is the arbitrary metadata attached to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev is the abbreviation of the credit type within which this credit class was created.
+  // credit_type_abbrev is the abbreviation of the credit type within which this
+  // credit class was created.
   string credit_type_abbrev = 4;
 }
 
-// ProjectInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+// ProjectInfoEntry is the human readable credit class information (i.e.
+// addresses are presented as strings rather than bytes).
 message ProjectInfoEntry {
   // id is the unique string identifier of the project.
   string id = 1;
@@ -375,22 +378,27 @@ message ProjectInfoEntry {
   // admin is the admin of the project.
   string admin = 2;
 
-  // class_id is the unique string identifier of the credit class within which the project was created.
+  // class_id is the unique string identifier of the credit class within which
+  // the project was created.
   string class_id = 3;
 
-  // project_jurisdiction is the jurisdiction of the project. Full documentation can be found in MsgCreateProject.project_jurisdiction.
+  // project_jurisdiction is the jurisdiction of the project. Full documentation
+  // can be found in MsgCreateProject.project_jurisdiction.
   string project_jurisdiction = 4;
 
   // metadata is the arbitrary metadata attached to the project.
   string metadata = 5;
 }
 
-// BatchInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+// BatchInfoEntry is the human readable credit class information (i.e. addresses
+// are presented as strings rather than bytes).
 message BatchInfoEntry {
-  // issuer is the address that created the batch and the address authorized to mint new credits to the credit batch if the credit batch is open.
+  // issuer is the address that created the batch and the address authorized to
+  // mint new credits to the credit batch if the credit batch is open.
   string issuer = 1;
 
-  // project_id is the unique string identifier of the project within which this credit batch was created.
+  // project_id is the unique string identifier of the project within which this
+  // credit batch was created.
   string project_id = 2;
 
   // batch_denom is the unique string identifier of the credit batch formed
@@ -411,6 +419,7 @@ message BatchInfoEntry {
   // issuance_date is the timestamp when the credit batch was issued.
   google.protobuf.Timestamp issuance_date = 7;
 
-  // open determines whether or not the credit batch is open, i.e. whether or not new credits can be minted to the credit batch.
+  // open determines whether or not the credit batch is open, i.e. whether or
+  // not new credits can be minted to the credit batch.
   bool open = 8;
 }
