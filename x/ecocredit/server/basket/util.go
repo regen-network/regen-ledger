@@ -26,8 +26,8 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 	}
 	defer itr.Close()
 
-	batchNameID := make(map[string]uint64)     // map of a batch denom to batch id
-	batchBalances := make(map[uint64]math.Dec) // map of a basket batch_id to balance
+	batchDenomToId := make(map[string]uint64)     // map of a batch denom to batch id
+	batchIdToBalance := make(map[uint64]math.Dec) // map of a basket batch_id to balance
 	for itr.Next() {
 		basket, err := itr.Value()
 		if err != nil {
@@ -45,27 +45,27 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 		}
 
 		var batchID uint64
-		if _, ok := batchNameID[basket.BasketDenom]; !ok {
+		if _, ok := batchDenomToId[basket.BasketDenom]; !ok {
 			bInfo, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, basket.BasketDenom)
 			if err != nil {
 				return nil, err
 			}
-			batchNameID[basket.BasketDenom] = bInfo.Id
+			batchDenomToId[basket.BasketDenom] = bInfo.Id
 		} else {
-			batchID = batchNameID[basket.BasketDenom]
+			batchID = batchDenomToId[basket.BasketDenom]
 		}
 
-		if existingBal, ok := batchBalances[batchID]; ok {
+		if existingBal, ok := batchIdToBalance[batchID]; ok {
 			existingBal, err = existingBal.Add(amount)
 			if err != nil {
 				return nil, err
 			}
 
-			batchBalances[batchID] = existingBal
+			batchIdToBalance[batchID] = existingBal
 		} else {
-			batchBalances[batchID] = amount
+			batchIdToBalance[batchID] = amount
 		}
 	}
 
-	return batchBalances, nil
+	return batchIdToBalance, nil
 }
