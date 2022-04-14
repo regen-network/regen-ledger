@@ -253,7 +253,6 @@ func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances
 			Escrowed: b.Escrowed,
 		}))
 	}
-
 }
 
 func initSupply(t *testing.T, ctx context.Context, ss api.StateStore, supply []*core.BatchSupply) {

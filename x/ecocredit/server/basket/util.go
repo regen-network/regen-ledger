@@ -2,25 +2,13 @@ package basket
 
 import (
 	"context"
-	gomath "math"
 
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/types/ormutil"
 )
 
 func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, error) {
-	pulsarPageReq, err := ormutil.GogoPageReqToPulsarPageReq(&query.PageRequest{
-		Offset: 0,
-		Limit:  gomath.MaxUint64,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	itr, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{}, ormlist.Paginate(pulsarPageReq))
+	itr, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{})
 	if err != nil {
 		return nil, err
 	}
