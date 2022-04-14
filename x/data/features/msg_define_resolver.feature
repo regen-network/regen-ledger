@@ -1,6 +1,6 @@
 Feature: MsgDefineResolver
 
-  Rule: only a valid message is accepted
+  Rule: only a valid manager is accepted
 
     Scenario: an error is returned if manager is empty
       Given the message
@@ -19,6 +19,8 @@ Feature: MsgDefineResolver
       """
       When the message is validated
       Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
+
+  Rule: only a valid resolver url is accepted
 
     Scenario: an error is returned if resolver url is empty
       Given the message
@@ -41,6 +43,8 @@ Feature: MsgDefineResolver
       When the message is validated
       Then expect the error "invalid resolver url: invalid request"
 
+  Rule: only a valid message is accepted
+
     Scenario: no error is returned if manager and resolver url are valid
       Given the message
       """
@@ -50,4 +54,4 @@ Feature: MsgDefineResolver
       }
       """
       When the message is validated
-      Then expect the error ""
+      Then expect no error

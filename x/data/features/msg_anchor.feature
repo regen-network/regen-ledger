@@ -1,6 +1,6 @@
 Feature: MsgAnchor
 
-  Rule: only a valid message is accepted
+  Rule: only a valid sender is accepted
 
     Scenario: an error is returned if sender is empty
       Given the message
@@ -20,6 +20,8 @@ Feature: MsgAnchor
       When the message is validated
       Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
+  Rule: only a valid content hash is accepted
+
     Scenario: an error is returned if content hash is empty
       Given the message
       """
@@ -31,6 +33,8 @@ Feature: MsgAnchor
       Then expect the error "content hash cannot be empty: invalid request"
 
     # Note: see ./types_content_hash.feature for content hash validation
+
+  Rule: only a valid message is accepted
 
     Scenario: no error is returned if sender and content hash are valid
       Given the message
@@ -46,5 +50,5 @@ Feature: MsgAnchor
       }
       """
       When the message is validated
-      Then expect the error ""
+      Then expect no error
 

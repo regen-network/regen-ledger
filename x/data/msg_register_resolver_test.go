@@ -35,9 +35,9 @@ func (s *msgRegisterResolverSuite) TheMessageIsValidated() {
 }
 
 func (s *msgRegisterResolverSuite) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgRegisterResolverSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

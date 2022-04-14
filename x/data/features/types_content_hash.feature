@@ -1,6 +1,6 @@
 Feature: Types
 
-  Rule: only a valid content hash is accepted
+  Rule: a content hash must be one of raw type or graph type
 
     Scenario: an error is returned if content hash is empty
       Given the content hash
@@ -17,6 +17,8 @@ Feature: Types
       """
       When the content hash is validated
       Then expect the error "content hash must be one of raw type or graph type: invalid request"
+
+  Rule: only a valid raw content hash hash and digest algorithm is accepted
 
     Scenario: an error is returned if raw content hash is empty
       Given the content hash
@@ -66,6 +68,8 @@ Feature: Types
       When the content hash is validated
       Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
 
+  Rule: only a valid raw content hash media type is accepted
+
     Scenario: no error is returned if raw content hash media type is unspecified
       Given the content hash
       """
@@ -92,6 +96,8 @@ Feature: Types
       """
       When the content hash is validated
       Then expect the error ""
+
+  Rule: only a valid graph content hash hash and digest algorithm is accepted
 
     Scenario: an error is returned if graph content hash is empty
       Given the content hash
@@ -141,6 +147,8 @@ Feature: Types
       When the content hash is validated
       Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
 
+  Rule: only a valid graph content hash canonicalization algorithm is accepted
+
     Scenario: an error is returned if graph content hash canonicalization algorithm is unspecified
       Given the content hash
       """
@@ -167,6 +175,8 @@ Feature: Types
       """
       When the content hash is validated
       Then expect the error "unknown data.GraphCanonicalizationAlgorithm 2: invalid request"
+
+  Rule: only a valid graph content hash merkle tree is accepted
 
     Scenario: no error is returned if graph content hash merkle tree is unspecified
       Given the content hash

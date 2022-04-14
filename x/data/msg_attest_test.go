@@ -35,9 +35,9 @@ func (s *msgAttestSuite) TheMessageIsValidated() {
 }
 
 func (s *msgAttestSuite) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgAttestSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

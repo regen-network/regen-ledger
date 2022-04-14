@@ -1,6 +1,6 @@
 Feature: MsgAttest
 
-  Rule: only a valid message is accepted
+  Rule: only a valid attestor is accepted
 
     Scenario: an error is returned if attestor is empty
       Given the message
@@ -20,6 +20,8 @@ Feature: MsgAttest
       When the message is validated
       Then expect the error "decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
+  Rule: only a valid content hash is accepted
+
     Scenario: an error is returned if content hashes is empty
       Given the message
       """
@@ -31,6 +33,8 @@ Feature: MsgAttest
       Then expect the error "content hashes cannot be empty: invalid request"
 
       # Note: see ./types_content_hash.feature for content hash validation
+
+  Rule: only a valid message is accepted
 
     Scenario: no error is returned if attestor and content hashes are valid
       Given the message
@@ -47,5 +51,5 @@ Feature: MsgAttest
       }
       """
       When the message is validated
-      Then expect the error ""
+      Then expect no error
 

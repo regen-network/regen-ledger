@@ -35,9 +35,9 @@ func (s *msgAnchorSuite) TheMessageIsValidated() {
 }
 
 func (s *msgAnchorSuite) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgAnchorSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
