@@ -111,7 +111,7 @@ message QueryClassesRequest {
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
   // classes are the fetched credit classes.
-  repeated ClassInfo classes = 1;
+  repeated ClassInfoEntry classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -130,7 +130,7 @@ message QueryClassesByAdminRequest {
 // QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
 message QueryClassesByAdminResponse {
   // classes are the fetched credit classes.
-  repeated ClassInfo classes = 1;
+  repeated ClassInfoEntry classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -146,8 +146,8 @@ message QueryClassInfoRequest {
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 message QueryClassInfoResponse {
 
-  // info is the ClassInfo for the credit class.
-  ClassInfo info = 1;
+  // class is the ClassInfo for the credit class.
+  ClassInfoEntry class = 1;
 }
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
@@ -181,7 +181,7 @@ message QueryProjectsRequest {
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
   // projects are the fetched projects.
-  repeated ProjectInfo projects = 1;
+  repeated ProjectInfoEntry projects = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -197,8 +197,8 @@ message QueryProjectInfoRequest {
 // QueryProjectInfoResponse is the Query/Project response type.
 message QueryProjectInfoResponse {
 
-  // info is the ProjectInfo for the project.
-  ProjectInfo info = 1;
+  // project is the ProjectInfo for the project.
+  ProjectInfoEntry project = 1;
 }
 
 // QueryBatchesRequest is the Query/Batches request type.
@@ -215,7 +215,7 @@ message QueryBatchesRequest {
 message QueryBatchesResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated BatchInfoEntry batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -235,7 +235,7 @@ message QueryBatchesByIssuerRequest {
 message QueryBatchesByIssuerResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated BatchInfoEntry batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -255,7 +255,7 @@ message QueryBatchesByClassRequest {
 message QueryBatchesByClassResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated BatchInfoEntry batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -271,8 +271,8 @@ message QueryBatchInfoRequest {
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 message QueryBatchInfoResponse {
 
-  // info is the BatchInfo for the credit batch.
-  BatchInfo info = 1;
+  // batch is the BatchInfo for the credit batch.
+  BatchInfoEntry batch = 1;
 }
 
 // QueryBalanceRequest is the Query/Balance request type.
@@ -293,7 +293,6 @@ message QueryBalanceResponse {
 
 // QueryBalancesRequest is the Query/Balances request type.
 message QueryBalancesRequest {
-
   // account is the address of the account whose balance is being queried.
   string account = 1;
 
@@ -351,4 +350,67 @@ message QueryParamsRequest {}
 message QueryParamsResponse {
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+}
+
+// ClassInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+message ClassInfoEntry {
+  // id is the unique string identifier of the credit class.
+  string id = 1;
+
+  // admin is the admin of the credit class.
+  string admin = 2;
+
+  // metadata is the arbitrary metadata attached to the credit class.
+  string metadata = 3;
+
+  // credit_type_abbrev is the abbreviation of the credit type within which this credit class was created.
+  string credit_type_abbrev = 4;
+}
+
+// ProjectInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+message ProjectInfoEntry {
+  // id is the unique string identifier of the project.
+  string id = 1;
+
+  // admin is the admin of the project.
+  string admin = 2;
+
+  // class_id is the unique string identifier of the credit class within which the project was created.
+  string class_id = 3;
+
+  // project_jurisdiction is the jurisdiction of the project. Full documentation can be found in MsgCreateProject.project_jurisdiction.
+  string project_jurisdiction = 4;
+
+  // metadata is the arbitrary metadata attached to the project.
+  string metadata = 5;
+}
+
+// BatchInfoEntry is the human readable credit class information (i.e. addresses are presented as strings rather than bytes).
+message BatchInfoEntry {
+  // issuer is the address that created the batch and the address authorized to mint new credits to the credit batch if the credit batch is open.
+  string issuer = 1;
+
+  // project_id is the unique string identifier of the project within which this credit batch was created.
+  string project_id = 2;
+
+  // batch_denom is the unique string identifier of the credit batch formed
+  // from the project name, batch sequence number and dates.
+  string batch_denom = 3;
+
+  // metadata is any arbitrary metadata attached to the credit batch.
+  string metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5;
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6;
+
+  // issuance_date is the timestamp when the credit batch was issued.
+  google.protobuf.Timestamp issuance_date = 7;
+
+  // open determines whether or not the credit batch is open, i.e. whether or not new credits can be minted to the credit batch.
+  bool open = 8;
 }
