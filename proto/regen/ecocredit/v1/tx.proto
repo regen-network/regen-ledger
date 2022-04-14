@@ -84,9 +84,9 @@ message MsgCreateClass {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C",
+  // credit_type_abbreviation is the abbreviation of a credit type (e.g. "C",
   // "BIO").
-  string credit_type_abbrev = 4;
+  string credit_type_abbreviation = 4;
 
   // fee specifies the fee to pay for the creation of the credit class.
   // acceptable fees for creating a credit class can be found in the governance
@@ -96,7 +96,7 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
-  // class_id is the unique ID of the newly created credit class.
+  // class_id is the unique string identifier of the credit class.
   string class_id = 1;
 }
 
@@ -107,7 +107,8 @@ message MsgCreateProject {
   // issuer issue all batches for a project.
   string issuer = 1;
 
-  // class_id is the unique ID of the class within which the project is created.
+  // class_id is the unique string identifier of the credit class within which
+  // the project is created.
   string class_id = 2;
 
   // metadata is any arbitrary metadata attached to the project.
@@ -131,17 +132,17 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
-  // project_id is the ID of the newly created project.
+  // project_id is the unique string identifier of the newly created project.
   string project_id = 1;
 }
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
-
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
-  // project_id is the unique ID of the project this batch belongs to.
+  // project_id is the unique string identifier of the project within which the
+  // batch is created.
   string project_id = 2;
 
   // issuance are the credits issued in the batch.
@@ -175,7 +176,6 @@ message MsgCreateBatch {
 // BatchIssuance represents the issuance of some credits in a batch to a
 // single recipient.
 message BatchIssuance {
-
   // recipient is the account of the recipient.
   string recipient = 1;
 
@@ -199,7 +199,7 @@ message BatchIssuance {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
-  // batch_denom is the unique denomination ID of the newly created batch.
+  // batch_denom is the unique string identifier of the newly created batch.
   string batch_denom = 1;
 }
 
@@ -209,7 +209,7 @@ message MsgMintBatchCredits {
   // Signer of the msg.
   string issuer = 1;
 
-  // batch_denom is the unique ID of the credit batch.
+  // batch_denom is the unique string identifier of the credit batch.
   string batch_denom = 2;
 
   // issuance are the credits issued in the batch.
@@ -229,7 +229,7 @@ message MsgSealBatch {
   // Signer of the msg.
   string issuer = 1;
 
-  // batch_denom is the unique ID of the credit batch.
+  // batch_denom is the unique string identifier of the credit batch.
   string batch_denom = 2;
 }
 
@@ -256,7 +256,7 @@ message MsgSend {
   // and retired credits, which will be retired on receipt.
   message SendCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique string identifier of the credit batch.
     string batch_denom = 1;
 
     // tradable_amount is the number of credits in this transfer that can be
@@ -294,7 +294,7 @@ message MsgRetire {
   // RetireCredits specifies a batch and the number of credits being retired.
   message RetireCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique string identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being retired.
@@ -316,7 +316,6 @@ message MsgRetireResponse {}
 
 // MsgCancel is the Msg/Cancel request type.
 message MsgCancel {
-
   // holder is the credit holder address.
   string holder = 1;
 
@@ -326,7 +325,7 @@ message MsgCancel {
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique string identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being cancelled.
@@ -341,11 +340,10 @@ message MsgCancelResponse {}
 
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 message MsgUpdateClassAdmin {
-
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique string identifier of the credit class.
   string class_id = 2;
 
   // new_admin is the address of the new admin of the credit class.
@@ -361,7 +359,7 @@ message MsgUpdateClassIssuers {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique string identifier of the credit class.
   string class_id = 2;
 
   // add_issuers are the issuers to add to the class issuers list.
@@ -380,7 +378,7 @@ message MsgUpdateClassMetadata {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique string identifier of the credit class.
   string class_id = 2;
 
   // metadata is the updated arbitrary metadata to be attached to the credit
@@ -400,7 +398,7 @@ message MsgUpdateProjectAdmin {
   // new_admin is the address of the new admin of the project.
   string new_admin = 2;
 
-  // project_id is the id of the project. (e.g. VERRA)
+  // project_id is the unique string identifier of the project (e.g. VERRA1).
   string project_id = 3;
 }
 
@@ -416,7 +414,7 @@ message MsgUpdateProjectMetadata {
   // new_metadata is the metadata to update the project with.
   string new_metadata = 2;
 
-  // project_id is the id of the project. (e.g. VERRA)
+  // project_id is the unique string identifier of the project (e.g. VERRA1).
   string project_id = 3;
 }
 
