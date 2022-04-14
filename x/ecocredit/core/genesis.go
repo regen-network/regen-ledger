@@ -220,12 +220,18 @@ func validateMsg(m proto.Message) error {
 			return err
 		}
 		return msg.Validate()
+	case *api.CreditType:
+		msg := &CreditType{}
+		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
+			return err
+		}
+		return msg.Validate()
 	}
 
 	return nil
 }
 
-func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss api.StateStore, calSupply map[uint64]math.Dec) error {
+func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, ss api.StateStore, batchIdToSupply map[uint64]math.Dec) error {
 	bbItr, err := ss.BatchBalanceTable().List(ctx, api.BatchBalancePrimaryKey{})
 	if err != nil {
 		return err
@@ -242,26 +248,26 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 			return err
 		}
 
-		if _, ok := decimalPlaces[balance.BatchId]; !ok {
+		if _, ok := batchIdToPrecision[balance.BatchId]; !ok {
 			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchId)
 		}
 
 		if balance.Tradable != "" {
-			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, decimalPlaces[balance.BatchId])
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, batchIdToPrecision[balance.BatchId])
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Retired != "" {
-			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, decimalPlaces[balance.BatchId])
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchId])
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Escrowed != "" {
-			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, decimalPlaces[balance.BatchId])
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchId])
 			if err != nil {
 				return err
 			}
@@ -277,23 +283,23 @@ func calculateSupply(ctx context.Context, decimalPlaces map[uint64]uint32, ss ap
 			return err
 		}
 
-		if supply, ok := calSupply[balance.BatchId]; ok {
+		if supply, ok := batchIdToSupply[balance.BatchId]; ok {
 			result, err := math.SafeAddBalance(supply, total)
 			if err != nil {
 				return err
 			}
-			calSupply[balance.BatchId] = result
+			batchIdToSupply[balance.BatchId] = result
 		} else {
-			calSupply[balance.BatchId] = total
+			batchIdToSupply[balance.BatchId] = total
 		}
 	}
 
 	return nil
 }
 
-func validateSupply(calSupply, supply map[uint64]math.Dec) error {
-	for denom, cs := range calSupply {
-		if s, ok := supply[denom]; ok {
+func validateSupply(batchIdToSupplyCal, batchIdToSupply map[uint64]math.Dec) error {
+	for denom, cs := range batchIdToSupplyCal {
+		if s, ok := batchIdToSupply[denom]; ok {
 			if s.Cmp(cs) != math.EqualTo {
 				return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %d credit batch, expected %v, got %v", denom, s, cs)
 			}
@@ -410,6 +416,24 @@ func (b BatchInfo) Validate() error {
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(b.Issuer).String()); err != nil {
 		return sdkerrors.Wrap(err, "issuer")
+	}
+
+	return nil
+}
+
+// Validate performs a basic validation of credit type
+func (c CreditType) Validate() error {
+	if err := ValidateCreditTypeAbbreviation(c.Abbreviation); err != nil {
+		return err
+	}
+	if len(c.Name) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
+	}
+	if len(c.Unit) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("unit cannot be empty")
+	}
+	if c.Precision != PRECISION {
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type precision is currently locked to %d", PRECISION)
 	}
 
 	return nil

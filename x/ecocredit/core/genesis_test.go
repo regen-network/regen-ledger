@@ -118,6 +118,30 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
+			"invalid credit type abbreviation",
+			func() json.RawMessage {
+				return json.RawMessage(`{
+					"regen.ecocredit.v1.CreditType": [
+						{
+							"name": "carbon",
+							"abbreviation":"1234",
+							"unit":"kg",
+							"precision":"6"
+						}
+					],
+					"regen.ecocredit.v1.ClassInfo": [
+						{
+							"name":"C01",
+							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
+							"credit_type":"C"
+						}
+					]}`)
+			},
+			defaultParams,
+			true,
+			"credit type abbreviation must be 1-3 uppercase latin letters",
+		},
+		{
 			"invalid: credit type param",
 			func() json.RawMessage {
 				return json.RawMessage(`{
