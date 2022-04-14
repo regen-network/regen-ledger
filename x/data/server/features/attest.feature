@@ -1,8 +1,7 @@
 Feature: Attest
 
   Background: the message has been validated
-    Given alice is the attestor
-    And the content hash
+    Given the content hash
     """
     {
       "graph": {
@@ -13,22 +12,30 @@ Feature: Attest
     }
     """
 
-  Scenario: data is attested to when the data has been anchored
-    Given alice has anchored the data at block time "2020-01-01"
-    When alice attempts to attest to the data at block time "2020-01-02"
-    And the data attestor entry exists and the timestamp is equal to "2020-01-02"
+  Rule: data is anchored if not already anchored
 
-  Scenario: data is anchored when the data has not been anchored
-    When alice attempts to attest to the data at block time "2020-01-01"
-    And the data anchor entry exists and the timestamp is equal to "2020-01-01"
+    Scenario: the data has been anchored
+      Given alice has anchored the data at block time "2020-01-01"
+      When alice attempts to attest to the data at block time "2020-01-02"
+      Then the anchor entry exists with timestamp "2020-01-01"
 
-  Scenario: data is attested to when the data has not been anchored
-    When alice attempts to attest to the data at block time "2020-01-01"
-    And the data attestor entry exists and the timestamp is equal to "2020-01-01"
+    Scenario: the data has not been anchored
+      When alice attempts to attest to the data at block time "2020-01-01"
+      Then the anchor entry exists with timestamp "2020-01-01"
 
-  Scenario: data attestor entry is not updated when the same address attests to the same data
-    And alice has attested to the data at block time "2020-01-01"
-    When alice attempts to attest to the data at block time "2020-01-02"
-    And the data attestor entry exists and the timestamp is equal to "2020-01-01"
+  Rule: data is attested to if not already attested to by the same address
 
-  # Note: see ../features/types_content_hash.feature for content hash validation
+    Scenario: the data has been attested to by the same address
+      Given alice has attested to the data at block time "2020-01-01"
+      When alice attempts to attest to the data at block time "2020-01-02"
+      Then the attestor entry for alice exists with timestamp "2020-01-01"
+
+    Scenario: the data has been attested to by a different address
+      Given alice has attested to the data at block time "2020-01-01"
+      When bob attempts to attest to the data at block time "2020-01-02"
+      Then the attestor entry for alice exists with timestamp "2020-01-01"
+      And the attestor entry for bob exists with timestamp "2020-01-02"
+
+    Scenario: the data has not been attested to
+      When alice attempts to attest to the data at block time "2020-01-01"
+      Then the attestor entry for alice exists with timestamp "2020-01-01"

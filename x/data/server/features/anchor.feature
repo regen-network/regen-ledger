@@ -1,8 +1,7 @@
 Feature: Anchor
 
   Background: the message has been validated
-    Given alice is the sender
-    And the content hash
+    Given the content hash
     """
     {
       "raw": {
@@ -12,13 +11,18 @@ Feature: Anchor
     }
     """
 
-  Scenario: data is anchored when the data has not been anchored
-    When alice attempts to anchor the data at block time "2020-01-01"
-    Then the data anchor entry exists and the timestamp is equal to "2020-01-01"
+  Rule: data is anchored if the content hash is unique
 
-  Scenario: data anchor entry is not updated when the data has already been anchored
-    And alice has anchored the data at block time "2020-01-01"
-    When alice attempts to anchor the data at block time "2020-01-02"
-    Then the data anchor entry exists and the timestamp is equal to "2020-01-01"
+    Scenario: the data has not been anchored
+      When alice attempts to anchor the data at block time "2020-01-01"
+      Then the data anchor entry exists with timestamp "2020-01-01"
 
-  # Note: see ../features/types_content_hash.feature for content hash validation
+    Scenario: the data has already been anchored by the same address
+      Given alice has anchored the data at block time "2020-01-01"
+      When alice attempts to anchor the data at block time "2020-01-02"
+      Then the data anchor entry exists with timestamp "2020-01-01"
+
+    Scenario: the data has already been anchored by a different address
+      Given alice has anchored the data at block time "2020-01-01"
+      When bob attempts to anchor the data at block time "2020-01-02"
+      Then the data anchor entry exists with timestamp "2020-01-01"

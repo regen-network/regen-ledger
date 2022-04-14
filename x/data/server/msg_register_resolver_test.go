@@ -3,6 +3,7 @@ package server
 import (
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
@@ -30,13 +31,7 @@ func TestRegisterResolver(t *testing.T) {
 
 func (s *registerResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
-}
-
-func (s *registerResolverSuite) AliceIsTheManager() {
 	s.alice = s.addrs[0]
-}
-
-func (s *registerResolverSuite) BobIsNotTheManager() {
 	s.bob = s.addrs[1]
 }
 
@@ -46,7 +41,12 @@ func (s *registerResolverSuite) TheContentHash(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
-func (s *registerResolverSuite) AliceHasAnchoredTheData() {
+func (s *registerResolverSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+
 	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
 		Sender:      s.alice.String(),
 		ContentHash: s.ch,
@@ -64,6 +64,19 @@ func (s *registerResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
 }
 
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolver() {
+	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
+		Manager:       s.alice.String(),
+		ResolverId:    s.id,
+		ContentHashes: []*data.ContentHash{s.ch},
+	})
+}
+
+func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolverAtBlockTime(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+
 	_, s.err = s.server.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
 		Manager:       s.alice.String(),
 		ResolverId:    s.id,
@@ -90,15 +103,10 @@ func (s *registerResolverSuite) BobAttemptsToRegisterDataToTheResolver() {
 	})
 }
 
-func (s *registerResolverSuite) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
-}
+func (s *registerResolverSuite) TheAnchorEntryExistsWithTimestamp(a string) {
+	anchorTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
 
-func (s *registerResolverSuite) TheDataAnchorEntryExists() {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -110,9 +118,10 @@ func (s *registerResolverSuite) TheDataAnchorEntryExists() {
 	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
+	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
 
-func (s *registerResolverSuite) TheDataResolverEntryExists() {
+func (s *registerResolverSuite) TheDataResolverExists() {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -124,4 +133,8 @@ func (s *registerResolverSuite) TheDataResolverEntryExists() {
 	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId.Id, s.id)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataResolver)
+}
+
+func (s *registerResolverSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
 }

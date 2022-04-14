@@ -16,6 +16,7 @@ import (
 type anchorSuite struct {
 	*baseSuite
 	alice sdk.AccAddress
+	bob   sdk.AccAddress
 	ch    *data.ContentHash
 	err   error
 }
@@ -28,10 +29,8 @@ func TestAnchor(t *testing.T) {
 
 func (s *anchorSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
-}
-
-func (s *anchorSuite) AliceIsTheSender() {
 	s.alice = s.addrs[0]
+	s.bob = s.addrs[1]
 }
 
 func (s *anchorSuite) TheContentHash(a gocuke.DocString) {
@@ -64,7 +63,19 @@ func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
 	})
 }
 
-func (s *anchorSuite) TheDataAnchorEntryExistsAndTheTimestampIsEqualTo(a string) {
+func (s *anchorSuite) BobAttemptsToAnchorTheDataAtBlockTime(a string) {
+	blockTime, err := time.Parse("2006-01-02", a)
+	require.NoError(s.t, err)
+
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+
+	_, s.err = s.server.Anchor(s.ctx, &data.MsgAnchor{
+		Sender:      s.bob.String(),
+		ContentHash: s.ch,
+	})
+}
+
+func (s *anchorSuite) TheDataAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := time.Parse("2006-01-02", a)
 	require.NoError(s.t, err)
 

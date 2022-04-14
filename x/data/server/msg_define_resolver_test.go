@@ -13,8 +13,9 @@ import (
 
 type defineResolverSuite struct {
 	*baseSuite
-	alice sdk.AccAddress
-	err   error
+	alice       sdk.AccAddress
+	resolverUrl string
+	err         error
 }
 
 func TestDefineResolver(t *testing.T) {
@@ -23,38 +24,35 @@ func TestDefineResolver(t *testing.T) {
 
 func (s *defineResolverSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
-}
-
-func (s *defineResolverSuite) AliceIsTheManager() {
 	s.alice = s.addrs[0]
 }
 
-func (s *defineResolverSuite) AliceHasDefinedAResolverWithUrl(a string) {
+func (s *defineResolverSuite) TheResolverUrl(a string) {
+	s.resolverUrl = a
+}
+
+func (s *defineResolverSuite) AliceHasDefinedAResolver() {
 	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
-		ResolverUrl: a,
+		ResolverUrl: s.resolverUrl,
 	})
 	require.NoError(s.t, err)
 }
 
-func (s *defineResolverSuite) AliceAttemptsToDefineAResolverWithUrl(a string) {
+func (s *defineResolverSuite) AliceAttemptsToDefineAResolver() {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
-		ResolverUrl: a,
+		ResolverUrl: s.resolverUrl,
 	})
 }
 
-func (s *defineResolverSuite) TheResolverInfoEntryExistsWithUrl(a string) {
+func (s *defineResolverSuite) TheResolverInfoEntryExists() {
 	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, 1)
 	require.NoError(s.t, err)
-	require.Equal(s.t, a, dataResolver.Url)
+	require.Equal(s.t, s.resolverUrl, dataResolver.Url)
 	require.Equal(s.t, s.alice.Bytes(), dataResolver.Manager)
 }
 
 func (s *defineResolverSuite) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
+	require.EqualError(s.t, s.err, a)
 }
