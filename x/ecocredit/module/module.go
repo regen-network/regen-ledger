@@ -53,7 +53,7 @@ func NewModule(
 	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
+		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
@@ -75,7 +75,6 @@ func (a Module) Name() string {
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
-	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
@@ -88,7 +87,6 @@ func (a *Module) RegisterServices(configurator servermodule.Configurator) {
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
-	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
@@ -106,7 +104,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	err = server.MergeLegacyJSONIntoTarget(cdc, ecocredit.DefaultGenesisState(), jsonTarget)
+	err = server.MergeLegacyJSONIntoTarget(cdc, coretypes.DefaultParams(), jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -167,7 +165,6 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	ecocredit.RegisterLegacyAminoCodec(cdc)
 	basket.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
 	marketplacetypes.RegisterLegacyAminoCodec(cdc)

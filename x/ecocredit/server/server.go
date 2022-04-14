@@ -7,8 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -249,9 +250,6 @@ func RegisterServices(
 	distKeeper ecocredit.DistributionKeeper,
 ) ecocredit.Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
-
-	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
-	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 
 	baskettypes.RegisterMsgServer(configurator.MsgServer(), impl.basketKeeper)
 	baskettypes.RegisterQueryServer(configurator.QueryServer(), impl.basketKeeper)

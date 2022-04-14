@@ -19,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // NOTE: currently we have ORM + non-ORM genesis in parallel. We will remove
@@ -38,55 +39,26 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	var genesisState ecocredit.GenesisState
-	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&genesisState)))
+	params := coretypes.DefaultParams()
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return nil, err
 	}
 
 	if r == nil { // r is nil when theres no table data, so we can just unmarshal the data given
 		bz := bytes.NewBuffer(data)
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &genesisState)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(bz, &params)
 		if err != nil {
 			return nil, err
 		}
 	} else { // r is not nil, so there is table data and we can just use r.
-		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &genesisState)
+		err = (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &params)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
-
-	if err := s.creditTypeSeqTable.Import(ctx, genesisState.Sequences, 0); err != nil {
-		return nil, errors.Wrap(err, "sequences")
-	}
-
-	if err := s.classInfoTable.Import(ctx, genesisState.ClassInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "class-info")
-	}
-
-	if err := s.projectInfoTable.Import(ctx, genesisState.ProjectInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "project-info")
-	}
-
-	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeqNum); err != nil {
-		return nil, errors.Wrap(err, "project seq")
-	}
-
-	if err := s.batchInfoTable.Import(ctx, genesisState.BatchInfo, 0); err != nil {
-		return nil, errors.Wrap(err, "batch-info")
-	}
-
-	store := ctx.KVStore(s.storeKey)
-	if err := setBalanceAndSupply(store, genesisState.Balances); err != nil {
-		return nil, err
-	}
-
-	if err := validateSupplies(store, genesisState.Supplies); err != nil {
-		return nil, err
-	}
+	s.paramSpace.SetParamSet(ctx.Context, &params)
 
 	return []abci.ValidatorUpdate{}, nil
 }
@@ -282,7 +254,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, err
 	}
 
-	err = MergeLegacyJSONIntoTarget(cdc, gs, jsonTarget)
+	err = MergeLegacyJSONIntoTarget(cdc, coretypes.DefaultParams(), jsonTarget)
 	if err != nil {
 		return nil, err
 	}
@@ -292,13 +264,13 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 
 // MergeLegacyJSONIntoTarget merges legacy genesis JSON in message into the
 // ormjson.WriteTarget under key which has the name of the legacy message.
-func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message proto.Message, target ormjson.WriteTarget) error {
-	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(message)))
+func MergeLegacyJSONIntoTarget(cdc codec.JSONCodec, message coretypes.Params, target ormjson.WriteTarget) error {
+	w, err := target.OpenWriter(protoreflect.FullName(proto.MessageName(&message)))
 	if err != nil {
 		return err
 	}
 
-	bz, err := cdc.MarshalJSON(message)
+	bz, err := cdc.MarshalJSON(&message)
 	if err != nil {
 		return err
 	}
