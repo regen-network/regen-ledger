@@ -23,6 +23,7 @@ import (
 
 // ValidateGenesis performs basic validation for the following:
 // - params are valid param types with valid properties
+// - proto messages are valid proto messages
 // - the credit type referenced in each credit class exists
 // - the credit class referenced in each project exists
 // - the tradable amount of each credit batch complies with the credit type precision
