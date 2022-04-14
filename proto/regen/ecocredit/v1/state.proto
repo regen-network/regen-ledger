@@ -20,9 +20,9 @@ message CreditType {
   // row_id is the numeric table row identifier of the credit type.
   uint64 row_id = 1;
 
-  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
-  // name, used in batch denominations within the CreditType. It must be unique.
-  string abbreviation = 2;
+  // abbrev is a 1-3 character uppercase abbreviation of the CreditType name,
+  // used in batch denominations within the CreditType. It must be unique.
+  string abbrev = 2;
 
   // name is the name of the credit type (e.g. carbon, biodiversity, etc).
   string name = 3;
@@ -47,8 +47,8 @@ message ClassInfo {
   // row_id is the numeric table row identifier of the credit class.
   uint64 row_id = 1;
 
-  // id is the unique string identifier of the credit class formed from the
-  // credit type abbreviation and an auto-generated integer.
+  // id is the unique string identifier of the credit class auto-generated from
+  // the credit type abbreviation and the credit class sequence number.
   string id = 2;
 
   // admin is the admin of the credit class.
@@ -89,9 +89,9 @@ message ProjectInfo {
   // row_id is the numeric table row identifier of the project.
   uint64 row_id = 1;
 
-  // id is the unique identifier of the project either formed from its credit
-  // class name and an auto-generated number or a custom name provided
-  // upon creation.
+  // id is the unique string identifier of the project either auto-generated
+  // from the credit class id and the project sequence number, or from a custom
+  // name provided upon creation.
   string id = 2;
 
   // admin is the admin of the project.
@@ -234,7 +234,7 @@ message BatchSupply {
   };
 
   // row_id is the numeric table row identifier of the credit batch.
-  uint64 row_id = 2;
+  uint64 row_id = 1;
 
   // tradable_amount is the total number of tradable credits in the credit
   // batch. Some of the issued credits may be cancelled and will be removed from

@@ -84,9 +84,8 @@ message MsgCreateClass {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 3;
 
-  // credit_type_abbreviation is the abbreviation of a credit type (e.g. "C",
-  // "BIO").
-  string credit_type_abbreviation = 4;
+  // credit_type_abbrev is the abbreviation of a credit type (e.g. "C", "BIO").
+  string credit_type_abbrev = 4;
 
   // fee specifies the fee to pay for the creation of the credit class.
   // acceptable fees for creating a credit class can be found in the governance
