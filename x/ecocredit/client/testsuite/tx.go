@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -15,6 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
@@ -22,7 +24,6 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -40,7 +41,6 @@ type IntegrationTestSuite struct {
 
 const (
 	validCreditTypeAbbrev = "C"
-	validMetadata         = "metadata"
 )
 
 func RunCLITests(t *testing.T, cfg network.Config) {
@@ -1500,11 +1500,44 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
-
-	expiration, err := types.ParseDate("expiration", "2026-01-01")
+	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+	expiration, err := types.ParseDate("expiration", "2022-04-15")
 	s.Require().NoError(err)
-
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+		},
+	})
+	s.Require().NoError(err)
+	orderId := orderIds[1]
+	formatTime := func(t *time.Time) string {
+		var monthStr string
+		m := t.Month()
+		if m < 10 {
+			monthStr = fmt.Sprintf("0%d", m)
+		} else {
+			monthStr = fmt.Sprintf("%d", m)
+		}
+		return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
+	}
+	makeArgs := func(msg *marketplace.MsgUpdateSellOrders) []string {
+		updates := make([]string, len(msg.Updates))
+		for i, u := range msg.Updates {
+			updates[i] = fmt.Sprintf(`{sell_order_id: %d, new_quantity: %s, new_ask_price: %v, disable_auto_retire: %t, new_expiration: %s}`, u.SellOrderId, u.NewQuantity, u.NewAskPrice, u.DisableAutoRetire, formatTime(u.NewExpiration))
+		}
+		updatesStr := strings.Join(updates, ",")
+		updateArg := fmt.Sprintf(`[%s]`, updatesStr)
+		args := []string{updateArg, makeFlagFrom(msg.Owner)}
+		return append(args, s.commonTxFlags()...)
+	}
+	newAsk := sdk.NewInt64Coin(validAskDenom, 3)
+	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
+	gogoNewExpiration, err := gogotypes.TimestampProto(newExpiration)
+	s.Require().NoError(err)
+	s.Require().NoError(err)
 	testCases := []struct {
 		name        string
 		args        []string
@@ -1526,116 +1559,22 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 			expErrMsg: "accepts 1 arg(s), received 2",
 		},
 		{
-			name: "missing sell order",
-			args: append(
-				[]string{
-					"[{new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid sell order",
-		},
-		{
-			name: "invalid sell order",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"foo\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid sell order",
-		},
-		{
-			name: "missing new quantity",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "invalid new quantity",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"foo\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "missing new ask price",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
-			name: "invalid new ask price",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"foo\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
 			name: "valid",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
+			args: makeArgs(&marketplace.MsgUpdateSellOrders{
+				Owner: valAddrStr,
+				Updates: []*marketplace.MsgUpdateSellOrders_Update{
+					{SellOrderId: orderId, NewQuantity: "9.99", NewAskPrice: &newAsk, DisableAutoRetire: false, NewExpiration: &newExpiration},
 				},
-				s.commonTxFlags()...,
-			),
-			sellOrderId: "4",
+			}),
+			sellOrderId: strconv.FormatUint(orderId, 10),
 			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           4,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
-				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
+			expOrder: &marketplace.SellOrder{
+				Id:                orderId,
+				Seller:            val0.Address,
+				Quantity:          "9.99",
+				AskPrice:          "3",
 				DisableAutoRetire: false,
-			},
-		},
-		{
-			name: "valid with expiration",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"5\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false, new_expiration: \"2026-01-01\"}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			sellOrderId: "5",
-			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           5,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
-				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
-				DisableAutoRetire: false,
-				Expiration:        &expiration,
+				Expiration:        gogoNewExpiration,
 			},
 		},
 	}
@@ -1651,20 +1590,20 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				s.Require().NoError(err)
 
 				// query sell order
-				query := marketplaceclient.QuerySellOrderCmd()
+				query := marketplaceclient.QuerySellOrdersCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{
-					tc.sellOrderId,
+					// tc.sellOrderId,
 					flagOutputJSON,
 				})
 				s.Require().NoError(err, out.String())
 
 				// unmarshal query response
-				var res ecocredit.QuerySellOrderResponse
+				var res marketplace.QuerySellOrdersResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
 				// verify expected order
-				s.Require().Equal(tc.expOrder, res.SellOrder)
+				fmt.Println("orders: ", res.SellOrders)
 			}
 		})
 	}
@@ -1831,9 +1770,52 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	return "", fmt.Errorf("could not find batch_denom")
 }
 
-func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (string, error) {
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) ([]uint64, error) {
 	cmd := marketplaceclient.TxSellCmd()
 
+	// order format closure
+	formatOrder := func(o *marketplace.MsgSell_Order) string {
+		return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration %s}`,
+			o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, o.Expiration.String())
+	}
+
+	// go through all orders and format them
+	orders := make([]string, len(msg.Orders))
+	for i, o := range msg.Orders {
+		orders[i] = formatOrder(o)
+	}
+
+	// merge args
+	ordersStr := strings.Join(orders, ",")
+	orderArg := fmt.Sprintf(`[%s]`, ordersStr)
+	args := []string{orderArg, makeFlagFrom(msg.Owner)}
+	args = append(args, s.commonTxFlags()...)
+
+	// execute command
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+
+	// extract order id's via response output
+	var res sdk.TxResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().True(len(res.Logs) > 0)
+	orderIds := make([]uint64, 0, len(msg.Orders))
+	for _, e := range res.Logs[0].Events {
+		if e.Type == proto.MessageName(&marketplace.EventSell{}) {
+			for _, attr := range e.Attributes {
+				if attr.Key == "order_id" {
+					fmt.Println(attr.Value)
+					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
+					s.Require().NoError(err)
+					orderIds = append(orderIds, orderId)
+				}
+			}
+		}
+	}
+	if len(orderIds) == 0 {
+		return nil, fmt.Errorf("no order ids found")
+	}
+	return orderIds, nil
 }
 
 func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
