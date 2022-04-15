@@ -31,7 +31,7 @@ func (s *defineResolverSuite) TheResolverUrl(a string) {
 	s.resolverUrl = a
 }
 
-func (s *defineResolverSuite) AliceHasDefinedAResolver() {
+func (s *defineResolverSuite) AliceHasDefinedTheResolver() {
 	_, err := s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
 		ResolverUrl: s.resolverUrl,
@@ -39,14 +39,14 @@ func (s *defineResolverSuite) AliceHasDefinedAResolver() {
 	require.NoError(s.t, err)
 }
 
-func (s *defineResolverSuite) AliceAttemptsToDefineAResolver() {
+func (s *defineResolverSuite) AliceAttemptsToDefineTheResolver() {
 	_, s.err = s.server.DefineResolver(s.ctx, &data.MsgDefineResolver{
 		Manager:     s.alice.String(),
 		ResolverUrl: s.resolverUrl,
 	})
 }
 
-func (s *defineResolverSuite) TheResolverInfoEntryExists() {
+func (s *defineResolverSuite) TheResolverInfoEntryExistsAndAliceIsTheManager() {
 	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, 1)
 	require.NoError(s.t, err)
 	require.Equal(s.t, s.resolverUrl, dataResolver.Url)

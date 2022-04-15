@@ -1,208 +1,199 @@
 Feature: Types
 
-  Rule: a content hash must be one of raw type or graph type
+  Scenario: an error is returned if content hash is empty
+    Given the content hash
+    """
+    {}
+    """
+    When the content hash is validated
+    Then expect the error "content hash must be one of raw type or graph type: invalid request"
 
-    Scenario: an error is returned if content hash is empty
-      Given the content hash
-      """
-      {}
-      """
-      When the content hash is validated
-      Then expect the error "content hash must be one of raw type or graph type: invalid request"
+  Scenario: an error is returned if content hash includes both raw type and graph type
+    Given the content hash
+    """
+    {
+      "raw": {},
+      "graph": {}
+    }
+    """
+    When the content hash is validated
+    Then expect the error "content hash must be one of raw type or graph type: invalid request"
 
-    Scenario: an error is returned if content hash includes both raw type and graph type
-      Given the content hash
-      """
-      {}
-      """
-      When the content hash is validated
-      Then expect the error "content hash must be one of raw type or graph type: invalid request"
+  Scenario: an error is returned if raw content hash is empty
+    Given the content hash
+    """
+    {
+      "raw": {}
+    }
+    """
+    When the content hash is validated
+    Then expect the error "hash cannot be empty: invalid request"
 
-  Rule: only a valid raw content hash hash and digest algorithm is accepted
-
-    Scenario: an error is returned if raw content hash is empty
-      Given the content hash
-      """
-      {
-        "raw": {}
+  Scenario: an error is returned if raw content hash digest algorithm is unspecified
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       }
-      """
-      When the content hash is validated
-      Then expect the error "hash cannot be empty: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "invalid data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request"
 
-    Scenario: an error is returned if raw content hash digest algorithm is unspecified
-      Given the content hash
-      """
-      {
-        "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-        }
+  Scenario: an error is returned if raw content hash digest algorithm is unknown
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 2
       }
-      """
-      When the content hash is validated
-      Then expect the error "invalid data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "unknown data.DigestAlgorithm 2: invalid request"
 
-    Scenario: an error is returned if raw content hash digest algorithm is unknown
-      Given the content hash
-      """
-      {
-        "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 2
-        }
+  Scenario: an error is returned if raw content hash length does not match blake2b digest algorithm
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": [0],
+        "digest_algorithm": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "unknown data.DigestAlgorithm 2: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
 
-    Scenario: an error is returned if raw content hash length does not match blake2b digest algorithm
-      Given the content hash
-      """
-      {
-        "raw": {
-          "hash": [0],
-          "digest_algorithm": 1
-        }
+  Scenario: no error is returned if raw content hash media type is unspecified
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error ""
 
-  Rule: only a valid raw content hash media type is accepted
-
-    Scenario: no error is returned if raw content hash media type is unspecified
-      Given the content hash
-      """
-      {
-        "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1
-        }
+  Scenario: no error is returned if raw content hash media type is valid
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "media_type": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error ""
+    }
+    """
+    When the content hash is validated
+    Then expect the error ""
 
-    Scenario: no error is returned if raw content hash media type is valid
-      Given the content hash
-      """
-      {
-        "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1,
-          "media_type": 1
-        }
+  Scenario: an error is returned if graph content hash is empty
+    Given the content hash
+    """
+    {
+      "graph": {}
+    }
+    """
+    When the content hash is validated
+    Then expect the error "hash cannot be empty: invalid request"
+
+  Scenario: an error is returned if graph content hash digest algorithm is unspecified
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       }
-      """
-      When the content hash is validated
-      Then expect the error ""
+    }
+    """
+    When the content hash is validated
+    Then expect the error "invalid data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request"
 
-  Rule: only a valid graph content hash hash and digest algorithm is accepted
-
-    Scenario: an error is returned if graph content hash is empty
-      Given the content hash
-      """
-      {
-        "graph": {}
+  Scenario: an error is returned if graph content hash digest algorithm is unknown
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 2
       }
-      """
-      When the content hash is validated
-      Then expect the error "hash cannot be empty: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "unknown data.DigestAlgorithm 2: invalid request"
 
-    Scenario: an error is returned if graph content hash digest algorithm is unspecified
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
-        }
+  Scenario: an error is returned if graph content hash length does not match blake2b digest algorithm
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": [0],
+        "digest_algorithm": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "invalid data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
 
-    Scenario: an error is returned if graph content hash digest algorithm is unknown
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 2
-        }
+  Scenario: an error is returned if graph content hash canonicalization algorithm is unspecified
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "unknown data.DigestAlgorithm 2: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request"
 
-    Scenario: an error is returned if graph content hash length does not match blake2b digest algorithm
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": [0],
-          "digest_algorithm": 1
-        }
+  Scenario: an error is returned if graph content hash canonicalization algorithm is unknown
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "canonicalization_algorithm": 2
       }
-      """
-      When the content hash is validated
-      Then expect the error "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 1: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "unknown data.GraphCanonicalizationAlgorithm 2: invalid request"
 
-  Rule: only a valid graph content hash canonicalization algorithm is accepted
-
-    Scenario: an error is returned if graph content hash canonicalization algorithm is unspecified
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1
-        }
+  Scenario: no error is returned if graph content hash merkle tree is unspecified
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "canonicalization_algorithm": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error ""
 
-    Scenario: an error is returned if graph content hash canonicalization algorithm is unknown
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1,
-          "canonicalization_algorithm": 2
-        }
+  Scenario: an error is returned if graph content hash merkle tree is unknown
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "canonicalization_algorithm": 1,
+        "merkle_tree": 1
       }
-      """
-      When the content hash is validated
-      Then expect the error "unknown data.GraphCanonicalizationAlgorithm 2: invalid request"
-
-  Rule: only a valid graph content hash merkle tree is accepted
-
-    Scenario: no error is returned if graph content hash merkle tree is unspecified
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1,
-          "canonicalization_algorithm": 1
-        }
-      }
-      """
-      When the content hash is validated
-      Then expect the error ""
-
-    Scenario: an error is returned if graph content hash merkle tree is unknown
-      Given the content hash
-      """
-      {
-        "graph": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1,
-          "canonicalization_algorithm": 1,
-          "merkle_tree": 1
-        }
-      }
-      """
-      When the content hash is validated
-      Then expect the error "unknown data.GraphMerkleTree 1: invalid request"
+    }
+    """
+    When the content hash is validated
+    Then expect the error "unknown data.GraphMerkleTree 1: invalid request"
