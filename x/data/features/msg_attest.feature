@@ -30,7 +30,7 @@ Feature: MsgAttest
     When the message is validated
     Then expect the error "content hashes cannot be empty: invalid request"
 
-  Scenario: no error is returned if the message is valid
+  Scenario: no error is returned if all message fields pass validation
     Given the message
      """
      {

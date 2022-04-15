@@ -28,18 +28,29 @@ Feature: MsgDefineResolver
     When the message is validated
     Then expect the error "invalid resolver url: invalid request"
 
-  Scenario: an error is returned if resolver url is not a valid url
+  Scenario: an error is returned if resolver url is missing a protocol
     Given the message
     """
     {
       "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "resolver_url": "foo"
+      "resolver_url": "foo.com"
     }
     """
     When the message is validated
     Then expect the error "invalid resolver url: invalid request"
 
-  Scenario: no error is returned if the message is valid
+  Scenario: an error is returned if resolver url is a top level domain
+    Given the message
+    """
+    {
+      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "resolver_url": "https://foo"
+    }
+    """
+    When the message is validated
+    Then expect the error "invalid resolver url: invalid request"
+
+  Scenario: no error is returned if all message fields pass validation
     Given the message
     """
     {

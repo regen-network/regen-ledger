@@ -80,7 +80,7 @@ Feature: Types
     When the content hash is validated
     Then expect no error
 
-  Scenario: no error is returned if raw content hash media type is valid
+  Scenario: no error is returned if raw content hash media type is known
     Given the content hash
     """
     {
