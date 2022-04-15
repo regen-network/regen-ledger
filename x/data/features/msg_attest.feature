@@ -1,6 +1,21 @@
 Feature: MsgAttest
 
-  # Note: see ./types_content_hash.feature for content hash validation
+  Scenario: a valid message
+    Given the message
+     """
+     {
+       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+       "content_hashes": [
+         {
+           "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+           "digest_algorithm": 1,
+           "canonicalization_algorithm": 1
+         }
+       ]
+     }
+     """
+    When the message is validated
+    Then expect no error
 
   Scenario: an error is returned if attestor is empty
     Given the message
@@ -30,19 +45,4 @@ Feature: MsgAttest
     When the message is validated
     Then expect the error "content hashes cannot be empty: invalid request"
 
-  Scenario: no error is returned if all message fields pass validation
-    Given the message
-     """
-     {
-       "attestor": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-       "content_hashes": [
-         {
-           "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-           "digest_algorithm": 1,
-           "canonicalization_algorithm": 1
-         }
-       ]
-     }
-     """
-    When the message is validated
-    Then expect no error
+  # Note: see ./types_content_hash.feature for content hash validation

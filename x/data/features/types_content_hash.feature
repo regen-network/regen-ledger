@@ -1,5 +1,34 @@
 Feature: Types
 
+  Scenario: a valid raw content hash
+    Given the content hash
+    """
+    {
+      "raw": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "media_type": 1
+      }
+    }
+    """
+    When the content hash is validated
+    Then expect no error
+
+  Scenario: a valid graph content hash
+    Given the content hash
+    """
+    {
+      "graph": {
+        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "digest_algorithm": 1,
+        "canonicalization_algorithm": 1,
+        "merkle_tree": 0
+      }
+    }
+    """
+    When the content hash is validated
+    Then expect no error
+
   Scenario: an error is returned if content hash is empty
     Given the content hash
     """
@@ -74,20 +103,6 @@ Feature: Types
       "raw": {
         "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
         "digest_algorithm": 1
-      }
-    }
-    """
-    When the content hash is validated
-    Then expect no error
-
-  Scenario: no error is returned if raw content hash media type is known
-    Given the content hash
-    """
-    {
-      "raw": {
-        "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-        "digest_algorithm": 1,
-        "media_type": 1
       }
     }
     """

@@ -1,5 +1,16 @@
 Feature: MsgDefineResolver
 
+  Scenario: a valid message
+    Given the message
+    """
+    {
+      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "resolver_url": "https://foo.bar"
+    }
+    """
+    When the message is validated
+    Then expect no error
+
   Scenario: an error is returned if manager is empty
     Given the message
     """
@@ -38,14 +49,3 @@ Feature: MsgDefineResolver
     """
     When the message is validated
     Then expect the error "invalid resolver url: invalid request"
-
-  Scenario: no error is returned if all message fields pass validation
-    Given the message
-    """
-    {
-      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "resolver_url": "https://foo.bar"
-    }
-    """
-    When the message is validated
-    Then expect no error

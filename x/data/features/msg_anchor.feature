@@ -1,6 +1,20 @@
 Feature: MsgAnchor
 
-  # Note: see ./types_content_hash.feature for content hash validation
+  Scenario: a valid message
+    Given the message
+    """
+    {
+      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "content_hash": {
+        "raw": {
+          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "digest_algorithm": 1
+        }
+      }
+    }
+    """
+    When the message is validated
+    Then expect no error
 
   Scenario: an error is returned if sender is empty
     Given the message
@@ -30,18 +44,4 @@ Feature: MsgAnchor
     When the message is validated
     Then expect the error "content hash cannot be empty: invalid request"
 
-  Scenario: no error is returned if all message fields pass validation
-    Given the message
-    """
-    {
-      "sender": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "content_hash": {
-        "raw": {
-          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-          "digest_algorithm": 1
-        }
-      }
-    }
-    """
-    When the message is validated
-    Then expect no error
+  # Note: see ./types_content_hash.feature for content hash validation
