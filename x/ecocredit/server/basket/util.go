@@ -7,22 +7,19 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
+// GetBasketBalanceMap calculates credit balance of each batch within the basket
 func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, error) {
-	itr, err := k.stateStore.BasketTable().List(ctx, api.BasketPrimaryKey{})
+	batchDenomToId := make(map[string]uint64)     // map of a batch denom to batch id
+	batchIdToBalance := make(map[uint64]math.Dec) // map of a basket batch_id to balance
+
+	itr, err := k.stateStore.BasketBalanceTable().List(ctx, api.BasketBalancePrimaryKey{})
 	if err != nil {
 		return nil, err
 	}
 	defer itr.Close()
 
-	batchDenomToId := make(map[string]uint64)     // map of a batch denom to batch id
-	batchIdToBalance := make(map[uint64]math.Dec) // map of a basket batch_id to balance
 	for itr.Next() {
-		basket, err := itr.Value()
-		if err != nil {
-			return nil, err
-		}
-
-		bb, err := k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, basket.BasketDenom)
+		bb, err := itr.Value()
 		if err != nil {
 			return nil, err
 		}
@@ -33,14 +30,16 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 		}
 
 		var batchID uint64
-		if _, ok := batchDenomToId[basket.BasketDenom]; !ok {
-			bInfo, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, basket.BasketDenom)
+		if _, ok := batchDenomToId[bb.BatchDenom]; !ok {
+			bInfo, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, bb.BatchDenom)
 			if err != nil {
 				return nil, err
 			}
-			batchDenomToId[basket.BasketDenom] = bInfo.Id
+
+			batchDenomToId[bb.BatchDenom] = bInfo.Id
+			batchID = bInfo.Id
 		} else {
-			batchID = batchDenomToId[basket.BasketDenom]
+			batchID = batchDenomToId[bb.BatchDenom]
 		}
 
 		if existingBal, ok := batchIdToBalance[batchID]; ok {
