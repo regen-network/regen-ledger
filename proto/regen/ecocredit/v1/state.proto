@@ -12,13 +12,13 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 message CreditType {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
-    primary_key : {fields : "row_id", auto_increment : true}
-    index : {fields : "abbrev", unique : true}
-    index : {id : 1, fields : "name", unique : true}
+    primary_key : {fields : "row_key", auto_increment : true}
+    index : {id : 1, fields : "abbrev", unique : true}
+    index : {id : 2, fields : "name", unique : true}
   };
 
-  // row_id is the numeric table row identifier of the credit type.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit type.
+  uint64 row_key = 1;
 
   // abbrev is a 1-3 character uppercase abbreviation of the CreditType name,
   // used in batch denominations within the CreditType. It must be unique.
@@ -38,17 +38,17 @@ message CreditType {
 message ClassInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 2,
-    primary_key : {fields : "row_id", auto_increment : true}
-    index : {id : 1 fields : "name", unique : true}
+    primary_key : {fields : "row_key", auto_increment : true}
+    index : {id : 1 fields : "id", unique : true}
     index : {id : 2 fields : "admin"}
     index : {id : 3 fields : "credit_type"}
   };
 
-  // row_id is the numeric table row identifier of the credit class.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit class.
+  uint64 row_key = 1;
 
-  // id is the unique string identifier of the credit class auto-generated from
-  // the credit type abbreviation and the credit class sequence number.
+  // id is the unique identifier of the credit class auto-generated from the
+  // credit type abbreviation and the credit class sequence number.
   string id = 2;
 
   // admin is the admin of the credit class.
@@ -66,11 +66,11 @@ message ClassInfo {
 message ClassIssuer {
   option (cosmos.orm.v1alpha1.table) = {
     id : 3,
-    primary_key : {fields : "row_id,issuer"}
+    primary_key : {fields : "row_key,issuer"}
   };
 
-  // row_id is the numeric table row identifier of the credit class.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit class.
+  uint64 row_key = 1;
 
   // issuer is the approved issuer of the credit class.
   bytes issuer = 2;
@@ -80,25 +80,25 @@ message ClassIssuer {
 message ProjectInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4,
-    primary_key : {fields : "row_id", auto_increment : true}
-    index : {id : 1, fields : "name", unique : true}
-    index : {id : 2, fields : "class_id,name", unique : true}
+    primary_key : {fields : "row_key", auto_increment : true}
+    index : {id : 1, fields : "id", unique : true}
+    index : {id : 2, fields : "class_id,id", unique : true}
     index : {id : 3, fields : "admin"}
   };
 
-  // row_id is the numeric table row identifier of the project.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the project.
+  uint64 row_key = 1;
 
-  // id is the unique string identifier of the project either auto-generated
-  // from the credit class id and the project sequence number, or from a custom
-  // name provided upon creation.
+  // id is the unique identifier of the project either auto-generated from the
+  // credit class id and the project sequence number, or from a custom project
+  // id provided upon creation.
   string id = 2;
 
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // class_id is the unique string identifier of credit class within which the
-  // project was created.
+  // class_id is the unique identifier of credit class within which the project
+  // was created.
   string class_id = 4;
 
   // project_location is the location of the project.
@@ -113,27 +113,27 @@ message ProjectInfo {
 message BatchInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 5,
-    primary_key : {fields : "row_id", auto_increment : true}
+    primary_key : {fields : "row_key", auto_increment : true}
     index : {id : 1 fields : "batch_denom", unique : true}
     index : {id : 2 fields : "project_id"}
     index : {id : 3 fields : "start_date"}
     index : {id : 4 fields : "issuer"}
   };
 
-  // row_id is the numeric table row identifier of the credit batch.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit batch.
+  uint64 row_key = 1;
 
   // issuer is the address that created the batch and which is
   // authorized to mint more credits if open=true.
   bytes issuer = 2;
 
-  // project_id is the unique string identifier of the project within which the
-  // credit batch was created.
+  // project_id is the unique identifier of the project within which the credit
+  // batch was created.
   string project_id = 3;
 
-  // batch_denom is the unique string identifier of the credit batch formed from
-  // the unique string identifier of the project, the batch sequence number, and
-  // the start and end date of the credit batch.
+  // batch_denom is the unique identifier of the credit batch formed from the
+  // project id, the batch sequence number, and the start and end date of the
+  // credit batch.
   string batch_denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
@@ -160,11 +160,11 @@ message BatchInfo {
 message ClassSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 6,
-    primary_key : {fields : "row_id"}
+    primary_key : {fields : "row_key"}
   };
 
-  // row_id is the numeric table row identifier of the credit type.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit type.
+  uint64 row_key = 1;
 
   // next_sequence is the next sequence number for a credit class within the
   // credit type.
@@ -176,11 +176,11 @@ message ClassSequence {
 message ProjectSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 7,
-    primary_key : {fields : "row_id"}
+    primary_key : {fields : "row_key"}
   };
 
-  // row_id is the numeric table row identifier of the credit class.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit class.
+  uint64 row_key = 1;
 
   // next_sequence is the next sequence number for a project within the credit
   // class.
@@ -191,11 +191,11 @@ message ProjectSequence {
 message BatchSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 8,
-    primary_key : {fields : "row_id"}
+    primary_key : {fields : "row_key"}
   };
 
-  // row_id is the numeric table row identifier of the project.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the project.
+  uint64 row_key = 1;
 
   // next_sequence is the next sequence number for a credit batch within the
   // project.
@@ -206,12 +206,12 @@ message BatchSequence {
 message BatchBalance {
   option (cosmos.orm.v1alpha1.table) = {
     id : 9,
-    primary_key : {fields : "address,row_id"}
-    index : {id : 1, fields : "batch_id,address"}
+    primary_key : {fields : "address,row_key"}
+    index : {id : 1, fields : "row_key,address"}
   };
 
-  // row_id is the numeric table row identifier of the credit batch.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit batch.
+  uint64 row_key = 1;
 
   // address is the address of the credit holder
   bytes address = 2;
@@ -230,11 +230,11 @@ message BatchBalance {
 message BatchSupply {
   option (cosmos.orm.v1alpha1.table) = {
     id : 10,
-    primary_key : {fields : "row_id"}
+    primary_key : {fields : "row_key"}
   };
 
-  // row_id is the numeric table row identifier of the credit batch.
-  uint64 row_id = 1;
+  // row_key is the numeric table row identifier of the credit batch.
+  uint64 row_key = 1;
 
   // tradable_amount is the total number of tradable credits in the credit
   // batch. Some of the issued credits may be cancelled and will be removed from

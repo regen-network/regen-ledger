@@ -95,7 +95,7 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
-  // class_id is the unique string identifier of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 1;
 }
 
@@ -106,8 +106,8 @@ message MsgCreateProject {
   // issuer issue all batches for a project.
   string issuer = 1;
 
-  // class_id is the unique string identifier of the credit class within which
-  // the project is created.
+  // class_id is the unique identifier of the credit class within which the
+  // project is created.
   string class_id = 2;
 
   // metadata is any arbitrary metadata attached to the project.
@@ -131,7 +131,7 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
-  // project_id is the unique string identifier of the newly created project.
+  // project_id is the unique identifier of the newly created project.
   string project_id = 1;
 }
 
@@ -140,8 +140,8 @@ message MsgCreateBatch {
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
-  // project_id is the unique string identifier of the project within which the
-  // batch is created.
+  // project_id is the unique identifier of the project within which the batch
+  // is created.
   string project_id = 2;
 
   // issuance are the credits issued in the batch.
@@ -198,7 +198,7 @@ message BatchIssuance {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
-  // batch_denom is the unique string identifier of the newly created batch.
+  // batch_denom is the unique identifier of the newly created batch.
   string batch_denom = 1;
 }
 
@@ -208,7 +208,7 @@ message MsgMintBatchCredits {
   // Signer of the msg.
   string issuer = 1;
 
-  // batch_denom is the unique string identifier of the credit batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 
   // issuance are the credits issued in the batch.
@@ -228,7 +228,7 @@ message MsgSealBatch {
   // Signer of the msg.
   string issuer = 1;
 
-  // batch_denom is the unique string identifier of the credit batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 }
 
@@ -255,7 +255,7 @@ message MsgSend {
   // and retired credits, which will be retired on receipt.
   message SendCredits {
 
-    // batch_denom is the unique string identifier of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // tradable_amount is the number of credits in this transfer that can be
@@ -293,7 +293,7 @@ message MsgRetire {
   // RetireCredits specifies a batch and the number of credits being retired.
   message RetireCredits {
 
-    // batch_denom is the unique string identifier of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being retired.
@@ -324,7 +324,7 @@ message MsgCancel {
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
-    // batch_denom is the unique string identifier of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being cancelled.
@@ -342,7 +342,7 @@ message MsgUpdateClassAdmin {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique string identifier of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // new_admin is the address of the new admin of the credit class.
@@ -358,7 +358,7 @@ message MsgUpdateClassIssuers {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique string identifier of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // add_issuers are the issuers to add to the class issuers list.
@@ -377,7 +377,7 @@ message MsgUpdateClassMetadata {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique string identifier of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // metadata is the updated arbitrary metadata to be attached to the credit
@@ -397,7 +397,7 @@ message MsgUpdateProjectAdmin {
   // new_admin is the address of the new admin of the project.
   string new_admin = 2;
 
-  // project_id is the unique string identifier of the project (e.g. VERRA1).
+  // project_id is the unique identifier of the project (e.g. VERRA1).
   string project_id = 3;
 }
 
@@ -413,7 +413,7 @@ message MsgUpdateProjectMetadata {
   // new_metadata is the metadata to update the project with.
   string new_metadata = 2;
 
-  // project_id is the unique string identifier of the project (e.g. VERRA1).
+  // project_id is the unique identifier of the project (e.g. VERRA1).
   string project_id = 3;
 }
 
