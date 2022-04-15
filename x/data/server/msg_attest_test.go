@@ -2,10 +2,10 @@ package server
 
 import (
 	"testing"
-	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +40,7 @@ func (s *attestSuite) TheContentHash(a gocuke.DocString) {
 }
 
 func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -52,7 +52,7 @@ func (s *attestSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 }
 
 func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -64,7 +64,7 @@ func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
 }
 
 func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -76,7 +76,7 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 }
 
 func (s *attestSuite) BobAttemptsToAttestToTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -88,43 +88,39 @@ func (s *attestSuite) BobAttemptsToAttestToTheDataAtBlockTime(a string) {
 }
 
 func (s *attestSuite) TheAnchorEntryExistsWithTimestamp(a string) {
-	ts, err := time.Parse("2006-01-02", a)
+	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	iri, err := s.ch.ToIRI()
-	require.NoError(s.t, err)
-	require.NotNil(s.t, iri)
+	dataId := s.getDataId()
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
-
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
-	require.NoError(s.t, err)
-	require.Equal(s.t, ts, dataAnchor.Timestamp.AsTime())
+	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
 
 func (s *attestSuite) TheAttestorEntryForAliceExistsWithTimestamp(a string) {
-	ts, err := time.Parse("2006-01-02", a)
+	attestTime, err := types.ParseDate("attest timestamp", a)
 	require.NoError(s.t, err)
 
-	iri, err := s.ch.ToIRI()
-	require.NoError(s.t, err)
-	require.NotNil(s.t, iri)
+	dataId := s.getDataId()
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId, s.alice)
 	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
-
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId.Id, s.alice)
-	require.NoError(s.t, err)
-	require.Equal(s.t, ts, dataAttestor.Timestamp.AsTime())
+	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
 }
 
 func (s *attestSuite) TheAttestorEntryForBobExistsWithTimestamp(a string) {
-	ts, err := time.Parse("2006-01-02", a)
+	attestTime, err := types.ParseDate("attest timestamp", a)
 	require.NoError(s.t, err)
 
+	dataId := s.getDataId()
+
+	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId, s.bob)
+	require.NoError(s.t, err)
+	require.Equal(s.t, attestTime, dataAttestor.Timestamp.AsTime())
+}
+
+func (s *attestSuite) getDataId() []byte {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -133,7 +129,5 @@ func (s *attestSuite) TheAttestorEntryForBobExistsWithTimestamp(a string) {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataId)
 
-	dataAttestor, err := s.server.stateStore.DataAttestorTable().Get(s.ctx, dataId.Id, s.bob)
-	require.NoError(s.t, err)
-	require.Equal(s.t, ts, dataAttestor.Timestamp.AsTime())
+	return dataId.Id
 }

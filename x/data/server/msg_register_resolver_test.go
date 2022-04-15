@@ -3,10 +3,10 @@ package server
 import (
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,7 +52,7 @@ func (s *registerResolverSuite) AliceHasDefinedTheResolverWithUrl(a string) {
 }
 
 func (s *registerResolverSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -91,7 +91,7 @@ func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToAResolverWithId(
 }
 
 func (s *registerResolverSuite) AliceAttemptsToRegisterTheDataToTheResolverAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -112,24 +112,30 @@ func (s *registerResolverSuite) BobAttemptsToRegisterTheDataToTheResolver() {
 }
 
 func (s *registerResolverSuite) TheAnchorEntryExistsWithTimestamp(a string) {
-	anchorTime, err := time.Parse("2006-01-02", a)
+	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
-	iri, err := s.ch.ToIRI()
-	require.NoError(s.t, err)
-	require.NotNil(s.t, iri)
+	dataId := s.getDataId()
 
-	dataId, err := s.server.stateStore.DataIDTable().GetByIri(s.ctx, iri)
-	require.NoError(s.t, err)
-	require.NotNil(s.t, dataId)
-
-	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId.Id)
+	dataAnchor, err := s.server.stateStore.DataAnchorTable().Get(s.ctx, dataId)
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataAnchor)
 	require.Equal(s.t, anchorTime, dataAnchor.Timestamp.AsTime())
 }
 
 func (s *registerResolverSuite) TheDataResolverEntryExists() {
+	dataId := s.getDataId()
+
+	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId, s.id)
+	require.NoError(s.t, err)
+	require.NotNil(s.t, dataResolver)
+}
+
+func (s *registerResolverSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *registerResolverSuite) getDataId() []byte {
 	iri, err := s.ch.ToIRI()
 	require.NoError(s.t, err)
 	require.NotNil(s.t, iri)
@@ -138,11 +144,5 @@ func (s *registerResolverSuite) TheDataResolverEntryExists() {
 	require.NoError(s.t, err)
 	require.NotNil(s.t, dataId)
 
-	dataResolver, err := s.server.stateStore.DataResolverTable().Get(s.ctx, dataId.Id, s.id)
-	require.NoError(s.t, err)
-	require.NotNil(s.t, dataResolver)
-}
-
-func (s *registerResolverSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
+	return dataId.Id
 }

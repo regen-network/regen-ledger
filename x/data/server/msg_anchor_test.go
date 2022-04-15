@@ -2,10 +2,10 @@ package server
 
 import (
 	"testing"
-	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +40,7 @@ func (s *anchorSuite) TheContentHash(a gocuke.DocString) {
 }
 
 func (s *anchorSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -52,7 +52,7 @@ func (s *anchorSuite) AliceHasAnchoredTheDataAtBlockTime(a string) {
 }
 
 func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -64,7 +64,7 @@ func (s *anchorSuite) AliceAttemptsToAnchorTheDataAtBlockTime(a string) {
 }
 
 func (s *anchorSuite) BobAttemptsToAnchorTheDataAtBlockTime(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
+	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
@@ -76,7 +76,7 @@ func (s *anchorSuite) BobAttemptsToAnchorTheDataAtBlockTime(a string) {
 }
 
 func (s *anchorSuite) TheAnchorEntryExistsWithTimestamp(a string) {
-	anchorTime, err := time.Parse("2006-01-02", a)
+	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
 	iri, err := s.ch.ToIRI()
