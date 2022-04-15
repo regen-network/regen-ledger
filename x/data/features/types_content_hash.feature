@@ -78,7 +78,7 @@ Feature: Types
     }
     """
     When the content hash is validated
-    Then expect the error ""
+    Then expect no error
 
   Scenario: no error is returned if raw content hash media type is valid
     Given the content hash
@@ -92,7 +92,7 @@ Feature: Types
     }
     """
     When the content hash is validated
-    Then expect the error ""
+    Then expect no error
 
   Scenario: an error is returned if graph content hash is empty
     Given the content hash
@@ -181,7 +181,7 @@ Feature: Types
     }
     """
     When the content hash is validated
-    Then expect the error ""
+    Then expect no error
 
   Scenario: an error is returned if graph content hash merkle tree is unknown
     Given the content hash

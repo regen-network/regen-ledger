@@ -35,9 +35,9 @@ func (s *contentHash) TheContentHashIsValidated() {
 }
 
 func (s *contentHash) ExpectTheError(a string) {
-	if a == "" {
-		require.NoError(s.t, s.err)
-	} else {
-		require.EqualError(s.t, s.err, a)
-	}
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *contentHash) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
