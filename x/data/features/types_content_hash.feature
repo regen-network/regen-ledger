@@ -59,7 +59,7 @@ Feature: Types
     """
     {
       "raw": {
-        "hash": [0],
+        "hash": "AA==",
         "digest_algorithm": 1
       }
     }
@@ -134,7 +134,7 @@ Feature: Types
     """
     {
       "graph": {
-        "hash": [0],
+        "hash": "AA==",
         "digest_algorithm": 1
       }
     }

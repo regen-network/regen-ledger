@@ -38,7 +38,7 @@ Feature: Register Resolver
 
   Rule: the data is registered if not already registered
 
-    Background: the resolver has been defined
+    Background: the resolver has already been defined
       Given alice has defined the resolver with url "https://foo.bar"
 
     Scenario: the data has not been registered
@@ -50,15 +50,15 @@ Feature: Register Resolver
       When alice attempts to register the data to the resolver
       Then the data resolver entry exists
 
-  Rule: the data is registered if the registrar is the manager
+  Rule: the data is registered if the registrant is the manager
 
-    Background: the resolver has been defined
+    Background: the resolver has already been defined
       Given alice has defined the resolver with url "https://foo.bar"
 
-    Scenario: the registrar is the manager
+    Scenario: the registrant is the manager
       When alice attempts to register the data to the resolver
       Then the data resolver entry exists
 
-    Scenario: the registrar is not the manager
+    Scenario: the registrant is not the manager
       When bob attempts to register the data to the resolver
       Then expect the error "unauthorized resolver manager"

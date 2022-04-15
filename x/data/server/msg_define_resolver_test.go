@@ -46,7 +46,7 @@ func (s *defineResolverSuite) AliceAttemptsToDefineTheResolver() {
 	})
 }
 
-func (s *defineResolverSuite) TheResolverInfoEntryExistsAndAliceIsTheManager() {
+func (s *defineResolverSuite) TheResolverExistsAndAliceIsTheManager() {
 	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, 1)
 	require.NoError(s.t, err)
 	require.Equal(s.t, s.resolverUrl, dataResolver.Url)

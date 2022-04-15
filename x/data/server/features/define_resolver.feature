@@ -7,7 +7,7 @@ Feature: Define Resolver
 
     Scenario: the resolver has not been defined
       When alice attempts to define the resolver
-      Then the resolver info entry exists and alice is the manager
+      Then the resolver exists and alice is the manager
 
     Scenario: the resolver has already been defined
       Given alice has defined the resolver

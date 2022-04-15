@@ -33,7 +33,7 @@ Feature: MsgDefineResolver
     """
     {
       "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "resolver_url": "foo.com"
+      "resolver_url": "foo.bar"
     }
     """
     When the message is validated

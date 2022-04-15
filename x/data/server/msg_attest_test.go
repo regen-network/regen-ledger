@@ -59,7 +59,7 @@ func (s *attestSuite) AliceHasAttestedToTheDataAtBlockTime(a string) {
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
-		ContentHashes: []*data.ContentHash_Graph{s.ch.GetGraph()},
+		ContentHashes: []*data.ContentHash_Graph{s.ch.Graph},
 	})
 }
 
@@ -71,7 +71,7 @@ func (s *attestSuite) AliceAttemptsToAttestToTheDataAtBlockTime(a string) {
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.alice.String(),
-		ContentHashes: []*data.ContentHash_Graph{s.ch.GetGraph()},
+		ContentHashes: []*data.ContentHash_Graph{s.ch.Graph},
 	})
 }
 
@@ -83,7 +83,7 @@ func (s *attestSuite) BobAttemptsToAttestToTheDataAtBlockTime(a string) {
 
 	_, s.err = s.server.Attest(s.ctx, &data.MsgAttest{
 		Attestor:      s.bob.String(),
-		ContentHashes: []*data.ContentHash_Graph{s.ch.GetGraph()},
+		ContentHashes: []*data.ContentHash_Graph{s.ch.Graph},
 	})
 }
 
