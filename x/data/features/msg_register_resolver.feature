@@ -30,17 +30,6 @@ Feature: MsgRegisterResolver
     When the message is validated
     Then expect the error "resolver id cannot be empty: invalid request"
 
-  Scenario: an error is returned if resolver id is negative
-    Given the message
-    """
-    {
-      "manager": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "resolver_id": -1
-    }
-    """
-    When the message is validated
-    Then expect the error "resolver id cannot be empty: invalid request"
-
   Scenario: an error is returned if content hashes is empty
     Given the message
     """
