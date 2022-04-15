@@ -1,6 +1,6 @@
 Feature: Define Resolver
 
-  Background: the message has been validated
+  Background:
     Given the resolver url "https://foo.bar"
 
   Rule: the resolver is defined if the resolver url is unique

@@ -1,6 +1,6 @@
 Feature: Register Resolver
 
-  Background: the message has been validated
+  Background:
     Given the content hash
     """
     {
