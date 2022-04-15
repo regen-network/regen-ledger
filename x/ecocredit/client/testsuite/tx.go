@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -16,6 +17,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/rand"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -24,6 +26,7 @@ import (
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
@@ -1495,7 +1498,9 @@ func makeCreateProjectArgs(msg *core.MsgCreateProject, flags ...string) []string
 
 func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 
 	expiration, err := types.ParseDate("expiration", "2026-01-01")
 	s.Require().NoError(err)
@@ -1506,7 +1511,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		sellOrderId string
 		expErr      bool
 		expErrMsg   string
-		expOrder    *ecocredit.SellOrder
+		expOrder    *marketplace.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -1824,4 +1829,44 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 		}
 	}
 	return "", fmt.Errorf("could not find batch_denom")
+}
+
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) (string, error) {
+	cmd := marketplaceclient.TxSellCmd()
+
+}
+
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            addr,
+		Issuers:          []string{addr},
+		Metadata:         "meta",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	s.Require().NoError(err)
+	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+		Issuer:          addr,
+		ClassId:         classId,
+		Metadata:        "meta",
+		ProjectLocation: "US-OR",
+		ProjectId:       rand.Str(3),
+	})
+	s.Require().NoError(err)
+	start, end := time.Now(), time.Now()
+	batchDenom, err := s.createBatch(clientCtx, &core.MsgCreateBatch{
+		Issuer:    addr,
+		ProjectId: projectId,
+		Issuance: []*core.BatchIssuance{
+			{Recipient: addr, TradableAmount: "999999999999999999"},
+		},
+		Metadata:  "meta",
+		StartDate: &start,
+		EndDate:   &end,
+		Open:      false,
+		OriginTx:  nil,
+		Note:      "",
+	})
+	s.Require().NoError(err)
+	return classId, projectId, batchDenom
 }
