@@ -30,6 +30,16 @@ const (
 	typeCreditTypes      = "credit_types"
 )
 
+func genAskedDenoms() []*core.AskDenom {
+	return []*core.AskDenom{
+		{
+			Denom:        "stake",
+			DisplayDenom: "stak",
+			Exponent:     18,
+		},
+	}
+}
+
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
 	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 10)))))
@@ -37,7 +47,19 @@ func genCreditClassFee(r *rand.Rand) sdk.Coins {
 
 // genAllowedClassCreators generate random set of creators
 func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []string {
-	n := simtypes.RandIntBetween(r, 1, len(accs))
+	max := 50
+
+	switch len(accs) {
+	case 0:
+		return []string{}
+	case 1:
+		return []string{accs[0].Address.String()}
+	default:
+		if len(accs) < max {
+			max = len(accs)
+		}
+	}
+	n := simtypes.RandIntBetween(r, 1, max)
 	creators := make([]string, n)
 
 	for i := 0; i < n; i++ {
@@ -111,6 +133,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		AllowlistEnabled:     allowListEnabled,
 		CreditTypes:          creditTypes,
 		BasketFee:            basketCreationFee,
+		AllowedAskDenoms:     genAskedDenoms(),
 	}
 
 	db := dbm.NewMemDB()
@@ -133,7 +156,9 @@ func RandomizedGenState(simState *module.SimulationState) {
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, typeCreditTypes, &creditTypes, simState.Rand,
 		func(r *rand.Rand) {
-			genGenesisState(ormCtx, r, simState, ss)
+			if err := genGenesisState(ormCtx, r, simState, ss); err != nil {
+				panic(err)
+			}
 		})
 
 	paramsBz := simState.Cdc.MustMarshalJSON(params)
@@ -171,14 +196,24 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// create few classes
 	cID1, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{Name: "C01", Admin: accs[0].Address.Bytes(), Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))},
+		&api.ClassInfo{
+			Name:       "C01",
+			Admin:      accs[0].Address,
+			Metadata:   simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100)),
+			CreditType: "C",
+		},
 	)
 	if err != nil {
 		return err
 	}
 
 	cID2, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{Name: "C02", Admin: accs[1].Address.Bytes(), Metadata: metadata},
+		&api.ClassInfo{
+			Name:       "C02",
+			Admin:      accs[1].Address,
+			Metadata:   metadata,
+			CreditType: "C",
+		},
 	)
 	if err != nil {
 		return err
@@ -186,25 +221,25 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// create class issuers
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassId: cID1, Issuer: accs[0].Address.Bytes()},
+		&api.ClassIssuer{ClassId: cID1, Issuer: accs[0].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassId: cID1, Issuer: accs[1].Address.Bytes()},
+		&api.ClassIssuer{ClassId: cID1, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassId: cID2, Issuer: accs[1].Address.Bytes()},
+		&api.ClassIssuer{ClassId: cID2, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassId: cID2, Issuer: accs[2].Address.Bytes()},
+		&api.ClassIssuer{ClassId: cID2, Issuer: accs[2].Address},
 	); err != nil {
 		return err
 	}
@@ -225,9 +260,9 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// create few batches
-	startDate := simState.GenTimestamp
-	endDate := simState.GenTimestamp.AddDate(0, 1, 0)
-	denom, err := ecocredit.FormatDenom("C001", 1, &startDate, &endDate)
+	startDate := simState.GenTimestamp.UTC()
+	endDate := simState.GenTimestamp.AddDate(0, 1, 0).UTC()
+	denom, err := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -235,7 +270,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	bID1, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
 			Issuer: accs[0].Address.Bytes(), ProjectId: pID1, BatchDenom: denom,
-			StartDate: timestamppb.New(startDate.UTC()), EndDate: timestamppb.New(endDate.UTC()),
+			StartDate: timestamppb.New(startDate), EndDate: timestamppb.New(endDate),
 			Metadata: metadata, IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
 		},
 	)
@@ -243,7 +278,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C002", 2, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C02", 1, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -259,7 +294,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C003", 3, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C02", 2, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -324,6 +359,55 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		BatchId:        bID3,
 		TradableAmount: "100",
 		RetiredAmount:  "10",
+	}); err != nil {
+		return err
+	}
+
+	// class sequence
+	if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
+		CreditType:  "C",
+		NextClassId: 3,
+	}); err != nil {
+		return err
+	}
+
+	// project sequence
+	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+		ClassId:       1,
+		NextProjectId: 2,
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+		ClassId:       2,
+		NextProjectId: 2,
+	}); err != nil {
+		return err
+	}
+
+	// itr, err := ss.ProjectInfoTable().List(ctx, api.ProjectInfoPrimaryKey{})
+	// if err != nil {
+	// 	return err
+	// }
+	// defer itr.Close()
+	// for itr.Next() {
+	// 	val, _ := itr.Value()
+	// 	fmt.Println("+++++++++++++++++++=")
+	// 	fmt.Println(val)
+	// 	fmt.Println("+++++++++++++++++++=")
+	// }
+	// batch sequence
+	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
+		ProjectId:   "Project1",
+		NextBatchId: 2,
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
+		ProjectId:   "C0101",
+		NextBatchId: 2,
 	}); err != nil {
 		return err
 	}

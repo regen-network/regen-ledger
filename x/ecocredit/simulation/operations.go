@@ -200,20 +200,18 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not allowed to create credit class"), nil, nil // skip
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
-		classFee := simtypes.RandSubsetCoins(r, spendable)
-		if spendable.IsAllLTE(params.CreditClassFee) && classFee.IsAllLT(params.CreditClassFee) {
+		spendable, neg := bk.SpendableCoins(sdkCtx, admin.Address).SafeSub(params.CreditClassFee)
+		if neg {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
 		}
 
-		f := sdk.NewCoin(sdk.DefaultBondDenom, classFee.AmountOf(sdk.DefaultBondDenom))
 		creditTypes := []string{"C", "BIO"}
 		msg := &core.MsgCreateClass{
 			Admin:            admin.Address.String(),
 			Issuers:          issuers,
 			Metadata:         simtypes.RandStringOfLength(r, 10),
 			CreditTypeAbbrev: creditTypes[r.Intn(len(creditTypes))],
-			Fee:              &f,
+			Fee:              &params.CreditClassFee[0],
 		}
 
 		txCtx := simulation.OperationInput{
@@ -311,29 +309,18 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		issuer := accs[0]
 
 		ctx := regentypes.Context{Context: sdkCtx}
-		res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{})
-		if err != nil {
-			if ormerrors.IsNotFound(err) {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "no projects"), nil, nil
-			}
 
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, err.Error()), nil, err
+		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCreateBatch)
+		if class == nil {
+			return op, nil, err
 		}
 
-		projects := res.Projects
-		if len(projects) == 0 {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "no projects"), nil, nil
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCreateBatch, class.Name)
+		if project == nil {
+			return op, nil, err
 		}
 
-		var projectID string
-		for _, project := range projects {
-			if sdk.AccAddress(project.Admin).String() == issuer.Address.String() {
-				projectID = project.Name
-				break
-			}
-		}
-
-		if projectID == "" {
+		if sdk.AccAddress(project.Admin).String() != issuer.Address.String() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "don't have permission to create credit batch"), nil, nil
 		}
 
@@ -344,7 +331,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		tenHours := now.Add(10 * time.Hour)
 		msg := &core.MsgCreateBatch{
 			Issuer:    issuer.Address.String(),
-			ProjectId: projectID,
+			ProjectId: project.Name,
 			Issuance:  generateBatchIssuance(r, accs),
 			StartDate: &now,
 			EndDate:   &tenHours,
@@ -611,9 +598,9 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "balance is zero"), nil, nil
 		}
 
-		msg := &ecocredit.MsgCancel{
+		msg := &core.MsgCancel{
 			Holder: admin,
-			Credits: []*ecocredit.MsgCancel_CancelCredits{
+			Credits: []*core.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.BatchDenom,
 					Amount:     balanceRes.Balance.Tradable,
@@ -824,9 +811,6 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient c
 	}
 
 	projects := res.Projects
-	if len(projects) == 0 {
-		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no project found"), nil
-	}
 
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
@@ -843,10 +827,6 @@ func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient c
 	}
 
 	batches := res.Batches
-	if len(batches) == 0 {
-		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no batch found"), nil
-	}
-
 	return batches[r.Intn(len(batches))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
