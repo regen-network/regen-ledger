@@ -81,7 +81,7 @@ message QueryByIRIResponse {
 
 // QueryByHashRequest is the Query/ByHash request type.
 message QueryByHashRequest {
-  // hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the anchored data.
   ContentHash content_hash = 1;
 }
 
@@ -111,7 +111,7 @@ message QueryByAttestorResponse {
 
 // QueryIRIByHashRequest is the Query/IRIByHash request type.
 message QueryIRIByHashRequest {
-  // hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the anchored data.
   ContentHash content_hash = 1;
 }
 
@@ -129,7 +129,7 @@ message QueryHashByIRIRequest {
 
 // QueryHashByIRIResponse is the Query/HashByIRI response type.
 message QueryHashByIRIResponse {
-  // hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the anchored data.
   ContentHash content_hash = 1;
 }
 
@@ -153,7 +153,7 @@ message QueryAttestorsByIRIResponse {
 
 // QueryAttestorsByHashRequest is the Query/AttestorsByHash request type.
 message QueryAttestorsByHashRequest {
-  // hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the anchored data.
   ContentHash content_hash = 1;
 
   // pagination is the PageRequest to use for pagination.
@@ -190,7 +190,7 @@ message QueryResolversByIRIResponse {
 
 // QueryResolversByHashRequest is the Query/ResolversByHash request type.
 message QueryResolversByHashRequest {
-  // hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the anchored data.
   ContentHash content_hash = 1;
 
   // pagination is the PageRequest to use for pagination.

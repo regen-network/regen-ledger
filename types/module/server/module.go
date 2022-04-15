@@ -35,4 +35,5 @@ type Configurator interface {
 	RegisterInvariantsHandler(registry RegisterInvariantsHandler)
 	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
 	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
+	RegisterMigrationHandler(MigrationHandler)
 }

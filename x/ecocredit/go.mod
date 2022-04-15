@@ -13,7 +13,6 @@ require (
 	github.com/google/go-cmp v0.5.7
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/pkg/errors v0.9.1
 	github.com/regen-network/gocuke v0.6.0
 	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
@@ -26,6 +25,7 @@ require (
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
+	gotest.tools v2.2.0+incompatible
 	gotest.tools/v3 v3.1.0
 	pgregory.net/rapid v0.4.7
 	sigs.k8s.io/yaml v1.2.0
@@ -103,6 +103,7 @@ require (
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
