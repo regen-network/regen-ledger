@@ -63,6 +63,14 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
+
+  // UpdateProjectAdmin updates the project admin address
+  rpc UpdateProjectAdmin(MsgUpdateProjectAdmin)
+      returns (MsgUpdateProjectAdminResponse);
+
+  // UpdateProjectMetadata updates the project metadata
+  rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
+      returns (MsgUpdateProjectMetadataResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -380,5 +388,38 @@ message MsgUpdateClassMetadata {
   string metadata = 3;
 }
 
-// MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+// MsgUpdateClassMetadataResponse is the Msg/UpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+// MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
+message MsgUpdateProjectAdmin {
+
+  // admin is the project's current admin address.
+  string admin = 1;
+
+  // new_admin is the address of the new admin of the project.
+  string new_admin = 2;
+
+  // project_id is the id of the project. (e.g. VERRA)
+  string project_id = 3;
+}
+
+// MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin response type.
+message MsgUpdateProjectAdminResponse {}
+
+// MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
+message MsgUpdateProjectMetadata {
+
+  // admin is project admin address.
+  string admin = 1;
+
+  // new_metadata is the metadata to update the project with.
+  string new_metadata = 2;
+
+  // project_id is the id of the project. (e.g. VERRA)
+  string project_id = 3;
+}
+
+// MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
+// response type.
+message MsgUpdateProjectMetadataResponse {}

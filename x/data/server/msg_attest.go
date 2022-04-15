@@ -16,8 +16,8 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 
 	var newEntries []*data.AttestorEntry
 
-	for _, hash := range request.Hashes {
-		iri, id, timestamp, err := s.anchorAndGetIRI(ctx, hash)
+	for _, ch := range request.ContentHashes {
+		iri, id, timestamp, err := s.anchorAndGetIRI(ctx, ch)
 		if err != nil {
 			return nil, err
 		}
@@ -58,7 +58,7 @@ func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.
 			Timestamp: timestamp,
 		})
 
-		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest content hash iteration")
 	}
 
 	return &data.MsgAttestResponse{NewEntries: newEntries}, nil

@@ -20,7 +20,7 @@ type ToIRI interface {
 
 // Anchor anchors a piece of data to the blockchain based on its secure hash.
 func (s serverImpl) Anchor(ctx context.Context, request *data.MsgAnchor) (*data.MsgAnchorResponse, error) {
-	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
+	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.ContentHash)
 	if err != nil {
 		return nil, err
 	}

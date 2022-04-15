@@ -16,10 +16,10 @@ func (m *MsgAnchor) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	if m.Hash == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
+	if m.ContentHash == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 	}
-	return m.Hash.Validate()
+	return m.ContentHash.Validate()
 }
 
 func (m *MsgAnchor) GetSigners() []sdk.AccAddress {
@@ -43,13 +43,13 @@ func (m *MsgAttest) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	if len(m.Hashes) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("hashes cannot be empty")
+	if len(m.ContentHashes) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("content hashes cannot be empty")
 	}
 
-	for _, hash := range m.Hashes {
+	for _, hash := range m.ContentHashes {
 		if hash == nil {
-			return sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
+			return sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 		}
 		err := hash.Validate()
 		if err != nil {
@@ -107,10 +107,10 @@ func (m *MsgRegisterResolver) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Manager); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	if len(m.Data) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("data cannot be empty")
+	if len(m.ContentHashes) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("content hashes cannot be empty")
 	}
-	for _, hash := range m.Data {
+	for _, hash := range m.ContentHashes {
 		if err := hash.Validate(); err != nil {
 			return err
 		}
