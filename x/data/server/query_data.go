@@ -95,9 +95,9 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		}
 
 		entries = append(entries, &data.ContentEntry{
-			Hash:      contentHash,
-			Iri:       dataId.Iri,
-			Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+			ContentHash: contentHash,
+			Iri:         dataId.Iri,
+			Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 		})
 	}
 
@@ -124,8 +124,8 @@ func (s serverImpl) getEntry(ctx context.Context, ch *data.ContentHash, iri stri
 	}
 
 	return &data.ContentEntry{
-		Hash:      ch,
-		Iri:       iri,
-		Timestamp: types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
+		ContentHash: ch,
+		Iri:         iri,
+		Timestamp:   types.ProtobufToGogoTimestamp(dataAnchor.Timestamp),
 	}, nil
 }

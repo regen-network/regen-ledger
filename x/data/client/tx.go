@@ -56,14 +56,14 @@ func MsgAnchorCmd() *cobra.Command {
 			}
 
 			attestor := clientCtx.GetFromAddress()
-			content, err := data.ParseIRI(iri)
+			contentHash, err := data.ParseIRI(iri)
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
 			}
 
 			msg := data.MsgAnchor{
-				Sender: attestor.String(),
-				Hash:   content,
+				Sender:      attestor.String(),
+				ContentHash: contentHash,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -96,7 +96,7 @@ Attest to the veracity of more than one entry using a comma-separated (no spaces
 				return sdkerrors.ErrInvalidRequest.Wrap("at least one iri is required")
 			}
 
-			var hashes []*data.ContentHash_Graph
+			var contentHashes []*data.ContentHash_Graph
 
 			iris := strings.Split(args[0], ",")
 
@@ -109,12 +109,12 @@ Attest to the veracity of more than one entry using a comma-separated (no spaces
 				if graph == nil {
 					return sdkerrors.ErrInvalidRequest.Wrap("can only attest to graph data types")
 				}
-				hashes = append(hashes, graph)
+				contentHashes = append(contentHashes, graph)
 			}
 
 			msg := data.MsgAttest{
-				Attestor: attestor.String(),
-				Hashes:   hashes,
+				Attestor:      attestor.String(),
+				ContentHashes: contentHashes,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -210,9 +210,9 @@ Flags:
 			}
 
 			msg := data.MsgRegisterResolver{
-				Manager:    clientCtx.GetFromAddress().String(),
-				ResolverId: resolverID,
-				Data:       contentHashes,
+				Manager:       clientCtx.GetFromAddress().String(),
+				ResolverId:    resolverID,
+				ContentHashes: contentHashes,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -240,5 +240,5 @@ func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.Cont
 		return nil, err
 	}
 
-	return contentHashes.Data, nil
+	return contentHashes.ContentHashes, nil
 }
