@@ -3,7 +3,6 @@ package marketplace
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -13,11 +12,12 @@ import (
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Sell creates new sell orders for credits
-func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
+func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
@@ -76,7 +76,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		}
 
 		sellOrderIds[i] = id
-		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			OrderId:           id,
 			BatchDenom:        batch.BatchDenom,
 			Quantity:          order.Quantity,
@@ -89,7 +89,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
-	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
