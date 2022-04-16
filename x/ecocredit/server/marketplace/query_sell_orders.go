@@ -59,7 +59,7 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchIdIndexKey{}.WithBatchId(batch.Id), ormlist.Paginate(pg))
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchIdIndexKey{}.WithBatchId(batch.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
