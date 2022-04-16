@@ -16,22 +16,18 @@ message CreditType {
     index : {id : 2, fields : "name", unique : true}
   };
 
-  // key is the table row identifier of the credit type used internally for
-  // efficient lookups. This identifier is auto-incrementing.
-  uint64 key = 1;
-
   // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
   // name, used in batch denominations within the CreditType. It must be unique.
-  string abbreviation = 2;
+  string abbreviation = 1;
 
   // name is the name of the credit type (e.g. carbon, biodiversity, etc).
-  string name = 3;
+  string name = 2;
 
   // unit is the measurement unit of the credit type (e.g. kg, ton, etc).
-  string unit = 4;
+  string unit = 3;
 
   // precision is the decimal precision of the credit type.
-  uint32 precision = 5;
+  uint32 precision = 4;
 }
 
 // ClassInfo represents the high-level on-chain information for a credit class.
