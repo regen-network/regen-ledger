@@ -25,7 +25,8 @@ message EventCreateProject {
   // admin is the admin of the project.
   string admin = 2;
 
-  // class_id is the unique identifier of the credit class within which this project was created.
+  // class_id is the unique identifier of the credit class within which this
+  // project was created.
   string class_id = 3;
 
   // project_location is the location of the project.
@@ -36,7 +37,8 @@ message EventCreateProject {
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
 
-  // class_id is the unique identifier of the credit class within which this credit batch was created.
+  // class_id is the unique identifier of the credit class within which this
+  // credit batch was created.
   string class_id = 1;
 
   // batch_denom is the unique identifier of the credit batch.
@@ -63,7 +65,8 @@ message EventCreateBatch {
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
   string project_location = 8;
 
-  // project_id is the unique identifier of the project within which this credit batch was created.
+  // project_id is the unique identifier of the project within which this credit
+  // batch was created.
   string project_id = 9;
 
   // A reference to a transaction or an event referencing the transaction
@@ -77,7 +80,8 @@ message EventCreateBatch {
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventMintBatchCredits {
 
-  // batch_denom is the unique identifier of the credit batch within which the credits were minted.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were minted.
   string batch_denom = 1;
 
   // A reference to a transaction or an event referencing the transaction
@@ -124,7 +128,8 @@ message EventRetire {
   // issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
   string retirer = 1;
 
-  // batch_denom is the unique identifier of the credit batch within which the credits were retired.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were retired.
   string batch_denom = 2;
 
   // amount is the decimal number of credits that have been retired.
@@ -147,7 +152,8 @@ message EventCancel {
   // the holder of the credits.
   string canceller = 1;
 
-  // batch_denom is the unique identifier of the credit batch within which the credits were cancelled.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were cancelled.
   string batch_denom = 2;
 
   // amount is the decimal number of credits that have been cancelled.
