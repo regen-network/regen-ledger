@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -24,18 +25,29 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 	if err != nil {
 		return nil, err
 	}
-	projectInfos := make([]*core.ProjectInfo, 0)
+	projectInfos := make([]*core.ProjectInfoEntry, 0)
 	for it.Next() {
 		info, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var pi core.ProjectInfo
-		if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
+		admin := sdk.AccAddress(info.Admin)
+
+		class, err := k.stateStore.ClassInfoTable().Get(ctx, info.ClassId)
+		if err != nil {
 			return nil, err
 		}
-		projectInfos = append(projectInfos, &pi)
+
+		project := core.ProjectInfoEntry{
+			Id:              info.Name,
+			Admin:           admin.String(),
+			ClassId:         class.Name,
+			ProjectLocation: info.ProjectLocation,
+			Metadata:        info.Metadata,
+		}
+
+		projectInfos = append(projectInfos, &project)
 	}
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {

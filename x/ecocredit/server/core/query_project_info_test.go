@@ -15,19 +15,28 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	// insert 1 project
-	err := s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	// insert class
+	classId, err := s.stateStore.ClassInfoTable().InsertReturningID(s.ctx, &api.ClassInfo{
+		Name: "C01",
+	})
+	assert.NilError(t, err)
+
+	// insert project
+	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
 		Name:            "P01",
-		ClassId:         1,
+		ClassId:         classId,
 		ProjectLocation: "US-CA",
-		Metadata:        "",
+		Metadata:        "data",
 	})
 	assert.NilError(t, err)
 
 	// valid query
 	res, err := s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
-	assert.Equal(t, "P01", res.Info.Name)
+	assert.Equal(t, "P01", res.Project.Id)
+	assert.Equal(t, "C01", res.Project.ClassId)
+	assert.Equal(t, "US-CA", res.Project.ProjectLocation)
+	assert.Equal(t, "data", res.Project.Metadata)
 
 	// invalid query
 	_, err = s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "F01"})

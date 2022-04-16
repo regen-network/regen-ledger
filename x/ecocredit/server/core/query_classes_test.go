@@ -33,8 +33,8 @@ func TestQuery_Classes(t *testing.T) {
 	res, err := s.k.Classes(s.ctx, &core.QueryClassesRequest{})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Classes))
-	assert.Equal(t, "C01", res.Classes[0].Name)
-	assert.Equal(t, "C02", res.Classes[1].Name)
+	assert.Equal(t, "C01", res.Classes[0].Id)
+	assert.Equal(t, "C02", res.Classes[1].Id)
 
 	// request with pagination
 	res, err = s.k.Classes(s.ctx, &core.QueryClassesRequest{Pagination: &query.PageRequest{
@@ -45,5 +45,5 @@ func TestQuery_Classes(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Classes))
 	assert.Equal(t, uint64(2), res.Pagination.Total)
-	assert.Equal(t, "C02", res.Classes[0].Name)
+	assert.Equal(t, "C02", res.Classes[0].Id)
 }

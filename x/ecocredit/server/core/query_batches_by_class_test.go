@@ -1,57 +1,62 @@
 package core
 
 import (
+	"strings"
+	"testing"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"gotest.tools/v3/assert"
-	"strings"
-	"testing"
 )
 
 func TestQuery_BatchesByClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	// make a class
+	// insert class
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "foo",
-		CreditType: "C",
+		Name: "C01",
 	}))
-	// make some batches under it
+
+	// insert project
+	projectKey, err := s.stateStore.ProjectInfoTable().InsertReturningID(s.ctx, &api.ProjectInfo{
+		Name: "P01",
+	})
+	assert.NilError(t, err)
+
+	// insert three batches under the project
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectId:  projectKey,
 		BatchDenom: "C01-20200101-20200102-001",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectId:  projectKey,
 		BatchDenom: "C01-20190203-20200102-002",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectId:  projectKey,
 		BatchDenom: "C01-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 
-	// Classes that SHOULD NOT show up from a query for "C01"
+	// classes that SHOULD NOT show up from a query for "C01"
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectId:  projectKey,
 		BatchDenom: "C011-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectId:  projectKey,
 		BatchDenom: "BIO1-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,

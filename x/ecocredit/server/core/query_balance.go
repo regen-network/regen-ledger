@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -26,21 +25,25 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			return &core.QueryBalanceResponse{
-				Balance: &core.BatchBalance{
-					Address:  addr,
-					BatchId:  batch.Id,
-					Tradable: "0",
-					Retired:  "0",
-					Escrowed: "0",
+				Balance: &core.BatchBalanceEntry{
+					Address:    addr.String(),
+					BatchDenom: batch.BatchDenom,
+					Tradable:   "0",
+					Retired:    "0",
+					Escrowed:   "0",
 				},
 			}, nil
 		}
 		return nil, err
 	}
-	var bal core.BatchBalance
-	if err = ormutil.PulsarToGogoSlow(balance, &bal); err != nil {
-		return nil, err
+
+	entry := core.BatchBalanceEntry{
+		Address:    addr.String(),
+		BatchDenom: batch.BatchDenom,
+		Tradable:   balance.Tradable,
+		Retired:    balance.Retired,
+		Escrowed:   balance.Escrowed,
 	}
 
-	return &core.QueryBalanceResponse{Balance: &bal}, nil
+	return &core.QueryBalanceResponse{Balance: &entry}, nil
 }

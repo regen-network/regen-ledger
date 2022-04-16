@@ -3,7 +3,8 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types/ormutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -19,9 +20,23 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		return nil, err
 	}
 
-	var bi core.BatchInfo
-	if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
+	issuer := sdk.AccAddress(batch.Issuer)
+
+	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectId)
+	if err != nil {
 		return nil, err
 	}
-	return &core.QueryBatchInfoResponse{Info: &bi}, nil
+
+	entry := core.BatchInfoEntry{
+		Issuer:       issuer.String(),
+		ProjectId:    project.Name,
+		BatchDenom:   batch.BatchDenom,
+		Metadata:     batch.Metadata,
+		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
+		EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
+		IssuanceDate: types.ProtobufToGogoTimestamp(batch.IssuanceDate),
+		Open:         batch.Open,
+	}
+
+	return &core.QueryBatchInfoResponse{Batch: &entry}, nil
 }

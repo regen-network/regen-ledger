@@ -29,17 +29,21 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 		return nil, err
 	}
 
-	classes := make([]*core.ClassInfo, 0)
+	classes := make([]*core.ClassInfoEntry, 0)
 	for it.Next() {
-		v, err := it.Value()
+		class, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var ci core.ClassInfo
-		if err = ormutil.PulsarToGogoSlow(v, &ci); err != nil {
-			return nil, err
+
+		entry := core.ClassInfoEntry{
+			Id:               class.Name,
+			Admin:            admin.String(),
+			Metadata:         class.Metadata,
+			CreditTypeAbbrev: class.CreditType,
 		}
-		classes = append(classes, &ci)
+
+		classes = append(classes, &entry)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())

@@ -17,9 +17,10 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	s := setupBase(t)
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noBatches := testdata.KeyTestPubAddr()
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: s.addr, BatchDenom: "1"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: s.addr, BatchDenom: "2"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: otherAddr, BatchDenom: "3"}))
+	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{Name: "P01"}))
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: s.addr, BatchDenom: "1"}))
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: s.addr, BatchDenom: "2"}))
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: otherAddr, BatchDenom: "3"}))
 
 	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: s.addr.String(), Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})
 	assert.NilError(t, err)

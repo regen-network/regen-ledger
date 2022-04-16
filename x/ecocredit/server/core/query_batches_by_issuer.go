@@ -4,6 +4,7 @@ import (
 	"context"
 
 	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
@@ -29,18 +30,31 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfo, 0, 8)
+	batches := make([]*core.BatchInfoEntry, 0, 8)
 
 	for it.Next() {
-		v, err := it.Value()
+		batch, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var batch core.BatchInfo
-		if err = ormutil.PulsarToGogoSlow(v, &batch); err != nil {
+
+		project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectId)
+		if err != nil {
 			return nil, err
 		}
-		batches = append(batches, &batch)
+
+		entry := core.BatchInfoEntry{
+			Issuer:       req.Issuer,
+			ProjectId:    project.Name,
+			BatchDenom:   batch.BatchDenom,
+			Metadata:     batch.Metadata,
+			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
+			EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
+			IssuanceDate: types.ProtobufToGogoTimestamp(batch.IssuanceDate),
+			Open:         batch.Open,
+		}
+
+		batches = append(batches, &entry)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
