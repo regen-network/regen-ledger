@@ -104,12 +104,14 @@ service Query {
 
 // QueryClassesRequest is the Query/Classes request type.
 message QueryClassesRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
+
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -129,6 +131,7 @@ message QueryClassesByAdminRequest {
 
 // QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
 message QueryClassesByAdminResponse {
+
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -152,6 +155,7 @@ message QueryClassInfoResponse {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
 message QueryClassIssuersRequest {
+
   // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 
@@ -161,6 +165,7 @@ message QueryClassIssuersRequest {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers response type.
 message QueryClassIssuersResponse {
+
   // issuers is a list of issuers for the credit class
   repeated string issuers = 1;
 
@@ -180,6 +185,7 @@ message QueryProjectsRequest {
 
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
+
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
 
@@ -287,6 +293,7 @@ message QueryBalanceRequest {
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
+
   // balance is the balance of the given account.
   BatchBalance balance = 1;
 }
@@ -340,6 +347,7 @@ message QueryCreditTypesRequest {}
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
+
   // list of credit types
   repeated CreditType credit_types = 1;
 }
@@ -349,6 +357,7 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
+
   // params defines the parameters of the ecocredit module.
   Params params = 1;
 }

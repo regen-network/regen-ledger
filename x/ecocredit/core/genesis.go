@@ -376,7 +376,7 @@ func (p ProjectInfo) Validate() error {
 	}
 
 	if p.ClassKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
 	}
 
 	if err := ValidateLocation(p.ProjectLocation); err != nil {
@@ -401,7 +401,7 @@ func (b BatchInfo) Validate() error {
 	}
 
 	if b.ProjectKey == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("project id cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("project key cannot be zero")
 	}
 
 	if b.StartDate == nil {

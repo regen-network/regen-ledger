@@ -6843,8 +6843,7 @@ type ProjectInfo struct {
 	// efficient lookups. This identifier is auto-incrementing.
 	Key uint64 `protobuf:"varint,1,opt,name=key,proto3" json:"key,omitempty"`
 	// id is the unique identifier of the project either auto-generated from the
-	// credit class id and the project sequence number, or from a custom project
-	// id provided upon creation.
+	// credit class id and project sequence number or provided upon creation.
 	Id string `protobuf:"bytes,2,opt,name=id,proto3" json:"id,omitempty"`
 	// admin is the admin of the project.
 	Admin []byte `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -6933,7 +6932,7 @@ type BatchInfo struct {
 	// authorized to mint more credits if open=true.
 	Issuer []byte `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// project_key is the table row identifier of the credit class used internally
-	// for efficient lookups. This links a project to a credit class.
+	// for efficient lookups. This links a credit batch to a project.
 	ProjectKey uint64 `protobuf:"varint,3,opt,name=project_key,json=projectKey,proto3" json:"project_key,omitempty"`
 	// batch_denom is the unique identifier of the credit batch formed from the
 	// project id, the batch sequence number, and the start and end date of the
@@ -7184,7 +7183,7 @@ func (x *BatchSequence) GetNextSequence() uint64 {
 	return 0
 }
 
-// BatchBalance stores each users credit balance
+// BatchBalance stores each accounts credit balance.
 type BatchBalance struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7193,11 +7192,11 @@ type BatchBalance struct {
 	// batch_key is the table row identifier of the credit batch used internally
 	// for efficient lookups. This links a batch balance to a credit batch.
 	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
-	// address is the address of the credit holder
+	// address is the address of the credit holder.
 	Address []byte `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	// tradable is the tradable amount of credits
+	// tradable is the tradable amount of credits.
 	Tradable string `protobuf:"bytes,3,opt,name=tradable,proto3" json:"tradable,omitempty"`
-	// retired is the retired amount of credits
+	// retired is the retired amount of credits.
 	Retired string `protobuf:"bytes,4,opt,name=retired,proto3" json:"retired,omitempty"`
 	// escrowed is the amount of credits locked up in escrow for the marketplace.
 	Escrowed string `protobuf:"bytes,5,opt,name=escrowed,proto3" json:"escrowed,omitempty"`
@@ -7258,7 +7257,7 @@ func (x *BatchBalance) GetEscrowed() string {
 	return ""
 }
 
-// BatchSupply tracks the supply of a credit batch
+// BatchSupply stores the supply of credits for a credit batch.
 type BatchSupply struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7415,7 +7414,7 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x1c, 0x0a, 0x09, 0x70, 0x72, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01,
 	0x28, 0x0d, 0x52, 0x09, 0x70, 0x72, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x3a, 0x24, 0xf2,
 	0x9e, 0xd3, 0x8e, 0x03, 0x1e, 0x0a, 0x0e, 0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0a, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x10, 0x02, 0x18,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0a, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x10, 0x01, 0x18,
 	0x01, 0x18, 0x01, 0x22, 0xcd, 0x01, 0x0a, 0x09, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x6e, 0x66,
 	0x6f, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03,
 	0x6b, 0x65, 0x79, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,

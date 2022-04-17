@@ -65,7 +65,7 @@ type CreditTypeNameIndexKey struct {
 	vs []interface{}
 }
 
-func (x CreditTypeNameIndexKey) id() uint32            { return 2 }
+func (x CreditTypeNameIndexKey) id() uint32            { return 1 }
 func (x CreditTypeNameIndexKey) values() []interface{} { return x.vs }
 func (x CreditTypeNameIndexKey) creditTypeIndexKey()   {}
 
@@ -111,14 +111,14 @@ func (this creditTypeTable) Get(ctx context.Context, abbreviation string) (*Cred
 }
 
 func (this creditTypeTable) HasByName(ctx context.Context, name string) (found bool, err error) {
-	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
+	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		name,
 	)
 }
 
 func (this creditTypeTable) GetByName(ctx context.Context, name string) (*CreditType, error) {
 	var creditType CreditType
-	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &creditType,
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &creditType,
 		name,
 	)
 	if err != nil {

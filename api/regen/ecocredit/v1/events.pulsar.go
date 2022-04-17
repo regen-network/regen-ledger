@@ -6415,7 +6415,7 @@ type EventCreateProject struct {
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// admin is the admin of the project.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
-	// class_id is the unique identifier of the credit class within which this
+	// class_id is the unique identifier of the credit class within which the
 	// project was created.
 	ClassId string `protobuf:"bytes,3,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// project_location is the location of the project.
@@ -6477,7 +6477,7 @@ type EventCreateBatch struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique identifier of the credit class within which this
+	// class_id is the unique identifier of the credit class within which the
 	// credit batch was created.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
@@ -6497,7 +6497,7 @@ type EventCreateBatch struct {
 	// project_location is the location of the project backing the credits in this
 	// batch. Full documentation can be found in MsgCreateBatch.project_location.
 	ProjectLocation string `protobuf:"bytes,8,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
-	// project_id is the unique identifier of the project within which this credit
+	// project_id is the unique identifier of the project within which the credit
 	// batch was created.
 	ProjectId string `protobuf:"bytes,9,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// A reference to a transaction or an event referencing the transaction

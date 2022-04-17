@@ -13,7 +13,7 @@ message CreditType {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
     primary_key : {fields : "abbreviation"}
-    index : {id : 2, fields : "name", unique : true}
+    index : {id : 1, fields : "name", unique : true}
   };
 
   // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
@@ -89,8 +89,7 @@ message ProjectInfo {
   uint64 key = 1;
 
   // id is the unique identifier of the project either auto-generated from the
-  // credit class id and the project sequence number, or from a custom project
-  // id provided upon creation.
+  // credit class id and project sequence number or provided upon creation.
   string id = 2;
 
   // admin is the admin of the project.
@@ -128,7 +127,7 @@ message BatchInfo {
   bytes issuer = 2;
 
   // project_key is the table row identifier of the credit class used internally
-  // for efficient lookups. This links a project to a credit class.
+  // for efficient lookups. This links a credit batch to a project.
   uint64 project_key = 3;
 
   // batch_denom is the unique identifier of the credit batch formed from the
@@ -206,7 +205,7 @@ message BatchSequence {
   uint64 next_sequence = 2;
 }
 
-// BatchBalance stores each users credit balance
+// BatchBalance stores each accounts credit balance.
 message BatchBalance {
   option (cosmos.orm.v1alpha1.table) = {
     id : 9,
@@ -218,20 +217,20 @@ message BatchBalance {
   // for efficient lookups. This links a batch balance to a credit batch.
   uint64 batch_key = 1;
 
-  // address is the address of the credit holder
+  // address is the address of the credit holder.
   bytes address = 2;
 
-  // tradable is the tradable amount of credits
+  // tradable is the tradable amount of credits.
   string tradable = 3;
 
-  // retired is the retired amount of credits
+  // retired is the retired amount of credits.
   string retired = 4;
 
   // escrowed is the amount of credits locked up in escrow for the marketplace.
   string escrowed = 5;
 }
 
-// BatchSupply tracks the supply of a credit batch
+// BatchSupply stores the supply of credits for a credit batch.
 message BatchSupply {
   option (cosmos.orm.v1alpha1.table) = {
     id : 10,

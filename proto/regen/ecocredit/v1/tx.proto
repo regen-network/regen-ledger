@@ -95,6 +95,7 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
+
   // class_id is the unique identifier of the credit class.
   string class_id = 1;
 }
@@ -107,7 +108,7 @@ message MsgCreateProject {
   string issuer = 1;
 
   // class_id is the unique identifier of the credit class within which the
-  // project is created.
+  // project will be created.
   string class_id = 2;
 
   // metadata is any arbitrary metadata attached to the project.
@@ -131,6 +132,7 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
+
   // project_id is the unique identifier of the newly created project.
   string project_id = 1;
 }
@@ -140,8 +142,8 @@ message MsgCreateBatch {
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
-  // project_id is the unique identifier of the project within which the batch
-  // is created.
+  // project_id is the unique identifier of the project within which the credit
+  // batch will be created.
   string project_id = 2;
 
   // issuance are the credits issued in the batch.
@@ -175,6 +177,7 @@ message MsgCreateBatch {
 // BatchIssuance represents the issuance of some credits in a batch to a
 // single recipient.
 message BatchIssuance {
+
   // recipient is the account of the recipient.
   string recipient = 1;
 
@@ -198,6 +201,7 @@ message BatchIssuance {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
+
   // batch_denom is the unique identifier of the newly created batch.
   string batch_denom = 1;
 }
@@ -315,6 +319,7 @@ message MsgRetireResponse {}
 
 // MsgCancel is the Msg/Cancel request type.
 message MsgCancel {
+
   // holder is the credit holder address.
   string holder = 1;
 
@@ -339,6 +344,7 @@ message MsgCancelResponse {}
 
 // MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
 message MsgUpdateClassAdmin {
+
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 

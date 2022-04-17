@@ -170,7 +170,7 @@ type MsgCreateProject struct {
 	// issuer issue all batches for a project.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// class_id is the unique identifier of the credit class within which the
-	// project is created.
+	// project will be created.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -307,8 +307,8 @@ func (m *MsgCreateProjectResponse) GetProjectId() string {
 type MsgCreateBatch struct {
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// project_id is the unique identifier of the project within which the batch
-	// is created.
+	// project_id is the unique identifier of the project within which the credit
+	// batch will be created.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// issuance are the credits issued in the batch.
 	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
