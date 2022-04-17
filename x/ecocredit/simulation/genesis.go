@@ -386,17 +386,6 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	// itr, err := ss.ProjectInfoTable().List(ctx, api.ProjectInfoPrimaryKey{})
-	// if err != nil {
-	// 	return err
-	// }
-	// defer itr.Close()
-	// for itr.Next() {
-	// 	val, _ := itr.Value()
-	// 	fmt.Println("+++++++++++++++++++=")
-	// 	fmt.Println(val)
-	// 	fmt.Println("+++++++++++++++++++=")
-	// }
 	// batch sequence
 	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
 		ProjectId:   "Project1",

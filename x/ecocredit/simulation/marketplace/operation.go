@@ -218,7 +218,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}
 
-			exp := simtypes.RandTimestamp(r)
+			exp := ctx.BlockTime().AddDate(1, 0, 0)
 			d, err := math.NewNonNegativeDecFromString(bal.Balance.Tradable)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
