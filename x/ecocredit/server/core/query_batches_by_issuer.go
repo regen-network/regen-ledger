@@ -3,14 +3,14 @@ package core
 import (
 	"context"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // BatchesByIssuer queries all batches issued from the given issuer address
@@ -25,12 +25,12 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchInfoTable().List(ctx, ecocreditv1.BatchInfoIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfoEntry, 0, 8)
+	batches := make([]*core.BatchDetails, 0, 8)
 
 	for it.Next() {
 		batch, err := it.Value()
@@ -43,7 +43,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 			return nil, err
 		}
 
-		entry := core.BatchInfoEntry{
+		info := core.BatchDetails{
 			Issuer:       req.Issuer,
 			ProjectId:    project.Name,
 			BatchDenom:   batch.BatchDenom,
@@ -54,7 +54,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 			Open:         batch.Open,
 		}
 
-		batches = append(batches, &entry)
+		batches = append(batches, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())

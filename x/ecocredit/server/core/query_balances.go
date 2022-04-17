@@ -3,12 +3,12 @@ package core
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*core.QueryBalancesResponse, error) {
@@ -27,7 +27,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	balances := make([]*core.BatchBalanceEntry, 0, 8) // pre-allocate some cap space
+	balances := make([]*core.BatchBalanceDetails, 0, 8) // pre-allocate some cap space
 	for it.Next() {
 		balance, err := it.Value()
 		if err != nil {
@@ -36,7 +36,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 
 		batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchId)
 
-		entry := core.BatchBalanceEntry{
+		info := core.BatchBalanceDetails{
 			Address:    addr.String(),
 			BatchDenom: batch.BatchDenom,
 			Tradable:   balance.Tradable,
@@ -44,7 +44,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 			Escrowed:   balance.Escrowed,
 		}
 
-		balances = append(balances, &entry)
+		balances = append(balances, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())

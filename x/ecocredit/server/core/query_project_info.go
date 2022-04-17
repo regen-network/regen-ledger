@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -21,7 +22,7 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 		return nil, err
 	}
 
-	entry := core.ProjectInfoEntry{
+	info := core.ProjectDetails{
 		Id:              project.Name,
 		Admin:           admin.String(),
 		ClassId:         class.Name,
@@ -29,5 +30,5 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 		Metadata:        project.Metadata,
 	}
 
-	return &core.QueryProjectInfoResponse{Project: &entry}, nil
+	return &core.QueryProjectInfoResponse{Project: &info}, nil
 }

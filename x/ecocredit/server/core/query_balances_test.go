@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -54,13 +54,13 @@ func TestQuery_Balances(t *testing.T) {
 	assert.Equal(t, 0, len(res.Balances))
 }
 
-func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceEntry, balance *api.BatchBalance) {
+func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceDetails, balance *api.BatchBalance) {
 	addr := sdk.AccAddress(balance.Address)
 
 	batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchId)
 	assert.NilError(t, err)
 
-	entry := core.BatchBalanceEntry{
+	info := core.BatchBalanceDetails{
 		Address:    addr.String(),
 		BatchDenom: batch.BatchDenom,
 		Tradable:   balance.Tradable,
@@ -68,5 +68,5 @@ func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *c
 		Escrowed:   balance.Escrowed,
 	}
 
-	assert.DeepEqual(t, entry, *received)
+	assert.DeepEqual(t, info, *received)
 }

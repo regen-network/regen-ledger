@@ -23,23 +23,23 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		return nil, err
 	}
 
-	classes := make([]*core.ClassInfoEntry, 0)
+	classes := make([]*core.ClassDetails, 0)
 	for it.Next() {
-		info, err := it.Value()
+		class, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		admin := sdk.AccAddress(info.Admin)
+		admin := sdk.AccAddress(class.Admin)
 
-		entry := core.ClassInfoEntry{
-			Id:               info.Name,
+		info := core.ClassDetails{
+			Id:               class.Name,
 			Admin:            admin.String(),
-			Metadata:         info.Metadata,
-			CreditTypeAbbrev: info.CreditType,
+			Metadata:         class.Metadata,
+			CreditTypeAbbrev: class.CreditType,
 		}
 
-		classes = append(classes, &entry)
+		classes = append(classes, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())

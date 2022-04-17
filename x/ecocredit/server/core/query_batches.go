@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -18,16 +18,18 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 	if err != nil {
 		return nil, err
 	}
+
 	project, err := k.stateStore.ProjectInfoTable().GetByName(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
+
 	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfoEntry, 0)
+	batches := make([]*core.BatchDetails, 0)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
@@ -36,7 +38,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 
 		issuer := sdk.AccAddress(batch.Issuer)
 
-		entry := core.BatchInfoEntry{
+		info := core.BatchDetails{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Name,
 			BatchDenom:   batch.BatchDenom,
@@ -47,12 +49,14 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 			Open:         batch.Open,
 		}
 
-		batches = append(batches, &entry)
+		batches = append(batches, &info)
 	}
+
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
+
 	return &core.QueryBatchesResponse{
 		Batches:    batches,
 		Pagination: pr,

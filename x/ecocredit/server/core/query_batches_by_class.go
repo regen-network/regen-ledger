@@ -5,9 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -30,7 +30,7 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfoEntry, 0, 10)
+	batches := make([]*core.BatchDetails, 0, 10)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
@@ -44,7 +44,7 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 			return nil, err
 		}
 
-		entry := core.BatchInfoEntry{
+		info := core.BatchDetails{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Name,
 			BatchDenom:   batch.BatchDenom,
@@ -55,7 +55,7 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 			Open:         batch.Open,
 		}
 
-		batches = append(batches, &entry)
+		batches = append(batches, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())

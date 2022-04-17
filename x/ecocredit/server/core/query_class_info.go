@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -16,12 +17,12 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 
 	admin := sdk.AccAddress(class.Admin)
 
-	entry := core.ClassInfoEntry{
+	info := core.ClassDetails{
 		Id:               class.Name,
 		Admin:            admin.String(),
 		Metadata:         class.Metadata,
 		CreditTypeAbbrev: class.CreditType,
 	}
 
-	return &core.QueryClassInfoResponse{Class: &entry}, nil
+	return &core.QueryClassInfoResponse{Class: &info}, nil
 }

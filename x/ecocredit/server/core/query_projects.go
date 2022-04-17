@@ -17,44 +17,49 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 	if err != nil {
 		return nil, err
 	}
+
 	cInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
+
 	it, err := k.stateStore.ProjectInfoTable().List(ctx, api.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
-	projectInfos := make([]*core.ProjectInfoEntry, 0)
+
+	projects := make([]*core.ProjectDetails, 0)
 	for it.Next() {
-		info, err := it.Value()
+		project, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		admin := sdk.AccAddress(info.Admin)
+		admin := sdk.AccAddress(project.Admin)
 
-		class, err := k.stateStore.ClassInfoTable().Get(ctx, info.ClassId)
+		class, err := k.stateStore.ClassInfoTable().Get(ctx, project.ClassId)
 		if err != nil {
 			return nil, err
 		}
 
-		project := core.ProjectInfoEntry{
-			Id:              info.Name,
+		info := core.ProjectDetails{
+			Id:              project.Name,
 			Admin:           admin.String(),
 			ClassId:         class.Name,
-			ProjectLocation: info.ProjectLocation,
-			Metadata:        info.Metadata,
+			ProjectLocation: project.ProjectLocation,
+			Metadata:        project.Metadata,
 		}
 
-		projectInfos = append(projectInfos, &project)
+		projects = append(projects, &info)
 	}
+
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
+
 	return &core.QueryProjectsResponse{
-		Projects:   projectInfos,
+		Projects:   projects,
 		Pagination: pr,
 	}, nil
 }

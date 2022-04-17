@@ -4,9 +4,10 @@ import (
 	"strings"
 	"testing"
 
+	"gotest.tools/v3/assert"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"gotest.tools/v3/assert"
 )
 
 func TestQuery_BatchesByClass(t *testing.T) {

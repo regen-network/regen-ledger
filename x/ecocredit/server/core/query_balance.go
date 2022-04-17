@@ -16,6 +16,7 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 	if err != nil {
 		return nil, err
 	}
+
 	addr, err := sdk.AccAddressFromBech32(req.Account)
 	if err != nil {
 		return nil, err
@@ -25,7 +26,7 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			return &core.QueryBalanceResponse{
-				Balance: &core.BatchBalanceEntry{
+				Balance: &core.BatchBalanceDetails{
 					Address:    addr.String(),
 					BatchDenom: batch.BatchDenom,
 					Tradable:   "0",
@@ -37,7 +38,7 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 		return nil, err
 	}
 
-	entry := core.BatchBalanceEntry{
+	info := core.BatchBalanceDetails{
 		Address:    addr.String(),
 		BatchDenom: batch.BatchDenom,
 		Tradable:   balance.Tradable,
@@ -45,5 +46,5 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 		Escrowed:   balance.Escrowed,
 	}
 
-	return &core.QueryBalanceResponse{Balance: &entry}, nil
+	return &core.QueryBalanceResponse{Balance: &info}, nil
 }

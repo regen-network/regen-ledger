@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -27,7 +28,7 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		return nil, err
 	}
 
-	entry := core.BatchInfoEntry{
+	info := core.BatchDetails{
 		Issuer:       issuer.String(),
 		ProjectId:    project.Name,
 		BatchDenom:   batch.BatchDenom,
@@ -38,5 +39,5 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		Open:         batch.Open,
 	}
 
-	return &core.QueryBatchInfoResponse{Batch: &entry}, nil
+	return &core.QueryBatchInfoResponse{Batch: &info}, nil
 }
