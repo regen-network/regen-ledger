@@ -213,7 +213,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	pID1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
 			Key:             cID1,
-			Id:              "Project1",
+			Id:              "P01",
 			Admin:           accs[0].Address.Bytes(),
 			ProjectLocation: "AQ",
 			Metadata:        metadata,
@@ -226,7 +226,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	pID2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
 			Key:             cID2,
-			Id:              "Project2",
+			Id:              "P02",
 			Admin:           accs[1].Address.Bytes(),
 			ProjectLocation: "AQ",
 			Metadata:        metadata,
@@ -239,7 +239,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	// create few batches
 	startDate := simState.GenTimestamp
 	endDate := simState.GenTimestamp.AddDate(0, 1, 0)
-	denom, err := ecocredit.FormatDenom("C001", 1, &startDate, &endDate)
+	denom, err := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -259,7 +259,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C002", 2, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C02", 2, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C003", 3, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C03", 3, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -301,8 +301,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// batch balances
 	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		Address:  accs[0].Address,
 		BatchKey: bID1,
+		Address:  accs[0].Address,
 		Tradable: "100",
 		Retired:  "10",
 	}); err != nil {
@@ -310,8 +310,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		Address:  accs[1].Address,
 		BatchKey: bID2,
+		Address:  accs[1].Address,
 		Tradable: "100",
 		Retired:  "10",
 	}); err != nil {
@@ -319,8 +319,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		Address:  accs[2].Address,
 		BatchKey: bID3,
+		Address:  accs[2].Address,
 		Tradable: "100",
 		Retired:  "10",
 	}); err != nil {

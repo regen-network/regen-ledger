@@ -19,9 +19,8 @@ import (
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	projectID := req.ProjectId
 
-	projectInfo, err := k.stateStore.ProjectInfoTable().GetById(ctx, projectID)
+	projectInfo, err := k.stateStore.ProjectInfoTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, err
 	}
@@ -102,8 +101,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			}
 		}
 		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-			Address:  recipient,
 			BatchKey: key,
+			Address:  recipient,
 			Tradable: tradable.String(),
 			Retired:  retired.String(),
 		}); err != nil {

@@ -6654,9 +6654,9 @@ type CreditType struct {
 	// abbreviation is a 1-3 character uppercase abbreviation of the CreditType
 	// name, used in batch denominations within the CreditType. It must be unique.
 	Abbreviation string `protobuf:"bytes,1,opt,name=abbreviation,proto3" json:"abbreviation,omitempty"`
-	// name is the name of the credit type (e.g. carbon, biodiversity, etc).
+	// name is the name of the credit type (e.g. carbon, biodiversity).
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	// unit is the measurement unit of the credit type (e.g. kg, ton, etc).
+	// unit is the measurement unit of the credit type (e.g. kg, ton).
 	Unit string `protobuf:"bytes,3,opt,name=unit,proto3" json:"unit,omitempty"`
 	// precision is the decimal precision of the credit type.
 	Precision uint32 `protobuf:"varint,4,opt,name=precision,proto3" json:"precision,omitempty"`
@@ -7047,7 +7047,7 @@ type ClassSequence struct {
 	// sequence to a credit type.
 	CreditTypeAbbrev string `protobuf:"bytes,1,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// next_sequence is the next sequence number for a credit class within the
-	// credit type.
+	// credit type. The sequence number is used to generate a class id.
 	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
@@ -7096,7 +7096,7 @@ type ProjectSequence struct {
 	// for efficient lookups. This links a project sequence to a credit class.
 	ClassKey uint64 `protobuf:"varint,1,opt,name=class_key,json=classKey,proto3" json:"class_key,omitempty"`
 	// next_sequence is the next sequence number for a project within the credit
-	// class.
+	// class. The sequence number is used to generate a project id.
 	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 
@@ -7145,7 +7145,7 @@ type BatchSequence struct {
 	// efficient lookups. This links a batch sequence to a project.
 	ProjectKey uint64 `protobuf:"varint,1,opt,name=project_key,json=projectKey,proto3" json:"project_key,omitempty"`
 	// next_sequence is the next sequence number for a credit batch within the
-	// project.
+	// project. The sequence number is used to generate a batch denom.
 	NextSequence uint64 `protobuf:"varint,2,opt,name=next_sequence,json=nextSequence,proto3" json:"next_sequence,omitempty"`
 }
 

@@ -139,6 +139,7 @@ message MsgCreateProjectResponse {
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
 message MsgCreateBatch {
+
   // issuer is the address of the batch issuer.
   string issuer = 1;
 

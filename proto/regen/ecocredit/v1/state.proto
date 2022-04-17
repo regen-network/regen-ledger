@@ -20,10 +20,10 @@ message CreditType {
   // name, used in batch denominations within the CreditType. It must be unique.
   string abbreviation = 1;
 
-  // name is the name of the credit type (e.g. carbon, biodiversity, etc).
+  // name is the name of the credit type (e.g. carbon, biodiversity).
   string name = 2;
 
-  // unit is the measurement unit of the credit type (e.g. kg, ton, etc).
+  // unit is the measurement unit of the credit type (e.g. kg, ton).
   string unit = 3;
 
   // precision is the decimal precision of the credit type.
@@ -167,7 +167,7 @@ message ClassSequence {
   string credit_type_abbrev = 1;
 
   // next_sequence is the next sequence number for a credit class within the
-  // credit type.
+  // credit type. The sequence number is used to generate a class id.
   uint64 next_sequence = 2;
 }
 
@@ -184,7 +184,7 @@ message ProjectSequence {
   uint64 class_key = 1;
 
   // next_sequence is the next sequence number for a project within the credit
-  // class.
+  // class. The sequence number is used to generate a project id.
   uint64 next_sequence = 2;
 }
 
@@ -201,7 +201,7 @@ message BatchSequence {
   uint64 project_key = 1;
 
   // next_sequence is the next sequence number for a credit batch within the
-  // project.
+  // project. The sequence number is used to generate a batch denom.
   uint64 next_sequence = 2;
 }
 

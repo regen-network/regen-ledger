@@ -298,8 +298,8 @@ func (s takeSuite) getUserBalance(batchDenom string) *ecoApi.BatchBalance {
 	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, id)
 	if ormerrors.IsNotFound(err) {
 		bal = &ecoApi.BatchBalance{
-			Address:  s.addr,
 			BatchKey: id,
+			Address:  s.addr,
 			Tradable: "0",
 			Retired:  "0",
 			Escrowed: "0",

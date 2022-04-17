@@ -69,8 +69,8 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &api.BatchBalance{
-				Address:  to,
 				BatchKey: batch.Key,
+				Address:  to,
 				Tradable: "0",
 				Retired:  "0",
 			}
@@ -120,8 +120,8 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	// update the "to" balance
 	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		Address:  to,
 		BatchKey: batch.Key,
+		Address:  to,
 		Tradable: toTradableBalance.String(),
 		Retired:  toRetiredBalance.String(),
 	}); err != nil {
@@ -130,8 +130,8 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 
 	// update the "from" balance
 	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-		Address:  from,
 		BatchKey: batch.Key,
+		Address:  from,
 		Tradable: fromTradableBalance.String(),
 		Retired:  fromRetiredBalance.String(),
 	}); err != nil {

@@ -30,8 +30,8 @@ func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
-				Address:  addr,
 				BatchKey: batchKey,
+				Address:  addr,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",
@@ -58,8 +58,8 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
-				Address:  addr,
 				BatchKey: batchKey,
+				Address:  addr,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",

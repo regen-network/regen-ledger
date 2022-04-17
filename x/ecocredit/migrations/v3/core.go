@@ -47,8 +47,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	defer classItr.Close()
 
-	classKeyToClassIdMap := make(map[uint64]string) // map of a class key to a class id
-	classIdToClassKeyMap := make(map[string]uint64) // map of a class id to a class key
+	classKeyToClassId := make(map[uint64]string) // map of a class key to a class id
+	classIdToClassKey := make(map[string]uint64) // map of a class id to a class key
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
@@ -73,8 +73,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		classKeyToClassIdMap[classKey] = classInfo.ClassId
-		classIdToClassKeyMap[classInfo.ClassId] = classKey
+		classKeyToClassId[classKey] = classInfo.ClassId
+		classIdToClassKey[classInfo.ClassId] = classKey
 
 		// migrate class issuers to ORM v1
 		for _, issuer := range classInfo.Issuers {
@@ -162,7 +162,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 
-			if pInfo.ClassKey == classIdToClassKeyMap[batchInfo.ClassId] && pInfo.ProjectLocation == batchInfo.ProjectLocation {
+			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.ProjectLocation == batchInfo.ProjectLocation {
 				projectExists = true
 				projectKey = pInfo.Key
 				break
@@ -172,7 +172,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		pItr.Close()
 
 		if !projectExists {
-			classKey := classIdToClassKeyMap[batchInfo.ClassId]
+			classKey := classIdToClassKey[batchInfo.ClassId]
 			var projectSeq uint64 = 1
 			if val, ok := classKeyToProjectSeq[classKey]; ok {
 				classKeyToProjectSeq[classKey] = val + 1
