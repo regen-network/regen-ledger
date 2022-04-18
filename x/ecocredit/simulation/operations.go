@@ -307,12 +307,22 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
+		result, err := qryClient.ClassIssuers(ctx, &core.QueryClassIssuersRequest{ClassId: class.Name})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, err.Error()), nil, err
+		}
+
+		classIssuers := result.Issuers
+		if len(classIssuers) == 0 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "no issuers"), nil, nil
+		}
+
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCreateBatch, class.Name)
 		if project == nil {
 			return op, nil, err
 		}
 
-		if sdk.AccAddress(project.Admin).String() != issuer.Address.String() {
+		if !utils.Contains(classIssuers, issuer.Address.String()) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "don't have permission to create credit batch"), nil, nil
 		}
 
