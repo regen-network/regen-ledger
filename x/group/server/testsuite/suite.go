@@ -20,7 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
@@ -79,7 +79,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
 
-	ecocreditParams := ecocredit.DefaultParams()
+	ecocreditParams := core.DefaultParams()
 	ecocreditParams.CreditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))) // overwriting the fee to 0stake
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
@@ -1880,20 +1880,6 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultSuccess,
 			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
-		},
-		"proposal with ADR 033 executed when accepted": {
-			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{&ecocredit.MsgCreateClass{
-					Admin:          s.groupAccountAddr.String(),
-					Issuers:        []string{s.groupAccountAddr.String()},
-					CreditTypeName: "carbon",
-				},
-				}
-				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
-			},
-			expProposalStatus: group.ProposalStatusClosed,
-			expProposalResult: group.ProposalResultAccepted,
-			expExecutorResult: group.ProposalExecutorResultSuccess,
 		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {

@@ -1,9 +1,9 @@
 package core
 
 import (
+	"strings"
 	"testing"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -88,7 +88,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          issuer,
 				ClassId:         "A01",
-				Metadata:        simtypes.RandStringOfLength(r, 288),
+				Metadata:        strings.Repeat("x", 288),
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "AB",
 			},
