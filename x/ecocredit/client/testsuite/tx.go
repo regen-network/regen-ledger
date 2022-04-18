@@ -49,10 +49,10 @@ const (
 var validMetadataBytes = []byte{0x1}
 
 func RunCLITests(t *testing.T, cfg network.Config) {
-	// TODO: enable integrations test after ORM migration
+	// TODO: uncomment after CLI v1 integration https://github.com/regen-network/regen-ledger/issues/876
 	// suite.Run(t, NewIntegrationTestSuite(cfg))
 
-	// // setup another cfg for testing ecocredit enabled class creators list.
+	// setup another cfg for testing ecocredit enabled class creators list.
 	// genesisState := ecocredit.DefaultGenesisState()
 	// genesisState.Params.AllowlistEnabled = true
 	// bz, err := cfg.Codec.MarshalJSON(genesisState)
