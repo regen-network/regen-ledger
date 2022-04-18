@@ -35,10 +35,28 @@ service Msg {
   rpc MintBatchCredits(MsgMintBatchCredits)
       returns (MsgMintBatchCreditsResponse);
 
-  // MsgSealBatch sets the `batch.open` attribute to false. Sealed batch
+  // SealBatch sets the `batch.open` attribute to false. Sealed batch
   // can't issue more credits. Once batch is sealed it can't be toggled any
   // more. Only batch creator can seal a batch.
   rpc SealBatch(MsgSealBatch) returns (MsgSealBatchResponse);
+
+  // CreatePendingBatch creates a pending batch (potentially with an issuance of credits)
+  // for an issuer to approve within a specified amount of time.
+  rpc CreatePendingBatch(MsgCreatePendingBatch) returns (MsgCreatePendingBatchResponse);
+
+  // MintPendingBatchCredits creates a pending issuance of credits against a pre-existing
+  // batch for an issuer to approve within a specified amount of time.
+  rpc MintPendingBatchCredits(MsgMintPendingBatchCredits) returns (MsgMintPendingBatchCreditsResponse);
+
+  // ApprovePendingIssuances approves a pending set of credits against a pre-existing batch
+  // delivering the credit issuances to the users specified in the initial MintPendingBatchCredits RPC
+  // call. Only the designated issuer for a given set of pending batch credits can approve them.
+  rpc ApprovePendingIssuances(MsgApprovePendingIssuances) returns (MsgApprovePendingIssuancesResponse);
+
+  // ApprovePendingBatches approves a pending batch of credits, delivering the credit issuances
+  // to the users specified in the initial CreatePendingBatch RPC call. Only the designated
+  // issuer for a given set of pending batch credits can approve them.
+  rpc ApprovePendingBatches(MsgApprovePendingBatches) returns (MsgApprovePendingBatchesResponse);
 
   // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
@@ -92,6 +110,13 @@ message MsgCreateClass {
   // acceptable fees for creating a credit class can be found in the governance
   // parameters for the ecocredit module.
   cosmos.base.v1beta1.Coin fee = 5;
+
+  // allow_pending_issuances enables permissionless creation of pending
+  // batches & batch issuances. For use in credit classes that have
+  // bridged assets, and also credit classes that want to allow for
+  // users to propose credit issaunces for a specific project (e.g.
+  // from the project developer).
+  boolean allow_pending_issuances = 6;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
@@ -223,7 +248,10 @@ message MsgMintBatchCredits {
   string note = 5;
 }
 
-// MsgSealBatch request type for MsgSealBatch RPC.
+// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
+message MsgMintBatchCreditsResponse {}
+
+// MsgSealBatch request type for SealBatch RPC.
 message MsgSealBatch {
   // Issuer must equal to the batch.issuer address.
   // Signer of the msg.
@@ -233,11 +261,134 @@ message MsgSealBatch {
   string batch_denom = 2;
 }
 
-// MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
-message MsgMintBatchCreditsResponse {}
-
 // MsgSealBatchResponse is the Msg/SealBatch response type.
 message MsgSealBatchResponse {}
+
+// MsgCreatePendingBatch is the Msg/CreatePendingBatch request type.
+message MsgCreatePendingBatch {
+
+  // issuer is the address of the credit class issuer who is being requested
+  // to approve the batch issuance.
+  string issuer = 1;
+
+  // batch_info is the batch data provided by the sender (the user
+  // proposing submitting the pending batch request).
+  PendingBatchInfo batch_info = 2;
+
+  // issuance are the credits proposed by the user to be issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 4;
+
+  // reference note for accounting, will be passed to an event
+  string note = 5;
+
+  message PendingBatchInfo {
+
+    // project is the project_id of the project this batch belongs to, or a
+    // new set of ProjectInfo to be used for the new project, if the project
+    // does not exist yet
+    oneof project {
+      string project_id = 1;
+      PendingProjectInfo project_info = 2;
+    }
+
+    // metadata is any arbitrary metadata attached to the credit batch.
+    string metadata = 3;
+
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified.
+    google.protobuf.Timestamp start_date = 4 [(gogoproto.stdtime) = true];
+
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified.
+    google.protobuf.Timestamp end_date = 5 [(gogoproto.stdtime) = true];
+
+    // If open is true we will enable future minting.
+    // Otherwise we will seal the batch and disable the future minting.
+    bool open = 6;
+  }
+
+  message PendingProjectInfo {
+
+    // class_id is the unique ID of the class within which the project is created.
+    string class_id = 1;
+
+    // metadata is any arbitrary metadata attached to the project.
+    string metadata = 2;
+
+    // project_location is the location of the project backing the credits in this
+    // batch. It is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters. country-code is required, while sub-national-code
+    // and postal-code can be added for increasing precision.
+    string project_location = 3;
+
+    // project_id is an optional user-specified project ID which can be used
+    // instead of an auto-generated ID. If project_id is provided, it must be
+    // unique within the credit class and match the regex [A-Za-z0-9]{2,16}
+    // or else the operation will fail. If project_id is omitted an ID will
+    // automatically be generated.
+    string project_id = 4;
+  }
+}
+
+// MsgCreatePendingBatchResponse is the Msg/CreatePendingBatch response type.
+message MsgCreatePendingBatchResponse {
+  // batch_denom is the unique denomination ID of the newly created batch.
+  string batch_denom = 1;
+}
+
+// MsgApprovePendingBatch is the Msg/ApprovePendingBatch request type.
+message MsgApprovePendingBatches {
+  repeated string batch_denom = 1;
+}
+
+// MsgApprovePendingBatchResponse is the Msg/ApproveBatchCredits response type.
+message MsgApprovePendingBatchesResponse {}
+
+// MsgMintPendingBatchCredits is the Msg/MintPendingBatchCredits request type.
+message MsgMintPendingBatchCredits {
+
+  // issuer is the address of the credit class issuer who is being requested
+  // to approve the batch issuance.
+  string issuer = 1;
+
+  // batch_denom identifies the batch that the credits should be issued to.
+  // The transaction will fail if the batch is not open
+  string batch_denom = 2;
+
+  // issuance are the credits proposed by the user to be issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from other chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 4;
+
+  // reference note for accounting, will be passed to an event
+  string note = 5;
+}
+
+// MsgMintPendingBatchCreditsResponse is the Msg/MintPendingBatchCredits response type.
+message MsgMintPendingBatchCreditsResponse {
+  uint64 pending_issuance_id = 1;
+}
+
+
+// MsgApproveBatchCredits is the Msg/ApproveBatchCredits request type.
+message MsgApprovePendingIssuances {
+  repeated uint64 pending_issuance_id = 1;
+}
+
+// MsgApprovePendingIssuancseResponse is the Msg/ApprovePendingIssuances response type.
+message MsgApprovePendingIssuancesResponse {}
 
 // MsgSend is the Msg/Send request type.
 message MsgSend {

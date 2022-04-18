@@ -43,7 +43,7 @@ message ClassInfo {
   // id is the unique ID of credit class.
   uint64 id = 1;
 
-  // abbrev is the unique string name for this credit class formed from its
+  // name is the unique string name for this credit class formed from its
   // credit type and an auto-generated integer.
   string name = 2;
 
