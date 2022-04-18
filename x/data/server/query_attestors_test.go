@@ -16,11 +16,12 @@ import (
 
 type queryAttestorsSuite struct {
 	*baseSuite
-	contentEntry  *data.ContentEntry
-	attestorEntry *data.AttestorEntry
-	request       *data.QueryAttestorsByIRIRequest
-	response      *data.QueryAttestorsByIRIResponse
-	err           error
+	contentEntry   *data.ContentEntry
+	byIriRequest   *data.QueryAttestorsByIRIRequest
+	byIriResponse  *data.QueryAttestorsByIRIResponse
+	byHashRequest  *data.QueryAttestorsByHashRequest
+	byHashResponse *data.QueryAttestorsByHashResponse
+	err            error
 }
 
 func TestQueryAttestors(t *testing.T) {
@@ -48,32 +49,42 @@ func (s *queryAttestorsSuite) TheContentEntry(a gocuke.DocString) {
 }
 
 func (s *queryAttestorsSuite) TheAttestorEntry(a gocuke.DocString) {
-	s.attestorEntry = &data.AttestorEntry{}
-	err := jsonpb.UnmarshalString(a.Content, s.attestorEntry)
+	attestorEntry := &data.AttestorEntry{}
+	err := jsonpb.UnmarshalString(a.Content, attestorEntry)
 	require.NoError(s.t, err)
 
 	id, err := s.server.getOrCreateDataId(s.ctx, s.contentEntry.Iri)
 	require.NoError(s.t, err)
 
-	attestor, err := sdk.AccAddressFromBech32(s.attestorEntry.Attestor)
+	attestor, err := sdk.AccAddressFromBech32(attestorEntry.Attestor)
 	require.NoError(s.t, err)
 
 	err = s.server.stateStore.DataAttestorTable().Insert(s.ctx, &api.DataAttestor{
 		Id:        id,
 		Attestor:  attestor,
-		Timestamp: types.GogoToProtobufTimestamp(s.attestorEntry.Timestamp),
+		Timestamp: types.GogoToProtobufTimestamp(attestorEntry.Timestamp),
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *queryAttestorsSuite) TheQueryByIriRequest(a gocuke.DocString) {
-	s.request = &data.QueryAttestorsByIRIRequest{}
-	err := jsonpb.UnmarshalString(a.Content, s.request)
+	s.byIriRequest = &data.QueryAttestorsByIRIRequest{}
+	err := jsonpb.UnmarshalString(a.Content, s.byIriRequest)
 	require.NoError(s.t, err)
 }
 
-func (s *queryAttestorsSuite) TheQueryIsExecuted() {
-	s.response, s.err = s.server.AttestorsByIRI(s.ctx, s.request)
+func (s *queryAttestorsSuite) TheQueryByHashRequest(a gocuke.DocString) {
+	s.byHashRequest = &data.QueryAttestorsByHashRequest{}
+	err := jsonpb.UnmarshalString(a.Content, s.byHashRequest)
+	require.NoError(s.t, err)
+}
+
+func (s *queryAttestorsSuite) TheQueryByIriIsExecuted() {
+	s.byIriResponse, s.err = s.server.AttestorsByIRI(s.ctx, s.byIriRequest)
+}
+
+func (s *queryAttestorsSuite) TheQueryByHashIsExecuted() {
+	s.byHashResponse, s.err = s.server.AttestorsByHash(s.ctx, s.byHashRequest)
 }
 
 func (s *queryAttestorsSuite) TheQueryByIriResponse(a gocuke.DocString) {
@@ -81,8 +92,21 @@ func (s *queryAttestorsSuite) TheQueryByIriResponse(a gocuke.DocString) {
 	err := jsonpb.UnmarshalString(a.Content, res)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, len(res.Attestors), len(s.response.Attestors))
-	require.Equal(s.t, res.Attestors, s.response.Attestors)
+	require.Equal(s.t, len(res.Attestors), len(s.byIriResponse.Attestors))
+	for i, attestor := range res.Attestors {
+		require.Equal(s.t, attestor, s.byIriResponse.Attestors[i])
+	}
+}
+
+func (s *queryAttestorsSuite) TheQueryByHashResponse(a gocuke.DocString) {
+	res := &data.QueryAttestorsByIRIResponse{}
+	err := jsonpb.UnmarshalString(a.Content, res)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, len(res.Attestors), len(s.byHashResponse.Attestors))
+	for i, attestor := range res.Attestors {
+		require.Equal(s.t, attestor, s.byHashResponse.Attestors[i])
+	}
 }
 
 func (s *queryAttestorsSuite) ExpectTheError(a string) {
