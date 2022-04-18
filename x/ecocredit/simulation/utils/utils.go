@@ -87,9 +87,9 @@ func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, ms
 	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no classes"), nil
+			return []*core.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no classes"), nil
 		}
-		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+		return []*core.ClassInfo{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
 	}
 
 	return res.Classes, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
@@ -97,7 +97,7 @@ func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, ms
 
 func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
 	classes, op, err := GetClasses(sdkCtx, r, qryClient, msgType)
-	if classes == nil {
+	if len(classes) == 0 {
 		return nil, op, err
 	}
 

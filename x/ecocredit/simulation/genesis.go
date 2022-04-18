@@ -219,6 +219,14 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
+	// class sequence
+	if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
+		CreditType:  "C",
+		NextClassId: cID2 + 1,
+	}); err != nil {
+		return err
+	}
+
 	// create class issuers
 	if err := ss.ClassIssuerTable().Save(ctx,
 		&api.ClassIssuer{ClassId: cID1, Issuer: accs[0].Address},
@@ -246,16 +254,43 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// create few projects
 	pID1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{ClassId: cID1, Name: "Project1", Admin: accs[0].Address.Bytes(), ProjectLocation: "AQ", Metadata: metadata},
+		&api.ProjectInfo{
+			ClassId:         cID1,
+			Name:            "Project1",
+			Admin:           accs[0].Address,
+			ProjectLocation: "AQ",
+			Metadata:        metadata,
+		},
 	)
 	if err != nil {
 		return err
 	}
 
 	pID2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{ClassId: cID2, Admin: accs[1].Address.Bytes(), ProjectLocation: "AQ", Metadata: metadata},
+		&api.ProjectInfo{
+			ClassId:         cID2,
+			Admin:           accs[1].Address,
+			ProjectLocation: "AQ",
+			Metadata:        metadata,
+			Name:            "C0201",
+		},
 	)
 	if err != nil {
+		return err
+	}
+
+	// project sequence
+	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+		ClassId:       cID1,
+		NextProjectId: pID1 + 1,
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+		ClassId:       cID2,
+		NextProjectId: pID2 + 1,
+	}); err != nil {
 		return err
 	}
 
@@ -278,32 +313,38 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C02", 1, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C01", 2, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
 
 	bID2, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer: accs[1].Address.Bytes(), ProjectId: pID1, BatchDenom: denom,
-			StartDate: timestamppb.New(startDate.UTC()), EndDate: timestamppb.New(endDate.UTC()),
-			Metadata: metadata, IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
+			Issuer:    accs[1].Address,
+			ProjectId: pID1, BatchDenom: denom,
+			StartDate:    timestamppb.New(startDate.UTC()),
+			EndDate:      timestamppb.New(endDate.UTC()),
+			Metadata:     metadata,
+			IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
 		},
 	)
 	if err != nil {
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C02", 2, &startDate, &endDate)
+	denom, err = ecocredit.FormatDenom("C02", 1, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
 
 	bID3, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer: accs[2].Address.Bytes(), ProjectId: pID2, BatchDenom: denom,
-			StartDate: timestamppb.New(startDate.UTC()), EndDate: timestamppb.New(endDate.UTC()),
-			Metadata: metadata, IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
+			Issuer:    accs[2].Address,
+			ProjectId: pID2, BatchDenom: denom,
+			StartDate:    timestamppb.New(startDate.UTC()),
+			EndDate:      timestamppb.New(endDate.UTC()),
+			Metadata:     metadata,
+			IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
 		},
 	)
 	if err != nil {
@@ -363,39 +404,16 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	// class sequence
-	if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
-		CreditType:  "C",
-		NextClassId: 3,
-	}); err != nil {
-		return err
-	}
-
-	// project sequence
-	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-		ClassId:       1,
-		NextProjectId: 2,
-	}); err != nil {
-		return err
-	}
-
-	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-		ClassId:       2,
-		NextProjectId: 2,
-	}); err != nil {
-		return err
-	}
-
 	// batch sequence
 	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
 		ProjectId:   "Project1",
-		NextBatchId: 2,
+		NextBatchId: 3,
 	}); err != nil {
 		return err
 	}
 
 	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
-		ProjectId:   "C0101",
+		ProjectId:   "C0201",
 		NextBatchId: 2,
 	}); err != nil {
 		return err

@@ -298,10 +298,9 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		issuer := accs[0]
+		issuer, _ := simtypes.RandomAcc(r, accs)
 
 		ctx := regentypes.Context{Context: sdkCtx}
-
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCreateBatch)
 		if class == nil {
 			return op, nil, err
