@@ -26,14 +26,14 @@ func TestQuery_Batches(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-001",
-		Metadata:   "",
+		Metadata:   "data",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		ProjectId:  1,
 		BatchDenom: "C01-20200101-20220101-002",
-		Metadata:   "",
+		Metadata:   "data",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
@@ -46,6 +46,7 @@ func TestQuery_Batches(t *testing.T) {
 	res, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Batches))
+	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].BatchDenom)
 	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].BatchDenom)
 
 	// paginated query

@@ -19,26 +19,31 @@ func TestQuery_BatchInfo(t *testing.T) {
 
 	startTime, err := types.ParseDate("", "2020-01-01")
 	assert.NilError(t, err)
-	endTime, err := types.ParseDate("", "2022-01-01")
+	endTime, err := types.ParseDate("", "2021-01-01")
+	assert.NilError(t, err)
+	issuanceTime, err := types.ParseDate("", "2022-01-01")
 	assert.NilError(t, err)
 
 	projectId := "P01"
+	issuer := s.addr
 	batchDenom := "C01-20200101-20220101-001"
 	metadata := "data"
 	startDate := timestamppb.New(startTime)
 	endDate := timestamppb.New(endTime)
+	issuanceDate := timestamppb.New(issuanceTime)
 
-	projectKey, err := s.stateStore.ProjectInfoTable().InsertReturningID(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
 		Name: projectId,
-	})
-	assert.NilError(t, err)
+	}))
 
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  projectKey,
-		BatchDenom: batchDenom,
-		Metadata:   metadata,
-		StartDate:  startDate,
-		EndDate:    endDate,
+		Issuer:       issuer,
+		ProjectId:    1,
+		BatchDenom:   batchDenom,
+		Metadata:     metadata,
+		StartDate:    startDate,
+		EndDate:      endDate,
+		IssuanceDate: issuanceDate,
 	}))
 
 	// valid query
@@ -46,8 +51,11 @@ func TestQuery_BatchInfo(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, projectId, res.Batch.ProjectId)
 	assert.Equal(t, batchDenom, res.Batch.BatchDenom)
-	assert.Equal(t, startDate.Seconds, res.Batch.StartDate.Seconds)
-	assert.Equal(t, endDate.Seconds, res.Batch.EndDate.Seconds)
+	assert.Equal(t, metadata, res.Batch.Metadata)
+	assert.Equal(t, issuer.String(), res.Batch.Issuer)
+	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(startDate), res.Batch.StartDate)
+	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(endDate), res.Batch.EndDate)
+	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(issuanceDate), res.Batch.IssuanceDate)
 
 	// invalid query
 	_, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: "A00-00000000-00000000-000"})

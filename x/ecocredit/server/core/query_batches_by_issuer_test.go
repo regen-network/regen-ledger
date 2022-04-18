@@ -3,6 +3,8 @@ package core
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -16,17 +18,54 @@ import (
 func TestQueryBatchesByIssuer(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noBatches := testdata.KeyTestPubAddr()
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{Name: "P01"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: s.addr, BatchDenom: "1"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: s.addr, BatchDenom: "2"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{ProjectId: 1, Issuer: otherAddr, BatchDenom: "3"}))
 
-	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: s.addr.String(), Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})
+	startTime, err := types.ParseDate("", "2020-01-01")
+	assert.NilError(t, err)
+	endTime, err := types.ParseDate("", "2021-01-01")
+	assert.NilError(t, err)
+	issuanceTime, err := types.ParseDate("", "2022-01-01")
+	assert.NilError(t, err)
+
+	batch1 := &api.BatchInfo{
+		Issuer:       s.addr,
+		ProjectId:    1,
+		BatchDenom:   "C01-20200101-20200102-001",
+		Metadata:     "data",
+		StartDate:    timestamppb.New(startTime),
+		EndDate:      timestamppb.New(endTime),
+		IssuanceDate: timestamppb.New(issuanceTime),
+	}
+
+	// insert project
+	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+		Name: "P01",
+	}))
+
+	// insert two batches with s.addr as the issuer
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, batch1))
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+		Issuer:     s.addr,
+		ProjectId:  1,
+		BatchDenom: "C01-20200101-20200102-002",
+	}))
+
+	// insert one batch without s.addr as the issuer
+	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+		Issuer:     otherAddr,
+		ProjectId:  1,
+		BatchDenom: "C01-20200101-20200102-003",
+	}))
+
+	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{
+		Issuer:     s.addr.String(),
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
-	assert.Equal(t, "1", res.Batches[0].BatchDenom)
+	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	res, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: noBatches.String()})

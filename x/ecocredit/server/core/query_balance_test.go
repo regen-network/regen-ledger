@@ -14,6 +14,7 @@ import (
 func TestQuery_Balance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
+
 	noBalanceAddr := genAddrs(1)[0]
 	batchDenom := "C01-20200101-20220101-001"
 	tradable := "10.54321"
@@ -21,11 +22,7 @@ func TestQuery_Balance(t *testing.T) {
 
 	// make a batch and give s.addr some balance
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
 		BatchDenom: batchDenom,
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
 		Address:  s.addr,
@@ -40,6 +37,8 @@ func TestQuery_Balance(t *testing.T) {
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
+	assert.Equal(t, s.addr.String(), res.Balance.Address)
+	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
 	assert.Equal(t, tradable, res.Balance.Tradable)
 	assert.Equal(t, retired, res.Balance.Retired)
 
@@ -49,6 +48,8 @@ func TestQuery_Balance(t *testing.T) {
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
+	assert.Equal(t, noBalanceAddr.String(), res.Balance.Address)
+	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
 	assert.Equal(t, "0", res.Balance.Tradable)
 	assert.Equal(t, "0", res.Balance.Retired)
 
