@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -231,7 +232,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
-				Metadata:  string(make([]byte, 288)),
+				Metadata:  strings.Repeat("x", 288),
 			},
 			expErr: true,
 		},

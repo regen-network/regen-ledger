@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -87,7 +88,7 @@ func TestMsgCreateProject(t *testing.T) {
 			MsgCreateProject{
 				Issuer:          issuer,
 				ClassId:         "A01",
-				Metadata:        string(make([]byte, 288)),
+				Metadata:        strings.Repeat("x", 288),
 				ProjectLocation: "AB-CDE FG1 345",
 				ProjectId:       "AB",
 			},

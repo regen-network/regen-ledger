@@ -1,6 +1,7 @@
 package core
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
@@ -32,7 +33,7 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			expErr: true,
 		},
 		"invalid: metadata too large": {
-			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: string(make([]byte, 288))},
+			src:    MsgUpdateClassMetadata{Admin: a1, ClassId: "C01", Metadata: strings.Repeat("x", 288)},
 			expErr: true,
 		},
 	}
