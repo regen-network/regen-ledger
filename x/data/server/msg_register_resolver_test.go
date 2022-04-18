@@ -6,11 +6,11 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -24,7 +24,7 @@ type registerResolverSuite struct {
 }
 
 func TestRegisterResolver(t *testing.T) {
-	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/register_resolver.feature")
+	runner := gocuke.NewRunner(t, &registerResolverSuite{}).Path("./features/msg_register_resolver.feature")
 	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*registerResolverSuite).TheContentHash)
 	runner.Run()
 }

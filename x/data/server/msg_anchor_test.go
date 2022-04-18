@@ -5,11 +5,11 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -22,7 +22,7 @@ type anchorSuite struct {
 }
 
 func TestAnchor(t *testing.T) {
-	runner := gocuke.NewRunner(t, &anchorSuite{}).Path("./features/anchor.feature")
+	runner := gocuke.NewRunner(t, &anchorSuite{}).Path("./features/msg_anchor.feature")
 	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*anchorSuite).TheContentHash)
 	runner.Run()
 }

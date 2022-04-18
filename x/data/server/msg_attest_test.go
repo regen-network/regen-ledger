@@ -5,11 +5,11 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -22,7 +22,7 @@ type attestSuite struct {
 }
 
 func TestAttest(t *testing.T) {
-	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/attest.feature")
+	runner := gocuke.NewRunner(t, &attestSuite{}).Path("./features/msg_attest.feature")
 	runner.Step(`^the\s+content\s+hash\s+"((?:[^\"]|\")*)"`, (*attestSuite).TheContentHash)
 	runner.Run()
 }
