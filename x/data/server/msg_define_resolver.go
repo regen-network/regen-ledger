@@ -21,7 +21,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		Manager: manager,
 	})
 	if err != nil {
-		return nil, err
+		return nil, data.ErrResolverURLExists
 	}
 
 	return &data.MsgDefineResolverResponse{ResolverId: id}, nil

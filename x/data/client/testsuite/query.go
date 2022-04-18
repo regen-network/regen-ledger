@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				s.Require().Equal(tc.expIRI, res.Entry.Iri)
-				s.Require().NotNil(res.Entry.Hash)
+				s.Require().NotNil(res.Entry.ContentHash)
 				s.Require().NotNil(res.Entry.Timestamp)
 			}
 		})
@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 
 				for i, entry := range res.Entries {
 					s.Require().Equal(tc.expIRIs[i], entry.Iri)
-					s.Require().NotNil(entry.Hash)
+					s.Require().NotNil(entry.ContentHash)
 					s.Require().NotNil(entry.Timestamp)
 				}
 			}

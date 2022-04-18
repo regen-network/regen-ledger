@@ -120,8 +120,8 @@ func SimulateMsgAnchor(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 		}
 
 		msg := &data.MsgAnchor{
-			Sender: sender.Address.String(),
-			Hash:   contentHash,
+			Sender:      sender.Address.String(),
+			ContentHash: contentHash,
 		}
 
 		account := ak.GetAccount(sdkCtx, sender.Address)
@@ -171,8 +171,8 @@ func SimulateMsgAttest(ak data.AccountKeeper, bk data.BankKeeper) simtypes.Opera
 
 		digest := hash.Sum(nil)
 		msg := &data.MsgAttest{
-			Attestor: attestor.Address.String(),
-			Hashes:   []*data.ContentHash_Graph{getGraph(digest)},
+			Attestor:      attestor.Address.String(),
+			ContentHashes: []*data.ContentHash_Graph{getGraph(digest)},
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -241,8 +241,8 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
-			if strings.Contains(err.Error(), "unique key violation") {
-				return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unique key voilation"), nil, nil
+			if strings.Contains(err.Error(), "resolver URL already exists") {
+				return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "resolver URL already exists"), nil, nil
 			}
 			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
 		}
@@ -284,14 +284,14 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, "fee error"), nil, err
 		}
 
-		hash, err := getContentHash(r)
+		contentHash, err := getContentHash(r)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
 		}
 		msg := &data.MsgRegisterResolver{
-			Manager:    manager.String(),
-			ResolverId: res.Id,
-			Data:       []*data.ContentHash{hash},
+			Manager:       manager.String(),
+			ResolverId:    res.Id,
+			ContentHashes: []*data.ContentHash{contentHash},
 		}
 
 		account := ak.GetAccount(sdkCtx, manager)
