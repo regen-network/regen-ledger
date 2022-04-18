@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/jsonpb"
-	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
-	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/regen-network/gocuke"
+	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
