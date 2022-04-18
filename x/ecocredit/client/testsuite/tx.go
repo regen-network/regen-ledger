@@ -117,26 +117,6 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
-func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {
-	var issuersStr string
-	if len(issuers) == 1 {
-		issuersStr = issuers[0]
-	} else if len(issuers) > 1 {
-		issuersStr = strings.Join(
-			issuers,
-			",",
-		)
-	}
-	args := []string{
-		issuersStr,
-		ctAbbrev,
-		metadata,
-		fee,
-	}
-	args = append(args, flags...)
-	return args
-}
-
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -1372,6 +1352,7 @@ func formatTime(t *time.Time) string {
 	return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
 }
 
+// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
 func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
@@ -1394,7 +1375,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Issuer:    addr,
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
-			{Recipient: addr, TradableAmount: "999999999999999999"},
+			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementLocation: "US-OR"},
 		},
 		Metadata:  "meta",
 		StartDate: &start,
@@ -1405,4 +1386,24 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	})
 	s.Require().NoError(err)
 	return classId, projectId, batchDenom
+}
+
+func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {
+	var issuersStr string
+	if len(issuers) == 1 {
+		issuersStr = issuers[0]
+	} else if len(issuers) > 1 {
+		issuersStr = strings.Join(
+			issuers,
+			",",
+		)
+	}
+	args := []string{
+		issuersStr,
+		ctAbbrev,
+		metadata,
+		fee,
+	}
+	args = append(args, flags...)
+	return args
 }
