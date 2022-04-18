@@ -108,12 +108,13 @@ func QueryClassInfoCmd() *cobra.Command {
 func QueryClassIssuersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "class-issuers [class-id]",
-		Short: "List addresses of the issuers for a credit class",
+		Short: "Retrieve addresses of the issuers for a credit class",
 		Long: `Retrieve addresses of the issuers for a credit class
-
+Args:
+	class-id: credit class id
 Example:
-$ regen q class-issuers C01
-$ regen q class-issuers C01 --pagination.limit 10
+	$ regen q ecocredit class-issuers C01
+	$ regen q ecocredit class-issuers C01 --pagination.limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
