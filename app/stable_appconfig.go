@@ -24,7 +24,7 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
+	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -32,7 +32,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-			core.CreditTypeProposalHandler,
+			ecocreditcore.CreditTypeProposalHandler,
 		),
 	}
 }
