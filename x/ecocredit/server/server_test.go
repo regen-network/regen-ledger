@@ -26,20 +26,17 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
-// TODO: uncomment after clean up legacy code https://github.com/regen-network/regen-ledger/issues/995
 func TestServer(t *testing.T) {
 	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
 	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
 	suite.Run(t, s)
 }
 
-/*
 func TestGenesis(t *testing.T) {
 	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
 }
-*/
 
 func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper, *mocks.MockDistributionKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
