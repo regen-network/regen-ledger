@@ -1,6 +1,8 @@
 package data
 
 import (
+	"reflect"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -47,9 +49,17 @@ func (chg ContentHash_Graph) Validate() error {
 }
 
 func (da DigestAlgorithm) Validate(hash []byte) error {
+	if reflect.DeepEqual(hash, []byte(nil)) {
+		return sdkerrors.ErrInvalidRequest.Wrapf("hash cannot be empty")
+	}
+
+	if da == DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED {
+		return sdkerrors.ErrInvalidRequest.Wrapf("invalid %T %s", da, da)
+	}
+
 	nBits, ok := DigestAlgorithmLength[da]
 	if !ok {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid or unknown %T %s", da, da)
+		return sdkerrors.ErrInvalidRequest.Wrapf("unknown %T %s", da, da)
 	}
 
 	nBytes := nBits / 8

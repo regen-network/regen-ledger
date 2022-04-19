@@ -5,6 +5,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -14,7 +15,7 @@ import (
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
 	resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, msg.ResolverId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
 
 	manager, err := sdk.AccAddressFromBech32(msg.Manager)
