@@ -1,6 +1,5 @@
 package testsuite
 
-/*
 import (
 	"fmt"
 
@@ -157,7 +156,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 
 				var res core.QueryClassInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				tc.expectedClassInfo.Id = res.Info.Id // force the db id's to be equal as we cannot know this beforehand.
+				tc.expectedClassInfo.Key = res.Info.Key // force the db id's to be equal as we cannot know this beforehand.
 				s.Require().Equal(tc.expectedClassInfo, res.Info)
 			}
 		})
@@ -801,4 +800,3 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 	}
 
 }
-*/
