@@ -203,3 +203,29 @@ message EventClassMetadataUpdated {
   // new_metadata is the metadata after the update.
   string new_metadata = 3;
 }
+
+// EventProjectAdminUpdated is emitted when the project admin is changed.
+message EventProjectAdminUpdated {
+
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
+
+  // old_admin is the admin address before the update.
+  string old_admin = 2;
+
+  // new_admin is the admin address after the update.
+  string new_admin = 3;
+}
+
+// EventProjectMetadataUpdated is emitted when the project metadata is changed.
+message EventProjectMetadataUpdated {
+
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
+
+  // old_metadata is the metadata before the update.
+  string old_metadata = 2;
+
+  // new_metadata is the metadata after the update.
+  string new_metadata = 3;
+}
