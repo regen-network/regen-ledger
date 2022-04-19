@@ -26,7 +26,7 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: false,
 		},
@@ -38,7 +38,7 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
@@ -51,14 +51,14 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg without credits": {
 			src: MsgRetire{
-				Holder:   addr1,
-				Location: "AB-CDE FG1 345",
+				Holder:       addr1,
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
@@ -70,7 +70,7 @@ func TestMsgRetire(t *testing.T) {
 						Amount: "10",
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
@@ -82,7 +82,7 @@ func TestMsgRetire(t *testing.T) {
 						BatchDenom: batchDenom,
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
@@ -95,11 +95,11 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "abc",
 					},
 				},
-				Location: "AB-CDE FG1 345",
+				Jurisdiction: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
-		"invalid msg without location": {
+		"invalid msg without jurisdiction": {
 			src: MsgRetire{
 				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
@@ -111,7 +111,7 @@ func TestMsgRetire(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg with wrong location": {
+		"invalid msg with wrong jurisdiction": {
 			src: MsgRetire{
 				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
@@ -120,7 +120,7 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Location: "wrongLocation",
+				Jurisdiction: "wrongJurisdiction",
 			},
 			expErr: true,
 		},

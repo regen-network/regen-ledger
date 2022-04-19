@@ -25,17 +25,17 @@ func TestQuery_Projects(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              "P01",
-		ClassKey:        1,
-		ProjectLocation: "US-CA",
-		Metadata:        "",
+		Id:                  "P01",
+		ClassKey:            1,
+		ProjectJurisdiction: "US-CA",
+		Metadata:            "",
 	})
 	assert.NilError(t, err)
 	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              "P02",
-		ClassKey:        1,
-		ProjectLocation: "US-CA",
-		Metadata:        "",
+		Id:                  "P02",
+		ClassKey:            1,
+		ProjectJurisdiction: "US-CA",
+		Metadata:            "",
 	})
 	assert.NilError(t, err)
 
@@ -43,7 +43,7 @@ func TestQuery_Projects(t *testing.T) {
 	res, err := s.k.Projects(s.ctx, &core.QueryProjectsRequest{ClassId: "C01"})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Projects))
-	assert.Equal(t, "US-CA", res.Projects[0].ProjectLocation)
+	assert.Equal(t, "US-CA", res.Projects[0].ProjectJurisdiction)
 
 	// invalid query
 	_, err = s.k.Projects(s.ctx, &core.QueryProjectsRequest{ClassId: "F01"})

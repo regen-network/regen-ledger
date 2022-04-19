@@ -125,7 +125,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 			}
 
 			if !retiredAmount.IsZero() {
-				if err = ValidateLocation(iss.RetirementLocation); err != nil {
+				if err = ValidateJurisdiction(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -182,7 +182,7 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = ValidateLocation(credit.RetirementLocation); err != nil {
+			if err = ValidateJurisdiction(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -227,7 +227,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if err := ValidateLocation(m.Location); err != nil {
+	if err := ValidateJurisdiction(m.Location); err != nil {
 		return err
 	}
 
@@ -506,7 +506,7 @@ func (m *MsgBuy) ValidateBasic() error {
 		}
 
 		if order.RetirementLocation != "" {
-			if err := ValidateLocation(order.RetirementLocation); err != nil {
+			if err := ValidateJurisdiction(order.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -578,7 +578,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return ErrMaxLimit.Wrap("create project metadata")
 	}
 
-	if err := ValidateLocation(m.ProjectLocation); err != nil {
+	if err := ValidateJurisdiction(m.ProjectLocation); err != nil {
 		return err
 	}
 

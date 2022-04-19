@@ -16,11 +16,11 @@ func TestUpdateProjectMetadata_Valid(t *testing.T) {
 	s := setupBase(t)
 	projectId := "VERRA1"
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              projectId,
-		Admin:           s.addr,
-		ClassKey:        1,
-		ProjectLocation: "US-NY",
-		Metadata:        "hi",
+		Id:                  projectId,
+		Admin:               s.addr,
+		ClassKey:            1,
+		ProjectJurisdiction: "US-NY",
+		Metadata:            "hi",
 	}))
 	newMetadata := "hello world"
 
@@ -41,11 +41,11 @@ func TestUpdateProjectMetadata_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	projectId := "VERRA1"
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              projectId,
-		Admin:           s.addr,
-		ClassKey:        1,
-		ProjectLocation: "US-NY",
-		Metadata:        "hi",
+		Id:                  projectId,
+		Admin:               s.addr,
+		ClassKey:            1,
+		ProjectJurisdiction: "US-NY",
+		Metadata:            "hi",
 	}))
 	notAdmin := sdk.AccAddress("addr1")
 

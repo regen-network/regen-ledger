@@ -42,7 +42,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if err := ValidateLocation(m.Location); err != nil {
+	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return err
 	}
 
