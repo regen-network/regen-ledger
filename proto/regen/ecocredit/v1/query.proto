@@ -104,12 +104,14 @@ service Query {
 
 // QueryClassesRequest is the Query/Classes request type.
 message QueryClassesRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
+
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -129,6 +131,7 @@ message QueryClassesByAdminRequest {
 
 // QueryClassesByAdminResponse is the Query/ClassesByAdmin response type.
 message QueryClassesByAdminResponse {
+
   // classes are the fetched credit classes.
   repeated ClassInfo classes = 1;
 
@@ -139,7 +142,7 @@ message QueryClassesByAdminResponse {
 // QueryClassInfoRequest is the Query/ClassInfo request type.
 message QueryClassInfoRequest {
 
-  // class_id is the unique ID of credit class to query.
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 }
 
@@ -152,7 +155,8 @@ message QueryClassInfoResponse {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
 message QueryClassIssuersRequest {
-  // class_id is the unique ID of credit class to query.
+
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 
   // pagination defines an optional pagination for the request.
@@ -161,6 +165,7 @@ message QueryClassIssuersRequest {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers response type.
 message QueryClassIssuersResponse {
+
   // issuers is a list of issuers for the credit class
   repeated string issuers = 1;
 
@@ -171,7 +176,7 @@ message QueryClassIssuersResponse {
 // QueryProjectsRequest is the Query/Projects request type.
 message QueryProjectsRequest {
 
-  // class_id is the unique ID of credit class to query.
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 
   // pagination defines an optional pagination for the request.
@@ -180,6 +185,7 @@ message QueryProjectsRequest {
 
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
+
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
 
@@ -190,7 +196,7 @@ message QueryProjectsResponse {
 // QueryProjectInfoRequest is the Query/Project request type.
 message QueryProjectInfoRequest {
 
-  // project_id is the unique ID of the project to query.
+  // project_id is the unique identifier of the project to query.
   string project_id = 1;
 }
 
@@ -204,7 +210,7 @@ message QueryProjectInfoResponse {
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
 
-  // project_id is the unique ID of the project to query.
+  // project_id is the unique identifier of the project to query.
   string project_id = 1;
 
   // pagination defines an optional pagination for the request.
@@ -244,7 +250,7 @@ message QueryBatchesByIssuerResponse {
 // QueryBatchesByClassRequest is the Query/BatchesByClass request type.
 message QueryBatchesByClassRequest {
 
-  // class_id is the unique ID of the class to query.
+  // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 
   // pagination defines an optional pagination for the request.
@@ -264,7 +270,7 @@ message QueryBatchesByClassResponse {
 // QueryBatchInfoRequest is the Query/BatchInfo request type.
 message QueryBatchInfoRequest {
 
-  // batch_denom is the unique ID of credit batch to query.
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 1;
 }
 
@@ -281,12 +287,13 @@ message QueryBalanceRequest {
   // account is the address of the account whose balance is being queried.
   string account = 1;
 
-  // batch_denom is the unique ID of credit batch balance to query.
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 2;
 }
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
+
   // balance is the balance of the given account.
   BatchBalance balance = 1;
 }
@@ -315,7 +322,7 @@ message QueryBalancesResponse {
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
-  // batch_denom is the unique ID of credit batch to query.
+  // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 1;
 }
 
@@ -340,6 +347,7 @@ message QueryCreditTypesRequest {}
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
+
   // list of credit types
   repeated CreditType credit_types = 1;
 }
@@ -349,6 +357,7 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
+
   // params defines the parameters of the ecocredit module.
   Params params = 1;
 }

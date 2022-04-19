@@ -84,8 +84,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// anchor some data
 	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.addr1.String(),
-		Hash:   s.hash1,
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.NotNil(anchorRes1)
@@ -97,8 +97,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.addr1.String(),
-		Hash:   s.hash1,
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash1,
 	})
 	require.NoError(err)
 	require.NotNil(anchorRes2)
@@ -148,22 +148,22 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// can query attestors by hash
 	attestorsByHash, err := s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
-		ContentHash: dataByIRI.Entry.Hash,
+		ContentHash: dataByIRI.Entry.ContentHash,
 	})
 	require.NoError(err)
 	require.Empty(attestorsByHash.Attestors)
 
 	// can attest to data
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestor: s.addr1.String(),
-		Hashes:   []*data.ContentHash_Graph{graphHash},
+		Attestor:      s.addr1.String(),
+		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 
 	// attesting to the same data twice is a no-op
 	attestRes, err := s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestor: s.addr1.String(),
-		Hashes:   []*data.ContentHash_Graph{graphHash},
+		Attestor:      s.addr1.String(),
+		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 	require.Nil(attestRes.NewEntries)
@@ -195,8 +195,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// another attestor can attest
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
-		Attestor: s.addr2.String(),
-		Hashes:   []*data.ContentHash_Graph{graphHash},
+		Attestor:      s.addr2.String(),
+		ContentHashes: []*data.ContentHash_Graph{graphHash},
 	})
 	require.NoError(err)
 
@@ -225,8 +225,8 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 	// anchor some data
 	anchorRes1, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.addr1.String(),
-		Hash:   s.hash2,
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash2,
 	})
 	require.NoError(err)
 	require.NotNil(anchorRes1)
@@ -238,8 +238,8 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 	// anchoring same data twice is a no-op
 	anchorRes2, err := s.msgClient.Anchor(s.ctx, &data.MsgAnchor{
-		Sender: s.addr1.String(),
-		Hash:   s.hash2,
+		Sender:      s.addr1.String(),
+		ContentHash: s.hash2,
 	})
 	require.NoError(err)
 	require.NotNil(anchorRes2)
@@ -284,7 +284,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 func (s *IntegrationTestSuite) TestResolver() {
 	require := s.Require()
 	testUrl := "https://foo.bar"
-	testData := []*data.ContentHash{s.hash1}
+	hashes := []*data.ContentHash{s.hash1}
 
 	iri, err := s.hash1.ToIRI()
 	require.NoError(err)
@@ -300,9 +300,9 @@ func (s *IntegrationTestSuite) TestResolver() {
 
 	// can register content to a resolver
 	res2, err := s.msgClient.RegisterResolver(s.ctx, &data.MsgRegisterResolver{
-		Manager:    s.addr1.String(),
-		ResolverId: res1.ResolverId,
-		Data:       testData,
+		Manager:       s.addr1.String(),
+		ResolverId:    res1.ResolverId,
+		ContentHashes: hashes,
 	})
 	require.NoError(err)
 	require.NotNil(res2)
