@@ -78,7 +78,8 @@ type serverImpl struct {
 	coreKeeper        core.Keeper
 	marketplaceKeeper marketplace.Keeper
 
-	db ormdb.ModuleDB
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -232,6 +233,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err)
 	}
+	s.stateStore = ss
 	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
 
 	s.marketplaceKeeper = marketplace.NewKeeper(s.db, ss, bankKeeper, s.paramSpace)
@@ -261,6 +263,8 @@ func RegisterServices(
 	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterMigrationHandler(impl.RunMigrations)
+
 	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
 	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)

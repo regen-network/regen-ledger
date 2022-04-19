@@ -19,14 +19,13 @@ import (
 // Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	projectID := req.ProjectId
 
-	projectInfo, err := k.stateStore.ProjectInfoTable().GetByName(ctx, projectID)
+	projectInfo, err := k.stateStore.ProjectInfoTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.Key)
 	if err != nil {
 		return nil, err
 	}
@@ -36,25 +35,25 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	err = k.assertClassIssuer(ctx, classInfo.Id, issuer)
+	err = k.assertClassIssuer(ctx, classInfo.Key, issuer)
 	if err != nil {
 		return nil, err
 	}
 
-	batchSeqNo, err := k.getBatchSeqNo(ctx, projectID)
+	batchSeqNo, err := k.getBatchSeqNo(ctx, projectInfo.Key)
 	if err != nil {
 		return nil, err
 	}
 
-	batchDenom, err := ecocredit.FormatDenom(classInfo.Name, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := ecocredit.FormatDenom(classInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
-	rowID, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
-		ProjectId:    projectInfo.Id,
+	key, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
+		ProjectKey:   projectInfo.Key,
 		Issuer:       issuer,
 		BatchDenom:   batchDenom,
 		Metadata:     req.Metadata,
@@ -102,8 +101,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			}
 		}
 		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+			BatchKey: key,
 			Address:  recipient,
-			BatchId:  rowID,
 			Tradable: tradable.String(),
 			Retired:  retired.String(),
 		}); err != nil {
@@ -123,7 +122,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
-		BatchId:         rowID,
+		BatchKey:        key,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
 		CancelledAmount: math.NewDecFromInt64(0).String(),
@@ -137,7 +136,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
-		ClassId:         classInfo.Name,
+		ClassId:         classInfo.Id,
 		BatchDenom:      batchDenom,
 		Issuer:          req.Issuer,
 		TotalAmount:     totalAmount.String(),
@@ -145,7 +144,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		EndDate:         endDate.String(),
 		IssuanceDate:    issuanceDate.String(),
 		ProjectLocation: projectInfo.ProjectLocation,
-		ProjectId:       projectInfo.Name,
+		ProjectId:       projectInfo.Id,
 	}); err != nil {
 		return nil, err
 	}
@@ -154,20 +153,20 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 }
 
 // getBatchSeqNo gets the batch sequence number
-func (k Keeper) getBatchSeqNo(ctx context.Context, projectID string) (uint64, error) {
+func (k Keeper) getBatchSeqNo(ctx context.Context, projectKey uint64) (uint64, error) {
 	var seq uint64 = 1
-	batchSeq, err := k.stateStore.BatchSequenceTable().Get(ctx, projectID)
+	batchSeq, err := k.stateStore.BatchSequenceTable().Get(ctx, projectKey)
 	if err != nil {
 		if !ormerrors.IsNotFound(err) {
 			return 0, err
 		}
 	} else {
-		seq = batchSeq.NextBatchId
+		seq = batchSeq.NextSequence
 	}
 
 	if err = k.stateStore.BatchSequenceTable().Save(ctx, &api.BatchSequence{
-		ProjectId:   projectID,
-		NextBatchId: seq + 1,
+		ProjectKey:   projectKey,
+		NextSequence: seq + 1,
 	}); err != nil {
 		return 0, err
 	}

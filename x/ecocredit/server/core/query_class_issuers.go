@@ -18,12 +18,12 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *core.QueryClassIssuer
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, request.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassIssuerTable().List(ctx, api.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(classInfo.Id), ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassIssuerTable().List(ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(classInfo.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
