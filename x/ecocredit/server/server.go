@@ -82,8 +82,8 @@ type serverImpl struct {
 	db ormdb.ModuleDB
 }
 
-func (s serverImpl) NewCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
-	return s.coreKeeper.NewCreditType(ctx, ctp)
+func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.AddCreditType(ctx, ctp)
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,

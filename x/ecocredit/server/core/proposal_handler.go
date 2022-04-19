@@ -10,7 +10,7 @@ import (
 
 // ProposalKeeper defines the expected interface for ecocredit module proposals.
 type ProposalKeeper interface {
-	NewCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error
+	AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error
 }
 
 func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
@@ -19,11 +19,11 @@ func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
 		case *coretypes.CreditTypeProposal:
 			return handleCreditTypeProposal(ctx, k, c)
 		default:
-			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized software upgrade proposal content type: %T", c)
+			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized credit type proposal content type: %T", c)
 		}
 	}
 }
 
 func handleCreditTypeProposal(ctx sdk.Context, k ProposalKeeper, proposal *coretypes.CreditTypeProposal) error {
-	return k.NewCreditType(ctx, proposal)
+	return k.AddCreditType(ctx, proposal)
 }

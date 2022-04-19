@@ -10,8 +10,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// NewCreditType adds a new credit type to the network
-func (k Keeper) NewCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error {
+// AddCreditType adds a new credit type to the network
+func (k Keeper) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error {
 	if ctp == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
 	}
