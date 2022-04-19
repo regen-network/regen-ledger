@@ -1,6 +1,8 @@
 package core
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"gotest.tools/v3/assert"
@@ -48,6 +50,14 @@ func TestCreditType_Validate(t *testing.T) {
 				Name:         "",
 			},
 			errMsg: "name cannot be empty",
+		},
+		{
+			name: "invalid name too long name",
+			fields: fields{
+				Abbreviation: "C",
+				Name:         strings.Repeat("x", maxCreditTypeNameLength+1),
+			},
+			errMsg: fmt.Sprintf("credit type name cannot exceed %d characters", maxCreditTypeNameLength),
 		},
 		{
 			name: "invalid no unit",
