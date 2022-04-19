@@ -179,7 +179,7 @@ type MsgCreateProject struct {
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
 	// fields conforming to ISO 3166-2, and postal-code being up to 64
 	// alphanumeric characters. country-code is required, while sub-national-code
-	// and postal-code can be added for increasing precision.
+	// and postal-code are optional and can be added for increased precision.
 	ProjectJurisdiction string `protobuf:"bytes,4,opt,name=project_jurisdiction,json=projectJurisdiction,proto3" json:"project_jurisdiction,omitempty"`
 	// project_id is an optional user-specified project ID which can be used
 	// instead of an auto-generated ID. If project_id is provided, it must be
