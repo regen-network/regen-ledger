@@ -73,7 +73,7 @@ func TestMsgCreateProject(t *testing.T) {
 			true,
 		},
 		{
-			"invalid project location",
+			"invalid project jurisdiction",
 			MsgCreateProject{
 				Issuer:              issuer,
 				ClassId:             "A01",

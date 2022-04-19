@@ -19,7 +19,7 @@ var errBadReq = sdkerrors.ErrInvalidRequest
 // TODO: This could be used as params once x/params is upgraded to use protobuf
 const MaxMetadataLength = 256
 
-var reLocation = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
+var reJurisdiction = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
 
 // ValidateJurisdiction checks that the country and region conform to ISO 3166 and
 // the postal code is valid. This is a simple regex check and doesn't check that
@@ -27,7 +27,7 @@ var reLocation = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0
 // could change at short notice and we don't want to hardfork to keep up-to-date
 // with that information.
 func ValidateJurisdiction(jurisdiction string) error {
-	matches := reLocation.FindStringSubmatch(jurisdiction)
+	matches := reJurisdiction.FindStringSubmatch(jurisdiction)
 	if matches == nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("Invalid jurisdiction: %s.\nJurisdiction should have format <country-code>[-<region-code>[ <postal-code>]].\n", jurisdiction)
 	}

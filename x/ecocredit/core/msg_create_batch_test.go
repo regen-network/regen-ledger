@@ -128,7 +128,7 @@ func TestMsgCreateBatch(t *testing.T) {
 					{
 						Recipient:              addr2,
 						RetiredAmount:          "50",
-						RetirementJurisdiction: "wrong location",
+						RetirementJurisdiction: "wrong jurisdiction",
 					},
 				},
 			},

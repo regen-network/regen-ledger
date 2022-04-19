@@ -14,7 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Retire credits to the specified location.
+// Retire credits to the specified jurisdiction.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)

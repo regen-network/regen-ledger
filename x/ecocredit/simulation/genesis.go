@@ -211,14 +211,14 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// create few projects
 	pID1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{ClassId: cID1, Name: "Project1", Admin: accs[0].Address.Bytes(), ProjectLocation: "AQ", Metadata: metadata},
+		&api.ProjectInfo{ClassId: cID1, Name: "Project1", Admin: accs[0].Address.Bytes(), ProjectJurisdiction: "AQ", Metadata: metadata},
 	)
 	if err != nil {
 		return err
 	}
 
 	pID2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{ClassId: cID2, Admin: accs[1].Address.Bytes(), ProjectLocation: "AQ", Metadata: metadata},
+		&api.ProjectInfo{ClassId: cID2, Admin: accs[1].Address.Bytes(), ProjectJurisdiction: "AQ", Metadata: metadata},
 	)
 	if err != nil {
 		return err

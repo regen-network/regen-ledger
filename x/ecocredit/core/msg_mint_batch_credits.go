@@ -75,7 +75,7 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 
 			if !retiredAmount.IsZero() {
 				if err = ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
-					return errBadReq.Wrapf("issuance[%d].retirement_location; %v", idx, err)
+					return errBadReq.Wrapf("issuance[%d].retirement_jurisdiction; %v", idx, err)
 				}
 			}
 		}

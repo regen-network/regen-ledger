@@ -99,7 +99,7 @@ func TestMsgRetire(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg without location": {
+		"invalid msg without jurisdiction": {
 			src: MsgRetire{
 				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
@@ -111,7 +111,7 @@ func TestMsgRetire(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg with wrong location": {
+		"invalid msg with wrong jurisdiction": {
 			src: MsgRetire{
 				Holder: addr1,
 				Credits: []*MsgRetire_RetireCredits{
@@ -120,7 +120,7 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
-				Jurisdiction: "wrongLocation",
+				Jurisdiction: "wrongJurisdiction",
 			},
 			expErr: true,
 		},

@@ -420,7 +420,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		var tradable int
 		var retired int
-		var retirementLocation string
+		var retirementJurisdiction string
 		if !tradableBalance.IsZero() {
 			i64, err := tradableBalance.Int64()
 			if err != nil {
@@ -430,7 +430,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				tradable = simtypes.RandIntBetween(r, 1, int(i64))
 				retired = simtypes.RandIntBetween(r, 0, tradable)
 				if retired != 0 {
-					retirementLocation = "AQ"
+					retirementJurisdiction = "AQ"
 				}
 			} else {
 				tradable = int(i64)
@@ -449,7 +449,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					BatchDenom:             batch.BatchDenom,
 					TradableAmount:         fmt.Sprintf("%d", tradable),
 					RetiredAmount:          fmt.Sprintf("%d", retired),
-					RetirementJurisdiction: retirementLocation,
+					RetirementJurisdiction: retirementJurisdiction,
 				},
 			},
 		}
@@ -867,15 +867,15 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.BatchI
 	for i := 0; i < numIssuances; i++ {
 		recipient := accs[i]
 		retiredAmount := simtypes.RandIntBetween(r, 0, 100)
-		var retirementLocation string
+		var retirementJurisdiction string
 		if retiredAmount > 0 {
-			retirementLocation = "AD"
+			retirementJurisdiction = "AD"
 		}
 		res[i] = &core.BatchIssuance{
 			Recipient:              recipient.Address.String(),
 			TradableAmount:         fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
 			RetiredAmount:          fmt.Sprintf("%d", retiredAmount),
-			RetirementJurisdiction: retirementLocation,
+			RetirementJurisdiction: retirementJurisdiction,
 		}
 	}
 

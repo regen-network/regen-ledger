@@ -42,8 +42,8 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	]`
 
 	projectInfoJSON := `[
-		{"name":"P01","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_id":"1","project_location":"AQ","metadata":"project metadata"},
-		{"name":"P02","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_id":"2","project_location":"AQ","metadata":"project metadata"}	
+		{"name":"P01","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_id":"1","project_jurisdiction":"AQ","metadata":"project metadata"},
+		{"name":"P02","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_id":"2","project_jurisdiction":"AQ","metadata":"project metadata"}	
 	]`
 
 	batchInfoJSON := `[
