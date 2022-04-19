@@ -119,7 +119,7 @@ message MsgCreateProject {
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
-  // and postal-code can be added for increasing precision.
+  // and postal-code are optional and can be added for increased precision.
   string project_jurisdiction = 4;
 
   // project_id is an optional user-specified project ID which can be used
