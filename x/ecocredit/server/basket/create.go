@@ -87,9 +87,9 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
 // it's precision is bigger then the requested exponent.
-func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, exponent uint32) error {
+func validateCreditType(creditTypes []*core.CreditType, abbreviation string, exponent uint32) error {
 	for _, c := range creditTypes {
-		if c.Abbreviation == creditTypeAbbr {
+		if c.Abbreviation == abbreviation {
 			if c.Precision > exponent {
 				return sdkerrors.ErrInvalidRequest.Wrapf(
 					"exponent %d must be >= credit type precision %d",
@@ -100,22 +100,22 @@ func validateCreditType(creditTypes []*core.CreditType, creditTypeAbbr string, e
 			return nil
 		}
 	}
-	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", creditTypeAbbr)
+	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", abbreviation)
 }
 
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
 // the class into the BasketClass table.
-func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbr string) error {
+func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbrev string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, class := range allowedClasses {
-		classInfo, err := k.coreStore.ClassInfoTable().GetByName(ctx, class)
+		classInfo, err := k.coreStore.ClassInfoTable().GetById(ctx, class)
 		if err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}
 
-		if classInfo.CreditType != creditTypeAbbr {
+		if classInfo.CreditTypeAbbrev != creditTypeAbbrev {
 			return sdkerrors.ErrInvalidRequest.Wrapf("basket specified credit type %s, but class %s is of type %s",
-				creditTypeAbbr, class, classInfo.CreditType)
+				creditTypeAbbrev, class, classInfo.CreditTypeAbbrev)
 		}
 
 		if err := k.stateStore.BasketClassTable().Insert(ctx,

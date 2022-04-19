@@ -15495,8 +15495,7 @@ type MsgCreateClass struct {
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// credit_type_abbrev describes the abbreviation of a credit type (e.g. "C",
-	// "BIO").
+	// credit_type_abbrev is the abbreviation of a credit type (e.g. "C", "BIO").
 	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// fee specifies the fee to pay for the creation of the credit class.
 	// acceptable fees for creating a credit class can be found in the governance
@@ -15565,7 +15564,7 @@ type MsgCreateClassResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique ID of the newly created credit class.
+	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
@@ -15606,7 +15605,8 @@ type MsgCreateProject struct {
 	// which batches will be issued. It is not required, however, that this same
 	// issuer issue all batches for a project.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// class_id is the unique ID of the class within which the project is created.
+	// class_id is the unique identifier of the credit class within which the
+	// project will be created.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -15686,7 +15686,7 @@ type MsgCreateProjectResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// project_id is the ID of the newly created project.
+	// project_id is the unique identifier of the newly created project.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
@@ -15725,7 +15725,8 @@ type MsgCreateBatch struct {
 
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// project_id is the unique ID of the project this batch belongs to.
+	// project_id is the unique identifier of the project within which the credit
+	// batch will be created.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// issuance are the credits issued in the batch.
 	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
@@ -15911,7 +15912,7 @@ type MsgCreateBatchResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch_denom is the unique denomination ID of the newly created batch.
+	// batch_denom is the unique identifier of the newly created batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -15951,7 +15952,7 @@ type MsgMintBatchCredits struct {
 	// Issuer must equal to the batch.issuer address.
 	// Signer of the msg.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// batch_denom is the unique ID of the credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// issuance are the credits issued in the batch.
 	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
@@ -16026,7 +16027,7 @@ type MsgSealBatch struct {
 	// Issuer must equal to the batch.issuer address.
 	// Signer of the msg.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// batch_denom is the unique ID of the credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -16367,7 +16368,7 @@ type MsgUpdateClassAdmin struct {
 
 	// admin is the address of the account that is the admin of the credit class.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// class_id is the unique ID of the credit class.
+	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// new_admin is the address of the new admin of the credit class.
 	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
@@ -16449,7 +16450,7 @@ type MsgUpdateClassIssuers struct {
 
 	// admin is the address of the account that is the admin of the credit class.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// class_id is the unique ID of the credit class.
+	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// add_issuers are the issuers to add to the class issuers list.
 	AddIssuers []string `protobuf:"bytes,3,rep,name=add_issuers,json=addIssuers,proto3" json:"add_issuers,omitempty"`
@@ -16540,7 +16541,7 @@ type MsgUpdateClassMetadata struct {
 
 	// admin is the address of the account that is the admin of the credit class.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// class_id is the unique ID of the credit class.
+	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is the updated arbitrary metadata to be attached to the credit
 	// class.
@@ -16625,7 +16626,7 @@ type MsgUpdateProjectAdmin struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// new_admin is the address of the new admin of the project.
 	NewAdmin string `protobuf:"bytes,2,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
-	// project_id is the id of the project. (e.g. VERRA)
+	// project_id is the unique identifier of the project (e.g. VERRA1).
 	ProjectId string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
@@ -16707,7 +16708,7 @@ type MsgUpdateProjectMetadata struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// new_metadata is the metadata to update the project with.
 	NewMetadata string `protobuf:"bytes,2,opt,name=new_metadata,json=newMetadata,proto3" json:"new_metadata,omitempty"`
-	// project_id is the id of the project. (e.g. VERRA)
+	// project_id is the unique identifier of the project (e.g. VERRA1).
 	ProjectId string `protobuf:"bytes,3,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
@@ -16788,7 +16789,7 @@ type MsgSend_SendCredits struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch_denom is the unique ID of the credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// tradable_amount is the number of credits in this transfer that can be
 	// traded by the recipient. Decimal values are acceptable within the
@@ -16861,7 +16862,7 @@ type MsgRetire_RetireCredits struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch_denom is the unique ID of the credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the number of credits being retired.
 	// Decimal values are acceptable within the precision returned by
@@ -16909,7 +16910,7 @@ type MsgCancel_CancelCredits struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch_denom is the unique ID of the credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the number of credits being cancelled.
 	// Decimal values are acceptable within the precision returned by

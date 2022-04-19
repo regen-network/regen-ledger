@@ -20,13 +20,13 @@ message CreditType {
   // name, used in batch denominations within the CreditType. It must be unique.
   string abbreviation = 1;
 
-  // the type of credit (e.g. carbon, biodiversity, etc)
+  // name is the name of the credit type (e.g. carbon, biodiversity).
   string name = 2;
 
-  // the measurement unit (e.g. kg, ton, etc)
+  // unit is the measurement unit of the credit type (e.g. kg, ton).
   string unit = 3;
 
-  // the decimal precision
+  // precision is the decimal precision of the credit type.
   uint32 precision = 4;
 }
 
@@ -34,18 +34,19 @@ message CreditType {
 message ClassInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 2,
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1 fields : "name", unique : true}
+    primary_key : {fields : "key", auto_increment : true}
+    index : {id : 1 fields : "id", unique : true}
     index : {id : 2 fields : "admin"}
-    index : {id : 3 fields : "credit_type"}
+    index : {id : 3 fields : "credit_type_abbrev"}
   };
 
-  // id is the unique ID of credit class.
-  uint64 id = 1;
+  // key is the table row identifier of the credit class used internally for
+  // efficient lookups. This identifier is auto-incrementing.
+  uint64 key = 1;
 
-  // abbrev is the unique string name for this credit class formed from its
-  // credit type and an auto-generated integer.
-  string name = 2;
+  // id is the unique identifier of the credit class auto-generated from the
+  // credit type abbreviation and the credit class sequence number.
+  string id = 2;
 
   // admin is the admin of the credit class.
   bytes admin = 3;
@@ -53,8 +54,8 @@ message ClassInfo {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 4;
 
-  // credit_type is the abbreviation of the credit type.
-  string credit_type = 5;
+  // credit_type_abbrev is the abbreviation of the credit type.
+  string credit_type_abbrev = 5;
 }
 
 // ClassIssuers is a JOIN table for Class Info that stores the credit class
@@ -62,11 +63,12 @@ message ClassInfo {
 message ClassIssuer {
   option (cosmos.orm.v1alpha1.table) = {
     id : 3,
-    primary_key : {fields : "class_id,issuer"}
+    primary_key : {fields : "class_key,issuer"}
   };
 
-  // class_id is the row ID of a credit class.
-  uint64 class_id = 1;
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a class issuer to a credit class.
+  uint64 class_key = 1;
 
   // issuer is the approved issuer of the credit class.
   bytes issuer = 2;
@@ -76,25 +78,26 @@ message ClassIssuer {
 message ProjectInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4,
-    primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1, fields : "name", unique : true}
-    index : {id : 2, fields : "class_id,name", unique : true}
+    primary_key : {fields : "key", auto_increment : true}
+    index : {id : 1, fields : "id", unique : true}
+    index : {id : 2, fields : "class_key,id", unique : true}
     index : {id : 3, fields : "admin"}
   };
 
-  // id is the unique ID of the project.
-  uint64 id = 1;
+  // key is the table row identifier of the project used internally for
+  // efficient lookups. This identifier is auto-incrementing.
+  uint64 key = 1;
 
-  // name is the unique name of the project either formed from its credit
-  // class name and an auto-generated number or a custom name provided
-  // upon creation.
-  string name = 2;
+  // id is the unique identifier of the project either auto-generated from the
+  // credit class id and project sequence number or provided upon creation.
+  string id = 2;
 
   // admin is the admin of the project.
   bytes admin = 3;
 
-  // class_id is the ID of credit class for this project.
-  uint64 class_id = 4;
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a project to a credit class.
+  uint64 class_key = 4;
 
   // project_location is the location of the project.
   // Full documentation can be found in MsgCreateProject.project_location.
@@ -108,25 +111,28 @@ message ProjectInfo {
 message BatchInfo {
   option (cosmos.orm.v1alpha1.table) = {
     id : 5,
-    primary_key : {fields : "id", auto_increment : true}
+    primary_key : {fields : "key", auto_increment : true}
     index : {id : 1 fields : "batch_denom", unique : true}
-    index : {id : 2 fields : "project_id"}
+    index : {id : 2 fields : "project_key"}
     index : {id : 3 fields : "start_date"}
     index : {id : 4 fields : "issuer"}
   };
 
-  // id is an auto-incrementing integer to succinctly identify the batch
-  uint64 id = 1;
+  // key is the table row identifier of the credit batch used internally for
+  // efficient lookups. This identifier is auto-incrementing.
+  uint64 key = 1;
 
   // issuer is the address that created the batch and which is
   // authorized to mint more credits if open=true.
   bytes issuer = 2;
 
-  // project_id is the unique ID of the project this batch belongs to.
-  uint64 project_id = 3;
+  // project_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a credit batch to a project.
+  uint64 project_key = 3;
 
-  // batch_denom is the unique string identifier of the credit batch formed
-  // from the project name, batch sequence number and dates.
+  // batch_denom is the unique identifier of the credit batch formed from the
+  // project id, the batch sequence number, and the start and end date of the
+  // credit batch.
   string batch_denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
@@ -148,83 +154,92 @@ message BatchInfo {
   bool open = 9;
 }
 
-// ClassSequence is a sequence number for creating credit class identifiers for
-// each credit type.
+// ClassSequence stores and increments the sequence number for credit classes
+// within a credit type.
 message ClassSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 6,
-    primary_key : {fields : "credit_type"}
+    primary_key : {fields : "credit_type_abbrev"}
   };
 
-  // credit_type is the credit type abbreviation
-  string credit_type = 1;
+  // credit_type_abbrev is the credit type abbreviation. This links a class
+  // sequence to a credit type.
+  string credit_type_abbrev = 1;
 
-  // next_class_id is the next class ID for this credit type
-  uint64 next_class_id = 2;
+  // next_sequence is the next sequence number for a credit class within the
+  // credit type. The sequence number is used to generate a class id.
+  uint64 next_sequence = 2;
 }
 
-// ProjectSequence stores and increments the sequence number for projects
-// within a given credit class.
+// ProjectSequence stores and increments the sequence number for projects within
+// a credit class.
 message ProjectSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 7,
-    primary_key : {fields : "class_id"}
+    primary_key : {fields : "class_key"}
   };
 
-  // class_id is the id of the credit class
-  uint64 class_id = 1;
+  // class_key is the table row identifier of the credit class used internally
+  // for efficient lookups. This links a project sequence to a credit class.
+  uint64 class_key = 1;
 
-  // next_project_id is the sequence number for the project
-  uint64 next_project_id = 2;
+  // next_sequence is the next sequence number for a project within the credit
+  // class. The sequence number is used to generate a project id.
+  uint64 next_sequence = 2;
 }
 
-// BatchSequence tracks the sequence number for batches within a project
+// BatchSequence stores and increments the sequence number for credit batches
+// within a project.
 message BatchSequence {
   option (cosmos.orm.v1alpha1.table) = {
     id : 8,
-    primary_key : {fields : "project_id"}
+    primary_key : {fields : "project_key"}
   };
 
-  // project_id is the id of the project for a batch
-  string project_id = 1;
+  // project_key is the table row identifier of the project used internally for
+  // efficient lookups. This links a batch sequence to a project.
+  uint64 project_key = 1;
 
-  // next_batch_id is a sequence number incrementing on each issued batch
-  uint64 next_batch_id = 2;
+  // next_sequence is the next sequence number for a credit batch within the
+  // project. The sequence number is used to generate a batch denom.
+  uint64 next_sequence = 2;
 }
 
-// BatchBalance stores each users credit balance
+// BatchBalance stores each accounts credit balance.
 message BatchBalance {
   option (cosmos.orm.v1alpha1.table) = {
     id : 9,
-    primary_key : {fields : "address,batch_id"}
-    index : {id : 1, fields : "batch_id,address"}
+    primary_key : {fields : "address,batch_key"}
+    index : {id : 1, fields : "batch_key,address"}
   };
 
-  // address is the address of the credit holder
-  bytes address = 1;
+  // batch_key is the table row identifier of the credit batch used internally
+  // for efficient lookups. This links a batch balance to a credit batch.
+  uint64 batch_key = 1;
 
-  // batch_id is the id of the credit batch
-  uint64 batch_id = 2;
+  // address is the address of the credit holder.
+  bytes address = 2;
 
-  // tradable is the tradable amount of credits
+  // tradable is the tradable amount of credits.
   string tradable = 3;
 
-  // retired is the retired amount of credits
+  // retired is the retired amount of credits.
   string retired = 4;
 
   // escrowed is the amount of credits locked up in escrow for the marketplace.
   string escrowed = 5;
 }
 
-// BatchSupply tracks the supply of a credit batch
+// BatchSupply stores the supply of credits for a credit batch.
 message BatchSupply {
   option (cosmos.orm.v1alpha1.table) = {
     id : 10,
-    primary_key : {fields : "batch_id"}
+    primary_key : {fields : "batch_key"}
   };
 
-  // batch_id is the id of the batch
-  uint64 batch_id = 1;
+  // batch_key is the table row identifier of the credit batch used internally
+  // for efficient lookups. This links a batch supply to a credit batch.
+  uint64 batch_key = 1;
 
   // tradable_amount is the total number of tradable credits in the credit
   // batch. Some of the issued credits may be cancelled and will be removed from

@@ -88,12 +88,12 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			return err
 		}
 
-		if _, ok := abbrevToPrecision[class.CreditType]; !ok {
-			return sdkerrors.ErrNotFound.Wrapf("credit type not exist for %s abbreviation", class.CreditType)
+		if _, ok := abbrevToPrecision[class.CreditTypeAbbrev]; !ok {
+			return sdkerrors.ErrNotFound.Wrapf("credit type not exist for %s abbreviation", class.CreditTypeAbbrev)
 		}
 	}
 
-	projectIdToClassId := make(map[uint64]uint64) // map of projectID to classID
+	projectKeyToClassKey := make(map[uint64]uint64) // map of project key to class key
 	pItr, err := ss.ProjectInfoTable().List(ormCtx, api.ProjectInfoPrimaryKey{})
 	if err != nil {
 		return err
@@ -106,10 +106,10 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			return err
 		}
 
-		if _, exists := projectIdToClassId[project.Id]; exists {
+		if _, exists := projectKeyToClassKey[project.Key]; exists {
 			continue
 		}
-		projectIdToClassId[project.Id] = project.ClassId
+		projectKeyToClassKey[project.Key] = project.ClassKey
 	}
 
 	batchIdToPrecision := make(map[uint64]uint32) // map of batchID to precision
@@ -126,17 +126,17 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			return err
 		}
 
-		if _, exists := batchIdToPrecision[batch.Id]; exists {
+		if _, exists := batchIdToPrecision[batch.Key]; exists {
 			continue
 		}
 
-		class, err := ss.ClassInfoTable().Get(ormCtx, projectIdToClassId[batch.ProjectId])
+		class, err := ss.ClassInfoTable().Get(ormCtx, projectKeyToClassKey[batch.ProjectKey])
 		if err != nil {
 			return err
 		}
 
-		if class.Id == projectIdToClassId[batch.ProjectId] {
-			batchIdToPrecision[batch.Id] = abbrevToPrecision[class.CreditType]
+		if class.Key == projectKeyToClassKey[batch.ProjectKey] {
+			batchIdToPrecision[batch.Key] = abbrevToPrecision[class.CreditTypeAbbrev]
 		}
 	}
 
@@ -158,13 +158,13 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		tSupply := math.NewDecFromInt64(0)
 		rSupply := math.NewDecFromInt64(0)
 		if batchSupply.TradableAmount != "" {
-			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, batchIdToPrecision[batchSupply.BatchId])
+			tSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.TradableAmount, batchIdToPrecision[batchSupply.BatchKey])
 			if err != nil {
 				return err
 			}
 		}
 		if batchSupply.RetiredAmount != "" {
-			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, batchIdToPrecision[batchSupply.BatchId])
+			rSupply, err = math.NewNonNegativeFixedDecFromString(batchSupply.RetiredAmount, batchIdToPrecision[batchSupply.BatchKey])
 			if err != nil {
 				return err
 			}
@@ -175,7 +175,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			return err
 		}
 
-		batchIdToSupply[batchSupply.BatchId] = total
+		batchIdToSupply[batchSupply.BatchKey] = total
 	}
 
 	// calculate credit batch supply from genesis tradable, retired and escrowed balances
@@ -248,26 +248,26 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		if _, ok := batchIdToPrecision[balance.BatchId]; !ok {
-			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchId)
+		if _, ok := batchIdToPrecision[balance.BatchKey]; !ok {
+			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchKey)
 		}
 
 		if balance.Tradable != "" {
-			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, batchIdToPrecision[balance.BatchId])
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, batchIdToPrecision[balance.BatchKey])
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Retired != "" {
-			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchId])
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Escrowed != "" {
-			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchId])
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
 			if err != nil {
 				return err
 			}
@@ -283,14 +283,14 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		if supply, ok := batchIdToSupply[balance.BatchId]; ok {
+		if supply, ok := batchIdToSupply[balance.BatchKey]; ok {
 			result, err := math.SafeAddBalance(supply, total)
 			if err != nil {
 				return err
 			}
-			batchIdToSupply[balance.BatchId] = result
+			batchIdToSupply[balance.BatchKey] = result
 		} else {
-			batchIdToSupply[balance.BatchId] = total
+			batchIdToSupply[balance.BatchKey] = total
 		}
 	}
 
@@ -341,15 +341,15 @@ func (c ClassInfo) Validate() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if len(c.Name) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class name cannot be empty")
+	if len(c.Id) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
-	if err := ecocredit.ValidateClassID(c.Name); err != nil {
+	if err := ecocredit.ValidateClassID(c.Id); err != nil {
 		return err
 	}
 
-	if len(c.CreditType) == 0 {
+	if len(c.CreditTypeAbbrev) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("must specify a credit type abbreviation")
 	}
 
@@ -358,8 +358,8 @@ func (c ClassInfo) Validate() error {
 
 // Validate performs a basic validation of credit class issuers
 func (c ClassIssuer) Validate() error {
-	if c.ClassId == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be zero")
+	if c.ClassKey == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(c.Issuer).String()); err != nil {
@@ -375,8 +375,8 @@ func (p ProjectInfo) Validate() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if p.ClassId == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be zero")
+	if p.ClassKey == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
 	}
 
 	if err := ValidateLocation(p.ProjectLocation); err != nil {
@@ -387,7 +387,7 @@ func (p ProjectInfo) Validate() error {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 
-	if err := ValidateProjectID(p.Name); err != nil {
+	if err := ValidateProjectID(p.Id); err != nil {
 		return err
 	}
 
@@ -400,8 +400,8 @@ func (b BatchInfo) Validate() error {
 		return err
 	}
 
-	if b.ProjectId == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("project id cannot be zero")
+	if b.ProjectKey == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("project key cannot be zero")
 	}
 
 	if b.StartDate == nil {

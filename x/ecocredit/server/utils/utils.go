@@ -16,13 +16,13 @@ import (
 func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
+	classInfo, err := store.ClassInfoTable().GetById(ctx, classId)
 	if err != nil {
 		return core.CreditType{}, err
 	}
 	p := &core.Params{}
 	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditType, p.CreditTypes)
+	return GetCreditType(classInfo.CreditTypeAbbrev, p.CreditTypes)
 }
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.

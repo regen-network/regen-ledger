@@ -9,7 +9,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {
 
-  // class_id is the unique ID of credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 1;
 
   // admin is the admin of the credit class.
@@ -19,13 +19,14 @@ message EventCreateClass {
 // EventCreateProject is an event emitted when a project is created.
 message EventCreateProject {
 
-  // project_id is the unique ID of the project.
+  // project_id is the unique identifier of the project.
   string project_id = 1;
 
   // admin is the admin of the project.
   string admin = 2;
 
-  // class_id is the unique ID of credit class for this project.
+  // class_id is the unique identifier of the credit class within which the
+  // project was created.
   string class_id = 3;
 
   // project_location is the location of the project.
@@ -36,10 +37,11 @@ message EventCreateProject {
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
 
-  // class_id is the unique ID of credit class.
+  // class_id is the unique identifier of the credit class within which the
+  // credit batch was created.
   string class_id = 1;
 
-  // batch_denom is the unique ID of credit batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 
   // issuer is the account address of the issuer of the credit batch.
@@ -63,7 +65,8 @@ message EventCreateBatch {
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
   string project_location = 8;
 
-  // project_id is the unique ID of the project this batch belongs to.
+  // project_id is the unique identifier of the project within which the credit
+  // batch was created.
   string project_id = 9;
 
   // A reference to a transaction or an event referencing the transaction
@@ -77,7 +80,8 @@ message EventCreateBatch {
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventMintBatchCredits {
 
-  // batch_denom is the unique ID of credit batch.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were minted.
   string batch_denom = 1;
 
   // A reference to a transaction or an event referencing the transaction
@@ -90,6 +94,7 @@ message EventMintBatchCredits {
 // basket. Each batch_denom created, transferred or taken from a basket will
 // result in a separate EventReceive for easy indexing.
 message EventReceive {
+
   // sender is the sender of the credits in the case that this event is the
   // result of a transfer. It will not be set when credits are received at
   // initial issuance or taken from a basket.
@@ -98,7 +103,7 @@ message EventReceive {
   // recipient is the recipient of the credits.
   string recipient = 2;
 
-  // batch_denom is the unique ID of credit batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 3;
 
   // tradable_amount is the decimal number of tradable credits received.
@@ -124,7 +129,8 @@ message EventRetire {
   // issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
   string retirer = 1;
 
-  // batch_denom is the unique ID of credit batch.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were retired.
   string batch_denom = 2;
 
   // amount is the decimal number of credits that have been retired.
@@ -147,7 +153,8 @@ message EventCancel {
   // the holder of the credits.
   string canceller = 1;
 
-  // batch_denom is the unique ID of credit batch.
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were cancelled.
   string batch_denom = 2;
 
   // amount is the decimal number of credits that have been cancelled.
@@ -158,8 +165,8 @@ message EventCancel {
 // changed.
 message EventClassAdminUpdated {
 
-  // class_name is the name of the class that was updated.
-  string class_name = 1;
+  // class_id is the unique identifier of the class that was updated.
+  string class_id = 1;
 
   // old_admin is the admin of the credit class before the update.
   string old_admin = 2;
@@ -171,8 +178,9 @@ message EventClassAdminUpdated {
 // EventClassIssuersUpdated is emitted when the issuer list for a credit class
 // is updated.
 message EventClassIssuersUpdated {
-  // class_name is the name of the class that was updated.
-  string class_name = 1;
+
+  // class_id is the unique identifier of the class that was updated.
+  string class_id = 1;
 
   // added_issuers contains all the addresses added to the class issuer list.
   repeated string added_issuers = 2;
@@ -185,8 +193,9 @@ message EventClassIssuersUpdated {
 // EventClassMetadataUpdated is emitted when the credit class metadata is
 // changed.
 message EventClassMetadataUpdated {
-  // class_name is the name of the class that was updated.
-  string class_name = 1;
+
+  // class_id is the unique identifier of the class that was updated.
+  string class_id = 1;
 
   // old_metadata is the metadata before the update.
   string old_metadata = 2;

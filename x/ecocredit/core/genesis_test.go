@@ -13,8 +13,8 @@ func TestValidateGenesis(t *testing.T) {
 	x := `{
 		"regen.ecocredit.v1.BatchBalance":[
 			{
+				"batch_key":"1",
 				"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=",
-				"batch_id":"1",
 				"tradable":"90.003",
 				"retired":"9.997"
 			}
@@ -22,14 +22,14 @@ func TestValidateGenesis(t *testing.T) {
 		"regen.ecocredit.v1.BatchInfo":[
 			{
 				"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=",
-				"project_id":"1",
+				"project_key":"1",
 				"batch_denom":"BIO01-00000000-00000000-001",
 				"start_date":"2021-04-08T10:40:10.774108556Z",
 				"end_date":"2022-04-08T10:40:10.774108556Z"
 			},
 		    {
 				"issuer":"gydQIvR2RUi0N1RJnmgOLVSkcd4=",
-				"project_id":"1",
+				"project_key":"1",
 				"batch_denom":"BIO02-00000000-00000000-001",
 				"start_date":"2021-04-08T10:40:10.774108556Z",
 				"end_date":"2022-04-08T10:40:10.774108556Z"
@@ -37,34 +37,34 @@ func TestValidateGenesis(t *testing.T) {
 		],
 		"regen.ecocredit.v1.BatchSupply":[
 			{
-				"batch_id":"1",
+				"batch_key":"1",
 				"tradable_amount":"90.003",
 				"retired_amount":"9.997"
 			}
 		],
 		"regen.ecocredit.v1.ClassInfo":[
 			{
-				"name":"BIO001",
+				"id":"BIO001",
 				"admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=",
-				"credit_type":"BIO"
+				"credit_type_abbrev":"BIO"
 			},
 		    {
-				"name":"BIO02",
+				"id":"BIO02",
 				"admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=",
-				"credit_type":"BIO"
+				"credit_type_abbrev":"BIO"
 			}
 		],
 		"regen.ecocredit.v1.ProjectInfo":[
 			{
-				"name":"P01",
+				"id":"P01",
 				"admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=",
-				"class_id":"1",
+				"class_key":"1",
 				"project_location":"AQ"
 			},
 			{
-				"name":"P02",
+				"id":"P02",
 				"admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=",
-				"class_id":"2",
+				"class_key":"2",
 				"project_location":"AQ",
 				"metadata":"project metadata"
 			}
@@ -95,7 +95,7 @@ func TestGenesisValidate(t *testing.T) {
 	defaultParams := core.DefaultParams()
 
 	testCases := []struct {
-		name        string
+		id          string
 		gensisState func() json.RawMessage
 		params      core.Params
 		expectErr   bool
@@ -107,9 +107,9 @@ func TestGenesisValidate(t *testing.T) {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [
 						{
-							"name":"C01",
+							"id":"C01",
 							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
-							"credit_type":"C"
+							"credit_type_abbrev":"C"
 						}
 					]}`)
 			},
@@ -131,9 +131,9 @@ func TestGenesisValidate(t *testing.T) {
 					],
 					"regen.ecocredit.v1.ClassInfo": [
 						{
-							"name":"C01",
+							"id":"C01",
 							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
-							"credit_type":"C"
+							"credit_type_abbrev":"C"
 						}
 					]}`)
 			},
@@ -146,9 +146,9 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [{
-						"name":"C01",
+						"id":"C01",
 						"admin":"v9PCozRRuFc5I5hdJOwD3k9WMOI=",
-						"credit_type":"C"
+						"credit_type_abbrev":"C"
 					}]					
 					}`)
 			},
@@ -165,9 +165,9 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [{
-						"name":"C01",
+						"id":"C01",
 						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
-						"credit_type":"C"
+						"credit_type_abbrev":"C"
 					}]					
 					}`)
 			},
@@ -194,9 +194,9 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [{
-						"name":"1",
+						"id":"C01",
 						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
-						"credit_type":"C"
+						"credit_type_abbrev":"C"
 					}]					
 				}`)
 			},
@@ -210,13 +210,13 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid creator address: decoding bech32 failed",
 		},
 		{
-			"invalid: type name does not match param name",
+			"invalid: type id does not match param id",
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [{
-						"name":"C01",
+						"id":"C01",
 						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
-						"credit_type":"F"
+						"credit_type_abbrev":"F"
 					}]
 				}`)
 			},
@@ -229,9 +229,9 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo": [{
-						"name":"C01",
+						"id":"C01",
 						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
-						"credit_type":"F"
+						"credit_type_abbrev":"F"
 					}]	
 				}`)
 			},
@@ -244,26 +244,26 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo":[{
-						"name":"C01",
+						"id":"C01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"credit_type":"C"
+						"credit_type_abbrev":"C"
 					}],
 					"regen.ecocredit.v1.ProjectInfo":[{
-						"name":"01",
+						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"class_id":"1",
+						"class_key":"1",
 						"project_location":"AQ"
 					}],
 					"regen.ecocredit.v1.BatchInfo":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"project_id":"1",
+						"project_key":"1",
 						"batch_denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z"
 					}],
 					"regen.ecocredit.v1.BatchBalance":[{
+						"batch_key":"1",
 						"address":"mAAyikSMAfVwmlW4BPV2Q6GmpHc=",
-						"batch_id":"1",
 						"tradable":"400.456"
 					}]
 				}`)
@@ -277,31 +277,31 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 					"regen.ecocredit.v1.ClassInfo":[{
-						"name":"C01",
+						"id":"C01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"credit_type":"C"
+						"credit_type_abbrev":"C"
 					}],
 					"regen.ecocredit.v1.ProjectInfo":[{
-						"name":"01",
+						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"class_id":"1",
+						"class_key":"1",
 						"project_location":"AQ"
 					}],
 					"regen.ecocredit.v1.BatchInfo":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"project_id":"1",
+						"project_key":"1",
 						"batch_denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z"
 					}],
 					"regen.ecocredit.v1.BatchBalance":[{
+						"batch_key":"1",
 						"address":"mAAyikSMAfVwmlW4BPV2Q6GmpHc=",
-						"batch_id":"1",
 						"tradable":"100",
 						"retired":"100"
 					}],
 					"regen.ecocredit.v1.BatchSupply":[{
-						"batch_id":"1",
+						"batch_key":"1",
 						"tradable_amount":"10"
 					}]
 				}`)
@@ -315,40 +315,40 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 				"regen.ecocredit.v1.ClassInfo":[{
-					"name":"C01",
+					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"credit_type":"C"
+					"credit_type_abbrev":"C"
 				}],
 				"regen.ecocredit.v1.ProjectInfo":[{
-					"name":"01",
+					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"class_id":"1",
+					"class_key":"1",
 					"project_location":"AQ"
 				}],
 				"regen.ecocredit.v1.BatchInfo":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"project_id":"1",
+					"project_key":"1",
 					"batch_denom":"C01-00000000-00000000-001",
 					"start_date":"2021-04-08T10:40:10.774108556Z",
 					"end_date":"2022-04-08T10:40:10.774108556Z"
 				}],
 				"regen.ecocredit.v1.BatchBalance":[
 					{
+						"batch_key":"1",
 						"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"batch_id":"1",
 						"tradable":"100.123",
 						"retired":"100.123"
 					},
 					{
+						"batch_key":"1",
 						"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"batch_id":"1",
 						"tradable":"100.123",
 						"retired":"100.123"
 					}
 				],
 				"regen.ecocredit.v1.BatchSupply":[
 					{
-						"batch_id":"1",
+						"batch_key":"1",
 						"tradable_amount":"200.246",
 						"retired_amount":"200.246"
 					}
@@ -364,19 +364,19 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`{
 				"regen.ecocredit.v1.ClassInfo":[{
-					"name":"C01",
+					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"credit_type":"C"
+					"credit_type_abbrev":"C"
 				}],
 				"regen.ecocredit.v1.ProjectInfo":[{
-					"name":"01",
+					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"class_id":"1",
+					"class_key":"1",
 					"project_location":"AQ"
 				}],
 				"regen.ecocredit.v1.BatchInfo":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"project_id":"1",
+					"project_key":"1",
 					"batch_denom":"C01-00000000-00000000-001",
 					"start_date":"2021-04-08T10:40:10.774108556Z",
 					"end_date":"2022-04-08T10:40:10.774108556Z",
@@ -384,22 +384,22 @@ func TestGenesisValidate(t *testing.T) {
 				}],
 				"regen.ecocredit.v1.BatchBalance":[
 					{
+						"batch_key":"1",
 						"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"batch_id":"1",
 						"tradable":"100.123",
 						"retired":"100.123",
 						"escrowed":"100.123"
 					},
 					{
+						"batch_key":"1",
 						"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"batch_id":"1",
 						"tradable":"100.123",
 						"retired":"100.123"
 					}
 				],
 				"regen.ecocredit.v1.BatchSupply":[
 					{
-						"batch_id":"1",
+						"batch_key":"1",
 						"tradable_amount":"300.369",
 						"retired_amount":"200.246"
 					}
@@ -417,34 +417,34 @@ func TestGenesisValidate(t *testing.T) {
 				{
 					"regen.ecocredit.v1.ClassInfo": [
 					  {
-						"name": "C01",
+						"id": "C01",
 						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"credit_type": "C"
+						"credit_type_abbrev": "C"
 					  },
 					  {
-						"name": "C02",
+						"id": "C02",
 						"admin": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"credit_type": "C"
+						"credit_type_abbrev": "C"
 					  }
 					],
 					"regen.ecocredit.v1.ProjectInfo": [
 					  {
-						"name": "01",
+						"id": "P01",
 						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"class_id": "1",
+						"class_key": "1",
 						"project_location":"AQ"
 					  },
 					  {
-						"name": "03",
+						"id": "P02",
 						"admin": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"class_id": "2",
+						"class_key": "2",
 						"project_location":"AQ"
 					  }
 					],
 					"regen.ecocredit.v1.BatchInfo": [
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"project_id": "1",
+						"project_key": "1",
 						"batch_denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z",
@@ -452,7 +452,7 @@ func TestGenesisValidate(t *testing.T) {
 					  },
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"project_id": "2",
+						"project_key": "2",
 						"batch_denom":"C01-00000000-00000000-002",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z",
@@ -461,26 +461,26 @@ func TestGenesisValidate(t *testing.T) {
 					],
 					"regen.ecocredit.v1.BatchBalance": [
 					  {
+						"batch_key": "1",
 						"address": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"batch_id": "1",
 						"tradable": "100.123",
 						"retired": "100.123"
 					  },
 					  {
+						"batch_key": "2",
 						"address": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"batch_id": "2",
 						"tradable": "100.123",
 						"retired": "100.123"
 					  }
 					],
 					"regen.ecocredit.v1.BatchSupply": [
 					  {
-						"batch_id": "1",
+						"batch_key": "1",
 						"tradable_amount": "100.123",
 						"retired_amount": "100.123"
 					  },
 					  {
-						"batch_id": "2",
+						"batch_key": "2",
 						"tradable_amount": "100.123",
 						"retired_amount": "100.123"
 					  }
@@ -495,7 +495,7 @@ func TestGenesisValidate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
+		t.Run(tc.id, func(t *testing.T) {
 			err := core.ValidateGenesis(tc.gensisState(), tc.params)
 			if tc.expectErr {
 				require.Error(t, err)

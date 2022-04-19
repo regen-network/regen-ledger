@@ -242,7 +242,7 @@ func (m *QueryClassesByAdminResponse) GetPagination() *query.PageResponse {
 
 // QueryClassInfoRequest is the Query/ClassInfo request type.
 type QueryClassInfoRequest struct {
-	// class_id is the unique ID of credit class to query.
+	// class_id is the unique identifier of the credit class to query.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
@@ -334,7 +334,7 @@ func (m *QueryClassInfoResponse) GetInfo() *ClassInfo {
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
 type QueryClassIssuersRequest struct {
-	// class_id is the unique ID of credit class to query.
+	// class_id is the unique identifier of the credit class to query.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -444,7 +444,7 @@ func (m *QueryClassIssuersResponse) GetPagination() *query.PageResponse {
 
 // QueryProjectsRequest is the Query/Projects request type.
 type QueryProjectsRequest struct {
-	// class_id is the unique ID of credit class to query.
+	// class_id is the unique identifier of the credit class to query.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -554,7 +554,7 @@ func (m *QueryProjectsResponse) GetPagination() *query.PageResponse {
 
 // QueryProjectInfoRequest is the Query/Project request type.
 type QueryProjectInfoRequest struct {
-	// project_id is the unique ID of the project to query.
+	// project_id is the unique identifier of the project to query.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
@@ -646,7 +646,7 @@ func (m *QueryProjectInfoResponse) GetInfo() *ProjectInfo {
 
 // QueryBatchesRequest is the Query/Batches request type.
 type QueryBatchesRequest struct {
-	// project_id is the unique ID of the project to query.
+	// project_id is the unique identifier of the project to query.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -866,7 +866,7 @@ func (m *QueryBatchesByIssuerResponse) GetPagination() *query.PageResponse {
 
 // QueryBatchesByClassRequest is the Query/BatchesByClass request type.
 type QueryBatchesByClassRequest struct {
-	// class_id is the unique ID of the class to query.
+	// class_id is the unique identifier of the credit class to query.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -976,7 +976,7 @@ func (m *QueryBatchesByClassResponse) GetPagination() *query.PageResponse {
 
 // QueryBatchInfoRequest is the Query/BatchInfo request type.
 type QueryBatchInfoRequest struct {
-	// batch_denom is the unique ID of credit batch to query.
+	// batch_denom is the unique identifier of the credit batch to query.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -1070,7 +1070,7 @@ func (m *QueryBatchInfoResponse) GetInfo() *BatchInfo {
 type QueryBalanceRequest struct {
 	// account is the address of the account whose balance is being queried.
 	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
-	// batch_denom is the unique ID of credit batch balance to query.
+	// batch_denom is the unique identifier of the credit batch to query.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -1280,7 +1280,7 @@ func (m *QueryBalancesResponse) GetPagination() *query.PageResponse {
 
 // QuerySupplyRequest is the Query/Supply request type.
 type QuerySupplyRequest struct {
-	// batch_denom is the unique ID of credit batch to query.
+	// batch_denom is the unique identifier of the credit batch to query.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
