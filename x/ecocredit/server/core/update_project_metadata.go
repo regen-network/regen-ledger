@@ -22,8 +22,17 @@ func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdatePr
 	if !sdk.AccAddress(project.Admin).Equals(admin) {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the admin of project %s", req.Admin, req.ProjectId)
 	}
+	oldMetadata := project.Metadata
 	project.Metadata = req.NewMetadata
 	if err := k.stateStore.ProjectInfoTable().Update(ctx, project); err != nil {
+		return nil, err
+	}
+
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventProjectMetadataUpdated{
+		ProjectId:   project.Id,
+		OldMetadata: oldMetadata,
+		NewMetadata: req.NewMetadata,
+	}); err != nil {
 		return nil, err
 	}
 
