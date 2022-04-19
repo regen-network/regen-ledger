@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -13,6 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // CreateBatch creates a new batch of credits.
@@ -25,7 +25,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.Key)
+	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.ClassKey)
 	if err != nil {
 		return nil, err
 	}
