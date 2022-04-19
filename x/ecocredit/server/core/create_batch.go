@@ -3,8 +3,9 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,7 +26,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.Key)
+	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.ClassKey)
 	if err != nil {
 		return nil, err
 	}

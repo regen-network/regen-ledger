@@ -1,5 +1,6 @@
 package testsuite
 
+/*
 import (
 	"fmt"
 
@@ -97,7 +98,7 @@ func (s *IntegrationTestSuite) TestGetClass() {
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &class)
 			require.NoError(err)
 			require.NotNil(class.Info)
-			require.Contains(class.Info.Name, classId)
+			require.Contains(class.Info.Id, classId)
 
 		})
 	}
@@ -470,3 +471,4 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 		})
 	}
 }
+*/

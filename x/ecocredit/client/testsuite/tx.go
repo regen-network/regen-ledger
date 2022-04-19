@@ -154,9 +154,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()))...),
 			expectErr: false,
 			expectedClassInfo: &core.ClassInfo{
-				Admin:      val0.Address,
-				Metadata:   validMetadata,
-				CreditType: validCreditTypeAbbrev,
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 		{
@@ -164,9 +164,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom("node0"))...),
 			expectErr: false,
 			expectedClassInfo: &core.ClassInfo{
-				Admin:      val0.Address,
-				Metadata:   validMetadata,
-				CreditType: validCreditTypeAbbrev,
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 		{
@@ -176,9 +176,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON))...),
 			expectErr: false,
 			expectedClassInfo: &core.ClassInfo{
-				Admin:      val0.Address,
-				Metadata:   validMetadata,
-				CreditType: validCreditTypeAbbrev,
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 	}
@@ -221,7 +221,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 
 									s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Info.Admin)
 									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
-									s.Require().Equal(tc.expectedClassInfo.CreditType, queryRes.Info.CreditType)
+									s.Require().Equal(tc.expectedClassInfo.CreditTypeAbbrev, queryRes.Info.CreditTypeAbbrev)
 								}
 							}
 						}
@@ -1280,7 +1280,6 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 	s.Require().NoError(err)
 	var res sdk.TxResponse
 	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
 			for _, attr := range e.Attributes {
