@@ -151,16 +151,16 @@ func TestMigrations(t *testing.T) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
 	// verify credit class data
-	res, err := ss.ClassInfoTable().GetByName(ctx, "C01")
+	res, err := ss.ClassInfoTable().GetById(ctx, "C01")
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.Admin, admin1.Bytes())
-	require.Equal(t, res.CreditType, "C")
+	require.Equal(t, res.CreditTypeAbbrev, "C")
 	require.Equal(t, res.Metadata, "metadata")
-	require.Equal(t, res.Name, "C01")
+	require.Equal(t, res.Id, "C01")
 
 	// verify class issuers migration
-	itr, err := ss.ClassIssuerTable().List(ctx, api.ClassIssuerClassIdIssuerIndexKey{}.WithClassId(1))
+	itr, err := ss.ClassIssuerTable().List(ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(1))
 	require.NoError(t, err)
 	require.NotNil(t, itr)
 
@@ -168,7 +168,7 @@ func TestMigrations(t *testing.T) {
 	for itr.Next() {
 		val, err := itr.Value()
 		require.NoError(t, err)
-		require.Equal(t, val.ClassId, uint64(1))
+		require.Equal(t, val.ClassKey, uint64(1))
 		require.Contains(t, issuers, val.Issuer)
 	}
 	itr.Close()
@@ -177,40 +177,40 @@ func TestMigrations(t *testing.T) {
 	res1, err := ss.ProjectInfoTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
-	require.Equal(t, res1.Name, "C0101")
+	require.Equal(t, res1.Id, "C0101")
 	require.Equal(t, res1.Metadata, "")
 	require.Equal(t, res1.ProjectLocation, "AB-CDE FG1 345")
-	require.Equal(t, res1.ClassId, uint64(1))
+	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 
 	// verify project sequence
 	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
-	require.Equal(t, res2.ClassId, uint64(1))
-	require.Equal(t, res2.NextProjectId, uint64(3))
+	require.Equal(t, res2.ClassKey, uint64(1))
+	require.Equal(t, res2.NextSequence, uint64(3))
 
 	// verify class sequence table migration
 	res3, err := ss.ClassSequenceTable().Get(ctx, "C")
 	require.NoError(t, err)
 	require.NotNil(t, res3)
-	require.Equal(t, res3.CreditType, "C")
-	require.Equal(t, res3.NextClassId, uint64(3))
+	require.Equal(t, res3.CreditTypeAbbrev, "C")
+	require.Equal(t, res3.NextSequence, uint64(3))
 
 	// verify batch sequence table migration
 	// project C0101 contains one credit batch ==> expected nextBatchId is 2
-	res4, err := ss.BatchSequenceTable().Get(ctx, "C0101")
+	res4, err := ss.BatchSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
-	require.Equal(t, res4.NextBatchId, uint64(2))
-	require.Equal(t, res4.ProjectId, "C0101")
+	require.Equal(t, res4.ProjectKey, uint64(1))
+	require.Equal(t, res4.NextSequence, uint64(2))
 
 	// projectC0102 contains two credit batches ==> expected nextBatchId is 3
-	res4, err = ss.BatchSequenceTable().Get(ctx, "C0102")
+	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
-	require.Equal(t, res4.NextBatchId, uint64(3))
-	require.Equal(t, res4.ProjectId, "C0102")
+	require.Equal(t, res4.ProjectKey, uint64(2))
+	require.Equal(t, res4.NextSequence, uint64(3))
 
 	// verify tradable and retired balance migration
 	// recipient1 balance -> tradable: 550 , retired: 350

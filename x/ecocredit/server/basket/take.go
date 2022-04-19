@@ -171,7 +171,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		return err
 	}
 	if !retire {
-		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
+		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
 		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
@@ -181,10 +181,10 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			BasketDenom:    basketDenom,
 		})
 	} else {
-		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
+		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
-		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Id, amount); err != nil {
+		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 			return err
 		}
 		err = sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{

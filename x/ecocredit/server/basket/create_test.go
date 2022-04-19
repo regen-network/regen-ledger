@@ -104,8 +104,8 @@ func TestInvalidClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       "bar",
-		CreditType: "BIO",
+		Id:               "bar",
+		CreditTypeAbbrev: "BIO",
 	}))
 	mockAny := gomock.Any()
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
@@ -165,10 +165,10 @@ func TestValidBasket(t *testing.T) {
 		},
 	)
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       "bar",
-		Admin:      nil,
-		Metadata:   "",
-		CreditType: "C",
+		Id:               "bar",
+		Admin:            nil,
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	}))
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = fee

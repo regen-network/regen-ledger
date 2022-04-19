@@ -4583,16 +4583,16 @@ func (x *fastReflection_EventCancel) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventClassAdminUpdated            protoreflect.MessageDescriptor
-	fd_EventClassAdminUpdated_class_name protoreflect.FieldDescriptor
-	fd_EventClassAdminUpdated_old_admin  protoreflect.FieldDescriptor
-	fd_EventClassAdminUpdated_new_admin  protoreflect.FieldDescriptor
+	md_EventClassAdminUpdated           protoreflect.MessageDescriptor
+	fd_EventClassAdminUpdated_class_id  protoreflect.FieldDescriptor
+	fd_EventClassAdminUpdated_old_admin protoreflect.FieldDescriptor
+	fd_EventClassAdminUpdated_new_admin protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventClassAdminUpdated = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventClassAdminUpdated")
-	fd_EventClassAdminUpdated_class_name = md_EventClassAdminUpdated.Fields().ByName("class_name")
+	fd_EventClassAdminUpdated_class_id = md_EventClassAdminUpdated.Fields().ByName("class_id")
 	fd_EventClassAdminUpdated_old_admin = md_EventClassAdminUpdated.Fields().ByName("old_admin")
 	fd_EventClassAdminUpdated_new_admin = md_EventClassAdminUpdated.Fields().ByName("new_admin")
 }
@@ -4662,9 +4662,9 @@ func (x *fastReflection_EventClassAdminUpdated) Interface() protoreflect.ProtoMe
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventClassAdminUpdated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ClassName != "" {
-		value := protoreflect.ValueOfString(x.ClassName)
-		if !f(fd_EventClassAdminUpdated_class_name, value) {
+	if x.ClassId != "" {
+		value := protoreflect.ValueOfString(x.ClassId)
+		if !f(fd_EventClassAdminUpdated_class_id, value) {
 			return
 		}
 	}
@@ -4695,8 +4695,8 @@ func (x *fastReflection_EventClassAdminUpdated) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventClassAdminUpdated) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
-		return x.ClassName != ""
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
+		return x.ClassId != ""
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		return x.OldAdmin != ""
 	case "regen.ecocredit.v1.EventClassAdminUpdated.new_admin":
@@ -4717,8 +4717,8 @@ func (x *fastReflection_EventClassAdminUpdated) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassAdminUpdated) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
-		x.ClassName = ""
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
+		x.ClassId = ""
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		x.OldAdmin = ""
 	case "regen.ecocredit.v1.EventClassAdminUpdated.new_admin":
@@ -4739,8 +4739,8 @@ func (x *fastReflection_EventClassAdminUpdated) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventClassAdminUpdated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
-		value := x.ClassName
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
+		value := x.ClassId
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		value := x.OldAdmin
@@ -4768,8 +4768,8 @@ func (x *fastReflection_EventClassAdminUpdated) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassAdminUpdated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
-		x.ClassName = value.Interface().(string)
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
+		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		x.OldAdmin = value.Interface().(string)
 	case "regen.ecocredit.v1.EventClassAdminUpdated.new_admin":
@@ -4794,8 +4794,8 @@ func (x *fastReflection_EventClassAdminUpdated) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassAdminUpdated) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
-		panic(fmt.Errorf("field class_name of message regen.ecocredit.v1.EventClassAdminUpdated is not mutable"))
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
+		panic(fmt.Errorf("field class_id of message regen.ecocredit.v1.EventClassAdminUpdated is not mutable"))
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		panic(fmt.Errorf("field old_admin of message regen.ecocredit.v1.EventClassAdminUpdated is not mutable"))
 	case "regen.ecocredit.v1.EventClassAdminUpdated.new_admin":
@@ -4813,7 +4813,7 @@ func (x *fastReflection_EventClassAdminUpdated) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventClassAdminUpdated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassAdminUpdated.class_name":
+	case "regen.ecocredit.v1.EventClassAdminUpdated.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.EventClassAdminUpdated.old_admin":
 		return protoreflect.ValueOfString("")
@@ -4888,7 +4888,7 @@ func (x *fastReflection_EventClassAdminUpdated) ProtoMethods() *protoiface.Metho
 		var n int
 		var l int
 		_ = l
-		l = len(x.ClassName)
+		l = len(x.ClassId)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -4943,10 +4943,10 @@ func (x *fastReflection_EventClassAdminUpdated) ProtoMethods() *protoiface.Metho
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.ClassName) > 0 {
-			i -= len(x.ClassName)
-			copy(dAtA[i:], x.ClassName)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassName)))
+		if len(x.ClassId) > 0 {
+			i -= len(x.ClassId)
+			copy(dAtA[i:], x.ClassId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -5001,7 +5001,7 @@ func (x *fastReflection_EventClassAdminUpdated) ProtoMethods() *protoiface.Metho
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -5029,7 +5029,7 @@ func (x *fastReflection_EventClassAdminUpdated) ProtoMethods() *protoiface.Metho
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ClassName = string(dAtA[iNdEx:postIndex])
+				x.ClassId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -5224,7 +5224,7 @@ func (x *_EventClassIssuersUpdated_3_list) IsValid() bool {
 
 var (
 	md_EventClassIssuersUpdated                 protoreflect.MessageDescriptor
-	fd_EventClassIssuersUpdated_class_name      protoreflect.FieldDescriptor
+	fd_EventClassIssuersUpdated_class_id        protoreflect.FieldDescriptor
 	fd_EventClassIssuersUpdated_added_issuers   protoreflect.FieldDescriptor
 	fd_EventClassIssuersUpdated_removed_issuers protoreflect.FieldDescriptor
 )
@@ -5232,7 +5232,7 @@ var (
 func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventClassIssuersUpdated = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventClassIssuersUpdated")
-	fd_EventClassIssuersUpdated_class_name = md_EventClassIssuersUpdated.Fields().ByName("class_name")
+	fd_EventClassIssuersUpdated_class_id = md_EventClassIssuersUpdated.Fields().ByName("class_id")
 	fd_EventClassIssuersUpdated_added_issuers = md_EventClassIssuersUpdated.Fields().ByName("added_issuers")
 	fd_EventClassIssuersUpdated_removed_issuers = md_EventClassIssuersUpdated.Fields().ByName("removed_issuers")
 }
@@ -5302,9 +5302,9 @@ func (x *fastReflection_EventClassIssuersUpdated) Interface() protoreflect.Proto
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventClassIssuersUpdated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ClassName != "" {
-		value := protoreflect.ValueOfString(x.ClassName)
-		if !f(fd_EventClassIssuersUpdated_class_name, value) {
+	if x.ClassId != "" {
+		value := protoreflect.ValueOfString(x.ClassId)
+		if !f(fd_EventClassIssuersUpdated_class_id, value) {
 			return
 		}
 	}
@@ -5335,8 +5335,8 @@ func (x *fastReflection_EventClassIssuersUpdated) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventClassIssuersUpdated) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
-		return x.ClassName != ""
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
+		return x.ClassId != ""
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.added_issuers":
 		return len(x.AddedIssuers) != 0
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.removed_issuers":
@@ -5357,8 +5357,8 @@ func (x *fastReflection_EventClassIssuersUpdated) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassIssuersUpdated) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
-		x.ClassName = ""
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
+		x.ClassId = ""
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.added_issuers":
 		x.AddedIssuers = nil
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.removed_issuers":
@@ -5379,8 +5379,8 @@ func (x *fastReflection_EventClassIssuersUpdated) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventClassIssuersUpdated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
-		value := x.ClassName
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
+		value := x.ClassId
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.added_issuers":
 		if len(x.AddedIssuers) == 0 {
@@ -5414,8 +5414,8 @@ func (x *fastReflection_EventClassIssuersUpdated) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassIssuersUpdated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
-		x.ClassName = value.Interface().(string)
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
+		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.added_issuers":
 		lv := value.List()
 		clv := lv.(*_EventClassIssuersUpdated_2_list)
@@ -5456,8 +5456,8 @@ func (x *fastReflection_EventClassIssuersUpdated) Mutable(fd protoreflect.FieldD
 		}
 		value := &_EventClassIssuersUpdated_3_list{list: &x.RemovedIssuers}
 		return protoreflect.ValueOfList(value)
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
-		panic(fmt.Errorf("field class_name of message regen.ecocredit.v1.EventClassIssuersUpdated is not mutable"))
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
+		panic(fmt.Errorf("field class_id of message regen.ecocredit.v1.EventClassIssuersUpdated is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventClassIssuersUpdated"))
@@ -5471,7 +5471,7 @@ func (x *fastReflection_EventClassIssuersUpdated) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventClassIssuersUpdated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_name":
+	case "regen.ecocredit.v1.EventClassIssuersUpdated.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.EventClassIssuersUpdated.added_issuers":
 		list := []string{}
@@ -5548,7 +5548,7 @@ func (x *fastReflection_EventClassIssuersUpdated) ProtoMethods() *protoiface.Met
 		var n int
 		var l int
 		_ = l
-		l = len(x.ClassName)
+		l = len(x.ClassId)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -5611,10 +5611,10 @@ func (x *fastReflection_EventClassIssuersUpdated) ProtoMethods() *protoiface.Met
 				dAtA[i] = 0x12
 			}
 		}
-		if len(x.ClassName) > 0 {
-			i -= len(x.ClassName)
-			copy(dAtA[i:], x.ClassName)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassName)))
+		if len(x.ClassId) > 0 {
+			i -= len(x.ClassId)
+			copy(dAtA[i:], x.ClassId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -5669,7 +5669,7 @@ func (x *fastReflection_EventClassIssuersUpdated) ProtoMethods() *protoiface.Met
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -5697,7 +5697,7 @@ func (x *fastReflection_EventClassIssuersUpdated) ProtoMethods() *protoiface.Met
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ClassName = string(dAtA[iNdEx:postIndex])
+				x.ClassId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -5800,7 +5800,7 @@ func (x *fastReflection_EventClassIssuersUpdated) ProtoMethods() *protoiface.Met
 
 var (
 	md_EventClassMetadataUpdated              protoreflect.MessageDescriptor
-	fd_EventClassMetadataUpdated_class_name   protoreflect.FieldDescriptor
+	fd_EventClassMetadataUpdated_class_id     protoreflect.FieldDescriptor
 	fd_EventClassMetadataUpdated_old_metadata protoreflect.FieldDescriptor
 	fd_EventClassMetadataUpdated_new_metadata protoreflect.FieldDescriptor
 )
@@ -5808,7 +5808,7 @@ var (
 func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventClassMetadataUpdated = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventClassMetadataUpdated")
-	fd_EventClassMetadataUpdated_class_name = md_EventClassMetadataUpdated.Fields().ByName("class_name")
+	fd_EventClassMetadataUpdated_class_id = md_EventClassMetadataUpdated.Fields().ByName("class_id")
 	fd_EventClassMetadataUpdated_old_metadata = md_EventClassMetadataUpdated.Fields().ByName("old_metadata")
 	fd_EventClassMetadataUpdated_new_metadata = md_EventClassMetadataUpdated.Fields().ByName("new_metadata")
 }
@@ -5878,9 +5878,9 @@ func (x *fastReflection_EventClassMetadataUpdated) Interface() protoreflect.Prot
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventClassMetadataUpdated) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ClassName != "" {
-		value := protoreflect.ValueOfString(x.ClassName)
-		if !f(fd_EventClassMetadataUpdated_class_name, value) {
+	if x.ClassId != "" {
+		value := protoreflect.ValueOfString(x.ClassId)
+		if !f(fd_EventClassMetadataUpdated_class_id, value) {
 			return
 		}
 	}
@@ -5911,8 +5911,8 @@ func (x *fastReflection_EventClassMetadataUpdated) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventClassMetadataUpdated) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
-		return x.ClassName != ""
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
+		return x.ClassId != ""
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		return x.OldMetadata != ""
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.new_metadata":
@@ -5933,8 +5933,8 @@ func (x *fastReflection_EventClassMetadataUpdated) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassMetadataUpdated) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
-		x.ClassName = ""
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
+		x.ClassId = ""
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		x.OldMetadata = ""
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.new_metadata":
@@ -5955,8 +5955,8 @@ func (x *fastReflection_EventClassMetadataUpdated) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventClassMetadataUpdated) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
-		value := x.ClassName
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
+		value := x.ClassId
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		value := x.OldMetadata
@@ -5984,8 +5984,8 @@ func (x *fastReflection_EventClassMetadataUpdated) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassMetadataUpdated) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
-		x.ClassName = value.Interface().(string)
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
+		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		x.OldMetadata = value.Interface().(string)
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.new_metadata":
@@ -6010,8 +6010,8 @@ func (x *fastReflection_EventClassMetadataUpdated) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventClassMetadataUpdated) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
-		panic(fmt.Errorf("field class_name of message regen.ecocredit.v1.EventClassMetadataUpdated is not mutable"))
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
+		panic(fmt.Errorf("field class_id of message regen.ecocredit.v1.EventClassMetadataUpdated is not mutable"))
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		panic(fmt.Errorf("field old_metadata of message regen.ecocredit.v1.EventClassMetadataUpdated is not mutable"))
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.new_metadata":
@@ -6029,7 +6029,7 @@ func (x *fastReflection_EventClassMetadataUpdated) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventClassMetadataUpdated) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_name":
+	case "regen.ecocredit.v1.EventClassMetadataUpdated.class_id":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.EventClassMetadataUpdated.old_metadata":
 		return protoreflect.ValueOfString("")
@@ -6104,7 +6104,7 @@ func (x *fastReflection_EventClassMetadataUpdated) ProtoMethods() *protoiface.Me
 		var n int
 		var l int
 		_ = l
-		l = len(x.ClassName)
+		l = len(x.ClassId)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -6159,10 +6159,10 @@ func (x *fastReflection_EventClassMetadataUpdated) ProtoMethods() *protoiface.Me
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.ClassName) > 0 {
-			i -= len(x.ClassName)
-			copy(dAtA[i:], x.ClassName)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassName)))
+		if len(x.ClassId) > 0 {
+			i -= len(x.ClassId)
+			copy(dAtA[i:], x.ClassId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ClassId)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -6217,7 +6217,7 @@ func (x *fastReflection_EventClassMetadataUpdated) ProtoMethods() *protoiface.Me
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassName", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -6245,7 +6245,7 @@ func (x *fastReflection_EventClassMetadataUpdated) ProtoMethods() *protoiface.Me
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ClassName = string(dAtA[iNdEx:postIndex])
+				x.ClassId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -6365,7 +6365,7 @@ type EventCreateClass struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique ID of credit class.
+	// class_id is the unique identifier of the credit class.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// admin is the admin of the credit class.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -6411,11 +6411,12 @@ type EventCreateProject struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// project_id is the unique ID of the project.
+	// project_id is the unique identifier of the project.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// admin is the admin of the project.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
-	// class_id is the unique ID of credit class for this project.
+	// class_id is the unique identifier of the credit class within which the
+	// project was created.
 	ClassId string `protobuf:"bytes,3,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// project_location is the location of the project.
 	// Full documentation can be found in MsgCreateProject.project_location.
@@ -6476,9 +6477,10 @@ type EventCreateBatch struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique ID of credit class.
+	// class_id is the unique identifier of the credit class within which the
+	// credit batch was created.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	// batch_denom is the unique ID of credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// issuer is the account address of the issuer of the credit batch.
 	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
@@ -6495,7 +6497,8 @@ type EventCreateBatch struct {
 	// project_location is the location of the project backing the credits in this
 	// batch. Full documentation can be found in MsgCreateBatch.project_location.
 	ProjectLocation string `protobuf:"bytes,8,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
-	// project_id is the unique ID of the project this batch belongs to.
+	// project_id is the unique identifier of the project within which the credit
+	// batch was created.
 	ProjectId string `protobuf:"bytes,9,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// A reference to a transaction or an event referencing the transaction
 	// which caused the transfer from other chain or registry.
@@ -6607,7 +6610,8 @@ type EventMintBatchCredits struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch_denom is the unique ID of credit batch.
+	// batch_denom is the unique identifier of the credit batch within which the
+	// credits were minted.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// A reference to a transaction or an event referencing the transaction
 	// which caused the transfer from other chain or registry.
@@ -6663,7 +6667,7 @@ type EventReceive struct {
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// recipient is the recipient of the credits.
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// batch_denom is the unique ID of credit batch.
+	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// tradable_amount is the decimal number of tradable credits received.
 	TradableAmount string `protobuf:"bytes,4,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
@@ -6750,7 +6754,8 @@ type EventRetire struct {
 	// account receiving credits in the case that credits were retired upon
 	// issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
 	Retirer string `protobuf:"bytes,1,opt,name=retirer,proto3" json:"retirer,omitempty"`
-	// batch_denom is the unique ID of credit batch.
+	// batch_denom is the unique identifier of the credit batch within which the
+	// credits were retired.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the decimal number of credits that have been retired.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
@@ -6821,7 +6826,8 @@ type EventCancel struct {
 	// canceller is the account which has cancelled the credits, which should be
 	// the holder of the credits.
 	Canceller string `protobuf:"bytes,1,opt,name=canceller,proto3" json:"canceller,omitempty"`
-	// batch_denom is the unique ID of credit batch.
+	// batch_denom is the unique identifier of the credit batch within which the
+	// credits were cancelled.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the decimal number of credits that have been cancelled.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
@@ -6875,8 +6881,8 @@ type EventClassAdminUpdated struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_name is the name of the class that was updated.
-	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// class_id is the unique identifier of the class that was updated.
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// old_admin is the admin of the credit class before the update.
 	OldAdmin string `protobuf:"bytes,2,opt,name=old_admin,json=oldAdmin,proto3" json:"old_admin,omitempty"`
 	// new_admin is the admin of the credit class after the update.
@@ -6903,9 +6909,9 @@ func (*EventClassAdminUpdated) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *EventClassAdminUpdated) GetClassName() string {
+func (x *EventClassAdminUpdated) GetClassId() string {
 	if x != nil {
-		return x.ClassName
+		return x.ClassId
 	}
 	return ""
 }
@@ -6931,8 +6937,8 @@ type EventClassIssuersUpdated struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_name is the name of the class that was updated.
-	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// class_id is the unique identifier of the class that was updated.
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// added_issuers contains all the addresses added to the class issuer list.
 	AddedIssuers []string `protobuf:"bytes,2,rep,name=added_issuers,json=addedIssuers,proto3" json:"added_issuers,omitempty"`
 	// removed_issuers contains all the addresses removed from the class issuer
@@ -6960,9 +6966,9 @@ func (*EventClassIssuersUpdated) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *EventClassIssuersUpdated) GetClassName() string {
+func (x *EventClassIssuersUpdated) GetClassId() string {
 	if x != nil {
-		return x.ClassName
+		return x.ClassId
 	}
 	return ""
 }
@@ -6988,8 +6994,8 @@ type EventClassMetadataUpdated struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_name is the name of the class that was updated.
-	ClassName string `protobuf:"bytes,1,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	// class_id is the unique identifier of the class that was updated.
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// old_metadata is the metadata before the update.
 	OldMetadata string `protobuf:"bytes,2,opt,name=old_metadata,json=oldMetadata,proto3" json:"old_metadata,omitempty"`
 	// new_metadata is the metadata after the update.
@@ -7016,9 +7022,9 @@ func (*EventClassMetadataUpdated) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *EventClassMetadataUpdated) GetClassName() string {
+func (x *EventClassMetadataUpdated) GetClassId() string {
 	if x != nil {
-		return x.ClassName
+		return x.ClassId
 	}
 	return ""
 }
@@ -7118,45 +7124,44 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06,
 	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x71, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61,
-	0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x1d,
-	0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a,
-	0x09, 0x6f, 0x6c, 0x64, 0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x6f, 0x6c, 0x64, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1b, 0x0a, 0x09, 0x6e, 0x65,
-	0x77, 0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6e,
-	0x65, 0x77, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61,
-	0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e,
-	0x61, 0x6d, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x61, 0x64, 0x64, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73,
-	0x75, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x64, 0x64, 0x65,
-	0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f,
-	0x76, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
-	0x09, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72,
-	0x73, 0x22, 0x80, 0x01, 0x0a, 0x19, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12,
-	0x1d, 0x0a, 0x0a, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x21,
-	0x0a, 0x0c, 0x6f, 0x6c, 0x64, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6f, 0x6c, 0x64, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0x12, 0x21, 0x0a, 0x0c, 0x6e, 0x65, 0x77, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6e, 0x65, 0x77, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0x42, 0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42,
-	0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02,
-	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x6d, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x19,
+	0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x6f, 0x6c, 0x64,
+	0x5f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x6c,
+	0x64, 0x41, 0x64, 0x6d, 0x69, 0x6e, 0x12, 0x1b, 0x0a, 0x09, 0x6e, 0x65, 0x77, 0x5f, 0x61, 0x64,
+	0x6d, 0x69, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6e, 0x65, 0x77, 0x41, 0x64,
+	0x6d, 0x69, 0x6e, 0x22, 0x83, 0x01, 0x0a, 0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x6c, 0x61,
+	0x73, 0x73, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64,
+	0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x61,
+	0x64, 0x64, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03,
+	0x28, 0x09, 0x52, 0x0c, 0x61, 0x64, 0x64, 0x65, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73,
+	0x12, 0x27, 0x0a, 0x0f, 0x72, 0x65, 0x6d, 0x6f, 0x76, 0x65, 0x64, 0x5f, 0x69, 0x73, 0x73, 0x75,
+	0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0e, 0x72, 0x65, 0x6d, 0x6f, 0x76,
+	0x65, 0x64, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x73, 0x22, 0x7c, 0x0a, 0x19, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49,
+	0x64, 0x12, 0x21, 0x0a, 0x0c, 0x6f, 0x6c, 0x64, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6f, 0x6c, 0x64, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0x12, 0x21, 0x0a, 0x0c, 0x6e, 0x65, 0x77, 0x5f, 0x6d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x6e, 0x65, 0x77, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x42, 0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
+	0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a,
+	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

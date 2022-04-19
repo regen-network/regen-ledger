@@ -85,7 +85,7 @@ func setupTake(t *testing.T) *takeSuite {
 	batchDenoms := []string{"C1-00000000-0000000-001", "C2-00000000-0000000-001", "C3-00000000-0000000-001", "C4-00000000-0000000-001"}
 	for _, denom := range batchDenoms {
 		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
-			ProjectId:  1,
+			ProjectKey: 1,
 			BatchDenom: denom,
 		}))
 	}
@@ -273,7 +273,7 @@ func (s takeSuite) getSupply(batchDenom string) *ecoApi.BatchSupply {
 	supply, err := s.coreStore.BatchSupplyTable().Get(s.ctx, id)
 	if ormerrors.IsNotFound(err) {
 		supply = &ecoApi.BatchSupply{
-			BatchId:         id,
+			BatchKey:        id,
 			TradableAmount:  "0",
 			RetiredAmount:   "0",
 			CancelledAmount: "0",
@@ -286,7 +286,7 @@ func (s takeSuite) getSupply(batchDenom string) *ecoApi.BatchSupply {
 
 func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
 	assert.NilError(s.t, s.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
-		BatchId:         batchId,
+		BatchKey:        batchId,
 		TradableAmount:  amount,
 		RetiredAmount:   "0",
 		CancelledAmount: "0",
@@ -298,8 +298,8 @@ func (s takeSuite) getUserBalance(batchDenom string) *ecoApi.BatchBalance {
 	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, id)
 	if ormerrors.IsNotFound(err) {
 		bal = &ecoApi.BatchBalance{
+			BatchKey: id,
 			Address:  s.addr,
-			BatchId:  id,
 			Tradable: "0",
 			Retired:  "0",
 			Escrowed: "0",

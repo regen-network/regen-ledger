@@ -15,7 +15,7 @@ func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdatePr
 	if err != nil {
 		return nil, err
 	}
-	project, err := k.stateStore.ProjectInfoTable().GetByName(ctx, req.ProjectId)
+	project, err := k.stateStore.ProjectInfoTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}

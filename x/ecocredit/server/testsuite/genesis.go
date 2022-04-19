@@ -30,38 +30,38 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	classIssuersJSON := `[
-	{"class_id":"1","issuer":"1ygCfmJaPVMIvVEcpx6r+2gpurM="},
-	{"class_id":"1","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
-	{"class_id":"2","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
-	{"class_id":"2","issuer":"lEjmu9Vooa24qp9vCMIlXGrMZoU="}
+	{"class_key":"1","issuer":"1ygCfmJaPVMIvVEcpx6r+2gpurM="},
+	{"class_key":"1","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
+	{"class_key":"2","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
+	{"class_key":"2","issuer":"lEjmu9Vooa24qp9vCMIlXGrMZoU="}
 	]`
 
 	classInfoJSON := `[
-		{"name":"BIO001","admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=","metadata":"credit class metadata","credit_type":"BIO"},
-		{"name":"BIO02","admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=","metadata":"credit class metadata","credit_type":"BIO"}	
+		{"id":"BIO001","admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=","metadata":"credit class metadata","credit_type_abbrev":"BIO"},
+		{"id":"BIO02","admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=","metadata":"credit class metadata","credit_type_abbrev":"BIO"}	
 	]`
 
 	projectInfoJSON := `[
-		{"name":"P01","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_id":"1","project_location":"AQ","metadata":"project metadata"},
-		{"name":"P02","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_id":"2","project_location":"AQ","metadata":"project metadata"}	
+		{"id":"P01","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_key":"1","project_location":"AQ","metadata":"project metadata"},
+		{"id":"P02","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_key":"2","project_location":"AQ","metadata":"project metadata"}	
 	]`
 
 	batchInfoJSON := `[
-	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_id":"1","batch_denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
-	{"issuer":null,"project_id":"1","batch_denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
+	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_key":"1","batch_denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
+	{"issuer":null,"project_key":"1","batch_denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
 	]`
 
 	batchBalancesJSON := `[
-	{"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=","batch_id":"1","tradable":"90.003","retired":"9.997","escrowed":""}
+	{"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=","batch_key":"1","tradable":"90.003","retired":"9.997","escrowed":""}
 	]`
 
 	batchSupplyJSON := `[
-		{"batch_id":"1","tradable_amount":"90.003","retired_amount":"9.997","cancelled_amount":""}
+		{"batch_key":"1","tradable_amount":"90.003","retired_amount":"9.997","cancelled_amount":""}
 	]`
 
-	classSeqJSON := `[{"credit_type":"BIO","next_class_id":"3"}]`
-	batchSeqJSON := `[{"project_id":"P01","next_batch_id":"3"}]`
-	projectSeqJSON := `[{"class_id":"1","next_project_id":"3"}]`
+	classSeqJSON := `[{"credit_type_abbrev":"BIO","next_sequence":"3"}]`
+	batchSeqJSON := `[{"project_key":"1","next_sequence":"3"}]`
+	projectSeqJSON := `[{"class_key":"1","next_sequence":"3"}]`
 
 	wrapper := map[string]json.RawMessage{}
 	wrapper[gogoproto.MessageName(&core.ClassInfo{})] = []byte(classInfoJSON)
