@@ -14,6 +14,10 @@ import (
 
 // AttestorsByIRI queries attestors based on IRI.
 func (s serverImpl) AttestorsByIRI(ctx context.Context, request *data.QueryAttestorsByIRIRequest) (*data.QueryAttestorsByIRIResponse, error) {
+	if request.Iri == "" {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("IRI cannot be empty")
+	}
+
 	dataId, err := s.stateStore.DataIDTable().GetByIri(ctx, request.Iri)
 	if err != nil {
 		return nil, err
