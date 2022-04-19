@@ -18,7 +18,7 @@ import (
 func TestCreateBatch_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	_, projectName := batchTestSetup(t, s.ctx, s.stateStore, s.addr)
+	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
@@ -81,9 +81,9 @@ func TestCreateBatch_Valid(t *testing.T) {
 	assert.Equal(t, "3.4", bal2.Retired)
 
 	// check sequence number
-	seq, err := s.stateStore.BatchSequenceTable().Get(s.ctx, projectName)
+	seq, err := s.stateStore.BatchSequenceTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, uint64(2), seq.NextBatchId)
+	assert.Equal(t, uint64(2), seq.NextSequence)
 }
 
 func TestCreateBatch_BadPrecision(t *testing.T) {
@@ -137,23 +137,23 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 }
 
 // creates a class "C01", with a single class issuer, and a project "PRO"
-func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (className, projectName string) {
-	className, projectName = "C01", "PRO"
-	cid, err := ss.ClassInfoTable().InsertReturningID(ctx, &api.ClassInfo{
-		Name:       className,
-		Admin:      addr,
-		Metadata:   "",
-		CreditType: "C",
+func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (classId, projectId string) {
+	classId, projectId = "C01", "PRO"
+	classKey, err := ss.ClassInfoTable().InsertReturningID(ctx, &api.ClassInfo{
+		Id:               classId,
+		Admin:            addr,
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err)
 	err = ss.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
-		ClassId: cid,
-		Issuer:  addr,
+		ClassKey: classKey,
+		Issuer:   addr,
 	})
 	assert.NilError(t, err)
 	_, err = ss.ProjectInfoTable().InsertReturningID(ctx, &api.ProjectInfo{
-		Name:            projectName,
-		ClassId:         1,
+		Id:              projectId,
+		ClassKey:        classKey,
 		ProjectLocation: "",
 		Metadata:        "",
 	})

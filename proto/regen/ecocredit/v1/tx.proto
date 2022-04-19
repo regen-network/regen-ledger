@@ -63,6 +63,14 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata)
       returns (MsgUpdateClassMetadataResponse);
+
+  // UpdateProjectAdmin updates the project admin address
+  rpc UpdateProjectAdmin(MsgUpdateProjectAdmin)
+      returns (MsgUpdateProjectAdminResponse);
+
+  // UpdateProjectMetadata updates the project metadata
+  rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
+      returns (MsgUpdateProjectMetadataResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -76,8 +84,7 @@ message MsgCreateClass {
   // metadata is any arbitrary metadata to attached to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev describes the abbreviation of a credit type (e.g. "C",
-  // "BIO").
+  // credit_type_abbrev is the abbreviation of a credit type (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
 
   // fee specifies the fee to pay for the creation of the credit class.
@@ -88,7 +95,8 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
-  // class_id is the unique ID of the newly created credit class.
+
+  // class_id is the unique identifier of the credit class.
   string class_id = 1;
 }
 
@@ -99,7 +107,8 @@ message MsgCreateProject {
   // issuer issue all batches for a project.
   string issuer = 1;
 
-  // class_id is the unique ID of the class within which the project is created.
+  // class_id is the unique identifier of the credit class within which the
+  // project will be created.
   string class_id = 2;
 
   // metadata is any arbitrary metadata attached to the project.
@@ -123,7 +132,8 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
-  // project_id is the ID of the newly created project.
+
+  // project_id is the unique identifier of the newly created project.
   string project_id = 1;
 }
 
@@ -133,7 +143,8 @@ message MsgCreateBatch {
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
-  // project_id is the unique ID of the project this batch belongs to.
+  // project_id is the unique identifier of the project within which the credit
+  // batch will be created.
   string project_id = 2;
 
   // issuance are the credits issued in the batch.
@@ -191,7 +202,8 @@ message BatchIssuance {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
-  // batch_denom is the unique denomination ID of the newly created batch.
+
+  // batch_denom is the unique identifier of the newly created batch.
   string batch_denom = 1;
 }
 
@@ -201,7 +213,7 @@ message MsgMintBatchCredits {
   // Signer of the msg.
   string issuer = 1;
 
-  // batch_denom is the unique ID of the credit batch.
+  // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 
   // issuance are the credits issued in the batch.
@@ -220,6 +232,9 @@ message MsgSealBatch {
   // Issuer must equal to the batch.issuer address.
   // Signer of the msg.
   string issuer = 1;
+
+  // batch_denom is the unique identifier of the credit batch.
+  string batch_denom = 2;
 }
 
 // MsgMintBatchCreditsResponse is the Msg/MintBatchCredits response type.
@@ -245,7 +260,7 @@ message MsgSend {
   // and retired credits, which will be retired on receipt.
   message SendCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // tradable_amount is the number of credits in this transfer that can be
@@ -283,7 +298,7 @@ message MsgRetire {
   // RetireCredits specifies a batch and the number of credits being retired.
   message RetireCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being retired.
@@ -315,7 +330,7 @@ message MsgCancel {
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
-    // batch_denom is the unique ID of the credit batch.
+    // batch_denom is the unique identifier of the credit batch.
     string batch_denom = 1;
 
     // amount is the number of credits being cancelled.
@@ -334,7 +349,7 @@ message MsgUpdateClassAdmin {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // new_admin is the address of the new admin of the credit class.
@@ -350,7 +365,7 @@ message MsgUpdateClassIssuers {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // add_issuers are the issuers to add to the class issuers list.
@@ -369,7 +384,7 @@ message MsgUpdateClassMetadata {
   // admin is the address of the account that is the admin of the credit class.
   string admin = 1;
 
-  // class_id is the unique ID of the credit class.
+  // class_id is the unique identifier of the credit class.
   string class_id = 2;
 
   // metadata is the updated arbitrary metadata to be attached to the credit
@@ -377,5 +392,38 @@ message MsgUpdateClassMetadata {
   string metadata = 3;
 }
 
-// MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+// MsgUpdateClassMetadataResponse is the Msg/UpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
+
+// MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin request type.
+message MsgUpdateProjectAdmin {
+
+  // admin is the project's current admin address.
+  string admin = 1;
+
+  // new_admin is the address of the new admin of the project.
+  string new_admin = 2;
+
+  // project_id is the unique identifier of the project (e.g. VERRA1).
+  string project_id = 3;
+}
+
+// MsgUpdateProjectAdmin is the Msg/UpdateProjectAdmin response type.
+message MsgUpdateProjectAdminResponse {}
+
+// MsgUpdateProjectMetadata is the Msg/UpdateProjectMetadata request type.
+message MsgUpdateProjectMetadata {
+
+  // admin is project admin address.
+  string admin = 1;
+
+  // new_metadata is the metadata to update the project with.
+  string new_metadata = 2;
+
+  // project_id is the unique identifier of the project (e.g. VERRA1).
+  string project_id = 3;
+}
+
+// MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
+// response type.
+message MsgUpdateProjectMetadataResponse {}

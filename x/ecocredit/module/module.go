@@ -29,7 +29,6 @@ import (
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -76,6 +75,7 @@ func (a Module) Name() string {
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
+	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
@@ -88,6 +88,7 @@ func (a *Module) RegisterServices(configurator servermodule.Configurator) {
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
+	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
@@ -105,8 +106,8 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 		panic(err)
 	}
 
-	legacyParams := coretypes.DefaultParams()
-	err = server.MergeLegacyJSONIntoTarget(cdc, &legacyParams, jsonTarget)
+	params := coretypes.DefaultParams()
+	err = coretypes.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -135,9 +136,8 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return err
 	}
 
-	var data ecocredit.GenesisState
-
-	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&data)))
+	var params coretypes.Params
+	r, err := jsonSource.OpenReader(protoreflect.FullName(proto.MessageName(&params)))
 	if err != nil {
 		return err
 	}
@@ -146,11 +146,12 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return nil
 	}
 
-	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
+	if err := (&jsonpb.Unmarshaler{AllowUnknownFields: true}).Unmarshal(r, &params); err != nil {
+		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return data.Validate()
+	return coretypes.ValidateGenesis(bz, params)
+
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
@@ -167,7 +168,8 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	basket.RegisterLegacyAminoCodec(cdc)
+	ecocredit.RegisterLegacyAminoCodec(cdc)
+	baskettypes.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
 	marketplacetypes.RegisterLegacyAminoCodec(cdc)
 }

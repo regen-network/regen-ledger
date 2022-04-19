@@ -58,8 +58,8 @@ message MsgAnchor {
   // can simply be an intermediary providing services.
   string sender = 1;
 
-  // hash is the content hash for the data to anchor.
-  ContentHash hash = 2;
+  // content_hash is the content hash for the data to anchor.
+  ContentHash content_hash = 2;
 }
 
 // MsgAnchor is the Msg/Anchor response type.
@@ -79,10 +79,10 @@ message MsgAttest {
   // vary depending on the underlying data.
   string attestor = 1;
 
-  // hashes are the content hashes for anchored data. Only RDF graph data can be
-  // signed as its data model is intended to specifically convey semantic
-  // meaning.
-  repeated ContentHash.Graph hashes = 2;
+  // content_hashes are the content hashes for anchored data. Only RDF graph
+  // data can be signed as its data model is intended to specifically convey
+  // semantic meaning.
+  repeated ContentHash.Graph content_hashes = 2;
 }
 
 // MsgAttestResponse is the Msg/Attest response type.
@@ -125,8 +125,9 @@ message MsgRegisterResolver {
   // resolver_id is the ID of a resolver defined with Msg/DefineResolver.
   uint64 resolver_id = 2;
 
-  // data is a list of content hashes which the resolver claims to serve.
-  repeated ContentHash data = 3;
+  // content_hashes is a list of content hashes which the resolver claims to
+  // serve.
+  repeated ContentHash content_hashes = 3;
 }
 
 // MsgRegisterResolverResponse is the Msg/RegisterResolver response type.

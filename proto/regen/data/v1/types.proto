@@ -148,8 +148,8 @@ enum GraphMerkleTree {
 
 // ContentEntry describes data referenced and possibly stored on chain
 message ContentEntry {
-  // hash is the content hash of the anchored data.
-  ContentHash hash = 1;
+  // content_hash is the content hash of the anchored data.
+  ContentHash content_hash = 1;
 
   // iri is the IRI of the anchored data.
   string iri = 2;
@@ -175,5 +175,5 @@ message AttestorEntry {
 // ContentHashes contains list of content ContentHash.
 message ContentHashes {
   // data is a list of content hashes which the resolver claims to serve.
-  repeated ContentHash data = 1;
+  repeated ContentHash content_hashes = 1;
 }

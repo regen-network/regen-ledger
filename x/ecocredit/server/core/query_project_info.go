@@ -9,7 +9,7 @@ import (
 
 // ProjectInfo queries project info from the given project name.
 func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoRequest) (*core.QueryProjectInfoResponse, error) {
-	info, err := k.stateStore.ProjectInfoTable().GetByName(ctx, request.ProjectId)
+	info, err := k.stateStore.ProjectInfoTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}

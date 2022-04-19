@@ -70,36 +70,36 @@ func setupBase(t *testing.T) *baseSuite {
 
 // setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
-func (s baseSuite) setupClassProjectBatch(t *testing.T) (className, projectName, batchDenom string) {
-	className, projectName, batchDenom = "C01", "PRO", "C01-20200101-20210101-01"
+func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, batchDenom string) {
+	classId, projectId, batchDenom = "C01", "P01", "C01-20200101-20210101-01"
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Id:               classId,
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name:            "PRO",
-		ClassId:         1,
+		Id:              projectId,
+		ClassKey:        1,
 		ProjectLocation: "US-OR",
 		Metadata:        "",
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
-		BatchDenom: "C01-20200101-20210101-01",
+		ProjectKey: 1,
+		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
 	}))
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchId:         1,
+		BatchKey:        1,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey: 1,
 		Address:  s.addr,
-		BatchId:  1,
 		Tradable: "10.5",
 		Retired:  "10.5",
 	}))

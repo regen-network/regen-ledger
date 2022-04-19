@@ -17,13 +17,13 @@ func TestQuery_Balances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	balance1 := &api.BatchBalance{Address: s.addr, BatchId: 1, Tradable: "15", Retired: "15", Escrowed: "15"}
-	balance2 := &api.BatchBalance{Address: s.addr, BatchId: 2, Tradable: "19", Retired: "20", Escrowed: "33"}
+	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: 1, Tradable: "15", Retired: "15", Escrowed: "15"}
+	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: 2, Tradable: "19", Retired: "20", Escrowed: "33"}
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance1))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance2))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey: 3,
 		Address:  s.addr,
-		BatchId:  3,
 		Tradable: "4",
 		Retired:  "5",
 		Escrowed: "6",
