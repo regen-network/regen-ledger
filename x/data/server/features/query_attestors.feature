@@ -152,7 +152,7 @@ Feature: QueryAttestors
         "timestamp": "2020-01-01T00:00:00.000000000Z"
       }
       """
-      And the query by Hash request
+      And the query by hash request
       """
       {
         "content_hash": {
@@ -164,8 +164,8 @@ Feature: QueryAttestors
         }
       }
       """
-      When the query by Hash is executed
-      Then the query by Hash response
+      When the query by hash is executed
+      Then the query by hash response
       """
       {
         "attestors": [
@@ -177,7 +177,7 @@ Feature: QueryAttestors
       """
 
     Scenario: an error is returned if the data entry does not exist
-      Given the query by Hash request
+      Given the query by hash request
       """
       {
         "content_hash": {
@@ -189,11 +189,11 @@ Feature: QueryAttestors
         }
       }
       """
-      When the query by Hash is executed
+      When the query by hash is executed
       Then expect the error "not found"
 
     Scenario: the attestors are empty if there are no attestor entries
-      Given the query by Hash request
+      Given the query by hash request
       """
       {
         "content_hash": {
@@ -205,8 +205,8 @@ Feature: QueryAttestors
         }
       }
       """
-      When the query by Hash is executed
-      Then the query by Hash response
+      When the query by hash is executed
+      Then the query by hash response
       """
       {
         "attestors": null
