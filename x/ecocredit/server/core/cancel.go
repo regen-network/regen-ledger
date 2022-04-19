@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
@@ -31,11 +32,11 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Key)
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
+		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -58,8 +59,8 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
+			BatchKey: batch.Key,
 			Address:  holder,
-			BatchId:  batch.Id,
 			Tradable: userBalTradable.String(),
 			Retired:  userBalance.Retired,
 		}); err != nil {
@@ -67,7 +68,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 
 		if err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
-			BatchId:         batch.Id,
+			BatchKey:        batch.Key,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   batchSupply.RetiredAmount,
 			CancelledAmount: cancelledDec.String(),

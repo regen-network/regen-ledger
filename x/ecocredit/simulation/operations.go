@@ -246,7 +246,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 
 		var classID string
 		for _, class := range classes {
-			issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Name})
+			issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Id})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, err.Error()), nil, err
 			}
@@ -257,7 +257,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			}
 
 			if utils.Contains(issuers, issuer.Address.String()) {
-				classID = class.Name
+				classID = class.Id
 				break
 			}
 		}
@@ -316,7 +316,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var projectID string
 		for _, project := range projects {
 			if sdk.AccAddress(project.Admin).String() == issuer.Address.String() {
-				projectID = project.Name
+				projectID = project.Id
 				break
 			}
 		}
@@ -371,12 +371,12 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgSend, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgSend, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgSend, class.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgSend, class.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -486,12 +486,12 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgRetire, project.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgRetire, project.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -571,12 +571,12 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgCancel, project.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgCancel, project.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -657,7 +657,7 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 
 		msg := &core.MsgUpdateClassAdmin{
 			Admin:    admin.String(),
-			ClassId:  class.Name,
+			ClassId:  class.Id,
 			NewAdmin: newAdmin.Address.String(),
 		}
 
@@ -699,7 +699,7 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 
 		msg := &core.MsgUpdateClassMetadata{
 			Admin:    admin.String(),
-			ClassId:  class.Name,
+			ClassId:  class.Id,
 			Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
 		}
 
@@ -739,7 +739,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Name})
+		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Id})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
 		}
@@ -763,7 +763,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 
 		msg := &core.MsgUpdateClassIssuers{
 			Admin:         admin.String(),
-			ClassId:       class.Name,
+			ClassId:       class.Id,
 			AddIssuers:    addIssuers,
 			RemoveIssuers: removeIssuers,
 		}

@@ -61,22 +61,22 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 			return nil, err
 		}
 	} else {
-		seq = classSeq.NextClassId
+		seq = classSeq.NextSequence
 	}
 	if err = k.stateStore.ClassSequenceTable().Save(goCtx, &api.ClassSequence{
-		CreditType:  creditType.Abbreviation,
-		NextClassId: seq + 1,
+		CreditTypeAbbrev: creditType.Abbreviation,
+		NextSequence:     seq + 1,
 	}); err != nil {
 		return nil, err
 	}
 
 	classID := ecocredit.FormatClassID(creditType.Abbreviation, seq)
 
-	rowId, err := k.stateStore.ClassInfoTable().InsertReturningID(goCtx, &api.ClassInfo{
-		Name:       classID,
-		Admin:      adminAddress,
-		Metadata:   req.Metadata,
-		CreditType: creditType.Abbreviation,
+	key, err := k.stateStore.ClassInfoTable().InsertReturningID(goCtx, &api.ClassInfo{
+		Id:               classID,
+		Admin:            adminAddress,
+		Metadata:         req.Metadata,
+		CreditTypeAbbrev: creditType.Abbreviation,
 	})
 	if err != nil {
 		return nil, err
@@ -88,8 +88,8 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 			return nil, err
 		}
 		if err = k.stateStore.ClassIssuerTable().Insert(goCtx, &api.ClassIssuer{
-			ClassId: rowId,
-			Issuer:  issuer,
+			ClassKey: key,
+			Issuer:   issuer,
 		}); err != nil {
 			return nil, err
 		}

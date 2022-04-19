@@ -100,8 +100,8 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			buyerBal = &ecoApi.BatchBalance{
+				BatchKey: sellOrder.BatchId,
 				Address:  buyerAcc,
-				BatchId:  sellOrder.BatchId,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",

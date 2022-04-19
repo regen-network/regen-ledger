@@ -21,15 +21,15 @@ func TestQuery_Balance(t *testing.T) {
 
 	// make a batch and give s.addr some balance
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
+		BatchKey: 1,
 		Address:  s.addr,
-		BatchId:  1,
 		Tradable: tradable,
 		Retired:  retired,
 	}))

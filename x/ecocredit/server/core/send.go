@@ -53,11 +53,11 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	precision := creditType.Precision
 
-	batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
+	batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	if err != nil {
 		return err
 	}
-	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Id)
+	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Key)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
@@ -65,12 +65,12 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		return err
 	}
 
-	toBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, to, batch.Id)
+	toBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, to, batch.Key)
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &api.BatchBalance{
+				BatchKey: batch.Key,
 				Address:  to,
-				BatchId:  batch.Id,
 				Tradable: "0",
 				Retired:  "0",
 			}
@@ -120,8 +120,8 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	// update the "to" balance
 	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+		BatchKey: batch.Key,
 		Address:  to,
-		BatchId:  batch.Id,
 		Tradable: toTradableBalance.String(),
 		Retired:  toRetiredBalance.String(),
 	}); err != nil {
@@ -130,8 +130,8 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 
 	// update the "from" balance
 	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
+		BatchKey: batch.Key,
 		Address:  from,
-		BatchId:  batch.Id,
 		Tradable: fromTradableBalance.String(),
 		Retired:  fromRetiredBalance.String(),
 	}); err != nil {
@@ -140,7 +140,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	// update the "retired" supply only if credits were retired
 	if didRetire {
 		if err := k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
-			BatchId:         batch.Id,
+			BatchKey:        batch.Key,
 			TradableAmount:  batchSupplyTradable.String(),
 			RetiredAmount:   batchSupplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,

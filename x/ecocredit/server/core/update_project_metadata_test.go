@@ -16,9 +16,9 @@ func TestUpdateProjectMetadata_Valid(t *testing.T) {
 	s := setupBase(t)
 	projectId := "VERRA1"
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name:            projectId,
+		Id:              projectId,
 		Admin:           s.addr,
-		ClassId:         1,
+		ClassKey:        1,
 		ProjectLocation: "US-NY",
 		Metadata:        "hi",
 	}))
@@ -31,7 +31,7 @@ func TestUpdateProjectMetadata_Valid(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	project, err := s.stateStore.ProjectInfoTable().GetByName(s.ctx, projectId)
+	project, err := s.stateStore.ProjectInfoTable().GetById(s.ctx, projectId)
 	assert.NilError(t, err)
 	assert.Equal(t, newMetadata, project.Metadata)
 }
@@ -41,9 +41,9 @@ func TestUpdateProjectMetadata_Unauthorized(t *testing.T) {
 	s := setupBase(t)
 	projectId := "VERRA1"
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name:            projectId,
+		Id:              projectId,
 		Admin:           s.addr,
-		ClassId:         1,
+		ClassKey:        1,
 		ProjectLocation: "US-NY",
 		Metadata:        "hi",
 	}))

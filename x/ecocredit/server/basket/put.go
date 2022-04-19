@@ -133,12 +133,12 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	}
 
 	// check credit type match
-	class, err := k.coreStore.ClassInfoTable().GetByName(ctx, classId)
+	class, err := k.coreStore.ClassInfoTable().GetById(ctx, classId)
 	if err != nil {
 		return err
 	}
-	if class.CreditType != basket.CreditTypeAbbrev {
-		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditType)
+	if class.CreditTypeAbbrev != basket.CreditTypeAbbrev {
+		return errInvalidReq.Wrapf("basket requires credit type %s but a credit with type %s was given", basket.CreditTypeAbbrev, class.CreditTypeAbbrev)
 	}
 
 	return nil
@@ -147,7 +147,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
 func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecoApi.BatchInfo) error {
 	// update user balance, subtracting from their tradable balance
-	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Id)
+	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Key)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batchInfo.BatchDenom, sender.String())
 	}

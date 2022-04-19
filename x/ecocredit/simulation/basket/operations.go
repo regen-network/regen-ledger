@@ -233,9 +233,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var ownerAddr string
 		var owner simtypes.Account
 		for _, class := range classes {
-			if class.CreditType == rBasket.CreditTypeAbbrev {
+			if class.CreditTypeAbbrev == rBasket.CreditTypeAbbrev {
 				issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{
-					ClassId: class.Name,
+					ClassId: class.Id,
 				})
 				if err != nil {
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
@@ -277,14 +277,14 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		var credits []*basket.BasketCredit
 		for _, classInfo := range classInfoList {
 
-			resProjects, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{ClassId: classInfo.Name})
+			resProjects, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{ClassId: classInfo.Id})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 			}
 
 			for _, projectInfo := range resProjects.GetProjects() {
 
-				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.Name})
+				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.Id})
 				if err != nil {
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 				}
@@ -477,7 +477,7 @@ func randomClasses(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient) ([
 	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
 	classIds := make([]string, max)
 	for i := 0; i < max; i++ {
-		classIds[i] = classes[i].Name
+		classIds[i] = classes[i].Id
 	}
 
 	return classIds, nil

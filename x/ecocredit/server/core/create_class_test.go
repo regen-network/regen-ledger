@@ -36,18 +36,18 @@ func TestCreateClass_Valid(t *testing.T) {
 	assert.Equal(t, res.ClassId, "C01")
 
 	// check class info
-	ci, err := s.stateStore.ClassInfoTable().GetByName(s.ctx, res.ClassId)
+	ci, err := s.stateStore.ClassInfoTable().GetById(s.ctx, res.ClassId)
 	assert.NilError(t, err)
-	assert.Equal(t, res.ClassId, ci.Name)
+	assert.Equal(t, res.ClassId, ci.Id)
 
 	// check class issuer
-	_, err = s.stateStore.ClassIssuerTable().Get(s.ctx, ci.Id, s.addr)
+	_, err = s.stateStore.ClassIssuerTable().Get(s.ctx, ci.Key, s.addr)
 	assert.NilError(t, err)
 
 	// check sequence number
 	seq, err := s.stateStore.ClassSequenceTable().Get(s.ctx, "C")
 	assert.NilError(t, err)
-	assert.Equal(t, uint64(2), seq.NextClassId)
+	assert.Equal(t, uint64(2), seq.NextSequence)
 }
 
 func TestCreateClass_Unauthorized(t *testing.T) {
