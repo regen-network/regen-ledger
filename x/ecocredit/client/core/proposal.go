@@ -1,8 +1,10 @@
 package core
 
 import (
+	"encoding/json"
 	"fmt"
-	"strconv"
+	"io/ioutil"
+	"strings"
 
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
@@ -18,7 +20,7 @@ import (
 )
 
 var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposalCmd, func(context client.Context) rest.ProposalRESTHandler {
-	return rest.ProposalRESTHandler{ // TODO: what to do here??
+	return rest.ProposalRESTHandler{
 		SubRoute: "",
 		Handler:  nil,
 	}
@@ -26,32 +28,38 @@ var CreditTypeProposalHandler = govclient.NewProposalHandler(TxCreditTypeProposa
 
 func TxCreditTypeProposalCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "credit-type-proposal [proposal-title] [proposal-description] [credit_type_abbreviation] [credit_type_name] [units] [precision] [flags]",
-		Args:  cobra.ExactArgs(6),
+		Use:   "credit-type-proposal [path_to_file.json] [flags]",
+		Args:  cobra.ExactArgs(1),
 		Short: "Submit a proposal for a new credit type",
-		Long: "Submit a proposal to add a new credit type. The credit type abbreviation and name MUST be unique, else " +
-			"the proposal will fail upon execution. Units are measurements units (i.e. metric tonne). Precision is how " +
-			"many decimal places are allowed in the credits.",
-		Example: `regen tx gov submit-proposal credit-type-proposal "Add Biodiversity Type" "A biodiversity type would be great..." BIO biodiversity "sq. meters" 3`,
+		Long: strings.TrimSpace(`Submit a proposal to add a new credit type. 
+The json file MUST take the following form:
+{
+	"title": "some title",
+	"description": "some description",
+	"credit_type": {
+					"abbreviation": "C",
+					"name": "carbon",
+					"unit": "metric ton C02",
+					"precision": 6
+	}
+}
+The credit type abbreviation MUST be unique, else the proposal will fail upon execution. Units are measurement units 
+(i.e. metric ton C02). Precision is how many decimal places are allowed in the credits.`),
+		Example: `regen tx gov submit-proposal credit-type-proposal my_file.json`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			title, desc, abbrev, name, units, precisionStr := args[0], args[1], args[2], args[3], args[4], args[5]
-			precisionU64, err := strconv.ParseUint(precisionStr, 10, 32)
+			proposalFile, err := ioutil.ReadFile(args[0])
 			if err != nil {
-				return fmt.Errorf("invalid precision %s: %w", precisionStr, err)
+				return err
 			}
-			proposal := core.CreditTypeProposal{
-				Title:       title,
-				Description: desc,
-				CreditType: &core.CreditType{
-					Abbreviation: abbrev,
-					Name:         name,
-					Unit:         units,
-					Precision:    uint32(precisionU64),
-				},
+
+			var proposal core.CreditTypeProposal
+			err = json.Unmarshal(proposalFile, &proposal)
+			if err != nil {
+				return err
 			}
 			if err := proposal.ValidateBasic(); err != nil {
 				return fmt.Errorf("invalid proposal: %w", err)
