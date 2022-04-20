@@ -36,8 +36,8 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 				return nil, err
 			}
 
-			batchDenomToId[bb.BatchDenom] = bInfo.Id
-			batchID = bInfo.Id
+			batchDenomToId[bb.BatchDenom] = bInfo.Key
+			batchID = bInfo.Key
 		} else {
 			batchID = batchDenomToId[bb.BatchDenom]
 		}

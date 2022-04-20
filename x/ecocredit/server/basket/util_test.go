@@ -48,6 +48,7 @@ func TestGetBasketBalances(t *testing.T) {
 	bIdToBalance, err := s.k.GetBasketBalanceMap(s.ctx)
 	require.NoError(t, err)
 	require.Len(t, bIdToBalance, 1)
+	require.Equal(t, bIdToBalance[1], amtToDeposit.String())
 
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addr.String(),
@@ -70,11 +71,13 @@ func TestGetBasketBalances(t *testing.T) {
 	bIdToBalance, err = s.k.GetBasketBalanceMap(s.ctx)
 	require.NoError(t, err)
 	require.Len(t, bIdToBalance, 2)
+	require.Equal(t, bIdToBalance[1], amtToDeposit.String())
+	require.Equal(t, bIdToBalance[2], amtToDeposit.String())
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, batchDenom string, startDate *timestamppb.Timestamp) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
-		ProjectId:  pid,
+		ProjectKey: pid,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  startDate,
