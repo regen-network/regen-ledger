@@ -13,7 +13,7 @@ func (k Keeper) Supply(ctx context.Context, request *core.QuerySupplyRequest) (*
 		return nil, err
 	}
 
-	supply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
+	supply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	if err != nil {
 		return nil, err
 	}

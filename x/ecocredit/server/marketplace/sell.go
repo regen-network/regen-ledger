@@ -48,7 +48,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, err
 		}
-		if err = k.escrowCredits(ctx, ownerAcc, batch.Id, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, ownerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -63,7 +63,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
-			BatchId:           batch.Id,
+			BatchId:           batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketId,
 			AskPrice:          order.AskPrice.Amount.String(),

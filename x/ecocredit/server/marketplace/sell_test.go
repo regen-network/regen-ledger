@@ -182,17 +182,17 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
 	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       classId,
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: creditType.Abbreviation,
+		Id:               classId,
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
 	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
@@ -206,14 +206,14 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	//	Exponent:     1,
 	//}))
 	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		BatchKey: 1,
 		Address:  s.addr,
-		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
 		Escrowed: "0",
 	}))
 	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
-		BatchId:        1,
+		BatchKey:       1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 	}))

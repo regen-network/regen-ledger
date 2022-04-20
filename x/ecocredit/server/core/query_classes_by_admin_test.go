@@ -17,15 +17,15 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	s := setupBase(t)
 	_, _, addr := testdata.KeyTestPubAddr()
 	_, _, noClasses := testdata.KeyTestPubAddr()
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Name: "C01", Admin: s.addr, CreditType: "C"}))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Name: "C02", Admin: s.addr, CreditType: "C"}))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Name: "C03", Admin: addr, CreditType: "C"}))
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C01", Admin: s.addr, CreditTypeAbbrev: "C"}))
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C02", Admin: s.addr, CreditTypeAbbrev: "C"}))
+	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C03", Admin: addr, CreditTypeAbbrev: "C"}))
 
 	// valid query
 	res, err := s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{Admin: s.addr.String(), Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Classes), 1)
-	assert.Equal(t, "C01", res.Classes[0].Name)
+	assert.Equal(t, "C01", res.Classes[0].Id)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// should be empty

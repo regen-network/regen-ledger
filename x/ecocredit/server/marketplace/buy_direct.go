@@ -77,7 +77,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 			autoRetire:         !order.DisableAutoRetire,
 			canPartialFill:     false,
 			batchDenom:         batch.BatchDenom,
-			retirementLocation: order.RetirementLocation,
+			retirementLocation: order.RetirementJurisdiction,
 		}); err != nil {
 			return nil, fmt.Errorf("error filling order: %w", err)
 		}

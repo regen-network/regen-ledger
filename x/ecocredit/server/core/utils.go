@@ -25,13 +25,13 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sd
 }
 
 // AddAndSaveBalance adds 'amt' to the addr's tradable balance.
-func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchId uint64, amt math.Dec) error {
-	bal, err := table.Get(ctx, addr, batchId)
+func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchKey uint64, amt math.Dec) error {
+	bal, err := table.Get(ctx, addr, batchKey)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
+				BatchKey: batchKey,
 				Address:  addr,
-				BatchId:  batchId,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",
@@ -53,13 +53,13 @@ func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr
 }
 
 // RetireAndSaveBalance adds 'amt' to the addr's retired balance.
-func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchId uint64, amount math.Dec) error {
-	bal, err := table.Get(ctx, addr, batchId)
+func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchKey uint64, amount math.Dec) error {
+	bal, err := table.Get(ctx, addr, batchKey)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
+				BatchKey: batchKey,
 				Address:  addr,
-				BatchId:  batchId,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",
@@ -81,8 +81,8 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 }
 
 // RetireSupply moves `amount` of credits from the supply's tradable amount to its retired amount.
-func RetireSupply(ctx context.Context, table ecoApi.BatchSupplyTable, batchId uint64, amount math.Dec) error {
-	supply, err := table.Get(ctx, batchId)
+func RetireSupply(ctx context.Context, table ecoApi.BatchSupplyTable, batchKey uint64, amount math.Dec) error {
+	supply, err := table.Get(ctx, batchKey)
 	if err != nil {
 		return err
 	}
