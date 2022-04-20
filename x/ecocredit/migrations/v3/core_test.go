@@ -179,7 +179,7 @@ func TestMigrations(t *testing.T) {
 	require.NotNil(t, res1)
 	require.Equal(t, res1.Id, "C0101")
 	require.Equal(t, res1.Metadata, "")
-	require.Equal(t, res1.ProjectLocation, "AB-CDE FG1 345")
+	require.Equal(t, res1.ProjectJurisdiction, "AB-CDE FG1 345")
 	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 

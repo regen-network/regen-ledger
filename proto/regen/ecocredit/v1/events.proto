@@ -29,9 +29,9 @@ message EventCreateProject {
   // project was created.
   string class_id = 3;
 
-  // project_location is the location of the project.
-  // Full documentation can be found in MsgCreateProject.project_location.
-  string project_location = 4;
+  // project_jurisdiction is the jurisdiction of the project.
+  // Full documentation can be found in MsgCreateProject.project_jurisdiction.
+  string project_jurisdiction = 4;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
@@ -61,9 +61,10 @@ message EventCreateBatch {
   // issuance_date is the timestamp when the credit batch was issued.
   string issuance_date = 7;
 
-  // project_location is the location of the project backing the credits in this
-  // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 8;
+  // project_jurisdiction is the jurisdiction of the project backing the credits
+  // in this batch. Full documentation can be found in
+  // MsgCreateBatch.project_jurisdiction.
+  string project_jurisdiction = 8;
 
   // project_id is the unique identifier of the project within which the credit
   // batch was created.
@@ -136,12 +137,12 @@ message EventRetire {
   // amount is the decimal number of credits that have been retired.
   string amount = 3;
 
-  // location is the location of the beneficiary or buyer of the retired
+  // jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
   // credits. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
-  string location = 4;
+  string jurisdiction = 4;
 }
 
 // EventCancel is an event emitted when credits are cancelled. When credits are
@@ -196,6 +197,32 @@ message EventClassMetadataUpdated {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
+
+  // old_metadata is the metadata before the update.
+  string old_metadata = 2;
+
+  // new_metadata is the metadata after the update.
+  string new_metadata = 3;
+}
+
+// EventProjectAdminUpdated is emitted when the project admin is changed.
+message EventProjectAdminUpdated {
+
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
+
+  // old_admin is the admin address before the update.
+  string old_admin = 2;
+
+  // new_admin is the admin address after the update.
+  string new_admin = 3;
+}
+
+// EventProjectMetadataUpdated is emitted when the project metadata is changed.
+message EventProjectMetadataUpdated {
+
+  // project_id is the unique identifier of the project that was updated.
+  string project_id = 1;
 
   // old_metadata is the metadata before the update.
   string old_metadata = 2;

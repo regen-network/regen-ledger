@@ -52,7 +52,7 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = ValidateLocation(credit.RetirementLocation); err != nil {
+			if err = ValidateJurisdiction(credit.RetirementJurisdiction); err != nil {
 				return err
 			}
 		}

@@ -99,9 +99,9 @@ message ProjectInfo {
   // for efficient lookups. This links a project to a credit class.
   uint64 class_key = 4;
 
-  // project_location is the location of the project.
-  // Full documentation can be found in MsgCreateProject.project_location.
-  string project_location = 5;
+  // project_jurisdiction is the jurisdiction of the project.
+  // Full documentation can be found in MsgCreateProject.project_jurisdiction.
+  string project_jurisdiction = 5;
 
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 6;

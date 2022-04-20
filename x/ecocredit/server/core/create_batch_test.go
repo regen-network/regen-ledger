@@ -152,10 +152,10 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 	})
 	assert.NilError(t, err)
 	_, err = ss.ProjectInfoTable().InsertReturningID(ctx, &api.ProjectInfo{
-		Id:              projectId,
-		ClassKey:        classKey,
-		ProjectLocation: "",
-		Metadata:        "",
+		Id:                  projectId,
+		ClassKey:            classKey,
+		ProjectJurisdiction: "",
+		Metadata:            "",
 	})
 	assert.NilError(t, err)
 	return
