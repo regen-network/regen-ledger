@@ -11,11 +11,7 @@ import (
 // BatchSupplyInvariant checks
 // - calculated total tradable balance of each credit batch matches the total tradable supply
 // - calculated total retired balance of each credit batch matches the total retired supply
-func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint64]math.Dec) (string, bool) {
-	var (
-		msg    string
-		broken bool
-	)
+func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint64]math.Dec) (msg string, broken bool) {
 	// sum of tradeable ecocredits with credits locked in baskets
 	batchIdToBalanceTradable := make(map[uint64]math.Dec) // map batch id => tradable balance
 	batchIdToBalanceRetired := make(map[uint64]math.Dec)  // map batch id => retired balance
