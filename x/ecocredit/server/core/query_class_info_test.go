@@ -14,7 +14,7 @@ import (
 func TestQuery_ClassInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",

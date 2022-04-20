@@ -24,7 +24,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 	}
 
 	for _, credit := range req.Credits {
-		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := k.stateStore.BatchTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}

@@ -64,10 +64,10 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	projectSeqJSON := `[{"class_key":"1","next_sequence":"3"}]`
 
 	wrapper := map[string]json.RawMessage{}
-	wrapper[gogoproto.MessageName(&core.ClassInfo{})] = []byte(classInfoJSON)
+	wrapper[gogoproto.MessageName(&core.Class{})] = []byte(classInfoJSON)
 	wrapper[gogoproto.MessageName(&core.ClassIssuer{})] = []byte(classIssuersJSON)
-	wrapper[gogoproto.MessageName(&core.ProjectInfo{})] = []byte(projectInfoJSON)
-	wrapper[gogoproto.MessageName(&core.BatchInfo{})] = []byte(batchInfoJSON)
+	wrapper[gogoproto.MessageName(&core.Project{})] = []byte(projectInfoJSON)
+	wrapper[gogoproto.MessageName(&core.Batch{})] = []byte(batchInfoJSON)
 	wrapper[gogoproto.MessageName(&core.BatchBalance{})] = []byte(batchBalancesJSON)
 	wrapper[gogoproto.MessageName(&core.BatchSupply{})] = []byte(batchSupplyJSON)
 	wrapper[gogoproto.MessageName(&core.ClassSequence{})] = []byte(classSeqJSON)

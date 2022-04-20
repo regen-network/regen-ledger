@@ -43,7 +43,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 }
 
 func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
-	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
+	batch, err := k.stateStore.BatchTable().GetByBatchDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
 	}

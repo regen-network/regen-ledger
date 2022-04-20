@@ -16,7 +16,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	s := setupBase(t)
 
 	// insert 1 project
-	err := s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  "P01",
 		ClassKey:            1,
 		ProjectJurisdiction: "US-CA",

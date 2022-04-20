@@ -21,7 +21,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
 	for _, credit := range req.Credits {
-		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := k.stateStore.BatchTable().GetByBatchDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
