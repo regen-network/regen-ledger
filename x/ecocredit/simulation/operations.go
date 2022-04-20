@@ -287,7 +287,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 }
 
 func genProjectID(r *rand.Rand) string {
-	if r.Float32() < 0.5 {
+	if r.Int63n(101) <= 50 {
 		simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 16))
 	}
 
@@ -855,7 +855,7 @@ func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient c
 }
 
 func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
-	n := simtypes.RandIntBetween(r, 2, 8)
+	n := simtypes.RandIntBetween(r, 3, 10)
 
 	var issuers []string
 	issuersMap := make(map[string]bool)

@@ -34,7 +34,7 @@ func genAskedDenoms() []*core.AskDenom {
 	return []*core.AskDenom{
 		{
 			Denom:        "stake",
-			DisplayDenom: "stak",
+			DisplayDenom: "stake",
 			Exponent:     18,
 		},
 	}
@@ -304,9 +304,13 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	bKey1, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer: accs[0].Address.Bytes(), ProjectKey: pKey1, BatchDenom: denom,
-			StartDate: timestamppb.New(startDate), EndDate: timestamppb.New(endDate),
-			Metadata: metadata, IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
+			Issuer:       accs[0].Address,
+			ProjectKey:   pKey1,
+			BatchDenom:   denom,
+			StartDate:    timestamppb.New(startDate),
+			EndDate:      timestamppb.New(endDate),
+			Metadata:     metadata,
+			IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
 		},
 	)
 	if err != nil {
@@ -320,8 +324,9 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	bKey2, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer:     accs[1].Address,
-			ProjectKey: pKey1, BatchDenom: denom,
+			Issuer:       accs[1].Address,
+			ProjectKey:   pKey1,
+			BatchDenom:   denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -339,8 +344,9 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	bKey3, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer:     accs[2].Address,
-			ProjectKey: pKey2, BatchDenom: denom,
+			Issuer:       accs[2].Address,
+			ProjectKey:   pKey2,
+			BatchDenom:   denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,

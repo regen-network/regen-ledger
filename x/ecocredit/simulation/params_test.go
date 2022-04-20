@@ -33,7 +33,7 @@ func TestParamChanges(t *testing.T) {
 	bz1, err := json.Marshal([]*core.AskDenom{
 		{
 			Denom:        "stake",
-			DisplayDenom: "stak",
+			DisplayDenom: "stake",
 			Exponent:     18,
 		},
 	})
