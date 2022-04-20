@@ -1187,12 +1187,12 @@ func (x *fastReflection_MsgCreateClassResponse) ProtoMethods() *protoiface.Metho
 }
 
 var (
-	md_MsgCreateProject                  protoreflect.MessageDescriptor
-	fd_MsgCreateProject_issuer           protoreflect.FieldDescriptor
-	fd_MsgCreateProject_class_id         protoreflect.FieldDescriptor
-	fd_MsgCreateProject_metadata         protoreflect.FieldDescriptor
-	fd_MsgCreateProject_project_location protoreflect.FieldDescriptor
-	fd_MsgCreateProject_project_id       protoreflect.FieldDescriptor
+	md_MsgCreateProject                      protoreflect.MessageDescriptor
+	fd_MsgCreateProject_issuer               protoreflect.FieldDescriptor
+	fd_MsgCreateProject_class_id             protoreflect.FieldDescriptor
+	fd_MsgCreateProject_metadata             protoreflect.FieldDescriptor
+	fd_MsgCreateProject_project_jurisdiction protoreflect.FieldDescriptor
+	fd_MsgCreateProject_project_id           protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -1201,7 +1201,7 @@ func init() {
 	fd_MsgCreateProject_issuer = md_MsgCreateProject.Fields().ByName("issuer")
 	fd_MsgCreateProject_class_id = md_MsgCreateProject.Fields().ByName("class_id")
 	fd_MsgCreateProject_metadata = md_MsgCreateProject.Fields().ByName("metadata")
-	fd_MsgCreateProject_project_location = md_MsgCreateProject.Fields().ByName("project_location")
+	fd_MsgCreateProject_project_jurisdiction = md_MsgCreateProject.Fields().ByName("project_jurisdiction")
 	fd_MsgCreateProject_project_id = md_MsgCreateProject.Fields().ByName("project_id")
 }
 
@@ -1288,9 +1288,9 @@ func (x *fastReflection_MsgCreateProject) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.ProjectLocation != "" {
-		value := protoreflect.ValueOfString(x.ProjectLocation)
-		if !f(fd_MsgCreateProject_project_location, value) {
+	if x.ProjectJurisdiction != "" {
+		value := protoreflect.ValueOfString(x.ProjectJurisdiction)
+		if !f(fd_MsgCreateProject_project_jurisdiction, value) {
 			return
 		}
 	}
@@ -1321,8 +1321,8 @@ func (x *fastReflection_MsgCreateProject) Has(fd protoreflect.FieldDescriptor) b
 		return x.ClassId != ""
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		return x.Metadata != ""
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
-		return x.ProjectLocation != ""
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
+		return x.ProjectJurisdiction != ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		return x.ProjectId != ""
 	default:
@@ -1347,8 +1347,8 @@ func (x *fastReflection_MsgCreateProject) Clear(fd protoreflect.FieldDescriptor)
 		x.ClassId = ""
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		x.Metadata = ""
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
-		x.ProjectLocation = ""
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
+		x.ProjectJurisdiction = ""
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		x.ProjectId = ""
 	default:
@@ -1376,8 +1376,8 @@ func (x *fastReflection_MsgCreateProject) Get(descriptor protoreflect.FieldDescr
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		value := x.Metadata
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
-		value := x.ProjectLocation
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
+		value := x.ProjectJurisdiction
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		value := x.ProjectId
@@ -1408,8 +1408,8 @@ func (x *fastReflection_MsgCreateProject) Set(fd protoreflect.FieldDescriptor, v
 		x.ClassId = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		x.Metadata = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
-		x.ProjectLocation = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
+		x.ProjectJurisdiction = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		x.ProjectId = value.Interface().(string)
 	default:
@@ -1438,8 +1438,8 @@ func (x *fastReflection_MsgCreateProject) Mutable(fd protoreflect.FieldDescripto
 		panic(fmt.Errorf("field class_id of message regen.ecocredit.v1.MsgCreateProject is not mutable"))
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		panic(fmt.Errorf("field metadata of message regen.ecocredit.v1.MsgCreateProject is not mutable"))
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
-		panic(fmt.Errorf("field project_location of message regen.ecocredit.v1.MsgCreateProject is not mutable"))
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
+		panic(fmt.Errorf("field project_jurisdiction of message regen.ecocredit.v1.MsgCreateProject is not mutable"))
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		panic(fmt.Errorf("field project_id of message regen.ecocredit.v1.MsgCreateProject is not mutable"))
 	default:
@@ -1461,7 +1461,7 @@ func (x *fastReflection_MsgCreateProject) NewField(fd protoreflect.FieldDescript
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateProject.metadata":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgCreateProject.project_location":
+	case "regen.ecocredit.v1.MsgCreateProject.project_jurisdiction":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgCreateProject.project_id":
 		return protoreflect.ValueOfString("")
@@ -1546,7 +1546,7 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.ProjectLocation)
+		l = len(x.ProjectJurisdiction)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -1590,10 +1590,10 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x2a
 		}
-		if len(x.ProjectLocation) > 0 {
-			i -= len(x.ProjectLocation)
-			copy(dAtA[i:], x.ProjectLocation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ProjectLocation)))
+		if len(x.ProjectJurisdiction) > 0 {
+			i -= len(x.ProjectJurisdiction)
+			copy(dAtA[i:], x.ProjectJurisdiction)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ProjectJurisdiction)))
 			i--
 			dAtA[i] = 0x22
 		}
@@ -1765,7 +1765,7 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProjectJurisdiction", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1793,7 +1793,7 @@ func (x *fastReflection_MsgCreateProject) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ProjectLocation = string(dAtA[iNdEx:postIndex])
+				x.ProjectJurisdiction = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
@@ -3324,11 +3324,11 @@ func (x *fastReflection_MsgCreateBatch) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_BatchIssuance                     protoreflect.MessageDescriptor
-	fd_BatchIssuance_recipient           protoreflect.FieldDescriptor
-	fd_BatchIssuance_tradable_amount     protoreflect.FieldDescriptor
-	fd_BatchIssuance_retired_amount      protoreflect.FieldDescriptor
-	fd_BatchIssuance_retirement_location protoreflect.FieldDescriptor
+	md_BatchIssuance                         protoreflect.MessageDescriptor
+	fd_BatchIssuance_recipient               protoreflect.FieldDescriptor
+	fd_BatchIssuance_tradable_amount         protoreflect.FieldDescriptor
+	fd_BatchIssuance_retired_amount          protoreflect.FieldDescriptor
+	fd_BatchIssuance_retirement_jurisdiction protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -3337,7 +3337,7 @@ func init() {
 	fd_BatchIssuance_recipient = md_BatchIssuance.Fields().ByName("recipient")
 	fd_BatchIssuance_tradable_amount = md_BatchIssuance.Fields().ByName("tradable_amount")
 	fd_BatchIssuance_retired_amount = md_BatchIssuance.Fields().ByName("retired_amount")
-	fd_BatchIssuance_retirement_location = md_BatchIssuance.Fields().ByName("retirement_location")
+	fd_BatchIssuance_retirement_jurisdiction = md_BatchIssuance.Fields().ByName("retirement_jurisdiction")
 }
 
 var _ protoreflect.Message = (*fastReflection_BatchIssuance)(nil)
@@ -3423,9 +3423,9 @@ func (x *fastReflection_BatchIssuance) Range(f func(protoreflect.FieldDescriptor
 			return
 		}
 	}
-	if x.RetirementLocation != "" {
-		value := protoreflect.ValueOfString(x.RetirementLocation)
-		if !f(fd_BatchIssuance_retirement_location, value) {
+	if x.RetirementJurisdiction != "" {
+		value := protoreflect.ValueOfString(x.RetirementJurisdiction)
+		if !f(fd_BatchIssuance_retirement_jurisdiction, value) {
 			return
 		}
 	}
@@ -3450,8 +3450,8 @@ func (x *fastReflection_BatchIssuance) Has(fd protoreflect.FieldDescriptor) bool
 		return x.TradableAmount != ""
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		return x.RetiredAmount != ""
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
-		return x.RetirementLocation != ""
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
+		return x.RetirementJurisdiction != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchIssuance"))
@@ -3474,8 +3474,8 @@ func (x *fastReflection_BatchIssuance) Clear(fd protoreflect.FieldDescriptor) {
 		x.TradableAmount = ""
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		x.RetiredAmount = ""
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
-		x.RetirementLocation = ""
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
+		x.RetirementJurisdiction = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchIssuance"))
@@ -3501,8 +3501,8 @@ func (x *fastReflection_BatchIssuance) Get(descriptor protoreflect.FieldDescript
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		value := x.RetiredAmount
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
-		value := x.RetirementLocation
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
+		value := x.RetirementJurisdiction
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -3530,8 +3530,8 @@ func (x *fastReflection_BatchIssuance) Set(fd protoreflect.FieldDescriptor, valu
 		x.TradableAmount = value.Interface().(string)
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		x.RetiredAmount = value.Interface().(string)
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
-		x.RetirementLocation = value.Interface().(string)
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
+		x.RetirementJurisdiction = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchIssuance"))
@@ -3558,8 +3558,8 @@ func (x *fastReflection_BatchIssuance) Mutable(fd protoreflect.FieldDescriptor) 
 		panic(fmt.Errorf("field tradable_amount of message regen.ecocredit.v1.BatchIssuance is not mutable"))
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		panic(fmt.Errorf("field retired_amount of message regen.ecocredit.v1.BatchIssuance is not mutable"))
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
-		panic(fmt.Errorf("field retirement_location of message regen.ecocredit.v1.BatchIssuance is not mutable"))
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
+		panic(fmt.Errorf("field retirement_jurisdiction of message regen.ecocredit.v1.BatchIssuance is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.BatchIssuance"))
@@ -3579,7 +3579,7 @@ func (x *fastReflection_BatchIssuance) NewField(fd protoreflect.FieldDescriptor)
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.BatchIssuance.retired_amount":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.BatchIssuance.retirement_location":
+	case "regen.ecocredit.v1.BatchIssuance.retirement_jurisdiction":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -3662,7 +3662,7 @@ func (x *fastReflection_BatchIssuance) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.RetirementLocation)
+		l = len(x.RetirementJurisdiction)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -3695,10 +3695,10 @@ func (x *fastReflection_BatchIssuance) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.RetirementLocation) > 0 {
-			i -= len(x.RetirementLocation)
-			copy(dAtA[i:], x.RetirementLocation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementLocation)))
+		if len(x.RetirementJurisdiction) > 0 {
+			i -= len(x.RetirementJurisdiction)
+			copy(dAtA[i:], x.RetirementJurisdiction)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementJurisdiction)))
 			i--
 			dAtA[i] = 0x22
 		}
@@ -3870,7 +3870,7 @@ func (x *fastReflection_BatchIssuance) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetirementLocation", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetirementJurisdiction", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -3898,7 +3898,7 @@ func (x *fastReflection_BatchIssuance) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.RetirementLocation = string(dAtA[iNdEx:postIndex])
+				x.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -6939,11 +6939,11 @@ func (x *fastReflection_MsgSend) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_MsgSend_SendCredits                     protoreflect.MessageDescriptor
-	fd_MsgSend_SendCredits_batch_denom         protoreflect.FieldDescriptor
-	fd_MsgSend_SendCredits_tradable_amount     protoreflect.FieldDescriptor
-	fd_MsgSend_SendCredits_retired_amount      protoreflect.FieldDescriptor
-	fd_MsgSend_SendCredits_retirement_location protoreflect.FieldDescriptor
+	md_MsgSend_SendCredits                         protoreflect.MessageDescriptor
+	fd_MsgSend_SendCredits_batch_denom             protoreflect.FieldDescriptor
+	fd_MsgSend_SendCredits_tradable_amount         protoreflect.FieldDescriptor
+	fd_MsgSend_SendCredits_retired_amount          protoreflect.FieldDescriptor
+	fd_MsgSend_SendCredits_retirement_jurisdiction protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -6952,7 +6952,7 @@ func init() {
 	fd_MsgSend_SendCredits_batch_denom = md_MsgSend_SendCredits.Fields().ByName("batch_denom")
 	fd_MsgSend_SendCredits_tradable_amount = md_MsgSend_SendCredits.Fields().ByName("tradable_amount")
 	fd_MsgSend_SendCredits_retired_amount = md_MsgSend_SendCredits.Fields().ByName("retired_amount")
-	fd_MsgSend_SendCredits_retirement_location = md_MsgSend_SendCredits.Fields().ByName("retirement_location")
+	fd_MsgSend_SendCredits_retirement_jurisdiction = md_MsgSend_SendCredits.Fields().ByName("retirement_jurisdiction")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgSend_SendCredits)(nil)
@@ -7038,9 +7038,9 @@ func (x *fastReflection_MsgSend_SendCredits) Range(f func(protoreflect.FieldDesc
 			return
 		}
 	}
-	if x.RetirementLocation != "" {
-		value := protoreflect.ValueOfString(x.RetirementLocation)
-		if !f(fd_MsgSend_SendCredits_retirement_location, value) {
+	if x.RetirementJurisdiction != "" {
+		value := protoreflect.ValueOfString(x.RetirementJurisdiction)
+		if !f(fd_MsgSend_SendCredits_retirement_jurisdiction, value) {
 			return
 		}
 	}
@@ -7065,8 +7065,8 @@ func (x *fastReflection_MsgSend_SendCredits) Has(fd protoreflect.FieldDescriptor
 		return x.TradableAmount != ""
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		return x.RetiredAmount != ""
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
-		return x.RetirementLocation != ""
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
+		return x.RetirementJurisdiction != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgSend.SendCredits"))
@@ -7089,8 +7089,8 @@ func (x *fastReflection_MsgSend_SendCredits) Clear(fd protoreflect.FieldDescript
 		x.TradableAmount = ""
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		x.RetiredAmount = ""
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
-		x.RetirementLocation = ""
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
+		x.RetirementJurisdiction = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgSend.SendCredits"))
@@ -7116,8 +7116,8 @@ func (x *fastReflection_MsgSend_SendCredits) Get(descriptor protoreflect.FieldDe
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		value := x.RetiredAmount
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
-		value := x.RetirementLocation
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
+		value := x.RetirementJurisdiction
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -7145,8 +7145,8 @@ func (x *fastReflection_MsgSend_SendCredits) Set(fd protoreflect.FieldDescriptor
 		x.TradableAmount = value.Interface().(string)
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		x.RetiredAmount = value.Interface().(string)
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
-		x.RetirementLocation = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
+		x.RetirementJurisdiction = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgSend.SendCredits"))
@@ -7173,8 +7173,8 @@ func (x *fastReflection_MsgSend_SendCredits) Mutable(fd protoreflect.FieldDescri
 		panic(fmt.Errorf("field tradable_amount of message regen.ecocredit.v1.MsgSend.SendCredits is not mutable"))
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		panic(fmt.Errorf("field retired_amount of message regen.ecocredit.v1.MsgSend.SendCredits is not mutable"))
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
-		panic(fmt.Errorf("field retirement_location of message regen.ecocredit.v1.MsgSend.SendCredits is not mutable"))
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
+		panic(fmt.Errorf("field retirement_jurisdiction of message regen.ecocredit.v1.MsgSend.SendCredits is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgSend.SendCredits"))
@@ -7194,7 +7194,7 @@ func (x *fastReflection_MsgSend_SendCredits) NewField(fd protoreflect.FieldDescr
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.MsgSend.SendCredits.retired_amount":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_location":
+	case "regen.ecocredit.v1.MsgSend.SendCredits.retirement_jurisdiction":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -7277,7 +7277,7 @@ func (x *fastReflection_MsgSend_SendCredits) ProtoMethods() *protoiface.Methods 
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.RetirementLocation)
+		l = len(x.RetirementJurisdiction)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -7310,10 +7310,10 @@ func (x *fastReflection_MsgSend_SendCredits) ProtoMethods() *protoiface.Methods 
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.RetirementLocation) > 0 {
-			i -= len(x.RetirementLocation)
-			copy(dAtA[i:], x.RetirementLocation)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementLocation)))
+		if len(x.RetirementJurisdiction) > 0 {
+			i -= len(x.RetirementJurisdiction)
+			copy(dAtA[i:], x.RetirementJurisdiction)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RetirementJurisdiction)))
 			i--
 			dAtA[i] = 0x22
 		}
@@ -7485,7 +7485,7 @@ func (x *fastReflection_MsgSend_SendCredits) ProtoMethods() *protoiface.Methods 
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetirementLocation", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RetirementJurisdiction", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -7513,7 +7513,7 @@ func (x *fastReflection_MsgSend_SendCredits) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.RetirementLocation = string(dAtA[iNdEx:postIndex])
+				x.RetirementJurisdiction = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -7958,10 +7958,10 @@ func (x *_MsgRetire_2_list) IsValid() bool {
 }
 
 var (
-	md_MsgRetire          protoreflect.MessageDescriptor
-	fd_MsgRetire_holder   protoreflect.FieldDescriptor
-	fd_MsgRetire_credits  protoreflect.FieldDescriptor
-	fd_MsgRetire_location protoreflect.FieldDescriptor
+	md_MsgRetire              protoreflect.MessageDescriptor
+	fd_MsgRetire_holder       protoreflect.FieldDescriptor
+	fd_MsgRetire_credits      protoreflect.FieldDescriptor
+	fd_MsgRetire_jurisdiction protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -7969,7 +7969,7 @@ func init() {
 	md_MsgRetire = File_regen_ecocredit_v1_tx_proto.Messages().ByName("MsgRetire")
 	fd_MsgRetire_holder = md_MsgRetire.Fields().ByName("holder")
 	fd_MsgRetire_credits = md_MsgRetire.Fields().ByName("credits")
-	fd_MsgRetire_location = md_MsgRetire.Fields().ByName("location")
+	fd_MsgRetire_jurisdiction = md_MsgRetire.Fields().ByName("jurisdiction")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgRetire)(nil)
@@ -8049,9 +8049,9 @@ func (x *fastReflection_MsgRetire) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.Location != "" {
-		value := protoreflect.ValueOfString(x.Location)
-		if !f(fd_MsgRetire_location, value) {
+	if x.Jurisdiction != "" {
+		value := protoreflect.ValueOfString(x.Jurisdiction)
+		if !f(fd_MsgRetire_jurisdiction, value) {
 			return
 		}
 	}
@@ -8074,8 +8074,8 @@ func (x *fastReflection_MsgRetire) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Holder != ""
 	case "regen.ecocredit.v1.MsgRetire.credits":
 		return len(x.Credits) != 0
-	case "regen.ecocredit.v1.MsgRetire.location":
-		return x.Location != ""
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
+		return x.Jurisdiction != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRetire"))
@@ -8096,8 +8096,8 @@ func (x *fastReflection_MsgRetire) Clear(fd protoreflect.FieldDescriptor) {
 		x.Holder = ""
 	case "regen.ecocredit.v1.MsgRetire.credits":
 		x.Credits = nil
-	case "regen.ecocredit.v1.MsgRetire.location":
-		x.Location = ""
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
+		x.Jurisdiction = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRetire"))
@@ -8123,8 +8123,8 @@ func (x *fastReflection_MsgRetire) Get(descriptor protoreflect.FieldDescriptor) 
 		}
 		listValue := &_MsgRetire_2_list{list: &x.Credits}
 		return protoreflect.ValueOfList(listValue)
-	case "regen.ecocredit.v1.MsgRetire.location":
-		value := x.Location
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
+		value := x.Jurisdiction
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -8152,8 +8152,8 @@ func (x *fastReflection_MsgRetire) Set(fd protoreflect.FieldDescriptor, value pr
 		lv := value.List()
 		clv := lv.(*_MsgRetire_2_list)
 		x.Credits = *clv.list
-	case "regen.ecocredit.v1.MsgRetire.location":
-		x.Location = value.Interface().(string)
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
+		x.Jurisdiction = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRetire"))
@@ -8182,8 +8182,8 @@ func (x *fastReflection_MsgRetire) Mutable(fd protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.v1.MsgRetire.holder":
 		panic(fmt.Errorf("field holder of message regen.ecocredit.v1.MsgRetire is not mutable"))
-	case "regen.ecocredit.v1.MsgRetire.location":
-		panic(fmt.Errorf("field location of message regen.ecocredit.v1.MsgRetire is not mutable"))
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
+		panic(fmt.Errorf("field jurisdiction of message regen.ecocredit.v1.MsgRetire is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.MsgRetire"))
@@ -8202,7 +8202,7 @@ func (x *fastReflection_MsgRetire) NewField(fd protoreflect.FieldDescriptor) pro
 	case "regen.ecocredit.v1.MsgRetire.credits":
 		list := []*MsgRetire_RetireCredits{}
 		return protoreflect.ValueOfList(&_MsgRetire_2_list{list: &list})
-	case "regen.ecocredit.v1.MsgRetire.location":
+	case "regen.ecocredit.v1.MsgRetire.jurisdiction":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -8283,7 +8283,7 @@ func (x *fastReflection_MsgRetire) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		l = len(x.Location)
+		l = len(x.Jurisdiction)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -8316,10 +8316,10 @@ func (x *fastReflection_MsgRetire) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Location) > 0 {
-			i -= len(x.Location)
-			copy(dAtA[i:], x.Location)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Location)))
+		if len(x.Jurisdiction) > 0 {
+			i -= len(x.Jurisdiction)
+			copy(dAtA[i:], x.Jurisdiction)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Jurisdiction)))
 			i--
 			dAtA[i] = 0x1a
 		}
@@ -8463,7 +8463,7 @@ func (x *fastReflection_MsgRetire) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Location", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -8491,7 +8491,7 @@ func (x *fastReflection_MsgRetire) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Location = string(dAtA[iNdEx:postIndex])
+				x.Jurisdiction = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -15610,13 +15610,13 @@ type MsgCreateProject struct {
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// project_location is the location of the project backing the credits in this
-	// batch. It is a string of the form
+	// project_jurisdiction is the jurisdiction of the project backing the credits
+	// in this batch. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
 	// fields conforming to ISO 3166-2, and postal-code being up to 64
 	// alphanumeric characters. country-code is required, while sub-national-code
-	// and postal-code can be added for increasing precision.
-	ProjectLocation string `protobuf:"bytes,4,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty"`
+	// and postal-code are optional and can be added for increased precision.
+	ProjectJurisdiction string `protobuf:"bytes,4,opt,name=project_jurisdiction,json=projectJurisdiction,proto3" json:"project_jurisdiction,omitempty"`
 	// project_id is an optional user-specified project ID which can be used
 	// instead of an auto-generated ID. If project_id is provided, it must be
 	// unique within the credit class and match the regex [A-Za-z0-9]{2,16}
@@ -15666,9 +15666,9 @@ func (x *MsgCreateProject) GetMetadata() string {
 	return ""
 }
 
-func (x *MsgCreateProject) GetProjectLocation() string {
+func (x *MsgCreateProject) GetProjectJurisdiction() string {
 	if x != nil {
-		return x.ProjectLocation
+		return x.ProjectJurisdiction
 	}
 	return ""
 }
@@ -15849,13 +15849,12 @@ type BatchIssuance struct {
 	// effectively retired by the issuer on receipt. Decimal values are
 	// acceptable.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
-	// retirement_location is the location of the beneficiary or buyer of the
-	// retired credits. This must be provided if retired_amount is positive. It
-	// is a string of the form
-	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters.
-	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
+	// retirement_jurisdiction is the jurisdiction of the beneficiary or buyer of
+	// the retired credits. This must be provided if retired_amount is positive.
+	// It is a string of the form <country-code>[-<sub-national-code>[
+	// <postal-code>]], with the first two fields conforming to ISO 3166-2, and
+	// postal-code being up to 64 alphanumeric characters.
+	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
 }
 
 func (x *BatchIssuance) Reset() {
@@ -15899,9 +15898,9 @@ func (x *BatchIssuance) GetRetiredAmount() string {
 	return ""
 }
 
-func (x *BatchIssuance) GetRetirementLocation() string {
+func (x *BatchIssuance) GetRetirementJurisdiction() string {
 	if x != nil {
-		return x.RetirementLocation
+		return x.RetirementJurisdiction
 	}
 	return ""
 }
@@ -16211,12 +16210,12 @@ type MsgRetire struct {
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being retired.
 	Credits []*MsgRetire_RetireCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
-	// location is the location of the beneficiary or buyer of the retired
+	// jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
 	// fields conforming to ISO 3166-2, and postal-code being up to 64
 	// alphanumeric characters.
-	Location string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
+	Jurisdiction string `protobuf:"bytes,3,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
 }
 
 func (x *MsgRetire) Reset() {
@@ -16253,9 +16252,9 @@ func (x *MsgRetire) GetCredits() []*MsgRetire_RetireCredits {
 	return nil
 }
 
-func (x *MsgRetire) GetLocation() string {
+func (x *MsgRetire) GetJurisdiction() string {
 	if x != nil {
-		return x.Location
+		return x.Jurisdiction
 	}
 	return ""
 }
@@ -16799,13 +16798,12 @@ type MsgSend_SendCredits struct {
 	// effectively retired by the issuer on receipt. Decimal values are
 	// acceptable within the precision returned by Query/Precision.
 	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
-	// retirement_location is the location of the beneficiary or buyer of the
-	// retired credits. This must be provided if retired_amount is positive. It
-	// is a string of the form
-	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters.
-	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty"`
+	// retirement_jurisdiction is the jurisdiction of the beneficiary or buyer
+	// of the retired credits. This must be provided if retired_amount is
+	// positive. It is a string of the form <country-code>[-<sub-national-code>[
+	// <postal-code>]], with the first two fields conforming to ISO 3166-2, and
+	// postal-code being up to 64 alphanumeric characters.
+	RetirementJurisdiction string `protobuf:"bytes,4,opt,name=retirement_jurisdiction,json=retirementJurisdiction,proto3" json:"retirement_jurisdiction,omitempty"`
 }
 
 func (x *MsgSend_SendCredits) Reset() {
@@ -16849,9 +16847,9 @@ func (x *MsgSend_SendCredits) GetRetiredAmount() string {
 	return ""
 }
 
-func (x *MsgSend_SendCredits) GetRetirementLocation() string {
+func (x *MsgSend_SendCredits) GetRetirementJurisdiction() string {
 	if x != nil {
-		return x.RetirementLocation
+		return x.RetirementJurisdiction
 	}
 	return ""
 }
@@ -16980,57 +16978,58 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x65, 0x65, 0x22, 0x33, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43,
 	0x6c, 0x61, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a, 0x08,
 	0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x22, 0xab, 0x01, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x43,
+	0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x22, 0xb3, 0x01, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x43,
 	0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x16, 0x0a, 0x06,
 	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73,
 	0x73, 0x75, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x5f, 0x69, 0x64,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x6c, 0x61, 0x73, 0x73, 0x49, 0x64, 0x12,
 	0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x29, 0x0a, 0x10, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x4c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63,
-	0x74, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a,
-	0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x39, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64,
-	0x22, 0x83, 0x03, 0x0a, 0x0e, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61,
-	0x74, 0x63, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x70,
-	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x3d, 0x0a, 0x08, 0x69, 0x73,
-	0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x52,
-	0x08, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x3f, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64,
-	0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x09, 0x73, 0x74, 0x61,
-	0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x64, 0x61,
-	0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x07, 0x65, 0x6e, 0x64, 0x44,
-	0x61, 0x74, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6f, 0x70, 0x65, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28,
-	0x08, 0x52, 0x04, 0x6f, 0x70, 0x65, 0x6e, 0x12, 0x39, 0x0a, 0x09, 0x6f, 0x72, 0x69, 0x67, 0x69,
-	0x6e, 0x5f, 0x74, 0x78, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
-	0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x52, 0x08, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e,
-	0x54, 0x78, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x22, 0xae, 0x01, 0x0a, 0x0d, 0x42, 0x61, 0x74, 0x63, 0x68,
-	0x49, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69,
-	0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63,
-	0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62,
-	0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12,
-	0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
-	0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64,
-	0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2f, 0x0a, 0x13, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65,
-	0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x12, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x39, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x43, 0x72,
+	0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x31, 0x0a, 0x14, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x70, 0x72, 0x6f, 0x6a, 0x65,
+	0x63, 0x74, 0x4a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1d,
+	0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x39, 0x0a,
+	0x18, 0x4d, 0x73, 0x67, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63,
+	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f,
+	0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x83, 0x03, 0x0a, 0x0e, 0x4d, 0x73, 0x67,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x69,
+	0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73,
+	0x75, 0x65, 0x72, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x12, 0x3d, 0x0a, 0x08, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x03,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49,
+	0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x08, 0x69, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63,
+	0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12, 0x3f, 0x0a,
+	0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90,
+	0xdf, 0x1f, 0x01, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x44, 0x61, 0x74, 0x65, 0x12, 0x3b,
+	0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x42, 0x04, 0x90, 0xdf,
+	0x1f, 0x01, 0x52, 0x07, 0x65, 0x6e, 0x64, 0x44, 0x61, 0x74, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6f,
+	0x70, 0x65, 0x6e, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x6f, 0x70, 0x65, 0x6e, 0x12,
+	0x39, 0x0a, 0x09, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x08, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78,
+	0x52, 0x08, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f,
+	0x74, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x22, 0xb6,
+	0x01, 0x0a, 0x0d, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x73, 0x73, 0x75, 0x61, 0x6e, 0x63, 0x65,
+	0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x27,
+	0x0a, 0x0f, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c,
+	0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72,
+	0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0d, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x37,
+	0x0a, 0x17, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6a, 0x75, 0x72,
+	0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x16, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4a, 0x75, 0x72, 0x69, 0x73,
+	0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x39, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x43, 0x72,
 	0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e,
@@ -17056,7 +17055,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x67, 0x4d, 0x69, 0x6e, 0x74, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74,
 	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x0a, 0x14, 0x4d, 0x73, 0x67,
 	0x53, 0x65, 0x61, 0x6c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0xb4, 0x02, 0x0a, 0x07, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x16, 0x0a,
+	0x65, 0x22, 0xbc, 0x02, 0x0a, 0x07, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x12, 0x16, 0x0a,
 	0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73,
 	0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65,
 	0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69,
@@ -17064,7 +17063,7 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
 	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e,
 	0x64, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x1a, 0xaf, 0x01, 0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x43,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x1a, 0xb7, 0x01, 0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x43,
 	0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f,
 	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74,
 	0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x27, 0x0a, 0x0f, 0x74, 0x72, 0x61, 0x64, 0x61,
@@ -17072,19 +17071,20 @@ var file_regen_ecocredit_v1_tx_proto_rawDesc = []byte{
 	0x52, 0x0e, 0x74, 0x72, 0x61, 0x64, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
 	0x12, 0x25, 0x0a, 0x0e, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75,
 	0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65,
-	0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2f, 0x0a, 0x13, 0x72, 0x65, 0x74, 0x69, 0x72,
-	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74,
-	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x11, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x53,
-	0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xd0, 0x01, 0x0a, 0x09,
-	0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x6f, 0x6c,
-	0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x68, 0x6f, 0x6c, 0x64, 0x65,
-	0x72, 0x12, 0x45, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72,
-	0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72,
-	0x65, 0x2e, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x52,
-	0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6c, 0x6f, 0x63, 0x61,
+	0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x37, 0x0a, 0x17, 0x72, 0x65, 0x74, 0x69, 0x72,
+	0x65, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x16, 0x72, 0x65, 0x74, 0x69, 0x72, 0x65,
+	0x6d, 0x65, 0x6e, 0x74, 0x4a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x22, 0x11, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0xd8, 0x01, 0x0a, 0x09, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72,
+	0x65, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x68, 0x6f, 0x6c, 0x64, 0x65, 0x72, 0x12, 0x45, 0x0a, 0x07, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e,
+	0x4d, 0x73, 0x67, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x2e, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65,
+	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x52, 0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73,
+	0x12, 0x22, 0x0a, 0x0c, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x6a, 0x75, 0x72, 0x69, 0x73, 0x64, 0x69, 0x63,
 	0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x48, 0x0a, 0x0d, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x43, 0x72,
 	0x65, 0x64, 0x69, 0x74, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64,
 	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63,

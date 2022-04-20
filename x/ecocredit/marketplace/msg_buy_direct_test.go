@@ -14,12 +14,12 @@ import (
 
 func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 	type fields struct {
-		Buyer              string
-		SellOrderId        uint64
-		Quantity           string
-		PricePerCredit     *sdk.Coin
-		DisableAutoRetire  bool
-		RetirementLocation string
+		Buyer                  string
+		SellOrderId            uint64
+		Quantity               string
+		PricePerCredit         *sdk.Coin
+		DisableAutoRetire      bool
+		RetirementJurisdiction string
 	}
 	validCoin := sdk.NewInt64Coin("ufoo", 31)
 	_, _, addr := testdata.KeyTestPubAddr()
@@ -39,14 +39,14 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 			},
 		},
 		{
-			name: "valid retirement location",
+			name: "valid retirement jurisdiction",
 			fields: fields{
-				Buyer:              addr.String(),
-				SellOrderId:        1,
-				Quantity:           "45",
-				PricePerCredit:     &validCoin,
-				DisableAutoRetire:  false,
-				RetirementLocation: "US-NY"},
+				Buyer:                  addr.String(),
+				SellOrderId:            1,
+				Quantity:               "45",
+				PricePerCredit:         &validCoin,
+				DisableAutoRetire:      false,
+				RetirementJurisdiction: "US-NY"},
 		},
 		{
 			name:   "invalid addr",
@@ -89,14 +89,14 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 			errMsg: "invalid denom",
 		},
 		{
-			name: "no retirement location when AutoRetiring",
+			name: "no retirement jurisdiction when AutoRetiring",
 			fields: fields{
 				Buyer:             addr.String(),
 				SellOrderId:       1,
 				Quantity:          "45",
 				PricePerCredit:    &validCoin,
 				DisableAutoRetire: false},
-			errMsg: "when DisableAutoRetire is false, a valid retirement location must be provided",
+			errMsg: "when DisableAutoRetire is false, a valid retirement jurisdiction must be provided",
 		},
 	}
 	for _, tt := range tests {
@@ -105,11 +105,11 @@ func TestMsgBuyDirect_ValidateBasic(t *testing.T) {
 				Buyer: tt.fields.Buyer,
 				Orders: []*MsgBuyDirect_Order{
 					{
-						SellOrderId:        tt.fields.SellOrderId,
-						Quantity:           tt.fields.Quantity,
-						BidPrice:           tt.fields.PricePerCredit,
-						DisableAutoRetire:  tt.fields.DisableAutoRetire,
-						RetirementLocation: tt.fields.RetirementLocation,
+						SellOrderId:            tt.fields.SellOrderId,
+						Quantity:               tt.fields.Quantity,
+						BidPrice:               tt.fields.PricePerCredit,
+						DisableAutoRetire:      tt.fields.DisableAutoRetire,
+						RetirementJurisdiction: tt.fields.RetirementJurisdiction,
 					},
 				},
 			}

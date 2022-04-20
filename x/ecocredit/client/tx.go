@@ -128,15 +128,15 @@ Parameters:
 }
 
 const (
-	FlagClassId         string = "class-id"
-	FlagProjectId       string = "project-id"
-	FlagIssuances       string = "issuances"
-	FlagStartDate       string = "start-date"
-	FlagEndDate         string = "end-date"
-	FlagProjectLocation string = "project-location"
-	FlagMetadata        string = "metadata"
-	FlagAddIssuers      string = "add-issuers"
-	FlagRemoveIssuers   string = "remove-issuers"
+	FlagClassId             string = "class-id"
+	FlagProjectId           string = "project-id"
+	FlagIssuances           string = "issuances"
+	FlagStartDate           string = "start-date"
+	FlagEndDate             string = "end-date"
+	FlagProjectJurisdiction string = "project-jurisdiction"
+	FlagMetadata            string = "metadata"
+	FlagAddIssuers          string = "add-issuers"
+	FlagRemoveIssuers       string = "remove-issuers"
 )
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
@@ -164,10 +164,10 @@ Required Flags:
 			}
 
 			templateIssuance := &core.BatchIssuance{
-				Recipient:          "recipient-address",
-				TradableAmount:     "tradable-amount",
-				RetiredAmount:      "retired-amount",
-				RetirementLocation: "retirement-location",
+				Recipient:              "recipient-address",
+				TradableAmount:         "tradable-amount",
+				RetiredAmount:          "retired-amount",
+				RetirementJurisdiction: "retirement-jurisdiction",
 			}
 
 			numIssuances, err := cmd.Flags().GetUint32(FlagIssuances)
@@ -255,13 +255,13 @@ Parameters:
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
                                     "tradable_amount":     "1000",
                                     "retired_amount":      "15",
-                                    "retirement_location": "ST-UVW XY Z12",
+                                    "retirement_jurisdiction": "ST-UVW XY Z12",
                                   },
                                 ],
                                 "metadata":         "metadata",
                                 "start_date":       "1990-01-01",
                                 "end_date":         "1995-10-31",
-                                "project_location": "AB-CDE FG1 345",
+                                "project_jurisdiction": "AB-CDE FG1 345",
                               }
                               `),
 		Args: cobra.ExactArgs(1),
@@ -306,8 +306,8 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "C01-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
-             Note: "retirement_location" is only required when "retired_amount" is positive.`,
+             eg: '[{batch_denom: "C01-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
+             Note: "retirement_jurisdiction" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*core.MsgSend_SendCredits{}
@@ -330,14 +330,14 @@ Parameters:
 // TxRetireCmd returns a transaction command that retires credits.
 func TxRetireCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "retire [credits] [retirement_location]",
+		Use:   "retire [credits] [retirement_jurisdiction]",
 		Short: "Retires a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
   credits:             YAML encoded credit list. Note: numerical values must be written in strings.
                        eg: '[{batch_denom: "C01-20210101-20210201-001", amount: "5"}]'
-  retirement_location: A string representing the location of the buyer or
+  retirement_jurisdiction: A string representing the jurisdiction of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where
                        country-code and region-code are taken from ISO 3166, and
@@ -354,9 +354,9 @@ Parameters:
 				return err
 			}
 			msg := core.MsgRetire{
-				Holder:   clientCtx.GetFromAddress().String(),
-				Credits:  credits,
-				Location: args[1],
+				Holder:       clientCtx.GetFromAddress().String(),
+				Credits:      credits,
+				Jurisdiction: args[1],
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -533,13 +533,13 @@ Example:
 // TxCreateProject returns a transaction command that creates a new project.
 func TxCreateProject() *cobra.Command {
 	cmd := txflags(&cobra.Command{
-		Use:   "create-project [class-id] [project-location] [metadata] --project-id [project-id]",
+		Use:   "create-project [class-id] [project-jurisdiction] [metadata] --project-id [project-id]",
 		Short: "Create a new project within a credit class",
 		Long: `Create a new project within a credit class.
 		
 		Parameters:
 		class-id: id of the class
-		project-location: the location of the project (see documentation for proper project-location formats).
+		project-jurisdiction: the jurisdiction of the project (see documentation for proper project-jurisdiction formats).
 		metadata: any arbitrary metadata attached to the project.
 		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
 		`,
@@ -552,11 +552,11 @@ func TxCreateProject() *cobra.Command {
 			classID := args[0]
 
 			if args[1] == "" {
-				return errors.New("project location is required")
+				return errors.New("project jurisdiction is required")
 			}
 
-			projectLocation := args[1]
-			if err := ecocredit.ValidateLocation(projectLocation); err != nil {
+			projectJurisdiction := args[1]
+			if err := ecocredit.ValidateJurisdiction(projectJurisdiction); err != nil {
 				return err
 			}
 
@@ -575,11 +575,11 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			msg := core.MsgCreateProject{
-				Issuer:          clientCtx.GetFromAddress().String(),
-				ClassId:         classID,
-				ProjectLocation: projectLocation,
-				Metadata:        args[2],
-				ProjectId:       projectId,
+				Issuer:              clientCtx.GetFromAddress().String(),
+				ClassId:             classID,
+				ProjectJurisdiction: projectJurisdiction,
+				Metadata:            args[2],
+				ProjectId:           projectId,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
