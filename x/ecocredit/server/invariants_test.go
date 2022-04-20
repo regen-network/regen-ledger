@@ -83,14 +83,14 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			[]*core.BatchBalance{
 				{
 					Address:  acc1,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "210",
 					Retired:  "110",
 				},
 			},
 			[]*core.BatchSupply{
 				{
-					BatchId:        1,
+					BatchKey:       1,
 					TradableAmount: "220",
 					RetiredAmount:  "110",
 				},
@@ -103,25 +103,25 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			[]*core.BatchBalance{
 				{
 					Address:  acc1,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "310.579",
 					Retired:  "0",
 				},
 				{
 					Address:  acc2,
-					BatchId:  2,
+					BatchKey: 2,
 					Tradable: "210.456",
 					Retired:  "100.1234",
 				},
 			},
 			[]*core.BatchSupply{
 				{
-					BatchId:        1,
+					BatchKey:       1,
 					TradableAmount: "320.579",
 					RetiredAmount:  "0",
 				},
 				{
-					BatchId:        2,
+					BatchKey:       2,
 					TradableAmount: "220.456",
 					RetiredAmount:  "100.1234",
 				},
@@ -134,23 +134,23 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			[]*core.BatchBalance{
 				{
 					Address:  acc1,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "100.123",
 				},
 				{
 					Address:  acc2,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "210.456",
 				},
 			},
 			[]*core.BatchSupply{
 				{
-					BatchId:        1,
+					BatchKey:       1,
 					TradableAmount: "310.579",
 					RetiredAmount:  "0",
 				},
 				{
-					BatchId:        3,
+					BatchKey:       3,
 					TradableAmount: "1234",
 					RetiredAmount:  "0",
 				},
@@ -163,23 +163,23 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			[]*core.BatchBalance{
 				{
 					Address:  acc1,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "310.579",
 				},
 				{
-					BatchId:  2,
+					BatchKey: 2,
 					Address:  acc2,
 					Tradable: "1234",
 				},
 			},
 			[]*core.BatchSupply{
 				{
-					BatchId:        1,
+					BatchKey:       1,
 					TradableAmount: "310.579",
 					RetiredAmount:  "123",
 				},
 				{
-					BatchId:        2,
+					BatchKey:       2,
 					TradableAmount: "12345",
 					RetiredAmount:  "0",
 				},
@@ -188,17 +188,17 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			true,
 		},
 		{
-			"valid clase escrowed balance",
+			"valid case escrowed balance",
 			[]*core.BatchBalance{
 				{
 					Address:  acc1,
-					BatchId:  1,
+					BatchKey: 1,
 					Tradable: "100",
 					Escrowed: "10",
 					Retired:  "1",
 				},
 				{
-					BatchId:  2,
+					BatchKey: 2,
 					Address:  acc2,
 					Tradable: "1234",
 					Retired:  "123",
@@ -207,12 +207,52 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			},
 			[]*core.BatchSupply{
 				{
-					BatchId:        1,
+					BatchKey:       1,
 					TradableAmount: "110",
 					RetiredAmount:  "10",
 				},
 				{
-					BatchId:        2,
+					BatchKey:       2,
+					TradableAmount: "2000",
+					RetiredAmount:  "123",
+				},
+			},
+			map[uint64]math.Dec{},
+			true,
+		},
+		{
+			"valid case multiple account",
+			[]*core.BatchBalance{
+				{
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "100",
+					Escrowed: "10",
+					Retired:  "1",
+				},
+				{
+					BatchKey: 1,
+					Address:  acc2,
+					Tradable: "1234",
+					Retired:  "123",
+					Escrowed: "766",
+				},
+				{
+					BatchKey: 2,
+					Address:  acc2,
+					Tradable: "1234",
+					Retired:  "123",
+					Escrowed: "766",
+				},
+			},
+			[]*core.BatchSupply{
+				{
+					BatchKey:       1,
+					TradableAmount: "2110",
+					RetiredAmount:  "123",
+				},
+				{
+					BatchKey:       2,
 					TradableAmount: "2000",
 					RetiredAmount:  "123",
 				},
@@ -245,9 +285,9 @@ func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances
 		_, err := math.NewNonNegativeDecFromString(b.Tradable)
 		require.NoError(t, err)
 
-		require.NoError(t, ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+		require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 			Address:  b.Address,
-			BatchId:  b.BatchId,
+			BatchKey: b.BatchKey,
 			Tradable: b.Tradable,
 			Retired:  b.Retired,
 			Escrowed: b.Escrowed,
@@ -257,8 +297,8 @@ func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances
 
 func initSupply(t *testing.T, ctx context.Context, ss api.StateStore, supply []*core.BatchSupply) {
 	for _, s := range supply {
-		err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
-			BatchId:         s.BatchId,
+		err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+			BatchKey:        s.BatchKey,
 			TradableAmount:  s.TradableAmount,
 			RetiredAmount:   s.RetiredAmount,
 			CancelledAmount: s.CancelledAmount,
