@@ -248,11 +248,11 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:          val.Address.String(),
-		ClassId:         classId,
-		Metadata:        "META2",
-		ProjectLocation: "US-OR",
-		ProjectId:       "FBI",
+		Issuer:              val.Address.String(),
+		ClassId:             classId,
+		Metadata:            "META2",
+		ProjectJurisdiction: "US-OR",
+		ProjectId:           "FBI",
 	})
 	s.Require().NoError(err)
 
@@ -269,10 +269,10 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:          s.network.Validators[1].Address.String(),
-				TradableAmount:     "100",
-				RetiredAmount:      "0.000001",
-				RetirementLocation: "AB",
+				Recipient:              s.network.Validators[1].Address.String(),
+				TradableAmount:         "100",
+				RetiredAmount:          "0.000001",
+				RetirementJurisdiction: "AB",
 			},
 		},
 		Metadata:  validMetadata,
@@ -430,7 +430,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 	clientCtx := val0.ClientCtx
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val0.Address.String())
 
-	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", batchDenom)
+	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_jurisdiction: \"AB-CD\"}]", batchDenom)
 
 	testCases := []struct {
 		name            string
@@ -1164,7 +1164,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.ProjectLocation, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1190,10 +1190,10 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx without project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:          val0.Address.String(),
-				ClassId:         classId,
-				Metadata:        "hi",
-				ProjectLocation: "US-OR",
+				Issuer:              val0.Address.String(),
+				ClassId:             classId,
+				Metadata:            "hi",
+				ProjectJurisdiction: "US-OR",
 			}),
 			false,
 			"",
@@ -1201,11 +1201,11 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx with project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:          val0.Address.String(),
-				ClassId:         classId,
-				Metadata:        "hi",
-				ProjectLocation: "US-OR",
-				ProjectId:       rand.Str(3),
+				Issuer:              val0.Address.String(),
+				ClassId:             classId,
+				Metadata:            "hi",
+				ProjectJurisdiction: "US-OR",
+				ProjectId:           rand.Str(3),
 			}),
 			false,
 			"",
@@ -1251,7 +1251,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.ProjectLocation, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		return append(args, flags...)
 	}
 
@@ -1362,11 +1362,11 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:          addr,
-		ClassId:         classId,
-		Metadata:        "meta",
-		ProjectLocation: "US-OR",
-		ProjectId:       rand.Str(3),
+		Issuer:              addr,
+		ClassId:             classId,
+		Metadata:            "meta",
+		ProjectJurisdiction: "US-OR",
+		ProjectId:           rand.Str(3),
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()
@@ -1374,7 +1374,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Issuer:    addr,
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
-			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementLocation: "US-OR"},
+			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementJurisdiction: "US-OR"},
 		},
 		Metadata:  "meta",
 		StartDate: &start,
