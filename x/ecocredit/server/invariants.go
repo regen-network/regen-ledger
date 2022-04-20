@@ -14,6 +14,7 @@ import (
 
 // RegisterInvariants registers the ecocredit module invariants.
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
+	// TODO: uncomment when core invariants are migrated #1017
 	// ir.RegisterRoute(ecocredit.ModuleName, "tradable-supply", s.tradableSupplyInvariant())
 	// ir.RegisterRoute(ecocredit.ModuleName, "retired-supply", s.retiredSupplyInvariant())
 	s.basketKeeper.RegisterInvariants(ir)

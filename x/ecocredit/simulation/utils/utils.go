@@ -118,5 +118,4 @@ func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 
 	spendable := bk.SpendableCoins(ctx, accAddr)
 	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
-
 }

@@ -144,11 +144,11 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, sellOrderAskPrice, sellOrderAskPrice+100))))
 			buyOrders[i] = &marketplace.MsgBuyDirect_Order{
-				SellOrderId:        sellOrders[i].Id,
-				Quantity:           sellOrders[i].Quantity,
-				BidPrice:           &bidPrice,
-				DisableAutoRetire:  sellOrders[i].DisableAutoRetire,
-				RetirementLocation: "AQ",
+				SellOrderId:            sellOrders[i].Id,
+				Quantity:               sellOrders[i].Quantity,
+				BidPrice:               &bidPrice,
+				DisableAutoRetire:      sellOrders[i].DisableAutoRetire,
+				RetirementJurisdiction: "AQ",
 			}
 		}
 

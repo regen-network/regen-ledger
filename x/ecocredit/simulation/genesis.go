@@ -195,7 +195,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
 	// create few classes
-	cID1, err := ss.ClassInfoTable().InsertReturningID(ctx,
+	cKey1, err := ss.ClassInfoTable().InsertReturningID(ctx,
 		&api.ClassInfo{
 			Id:               "C01",
 			Admin:            accs[0].Address,
@@ -207,7 +207,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	cID2, err := ss.ClassInfoTable().InsertReturningID(ctx,
+	cKey2, err := ss.ClassInfoTable().InsertReturningID(ctx,
 		&api.ClassInfo{
 			Id:               "C02",
 			Admin:            accs[1].Address,
@@ -222,40 +222,40 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	// class sequence
 	if err := ss.ClassSequenceTable().Save(ctx, &api.ClassSequence{
 		CreditTypeAbbrev: "C",
-		NextSequence:     cID2 + 1,
+		NextSequence:     cKey2 + 1,
 	}); err != nil {
 		return err
 	}
 
 	// create class issuers
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassKey: cID1, Issuer: accs[0].Address},
+		&api.ClassIssuer{ClassKey: cKey1, Issuer: accs[0].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassKey: cID1, Issuer: accs[1].Address},
+		&api.ClassIssuer{ClassKey: cKey1, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassKey: cID2, Issuer: accs[1].Address},
+		&api.ClassIssuer{ClassKey: cKey2, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
 	if err := ss.ClassIssuerTable().Save(ctx,
-		&api.ClassIssuer{ClassKey: cID2, Issuer: accs[2].Address},
+		&api.ClassIssuer{ClassKey: cKey2, Issuer: accs[2].Address},
 	); err != nil {
 		return err
 	}
 
 	// create few projects
-	pID1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
+	pKey1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
-			Key:                 cID1,
+			ClassKey:            cKey1,
 			Id:                  "Project1",
 			Admin:               accs[0].Address,
 			ProjectJurisdiction: "AQ",
@@ -266,9 +266,9 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	pID2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
+	pKey2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
-			Key:                 cID2,
+			ClassKey:            cKey2,
 			Admin:               accs[1].Address,
 			ProjectJurisdiction: "AQ",
 			Metadata:            metadata,
@@ -281,15 +281,15 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// project sequence
 	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-		ClassKey:     cID1,
-		NextSequence: pID1 + 1,
+		ClassKey:     cKey1,
+		NextSequence: pKey1 + 1,
 	}); err != nil {
 		return err
 	}
 
 	if err := ss.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
-		ClassKey:     cID2,
-		NextSequence: pID2 + 1,
+		ClassKey:     cKey2,
+		NextSequence: pKey2 + 1,
 	}); err != nil {
 		return err
 	}
@@ -304,7 +304,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	bKey1, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
-			Issuer: accs[0].Address.Bytes(), ProjectKey: pID1, BatchDenom: denom,
+			Issuer: accs[0].Address.Bytes(), ProjectKey: pKey1, BatchDenom: denom,
 			StartDate: timestamppb.New(startDate), EndDate: timestamppb.New(endDate),
 			Metadata: metadata, IssuanceDate: timestamppb.New(simtypes.RandTimestamp(r).UTC()),
 		},
@@ -321,7 +321,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	bKey2, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
 			Issuer:     accs[1].Address,
-			ProjectKey: pID1, BatchDenom: denom,
+			ProjectKey: pKey1, BatchDenom: denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -340,7 +340,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	bKey3, err := ss.BatchInfoTable().InsertReturningID(ctx,
 		&api.BatchInfo{
 			Issuer:     accs[2].Address,
-			ProjectKey: pID2, BatchDenom: denom,
+			ProjectKey: pKey2, BatchDenom: denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -406,14 +406,14 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// batch sequence
 	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
-		ProjectKey:   pID1,
+		ProjectKey:   pKey1,
 		NextSequence: 3,
 	}); err != nil {
 		return err
 	}
 
 	if err := ss.BatchSequenceTable().Save(ctx, &api.BatchSequence{
-		ProjectKey:   pID2,
+		ProjectKey:   pKey2,
 		NextSequence: 2,
 	}); err != nil {
 		return err
