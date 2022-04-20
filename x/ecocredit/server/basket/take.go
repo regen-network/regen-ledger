@@ -9,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -97,7 +98,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				amountCreditsNeeded,
 				basket.BasketDenom,
 				retire,
-				msg.RetirementLocation,
+				msg.RetirementJurisdiction,
 			)
 			if err != nil {
 				return nil, err
@@ -128,7 +129,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 				balance,
 				basket.BasketDenom,
 				retire,
-				msg.RetirementLocation,
+				msg.RetirementJurisdiction,
 			)
 			if err != nil {
 				return nil, err
@@ -164,14 +165,14 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	}, err
 }
 
-func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementLocation string) error {
+func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementJurisdiction string) error {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, batchDenom)
 	if err != nil {
 		return err
 	}
 	if !retire {
-		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
+		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
 		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
@@ -181,10 +182,10 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			BasketDenom:    basketDenom,
 		})
 	} else {
-		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Id, amount); err != nil {
+		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
-		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Id, amount); err != nil {
+		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 			return err
 		}
 		err = sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
@@ -196,11 +197,11 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		if err != nil {
 			return err
 		}
-		return sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
-			Retirer:    owner.String(),
-			BatchDenom: batchDenom,
-			Amount:     amount.String(),
-			Location:   retirementLocation,
+		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventRetire{
+			Retirer:      owner.String(),
+			BatchDenom:   batchDenom,
+			Amount:       amount.String(),
+			Jurisdiction: retirementJurisdiction,
 		})
 	}
 }

@@ -35,7 +35,7 @@ Feature: Take
     Given basket retire_on_take is true
     When user tries to take credits from a basket
     And user sets retire_on_take to true
-    And user provides a valid retirement location
+    And user provides a valid retirement jurisdiction
     Then credits are taken from the basket
     And credits are received in a retired state
 
@@ -46,26 +46,26 @@ Feature: Take
     Then credits are NOT taken from the basket
     And credits are NOT received in a retired or tradable state
 
-  Scenario: user does not provide retirement location when retire_on_take is false
+  Scenario: user does not provide retirement jurisdiction when retire_on_take is false
     Given basket retire_on_take is false
     When user tries to take credits from a basket
     And user sets retire_on_take to false
-    And user does not specify a retirement location
+    And user does not specify a retirement jurisdiction
     Then credits are taken from the basket
     And credits are received in a tradable state
 
-  Scenario: user does not provide retirement location when retire_on_take is true
+  Scenario: user does not provide retirement jurisdiction when retire_on_take is true
     Given basket retire_on_take is true
     When user tries to take credits from a basket
     And user sets retire_on_take to true
-    And user does not provide a retirement location
+    And user does not provide a retirement jurisdiction
     Then credits are NOT taken from the basket
     And credits are NOT received in a retired or tradable state
 
-  Scenario: user provides an invalid retirement location
+  Scenario: user provides an invalid retirement jurisdiction
     Given basket retire_on_take is true
     When user tries to take credits from a basket
     And user sets retire_on_take to true
-    And user does not provide a valid retirement location
+    And user does not provide a valid retirement jurisdiction
     Then credits are NOT taken from the basket
     And credits are NOT received in a retired or tradable state

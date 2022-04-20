@@ -15,10 +15,10 @@ func TestQuery_ClassInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+		Id:               "C01",
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err)
 
@@ -29,6 +29,6 @@ func TestQuery_ClassInfo(t *testing.T) {
 	// query a valid class
 	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C01"})
 	assert.NilError(t, err)
-	assert.Equal(t, "C01", res.Info.Name)
+	assert.Equal(t, "C01", res.Info.Id)
 	assert.DeepEqual(t, s.addr.Bytes(), res.Info.Admin)
 }

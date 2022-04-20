@@ -25,7 +25,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -40,9 +40,9 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassAdminUpdated{
-		ClassName: req.ClassId,
-		OldAdmin:  reqAddr.String(),
-		NewAdmin:  newAdmin.String(),
+		ClassId:  req.ClassId,
+		OldAdmin: reqAddr.String(),
+		NewAdmin: newAdmin.String(),
 	}); err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		return nil, err
 	}
 
-	class, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
+	class, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -75,8 +75,8 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 			return nil, err
 		}
 		if err = k.stateStore.ClassIssuerTable().Delete(ctx, &api.ClassIssuer{
-			ClassId: class.Id,
-			Issuer:  issuerAcc,
+			ClassKey: class.Key,
+			Issuer:   issuerAcc,
 		}); err != nil {
 			return nil, err
 		}
@@ -91,8 +91,8 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 			return nil, err
 		}
 		if err = k.stateStore.ClassIssuerTable().Insert(ctx, &api.ClassIssuer{
-			ClassId: class.Id,
-			Issuer:  issuerAcc,
+			ClassKey: class.Key,
+			Issuer:   issuerAcc,
 		}); err != nil {
 			return nil, err
 		}
@@ -101,7 +101,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassIssuersUpdated{
-		ClassName:      req.ClassId,
+		ClassId:        req.ClassId,
 		AddedIssuers:   req.AddIssuers,
 		RemovedIssuers: req.RemoveIssuers,
 	}); err != nil {
@@ -119,7 +119,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -136,7 +136,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassMetadataUpdated{
-		ClassName:   req.ClassId,
+		ClassId:     req.ClassId,
 		OldMetadata: oldMetadata,
 		NewMetadata: req.Metadata,
 	}); err != nil {

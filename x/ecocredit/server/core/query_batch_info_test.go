@@ -16,7 +16,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	s := setupBase(t)
 	batchDenom := "C01-20200101-20220101-001"
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: batchDenom,
 		Metadata:   "",
 		StartDate:  nil,
@@ -30,5 +30,5 @@ func TestQuery_BatchInfo(t *testing.T) {
 	// good query
 	res, err := s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
 	assert.NilError(t, err)
-	assert.Equal(t, uint64(1), res.Info.ProjectId)
+	assert.Equal(t, uint64(1), res.Info.ProjectKey)
 }

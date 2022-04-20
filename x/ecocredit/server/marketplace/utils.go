@@ -100,8 +100,8 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			buyerBal = &ecoApi.BatchBalance{
+				BatchKey: sellOrder.BatchId,
 				Address:  buyerAcc,
-				BatchId:  sellOrder.BatchId,
 				Tradable: "0",
 				Retired:  "0",
 				Escrowed: "0",
@@ -160,10 +160,10 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		}
 		supply.RetiredAmount = supplyRetired.String()
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:    buyerAcc.String(),
-			BatchDenom: opts.batchDenom,
-			Amount:     purchaseQty.String(),
-			Location:   opts.retirementLocation,
+			Retirer:      buyerAcc.String(),
+			BatchDenom:   opts.batchDenom,
+			Amount:       purchaseQty.String(),
+			Jurisdiction: opts.retirementLocation,
 		}); err != nil {
 			return err
 		}
