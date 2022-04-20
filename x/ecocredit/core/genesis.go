@@ -71,7 +71,16 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	}
 
 	abbrevToPrecision := make(map[string]uint32) // map of credit abbreviation to precision
-	for _, ct := range params.CreditTypes {
+	ctItr, err := ss.CreditTypeTable().List(ormCtx, &api.CreditTypePrimaryKey{})
+	if err != nil {
+		return err
+	}
+	defer ctItr.Close()
+	for ctItr.Next() {
+		ct, err := ctItr.Value()
+		if err != nil {
+			return err
+		}
 		abbrevToPrecision[ct.Abbreviation] = ct.Precision
 	}
 

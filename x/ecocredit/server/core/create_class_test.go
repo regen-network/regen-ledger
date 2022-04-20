@@ -14,16 +14,15 @@ import (
 func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
+	gmAny := gomock.Any()
 	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin(ccFee.Denom, 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(1)
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
@@ -53,10 +52,10 @@ func TestCreateClass_Valid(t *testing.T) {
 func TestCreateClass_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
+	gmAny := gomock.Any()
 
 	// allowlist = true and sender is not in allowlist
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.AllowlistEnabled = true
 		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
 	}).Times(1)
@@ -73,15 +72,14 @@ func TestCreateClass_Sequence(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(2)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
@@ -108,11 +106,10 @@ func TestCreateClass_Sequence(t *testing.T) {
 func TestCreateClass_Fees(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.AllowlistEnabled = false
 		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
 	}).Times(2)
 
 	// wrong denom

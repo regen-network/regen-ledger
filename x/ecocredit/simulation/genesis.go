@@ -109,7 +109,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowedClassCreators,
 		AllowlistEnabled:     allowListEnabled,
-		CreditTypes:          creditTypes,
 		BasketFee:            basketCreationFee,
 	}
 
