@@ -3,8 +3,9 @@ package marketplace
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -77,12 +78,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		sellOrderIds[i] = id
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
-			OrderId:           id,
-			BatchDenom:        batch.BatchDenom,
-			Quantity:          order.Quantity,
-			AskPrice:          order.AskPrice,
-			DisableAutoRetire: order.DisableAutoRetire,
-			Expiration:        order.Expiration,
+			OrderId: id,
 		}); err != nil {
 			return nil, err
 		}

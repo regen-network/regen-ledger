@@ -157,7 +157,6 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&baskettypes.EventTake{
 		Owner:       msg.Owner,
 		BasketDenom: msg.BasketDenom,
-		Credits:     credits,
 		Amount:      msg.Amount,
 	})
 	return &baskettypes.MsgTakeResponse{

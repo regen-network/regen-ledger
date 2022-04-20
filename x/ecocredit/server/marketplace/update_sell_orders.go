@@ -48,7 +48,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 	event := marketplace.EventUpdateSellOrder{}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
-	event.DisableAutoRetire = update.DisableAutoRetire
 
 	if update.NewAskPrice != nil {
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
@@ -70,7 +69,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			order.MarketId = marketId
 		}
 		order.AskPrice = update.NewAskPrice.Amount.String()
-		event.NewAskPrice = update.NewAskPrice
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
@@ -78,7 +76,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
-		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
 		if creditType == nil {
@@ -109,7 +106,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 				return err
 			}
 			order.Quantity = update.NewQuantity
-			event.NewQuantity = update.NewQuantity
 		case math.LessThan:
 			amtToUnescrow, err := existingQty.Sub(newQty)
 			if err != nil {
@@ -119,7 +115,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 				return err
 			}
 			order.Quantity = update.NewQuantity
-			event.NewQuantity = update.NewQuantity
 		}
 	}
 
