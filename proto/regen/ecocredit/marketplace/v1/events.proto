@@ -2,24 +2,23 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/timestamp.proto";
-
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
 
+  // seller is the owner of the sell order.
+  string seller = 1;
+
   // order_id is the unique ID of sell order.
-  uint64 order_id = 1;
+  uint64 order_id = 2;
 }
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 message EventUpdateSellOrder {
 
-  // owner is the owner of the sell orders.
-  string owner = 1;
+  // seller is the owner of the sell order.
+  string seller = 1;
 
   //  sell_order_id is the ID of an existing sell order.
   uint64 sell_order_id = 2;

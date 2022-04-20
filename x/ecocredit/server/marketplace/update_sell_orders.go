@@ -45,7 +45,10 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *core.CreditType
-	event := marketplace.EventUpdateSellOrder{}
+	event := marketplace.EventUpdateSellOrder{
+		Seller:      sdk.AccAddress(order.Seller).String(),
+		SellOrderId: order.Id,
+	}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
 

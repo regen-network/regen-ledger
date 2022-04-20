@@ -78,6 +78,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		sellOrderIds[i] = id
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
+			Seller:  req.Owner,
 			OrderId: id,
 		}); err != nil {
 			return nil, err
