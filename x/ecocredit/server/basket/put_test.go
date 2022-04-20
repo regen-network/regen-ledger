@@ -322,7 +322,7 @@ func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
 func insertBatch(t *testing.T, s *baseSuite, batchDenom string, startDate *timestamppb.Timestamp) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectKey: 1,
-		BatchDenom: batchDenom,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  startDate,
 		EndDate:    nil,
@@ -418,7 +418,7 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 
 	key, err = s.coreStore.BatchInfoTable().InsertReturningID(s.ctx, &ecocreditapi.BatchInfo{
 		ProjectKey: 1,
-		BatchDenom: s.batchDenom,
+		Denom:      s.batchDenom,
 		StartDate:  s.batchStartDate,
 	})
 	assert.NilError(s.t, err)

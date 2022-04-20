@@ -23,14 +23,14 @@ func TestValidateGenesis(t *testing.T) {
 			{
 				"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=",
 				"project_key":"1",
-				"batch_denom":"BIO01-00000000-00000000-001",
+				"denom":"BIO01-00000000-00000000-001",
 				"start_date":"2021-04-08T10:40:10.774108556Z",
 				"end_date":"2022-04-08T10:40:10.774108556Z"
 			},
 		    {
 				"issuer":"gydQIvR2RUi0N1RJnmgOLVSkcd4=",
 				"project_key":"1",
-				"batch_denom":"BIO02-00000000-00000000-001",
+				"denom":"BIO02-00000000-00000000-001",
 				"start_date":"2021-04-08T10:40:10.774108556Z",
 				"end_date":"2022-04-08T10:40:10.774108556Z"
 			}
@@ -257,7 +257,7 @@ func TestGenesisValidate(t *testing.T) {
 					"regen.ecocredit.v1.BatchInfo":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"project_key":"1",
-						"batch_denom":"C01-00000000-00000000-001",
+						"denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z"
 					}],
@@ -290,7 +290,7 @@ func TestGenesisValidate(t *testing.T) {
 					"regen.ecocredit.v1.BatchInfo":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"project_key":"1",
-						"batch_denom":"C01-00000000-00000000-001",
+						"denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z"
 					}],
@@ -328,7 +328,7 @@ func TestGenesisValidate(t *testing.T) {
 				"regen.ecocredit.v1.BatchInfo":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"project_key":"1",
-					"batch_denom":"C01-00000000-00000000-001",
+					"denom":"C01-00000000-00000000-001",
 					"start_date":"2021-04-08T10:40:10.774108556Z",
 					"end_date":"2022-04-08T10:40:10.774108556Z"
 				}],
@@ -377,7 +377,7 @@ func TestGenesisValidate(t *testing.T) {
 				"regen.ecocredit.v1.BatchInfo":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"project_key":"1",
-					"batch_denom":"C01-00000000-00000000-001",
+					"denom":"C01-00000000-00000000-001",
 					"start_date":"2021-04-08T10:40:10.774108556Z",
 					"end_date":"2022-04-08T10:40:10.774108556Z",
 					"metadata":"meta-data"
@@ -445,7 +445,7 @@ func TestGenesisValidate(t *testing.T) {
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 						"project_key": "1",
-						"batch_denom":"C01-00000000-00000000-001",
+						"denom":"C01-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z",
 						"metadata":"meta-data"
@@ -453,7 +453,7 @@ func TestGenesisValidate(t *testing.T) {
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 						"project_key": "2",
-						"batch_denom":"C01-00000000-00000000-002",
+						"denom":"C01-00000000-00000000-002",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z",
 						"metadata":"meta-data"

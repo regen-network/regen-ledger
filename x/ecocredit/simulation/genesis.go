@@ -248,7 +248,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[0].Address.Bytes(),
 			ProjectKey:   pKey1,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -268,7 +268,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[1].Address.Bytes(),
 			ProjectKey:   pKey1,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -288,7 +288,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[2].Address.Bytes(),
 			ProjectKey:   pKey2,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,

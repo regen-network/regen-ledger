@@ -680,9 +680,9 @@ type BatchInfoTable interface {
 	Has(ctx context.Context, key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, key uint64) (*BatchInfo, error)
-	HasByBatchDenom(ctx context.Context, batch_denom string) (found bool, err error)
-	// GetByBatchDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByBatchDenom(ctx context.Context, batch_denom string) (*BatchInfo, error)
+	HasByDenom(ctx context.Context, denom string) (found bool, err error)
+	// GetByDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
+	GetByDenom(ctx context.Context, denom string) (*BatchInfo, error)
 	List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
 	ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BatchInfoIndexKey) error
@@ -723,16 +723,16 @@ func (this BatchInfoKeyIndexKey) WithKey(key uint64) BatchInfoKeyIndexKey {
 	return this
 }
 
-type BatchInfoBatchDenomIndexKey struct {
+type BatchInfoDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoBatchDenomIndexKey) id() uint32            { return 1 }
-func (x BatchInfoBatchDenomIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoBatchDenomIndexKey) batchInfoIndexKey()    {}
+func (x BatchInfoDenomIndexKey) id() uint32            { return 1 }
+func (x BatchInfoDenomIndexKey) values() []interface{} { return x.vs }
+func (x BatchInfoDenomIndexKey) batchInfoIndexKey()    {}
 
-func (this BatchInfoBatchDenomIndexKey) WithBatchDenom(batch_denom string) BatchInfoBatchDenomIndexKey {
-	this.vs = []interface{}{batch_denom}
+func (this BatchInfoDenomIndexKey) WithDenom(denom string) BatchInfoDenomIndexKey {
+	this.vs = []interface{}{denom}
 	return this
 }
 
@@ -815,16 +815,16 @@ func (this batchInfoTable) Get(ctx context.Context, key uint64) (*BatchInfo, err
 	return &batchInfo, nil
 }
 
-func (this batchInfoTable) HasByBatchDenom(ctx context.Context, batch_denom string) (found bool, err error) {
+func (this batchInfoTable) HasByDenom(ctx context.Context, denom string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		batch_denom,
+		denom,
 	)
 }
 
-func (this batchInfoTable) GetByBatchDenom(ctx context.Context, batch_denom string) (*BatchInfo, error) {
+func (this batchInfoTable) GetByDenom(ctx context.Context, denom string) (*BatchInfo, error) {
 	var batchInfo BatchInfo
 	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchInfo,
-		batch_denom,
+		denom,
 	)
 	if err != nil {
 		return nil, err

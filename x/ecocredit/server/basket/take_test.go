@@ -86,7 +86,7 @@ func setupTake(t *testing.T) *takeSuite {
 	for _, denom := range batchDenoms {
 		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 			ProjectKey: 1,
-			BatchDenom: denom,
+			Denom:      denom,
 		}))
 	}
 	s.denomToId = map[string]uint64{"C1-00000000-0000000-001": 1, "C2-00000000-0000000-001": 2, "C3-00000000-0000000-001": 3, "C4-00000000-0000000-001": 4}
