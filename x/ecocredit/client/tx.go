@@ -20,6 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	corecli "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -45,6 +46,7 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
 		TxCreateProject(),
+		corecli.TxCreditTypeProposalCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
