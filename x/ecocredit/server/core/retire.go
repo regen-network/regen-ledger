@@ -14,7 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Retire credits to the specified location.
+// Retire credits to the specified jurisdiction.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
@@ -29,7 +29,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Id)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +52,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Id)
+		batchSupply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -71,8 +71,8 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
+			BatchKey: batch.Key,
 			Address:  holder,
-			BatchId:  batch.Id,
 			Tradable: userTradableBalance.String(),
 			Retired:  userRetiredBalance.String(),
 		}); err != nil {
@@ -80,17 +80,17 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}
 
 		err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
-			BatchId:         batch.Id,
+			BatchKey:        batch.Key,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,
 		})
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:    req.Holder,
-			BatchDenom: credit.BatchDenom,
-			Amount:     credit.Amount,
-			Location:   req.Location,
+			Retirer:      req.Holder,
+			BatchDenom:   credit.BatchDenom,
+			Amount:       credit.Amount,
+			Jurisdiction: req.Jurisdiction,
 		}); err != nil {
 			return nil, err
 		}

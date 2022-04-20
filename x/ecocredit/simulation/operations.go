@@ -246,7 +246,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			return op, nil, err
 		}
 
-		issuers, op, err := getClassIssuers(sdkCtx, r, qryClient, class.Name, TypeMsgCreateProject)
+		issuers, op, err := getClassIssuers(sdkCtx, r, qryClient, class.Id, TypeMsgCreateProject)
 		if len(issuers) == 0 {
 			return op, nil, err
 		}
@@ -259,11 +259,11 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		spendable := bk.SpendableCoins(sdkCtx, issuerAcc.GetAddress())
 
 		msg := &core.MsgCreateProject{
-			Issuer:          issuer.Address.String(),
-			ClassId:         class.Name,
-			Metadata:        simtypes.RandStringOfLength(r, 100),
-			ProjectLocation: "AB-CDE FG1 345",
-			ProjectId:       genProjectID(r),
+			Issuer:              issuer.Address.String(),
+			ClassId:             class.Id,
+			Metadata:            simtypes.RandStringOfLength(r, 100),
+			ProjectJurisdiction: "AB-CDE FG1 345",
+			ProjectId:           genProjectID(r),
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -306,7 +306,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		result, err := qryClient.ClassIssuers(ctx, &core.QueryClassIssuersRequest{ClassId: class.Name})
+		result, err := qryClient.ClassIssuers(ctx, &core.QueryClassIssuersRequest{ClassId: class.Id})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, err.Error()), nil, err
 		}
@@ -316,7 +316,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "no issuers"), nil, nil
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCreateBatch, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCreateBatch, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
@@ -332,7 +332,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		tenHours := now.Add(10 * time.Hour)
 		msg := &core.MsgCreateBatch{
 			Issuer:    issuer.Address.String(),
-			ProjectId: project.Name,
+			ProjectId: project.Id,
 			Issuance:  generateBatchIssuance(r, accs),
 			StartDate: &now,
 			EndDate:   &tenHours,
@@ -371,12 +371,12 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgSend, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgSend, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgSend, class.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgSend, class.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -420,7 +420,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		var tradable int
 		var retired int
-		var retirementLocation string
+		var retirementJurisdiction string
 		if !tradableBalance.IsZero() {
 			i64, err := tradableBalance.Int64()
 			if err != nil {
@@ -430,7 +430,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				tradable = simtypes.RandIntBetween(r, 1, int(i64))
 				retired = simtypes.RandIntBetween(r, 0, tradable)
 				if retired != 0 {
-					retirementLocation = "AQ"
+					retirementJurisdiction = "AQ"
 				}
 			} else {
 				tradable = int(i64)
@@ -446,10 +446,10 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Recipient: recipient.Address.String(),
 			Credits: []*core.MsgSend_SendCredits{
 				{
-					BatchDenom:         batch.BatchDenom,
-					TradableAmount:     fmt.Sprintf("%d", tradable),
-					RetiredAmount:      fmt.Sprintf("%d", retired),
-					RetirementLocation: retirementLocation,
+					BatchDenom:             batch.BatchDenom,
+					TradableAmount:         fmt.Sprintf("%d", tradable),
+					RetiredAmount:          fmt.Sprintf("%d", retired),
+					RetirementJurisdiction: retirementJurisdiction,
 				},
 			},
 		}
@@ -486,12 +486,12 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgRetire, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgRetire, project.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgRetire, project.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -536,7 +536,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					Amount:     randSub.String(),
 				},
 			},
-			Location: "ST-UVW XY Z12",
+			Jurisdiction: "ST-UVW XY Z12",
 		}
 
 		txCtx := simulation.OperationInput{
@@ -571,12 +571,12 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCancel, class.Name)
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgCancel, class.Id)
 		if project == nil {
 			return op, nil, err
 		}
 
-		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgCancel, project.Name)
+		batch, op, err := getRandomBatchFromProject(ctx, r, qryClient, TypeMsgCancel, project.Id)
 		if batch == nil {
 			return op, nil, err
 		}
@@ -657,7 +657,7 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 
 		msg := &core.MsgUpdateClassAdmin{
 			Admin:    admin.String(),
-			ClassId:  class.Name,
+			ClassId:  class.Id,
 			NewAdmin: newAdmin.Address.String(),
 		}
 
@@ -699,7 +699,7 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 
 		msg := &core.MsgUpdateClassMetadata{
 			Admin:    admin.String(),
-			ClassId:  class.Name,
+			ClassId:  class.Id,
 			Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
 		}
 
@@ -739,7 +739,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Name})
+		issuersRes, err := qryClient.ClassIssuers(sdk.WrapSDKContext(sdkCtx), &core.QueryClassIssuersRequest{ClassId: class.Id})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
 		}
@@ -763,7 +763,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 
 		msg := &core.MsgUpdateClassIssuers{
 			Admin:         admin.String(),
-			ClassId:       class.Name,
+			ClassId:       class.Id,
 			AddIssuers:    addIssuers,
 			RemoveIssuers: removeIssuers,
 		}
@@ -859,15 +859,15 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.BatchI
 	for i := 0; i < numIssuances; i++ {
 		recipient := accs[i]
 		retiredAmount := simtypes.RandIntBetween(r, 0, 100)
-		var retirementLocation string
+		var retirementJurisdiction string
 		if retiredAmount > 0 {
-			retirementLocation = "AD"
+			retirementJurisdiction = "AD"
 		}
 		res[i] = &core.BatchIssuance{
-			Recipient:          recipient.Address.String(),
-			TradableAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
-			RetiredAmount:      fmt.Sprintf("%d", retiredAmount),
-			RetirementLocation: retirementLocation,
+			Recipient:              recipient.Address.String(),
+			TradableAmount:         fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
+			RetiredAmount:          fmt.Sprintf("%d", retiredAmount),
+			RetirementJurisdiction: retirementJurisdiction,
 		}
 	}
 

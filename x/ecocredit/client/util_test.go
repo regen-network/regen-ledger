@@ -131,7 +131,7 @@ func TestJSONDupliteKeys(t *testing.T) {
 		},
 		{
 			"valid json simple",
-			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "project_location": "AB-CDE FG1 345"}`,
+			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "project_jurisdiction": "AB-CDE FG1 345"}`,
 			false,
 			"",
 		},
@@ -144,13 +144,13 @@ func TestJSONDupliteKeys(t *testing.T) {
 						"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
 						"tradable_amount": "1000",
 						"retired_amount": "5",
-						"retirement_location": "ST-UVW XY Z12"
+						"retirement_jurisdiction": "ST-UVW XY Z12"
 					}
 				],
 				"metadata": "Y2FyYm9uCg==",
 				"start_date": "2021-09-08T00:00:00Z",
 				"end_date": "2022-09-08T00:00:00Z",
-				"project_location": "AB-CDE FG1 345"
+				"project_jurisdiction": "AB-CDE FG1 345"
 			}`,
 			false,
 			"",
@@ -169,7 +169,7 @@ func TestJSONDupliteKeys(t *testing.T) {
 					"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
 					"tradable_amount": "1000",
 					"retired_amount": "5",
-					"retirement_location": "ST-UVW XY Z12"
+					"retirement_jurisdiction": "ST-UVW XY Z12"
 				}
 			]}`,
 			true,

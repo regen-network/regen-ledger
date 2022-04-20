@@ -50,7 +50,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 	// make another batch
 	otherDenom := "C01-19990101-20290101-001"
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecocreditApi.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: otherDenom,
 		Metadata:   "",
 		StartDate:  nil,

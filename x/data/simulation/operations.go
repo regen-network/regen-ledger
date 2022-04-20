@@ -241,8 +241,8 @@ func SimulateMsgDefineResolver(ak data.AccountKeeper, bk data.BankKeeper) simtyp
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
-			if strings.Contains(err.Error(), "unique key violation") {
-				return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unique key voilation"), nil, nil
+			if strings.Contains(err.Error(), "resolver URL already exists") {
+				return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "resolver URL already exists"), nil, nil
 			}
 			return simtypes.NoOpMsg(ModuleName, TypeMsgDefineResolver, "unable to deliver tx"), nil, err
 		}

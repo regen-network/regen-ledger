@@ -16,11 +16,11 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 	if err != nil {
 		return nil, err
 	}
-	cInfo, err := k.stateStore.ClassInfoTable().GetByName(ctx, request.ClassId)
+	cInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ProjectInfoTable().List(ctx, api.ProjectInfoClassIdNameIndexKey{}.WithClassId(cInfo.Id), ormlist.Paginate(pg))
+	it, err := k.stateStore.ProjectInfoTable().List(ctx, api.ProjectInfoClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}

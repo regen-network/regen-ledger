@@ -2,13 +2,13 @@ package core
 
 import (
 	"math/rand"
+	"strings"
 	"testing"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
 var (
@@ -89,7 +89,7 @@ func TestMsgCreateClass(t *testing.T) {
 				Admin:            addr1,
 				CreditTypeAbbrev: "C",
 				Issuers:          []string{addr1, addr2},
-				Metadata:         simtypes.RandStringOfLength(r, 288),
+				Metadata:         strings.Repeat("x", 288),
 			},
 			expErr: true,
 		},
