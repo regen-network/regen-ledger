@@ -17,7 +17,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-func (s *IntegrationTestSuite) TestQueryClasses() {
+func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val := s.network.Validators[0]
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryClassInfo() {
+func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBatches() {
+func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBatchInfo() {
+func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -271,7 +271,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBalance() {
+func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySupply() {
+func (s *IntegrationTestSuite) TestQuerySupplyCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -376,7 +376,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryCreditTypes() {
+func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -413,7 +413,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryParams() {
+func (s *IntegrationTestSuite) TestQueryParamsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -430,7 +430,7 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	require.Equal(core.DefaultParams(), *params.Params)
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrder() {
+func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -491,7 +491,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrders() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -548,7 +548,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -608,7 +608,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -670,7 +670,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryProjects() {
+func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -749,7 +749,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectInfo() {
+func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"

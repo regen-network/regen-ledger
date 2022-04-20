@@ -17,7 +17,7 @@ const (
 	coreRoute        = "/regen/ecocredit/v1/"
 )
 
-func (s *IntegrationTestSuite) TestGetClasses() {
+func (s *IntegrationTestSuite) TestQueryClasses() {
 	val := s.network.Validators[0]
 	ctx := val.ClientCtx
 	_, err := s.createClass(ctx, &core.MsgCreateClass{
@@ -65,7 +65,7 @@ func (s *IntegrationTestSuite) TestGetClasses() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetClass() {
+func (s *IntegrationTestSuite) TestQueryClass() {
 	val := s.network.Validators[0]
 	classId, err := s.createClass(val.ClientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
@@ -103,7 +103,7 @@ func (s *IntegrationTestSuite) TestGetClass() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetBatches() {
+func (s *IntegrationTestSuite) TestQueryBatches() {
 	val := s.network.Validators[0]
 	_, pid, _ := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 
@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetBatch() {
+func (s *IntegrationTestSuite) TestQueryBatch() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 
@@ -189,7 +189,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 
 }
 
-func (s *IntegrationTestSuite) TestGetBalance() {
+func (s *IntegrationTestSuite) TestQueryBalance() {
 	val := s.network.Validators[0]
 	noBalAddr := s.network.Validators[1]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
@@ -225,7 +225,7 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetSupply() {
+func (s *IntegrationTestSuite) TestQuerySupply() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 
@@ -269,7 +269,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	s.Require().Equal(core.DefaultParams(), *res.Params)
 }
 
-func (s *IntegrationTestSuite) TestGetSellOrder() {
+func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
@@ -310,7 +310,7 @@ func (s *IntegrationTestSuite) TestGetSellOrder() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetSellOrders() {
+func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
@@ -364,7 +364,7 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
@@ -417,7 +417,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
