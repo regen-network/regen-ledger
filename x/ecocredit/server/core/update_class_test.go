@@ -21,7 +21,7 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	addrs := genAddrs(1)
 	newAdmin := addrs[0]
 
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
@@ -36,7 +36,7 @@ func TestUpdateClass_UpdateAdmin(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	cInfo, err := s.stateStore.ClassInfoTable().Get(s.ctx, 1)
+	cInfo, err := s.stateStore.ClassTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 	assert.Check(t, newAdmin.Equals(types.AccAddress(cInfo.Admin)))
 }
@@ -46,7 +46,7 @@ func TestUpdateClass_UpdateAdminErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
@@ -78,7 +78,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	addrs := genAddrs(3)    // addrs to initially populate the class issuer store
 	newAddrs := genAddrs(3) // addrs to add in an update call
 
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
@@ -149,7 +149,7 @@ func TestUpdateClass_IssuersErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	classRowId, err := s.stateStore.ClassInfoTable().InsertReturningID(s.ctx, &api.ClassInfo{
+	classRowId, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
@@ -194,7 +194,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "foobar",
@@ -209,7 +209,7 @@ func TestUpdateClass_Metadata(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	class, err := s.stateStore.ClassInfoTable().Get(s.ctx, 1)
+	class, err := s.stateStore.ClassTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 	assert.Equal(t, "barfoo", class.Metadata)
 }
@@ -219,7 +219,7 @@ func TestUpdateClass_MetadataErrs(t *testing.T) {
 	s := setupBase(t)
 
 	addr := genAddrs(1)[0]
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",

@@ -28,11 +28,11 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
 				"from a sell order that does not have auto retire disabled")
 		}
-		batch, err := k.coreStore.BatchInfoTable().Get(ctx, sellOrder.BatchId)
+		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchId)
 		if err != nil {
 			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
 			autoRetire:         !order.DisableAutoRetire,
 			canPartialFill:     false,
-			batchDenom:         batch.BatchDenom,
+			batchDenom:         batch.Denom,
 			retirementLocation: order.RetirementJurisdiction,
 		}); err != nil {
 			return nil, fmt.Errorf("error filling order: %w", err)

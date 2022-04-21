@@ -101,7 +101,7 @@ func TestDuplicateDenom(t *testing.T) {
 func TestInvalidClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               "bar",
 		CreditTypeAbbrev: "BIO",
 	}))
@@ -161,7 +161,7 @@ func TestValidBasket(t *testing.T) {
 			}},
 		},
 	)
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               "bar",
 		Admin:            nil,
 		Metadata:         "",

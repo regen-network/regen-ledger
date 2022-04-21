@@ -84,7 +84,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		abbrevToPrecision[ct.Abbreviation] = ct.Precision
 	}
 
-	cItr, err := ss.ClassInfoTable().List(ormCtx, api.ClassInfoPrimaryKey{})
+	cItr, err := ss.ClassTable().List(ormCtx, api.ClassPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	}
 
 	projectKeyToClassKey := make(map[uint64]uint64) // map of project key to class key
-	pItr, err := ss.ProjectInfoTable().List(ormCtx, api.ProjectInfoPrimaryKey{})
+	pItr, err := ss.ProjectTable().List(ormCtx, api.ProjectPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	}
 
 	batchIdToPrecision := make(map[uint64]uint32) // map of batchID to precision
-	bItr, err := ss.BatchInfoTable().List(ormCtx, api.BatchInfoPrimaryKey{})
+	bItr, err := ss.BatchTable().List(ormCtx, api.BatchPrimaryKey{})
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 			continue
 		}
 
-		class, err := ss.ClassInfoTable().Get(ormCtx, projectKeyToClassKey[batch.ProjectKey])
+		class, err := ss.ClassTable().Get(ormCtx, projectKeyToClassKey[batch.ProjectKey])
 		if err != nil {
 			return err
 		}
@@ -202,8 +202,8 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 
 func validateMsg(m proto.Message) error {
 	switch m.(type) {
-	case *api.ClassInfo:
-		msg := &ClassInfo{}
+	case *api.Class:
+		msg := &Class{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
@@ -216,15 +216,15 @@ func validateMsg(m proto.Message) error {
 		}
 
 		return msg.Validate()
-	case *api.ProjectInfo:
-		msg := &ProjectInfo{}
+	case *api.Project:
+		msg := &Project{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
 
 		return msg.Validate()
-	case *api.BatchInfo:
-		msg := &BatchInfo{}
+	case *api.Batch:
+		msg := &Batch{}
 		if err := ormutil.PulsarToGogoSlow(m, msg); err != nil {
 			return err
 		}
@@ -341,7 +341,7 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 }
 
 // Validate performs a basic validation of credit class
-func (c ClassInfo) Validate() error {
+func (c Class) Validate() error {
 	if len(c.Metadata) > ecocredit.MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
@@ -379,7 +379,7 @@ func (c ClassIssuer) Validate() error {
 }
 
 // Validate performs a basic validation of project
-func (p ProjectInfo) Validate() error {
+func (p Project) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(sdk.AccAddress(p.Admin).String()); err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
@@ -404,8 +404,8 @@ func (p ProjectInfo) Validate() error {
 }
 
 // Validate performs a basic validation of credit batch
-func (b BatchInfo) Validate() error {
-	if err := ValidateDenom(b.BatchDenom); err != nil {
+func (b Batch) Validate() error {
+	if err := ValidateDenom(b.Denom); err != nil {
 		return err
 	}
 

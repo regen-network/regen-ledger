@@ -17,3 +17,11 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCancelSellOrder{}, "regen.marketplace/MsgCancelSellOrder", nil)
 	cdc.RegisterConcrete(&MsgUpdateSellOrders{}, "regen.marketplace/MsgUpdateSellOrders", nil)
 }
+
+var (
+	amino = codec.NewLegacyAmino()
+)
+
+func init() {
+	RegisterLegacyAminoCodec(amino)
+}

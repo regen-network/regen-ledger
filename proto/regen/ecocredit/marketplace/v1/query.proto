@@ -14,7 +14,7 @@ service Query {
   // SellOrder queries a sell order by its ID
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/id/{sell_order_id}";
+        "/regen/ecocredit/marketplace/v1/sell-orders/{sell_order_id}";
   }
 
   // SellOrders queries a paginated list of all sell orders

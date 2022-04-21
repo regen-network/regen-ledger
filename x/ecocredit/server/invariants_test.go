@@ -1,180 +1,275 @@
-package server
+package server_test
 
 import (
+	"context"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
+
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
+	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	coreserver "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 )
 
-func setupStore(t *testing.T) (sdk.Context, *sdk.KVStoreKey) {
-	interfaceRegistry := types.NewInterfaceRegistry()
-	ecocredit.RegisterTypes(interfaceRegistry)
-	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
-	db := dbm.NewMemDB()
-	cms := store.NewCommitMultiStore(db)
-	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
-	err := cms.LoadLatestVersion()
-	require.NoError(t, err)
-	ctx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
-	return ctx, key
+type baseSuite struct {
+	t            *testing.T
+	db           ormdb.ModuleDB
+	stateStore   api.StateStore
+	ctx          context.Context
+	k            coreserver.Keeper
+	ctrl         *gomock.Controller
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks.MockParamKeeper
+	storeKey     *sdk.KVStoreKey
+	sdkCtx       sdk.Context
 }
 
-func TestTradableSupplyInvariants(t *testing.T) {
+func setupBase(t *testing.T) *baseSuite {
+	// prepare database
+	s := &baseSuite{t: t}
+	var err error
+	s.db, err = ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	assert.NilError(t, err)
+	s.stateStore, err = api.NewStateStore(s.db)
+	assert.NilError(t, err)
+
+	db := dbm.NewMemDB()
+	cms := store.NewCommitMultiStore(db)
+	s.storeKey = sdk.NewKVStoreKey("test")
+	cms.MountStoreWithDB(s.storeKey, sdk.StoreTypeIAVL, db)
+	assert.NilError(t, cms.LoadLatestVersion())
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	// setup test keeper
+	s.ctrl = gomock.NewController(t)
+	assert.NilError(t, err)
+	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
+	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+
+	return s
+}
+
+func TestBatchSupplyInvariant(t *testing.T) {
 	acc1 := sdk.AccAddress([]byte("account1"))
 	acc2 := sdk.AccAddress([]byte("account2"))
 
 	testCases := []struct {
 		msg           string
-		balances      []*ecocredit.Balance
-		supply        []*ecocredit.Supply
-		basketBalance map[string]math.Dec
+		balances      []*core.BatchBalance
+		supply        []*core.BatchSupply
+		basketBalance map[uint64]math.Dec
 		expBroken     bool
 	}{
 		{
 			"valid test case",
-			[]*ecocredit.Balance{
+			[]*core.BatchBalance{
 				{
-					Address:         acc1.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "100",
-				},
-				{
-					Address:         acc2.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "210",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "210",
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "210",
+					Retired:  "110",
 				},
 			},
-			[]*ecocredit.Supply{
+			[]*core.BatchSupply{
 				{
-					BatchDenom:     "1/2",
-					TradableSupply: "320",
-					RetiredSupply:  "210",
+					BatchKey:       1,
+					TradableAmount: "220",
+					RetiredAmount:  "110",
 				},
 			},
-			map[string]math.Dec{"1/2": math.NewDecFromInt64(10)},
+			map[uint64]math.Dec{1: math.NewDecFromInt64(10)},
 			false,
 		},
 		{
 			"valid test case multiple denom",
-			[]*ecocredit.Balance{
+			[]*core.BatchBalance{
 				{
-					Address:         acc1.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "100.123",
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "310.579",
+					Retired:  "0",
 				},
 				{
-					Address:         acc2.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "210.456",
-				},
-				{
-					Address:         acc2.String(),
-					BatchDenom:      "3/4",
-					TradableBalance: "210.456",
+					Address:  acc2,
+					BatchKey: 2,
+					Tradable: "210.456",
+					Retired:  "100.1234",
 				},
 			},
-			[]*ecocredit.Supply{
+			[]*core.BatchSupply{
 				{
-					BatchDenom:     "1/2",
-					TradableSupply: "320.579",
-					RetiredSupply:  "0",
+					BatchKey:       1,
+					TradableAmount: "320.579",
+					RetiredAmount:  "0",
 				},
 				{
-					BatchDenom:     "3/4",
-					TradableSupply: "220.456",
-					RetiredSupply:  "0",
+					BatchKey:       2,
+					TradableAmount: "220.456",
+					RetiredAmount:  "100.1234",
 				},
 			},
-			map[string]math.Dec{"1/2": math.NewDecFromInt64(10), "3/4": math.NewDecFromInt64(10)},
+			map[uint64]math.Dec{1: math.NewDecFromInt64(10), 2: math.NewDecFromInt64(10)},
 			false,
 		},
 		{
 			"fail with error tradable balance not found",
-			[]*ecocredit.Balance{
+			[]*core.BatchBalance{
 				{
-					Address:         acc1.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "100.123",
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "100.123",
 				},
 				{
-					Address:         acc2.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "210.456",
-				},
-			},
-			[]*ecocredit.Supply{
-				{
-					BatchDenom:     "1/2",
-					TradableSupply: "310.579",
-					RetiredSupply:  "0",
-				},
-				{
-					BatchDenom:     "3/4",
-					TradableSupply: "1234",
-					RetiredSupply:  "0",
+					Address:  acc2,
+					BatchKey: 1,
+					Tradable: "210.456",
 				},
 			},
-			map[string]math.Dec{},
+			[]*core.BatchSupply{
+				{
+					BatchKey:       1,
+					TradableAmount: "310.579",
+					RetiredAmount:  "0",
+				},
+				{
+					BatchKey:       3,
+					TradableAmount: "1234",
+					RetiredAmount:  "0",
+				},
+			},
+			map[uint64]math.Dec{},
 			true,
 		},
 		{
 			"fail with error supply does not match",
-			[]*ecocredit.Balance{
+			[]*core.BatchBalance{
 				{
-					Address:         acc1.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "100.123",
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "310.579",
 				},
 				{
-					Address:         acc2.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "210.456",
-				},
-				{
-					BatchDenom:      "3/4",
-					Address:         acc2.String(),
-					TradableBalance: "1234",
+					BatchKey: 2,
+					Address:  acc2,
+					Tradable: "1234",
 				},
 			},
-			[]*ecocredit.Supply{
+			[]*core.BatchSupply{
 				{
-					BatchDenom:     "1/2",
-					TradableSupply: "325.57",
-					RetiredSupply:  "0",
+					BatchKey:       1,
+					TradableAmount: "310.579",
+					RetiredAmount:  "123",
 				},
 				{
-					BatchDenom:     "3/4",
-					TradableSupply: "1234",
-					RetiredSupply:  "0",
+					BatchKey:       2,
+					TradableAmount: "12345",
+					RetiredAmount:  "0",
 				},
 			},
-			map[string]math.Dec{},
+			map[uint64]math.Dec{},
 			true,
+		},
+		{
+			"valid case escrowed balance",
+			[]*core.BatchBalance{
+				{
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "100",
+					Escrowed: "10",
+					Retired:  "1",
+				},
+				{
+					BatchKey: 2,
+					Address:  acc2,
+					Tradable: "1234",
+					Retired:  "123",
+					Escrowed: "766",
+				},
+			},
+			[]*core.BatchSupply{
+				{
+					BatchKey:       1,
+					TradableAmount: "110",
+					RetiredAmount:  "1",
+				},
+				{
+					BatchKey:       2,
+					TradableAmount: "2000",
+					RetiredAmount:  "123",
+				},
+			},
+			map[uint64]math.Dec{},
+			false,
+		},
+		{
+			"valid case multiple account",
+			[]*core.BatchBalance{
+				{
+					Address:  acc1,
+					BatchKey: 1,
+					Tradable: "100",
+					Escrowed: "10",
+					Retired:  "1",
+				},
+				{
+					BatchKey: 1,
+					Address:  acc2,
+					Tradable: "1234",
+					Retired:  "123",
+					Escrowed: "766",
+				},
+				{
+					BatchKey: 2,
+					Address:  acc2,
+					Tradable: "1234",
+					Retired:  "123",
+					Escrowed: "766",
+				},
+			},
+			[]*core.BatchSupply{
+				{
+					BatchKey:       1,
+					TradableAmount: "2110",
+					RetiredAmount:  "124",
+				},
+				{
+					BatchKey:       2,
+					TradableAmount: "2000",
+					RetiredAmount:  "123",
+				},
+			},
+			map[uint64]math.Dec{},
+			false,
 		},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
-		ctx, storeKey := setupStore(t)
-		store := ctx.KVStore(storeKey)
+		suite := setupBase(t)
 		t.Run(tc.msg, func(t *testing.T) {
-			initBalances(t, store, tc.balances)
-			initSupply(t, store, tc.supply)
+			initBalances(t, suite.ctx, suite.stateStore, tc.balances)
+			initSupply(t, suite.ctx, suite.stateStore, tc.supply)
 
-			msg, broken := tradableSupplyInvariant(store, tc.basketBalance)
+			msg, broken := coreserver.BatchSupplyInvariant(suite.ctx, suite.k, tc.basketBalance)
 			if tc.expBroken {
 				require.True(t, broken, msg)
 			} else {
@@ -184,188 +279,29 @@ func TestTradableSupplyInvariants(t *testing.T) {
 	}
 }
 
-func TestRetiredSupplyInvariants(t *testing.T) {
-	acc1 := sdk.AccAddress([]byte("account1"))
-	acc2 := sdk.AccAddress([]byte("account2"))
-
-	testCases := []struct {
-		msg       string
-		balances  []*ecocredit.Balance
-		supply    []*ecocredit.Supply
-		expBroken bool
-	}{
-		{
-			"valid test case",
-			[]*ecocredit.Balance{
-				{
-					Address:        acc1.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "100",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "210",
-				},
-				{
-					Address:         acc2.String(),
-					BatchDenom:      "1/2",
-					TradableBalance: "210",
-				},
-			},
-			[]*ecocredit.Supply{
-				{
-					BatchDenom:     "1/2",
-					RetiredSupply:  "310",
-					TradableSupply: "210",
-				},
-			},
-			false,
-		},
-		{
-			"valid test case multiple denom",
-			[]*ecocredit.Balance{
-				{
-					Address:        acc1.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "100.123",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "210.456",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "3/4",
-					RetiredBalance: "210.456",
-				},
-			},
-			[]*ecocredit.Supply{
-				{
-					BatchDenom:     "1/2",
-					RetiredSupply:  "310.579",
-					TradableSupply: "0",
-				},
-				{
-					BatchDenom:     "3/4",
-					RetiredSupply:  "210.456",
-					TradableSupply: "0",
-				},
-			},
-			false,
-		},
-		{
-			"fail with error retired balance not found",
-			[]*ecocredit.Balance{
-				{
-					Address:        acc1.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "100.123",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "210.456",
-				},
-			},
-			[]*ecocredit.Supply{
-				{
-					BatchDenom:     "1/2",
-					RetiredSupply:  "310.579",
-					TradableSupply: "0",
-				},
-				{
-					BatchDenom:     "3/4",
-					RetiredSupply:  "1234",
-					TradableSupply: "0",
-				},
-			},
-			true,
-		},
-		{
-			"fail with error retired supply does not match",
-			[]*ecocredit.Balance{
-				{
-					Address:        acc1.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "100.123",
-				},
-				{
-					Address:        acc2.String(),
-					BatchDenom:     "1/2",
-					RetiredBalance: "210.456",
-				},
-				{
-					BatchDenom:     "3/4",
-					Address:        acc2.String(),
-					RetiredBalance: "1234",
-				},
-			},
-			[]*ecocredit.Supply{
-				{
-					BatchDenom:     "1/2",
-					RetiredSupply:  "310.57",
-					TradableSupply: "0",
-				},
-				{
-					BatchDenom:     "3/4",
-					RetiredSupply:  "1234",
-					TradableSupply: "0",
-				},
-			},
-			true,
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-		ctx, storeKey := setupStore(t)
-		store := ctx.KVStore(storeKey)
-		t.Run(tc.msg, func(t *testing.T) {
-			initBalances(t, store, tc.balances)
-			initSupply(t, store, tc.supply)
-
-			msg, broken := retiredSupplyInvariant(store)
-			if tc.expBroken {
-				require.True(t, broken, msg)
-			} else {
-				require.False(t, broken, msg)
-			}
-		})
-	}
-}
-
-func initBalances(t *testing.T, store sdk.KVStore, balances []*ecocredit.Balance) {
+func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances []*core.BatchBalance) {
 	for _, b := range balances {
-		denomT := ecocredit.BatchDenomT(b.BatchDenom)
-		addr, err := sdk.AccAddressFromBech32(b.Address)
+		_, err := math.NewNonNegativeDecFromString(b.Tradable)
 		require.NoError(t, err)
-		if b.TradableBalance != "" {
-			d, err := math.NewNonNegativeDecFromString(b.TradableBalance)
-			require.NoError(t, err)
-			key := ecocredit.TradableBalanceKey(addr, denomT)
-			ecocredit.SetDecimal(store, key, d)
-		}
-		if b.RetiredBalance != "" {
-			d, err := math.NewNonNegativeDecFromString(b.RetiredBalance)
-			require.NoError(t, err)
-			key := ecocredit.RetiredBalanceKey(addr, denomT)
-			ecocredit.SetDecimal(store, key, d)
-		}
+
+		require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+			Address:  b.Address,
+			BatchKey: b.BatchKey,
+			Tradable: b.Tradable,
+			Retired:  b.Retired,
+			Escrowed: b.Escrowed,
+		}))
 	}
 }
 
-func initSupply(t *testing.T, store sdk.KVStore, supply []*ecocredit.Supply) {
+func initSupply(t *testing.T, ctx context.Context, ss api.StateStore, supply []*core.BatchSupply) {
 	for _, s := range supply {
-		denomT := ecocredit.BatchDenomT(s.BatchDenom)
-		d, err := math.NewNonNegativeDecFromString(s.TradableSupply)
+		err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+			BatchKey:        s.BatchKey,
+			TradableAmount:  s.TradableAmount,
+			RetiredAmount:   s.RetiredAmount,
+			CancelledAmount: s.CancelledAmount,
+		})
 		require.NoError(t, err)
-		key := ecocredit.TradableSupplyKey(denomT)
-		ecocredit.AddAndSetDecimal(store, key, d)
-		d, err = math.NewNonNegativeDecFromString(s.RetiredSupply)
-		require.NoError(t, err)
-		key = ecocredit.RetiredSupplyKey(denomT)
-		ecocredit.AddAndSetDecimal(store, key, d)
 	}
 }

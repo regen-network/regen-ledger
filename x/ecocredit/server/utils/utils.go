@@ -11,7 +11,7 @@ import (
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
 func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, denom string) (*api.CreditType, error) {
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := store.ClassInfoTable().GetById(ctx, classId)
+	classInfo, err := store.ClassTable().GetById(ctx, classId)
 	if err != nil {
 		return nil, err
 	}

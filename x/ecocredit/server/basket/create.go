@@ -107,7 +107,7 @@ func (k Keeper) validateCreditType(ctx context.Context, abbreviation string, exp
 func (k Keeper) indexAllowedClasses(ctx context.Context, basketID uint64, allowedClasses []string, creditTypeAbbrev string) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, class := range allowedClasses {
-		classInfo, err := k.coreStore.ClassInfoTable().GetById(ctx, class)
+		classInfo, err := k.coreStore.ClassTable().GetById(ctx, class)
 		if err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit class %s: %s", class, err.Error())
 		}

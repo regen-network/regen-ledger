@@ -30,8 +30,8 @@ message CreditType {
   uint32 precision = 4;
 }
 
-// ClassInfo represents the high-level on-chain information for a credit class.
-message ClassInfo {
+// Class represents the high-level on-chain information for a credit class.
+message Class {
   option (cosmos.orm.v1alpha1.table) = {
     id : 2,
     primary_key : {fields : "key", auto_increment : true}
@@ -74,8 +74,8 @@ message ClassIssuer {
   bytes issuer = 2;
 }
 
-// ProjectInfo represents the high-level on-chain information for a project.
-message ProjectInfo {
+// Project represents the high-level on-chain information for a project.
+message Project {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4,
     primary_key : {fields : "key", auto_increment : true}
@@ -107,12 +107,12 @@ message ProjectInfo {
   string metadata = 6;
 }
 
-// BatchInfo represents the high-level on-chain information for a credit batch.
-message BatchInfo {
+// Batch represents the high-level on-chain information for a credit batch.
+message Batch {
   option (cosmos.orm.v1alpha1.table) = {
     id : 5,
     primary_key : {fields : "key", auto_increment : true}
-    index : {id : 1 fields : "batch_denom", unique : true}
+    index : {id : 1 fields : "denom", unique : true}
     index : {id : 2 fields : "project_key"}
     index : {id : 3 fields : "start_date"}
     index : {id : 4 fields : "issuer"}
@@ -130,10 +130,10 @@ message BatchInfo {
   // for efficient lookups. This links a credit batch to a project.
   uint64 project_key = 3;
 
-  // batch_denom is the unique identifier of the credit batch formed from the
+  // denom is the unique identifier of the credit batch formed from the
   // project id, the batch sequence number, and the start and end date of the
   // credit batch.
-  string batch_denom = 4;
+  string denom = 4;
 
   // metadata is any arbitrary metadata attached to the credit batch.
   string metadata = 5;
