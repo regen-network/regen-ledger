@@ -17,7 +17,7 @@ import (
 )
 
 // prints a query client response
-func print(cctx sdkclient.Context, res proto.Message, err error) error {
+func printQueryResponse(cctx sdkclient.Context, res proto.Message, err error) error {
 	if err != nil {
 		return err
 	}

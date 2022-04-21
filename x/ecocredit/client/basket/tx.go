@@ -251,8 +251,8 @@ Example:
 }
 
 const (
-	FlagRetirementLocation = "retirement-location"
-	FlagRetireOnTake       = "retire-on-take"
+	FlagRetirementJurisdiction = "retirement-jurisdiction"
+	FlagRetireOnTake           = "retire-on-take"
 )
 
 func TxTakeFromBasket() *cobra.Command {
@@ -265,7 +265,7 @@ Parameters:
 		amount: amount is a positive integer number of basket tokens to convert into credits.
 Flags:
 		from: account address of the owner of the basket.
-		retirement-location: retirement location is the optional retirement location for the credits
+		retirement-jurisdiction: retirement jurisdiction is the optional retirement jurisdiction for the credits
 				which will be used only if --retire-on-take flag is true.
 		retire-on-take: retire on take is a boolean that dictates whether the ecocredits
 		                received in exchange for the basket tokens will be received as
@@ -279,7 +279,7 @@ Flags:
 				return err
 			}
 
-			retirementLocation, err := cmd.Flags().GetString(FlagRetirementLocation)
+			retirementJurisdiction, err := cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
 				return err
 			}
@@ -290,11 +290,11 @@ Flags:
 			}
 
 			msg := basket.MsgTake{
-				Owner:              clientCtx.FromAddress.String(),
-				BasketDenom:        args[0],
-				Amount:             args[1],
-				RetirementLocation: retirementLocation,
-				RetireOnTake:       retireOnTake,
+				Owner:                  clientCtx.FromAddress.String(),
+				BasketDenom:            args[0],
+				Amount:                 args[1],
+				RetirementJurisdiction: retirementJurisdiction,
+				RetireOnTake:           retireOnTake,
 			}
 
 			if err := msg.ValidateBasic(); err != nil {
@@ -306,7 +306,7 @@ Flags:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(FlagRetirementLocation, "", "location for the credits which will be used only if --retire-on-take flag is true")
+	cmd.Flags().String(FlagRetirementJurisdiction, "", "jurisdiction for the credits which will be used only if --retire-on-take flag is true")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "dictates whether the ecocredits received in exchange for the basket tokens will be received as retired or tradable credits")
 
 	return cmd

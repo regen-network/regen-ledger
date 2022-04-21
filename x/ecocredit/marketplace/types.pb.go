@@ -78,7 +78,7 @@ type Filter_Criteria struct {
 	// attributes which are assigned to credit batches by some authority such
 	// as the credit issuer or a curator. Requiring some authority-based
 	// selector ensures that buy orders cannot just match some randomly issued
-	// credit based on location and dates.
+	// credit based on jurisdiction and dates.
 	//
 	// Types that are valid to be assigned to Selector:
 	//	*Filter_Criteria_ClassSelector
