@@ -2,9 +2,9 @@ package core
 
 import (
 	"context"
-	"strings"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -20,77 +20,57 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	startTime, err := types.ParseDate("", "2020-01-01")
-	assert.NilError(t, err)
-	endTime, err := types.ParseDate("", "2021-01-01")
-	assert.NilError(t, err)
-	issuanceTime, err := types.ParseDate("", "2022-01-01")
-	assert.NilError(t, err)
-
-	batch1 := &api.Batch{
-		Issuer:       s.addr,
-		ProjectKey:   1,
-		Denom:        "C01-20200101-20200102-001",
-		Metadata:     "data",
-		StartDate:    timestamppb.New(startTime),
-		EndDate:      timestamppb.New(endTime),
-		IssuanceDate: timestamppb.New(issuanceTime),
-	}
-
 	// insert class
 	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id: "C01",
 	}))
 
 	// insert project
-	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
 		Id: "P01",
-	}))
-
-	// insert three batches under the project
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
-		Denom:      "C01-20190203-20200102-002",
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
-	}))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
-		Denom:      "C01-20500404-20900102-003",
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
-	}))
-
-	// Classes that SHOULD NOT show up from a query for "C01"
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
-		Denom:      "C011-20500404-20900102-003",
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
-	}))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
-		Denom:      "BIO1-20500404-20900102-003",
-		Metadata:   "",
-		StartDate:  nil,
-		EndDate:    nil,
-	}))
-
-	res, err := s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{
-		ClassId:    "C01",
-		Pagination: &query.PageRequest{CountTotal: true, Limit: 2},
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.Batches))
-	assertBatchEqual(t, s.ctx, s.k, res.Batches[1], batch1)
-	assert.Equal(t, uint64(3), res.Pagination.Total)
-	for _, batch := range res.Batches {
-		assert.Check(t, strings.Contains(batch.Denom, "C01"))
+
+	startTime, err := types.ParseDate("start date", "2020-01-01")
+	assert.NilError(t, err)
+
+	endTime, err := types.ParseDate("end date", "2021-01-01")
+	assert.NilError(t, err)
+
+	issuanceTime, err := types.ParseDate("issuance date", "2022-01-01")
+	assert.NilError(t, err)
+
+	batch1 := &api.Batch{
+		Issuer:       s.addr,
+		ProjectKey:   pKey,
+		Denom:        "C01-20200101-20210101-001",
+		Metadata:     "data",
+		StartDate:    timestamppb.New(startTime),
+		EndDate:      timestamppb.New(endTime),
+		IssuanceDate: timestamppb.New(issuanceTime),
 	}
+
+	// insert three batches that are valid "C01" credit batches
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C01-20200101-20210101-002"}))
+
+	// insert three batches that are not "C01" credit batches
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C011-20200101-20210101-001"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "BIO1-20200101-20210101-001"}))
+
+	// query batches by "C01" credit class
+	res, err := s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{
+		ClassId:    "C01",
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, 1, len(res.Batches))
+	assert.Equal(t, uint64(2), res.Pagination.Total)
+	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
+
+	// query batches by unknown credit class
+	_, err = s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{ClassId: "A00"})
+	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
 
 func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchInfo, batch *api.Batch) {

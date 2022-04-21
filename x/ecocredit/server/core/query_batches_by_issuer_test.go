@@ -3,11 +3,11 @@ package core
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -19,14 +19,13 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	_, _, otherAddr := testdata.KeyTestPubAddr()
-	_, _, noBatches := testdata.KeyTestPubAddr()
+	startTime, err := types.ParseDate("start date", "2020-01-01")
+	assert.NilError(t, err)
 
-	startTime, err := types.ParseDate("", "2020-01-01")
+	endTime, err := types.ParseDate("end date", "2021-01-01")
 	assert.NilError(t, err)
-	endTime, err := types.ParseDate("", "2021-01-01")
-	assert.NilError(t, err)
-	issuanceTime, err := types.ParseDate("", "2022-01-01")
+
+	issuanceTime, err := types.ParseDate("issuance date", "2022-01-01")
 	assert.NilError(t, err)
 
 	// insert project
@@ -38,7 +37,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	batch1 := &api.Batch{
 		Issuer:       s.addr,
 		ProjectKey:   pKey,
-		Denom:        "C01-20200101-20200102-001",
+		Denom:        "C01-20200101-20210101-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
@@ -48,16 +47,8 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	// insert two batches with s.addr as the issuer
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		Issuer:     s.addr,
-		ProjectKey: pKey,
-		Denom:      "C01-20200101-20200102-002",
-	}))
-
-	// insert one batch without s.addr as the issuer
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		Issuer:     otherAddr,
-		ProjectKey: pKey,
-		Denom:      "C01-20200101-20200102-003",
+		Issuer: s.addr,
+		Denom:  "C01-20200101-20210101-002",
 	}))
 
 	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{
@@ -66,13 +57,17 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
-	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
+	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
 
-	res, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: noBatches.String()})
-	assert.NilError(t, err)
-	assert.Equal(t, 0, len(res.Batches))
-
+	// query batches by an invalid address
 	_, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: "foobar"})
 	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
+
+	_, _, notIssuer := testdata.KeyTestPubAddr()
+
+	// query batches by an address that is not an issuer
+	res, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: notIssuer.String()})
+	assert.NilError(t, err)
+	assert.Equal(t, 0, len(res.Batches))
 }

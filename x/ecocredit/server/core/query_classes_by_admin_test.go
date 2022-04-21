@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -17,50 +17,43 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	_, _, addr := testdata.KeyTestPubAddr()
-	_, _, noClasses := testdata.KeyTestPubAddr()
-
-	class1 := &api.Class{
-		Id:       "C01",
-		Admin:      s.addr,
-		Metadata:   "data",
+	class := &api.Class{
+		Id:               "C01",
+		Admin:            s.addr,
+		Metadata:         "data",
 		CreditTypeAbbrev: "C",
 	}
 
-	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, class1))
+	// insert two classes with s.addr as the admin
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, class))
 	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
-		Id:       "C02",
-		Admin:      s.addr,
-		CreditTypeAbbrev: "C",
-	}))
-	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
-		Id:       "C03",
-		Admin:      addr,
-		CreditTypeAbbrev: "C",
+		Id:    "C02",
+		Admin: s.addr,
 	}))
 
-	// valid query
+	// query classes by the admin s.addr
 	res, err := s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{
 		Admin:      s.addr.String(),
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, len(res.Classes), 1)
-	assert.Equal(t, class1.Id, res.Classes[0].Id)
+	assert.Equal(t, 1, len(res.Classes))
+	assert.Equal(t, class.Id, res.Classes[0].Id)
 	assert.Equal(t, s.addr.String(), res.Classes[0].Admin)
-	assert.Equal(t, class1.Metadata, res.Classes[0].Metadata)
-	assert.Equal(t, class1.CreditTypeAbbrev, res.Classes[0].CreditTypeAbbrev)
+	assert.Equal(t, class.Metadata, res.Classes[0].Metadata)
+	assert.Equal(t, class.CreditTypeAbbrev, res.Classes[0].CreditTypeAbbrev)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
-	// should be empty
+	_, _, notAdmin := testdata.KeyTestPubAddr()
+
+	// query classes by an unknown admin address
 	res, err = s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{
-		Admin:      noClasses.String(),
-		Pagination: &query.PageRequest{Limit: 10, CountTotal: true},
+		Admin: notAdmin.String(),
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.Classes))
 
-	// invalid address
-	_, err = s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{Admin: "invalid_address"})
+	// query classes by an invalid admin address
+	_, err = s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{Admin: "foobar"})
 	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
 }
