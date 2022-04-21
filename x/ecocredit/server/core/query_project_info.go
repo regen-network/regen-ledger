@@ -18,5 +18,5 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 	if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
 		return nil, err
 	}
-	return &core.QueryProjectInfoResponse{Info: &pi}, nil
+	return &core.QueryProjectInfoResponse{Project: &pi}, nil
 }

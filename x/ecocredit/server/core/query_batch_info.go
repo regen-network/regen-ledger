@@ -23,5 +23,5 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 	if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
 		return nil, err
 	}
-	return &core.QueryBatchInfoResponse{Info: &bi}, nil
+	return &core.QueryBatchInfoResponse{Batch: &bi}, nil
 }

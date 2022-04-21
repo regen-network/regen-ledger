@@ -29,6 +29,6 @@ func TestQuery_ClassInfo(t *testing.T) {
 	// query a valid class
 	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C01"})
 	assert.NilError(t, err)
-	assert.Equal(t, "C01", res.Info.Id)
-	assert.DeepEqual(t, s.addr.Bytes(), res.Info.Admin)
+	assert.Equal(t, "C01", res.Class.Id)
+	assert.DeepEqual(t, s.addr.Bytes(), res.Class.Admin)
 }

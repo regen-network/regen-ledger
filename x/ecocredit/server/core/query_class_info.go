@@ -18,5 +18,5 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 	if err = ormutil.PulsarToGogoSlow(classInfo, &ci); err != nil {
 		return nil, err
 	}
-	return &core.QueryClassInfoResponse{Info: &ci}, nil
+	return &core.QueryClassInfoResponse{Class: &ci}, nil
 }
