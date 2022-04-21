@@ -27,7 +27,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		batch, err := k.coreStore.BatchInfoTable().GetByDenom(ctx, order.BatchDenom)
+		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}

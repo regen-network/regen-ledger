@@ -14,14 +14,14 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		return nil, err
 	}
 
-	batch, err := k.stateStore.BatchInfoTable().GetByDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
 
-	var bi core.BatchInfo
+	var bi core.Batch
 	if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
 		return nil, err
 	}
-	return &core.QueryBatchInfoResponse{Info: &bi}, nil
+	return &core.QueryBatchInfoResponse{Batch: &bi}, nil
 }

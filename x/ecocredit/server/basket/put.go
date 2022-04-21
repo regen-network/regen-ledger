@@ -37,7 +37,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
 		// get credit batch info
-		batchInfo, err := k.coreStore.BatchInfoTable().GetByDenom(ctx, credit.BatchDenom)
+		batchInfo, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch %s: %s", credit.BatchDenom, err.Error())
 		}
@@ -94,7 +94,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecoApi.BatchInfo) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecoApi.Batch) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -133,7 +133,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 	}
 
 	// check credit type match
-	class, err := k.coreStore.ClassInfoTable().GetById(ctx, classId)
+	class, err := k.coreStore.ClassTable().GetById(ctx, classId)
 	if err != nil {
 		return err
 	}
@@ -145,7 +145,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecoApi.BatchInfo) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecoApi.Batch) error {
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Key)
 	if err != nil {

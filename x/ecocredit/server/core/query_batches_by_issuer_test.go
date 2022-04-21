@@ -17,9 +17,9 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	s := setupBase(t)
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noBatches := testdata.KeyTestPubAddr()
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: s.addr, Denom: "1"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: s.addr, Denom: "2"}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{Issuer: otherAddr, Denom: "3"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Issuer: s.addr, Denom: "1"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Issuer: s.addr, Denom: "2"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Issuer: otherAddr, Denom: "3"}))
 
 	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: s.addr.String(), Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})
 	assert.NilError(t, err)

@@ -20,7 +20,7 @@ func TestQuery_Supply(t *testing.T) {
 	cancelled := "0.3215"
 
 	// make a batch and some supply
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",

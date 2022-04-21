@@ -20,12 +20,12 @@ import (
 func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*core.MsgCreateBatchResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	projectInfo, err := k.stateStore.ProjectInfoTable().GetById(ctx, req.ProjectId)
+	projectInfo, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().Get(ctx, projectInfo.ClassKey)
+	classInfo, err := k.stateStore.ClassTable().Get(ctx, projectInfo.ClassKey)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
-	key, err := k.stateStore.BatchInfoTable().InsertReturningID(ctx, &api.BatchInfo{
+	key, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
 		ProjectKey:   projectInfo.Key,
 		Issuer:       issuer,
 		Denom:        batchDenom,

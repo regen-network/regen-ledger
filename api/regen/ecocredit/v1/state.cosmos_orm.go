@@ -160,146 +160,146 @@ func NewCreditTypeTable(db ormtable.Schema) (CreditTypeTable, error) {
 	return creditTypeTable{table}, nil
 }
 
-type ClassInfoTable interface {
-	Insert(ctx context.Context, classInfo *ClassInfo) error
-	InsertReturningID(ctx context.Context, classInfo *ClassInfo) (uint64, error)
-	Update(ctx context.Context, classInfo *ClassInfo) error
-	Save(ctx context.Context, classInfo *ClassInfo) error
-	Delete(ctx context.Context, classInfo *ClassInfo) error
+type ClassTable interface {
+	Insert(ctx context.Context, class *Class) error
+	InsertReturningID(ctx context.Context, class *Class) (uint64, error)
+	Update(ctx context.Context, class *Class) error
+	Save(ctx context.Context, class *Class) error
+	Delete(ctx context.Context, class *Class) error
 	Has(ctx context.Context, key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, key uint64) (*ClassInfo, error)
+	Get(ctx context.Context, key uint64) (*Class, error)
 	HasById(ctx context.Context, id string) (found bool, err error)
 	// GetById returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetById(ctx context.Context, id string) (*ClassInfo, error)
-	List(ctx context.Context, prefixKey ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error)
-	ListRange(ctx context.Context, from, to ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error)
-	DeleteBy(ctx context.Context, prefixKey ClassInfoIndexKey) error
-	DeleteRange(ctx context.Context, from, to ClassInfoIndexKey) error
+	GetById(ctx context.Context, id string) (*Class, error)
+	List(ctx context.Context, prefixKey ClassIndexKey, opts ...ormlist.Option) (ClassIterator, error)
+	ListRange(ctx context.Context, from, to ClassIndexKey, opts ...ormlist.Option) (ClassIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ClassIndexKey) error
+	DeleteRange(ctx context.Context, from, to ClassIndexKey) error
 
 	doNotImplement()
 }
 
-type ClassInfoIterator struct {
+type ClassIterator struct {
 	ormtable.Iterator
 }
 
-func (i ClassInfoIterator) Value() (*ClassInfo, error) {
-	var classInfo ClassInfo
-	err := i.UnmarshalMessage(&classInfo)
-	return &classInfo, err
+func (i ClassIterator) Value() (*Class, error) {
+	var class Class
+	err := i.UnmarshalMessage(&class)
+	return &class, err
 }
 
-type ClassInfoIndexKey interface {
+type ClassIndexKey interface {
 	id() uint32
 	values() []interface{}
-	classInfoIndexKey()
+	classIndexKey()
 }
 
 // primary key starting index..
-type ClassInfoPrimaryKey = ClassInfoKeyIndexKey
+type ClassPrimaryKey = ClassKeyIndexKey
 
-type ClassInfoKeyIndexKey struct {
+type ClassKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoKeyIndexKey) id() uint32            { return 0 }
-func (x ClassInfoKeyIndexKey) values() []interface{} { return x.vs }
-func (x ClassInfoKeyIndexKey) classInfoIndexKey()    {}
+func (x ClassKeyIndexKey) id() uint32            { return 0 }
+func (x ClassKeyIndexKey) values() []interface{} { return x.vs }
+func (x ClassKeyIndexKey) classIndexKey()        {}
 
-func (this ClassInfoKeyIndexKey) WithKey(key uint64) ClassInfoKeyIndexKey {
+func (this ClassKeyIndexKey) WithKey(key uint64) ClassKeyIndexKey {
 	this.vs = []interface{}{key}
 	return this
 }
 
-type ClassInfoIdIndexKey struct {
+type ClassIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoIdIndexKey) id() uint32            { return 1 }
-func (x ClassInfoIdIndexKey) values() []interface{} { return x.vs }
-func (x ClassInfoIdIndexKey) classInfoIndexKey()    {}
+func (x ClassIdIndexKey) id() uint32            { return 1 }
+func (x ClassIdIndexKey) values() []interface{} { return x.vs }
+func (x ClassIdIndexKey) classIndexKey()        {}
 
-func (this ClassInfoIdIndexKey) WithId(id string) ClassInfoIdIndexKey {
+func (this ClassIdIndexKey) WithId(id string) ClassIdIndexKey {
 	this.vs = []interface{}{id}
 	return this
 }
 
-type ClassInfoAdminIndexKey struct {
+type ClassAdminIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoAdminIndexKey) id() uint32            { return 2 }
-func (x ClassInfoAdminIndexKey) values() []interface{} { return x.vs }
-func (x ClassInfoAdminIndexKey) classInfoIndexKey()    {}
+func (x ClassAdminIndexKey) id() uint32            { return 2 }
+func (x ClassAdminIndexKey) values() []interface{} { return x.vs }
+func (x ClassAdminIndexKey) classIndexKey()        {}
 
-func (this ClassInfoAdminIndexKey) WithAdmin(admin []byte) ClassInfoAdminIndexKey {
+func (this ClassAdminIndexKey) WithAdmin(admin []byte) ClassAdminIndexKey {
 	this.vs = []interface{}{admin}
 	return this
 }
 
-type ClassInfoCreditTypeAbbrevIndexKey struct {
+type ClassCreditTypeAbbrevIndexKey struct {
 	vs []interface{}
 }
 
-func (x ClassInfoCreditTypeAbbrevIndexKey) id() uint32            { return 3 }
-func (x ClassInfoCreditTypeAbbrevIndexKey) values() []interface{} { return x.vs }
-func (x ClassInfoCreditTypeAbbrevIndexKey) classInfoIndexKey()    {}
+func (x ClassCreditTypeAbbrevIndexKey) id() uint32            { return 3 }
+func (x ClassCreditTypeAbbrevIndexKey) values() []interface{} { return x.vs }
+func (x ClassCreditTypeAbbrevIndexKey) classIndexKey()        {}
 
-func (this ClassInfoCreditTypeAbbrevIndexKey) WithCreditTypeAbbrev(credit_type_abbrev string) ClassInfoCreditTypeAbbrevIndexKey {
+func (this ClassCreditTypeAbbrevIndexKey) WithCreditTypeAbbrev(credit_type_abbrev string) ClassCreditTypeAbbrevIndexKey {
 	this.vs = []interface{}{credit_type_abbrev}
 	return this
 }
 
-type classInfoTable struct {
+type classTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this classInfoTable) Insert(ctx context.Context, classInfo *ClassInfo) error {
-	return this.table.Insert(ctx, classInfo)
+func (this classTable) Insert(ctx context.Context, class *Class) error {
+	return this.table.Insert(ctx, class)
 }
 
-func (this classInfoTable) Update(ctx context.Context, classInfo *ClassInfo) error {
-	return this.table.Update(ctx, classInfo)
+func (this classTable) Update(ctx context.Context, class *Class) error {
+	return this.table.Update(ctx, class)
 }
 
-func (this classInfoTable) Save(ctx context.Context, classInfo *ClassInfo) error {
-	return this.table.Save(ctx, classInfo)
+func (this classTable) Save(ctx context.Context, class *Class) error {
+	return this.table.Save(ctx, class)
 }
 
-func (this classInfoTable) Delete(ctx context.Context, classInfo *ClassInfo) error {
-	return this.table.Delete(ctx, classInfo)
+func (this classTable) Delete(ctx context.Context, class *Class) error {
+	return this.table.Delete(ctx, class)
 }
 
-func (this classInfoTable) InsertReturningID(ctx context.Context, classInfo *ClassInfo) (uint64, error) {
-	return this.table.InsertReturningID(ctx, classInfo)
+func (this classTable) InsertReturningID(ctx context.Context, class *Class) (uint64, error) {
+	return this.table.InsertReturningID(ctx, class)
 }
 
-func (this classInfoTable) Has(ctx context.Context, key uint64) (found bool, err error) {
+func (this classTable) Has(ctx context.Context, key uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, key)
 }
 
-func (this classInfoTable) Get(ctx context.Context, key uint64) (*ClassInfo, error) {
-	var classInfo ClassInfo
-	found, err := this.table.PrimaryKey().Get(ctx, &classInfo, key)
+func (this classTable) Get(ctx context.Context, key uint64) (*Class, error) {
+	var class Class
+	found, err := this.table.PrimaryKey().Get(ctx, &class, key)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &classInfo, nil
+	return &class, nil
 }
 
-func (this classInfoTable) HasById(ctx context.Context, id string) (found bool, err error) {
+func (this classTable) HasById(ctx context.Context, id string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		id,
 	)
 }
 
-func (this classInfoTable) GetById(ctx context.Context, id string) (*ClassInfo, error) {
-	var classInfo ClassInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &classInfo,
+func (this classTable) GetById(ctx context.Context, id string) (*Class, error) {
+	var class Class
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &class,
 		id,
 	)
 	if err != nil {
@@ -308,37 +308,37 @@ func (this classInfoTable) GetById(ctx context.Context, id string) (*ClassInfo, 
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &classInfo, nil
+	return &class, nil
 }
 
-func (this classInfoTable) List(ctx context.Context, prefixKey ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
+func (this classTable) List(ctx context.Context, prefixKey ClassIndexKey, opts ...ormlist.Option) (ClassIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return ClassInfoIterator{it}, err
+	return ClassIterator{it}, err
 }
 
-func (this classInfoTable) ListRange(ctx context.Context, from, to ClassInfoIndexKey, opts ...ormlist.Option) (ClassInfoIterator, error) {
+func (this classTable) ListRange(ctx context.Context, from, to ClassIndexKey, opts ...ormlist.Option) (ClassIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return ClassInfoIterator{it}, err
+	return ClassIterator{it}, err
 }
 
-func (this classInfoTable) DeleteBy(ctx context.Context, prefixKey ClassInfoIndexKey) error {
+func (this classTable) DeleteBy(ctx context.Context, prefixKey ClassIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this classInfoTable) DeleteRange(ctx context.Context, from, to ClassInfoIndexKey) error {
+func (this classTable) DeleteRange(ctx context.Context, from, to ClassIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this classInfoTable) doNotImplement() {}
+func (this classTable) doNotImplement() {}
 
-var _ ClassInfoTable = classInfoTable{}
+var _ ClassTable = classTable{}
 
-func NewClassInfoTable(db ormtable.Schema) (ClassInfoTable, error) {
-	table := db.GetTable(&ClassInfo{})
+func NewClassTable(db ormtable.Schema) (ClassTable, error) {
+	table := db.GetTable(&Class{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ClassInfo{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&Class{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return classInfoTable{table.(ormtable.AutoIncrementTable)}, nil
+	return classTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type ClassIssuerTable interface {
@@ -460,154 +460,154 @@ func NewClassIssuerTable(db ormtable.Schema) (ClassIssuerTable, error) {
 	return classIssuerTable{table}, nil
 }
 
-type ProjectInfoTable interface {
-	Insert(ctx context.Context, projectInfo *ProjectInfo) error
-	InsertReturningID(ctx context.Context, projectInfo *ProjectInfo) (uint64, error)
-	Update(ctx context.Context, projectInfo *ProjectInfo) error
-	Save(ctx context.Context, projectInfo *ProjectInfo) error
-	Delete(ctx context.Context, projectInfo *ProjectInfo) error
+type ProjectTable interface {
+	Insert(ctx context.Context, project *Project) error
+	InsertReturningID(ctx context.Context, project *Project) (uint64, error)
+	Update(ctx context.Context, project *Project) error
+	Save(ctx context.Context, project *Project) error
+	Delete(ctx context.Context, project *Project) error
 	Has(ctx context.Context, key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, key uint64) (*ProjectInfo, error)
+	Get(ctx context.Context, key uint64) (*Project, error)
 	HasById(ctx context.Context, id string) (found bool, err error)
 	// GetById returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetById(ctx context.Context, id string) (*ProjectInfo, error)
+	GetById(ctx context.Context, id string) (*Project, error)
 	HasByClassKeyId(ctx context.Context, class_key uint64, id string) (found bool, err error)
 	// GetByClassKeyId returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByClassKeyId(ctx context.Context, class_key uint64, id string) (*ProjectInfo, error)
-	List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error)
-	ListRange(ctx context.Context, from, to ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error)
-	DeleteBy(ctx context.Context, prefixKey ProjectInfoIndexKey) error
-	DeleteRange(ctx context.Context, from, to ProjectInfoIndexKey) error
+	GetByClassKeyId(ctx context.Context, class_key uint64, id string) (*Project, error)
+	List(ctx context.Context, prefixKey ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error)
+	ListRange(ctx context.Context, from, to ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ProjectIndexKey) error
+	DeleteRange(ctx context.Context, from, to ProjectIndexKey) error
 
 	doNotImplement()
 }
 
-type ProjectInfoIterator struct {
+type ProjectIterator struct {
 	ormtable.Iterator
 }
 
-func (i ProjectInfoIterator) Value() (*ProjectInfo, error) {
-	var projectInfo ProjectInfo
-	err := i.UnmarshalMessage(&projectInfo)
-	return &projectInfo, err
+func (i ProjectIterator) Value() (*Project, error) {
+	var project Project
+	err := i.UnmarshalMessage(&project)
+	return &project, err
 }
 
-type ProjectInfoIndexKey interface {
+type ProjectIndexKey interface {
 	id() uint32
 	values() []interface{}
-	projectInfoIndexKey()
+	projectIndexKey()
 }
 
 // primary key starting index..
-type ProjectInfoPrimaryKey = ProjectInfoKeyIndexKey
+type ProjectPrimaryKey = ProjectKeyIndexKey
 
-type ProjectInfoKeyIndexKey struct {
+type ProjectKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoKeyIndexKey) id() uint32            { return 0 }
-func (x ProjectInfoKeyIndexKey) values() []interface{} { return x.vs }
-func (x ProjectInfoKeyIndexKey) projectInfoIndexKey()  {}
+func (x ProjectKeyIndexKey) id() uint32            { return 0 }
+func (x ProjectKeyIndexKey) values() []interface{} { return x.vs }
+func (x ProjectKeyIndexKey) projectIndexKey()      {}
 
-func (this ProjectInfoKeyIndexKey) WithKey(key uint64) ProjectInfoKeyIndexKey {
+func (this ProjectKeyIndexKey) WithKey(key uint64) ProjectKeyIndexKey {
 	this.vs = []interface{}{key}
 	return this
 }
 
-type ProjectInfoIdIndexKey struct {
+type ProjectIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoIdIndexKey) id() uint32            { return 1 }
-func (x ProjectInfoIdIndexKey) values() []interface{} { return x.vs }
-func (x ProjectInfoIdIndexKey) projectInfoIndexKey()  {}
+func (x ProjectIdIndexKey) id() uint32            { return 1 }
+func (x ProjectIdIndexKey) values() []interface{} { return x.vs }
+func (x ProjectIdIndexKey) projectIndexKey()      {}
 
-func (this ProjectInfoIdIndexKey) WithId(id string) ProjectInfoIdIndexKey {
+func (this ProjectIdIndexKey) WithId(id string) ProjectIdIndexKey {
 	this.vs = []interface{}{id}
 	return this
 }
 
-type ProjectInfoClassKeyIdIndexKey struct {
+type ProjectClassKeyIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoClassKeyIdIndexKey) id() uint32            { return 2 }
-func (x ProjectInfoClassKeyIdIndexKey) values() []interface{} { return x.vs }
-func (x ProjectInfoClassKeyIdIndexKey) projectInfoIndexKey()  {}
+func (x ProjectClassKeyIdIndexKey) id() uint32            { return 2 }
+func (x ProjectClassKeyIdIndexKey) values() []interface{} { return x.vs }
+func (x ProjectClassKeyIdIndexKey) projectIndexKey()      {}
 
-func (this ProjectInfoClassKeyIdIndexKey) WithClassKey(class_key uint64) ProjectInfoClassKeyIdIndexKey {
+func (this ProjectClassKeyIdIndexKey) WithClassKey(class_key uint64) ProjectClassKeyIdIndexKey {
 	this.vs = []interface{}{class_key}
 	return this
 }
 
-func (this ProjectInfoClassKeyIdIndexKey) WithClassKeyId(class_key uint64, id string) ProjectInfoClassKeyIdIndexKey {
+func (this ProjectClassKeyIdIndexKey) WithClassKeyId(class_key uint64, id string) ProjectClassKeyIdIndexKey {
 	this.vs = []interface{}{class_key, id}
 	return this
 }
 
-type ProjectInfoAdminIndexKey struct {
+type ProjectAdminIndexKey struct {
 	vs []interface{}
 }
 
-func (x ProjectInfoAdminIndexKey) id() uint32            { return 3 }
-func (x ProjectInfoAdminIndexKey) values() []interface{} { return x.vs }
-func (x ProjectInfoAdminIndexKey) projectInfoIndexKey()  {}
+func (x ProjectAdminIndexKey) id() uint32            { return 3 }
+func (x ProjectAdminIndexKey) values() []interface{} { return x.vs }
+func (x ProjectAdminIndexKey) projectIndexKey()      {}
 
-func (this ProjectInfoAdminIndexKey) WithAdmin(admin []byte) ProjectInfoAdminIndexKey {
+func (this ProjectAdminIndexKey) WithAdmin(admin []byte) ProjectAdminIndexKey {
 	this.vs = []interface{}{admin}
 	return this
 }
 
-type projectInfoTable struct {
+type projectTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this projectInfoTable) Insert(ctx context.Context, projectInfo *ProjectInfo) error {
-	return this.table.Insert(ctx, projectInfo)
+func (this projectTable) Insert(ctx context.Context, project *Project) error {
+	return this.table.Insert(ctx, project)
 }
 
-func (this projectInfoTable) Update(ctx context.Context, projectInfo *ProjectInfo) error {
-	return this.table.Update(ctx, projectInfo)
+func (this projectTable) Update(ctx context.Context, project *Project) error {
+	return this.table.Update(ctx, project)
 }
 
-func (this projectInfoTable) Save(ctx context.Context, projectInfo *ProjectInfo) error {
-	return this.table.Save(ctx, projectInfo)
+func (this projectTable) Save(ctx context.Context, project *Project) error {
+	return this.table.Save(ctx, project)
 }
 
-func (this projectInfoTable) Delete(ctx context.Context, projectInfo *ProjectInfo) error {
-	return this.table.Delete(ctx, projectInfo)
+func (this projectTable) Delete(ctx context.Context, project *Project) error {
+	return this.table.Delete(ctx, project)
 }
 
-func (this projectInfoTable) InsertReturningID(ctx context.Context, projectInfo *ProjectInfo) (uint64, error) {
-	return this.table.InsertReturningID(ctx, projectInfo)
+func (this projectTable) InsertReturningID(ctx context.Context, project *Project) (uint64, error) {
+	return this.table.InsertReturningID(ctx, project)
 }
 
-func (this projectInfoTable) Has(ctx context.Context, key uint64) (found bool, err error) {
+func (this projectTable) Has(ctx context.Context, key uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, key)
 }
 
-func (this projectInfoTable) Get(ctx context.Context, key uint64) (*ProjectInfo, error) {
-	var projectInfo ProjectInfo
-	found, err := this.table.PrimaryKey().Get(ctx, &projectInfo, key)
+func (this projectTable) Get(ctx context.Context, key uint64) (*Project, error) {
+	var project Project
+	found, err := this.table.PrimaryKey().Get(ctx, &project, key)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &projectInfo, nil
+	return &project, nil
 }
 
-func (this projectInfoTable) HasById(ctx context.Context, id string) (found bool, err error) {
+func (this projectTable) HasById(ctx context.Context, id string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		id,
 	)
 }
 
-func (this projectInfoTable) GetById(ctx context.Context, id string) (*ProjectInfo, error) {
-	var projectInfo ProjectInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+func (this projectTable) GetById(ctx context.Context, id string) (*Project, error) {
+	var project Project
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &project,
 		id,
 	)
 	if err != nil {
@@ -616,19 +616,19 @@ func (this projectInfoTable) GetById(ctx context.Context, id string) (*ProjectIn
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &projectInfo, nil
+	return &project, nil
 }
 
-func (this projectInfoTable) HasByClassKeyId(ctx context.Context, class_key uint64, id string) (found bool, err error) {
+func (this projectTable) HasByClassKeyId(ctx context.Context, class_key uint64, id string) (found bool, err error) {
 	return this.table.GetIndexByID(2).(ormtable.UniqueIndex).Has(ctx,
 		class_key,
 		id,
 	)
 }
 
-func (this projectInfoTable) GetByClassKeyId(ctx context.Context, class_key uint64, id string) (*ProjectInfo, error) {
-	var projectInfo ProjectInfo
-	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &projectInfo,
+func (this projectTable) GetByClassKeyId(ctx context.Context, class_key uint64, id string) (*Project, error) {
+	var project Project
+	found, err := this.table.GetIndexByID(2).(ormtable.UniqueIndex).Get(ctx, &project,
 		class_key,
 		id,
 	)
@@ -638,192 +638,192 @@ func (this projectInfoTable) GetByClassKeyId(ctx context.Context, class_key uint
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &projectInfo, nil
+	return &project, nil
 }
 
-func (this projectInfoTable) List(ctx context.Context, prefixKey ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
+func (this projectTable) List(ctx context.Context, prefixKey ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return ProjectInfoIterator{it}, err
+	return ProjectIterator{it}, err
 }
 
-func (this projectInfoTable) ListRange(ctx context.Context, from, to ProjectInfoIndexKey, opts ...ormlist.Option) (ProjectInfoIterator, error) {
+func (this projectTable) ListRange(ctx context.Context, from, to ProjectIndexKey, opts ...ormlist.Option) (ProjectIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return ProjectInfoIterator{it}, err
+	return ProjectIterator{it}, err
 }
 
-func (this projectInfoTable) DeleteBy(ctx context.Context, prefixKey ProjectInfoIndexKey) error {
+func (this projectTable) DeleteBy(ctx context.Context, prefixKey ProjectIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this projectInfoTable) DeleteRange(ctx context.Context, from, to ProjectInfoIndexKey) error {
+func (this projectTable) DeleteRange(ctx context.Context, from, to ProjectIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this projectInfoTable) doNotImplement() {}
+func (this projectTable) doNotImplement() {}
 
-var _ ProjectInfoTable = projectInfoTable{}
+var _ ProjectTable = projectTable{}
 
-func NewProjectInfoTable(db ormtable.Schema) (ProjectInfoTable, error) {
-	table := db.GetTable(&ProjectInfo{})
+func NewProjectTable(db ormtable.Schema) (ProjectTable, error) {
+	table := db.GetTable(&Project{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ProjectInfo{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&Project{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return projectInfoTable{table.(ormtable.AutoIncrementTable)}, nil
+	return projectTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
-type BatchInfoTable interface {
-	Insert(ctx context.Context, batchInfo *BatchInfo) error
-	InsertReturningID(ctx context.Context, batchInfo *BatchInfo) (uint64, error)
-	Update(ctx context.Context, batchInfo *BatchInfo) error
-	Save(ctx context.Context, batchInfo *BatchInfo) error
-	Delete(ctx context.Context, batchInfo *BatchInfo) error
+type BatchTable interface {
+	Insert(ctx context.Context, batch *Batch) error
+	InsertReturningID(ctx context.Context, batch *Batch) (uint64, error)
+	Update(ctx context.Context, batch *Batch) error
+	Save(ctx context.Context, batch *Batch) error
+	Delete(ctx context.Context, batch *Batch) error
 	Has(ctx context.Context, key uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, key uint64) (*BatchInfo, error)
+	Get(ctx context.Context, key uint64) (*Batch, error)
 	HasByDenom(ctx context.Context, denom string) (found bool, err error)
 	// GetByDenom returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByDenom(ctx context.Context, denom string) (*BatchInfo, error)
-	List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
-	ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error)
-	DeleteBy(ctx context.Context, prefixKey BatchInfoIndexKey) error
-	DeleteRange(ctx context.Context, from, to BatchInfoIndexKey) error
+	GetByDenom(ctx context.Context, denom string) (*Batch, error)
+	List(ctx context.Context, prefixKey BatchIndexKey, opts ...ormlist.Option) (BatchIterator, error)
+	ListRange(ctx context.Context, from, to BatchIndexKey, opts ...ormlist.Option) (BatchIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchIndexKey) error
 
 	doNotImplement()
 }
 
-type BatchInfoIterator struct {
+type BatchIterator struct {
 	ormtable.Iterator
 }
 
-func (i BatchInfoIterator) Value() (*BatchInfo, error) {
-	var batchInfo BatchInfo
-	err := i.UnmarshalMessage(&batchInfo)
-	return &batchInfo, err
+func (i BatchIterator) Value() (*Batch, error) {
+	var batch Batch
+	err := i.UnmarshalMessage(&batch)
+	return &batch, err
 }
 
-type BatchInfoIndexKey interface {
+type BatchIndexKey interface {
 	id() uint32
 	values() []interface{}
-	batchInfoIndexKey()
+	batchIndexKey()
 }
 
 // primary key starting index..
-type BatchInfoPrimaryKey = BatchInfoKeyIndexKey
+type BatchPrimaryKey = BatchKeyIndexKey
 
-type BatchInfoKeyIndexKey struct {
+type BatchKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoKeyIndexKey) id() uint32            { return 0 }
-func (x BatchInfoKeyIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoKeyIndexKey) batchInfoIndexKey()    {}
+func (x BatchKeyIndexKey) id() uint32            { return 0 }
+func (x BatchKeyIndexKey) values() []interface{} { return x.vs }
+func (x BatchKeyIndexKey) batchIndexKey()        {}
 
-func (this BatchInfoKeyIndexKey) WithKey(key uint64) BatchInfoKeyIndexKey {
+func (this BatchKeyIndexKey) WithKey(key uint64) BatchKeyIndexKey {
 	this.vs = []interface{}{key}
 	return this
 }
 
-type BatchInfoDenomIndexKey struct {
+type BatchDenomIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoDenomIndexKey) id() uint32            { return 1 }
-func (x BatchInfoDenomIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoDenomIndexKey) batchInfoIndexKey()    {}
+func (x BatchDenomIndexKey) id() uint32            { return 1 }
+func (x BatchDenomIndexKey) values() []interface{} { return x.vs }
+func (x BatchDenomIndexKey) batchIndexKey()        {}
 
-func (this BatchInfoDenomIndexKey) WithDenom(denom string) BatchInfoDenomIndexKey {
+func (this BatchDenomIndexKey) WithDenom(denom string) BatchDenomIndexKey {
 	this.vs = []interface{}{denom}
 	return this
 }
 
-type BatchInfoProjectKeyIndexKey struct {
+type BatchProjectKeyIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoProjectKeyIndexKey) id() uint32            { return 2 }
-func (x BatchInfoProjectKeyIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoProjectKeyIndexKey) batchInfoIndexKey()    {}
+func (x BatchProjectKeyIndexKey) id() uint32            { return 2 }
+func (x BatchProjectKeyIndexKey) values() []interface{} { return x.vs }
+func (x BatchProjectKeyIndexKey) batchIndexKey()        {}
 
-func (this BatchInfoProjectKeyIndexKey) WithProjectKey(project_key uint64) BatchInfoProjectKeyIndexKey {
+func (this BatchProjectKeyIndexKey) WithProjectKey(project_key uint64) BatchProjectKeyIndexKey {
 	this.vs = []interface{}{project_key}
 	return this
 }
 
-type BatchInfoStartDateIndexKey struct {
+type BatchStartDateIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoStartDateIndexKey) id() uint32            { return 3 }
-func (x BatchInfoStartDateIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoStartDateIndexKey) batchInfoIndexKey()    {}
+func (x BatchStartDateIndexKey) id() uint32            { return 3 }
+func (x BatchStartDateIndexKey) values() []interface{} { return x.vs }
+func (x BatchStartDateIndexKey) batchIndexKey()        {}
 
-func (this BatchInfoStartDateIndexKey) WithStartDate(start_date *timestamppb.Timestamp) BatchInfoStartDateIndexKey {
+func (this BatchStartDateIndexKey) WithStartDate(start_date *timestamppb.Timestamp) BatchStartDateIndexKey {
 	this.vs = []interface{}{start_date}
 	return this
 }
 
-type BatchInfoIssuerIndexKey struct {
+type BatchIssuerIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchInfoIssuerIndexKey) id() uint32            { return 4 }
-func (x BatchInfoIssuerIndexKey) values() []interface{} { return x.vs }
-func (x BatchInfoIssuerIndexKey) batchInfoIndexKey()    {}
+func (x BatchIssuerIndexKey) id() uint32            { return 4 }
+func (x BatchIssuerIndexKey) values() []interface{} { return x.vs }
+func (x BatchIssuerIndexKey) batchIndexKey()        {}
 
-func (this BatchInfoIssuerIndexKey) WithIssuer(issuer []byte) BatchInfoIssuerIndexKey {
+func (this BatchIssuerIndexKey) WithIssuer(issuer []byte) BatchIssuerIndexKey {
 	this.vs = []interface{}{issuer}
 	return this
 }
 
-type batchInfoTable struct {
+type batchTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this batchInfoTable) Insert(ctx context.Context, batchInfo *BatchInfo) error {
-	return this.table.Insert(ctx, batchInfo)
+func (this batchTable) Insert(ctx context.Context, batch *Batch) error {
+	return this.table.Insert(ctx, batch)
 }
 
-func (this batchInfoTable) Update(ctx context.Context, batchInfo *BatchInfo) error {
-	return this.table.Update(ctx, batchInfo)
+func (this batchTable) Update(ctx context.Context, batch *Batch) error {
+	return this.table.Update(ctx, batch)
 }
 
-func (this batchInfoTable) Save(ctx context.Context, batchInfo *BatchInfo) error {
-	return this.table.Save(ctx, batchInfo)
+func (this batchTable) Save(ctx context.Context, batch *Batch) error {
+	return this.table.Save(ctx, batch)
 }
 
-func (this batchInfoTable) Delete(ctx context.Context, batchInfo *BatchInfo) error {
-	return this.table.Delete(ctx, batchInfo)
+func (this batchTable) Delete(ctx context.Context, batch *Batch) error {
+	return this.table.Delete(ctx, batch)
 }
 
-func (this batchInfoTable) InsertReturningID(ctx context.Context, batchInfo *BatchInfo) (uint64, error) {
-	return this.table.InsertReturningID(ctx, batchInfo)
+func (this batchTable) InsertReturningID(ctx context.Context, batch *Batch) (uint64, error) {
+	return this.table.InsertReturningID(ctx, batch)
 }
 
-func (this batchInfoTable) Has(ctx context.Context, key uint64) (found bool, err error) {
+func (this batchTable) Has(ctx context.Context, key uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, key)
 }
 
-func (this batchInfoTable) Get(ctx context.Context, key uint64) (*BatchInfo, error) {
-	var batchInfo BatchInfo
-	found, err := this.table.PrimaryKey().Get(ctx, &batchInfo, key)
+func (this batchTable) Get(ctx context.Context, key uint64) (*Batch, error) {
+	var batch Batch
+	found, err := this.table.PrimaryKey().Get(ctx, &batch, key)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &batchInfo, nil
+	return &batch, nil
 }
 
-func (this batchInfoTable) HasByDenom(ctx context.Context, denom string) (found bool, err error) {
+func (this batchTable) HasByDenom(ctx context.Context, denom string) (found bool, err error) {
 	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
 		denom,
 	)
 }
 
-func (this batchInfoTable) GetByDenom(ctx context.Context, denom string) (*BatchInfo, error) {
-	var batchInfo BatchInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batchInfo,
+func (this batchTable) GetByDenom(ctx context.Context, denom string) (*Batch, error) {
+	var batch Batch
+	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &batch,
 		denom,
 	)
 	if err != nil {
@@ -832,37 +832,37 @@ func (this batchInfoTable) GetByDenom(ctx context.Context, denom string) (*Batch
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &batchInfo, nil
+	return &batch, nil
 }
 
-func (this batchInfoTable) List(ctx context.Context, prefixKey BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
+func (this batchTable) List(ctx context.Context, prefixKey BatchIndexKey, opts ...ormlist.Option) (BatchIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return BatchInfoIterator{it}, err
+	return BatchIterator{it}, err
 }
 
-func (this batchInfoTable) ListRange(ctx context.Context, from, to BatchInfoIndexKey, opts ...ormlist.Option) (BatchInfoIterator, error) {
+func (this batchTable) ListRange(ctx context.Context, from, to BatchIndexKey, opts ...ormlist.Option) (BatchIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return BatchInfoIterator{it}, err
+	return BatchIterator{it}, err
 }
 
-func (this batchInfoTable) DeleteBy(ctx context.Context, prefixKey BatchInfoIndexKey) error {
+func (this batchTable) DeleteBy(ctx context.Context, prefixKey BatchIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this batchInfoTable) DeleteRange(ctx context.Context, from, to BatchInfoIndexKey) error {
+func (this batchTable) DeleteRange(ctx context.Context, from, to BatchIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this batchInfoTable) doNotImplement() {}
+func (this batchTable) doNotImplement() {}
 
-var _ BatchInfoTable = batchInfoTable{}
+var _ BatchTable = batchTable{}
 
-func NewBatchInfoTable(db ormtable.Schema) (BatchInfoTable, error) {
-	table := db.GetTable(&BatchInfo{})
+func NewBatchTable(db ormtable.Schema) (BatchTable, error) {
+	table := db.GetTable(&Batch{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&BatchInfo{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&Batch{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return batchInfoTable{table.(ormtable.AutoIncrementTable)}, nil
+	return batchTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type ClassSequenceTable interface {
@@ -1574,10 +1574,10 @@ func NewBatchOrigTxTable(db ormtable.Schema) (BatchOrigTxTable, error) {
 
 type StateStore interface {
 	CreditTypeTable() CreditTypeTable
-	ClassInfoTable() ClassInfoTable
+	ClassTable() ClassTable
 	ClassIssuerTable() ClassIssuerTable
-	ProjectInfoTable() ProjectInfoTable
-	BatchInfoTable() BatchInfoTable
+	ProjectTable() ProjectTable
+	BatchTable() BatchTable
 	ClassSequenceTable() ClassSequenceTable
 	ProjectSequenceTable() ProjectSequenceTable
 	BatchSequenceTable() BatchSequenceTable
@@ -1590,10 +1590,10 @@ type StateStore interface {
 
 type stateStore struct {
 	creditType      CreditTypeTable
-	classInfo       ClassInfoTable
+	class           ClassTable
 	classIssuer     ClassIssuerTable
-	projectInfo     ProjectInfoTable
-	batchInfo       BatchInfoTable
+	project         ProjectTable
+	batch           BatchTable
 	classSequence   ClassSequenceTable
 	projectSequence ProjectSequenceTable
 	batchSequence   BatchSequenceTable
@@ -1606,20 +1606,20 @@ func (x stateStore) CreditTypeTable() CreditTypeTable {
 	return x.creditType
 }
 
-func (x stateStore) ClassInfoTable() ClassInfoTable {
-	return x.classInfo
+func (x stateStore) ClassTable() ClassTable {
+	return x.class
 }
 
 func (x stateStore) ClassIssuerTable() ClassIssuerTable {
 	return x.classIssuer
 }
 
-func (x stateStore) ProjectInfoTable() ProjectInfoTable {
-	return x.projectInfo
+func (x stateStore) ProjectTable() ProjectTable {
+	return x.project
 }
 
-func (x stateStore) BatchInfoTable() BatchInfoTable {
-	return x.batchInfo
+func (x stateStore) BatchTable() BatchTable {
+	return x.batch
 }
 
 func (x stateStore) ClassSequenceTable() ClassSequenceTable {
@@ -1656,7 +1656,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	classInfoTable, err := NewClassInfoTable(db)
+	classTable, err := NewClassTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -1666,12 +1666,12 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	projectInfoTable, err := NewProjectInfoTable(db)
+	projectTable, err := NewProjectTable(db)
 	if err != nil {
 		return nil, err
 	}
 
-	batchInfoTable, err := NewBatchInfoTable(db)
+	batchTable, err := NewBatchTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -1708,10 +1708,10 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 
 	return stateStore{
 		creditTypeTable,
-		classInfoTable,
+		classTable,
 		classIssuerTable,
-		projectInfoTable,
-		batchInfoTable,
+		projectTable,
+		batchTable,
 		classSequenceTable,
 		projectSequenceTable,
 		batchSequenceTable,

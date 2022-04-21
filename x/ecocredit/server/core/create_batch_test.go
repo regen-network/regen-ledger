@@ -57,7 +57,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	totalRetired := "8.7"
 
 	// check the batch
-	batch, err := s.stateStore.BatchInfoTable().Get(s.ctx, 1)
+	batch, err := s.stateStore.BatchTable().Get(s.ctx, 1)
 	assert.NilError(t, err, "unexpected error: %w", err)
 	assert.Equal(t, res.BatchDenom, batch.Denom)
 	assert.Check(t, batch.IssuanceDate.AsTime().Equal(blockTime))
@@ -139,7 +139,7 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 // creates a class "C01", with a single class issuer, and a project "PRO"
 func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (classId, projectId string) {
 	classId, projectId = "C01", "PRO"
-	classKey, err := ss.ClassInfoTable().InsertReturningID(ctx, &api.ClassInfo{
+	classKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 		Id:               classId,
 		Admin:            addr,
 		Metadata:         "",
@@ -151,7 +151,7 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 		Issuer:   addr,
 	})
 	assert.NilError(t, err)
-	_, err = ss.ProjectInfoTable().InsertReturningID(ctx, &api.ProjectInfo{
+	_, err = ss.ProjectTable().InsertReturningID(ctx, &api.Project{
 		Id:                  projectId,
 		ClassKey:            classKey,
 		ProjectJurisdiction: "",

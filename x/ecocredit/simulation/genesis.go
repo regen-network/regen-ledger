@@ -170,15 +170,15 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
 	// create few classes
-	cKey1, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{Id: "C01", Admin: accs[0].Address.Bytes(), Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))},
+	cKey1, err := ss.ClassTable().InsertReturningID(ctx,
+		&api.Class{Id: "C01", Admin: accs[0].Address.Bytes(), Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))},
 	)
 	if err != nil {
 		return err
 	}
 
-	cKey2, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{Id: "C02", Admin: accs[1].Address.Bytes(), Metadata: metadata},
+	cKey2, err := ss.ClassTable().InsertReturningID(ctx,
+		&api.Class{Id: "C02", Admin: accs[1].Address.Bytes(), Metadata: metadata},
 	)
 	if err != nil {
 		return err
@@ -210,8 +210,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// create few projects
-	pKey1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{
+	pKey1, err := ss.ProjectTable().InsertReturningID(ctx,
+		&api.Project{
 			Key:                 cKey1,
 			Id:                  "P01",
 			Admin:               accs[0].Address.Bytes(),
@@ -223,8 +223,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	pKey2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{
+	pKey2, err := ss.ProjectTable().InsertReturningID(ctx,
+		&api.Project{
 			Key:                 cKey2,
 			Id:                  "P02",
 			Admin:               accs[1].Address.Bytes(),
@@ -244,8 +244,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey1, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey1, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[0].Address.Bytes(),
 			ProjectKey:   pKey1,
 			Denom:        denom,
@@ -264,8 +264,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey2, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey2, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[1].Address.Bytes(),
 			ProjectKey:   pKey1,
 			Denom:        denom,
@@ -284,8 +284,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey3, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey3, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[2].Address.Bytes(),
 			ProjectKey:   pKey2,
 			Denom:        denom,

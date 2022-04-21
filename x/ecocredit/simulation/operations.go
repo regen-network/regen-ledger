@@ -804,7 +804,7 @@ func getAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
 
 }
 
-func getRandomClass(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.ClassInfo, simtypes.OperationMsg, error) {
+func getRandomClass(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.Class, simtypes.OperationMsg, error) {
 	classes, err := utils.GetAndShuffleClasses(ctx, r, qryClient)
 	if err != nil {
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
@@ -817,7 +817,7 @@ func getRandomClass(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, m
 	return classes[0], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.ProjectInfo, simtypes.OperationMsg, error) {
+func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.Project, simtypes.OperationMsg, error) {
 	res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{
 		ClassId: classID,
 	})
@@ -833,7 +833,7 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient c
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
+func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.Batch, simtypes.OperationMsg, error) {
 	res, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{
 		ProjectId: projectID,
 	})

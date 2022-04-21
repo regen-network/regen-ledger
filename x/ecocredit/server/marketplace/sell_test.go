@@ -181,14 +181,14 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               classId,
 		Admin:            s.addr,
 		Metadata:         "",

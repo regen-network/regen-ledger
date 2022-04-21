@@ -167,7 +167,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batchDenom string, amount math.Dec, basketDenom string, retire bool, retirementJurisdiction string) error {
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	batch, err := k.coreStore.BatchInfoTable().GetByDenom(ctx, batchDenom)
+	batch, err := k.coreStore.BatchTable().GetByDenom(ctx, batchDenom)
 	if err != nil {
 		return err
 	}

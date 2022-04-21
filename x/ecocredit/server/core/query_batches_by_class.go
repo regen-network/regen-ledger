@@ -16,23 +16,23 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 	if err != nil {
 		return nil, err
 	}
-	class, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
+	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 	// we put a "-" after the class name to avoid including class names outside of the query (i.e. a query for C01 could technically include C011 otherwise).
-	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoDenomIndexKey{}.WithDenom(class.Id+"-"), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(class.Id+"-"), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
-	batches := make([]*core.BatchInfo, 0, 10)
+	batches := make([]*core.Batch, 0, 10)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var bi core.BatchInfo
+		var bi core.Batch
 		if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
 			return nil, err
 		}

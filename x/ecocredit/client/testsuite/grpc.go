@@ -93,11 +93,11 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var class core.QueryClassInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &class)
+			var res core.QueryClassInfoResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
-			require.NotNil(class.Info)
-			require.Contains(class.Info.Id, classId)
+			require.NotNil(res.Class)
+			require.Contains(res.Class.Id, classId)
 
 		})
 	}
@@ -164,11 +164,11 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var batch core.QueryBatchInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batch)
+			var res core.QueryBatchInfoResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
-			require.NotNil(batch.Info)
-			require.Equal(batch.Info.Denom, batchDenom)
+			require.NotNil(res.Batch)
+			require.Equal(res.Batch.Denom, batchDenom)
 		})
 	}
 }

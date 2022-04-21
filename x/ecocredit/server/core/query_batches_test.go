@@ -17,20 +17,20 @@ func TestQuery_Batches(t *testing.T) {
 	s := setupBase(t)
 
 	// make a project and two batches
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  "P01",
 		ClassKey:            1,
 		ProjectJurisdiction: "US-CA",
 		Metadata:            "",
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
 		Denom:      "C01-20200101-20220101-001",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
 		Denom:      "C01-20200101-20220101-002",
 		Metadata:   "",

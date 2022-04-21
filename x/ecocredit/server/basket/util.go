@@ -31,7 +31,7 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 
 		var batchKey uint64
 		if _, ok := batchDenomToKey[bb.BatchDenom]; !ok {
-			bInfo, err := k.coreStore.BatchInfoTable().GetByDenom(ctx, bb.BatchDenom)
+			bInfo, err := k.coreStore.BatchTable().GetByDenom(ctx, bb.BatchDenom)
 			if err != nil {
 				return nil, err
 			}

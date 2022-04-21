@@ -30,8 +30,8 @@ message CreditType {
   uint32 precision = 4;
 }
 
-// ClassInfo represents the high-level on-chain information for a credit class.
-message ClassInfo {
+// Class represents the high-level on-chain information for a credit class.
+message Class {
   option (cosmos.orm.v1alpha1.table) = {
     id : 2,
     primary_key : {fields : "key", auto_increment : true}
@@ -74,8 +74,8 @@ message ClassIssuer {
   bytes issuer = 2;
 }
 
-// ProjectInfo represents the high-level on-chain information for a project.
-message ProjectInfo {
+// Project represents the high-level on-chain information for a project.
+message Project {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4,
     primary_key : {fields : "key", auto_increment : true}
@@ -107,8 +107,8 @@ message ProjectInfo {
   string metadata = 6;
 }
 
-// BatchInfo represents the high-level on-chain information for a credit batch.
-message BatchInfo {
+// Batch represents the high-level on-chain information for a credit batch.
+message Batch {
   option (cosmos.orm.v1alpha1.table) = {
     id : 5,
     primary_key : {fields : "key", auto_increment : true}

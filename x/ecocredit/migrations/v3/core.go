@@ -63,13 +63,13 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		dest := api.ClassInfo{
+		dest := api.Class{
 			Id:               classInfo.ClassId,
 			Admin:            admin,
 			Metadata:         string(classInfo.Metadata),
 			CreditTypeAbbrev: classInfo.CreditType.Abbreviation,
 		}
-		classKey, err := ss.ClassInfoTable().InsertReturningID(ctx, &dest)
+		classKey, err := ss.ClassTable().InsertReturningID(ctx, &dest)
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		pItr, err := ss.ProjectInfoTable().List(ctx, api.ProjectInfoAdminIndexKey{}.WithAdmin(admin.Bytes()))
+		pItr, err := ss.ProjectTable().List(ctx, api.ProjectAdminIndexKey{}.WithAdmin(admin.Bytes()))
 		if err != nil {
 			return err
 		}
@@ -182,8 +182,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			}
 
 			id := FormatProjectID(batchInfo.ClassId, projectSeq)
-			key, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-				&api.ProjectInfo{
+			key, err := ss.ProjectTable().InsertReturningID(ctx,
+				&api.Project{
 					Id:                  id,
 					Admin:               admin,
 					ClassKey:            classKey,
@@ -197,7 +197,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			projectKey = key
 		}
 
-		bInfo := api.BatchInfo{
+		bInfo := api.Batch{
 			ProjectKey:   projectKey,
 			Denom:        batchInfo.BatchDenom,
 			Metadata:     string(batchInfo.Metadata),
@@ -206,7 +206,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			IssuanceDate: nil,
 		}
 
-		bID, err := ss.BatchInfoTable().InsertReturningID(ctx, &bInfo)
+		bID, err := ss.BatchTable().InsertReturningID(ctx, &bInfo)
 		if err != nil {
 			return err
 		}

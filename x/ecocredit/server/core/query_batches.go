@@ -16,23 +16,23 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 	if err != nil {
 		return nil, err
 	}
-	project, err := k.stateStore.ProjectInfoTable().GetById(ctx, request.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfo, 0)
+	batches := make([]*core.Batch, 0)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var bi core.BatchInfo
+		var bi core.Batch
 		if err = ormutil.PulsarToGogoSlow(batch, &bi); err != nil {
 			return nil, err
 		}

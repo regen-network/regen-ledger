@@ -19,7 +19,7 @@ func TestValidateGenesis(t *testing.T) {
 				"retired":"9.997"
 			}
 		],
-		"regen.ecocredit.v1.BatchInfo":[
+		"regen.ecocredit.v1.Batch":[
 			{
 				"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=",
 				"project_key":"1",
@@ -42,7 +42,7 @@ func TestValidateGenesis(t *testing.T) {
 				"retired_amount":"9.997"
 			}
 		],
-		"regen.ecocredit.v1.ClassInfo":[
+		"regen.ecocredit.v1.Class":[
 			{
 				"id":"BIO001",
 				"admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=",
@@ -54,7 +54,7 @@ func TestValidateGenesis(t *testing.T) {
 				"credit_type_abbrev":"BIO"
 			}
 		],
-		"regen.ecocredit.v1.ProjectInfo":[
+		"regen.ecocredit.v1.Project":[
 			{
 				"id":"P01",
 				"admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=",
@@ -105,7 +105,7 @@ func TestGenesisValidate(t *testing.T) {
 			"valid: no credit batches",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [
+					"regen.ecocredit.v1.Class": [
 						{
 							"id":"C01",
 							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
@@ -129,7 +129,7 @@ func TestGenesisValidate(t *testing.T) {
 							"precision":"6"
 						}
 					],
-					"regen.ecocredit.v1.ClassInfo": [
+					"regen.ecocredit.v1.Class": [
 						{
 							"id":"C01",
 							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
@@ -145,7 +145,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid: credit type param",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [{
+					"regen.ecocredit.v1.Class": [{
 						"id":"C01",
 						"admin":"v9PCozRRuFc5I5hdJOwD3k9WMOI=",
 						"credit_type_abbrev":"C"
@@ -164,7 +164,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid: duplicate credit type",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [{
+					"regen.ecocredit.v1.Class": [{
 						"id":"C01",
 						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
 						"credit_type_abbrev":"C"
@@ -193,7 +193,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid: bad addresses in allowlist",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [{
+					"regen.ecocredit.v1.Class": [{
 						"id":"C01",
 						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
 						"credit_type_abbrev":"C"
@@ -213,7 +213,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid: type id does not match param id",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [{
+					"regen.ecocredit.v1.Class": [{
 						"id":"C01",
 						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
 						"credit_type_abbrev":"F"
@@ -228,7 +228,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid: non-existent abbreviation",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo": [{
+					"regen.ecocredit.v1.Class": [{
 						"id":"C01",
 						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
 						"credit_type_abbrev":"F"
@@ -243,18 +243,18 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: supply is missing",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo":[{
+					"regen.ecocredit.v1.Class":[{
 						"id":"C01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"credit_type_abbrev":"C"
 					}],
-					"regen.ecocredit.v1.ProjectInfo":[{
+					"regen.ecocredit.v1.Project":[{
 						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"class_key":"1",
 						"project_jurisdiction":"AQ"
 					}],
-					"regen.ecocredit.v1.BatchInfo":[{
+					"regen.ecocredit.v1.Batch":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"project_key":"1",
 						"denom":"C01-00000000-00000000-001",
@@ -276,18 +276,18 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: invalid supply",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-					"regen.ecocredit.v1.ClassInfo":[{
+					"regen.ecocredit.v1.Class":[{
 						"id":"C01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"credit_type_abbrev":"C"
 					}],
-					"regen.ecocredit.v1.ProjectInfo":[{
+					"regen.ecocredit.v1.Project":[{
 						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"class_key":"1",
 						"project_jurisdiction":"AQ"
 					}],
-					"regen.ecocredit.v1.BatchInfo":[{
+					"regen.ecocredit.v1.Batch":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"project_key":"1",
 						"denom":"C01-00000000-00000000-001",
@@ -314,18 +314,18 @@ func TestGenesisValidate(t *testing.T) {
 			"valid test case",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-				"regen.ecocredit.v1.ClassInfo":[{
+				"regen.ecocredit.v1.Class":[{
 					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"credit_type_abbrev":"C"
 				}],
-				"regen.ecocredit.v1.ProjectInfo":[{
+				"regen.ecocredit.v1.Project":[{
 					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"class_key":"1",
 					"project_jurisdiction":"AQ"
 				}],
-				"regen.ecocredit.v1.BatchInfo":[{
+				"regen.ecocredit.v1.Batch":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"project_key":"1",
 					"denom":"C01-00000000-00000000-001",
@@ -363,18 +363,18 @@ func TestGenesisValidate(t *testing.T) {
 			"valid test case escrowed balance",
 			func() json.RawMessage {
 				return json.RawMessage(`{
-				"regen.ecocredit.v1.ClassInfo":[{
+				"regen.ecocredit.v1.Class":[{
 					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"credit_type_abbrev":"C"
 				}],
-				"regen.ecocredit.v1.ProjectInfo":[{
+				"regen.ecocredit.v1.Project":[{
 					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"class_key":"1",
 					"project_jurisdiction":"AQ"
 				}],
-				"regen.ecocredit.v1.BatchInfo":[{
+				"regen.ecocredit.v1.Batch":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"project_key":"1",
 					"denom":"C01-00000000-00000000-001",
@@ -415,7 +415,7 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`
 				{
-					"regen.ecocredit.v1.ClassInfo": [
+					"regen.ecocredit.v1.Class": [
 					  {
 						"id": "C01",
 						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -427,7 +427,7 @@ func TestGenesisValidate(t *testing.T) {
 						"credit_type_abbrev": "C"
 					  }
 					],
-					"regen.ecocredit.v1.ProjectInfo": [
+					"regen.ecocredit.v1.Project": [
 					  {
 						"id": "P01",
 						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -441,7 +441,7 @@ func TestGenesisValidate(t *testing.T) {
 						"project_jurisdiction":"AQ"
 					  }
 					],
-					"regen.ecocredit.v1.BatchInfo": [
+					"regen.ecocredit.v1.Batch": [
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 						"project_key": "1",

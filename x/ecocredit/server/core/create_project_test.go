@@ -27,7 +27,7 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, "FOO")
 
-	project, err := s.stateStore.ProjectInfoTable().GetById(s.ctx, "FOO")
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, "FOO")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, project.Admin, s.addr.Bytes())
 	assert.Equal(t, project.ProjectJurisdiction, "US-NY")
@@ -92,7 +92,7 @@ func TestCreateProject_NoDuplicates(t *testing.T) {
 }
 
 func makeClass(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) {
-	assert.NilError(t, ss.ClassInfoTable().Insert(ctx, &api.ClassInfo{
+	assert.NilError(t, ss.ClassTable().Insert(ctx, &api.Class{
 		Id:               "C01",
 		Admin:            addr,
 		Metadata:         "",

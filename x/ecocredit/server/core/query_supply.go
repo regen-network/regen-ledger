@@ -8,7 +8,7 @@ import (
 
 // Supply queries the supply (tradable, retired, cancelled) of a given credit batch.
 func (k Keeper) Supply(ctx context.Context, request *core.QuerySupplyRequest) (*core.QuerySupplyResponse, error) {
-	batch, err := k.stateStore.BatchInfoTable().GetByDenom(ctx, request.BatchDenom)
+	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, request.BatchDenom)
 	if err != nil {
 		return nil, err
 	}

@@ -313,7 +313,7 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKe
 }
 
 func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               name,
 		Admin:            s.addr,
 		Metadata:         "",
@@ -322,7 +322,7 @@ func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
 }
 
 func insertBatch(t *testing.T, s *baseSuite, batchDenom string, startDate *timestamppb.Timestamp) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",
@@ -409,16 +409,16 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	s.batchDenom = "batch-" + a
 	s.batchStartDate = timestamppb.New(startDate)
 
-	key, err := s.coreStore.ClassInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ClassInfo{
+	key, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &ecocreditapi.Class{
 		Id:               s.classId,
 		CreditTypeAbbrev: s.creditType,
 	})
 	assert.NilError(s.t, err)
 
-	key, err = s.coreStore.ProjectInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ProjectInfo{ClassKey: key})
+	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &ecocreditapi.Project{ClassKey: key})
 	assert.NilError(s.t, err)
 
-	key, err = s.coreStore.BatchInfoTable().InsertReturningID(s.ctx, &ecocreditapi.BatchInfo{
+	key, err = s.coreStore.BatchTable().InsertReturningID(s.ctx, &ecocreditapi.Batch{
 		ProjectKey: 1,
 		Denom:      s.batchDenom,
 		StartDate:  s.batchStartDate,

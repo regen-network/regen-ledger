@@ -72,19 +72,19 @@ func setupBase(t *testing.T) *baseSuite {
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, batchDenom string) {
 	classId, projectId, batchDenom = "C01", "P01", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	}))
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  projectId,
 		ClassKey:            1,
 		ProjectJurisdiction: "US-OR",
 		Metadata:            "",
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",

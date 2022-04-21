@@ -20,7 +20,7 @@ func TestQuery_Balance(t *testing.T) {
 	retired := "50.3214"
 
 	// make a batch and give s.addr some balance
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
 		Metadata:   "",

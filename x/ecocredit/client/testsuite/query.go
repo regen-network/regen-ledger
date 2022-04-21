@@ -117,7 +117,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 		args              []string
 		expectErr         bool
 		expectedErrMsg    string
-		expectedClassInfo *core.ClassInfo
+		expectedClassInfo *core.Class
 	}{
 		{
 			name:           "missing args",
@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			name:      "valid credit class",
 			args:      []string{classId},
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
+			expectedClassInfo: &core.Class{
 				Id:               classId,
 				Admin:            val.Address,
 				Metadata:         class.Metadata,
@@ -156,8 +156,8 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 				var res core.QueryClassInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				tc.expectedClassInfo.Key = res.Info.Key // force the db id's to be equal as we cannot know this beforehand.
-				s.Require().Equal(tc.expectedClassInfo, res.Info)
+				tc.expectedClassInfo.Key = res.Class.Key // force the db id's to be equal as we cannot know this beforehand.
+				s.Require().Equal(tc.expectedClassInfo, res.Class)
 			}
 		})
 	}
@@ -265,7 +265,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 
 				var res core.QueryBatchInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(res.Info.Denom, batchDenom)
+				s.Require().Equal(res.Batch.Denom, batchDenom)
 			}
 		})
 	}
@@ -794,7 +794,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 
 				var res core.QueryProjectInfoResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				require.Equal(projectId, res.Info.Id)
+				require.Equal(projectId, res.Project.Id)
 			}
 		})
 	}

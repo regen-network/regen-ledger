@@ -80,7 +80,7 @@ func TestGetBasketBalances(t *testing.T) {
 }
 
 func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
+	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
 		ProjectKey: pid,
 		Denom:      denom,
 		StartDate:  startDate,
