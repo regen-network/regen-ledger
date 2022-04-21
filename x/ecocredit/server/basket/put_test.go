@@ -283,7 +283,7 @@ func TestPut_BadCreditType(t *testing.T) {
 }
 
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
-	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
+	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       denom,
 		Name:              name,
 		DisableAutoRetire: false,
@@ -291,10 +291,12 @@ func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, crit
 		DateCriteria:      criteria,
 		Exponent:          6,
 		Curator:           s.addr.String(),
-	}))
+	})
+	assert.NilError(t, err)
+
 	for _, class := range classes {
 		assert.NilError(t, s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-			BasketId: 1,
+			BasketId: id,
 			ClassId:  class,
 		}))
 	}
