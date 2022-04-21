@@ -24,8 +24,8 @@ func (m MsgBuyDirect) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 		if !order.DisableAutoRetire {
-			if err := core.ValidateLocation(order.RetirementLocation); err != nil {
-				return sdkerrors.Wrapf(err, "when DisableAutoRetire is false, a valid retirement location must be provided")
+			if err := core.ValidateJurisdiction(order.RetirementJurisdiction); err != nil {
+				return sdkerrors.Wrapf(err, "when DisableAutoRetire is false, a valid retirement jurisdiction must be provided")
 			}
 		}
 		if order.BidPrice == nil {

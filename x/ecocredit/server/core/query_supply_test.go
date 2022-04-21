@@ -20,15 +20,15 @@ func TestQuery_Supply(t *testing.T) {
 	cancelled := "0.3215"
 
 	// make a batch and some supply
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
-		BatchDenom: batchDenom,
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
+		ProjectKey: 1,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchId:         1,
+		BatchKey:        1,
 		TradableAmount:  tradable,
 		RetiredAmount:   retired,
 		CancelledAmount: cancelled,

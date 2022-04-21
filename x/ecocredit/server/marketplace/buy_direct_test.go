@@ -236,11 +236,11 @@ func buyDirect(s *baseSuite, buyer string, sellOrderId uint64, qty string, price
 		Buyer: buyer,
 		Orders: []*marketplace.MsgBuyDirect_Order{
 			{
-				SellOrderId:        sellOrderId,
-				Quantity:           qty,
-				BidPrice:           pricePerCredit,
-				DisableAutoRetire:  disableAutoRetire,
-				RetirementLocation: retirementLocation,
+				SellOrderId:            sellOrderId,
+				Quantity:               qty,
+				BidPrice:               pricePerCredit,
+				DisableAutoRetire:      disableAutoRetire,
+				RetirementJurisdiction: retirementLocation,
 			},
 		},
 	})

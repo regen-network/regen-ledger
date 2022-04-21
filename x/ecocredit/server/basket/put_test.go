@@ -283,7 +283,7 @@ func TestPut_BadCreditType(t *testing.T) {
 }
 
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
-	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx, &api.Basket{
+	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       denom,
 		Name:              name,
 		DisableAutoRetire: false,
@@ -291,19 +291,21 @@ func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, crit
 		DateCriteria:      criteria,
 		Exponent:          6,
 		Curator:           s.addr.String(),
-	}))
+	})
+	assert.NilError(t, err)
+
 	for _, class := range classes {
 		assert.NilError(t, s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-			BasketId: 1,
+			BasketId: id,
 			ClassId:  class,
 		}))
 	}
 }
 
-func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId uint64, amount string) {
+func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
 	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		BatchKey: batchKey,
 		Address:  user,
-		BatchId:  batchId,
 		Tradable: amount,
 		Retired:  "",
 		Escrowed: "",
@@ -311,26 +313,26 @@ func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchId
 }
 
 func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       name,
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: creditTypeAbb,
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+		Id:               name,
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: creditTypeAbb,
 	}))
 }
 
 func insertBatch(t *testing.T, s *baseSuite, batchDenom string, startDate *timestamppb.Timestamp) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
-		ProjectId:  1,
-		BatchDenom: batchDenom,
+	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
+		ProjectKey: 1,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  startDate,
 		EndDate:    nil,
 	}))
 }
 
-func assertCreditsDeposited(t *testing.T, s *baseSuite, startingUserBalance, startingBasketBalance, amountPut math.Dec, user sdk.AccAddress, batchId, basketId uint64, batchDenom string) {
-	userBal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, user, batchId)
+func assertCreditsDeposited(t *testing.T, s *baseSuite, startingUserBalance, startingBasketBalance, amountPut math.Dec, user sdk.AccAddress, batchKey, basketId uint64, batchDenom string) {
+	userBal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, user, batchKey)
 	assert.NilError(t, err)
 	userTradable, err := math.NewDecFromString(userBal.Tradable)
 	assert.NilError(t, err)
@@ -407,25 +409,25 @@ func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
 	s.batchDenom = "batch-" + a
 	s.batchStartDate = timestamppb.New(startDate)
 
-	id, err := s.coreStore.ClassInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ClassInfo{
-		Name:       s.classId,
-		CreditType: s.creditType,
+	key, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &ecocreditapi.Class{
+		Id:               s.classId,
+		CreditTypeAbbrev: s.creditType,
 	})
 	assert.NilError(s.t, err)
 
-	id, err = s.coreStore.ProjectInfoTable().InsertReturningID(s.ctx, &ecocreditapi.ProjectInfo{ClassId: id})
+	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &ecocreditapi.Project{ClassKey: key})
 	assert.NilError(s.t, err)
 
-	id, err = s.coreStore.BatchInfoTable().InsertReturningID(s.ctx, &ecocreditapi.BatchInfo{
-		ProjectId:  id,
-		BatchDenom: s.batchDenom,
+	key, err = s.coreStore.BatchTable().InsertReturningID(s.ctx, &ecocreditapi.Batch{
+		ProjectKey: 1,
+		Denom:      s.batchDenom,
 		StartDate:  s.batchStartDate,
 	})
 	assert.NilError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
+		BatchKey: key,
 		Address:  s.addr,
-		BatchId:  id,
 		Tradable: s.tradableCredits,
 	})
 	assert.NilError(s.t, err)

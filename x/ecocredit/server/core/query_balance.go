@@ -13,7 +13,7 @@ import (
 // Balance queries the balance (both tradable and retired) of a given credit
 // batch for a given account.
 func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*core.QueryBalanceResponse, error) {
-	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, req.BatchDenom)
+	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, req.BatchDenom)
 	if err != nil {
 		return nil, err
 	}
@@ -22,13 +22,13 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 		return nil, err
 	}
 
-	balance, err := k.stateStore.BatchBalanceTable().Get(ctx, addr, batch.Id)
+	balance, err := k.stateStore.BatchBalanceTable().Get(ctx, addr, batch.Key)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			return &core.QueryBalanceResponse{
 				Balance: &core.BatchBalance{
+					BatchKey: batch.Key,
 					Address:  addr,
-					BatchId:  batch.Id,
 					Tradable: "0",
 					Retired:  "0",
 					Escrowed: "0",

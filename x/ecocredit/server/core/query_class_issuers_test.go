@@ -19,24 +19,24 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	// make a class with 3 issuers.
 	addrs := genAddrs(2)
 	issuers := append(addrs, s.addr)
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
-		Name:       "C01",
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: "C",
+	err := s.stateStore.ClassTable().Insert(s.ctx, &ecocreditv1.Class{
+		Id:               "C01",
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &ecocreditv1.ClassIssuer{
-		ClassId: 1,
-		Issuer:  s.addr,
+		ClassKey: 1,
+		Issuer:   s.addr,
 	}))
 	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &ecocreditv1.ClassIssuer{
-		ClassId: 1,
-		Issuer:  addrs[0],
+		ClassKey: 1,
+		Issuer:   addrs[0],
 	}))
 	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &ecocreditv1.ClassIssuer{
-		ClassId: 1,
-		Issuer:  addrs[1],
+		ClassKey: 1,
+		Issuer:   addrs[1],
 	}))
 
 	// base request
