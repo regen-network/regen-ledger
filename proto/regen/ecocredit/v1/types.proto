@@ -62,3 +62,18 @@ message OriginTx {
   // the id of a transaction based on a type (tx id, serial number)
   string id = 2;
 }
+
+// CreditTypeProposal is a gov Content type for adding a credit type.
+message CreditTypeProposal {
+  option (gogoproto.goproto_stringer) = false;
+
+  // title is the title of the proposal.
+  string title = 1;
+
+  // description is the description of the proposal.
+  string description = 2;
+
+  // credit_type is the credit type to be added to the network if the proposal
+  // passes.
+  CreditType credit_type = 3;
+}

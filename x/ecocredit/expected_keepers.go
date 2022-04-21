@@ -37,11 +37,6 @@ type BankKeeper interface {
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
-// Keeper defines the expected interface needed to prune expired buy and sell orders.
-type Keeper interface {
-	PruneOrders(ctx sdk.Context) error
-}
-
 type DistributionKeeper interface {
 	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
 }

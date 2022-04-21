@@ -7,6 +7,10 @@ package app
 
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,14 +20,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -31,6 +32,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			ecocreditcore.CreditTypeProposalHandler,
 		),
 	}
 }

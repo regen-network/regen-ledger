@@ -420,21 +420,3 @@ func (b Batch) Validate() error {
 
 	return nil
 }
-
-// Validate performs a basic validation of credit type
-func (c CreditType) Validate() error {
-	if err := ValidateCreditTypeAbbreviation(c.Abbreviation); err != nil {
-		return err
-	}
-	if len(c.Name) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
-	}
-	if len(c.Unit) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("unit cannot be empty")
-	}
-	if c.Precision != PRECISION {
-		return sdkerrors.ErrInvalidRequest.Wrapf("credit type precision is currently locked to %d", PRECISION)
-	}
-
-	return nil
-}
