@@ -75,7 +75,7 @@ func QueryClassesCmd() *cobra.Command {
 			res, err := c.Classes(cmd.Context(), &core.QueryClassesRequest{
 				Pagination: pagination,
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	}
 	flags.AddPaginationFlagsToCmd(cmd, "classes")
@@ -97,7 +97,7 @@ func QueryClassInfoCmd() *cobra.Command {
 			res, err := c.ClassInfo(cmd.Context(), &core.QueryClassInfoRequest{
 				ClassId: args[0],
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
@@ -123,7 +123,7 @@ func QueryProjectsCmd() *cobra.Command {
 				ClassId:    args[0],
 				Pagination: pagination,
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	}
 	flags.AddPaginationFlagsToCmd(cmd, "projects")
@@ -145,7 +145,7 @@ func QueryProjectInfoCmd() *cobra.Command {
 			res, err := c.ProjectInfo(cmd.Context(), &core.QueryProjectInfoRequest{
 				ProjectId: args[0],
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	}
 
@@ -174,7 +174,7 @@ func QueryBatchesCmd() *cobra.Command {
 				ProjectId:  args[0],
 				Pagination: pagination,
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	}
 	flags.AddPaginationFlagsToCmd(cmd, "batches")
@@ -198,7 +198,7 @@ func QueryBatchInfoCmd() *cobra.Command {
 			res, err := c.BatchInfo(cmd.Context(), &core.QueryBatchInfoRequest{
 				BatchDenom: args[0],
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
@@ -219,7 +219,7 @@ func QueryBalanceCmd() *cobra.Command {
 			res, err := c.Balance(cmd.Context(), &core.QueryBalanceRequest{
 				BatchDenom: args[0], Account: args[1],
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
@@ -240,7 +240,7 @@ func QuerySupplyCmd() *cobra.Command {
 			res, err := c.Supply(cmd.Context(), &core.QuerySupplyRequest{
 				BatchDenom: args[0],
 			})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
@@ -259,7 +259,7 @@ func QueryCreditTypesCmd() *cobra.Command {
 				return err
 			}
 			res, err := c.CreditTypes(cmd.Context(), &core.QueryCreditTypesRequest{})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }
@@ -283,7 +283,7 @@ $%s q %s params
 				return err
 			}
 			res, err := c.Params(cmd.Context(), &core.QueryParamsRequest{})
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	})
 }

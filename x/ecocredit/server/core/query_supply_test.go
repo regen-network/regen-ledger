@@ -22,7 +22,7 @@ func TestQuery_Supply(t *testing.T) {
 	// make a batch and some supply
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
-		BatchDenom: batchDenom,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,

@@ -384,7 +384,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		admin := sdk.AccAddress(project.Admin).String()
 		balres, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
 			Account:    admin,
-			BatchDenom: batch.BatchDenom,
+			BatchDenom: batch.Denom,
 		})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
@@ -446,7 +446,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Recipient: recipient.Address.String(),
 			Credits: []*core.MsgSend_SendCredits{
 				{
-					BatchDenom:             batch.BatchDenom,
+					BatchDenom:             batch.Denom,
 					TradableAmount:         fmt.Sprintf("%d", tradable),
 					RetiredAmount:          fmt.Sprintf("%d", retired),
 					RetirementJurisdiction: retirementJurisdiction,
@@ -499,7 +499,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
 			Account:    admin,
-			BatchDenom: batch.BatchDenom,
+			BatchDenom: batch.Denom,
 		})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
@@ -532,7 +532,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Holder: account.Address.String(),
 			Credits: []*core.MsgRetire_RetireCredits{
 				{
-					BatchDenom: batch.BatchDenom,
+					BatchDenom: batch.Denom,
 					Amount:     randSub.String(),
 				},
 			},
@@ -584,7 +584,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
 			Account:    admin,
-			BatchDenom: batch.BatchDenom,
+			BatchDenom: batch.Denom,
 		})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
@@ -603,7 +603,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Holder: admin,
 			Credits: []*ecocredit.MsgCancel_CancelCredits{
 				{
-					BatchDenom: batch.BatchDenom,
+					BatchDenom: batch.Denom,
 					Amount:     balanceRes.Balance.Tradable,
 				},
 			},
