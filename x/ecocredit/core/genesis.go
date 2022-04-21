@@ -396,7 +396,7 @@ func (p ProjectInfo) Validate() error {
 
 // Validate performs a basic validation of credit batch
 func (b BatchInfo) Validate() error {
-	if err := ValidateDenom(b.BatchDenom); err != nil {
+	if err := ValidateDenom(b.Denom); err != nil {
 		return err
 	}
 

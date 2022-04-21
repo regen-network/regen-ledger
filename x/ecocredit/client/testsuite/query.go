@@ -214,7 +214,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 				s.Require().True(res.Pagination.Total > 0)
 				denoms := make([]string, len(res.Batches))
 				for i, batch := range res.Batches {
-					denoms[i] = batch.BatchDenom
+					denoms[i] = batch.Denom
 				}
 				s.Require().Contains(denoms, batchDenom)
 			}
@@ -265,7 +265,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 
 				var res core.QueryBatchInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(res.Info.BatchDenom, batchDenom)
+				s.Require().Equal(res.Info.Denom, batchDenom)
 			}
 		})
 	}

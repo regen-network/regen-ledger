@@ -199,7 +199,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 		bInfo := api.BatchInfo{
 			ProjectKey:   projectKey,
-			BatchDenom:   batchInfo.BatchDenom,
+			Denom:        batchInfo.BatchDenom,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
@@ -211,7 +211,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
-		batchDenomToBatchMap[bInfo.BatchDenom] = batchMapT{
+		batchDenomToBatchMap[bInfo.Denom] = batchMapT{
 			Id:              bID,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}

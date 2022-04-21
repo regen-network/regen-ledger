@@ -59,7 +59,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	// check the batch
 	batch, err := s.stateStore.BatchInfoTable().Get(s.ctx, 1)
 	assert.NilError(t, err, "unexpected error: %w", err)
-	assert.Equal(t, res.BatchDenom, batch.BatchDenom)
+	assert.Equal(t, res.BatchDenom, batch.Denom)
 	assert.Check(t, batch.IssuanceDate.AsTime().Equal(blockTime))
 
 	// check the supply was set

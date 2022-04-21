@@ -47,8 +47,8 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	]`
 
 	batchInfoJSON := `[
-	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_key":"1","batch_denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
-	{"issuer":null,"project_key":"1","batch_denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
+	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_key":"1","denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
+	{"issuer":null,"project_key":"1","denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
 	]`
 
 	batchBalancesJSON := `[

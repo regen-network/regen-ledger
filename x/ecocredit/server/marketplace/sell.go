@@ -27,11 +27,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
+		batch, err := k.coreStore.BatchInfoTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -78,7 +78,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		sellOrderIds[i] = id
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			OrderId:           id,
-			BatchDenom:        batch.BatchDenom,
+			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskPrice:          order.AskPrice,
 			DisableAutoRetire: order.DisableAutoRetire,
