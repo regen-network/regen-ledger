@@ -22,6 +22,24 @@ func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint
 	}
 	defer itr.Close()
 
+	balanceFunc := func(name string, batchIdToBalance map[uint64]math.Dec, bID uint64, amount string) {
+		amt, err := math.NewNonNegativeDecFromString(amount)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing %s balance %v", name, err)
+		}
+		if val, ok := batchIdToBalance[bID]; ok {
+			result, err := math.SafeAddBalance(val, amt)
+			if err != nil {
+				broken = true
+				msg += fmt.Sprintf("error adding credit batch %s supply %v", name, err)
+			}
+			batchIdToBalance[bID] = result
+		} else {
+			batchIdToBalance[bID] = amt
+		}
+	}
+
 	for itr.Next() {
 		bBalance, err := itr.Value()
 		if err != nil {
@@ -29,55 +47,13 @@ func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint
 		}
 
 		// tradable balance
-		tBalance, err := math.NewNonNegativeDecFromString(bBalance.Tradable)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("error while parsing tradable balance %v", err)
-		}
-		if val, ok := batchIdToBalanceTradable[bBalance.BatchKey]; ok {
-			result, err := math.SafeAddBalance(val, tBalance)
-			if err != nil {
-				broken = true
-				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
-			}
-			batchIdToBalanceTradable[bBalance.BatchKey] = result
-		} else {
-			batchIdToBalanceTradable[bBalance.BatchKey] = tBalance
-		}
+		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.Tradable)
 
 		//escrowed balance
-		eBalance, err := math.NewNonNegativeDecFromString(bBalance.Escrowed)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("error while parsing escrowed balance %v", err)
-		}
-		if val, ok := batchIdToBalanceTradable[bBalance.BatchKey]; ok {
-			result, err := math.SafeAddBalance(val, eBalance)
-			if err != nil {
-				broken = true
-				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
-			}
-			batchIdToBalanceTradable[bBalance.BatchKey] = result
-		} else {
-			batchIdToBalanceTradable[bBalance.BatchKey] = eBalance
-		}
+		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.Escrowed)
 
 		// retired balance
-		rBalance, err := math.NewNonNegativeDecFromString(bBalance.Retired)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("error while parsing retired balance %v", err)
-		}
-		if val, ok := batchIdToBalanceRetired[bBalance.BatchKey]; ok {
-			result, err := math.SafeAddBalance(val, rBalance)
-			if err != nil {
-				broken = true
-				msg += fmt.Sprintf("error adding credit batch retired supply %v", err)
-			}
-			batchIdToBalanceRetired[bBalance.BatchKey] = result
-		} else {
-			batchIdToBalanceRetired[bBalance.BatchKey] = rBalance
-		}
+		balanceFunc("retired", batchIdToBalanceRetired, bBalance.BatchKey, bBalance.Retired)
 	}
 
 	for batchId, amt := range basketBalances {
@@ -95,6 +71,23 @@ func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint
 		}
 	}
 
+	supplyFunc := func(name string, batchIdToBalance map[uint64]math.Dec, batchKey uint64, amount string) {
+		expected, err := math.NewNonNegativeDecFromString(amount)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("\terror while parsing %s supply for batch id: %d\n", name, batchKey)
+		}
+		if actual, ok := batchIdToBalance[batchKey]; ok {
+			if expected.Cmp(actual) != math.EqualTo {
+				broken = true
+				msg += fmt.Sprintf("\t%s supply is incorrect for %d credit batch, expected %v, got %v\n", name, batchKey, expected, actual)
+			}
+		} else {
+			broken = true
+			msg += fmt.Sprintf("\t%s supply is not found for %d credit batch\n", name, batchKey)
+		}
+	}
+
 	sItr, err := k.stateStore.BatchSupplyTable().List(ctx, ecocreditv1.BatchSupplyPrimaryKey{})
 	if err != nil {
 		return msg + err.Error(), true
@@ -108,37 +101,10 @@ func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint
 		}
 
 		// tradable supply invariant check
-		tSupply, err := math.NewNonNegativeDecFromString(supply.TradableAmount)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("\terror while parsing tradable supply for batch id: %d\n", supply.BatchKey)
-		}
-		if s1, ok := batchIdToBalanceTradable[supply.BatchKey]; ok {
-			if tSupply.Cmp(s1) != math.EqualTo {
-				broken = true
-				msg += fmt.Sprintf("\ttradable supply is incorrect for %d credit batch, expected %v, got %v\n", supply.BatchKey, tSupply, s1)
-			}
-		} else {
-			broken = true
-			msg += fmt.Sprintf("\ttradable supply is not found for %d credit batch\n", supply.BatchKey)
-		}
+		supplyFunc("tradable", batchIdToBalanceTradable, supply.BatchKey, supply.TradableAmount)
 
 		// retired supply invariant check
-		retired, err := math.NewNonNegativeDecFromString(supply.RetiredAmount)
-		if err != nil {
-			broken = true
-			msg += fmt.Sprintf("\nerror while parsing reired supply for denom: %d\n", supply.BatchKey)
-		}
-		if s1, ok := batchIdToBalanceRetired[supply.BatchKey]; ok {
-			if retired.Cmp(s1) != math.EqualTo {
-				broken = true
-				msg += fmt.Sprintf("\tretired supply is incorrect for %d credit batch, expected %v, got %v\n", supply.BatchKey, retired, s1)
-			}
-		} else {
-			broken = true
-			msg += fmt.Sprintf("\tretired supply is not found for %d credit batch\n", supply.BatchKey)
-		}
-
+		supplyFunc("retired", batchIdToBalanceRetired, supply.BatchKey, supply.RetiredAmount)
 	}
 
 	return msg, broken

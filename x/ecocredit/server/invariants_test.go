@@ -209,7 +209,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 				{
 					BatchKey:       1,
 					TradableAmount: "110",
-					RetiredAmount:  "10",
+					RetiredAmount:  "1",
 				},
 				{
 					BatchKey:       2,
@@ -218,7 +218,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 				},
 			},
 			map[uint64]math.Dec{},
-			true,
+			false,
 		},
 		{
 			"valid case multiple account",
@@ -249,7 +249,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 				{
 					BatchKey:       1,
 					TradableAmount: "2110",
-					RetiredAmount:  "123",
+					RetiredAmount:  "124",
 				},
 				{
 					BatchKey:       2,
@@ -258,7 +258,7 @@ func TestBatchSupplyInvariant(t *testing.T) {
 				},
 			},
 			map[uint64]math.Dec{},
-			true,
+			false,
 		},
 	}
 
@@ -277,7 +277,6 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances []*core.BatchBalance) {
