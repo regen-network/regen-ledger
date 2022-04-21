@@ -27,10 +27,10 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	issuanceTime, err := types.ParseDate("", "2022-01-01")
 	assert.NilError(t, err)
 
-	batch1 := &api.BatchInfo{
+	batch1 := &api.Batch{
 		Issuer:       s.addr,
 		ProjectKey:   1,
-		BatchDenom:   "C01-20200101-20200102-001",
+		Denom:        "C01-20200101-20200102-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
@@ -38,43 +38,43 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	}
 
 	// insert class
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id: "C01",
 	}))
 
 	// insert project
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id: "P01",
 	}))
 
 	// insert three batches under the project
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, batch1))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
-		BatchDenom: "C01-20190203-20200102-002",
+		Denom:      "C01-20190203-20200102-002",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
-		BatchDenom: "C01-20500404-20900102-003",
+		Denom:      "C01-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
 
-	// classes that SHOULD NOT show up from a query for "C01"
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	// Classes that SHOULD NOT show up from a query for "C01"
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
-		BatchDenom: "C011-20500404-20900102-003",
+		Denom:      "C011-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
 	}))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
-		BatchDenom: "BIO1-20500404-20900102-003",
+		Denom:      "BIO1-20500404-20900102-003",
 		Metadata:   "",
 		StartDate:  nil,
 		EndDate:    nil,
@@ -93,16 +93,16 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	}
 }
 
-func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchDetails, batch *api.BatchInfo) {
+func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchInfo, batch *api.Batch) {
 	issuer := sdk.AccAddress(batch.Issuer)
 
-	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectKey)
+	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 	assert.NilError(t, err)
 
-	info := core.BatchDetails{
+	info := core.BatchInfo{
 		Issuer:       issuer.String(),
 		ProjectId:    project.Id,
-		BatchDenom:   batch.BatchDenom,
+		BatchDenom:   batch.Denom,
 		Metadata:     batch.Metadata,
 		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
 		EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),

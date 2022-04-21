@@ -20,20 +20,20 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	_, _, noClasses := testdata.KeyTestPubAddr()
 
-	class1 := &api.ClassInfo{
+	class1 := &api.Class{
 		Id:       "C01",
 		Admin:      s.addr,
 		Metadata:   "data",
 		CreditTypeAbbrev: "C",
 	}
 
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, class1))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, class1))
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:       "C02",
 		Admin:      s.addr,
 		CreditTypeAbbrev: "C",
 	}))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:       "C03",
 		Admin:      addr,
 		CreditTypeAbbrev: "C",

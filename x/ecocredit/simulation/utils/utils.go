@@ -14,7 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient) ([]*core.ClassDetails, error) {
+func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient) ([]*core.ClassInfo, error) {
 	ctx := regentypes.Context{Context: sdkCtx}
 	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
 	if err != nil {

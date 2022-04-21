@@ -29,34 +29,35 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	issuanceTime, err := types.ParseDate("", "2022-01-01")
 	assert.NilError(t, err)
 
-	batch1 := &api.BatchInfo{
+	// insert project
+	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id: "P01",
+	})
+	assert.NilError(t, err)
+
+	batch1 := &api.Batch{
 		Issuer:       s.addr,
-		ProjectKey:   1,
-		BatchDenom:   "C01-20200101-20200102-001",
+		ProjectKey:   pKey,
+		Denom:        "C01-20200101-20200102-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
 		IssuanceDate: timestamppb.New(issuanceTime),
 	}
 
-	// insert project
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id: "P01",
-	}))
-
 	// insert two batches with s.addr as the issuer
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, batch1))
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		Issuer:     s.addr,
-		ProjectKey: 1,
-		BatchDenom: "C01-20200101-20200102-002",
+		ProjectKey: pKey,
+		Denom:      "C01-20200101-20200102-002",
 	}))
 
 	// insert one batch without s.addr as the issuer
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		Issuer:     otherAddr,
-		ProjectKey: 1,
-		BatchDenom: "C01-20200101-20200102-003",
+		ProjectKey: pKey,
+		Denom:      "C01-20200101-20200102-003",
 	}))
 
 	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{

@@ -19,7 +19,7 @@ func TestQuery_ClassInfo(t *testing.T) {
 	metadata := "data"
 	creditType := "C"
 
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,
 		Metadata:         metadata,

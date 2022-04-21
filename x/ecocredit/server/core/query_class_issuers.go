@@ -18,7 +18,7 @@ func (k Keeper) ClassIssuers(ctx context.Context, request *core.QueryClassIssuer
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}

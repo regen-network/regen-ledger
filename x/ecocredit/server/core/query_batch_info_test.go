@@ -32,14 +32,14 @@ func TestQuery_BatchInfo(t *testing.T) {
 	endDate := timestamppb.New(endTime)
 	issuanceDate := timestamppb.New(issuanceTime)
 
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id: projectId,
 	}))
 
-	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		Issuer:       issuer,
 		ProjectKey:   1,
-		BatchDenom:   batchDenom,
+		Denom:        batchDenom,
 		Metadata:     metadata,
 		StartDate:    startDate,
 		EndDate:      endDate,

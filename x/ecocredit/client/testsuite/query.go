@@ -117,7 +117,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 		args              []string
 		expectErr         bool
 		expectedErrMsg    string
-		expectedClassInfo *core.ClassDetails
+		expectedClassInfo *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			name:      "valid credit class",
 			args:      []string{classId},
 			expectErr: false,
-			expectedClassInfo: &core.ClassDetails{
+			expectedClassInfo: &core.ClassInfo{
 				Id:               classId,
 				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,

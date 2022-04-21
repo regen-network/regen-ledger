@@ -10,19 +10,19 @@ import (
 
 // ProjectInfo queries project info from the given project name.
 func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoRequest) (*core.QueryProjectInfoResponse, error) {
-	project, err := k.stateStore.ProjectInfoTable().GetById(ctx, request.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
 	admin := sdk.AccAddress(project.Admin)
 
-	class, err := k.stateStore.ClassInfoTable().Get(ctx, project.ClassKey)
+	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 	if err != nil {
 		return nil, err
 	}
 
-	info := core.ProjectDetails{
+	info := core.ProjectInfo{
 		Id:              project.Id,
 		Admin:           admin.String(),
 		ClassId:         class.Id,

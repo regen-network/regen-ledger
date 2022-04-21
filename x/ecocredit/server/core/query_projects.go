@@ -18,17 +18,17 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 		return nil, err
 	}
 
-	cInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
+	cInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.ProjectInfoTable().List(ctx, api.ProjectInfoClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	projects := make([]*core.ProjectDetails, 0)
+	projects := make([]*core.ProjectInfo, 0)
 	for it.Next() {
 		project, err := it.Value()
 		if err != nil {
@@ -37,12 +37,12 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 
 		admin := sdk.AccAddress(project.Admin)
 
-		class, err := k.stateStore.ClassInfoTable().Get(ctx, project.ClassKey)
+		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
 		if err != nil {
 			return nil, err
 		}
 
-		info := core.ProjectDetails{
+		info := core.ProjectInfo{
 			Id:              project.Id,
 			Admin:           admin.String(),
 			ClassId:         class.Id,

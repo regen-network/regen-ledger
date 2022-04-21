@@ -18,11 +18,11 @@ func TestQuery_Balances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	bKey1, err := s.stateStore.BatchInfoTable().InsertReturningID(s.ctx, &api.BatchInfo{BatchDenom: "C01-20200101-20220101-001"})
+	bKey1, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C01-20200101-20220101-001"})
 	assert.NilError(t, err)
-	bKey2, err := s.stateStore.BatchInfoTable().InsertReturningID(s.ctx, &api.BatchInfo{BatchDenom: "C02-20200101-20220101-001"})
+	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-20200101-20220101-001"})
 	assert.NilError(t, err)
-	bKey3, err := s.stateStore.BatchInfoTable().InsertReturningID(s.ctx, &api.BatchInfo{BatchDenom: "C03-20200101-20220101-001"})
+	bKey3, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C03-20200101-20220101-001"})
 	assert.NilError(t, err)
 
 	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, Tradable: "15", Retired: "15", Escrowed: "15"}
@@ -54,15 +54,15 @@ func TestQuery_Balances(t *testing.T) {
 	assert.Equal(t, 0, len(res.Balances))
 }
 
-func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceDetails, balance *api.BatchBalance) {
+func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceInfo, balance *api.BatchBalance) {
 	addr := sdk.AccAddress(balance.Address)
 
-	batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchKey)
+	batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
 	assert.NilError(t, err)
 
-	info := core.BatchBalanceDetails{
+	info := core.BatchBalanceInfo{
 		Address:    addr.String(),
-		BatchDenom: batch.BatchDenom,
+		BatchDenom: batch.Denom,
 		Tradable:   balance.Tradable,
 		Retired:    balance.Retired,
 		Escrowed:   balance.Escrowed,

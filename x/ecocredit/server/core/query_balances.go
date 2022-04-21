@@ -27,18 +27,18 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	balances := make([]*core.BatchBalanceDetails, 0, 8) // pre-allocate some cap space
+	balances := make([]*core.BatchBalanceInfo, 0, 8) // pre-allocate some cap space
 	for it.Next() {
 		balance, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchKey)
+		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
 
-		info := core.BatchBalanceDetails{
+		info := core.BatchBalanceInfo{
 			Address:    addr.String(),
-			BatchDenom: batch.BatchDenom,
+			BatchDenom: batch.Denom,
 			Tradable:   balance.Tradable,
 			Retired:    balance.Retired,
 			Escrowed:   balance.Escrowed,

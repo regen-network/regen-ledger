@@ -227,7 +227,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		rBasket := baskets[r.Intn(len(baskets))]
-		var classInfoList []core.ClassDetails
+		var classInfoList []core.ClassInfo
 		max := 0
 
 		var ownerAddr string

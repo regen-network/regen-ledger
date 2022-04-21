@@ -17,7 +17,6 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
@@ -130,7 +129,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectErr         bool
 		expectedErrMsg    string
 		respCode          uint32
-		expectedClassInfo *core.ClassDetails
+		expectedClassInfo *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -154,7 +153,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassDetails{
+			expectedClassInfo: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -164,7 +163,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer with from key-name",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom("node0"))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassDetails{
+			expectedClassInfo: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -176,7 +175,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassDetails{
+			expectedClassInfo: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -289,7 +288,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectErr         bool
 		errInTxResponse   bool
 		expectedErrMsg    string
-		expectedBatchInfo *api.BatchDetails
+		expectedBatchInfo *core.BatchInfo
 	}{
 		{
 			name:           "missing args",
@@ -336,7 +335,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &api.BatchDetails{
+			expectedBatchInfo: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},
@@ -350,7 +349,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &api.BatchDetails{
+			expectedBatchInfo: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},
@@ -365,7 +364,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &api.BatchDetails{
+			expectedBatchInfo: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},

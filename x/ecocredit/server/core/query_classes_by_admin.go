@@ -24,19 +24,19 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassInfoTable().List(ctx, api.ClassInfoAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassTable().List(ctx, api.ClassAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	classes := make([]*core.ClassDetails, 0)
+	classes := make([]*core.ClassInfo, 0)
 	for it.Next() {
 		class, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		info := core.ClassDetails{
+		info := core.ClassInfo{
 			Id:               class.Id,
 			Admin:            admin.String(),
 			Metadata:         class.Metadata,

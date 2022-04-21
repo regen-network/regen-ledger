@@ -17,21 +17,21 @@ func TestQuery_Projects(t *testing.T) {
 	s := setupBase(t)
 
 	// create a class and 2 projects from it
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err)
-	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	err = s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  "P01",
 		ClassKey:            1,
 		ProjectJurisdiction: "US-CA",
 		Metadata:            "",
 	})
 	assert.NilError(t, err)
-	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	err = s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  "P02",
 		ClassKey:            1,
 		ProjectJurisdiction: "US-CA",

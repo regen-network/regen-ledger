@@ -18,12 +18,12 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassInfoTable().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassTable().List(ctx, &api.ClassPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	classes := make([]*core.ClassDetails, 0)
+	classes := make([]*core.ClassInfo, 0)
 	for it.Next() {
 		class, err := it.Value()
 		if err != nil {
@@ -32,7 +32,7 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 
 		admin := sdk.AccAddress(class.Admin)
 
-		info := core.ClassDetails{
+		info := core.ClassInfo{
 			Id:               class.Id,
 			Admin:            admin.String(),
 			Metadata:         class.Metadata,

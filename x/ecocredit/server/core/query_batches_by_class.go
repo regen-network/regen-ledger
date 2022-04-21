@@ -19,18 +19,18 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 		return nil, err
 	}
 
-	class, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
+	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
 	// we put a "-" after the class name to avoid including class names outside of the query (i.e. a query for C01 could technically include C011 otherwise).
-	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoBatchDenomIndexKey{}.WithBatchDenom(class.Id+"-"), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchDenomIndexKey{}.WithDenom(class.Id+"-"), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	batches := make([]*core.BatchDetails, 0, 10)
+	batches := make([]*core.BatchInfo, 0, 10)
 	for it.Next() {
 		batch, err := it.Value()
 		if err != nil {
@@ -39,15 +39,15 @@ func (k Keeper) BatchesByClass(ctx context.Context, request *core.QueryBatchesBy
 
 		issuer := sdk.AccAddress(batch.Issuer)
 
-		project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectKey)
+		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
 			return nil, err
 		}
 
-		info := core.BatchDetails{
+		info := core.BatchInfo{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Id,
-			BatchDenom:   batch.BatchDenom,
+			BatchDenom:   batch.Denom,
 			Metadata:     batch.Metadata,
 			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
 			EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
