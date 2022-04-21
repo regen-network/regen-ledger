@@ -12,6 +12,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	val2 := s.network.Validators[1]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
 
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
@@ -20,7 +21,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	testCases := []struct {
 		name           string
@@ -47,7 +48,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 			name:           "class not found",
 			args:           []string{"Z100"},
 			expectErr:      true,
-			expectedErrMsg: "class not found",
+			expectedErrMsg: "not found",
 		},
 	}
 
@@ -56,10 +57,10 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 			cmd := coreclient.QueryClassIssuersCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
-				s.Require().Error(err)
-				s.Require().Contains(out.String(), tc.expectedErrMsg)
+				require.Error(err)
+				require.Contains(out.String(), tc.expectedErrMsg)
 			} else {
-				s.Require().NoError(err, out.String())
+				require.NoError(err, out.String())
 			}
 		})
 	}
