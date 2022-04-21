@@ -1,11 +1,13 @@
 package testsuite
 
 import (
-	"encoding/base64"
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -14,16 +16,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/rand"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 type IntegrationTestSuite struct {
@@ -32,33 +37,16 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	testAccount sdk.AccAddress
-	classInfo   *ecocredit.ClassInfo
-	batchInfo   *ecocredit.BatchInfo
-	projectID   string
-	sellOrders  []*ecocredit.SellOrder
+	addr sdk.AccAddress
 }
 
 const (
-	validCreditType = "carbon"
-	validMetadata   = "AQ=="
-	classId         = "C01"
-	batchDenom      = "C01-20210101-20210201-001"
+	validCreditTypeAbbrev = "C"
+	validMetadata         = "hi"
 )
 
-var validMetadataBytes = []byte{0x1}
-
 func RunCLITests(t *testing.T, cfg network.Config) {
-	// TODO: uncomment after CLI v1 integration https://github.com/regen-network/regen-ledger/issues/876
-	// suite.Run(t, NewIntegrationTestSuite(cfg))
-
-	// setup another cfg for testing ecocredit enabled class creators list.
-	// genesisState := ecocredit.DefaultGenesisState()
-	// genesisState.Params.AllowlistEnabled = true
-	// bz, err := cfg.Codec.MarshalJSON(genesisState)
-	// require.NoError(t, err)
-	// cfg.GenesisState[ecocredit.ModuleName] = bz
-	// suite.Run(t, NewAllowListEnabledTestSuite(cfg))
+	suite.Run(t, NewIntegrationTestSuite(cfg))
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -66,7 +54,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 }
 
 // Write a MsgCreateBatch to a new temporary file and return the filename
-func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *ecocredit.MsgCreateBatch) string {
+func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch) string {
 	bytes, err := s.network.Validators[0].ClientCtx.Codec.MarshalJSON(msg)
 	s.Require().NoError(err)
 
@@ -90,172 +78,24 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	_, a1pub, a1 := testdata.KeyTestPubAddr()
-	val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
+	_, err = val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
+	s.Require().NoError(err)
 
+	// fund the test account
 	account := sdk.AccAddress(info.GetPubKey().Address())
 	for _, acc := range []sdk.AccAddress{account, a1} {
 		_, err = banktestutil.MsgSendExec(
 			val.ClientCtx,
 			val.Address,
 			acc,
-			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(20000000000000000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 			fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 			fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 		)
 		s.Require().NoError(err)
 	}
 
-	s.testAccount = account
-
-	var commonFlags = []string{
-		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	}
-
-	// Create a few credit classes
-	for i := 0; i < 4; i++ {
-		out, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.TxCreateClassCmd(),
-			append(
-				[]string{
-					val.Address.String(),
-					validCreditType,
-					validMetadata,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-				},
-				commonFlags...,
-			),
-		)
-
-		s.Require().NoError(err, out.String())
-		var txResp = sdk.TxResponse{}
-		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-		s.Require().Equal(uint32(0), txResp.Code, out.String())
-	}
-
-	// Store the first one in the test suite
-	s.classInfo = &ecocredit.ClassInfo{
-		ClassId:    classId,
-		Admin:      val.Address.String(),
-		Issuers:    []string{val.Address.String()},
-		CreditType: ecocredit.DefaultParams().CreditTypes[0],
-		Metadata:   validMetadataBytes,
-	}
-
-	// create project
-	s.projectID = "P01"
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.TxCreateProject(),
-		append(
-			[]string{
-				classId,
-				"GB",
-				validMetadata,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-				fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, s.projectID),
-			},
-			commonFlags...,
-		),
-	)
-	s.Require().NoError(err, out.String())
-
-	startDate, err := types.ParseDate("start date", "2021-01-01")
-	s.Require().NoError(err)
-	endDate, err := types.ParseDate("end date", "2021-02-01")
-	s.Require().NoError(err)
-
-	msgCreateBatch := ecocredit.MsgCreateBatch{
-		ProjectId: s.projectID,
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-			{
-				Recipient:          val.Address.String(),
-				TradableAmount:     "100",
-				RetiredAmount:      "0.000001",
-				RetirementLocation: "AB",
-			},
-		},
-		Metadata:  validMetadataBytes,
-		StartDate: &startDate,
-		EndDate:   &endDate,
-	}
-
-	// Write MsgCreateBatch to a temporary file
-	batchFile := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Create a few credit batches
-	for i := 0; i < 4; i++ {
-		out, err := cli.ExecTestCLICmd(val.ClientCtx, coreclient.TxCreateBatchCmd(),
-			append(
-				[]string{
-					batchFile,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-				},
-				commonFlags...,
-			),
-		)
-
-		s.Require().NoError(err, out.String())
-		txResp := sdk.TxResponse{}
-		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-		s.Require().Equal(uint32(0), txResp.Code, out.String())
-	}
-
-	// Store the first one in the test suite
-	s.batchInfo = &ecocredit.BatchInfo{
-		ProjectId:       s.projectID,
-		BatchDenom:      batchDenom,
-		TotalAmount:     "100.000001",
-		Metadata:        []byte{0x01},
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-	}
-
-	// Create a few sell orders
-	out, err = cli.ExecTestCLICmd(val.ClientCtx, marketplaceclient.TxSellCmd(),
-		append(
-			[]string{
-				"[" +
-					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
-					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
-					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}" +
-					"]",
-				makeFlagFrom(val.Address.String()),
-			},
-			commonFlags...,
-		),
-	)
-
-	s.Require().NoError(err, out.String())
-	txResp := sdk.TxResponse{}
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-	s.Require().Equal(uint32(0), txResp.Code, out.String())
-
-	s.sellOrders = []*ecocredit.SellOrder{
-		{
-			OrderId:           1,
-			Owner:             val.Address.String(),
-			BatchDenom:        batchDenom,
-			Quantity:          "1",
-			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-			DisableAutoRetire: false,
-		},
-		{
-			OrderId:           2,
-			Owner:             val.Address.String(),
-			BatchDenom:        batchDenom,
-			Quantity:          "1",
-			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-			DisableAutoRetire: false,
-		},
-		{
-			OrderId:           3,
-			Owner:             val.Address.String(),
-			BatchDenom:        batchDenom,
-			Quantity:          "1",
-			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-			DisableAutoRetire: false,
-		},
-	}
+	s.addr = account
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -279,8 +119,9 @@ func makeFlagFrom(from string) string {
 
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
-	val1 := s.network.Validators[1]
 	clientCtx := val0.ClientCtx
+	fee := core.DefaultParams().CreditClassFee[0]
+	feeStr := fee.String()
 
 	testCases := []struct {
 		name              string
@@ -288,153 +129,56 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectErr         bool
 		expectedErrMsg    string
 		respCode          uint32
-		expectedClassInfo *ecocredit.ClassInfo
+		expectedClassInfo *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 0",
+			expectedErrMsg: "accepts 4 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde", "abcde", "abcde"},
+			args:           []string{"abcde", "abcde", "abcde", "abcde", "abce"},
 			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 4",
+			expectedErrMsg: "accepts 4 arg(s), received 5",
 		},
 		{
-			name: "invalid issuer",
-			args: append(
-				[]string{
-					"abcde",
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
-		},
-		{
-			name: "invalid metadata",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					"=",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "metadata is malformed, proper base64 string is required",
-		},
-		{
-			name: "missing from flag",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-				},
-				s.commonTxFlags()...,
-			),
+			name:           "missing from flag",
+			args:           makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, s.commonTxFlags()...),
 			expectErr:      true,
 			expectedErrMsg: "required flag(s) \"from\" not set",
 		},
 		{
-			name: "invalid credit type",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					"caarbon",
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      false,
-			expectedErrMsg: "caarbon is not a valid credit type",
-			respCode:       29,
-		},
-		{
-			name: "single issuer",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
+			name:      "single issuer",
+			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()))...),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 		{
-			name: "single issuer with from key-name",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom("node0"),
-				},
-				s.commonTxFlags()...,
-			),
+			name:      "single issuer with from key-name",
+			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom("node0"))...),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
-			},
-		},
-		{
-			name: "multiple issuers",
-			args: append(
-				[]string{
-					strings.Join(
-						[]string{
-							val0.Address.String(),
-							val1.Address.String(),
-						},
-						",",
-					),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String(), val1.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 		{
 			name: "with amino-json",
-			args: append(
-				[]string{
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-				},
-				s.commonTxFlags()...,
-			),
+			args: makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr,
+				append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON))...),
 			expectErr: false,
-			expectedClassInfo: &ecocredit.ClassInfo{
-				Admin:    val0.Address.String(),
-				Issuers:  []string{val0.Address.String()},
-				Metadata: []byte{0x1},
+			expectedClassInfo: &core.ClassInfo{
+				Admin:            val0.Address,
+				Metadata:         validMetadata,
+				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
 		},
 	}
@@ -459,26 +203,25 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.respCode, res.Code)
+				s.Require().Equal(tc.respCode, res.Code, "got %d wanted %d\nresponse: %v", res.Code, tc.respCode, res)
 				if tc.respCode == 0 {
 					classIdFound := false
 					for _, e := range res.Logs[0].Events {
-						if e.Type == proto.MessageName(&ecocredit.EventCreateClass{}) {
+						if e.Type == proto.MessageName(&core.EventCreateClass{}) {
 							for _, attr := range e.Attributes {
 								if attr.Key == "class_id" {
 									classIdFound = true
 									classId := strings.Trim(attr.Value, "\"")
-
 									queryCmd := coreclient.QueryClassInfoCmd()
 									queryArgs := []string{classId, flagOutputJSON}
 									queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 									s.Require().NoError(err, queryOut.String())
-									var queryRes ecocredit.QueryClassInfoResponse
+									var queryRes core.QueryClassInfoResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
 									s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Info.Admin)
-									s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
 									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
+									s.Require().Equal(tc.expectedClassInfo.CreditTypeAbbrev, queryRes.Info.CreditTypeAbbrev)
 								}
 							}
 						}
@@ -495,6 +238,23 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
+	fee := core.DefaultParams().CreditClassFee[0]
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val.Address.String(),
+		Issuers:          []string{val.Address.String()},
+		Metadata:         "META",
+		CreditTypeAbbrev: "C",
+		Fee:              &fee,
+	})
+	s.Require().NoError(err)
+	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+		Issuer:              val.Address.String(),
+		ClassId:             classId,
+		Metadata:            "META2",
+		ProjectJurisdiction: "US-OR",
+		ProjectId:           "FBI",
+	})
+	s.Require().NoError(err)
 
 	// Write some invalid JSON to a file
 	invalidJsonFile := testutil.WriteToNewTempFile(s.T(), "{asdljdfklfklksdflk}")
@@ -504,57 +264,23 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	s.Require().NoError(err)
 	endDate, err := types.ParseDate("end date", "2021-02-01")
 	s.Require().NoError(err)
-
-	msgCreateBatch := ecocredit.MsgCreateBatch{
-		ProjectId: s.projectID,
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
+	msgCreateBatch := core.MsgCreateBatch{
+		Issuer:    val.Address.String(),
+		ProjectId: projectId,
+		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:          s.network.Validators[1].Address.String(),
-				TradableAmount:     "100",
-				RetiredAmount:      "0.000001",
-				RetirementLocation: "AB",
+				Recipient:              s.network.Validators[1].Address.String(),
+				TradableAmount:         "100",
+				RetiredAmount:          "0.000001",
+				RetirementJurisdiction: "AB",
 			},
 		},
-		Metadata:  validMetadataBytes,
+		Metadata:  validMetadata,
 		StartDate: &startDate,
 		EndDate:   &endDate,
 	}
 
 	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with invalid project
-	msgCreateBatch.ProjectId = "abcde-"
-	invalidProjectIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with missing start date
-	msgCreateBatch.ProjectId = s.projectID
-	msgCreateBatch.StartDate = nil
-	missingStartDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with missing end date
-	msgCreateBatch.StartDate = &startDate
-	msgCreateBatch.EndDate = nil
-	missingEndDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with invalid issuance recipient
-	msgCreateBatch.Issuance[0].Recipient = "abcde"
-	msgCreateBatch.EndDate = &endDate
-	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with invalid issuance tradable amount
-	msgCreateBatch.Issuance[0].Recipient = s.network.Validators[1].Address.String()
-	msgCreateBatch.Issuance[0].TradableAmount = "abcde"
-	invalidTradableAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with invalid issuance retired amount
-	msgCreateBatch.Issuance[0].TradableAmount = "100"
-	msgCreateBatch.Issuance[0].RetiredAmount = "abcde"
-	invalidRetiredAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
-	// Write batch with invalid issuance retirement location
-	msgCreateBatch.Issuance[0].RetiredAmount = "0.000001"
-	msgCreateBatch.Issuance[0].RetirementLocation = "abcde"
-	invalidRetirementLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	testCases := []struct {
 		name              string
@@ -562,7 +288,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectErr         bool
 		errInTxResponse   bool
 		expectedErrMsg    string
-		expectedBatchInfo *ecocredit.BatchInfo
+		expectedBatchInfo *core.BatchInfo
 	}{
 		{
 			name:           "missing args",
@@ -589,91 +315,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			expectedErrMsg: "invalid character",
 		},
 		{
-			name: "invalid project id",
-			args: append(
-				[]string{
-					invalidProjectIdJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:       true,
-			errInTxResponse: false,
-			expectedErrMsg:  "invalid project id",
-		},
-		{
-			name: "missing start date",
-			args: append(
-				[]string{
-					missingStartDateJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "must provide a start date for the credit batch: invalid request",
-		},
-		{
-			name: "missing end date",
-			args: append(
-				[]string{
-					missingEndDateJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
-		},
-		{
-			name: "invalid issuance recipient",
-			args: append(
-				[]string{
-					invalidRecipientJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
-		},
-		{
-			name: "invalid issuance tradable amount",
-			args: append(
-				[]string{
-					invalidTradableAmountJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid decimal string",
-		},
-		{
-			name: "invalid issuance retired amount",
-			args: append(
-				[]string{
-					invalidRetiredAmountJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid decimal string",
-		},
-		{
-			name: "invalid issuance retirement location",
-			args: append(
-				[]string{
-					invalidRetirementLocationJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "Invalid location: abcde",
-		},
-		{
 			name: "missing from flag",
 			args: append(
 				[]string{
@@ -694,11 +335,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &ecocredit.BatchInfo{
-				ProjectId:       s.projectID,
-				TotalAmount:     "100.000001",
-				Metadata:        []byte{0x1},
-				AmountCancelled: "0",
+			expectedBatchInfo: &core.BatchInfo{
+				Issuer: val.Address,
 			},
 		},
 		{
@@ -711,11 +349,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &ecocredit.BatchInfo{
-				ProjectId:       s.projectID,
-				TotalAmount:     "100.000001",
-				Metadata:        []byte{0x1},
-				AmountCancelled: "0",
+			expectedBatchInfo: &core.BatchInfo{
+				Issuer: val.Address,
 			},
 		},
 		{
@@ -729,11 +364,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &ecocredit.BatchInfo{
-				ProjectId:       s.projectID,
-				TotalAmount:     "100.000001",
-				Metadata:        []byte{0x1},
-				AmountCancelled: "0",
+			expectedBatchInfo: &core.BatchInfo{
+				Issuer: val.Address,
 			},
 		},
 	}
@@ -768,7 +400,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 
 				batchDenomFound := false
 				for _, e := range res.Logs[0].Events {
-					if e.Type == proto.MessageName(&ecocredit.EventCreateBatch{}) {
+					if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
 						for _, attr := range e.Attributes {
 							if attr.Key == "batch_denom" {
 								batchDenomFound = true
@@ -778,13 +410,10 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 								queryArgs := []string{batchDenom, flagOutputJSON}
 								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 								s.Require().NoError(err, queryOut.String())
-								var queryRes ecocredit.QueryBatchInfoResponse
+								var queryRes core.QueryBatchInfoResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
+								s.Require().Equal(tc.expectedBatchInfo.Issuer, queryRes.Info.Issuer)
 
-								s.Require().Equal(tc.expectedBatchInfo.ProjectId, queryRes.Info.ProjectId)
-								s.Require().Equal(tc.expectedBatchInfo.TotalAmount, queryRes.Info.TotalAmount)
-								s.Require().Equal(tc.expectedBatchInfo.Metadata, queryRes.Info.Metadata)
-								s.Require().Equal(tc.expectedBatchInfo.AmountCancelled, queryRes.Info.AmountCancelled)
 							}
 						}
 					}
@@ -799,12 +428,9 @@ func (s *IntegrationTestSuite) TestTxSend() {
 	val0 := s.network.Validators[0]
 	val1 := s.network.Validators[1]
 	clientCtx := val0.ClientCtx
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val0.Address.String())
 
-	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := "[{batch_denom: abcde, tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]"
-	invalidTradableAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"abcde\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidRetiredAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"abcde\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidRetirementLocationCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"abcde\"}]", s.batchInfo.BatchDenom)
+	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_jurisdiction: \"AB-CD\"}]", batchDenom)
 
 	testCases := []struct {
 		name            string
@@ -824,71 +450,6 @@ func (s *IntegrationTestSuite) TestTxSend() {
 			args:           []string{"abcde", "abcde", "abcde"},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
-		},
-		{
-			name: "invalid recipient",
-			args: append(
-				[]string{
-					"abcde",
-					validCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
-		},
-		{
-			name: "invalid batch denom",
-			args: append(
-				[]string{
-					val1.Address.String(),
-					invalidBatchDenomCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid denom",
-		},
-		{
-			name: "invalid tradable amount",
-			args: append(
-				[]string{
-					val1.Address.String(),
-					invalidTradableAmountCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid decimal string",
-		},
-		{
-			name: "invalid retired amount",
-			args: append(
-				[]string{
-					val1.Address.String(),
-					invalidRetiredAmountCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid decimal string",
-		},
-		{
-			name: "invalid retirement location",
-			args: append(
-				[]string{
-					val1.Address.String(),
-					invalidRetirementLocationCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "Invalid location: abcde",
 		},
 		{
 			name: "missing from flag",
@@ -964,11 +525,11 @@ func (s *IntegrationTestSuite) TestTxSend() {
 
 func (s *IntegrationTestSuite) TestTxRetire() {
 	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 
-	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", amount: \"5\"}]", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := "[{batch_denom: abcde, amount: \"5\"}]"
-	invalidAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", amount: \"abcde\"}]", s.batchInfo.BatchDenom)
+	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", amount: \"5\"}]", batchDenom)
 
 	testCases := []struct {
 		name            string
@@ -988,45 +549,6 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 			args:           []string{"abcde", "abcde", "abcde"},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
-		},
-		{
-			name: "invalid batch denom",
-			args: append(
-				[]string{
-					invalidBatchDenomCredits,
-					"AB-CD 12345",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid denom",
-		},
-		{
-			name: "invalid amount",
-			args: append(
-				[]string{
-					invalidAmountCredits,
-					"AB-CD 12345",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid decimal string",
-		},
-		{
-			name: "invalid retirement location",
-			args: append(
-				[]string{
-					validCredits,
-					"abcde",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "Invalid location: abcde",
 		},
 		{
 			name: "missing from flag",
@@ -1102,11 +624,11 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 
 func (s *IntegrationTestSuite) TestTxCancel() {
 	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 
-	validCredits := fmt.Sprintf("5 %s", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := "5 abcde"
-	invalidAmountCredits := fmt.Sprintf("abcde %s", s.batchInfo.BatchDenom)
+	validCredits := fmt.Sprintf("5 %s", batchDenom)
 
 	testCases := []struct {
 		name           string
@@ -1121,28 +643,10 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
-			name: "invalid batch denom",
-			args: append(
-				[]string{
-					invalidBatchDenomCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
+			name:           "too many args",
+			args:           []string{"foo", "bar"},
 			expectErr:      true,
-			expectedErrMsg: "invalid credit expression",
-		},
-		{
-			name: "invalid amount",
-			args: append(
-				[]string{
-					invalidAmountCredits,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "invalid credit expression",
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
 			name: "missing from flag",
@@ -1190,7 +694,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 				}
 			}()
 
-			cmd := client.TxCancelCmd()
+			cmd := coreclient.TxCancelCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -1206,12 +710,21 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
+func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	// use this classId as to not corrupt other tests
-	const classId = "C02"
 	_, _, a1 := testdata.KeyTestPubAddr()
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
+
+	fee := core.DefaultParams().CreditClassFee[0]
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val0.Address.String(),
+		Issuers:          []string{val0.Address.String()},
+		Metadata:         "META",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &fee,
+	})
+	s.Require().NoError(err)
 
 	testCases := []struct {
 		name      string
@@ -1262,24 +775,30 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 				query := coreclient.QueryClassInfoCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res ecocredit.QueryClassInfoResponse
+				var res core.QueryClassInfoResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
 				// check the admin has been changed
-				s.Require().Equal(res.Info.Admin, tc.args[1])
+				s.Require().Equal(sdk.AccAddress(res.Info.Admin).String(), tc.args[1])
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
-	// use C03 here as C02 will be corrupted by the admin change test
-	const classId = "C03"
-	newMetaData := base64.StdEncoding.EncodeToString([]byte("hello"))
+func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
+	newMetaData := "hello"
 	_, _, a1 := testdata.KeyTestPubAddr()
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val0.Address.String(),
+		Issuers:          []string{val0.Address.String()},
+		Metadata:         "META",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	s.Require().NoError(err)
 
 	testCases := []struct {
 		name      string
@@ -1303,13 +822,7 @@ func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
 			name:      "invalid request: no metadata",
 			args:      append([]string{classId, "", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
 			expErr:    true,
-			expErrMsg: "base64_metadata is required",
-		},
-		{
-			name:      "invalid request: bad metadata",
-			args:      append([]string{classId, "test", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
-			expErr:    true,
-			expErrMsg: "metadata is malformed, proper base64 string is required",
+			expErrMsg: "metadata is required",
 		},
 		{
 			name:   "valid request",
@@ -1336,59 +849,69 @@ func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
 				query := coreclient.QueryClassInfoCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res ecocredit.QueryClassInfoResponse
+				var res core.QueryClassInfoResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
 				// check metadata changed
-				b, err := base64.StdEncoding.DecodeString(newMetaData)
 				s.Require().NoError(err)
-				s.Require().Equal(res.Info.Metadata, b)
+				s.Require().Equal(res.Info.Metadata, tc.args[1])
 			}
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
-	const classId = "C03"
 	_, _, a2 := testdata.KeyTestPubAddr()
-	newIssuers := []string{s.testAccount.String(), a2.String()}
+	_, _, a3 := testdata.KeyTestPubAddr()
+	newIssuers := []string{a3.String(), a2.String()}
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val0.Address.String(),
+		Issuers:          []string{val0.Address.String()},
+		Metadata:         "META",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	s.Require().NoError(err)
+
+	makeArgs := func(add, remove []string, classId, from string) []string {
+		args := []string{classId}
+		if len(add) > 0 {
+			args = append(args, fmt.Sprintf("--%s=%s", coreclient.FlagAddIssuers, strings.Join(add, ",")))
+		}
+		if len(remove) > 0 {
+			args = append(args, fmt.Sprintf("--%s=%s", coreclient.FlagRemoveIssuers, strings.Join(remove, ",")))
+		}
+		args = append(args, makeFlagFrom(from))
+		return append(args, s.commonTxFlags()...)
+	}
 
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
+		name       string
+		args       []string
+		expErr     bool
+		expErrMsg  string
+		expIssuers []string
 	}{
 		{
-			name:      "invalid request: not enough args",
-			args:      append([]string{makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
-			expErr:    true,
-			expErrMsg: "accepts 2 arg(s), received 0",
-		},
-		{
 			name:      "invalid request: no id",
-			args:      append([]string{"", s.testAccount.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			args:      makeArgs(nil, nil, "", val0.Address.String()),
 			expErr:    true,
 			expErrMsg: "class-id is required",
 		},
 		{
-			name:      "invalid request: bad issuer addresses",
-			args:      append([]string{classId, "hello,world", makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
-			expErr:    true,
-			expErrMsg: "invalid address",
+			name:       "valid add request",
+			args:       makeArgs(newIssuers, nil, classId, val0.Address.String()),
+			expErr:     false,
+			expIssuers: newIssuers,
 		},
 		{
-			name:   "valid request",
-			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
-			expErr: false,
-		},
-		{
-			name:   "valid test: from key-name",
-			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom("node0")}, s.commonTxFlags()...),
-			expErr: false,
+			name:       "valid remove request",
+			args:       makeArgs(nil, newIssuers, classId, val0.Address.String()),
+			expErr:     false,
+			expIssuers: []string{val0.Address.String()},
 		},
 	}
 
@@ -1406,13 +929,11 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 				query := coreclient.QueryClassInfoCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res ecocredit.QueryClassInfoResponse
+				var res core.QueryClassInfoResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
-				// check issuers list was changed
-				s.Require().NoError(err)
-				s.Require().Equal(res.Info.Issuers, newIssuers)
+				// TODO: check issuers list was changed when we have that query available https://github.com/regen-network/regen-ledger/issues/1025
 			}
 		})
 	}
@@ -1420,18 +941,18 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 
 func (s *IntegrationTestSuite) TestTxSell() {
 	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	expiration, err := types.ParseDate("expiration", "2024-01-01")
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name        string
-		args        []string
-		sellOrderId string
-		expErr      bool
-		expErrMsg   string
-		expOrder    *ecocredit.SellOrder
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrder  *marketplace.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -1446,94 +967,19 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expErrMsg: "accepts 1 arg(s), received 2",
 		},
 		{
-			name: "missing batch denom",
-			args: append(
-				[]string{
-					"[{quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid denom",
-		},
-		{
-			name: "invalid batch denom",
-			args: append(
-				[]string{
-					"[{batch_denom: \"foo\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid denom",
-		},
-		{
-			name: "missing quantity",
-			args: append(
-				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", ask_price: \"100regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "invalid quantity",
-			args: append(
-				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"foo\", ask_price: \"100regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "missing ask price",
-			args: append(
-				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
-			name: "invalid ask price",
-			args: append(
-				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"foo\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
 			name: "valid",
 			args: append(
 				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
 			),
-			sellOrderId: "4",
-			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           4,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
+			expErr: false,
+			expOrder: &marketplace.SellOrder{
+				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+				AskPrice:          "100",
 				DisableAutoRetire: false,
 			},
 		},
@@ -1541,21 +987,18 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			name: "valid with expiration",
 			args: append(
 				[]string{
-					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]",
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
 			),
-			sellOrderId: "5",
-			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           5,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
+			expErr: false,
+			expOrder: &marketplace.SellOrder{
+				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+				AskPrice:          "100",
 				DisableAutoRetire: false,
-				Expiration:        &expiration,
+				Expiration:        types.ProtobufToGogoTimestamp(timestamppb.New(expiration)),
 			},
 		},
 	}
@@ -1563,28 +1006,46 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxSellCmd()
-			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().True(len(res.Logs) > 0)
 
-				// query sell order
-				query := marketplaceclient.QuerySellOrderCmd()
-				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{
-					tc.sellOrderId,
-					flagOutputJSON,
-				})
-				s.Require().NoError(err, out.String())
-
-				// unmarshal query response
-				var res ecocredit.QuerySellOrderResponse
-				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
-				s.Require().NoError(err)
-
-				// verify expected order
-				s.Require().Equal(tc.expOrder, res.SellOrder)
+				found := false
+				for _, e := range res.Logs[0].Events {
+					if e.Type == proto.MessageName(&marketplace.EventSell{}) {
+						for _, attr := range e.Attributes {
+							if attr.Key == "order_id" {
+								found = true
+								orderIdStr := strings.Trim(attr.Value, "\"")
+								_, err := strconv.ParseUint(orderIdStr, 10, 64)
+								s.Require().NoError(err)
+								queryCmd := marketplaceclient.QuerySellOrderCmd()
+								queryArgs := []string{orderIdStr, flagOutputJSON}
+								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
+								s.Require().NoError(err, queryOut.String())
+								var queryRes marketplace.QuerySellOrderResponse
+								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
+								s.Require().Equal(queryRes.SellOrder.Quantity, tc.expOrder.Quantity)
+								s.Require().Equal(tc.expOrder.DisableAutoRetire, queryRes.SellOrder.DisableAutoRetire)
+								s.Require().True(tc.expOrder.Expiration.Equal(queryRes.SellOrder.Expiration))
+								break
+							}
+							if found {
+								break
+							}
+						}
+					}
+					if found {
+						break
+					}
+				}
+				s.Require().True(found)
 			}
 		})
 	}
@@ -1592,18 +1053,45 @@ func (s *IntegrationTestSuite) TestTxSell() {
 
 func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-
-	expiration, err := types.ParseDate("expiration", "2026-01-01")
+	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
 	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+		},
+	})
+	s.Require().NoError(err)
+	orderId := orderIds[0]
 
+	makeArgs := func(msg *marketplace.MsgUpdateSellOrders) []string {
+		updates := make([]string, len(msg.Updates))
+		for i, u := range msg.Updates {
+			updates[i] = fmt.Sprintf(`{sell_order_id: %d, new_quantity: %s, new_ask_price: %v, disable_auto_retire: %t, new_expiration: %s}`, u.SellOrderId, u.NewQuantity, u.NewAskPrice, u.DisableAutoRetire, formatTime(u.NewExpiration))
+		}
+		updatesStr := strings.Join(updates, ",")
+		updateArg := fmt.Sprintf(`[%s]`, updatesStr)
+		args := []string{updateArg, makeFlagFrom(msg.Owner)}
+		return append(args, s.commonTxFlags()...)
+	}
+
+	newAsk := sdk.NewInt64Coin(validAskDenom, 3)
+	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
+	gogoNewExpiration, err := gogotypes.TimestampProto(newExpiration)
+	s.Require().NoError(err)
+	s.Require().NoError(err)
 	testCases := []struct {
 		name        string
 		args        []string
 		sellOrderId string
 		expErr      bool
 		expErrMsg   string
-		expOrder    *ecocredit.SellOrder
+		expOrder    *marketplace.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -1618,116 +1106,22 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 			expErrMsg: "accepts 1 arg(s), received 2",
 		},
 		{
-			name: "missing sell order",
-			args: append(
-				[]string{
-					"[{new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid sell order",
-		},
-		{
-			name: "invalid sell order",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"foo\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid sell order",
-		},
-		{
-			name: "missing new quantity",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "invalid new quantity",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"foo\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "quantity must be positive decimal",
-		},
-		{
-			name: "missing new ask price",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
-			name: "invalid new ask price",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"foo\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expErr:    true,
-			expErrMsg: "invalid decimal coin expression",
-		},
-		{
 			name: "valid",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
-					makeFlagFrom(val0.Address.String()),
+			args: makeArgs(&marketplace.MsgUpdateSellOrders{
+				Owner: valAddrStr,
+				Updates: []*marketplace.MsgUpdateSellOrders_Update{
+					{SellOrderId: orderId, NewQuantity: "9.99", NewAskPrice: &newAsk, DisableAutoRetire: false, NewExpiration: &newExpiration},
 				},
-				s.commonTxFlags()...,
-			),
-			sellOrderId: "4",
+			}),
+			sellOrderId: fmt.Sprintf("%d", orderId),
 			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           4,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
-				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
+			expOrder: &marketplace.SellOrder{
+				Id:                orderId,
+				Seller:            val0.Address,
+				Quantity:          "9.99",
+				AskPrice:          "3",
 				DisableAutoRetire: false,
-			},
-		},
-		{
-			name: "valid with expiration",
-			args: append(
-				[]string{
-					"[{sell_order_id: \"5\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false, new_expiration: \"2026-01-01\"}]",
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			sellOrderId: "5",
-			expErr:      false,
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           5,
-				Owner:             val0.Address.String(),
-				BatchDenom:        batchDenom,
-				Quantity:          "5",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
-				DisableAutoRetire: false,
-				Expiration:        &expiration,
+				Expiration:        gogoNewExpiration,
 			},
 		},
 	}
@@ -1735,28 +1129,22 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := marketplaceclient.TxUpdateSellOrdersCmd()
-			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), tc.expErrMsg)
 			} else {
-				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code, res)
 
 				// query sell order
-				query := marketplaceclient.QuerySellOrderCmd()
-				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{
-					tc.sellOrderId,
-					flagOutputJSON,
-				})
-				s.Require().NoError(err, out.String())
-
-				// unmarshal query response
-				var res ecocredit.QuerySellOrderResponse
-				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
-				s.Require().NoError(err)
-
-				// verify expected order
-				s.Require().Equal(tc.expOrder, res.SellOrder)
+				queryCmd := marketplaceclient.QuerySellOrderCmd()
+				queryArgs := []string{tc.sellOrderId, flagOutputJSON}
+				queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
+				s.Require().NoError(err, queryOut.String())
+				var queryRes marketplace.QuerySellOrderResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 			}
 		})
 	}
@@ -1766,16 +1154,20 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 	require := s.Require()
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val0.Address.String(),
+		Issuers:          []string{val0.Address.String()},
+		Metadata:         "hi",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	s.Require().NoError(err)
 
-	query := coreclient.QueryClassesCmd()
-	out, err := cli.ExecTestCLICmd(clientCtx, query, []string{flagOutputJSON})
-	require.NoError(err)
-
-	// unmarshal query response
-	var res ecocredit.QueryClassesResponse
-	err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
-	require.NoError(err)
-	require.Greater(len(res.Classes), 0)
+	makeArgs := func(msg *core.MsgCreateProject) []string {
+		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args = append(args, makeFlagFrom(msg.Issuer))
+		return append(args, s.commonTxFlags()...)
+	}
 
 	testCases := []struct {
 		name      string
@@ -1790,59 +1182,33 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			"accepts 3 arg(s), received 0",
 		},
 		{
-			"missing project-location",
-			[]string{"C01"},
+			"too many args",
+			[]string{"C01", "foo", "bar", "baz"},
 			true,
-			"accepts 3 arg(s), received 1",
-		},
-		{
-			"missing metadata",
-			[]string{"C01", "AQ"},
-			true,
-			"accepts 3 arg(s), received 2",
-		},
-		{
-			"invalid metadata",
-			[]string{"C01", "AQ", "invalid-metadata", makeFlagFrom(val0.Address.String())},
-			true,
-			"metadata is malformed",
-		},
-		{
-			"invalid project location",
-			[]string{"C01", "abcde", "AQ==", makeFlagFrom(val0.Address.String())},
-			true,
-			"Invalid location: abcde",
+			"accepts 3 arg(s), received 4",
 		},
 		{
 			"valid tx without project id",
-			append(
-				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String())},
-				s.commonTxFlags()...,
-			),
+			makeArgs(&core.MsgCreateProject{
+				Issuer:              val0.Address.String(),
+				ClassId:             classId,
+				Metadata:            "hi",
+				ProjectJurisdiction: "US-OR",
+			}),
 			false,
 			"",
 		},
 		{
 			"valid tx with project id",
-			append(
-				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String()),
-					fmt.Sprintf("--project-id=%s", "C01P01"),
-				},
-				s.commonTxFlags()...,
-			),
+			makeArgs(&core.MsgCreateProject{
+				Issuer:              val0.Address.String(),
+				ClassId:             classId,
+				Metadata:            "hi",
+				ProjectJurisdiction: "US-OR",
+				ProjectId:           rand.Str(3),
+			}),
 			false,
 			"",
-		},
-		{
-			"invalid project id format",
-			append(
-				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String()),
-					fmt.Sprintf("--project-id=%s", "C@a"),
-				},
-				s.commonTxFlags()...,
-			),
-			true,
-			"invalid project id",
 		},
 	}
 
@@ -1855,11 +1221,188 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				require.Contains(err.Error(), tc.expErrMsg)
 			} else {
 				require.NoError(err)
-
 				var res sdk.TxResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(uint32(0), res.Code)
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
+	args := makeCreateClassArgs(msg.Issuers, msg.CreditTypeAbbrev, msg.Metadata, msg.Fee.String(), append(s.commonTxFlags(), makeFlagFrom(msg.Admin))...)
+	cmd := coreclient.TxCreateClassCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	var res sdk.TxResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	for _, e := range res.Logs[0].Events {
+		if e.Type == proto.MessageName(&core.EventCreateClass{}) {
+			for _, attr := range e.Attributes {
+				if attr.Key == "class_id" {
+					return strings.Trim(attr.Value, "\""), nil
+				}
+			}
+		}
+	}
+	return "", fmt.Errorf("class_id not found")
+}
+
+func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
+	cmd := coreclient.TxCreateProject()
+	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
+		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		return append(args, flags...)
+	}
+
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, makeCreateProjectArgs(msg, append(s.commonTxFlags(), makeFlagFrom(msg.Issuer))...))
+	s.Require().NoError(err)
+	var res sdk.TxResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	for _, e := range res.Logs[0].Events {
+		if e.Type == proto.MessageName(&core.EventCreateProject{}) {
+			for _, attr := range e.Attributes {
+				if attr.Key == "project_id" {
+					return strings.Trim(attr.Value, "\""), nil
+				}
+			}
+		}
+	}
+	return "", fmt.Errorf("project_id not found")
+}
+
+func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.MsgCreateBatch) (string, error) {
+	batchJson := s.writeMsgCreateBatchJSON(msg)
+	args := []string{batchJson, makeFlagFrom(msg.Issuer)}
+	args = append(args, s.commonTxFlags()...)
+	cmd := coreclient.TxCreateBatchCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	var res sdk.TxResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	for _, e := range res.Logs[0].Events {
+		if e.Type == proto.MessageName(&core.EventCreateBatch{}) {
+			for _, attr := range e.Attributes {
+				if attr.Key == "batch_denom" {
+					return strings.Trim(attr.Value, "\""), nil
+				}
+			}
+		}
+	}
+	return "", fmt.Errorf("could not find batch_denom")
+}
+
+func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) ([]uint64, error) {
+	cmd := marketplaceclient.TxSellCmd()
+
+	// order format closure
+	formatOrder := func(o *marketplace.MsgSell_Order) string {
+		return fmt.Sprintf(`{batch_denom: %s, quantity: %s, ask_price: %v, disable_auto_retire: %t, expiration: %s}`,
+			o.BatchDenom, o.Quantity, o.AskPrice, o.DisableAutoRetire, formatTime(o.Expiration))
+	}
+
+	// go through all orders and format them
+	orders := make([]string, len(msg.Orders))
+	for i, o := range msg.Orders {
+		orders[i] = formatOrder(o)
+	}
+
+	// merge args
+	ordersStr := strings.Join(orders, ",")
+	orderArg := fmt.Sprintf(`[%s]`, ordersStr)
+	args := []string{orderArg, makeFlagFrom(msg.Owner)}
+	args = append(args, s.commonTxFlags()...)
+
+	// execute command
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+
+	// extract order id's via response output
+	var res sdk.TxResponse
+	s.Require().Equal(uint32(0), res.Code)
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().True(len(res.Logs) > 0)
+	orderIds := make([]uint64, 0, len(msg.Orders))
+	for _, e := range res.Logs[0].Events {
+		if e.Type == proto.MessageName(&marketplace.EventSell{}) {
+			for _, attr := range e.Attributes {
+				if attr.Key == "order_id" {
+					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
+					s.Require().NoError(err)
+					orderIds = append(orderIds, orderId)
+				}
+			}
+		}
+	}
+	if len(orderIds) == 0 {
+		return nil, fmt.Errorf("no order ids found")
+	}
+	return orderIds, nil
+}
+
+func formatTime(t *time.Time) string {
+	var monthStr string
+	m := t.Month()
+	if m < 10 {
+		monthStr = fmt.Sprintf("0%d", m)
+	} else {
+		monthStr = fmt.Sprintf("%d", m)
+	}
+	return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
+}
+
+// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            addr,
+		Issuers:          []string{addr},
+		Metadata:         "meta",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	s.Require().NoError(err)
+	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+		Issuer:              addr,
+		ClassId:             classId,
+		Metadata:            "meta",
+		ProjectJurisdiction: "US-OR",
+		ProjectId:           rand.Str(3),
+	})
+	s.Require().NoError(err)
+	start, end := time.Now(), time.Now()
+	batchDenom, err := s.createBatch(clientCtx, &core.MsgCreateBatch{
+		Issuer:    addr,
+		ProjectId: projectId,
+		Issuance: []*core.BatchIssuance{
+			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementJurisdiction: "US-OR"},
+		},
+		Metadata:  "meta",
+		StartDate: &start,
+		EndDate:   &end,
+		Open:      false,
+		OriginTx:  nil,
+		Note:      "",
+	})
+	s.Require().NoError(err)
+	return classId, projectId, batchDenom
+}
+
+func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {
+	var issuersStr string
+	if len(issuers) == 1 {
+		issuersStr = issuers[0]
+	} else if len(issuers) > 1 {
+		issuersStr = strings.Join(
+			issuers,
+			",",
+		)
+	}
+	args := []string{
+		issuersStr,
+		ctAbbrev,
+		metadata,
+		fee,
+	}
+	args = append(args, flags...)
+	return args
 }
