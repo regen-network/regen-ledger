@@ -89,7 +89,7 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	assertBatchEqual(t, s.ctx, s.k, res.Batches[1], batch1)
 	assert.Equal(t, uint64(3), res.Pagination.Total)
 	for _, batch := range res.Batches {
-		assert.Check(t, strings.Contains(batch.BatchDenom, "C01"))
+		assert.Check(t, strings.Contains(batch.Denom, "C01"))
 	}
 }
 
@@ -102,7 +102,7 @@ func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *cor
 	info := core.BatchInfo{
 		Issuer:       issuer.String(),
 		ProjectId:    project.Id,
-		BatchDenom:   batch.Denom,
+		Denom:        batch.Denom,
 		Metadata:     batch.Metadata,
 		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
 		EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),

@@ -50,7 +50,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	res, err := s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
 	assert.NilError(t, err)
 	assert.Equal(t, projectId, res.Batch.ProjectId)
-	assert.Equal(t, batchDenom, res.Batch.BatchDenom)
+	assert.Equal(t, batchDenom, res.Batch.Denom)
 	assert.Equal(t, metadata, res.Batch.Metadata)
 	assert.Equal(t, issuer.String(), res.Batch.Issuer)
 	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(startDate), res.Batch.StartDate)

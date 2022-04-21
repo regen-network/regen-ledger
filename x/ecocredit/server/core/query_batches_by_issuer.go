@@ -46,7 +46,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		info := core.BatchInfo{
 			Issuer:       req.Issuer,
 			ProjectId:    project.Id,
-			BatchDenom:   batch.Denom,
+			Denom:        batch.Denom,
 			Metadata:     batch.Metadata,
 			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
 			EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),

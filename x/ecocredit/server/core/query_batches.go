@@ -41,7 +41,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		info := core.BatchInfo{
 			Issuer:       issuer.String(),
 			ProjectId:    project.Id,
-			BatchDenom:   batch.Denom,
+			Denom:        batch.Denom,
 			Metadata:     batch.Metadata,
 			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
 			EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),

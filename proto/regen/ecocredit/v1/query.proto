@@ -393,9 +393,9 @@ message ProjectInfo {
   // project was created.
   string class_id = 3;
 
-  // project_location is the location of the project. Full documentation can be
-  // found in MsgCreateProject.project_location.
-  string project_location = 4;
+  // jurisdiction is the jurisdiction of the project. Full documentation can be
+  // found in MsgCreateProject.jurisdiction.
+  string jurisdiction = 4;
 
   // metadata is the arbitrary metadata attached to the project.
   string metadata = 5;
@@ -412,9 +412,9 @@ message BatchInfo {
   // batch was created.
   string project_id = 2;
 
-  // batch_denom is the unique identifier of the credit batch formed from the
-  // project name, batch sequence number and dates.
-  string batch_denom = 3;
+  // denom is the unique identifier of the credit batch formed from the project
+  // name, batch sequence number and dates.
+  string denom = 3;
 
   // metadata is any arbitrary metadata attached to the credit batch.
   string metadata = 4;

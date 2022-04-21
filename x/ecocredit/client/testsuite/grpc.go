@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batch)
-			require.Equal(res.Batch.BatchDenom, batchDenom)
+			require.Equal(res.Batch.Denom, batchDenom)
 		})
 	}
 }

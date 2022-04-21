@@ -43,11 +43,11 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 		}
 
 		info := core.ProjectInfo{
-			Id:              project.Id,
-			Admin:           admin.String(),
-			ClassId:         class.Id,
-			ProjectLocation: project.ProjectJurisdiction,
-			Metadata:        project.Metadata,
+			Id:           project.Id,
+			Admin:        admin.String(),
+			ClassId:      class.Id,
+			Jurisdiction: project.ProjectJurisdiction,
+			Metadata:     project.Metadata,
 		}
 
 		projects = append(projects, &info)

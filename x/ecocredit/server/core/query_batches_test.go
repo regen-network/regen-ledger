@@ -46,8 +46,8 @@ func TestQuery_Batches(t *testing.T) {
 	res, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Batches))
-	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].BatchDenom)
-	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].BatchDenom)
+	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].Denom)
+	assert.Equal(t, "C01-20200101-20220101-001", res.Batches[0].Denom)
 
 	// paginated query
 	res, err = s.k.Batches(s.ctx, &core.QueryBatchesRequest{

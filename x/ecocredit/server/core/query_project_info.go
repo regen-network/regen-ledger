@@ -23,11 +23,11 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 	}
 
 	info := core.ProjectInfo{
-		Id:              project.Id,
-		Admin:           admin.String(),
-		ClassId:         class.Id,
-		ProjectLocation: project.ProjectJurisdiction,
-		Metadata:        project.Metadata,
+		Id:           project.Id,
+		Admin:        admin.String(),
+		ClassId:      class.Id,
+		Jurisdiction: project.ProjectJurisdiction,
+		Metadata:     project.Metadata,
 	}
 
 	return &core.QueryProjectInfoResponse{Project: &info}, nil
