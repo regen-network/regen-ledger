@@ -29,9 +29,9 @@ message EventCreateProject {
   // project was created.
   string class_id = 3;
 
-  // project_location is the location of the project.
-  // Full documentation can be found in MsgCreateProject.project_location.
-  string project_location = 4;
+  // project_jurisdiction is the jurisdiction of the project.
+  // Full documentation can be found in MsgCreateProject.project_jurisdiction.
+  string project_jurisdiction = 4;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
@@ -61,9 +61,10 @@ message EventCreateBatch {
   // issuance_date is the timestamp when the credit batch was issued.
   string issuance_date = 7;
 
-  // project_location is the location of the project backing the credits in this
-  // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 8;
+  // project_jurisdiction is the jurisdiction of the project backing the credits
+  // in this batch. Full documentation can be found in
+  // MsgCreateBatch.project_jurisdiction.
+  string project_jurisdiction = 8;
 
   // project_id is the unique identifier of the project within which the credit
   // batch was created.
@@ -136,12 +137,12 @@ message EventRetire {
   // amount is the decimal number of credits that have been retired.
   string amount = 3;
 
-  // location is the location of the beneficiary or buyer of the retired
+  // jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
   // credits. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
-  string location = 4;
+  string jurisdiction = 4;
 }
 
 // EventCancel is an event emitted when credits are cancelled. When credits are

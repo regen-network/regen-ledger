@@ -37,7 +37,7 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s must be positive", m.Amount)
 	}
 	if m.RetireOnTake {
-		if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
+		if err := ecocredit.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}

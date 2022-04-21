@@ -28,7 +28,7 @@ func TestSend_Valid(t *testing.T) {
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
 			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "2.51"},
-			{BatchDenom: "C01-20200101-20210101-01", RetiredAmount: "1.30", RetirementLocation: "US-OR"},
+			{BatchDenom: "C01-20200101-20210101-01", RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
 		},
 	})
 	assert.NilError(t, err)

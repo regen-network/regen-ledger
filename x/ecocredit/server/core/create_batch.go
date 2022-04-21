@@ -92,10 +92,10 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:    recipient.String(),
-				BatchDenom: batchDenom,
-				Amount:     retired.String(),
-				Location:   issuance.RetirementLocation,
+				Retirer:      recipient.String(),
+				BatchDenom:   batchDenom,
+				Amount:       retired.String(),
+				Jurisdiction: issuance.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
 			}
@@ -136,15 +136,15 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
-		ClassId:         classInfo.Id,
-		BatchDenom:      batchDenom,
-		Issuer:          req.Issuer,
-		TotalAmount:     totalAmount.String(),
-		StartDate:       startDate.String(),
-		EndDate:         endDate.String(),
-		IssuanceDate:    issuanceDate.String(),
-		ProjectLocation: projectInfo.ProjectLocation,
-		ProjectId:       projectInfo.Id,
+		ClassId:             classInfo.Id,
+		BatchDenom:          batchDenom,
+		Issuer:              req.Issuer,
+		TotalAmount:         totalAmount.String(),
+		StartDate:           startDate.String(),
+		EndDate:             endDate.String(),
+		IssuanceDate:        issuanceDate.String(),
+		ProjectJurisdiction: projectInfo.ProjectJurisdiction,
+		ProjectId:           projectInfo.Id,
 	}); err != nil {
 		return nil, err
 	}

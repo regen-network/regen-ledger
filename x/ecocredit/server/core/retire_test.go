@@ -34,7 +34,7 @@ func TestRetire_Valid(t *testing.T) {
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: "C01-20200101-20210101-01", Amount: "10.0"},
 		},
-		Location: "US-NY",
+		Jurisdiction: "US-NY",
 	})
 	assert.NilError(t, err)
 
@@ -62,7 +62,7 @@ func TestRetire_Invalid(t *testing.T) {
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: "A00-00000000-00000000-01", Amount: "10.35"},
 		},
-		Location: "US-NY",
+		Jurisdiction: "US-NY",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
@@ -77,7 +77,7 @@ func TestRetire_Invalid(t *testing.T) {
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: batchDenom, Amount: "10.35250982359823095"},
 		},
-		Location: "US-NY",
+		Jurisdiction: "US-NY",
 	})
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
 
@@ -87,7 +87,7 @@ func TestRetire_Invalid(t *testing.T) {
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: batchDenom, Amount: "150"},
 		},
-		Location: "US-NY",
+		Jurisdiction: "US-NY",
 	})
 	assert.ErrorContains(t, err, errors.ErrInsufficientFunds.Error())
 }

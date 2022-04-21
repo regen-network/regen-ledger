@@ -114,13 +114,13 @@ message MsgCreateProject {
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 3;
 
-  // project_location is the location of the project backing the credits in this
-  // batch. It is a string of the form
+  // project_jurisdiction is the jurisdiction of the project backing the credits
+  // in this batch. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
-  // and postal-code can be added for increasing precision.
-  string project_location = 4;
+  // and postal-code are optional and can be added for increased precision.
+  string project_jurisdiction = 4;
 
   // project_id is an optional user-specified project ID which can be used
   // instead of an auto-generated ID. If project_id is provided, it must be
@@ -191,13 +191,12 @@ message BatchIssuance {
   // acceptable.
   string retired_amount = 3;
 
-  // retirement_location is the location of the beneficiary or buyer of the
-  // retired credits. This must be provided if retired_amount is positive. It
-  // is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-  // fields conforming to ISO 3166-2, and postal-code being up to 64
-  // alphanumeric characters.
-  string retirement_location = 4;
+  // retirement_jurisdiction is the jurisdiction of the beneficiary or buyer of
+  // the retired credits. This must be provided if retired_amount is positive.
+  // It is a string of the form <country-code>[-<sub-national-code>[
+  // <postal-code>]], with the first two fields conforming to ISO 3166-2, and
+  // postal-code being up to 64 alphanumeric characters.
+  string retirement_jurisdiction = 4;
 }
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
@@ -273,13 +272,12 @@ message MsgSend {
     // acceptable within the precision returned by Query/Precision.
     string retired_amount = 3;
 
-    // retirement_location is the location of the beneficiary or buyer of the
-    // retired credits. This must be provided if retired_amount is positive. It
-    // is a string of the form
-    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-    // fields conforming to ISO 3166-2, and postal-code being up to 64
-    // alphanumeric characters.
-    string retirement_location = 4;
+    // retirement_jurisdiction is the jurisdiction of the beneficiary or buyer
+    // of the retired credits. This must be provided if retired_amount is
+    // positive. It is a string of the form <country-code>[-<sub-national-code>[
+    // <postal-code>]], with the first two fields conforming to ISO 3166-2, and
+    // postal-code being up to 64 alphanumeric characters.
+    string retirement_jurisdiction = 4;
   }
 }
 
@@ -307,12 +305,12 @@ message MsgRetire {
     string amount = 2;
   }
 
-  // location is the location of the beneficiary or buyer of the retired
+  // jurisdiction is the jurisdiction of the beneficiary or buyer of the retired
   // credits. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
-  string location = 3;
+  string jurisdiction = 3;
 }
 
 // MsgRetire is the Msg/Retire response type.

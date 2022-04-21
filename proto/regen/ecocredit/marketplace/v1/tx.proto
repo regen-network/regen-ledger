@@ -150,9 +150,9 @@ message MsgBuyDirect {
     // it, that buy order will fail.
     bool disable_auto_retire = 5;
 
-    // retirement_location is the optional retirement location for the credits
-    // which will be used only if disable_auto_retire is false.
-    string retirement_location = 6;
+    // retirement_jurisdiction is the optional retirement jurisdiction for the
+    // credits which will be used only if disable_auto_retire is false.
+    string retirement_jurisdiction = 6;
   }
 }
 

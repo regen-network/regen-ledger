@@ -379,7 +379,7 @@ func (p ProjectInfo) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
 	}
 
-	if err := ValidateLocation(p.ProjectLocation); err != nil {
+	if err := ValidateJurisdiction(p.ProjectJurisdiction); err != nil {
 		return err
 	}
 

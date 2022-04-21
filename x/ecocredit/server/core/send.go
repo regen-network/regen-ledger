@@ -147,11 +147,11 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}); err != nil {
 			return err
 		}
-		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&ecocredit.EventRetire{
-			Retirer:    to.String(),
-			BatchDenom: credit.BatchDenom,
-			Amount:     sendAmtRetired.String(),
-			Location:   credit.RetirementLocation,
+		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventRetire{
+			Retirer:      to.String(),
+			BatchDenom:   credit.BatchDenom,
+			Amount:       sendAmtRetired.String(),
+			Jurisdiction: credit.RetirementJurisdiction,
 		}); err != nil {
 			return err
 		}

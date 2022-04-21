@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -73,8 +74,8 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 			}
 
 			if !retiredAmount.IsZero() {
-				if err = ValidateLocation(i.RetirementLocation); err != nil {
-					return errBadReq.Wrapf("issuance[%d].retirement_location; %v", idx, err)
+				if err = ValidateJurisdiction(i.RetirementJurisdiction); err != nil {
+					return errBadReq.Wrapf("issuance[%d].retirement_jurisdiction; %v", idx, err)
 				}
 			}
 		}

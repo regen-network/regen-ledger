@@ -212,11 +212,11 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	// create few projects
 	pKey1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
-			Key:             cKey1,
-			Id:              "P01",
-			Admin:           accs[0].Address.Bytes(),
-			ProjectLocation: "AQ",
-			Metadata:        metadata,
+			Key:                 cKey1,
+			Id:                  "P01",
+			Admin:               accs[0].Address.Bytes(),
+			ProjectJurisdiction: "AQ",
+			Metadata:            metadata,
 		},
 	)
 	if err != nil {
@@ -225,11 +225,11 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	pKey2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
 		&api.ProjectInfo{
-			Key:             cKey2,
-			Id:              "P02",
-			Admin:           accs[1].Address.Bytes(),
-			ProjectLocation: "AQ",
-			Metadata:        metadata,
+			Key:                 cKey2,
+			Id:                  "P02",
+			Admin:               accs[1].Address.Bytes(),
+			ProjectJurisdiction: "AQ",
+			Metadata:            metadata,
 		},
 	)
 	if err != nil {
