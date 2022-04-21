@@ -9,8 +9,8 @@ import (
 
 // GetBasketBalanceMap calculates credit balance of each batch within the basket
 func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, error) {
-	batchDenomToId := make(map[string]uint64)     // map of a batch denom to batch id
-	batchIdToBalance := make(map[uint64]math.Dec) // map of a basket batch_id to balance
+	batchDenomToKey := make(map[string]uint64)     // map of a batch denom to batch key
+	batchKeyToBalance := make(map[uint64]math.Dec) // map of a basket batch key to balance
 
 	itr, err := k.stateStore.BasketBalanceTable().List(ctx, api.BasketBalancePrimaryKey{})
 	if err != nil {
@@ -29,30 +29,30 @@ func (k Keeper) GetBasketBalanceMap(ctx context.Context) (map[uint64]math.Dec, e
 			return nil, err
 		}
 
-		var batchID uint64
-		if _, ok := batchDenomToId[bb.BatchDenom]; !ok {
+		var batchKey uint64
+		if _, ok := batchDenomToKey[bb.BatchDenom]; !ok {
 			bInfo, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, bb.BatchDenom)
 			if err != nil {
 				return nil, err
 			}
 
-			batchDenomToId[bb.BatchDenom] = bInfo.Key
-			batchID = bInfo.Key
+			batchDenomToKey[bb.BatchDenom] = bInfo.Key
+			batchKey = bInfo.Key
 		} else {
-			batchID = batchDenomToId[bb.BatchDenom]
+			batchKey = batchDenomToKey[bb.BatchDenom]
 		}
 
-		if existingBal, ok := batchIdToBalance[batchID]; ok {
+		if existingBal, ok := batchKeyToBalance[batchKey]; ok {
 			existingBal, err = existingBal.Add(amount)
 			if err != nil {
 				return nil, err
 			}
 
-			batchIdToBalance[batchID] = existingBal
+			batchKeyToBalance[batchKey] = existingBal
 		} else {
-			batchIdToBalance[batchID] = amount
+			batchKeyToBalance[batchKey] = amount
 		}
 	}
 
-	return batchIdToBalance, nil
+	return batchKeyToBalance, nil
 }
