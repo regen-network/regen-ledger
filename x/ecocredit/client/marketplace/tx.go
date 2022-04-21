@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	FlagRetirementLocation = "retirement-location"
+	FlagRetirementJurisdiction = "retirement-jurisdiction"
 )
 
 // TxSellCmd returns a transaction command that creates sell orders.
@@ -192,7 +192,7 @@ func TxBuyDirect() *cobra.Command {
 		Long: "Purchase ecocredits from a specific sell order. DisableAutoRetire can be set to false to retire the credits immediately upon purchase." +
 			"When set to true, credits will be received in a tradable state, IF AND ONLY IF the sell order also has auto retire disabled. " +
 			"NOTE: The bid price is the price paid PER credit. The total cost will be quantity * bid_price.",
-		Example: "regen tx ecocredit buy-direct 194 300 40regen true --retirement-location=US-NY",
+		Example: "regen tx ecocredit buy-direct 194 300 40regen true --retirement-jurisdiction=US-NY",
 		Args:    cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -215,8 +215,8 @@ func TxBuyDirect() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var retireLocation string
-			retireLocation, err = cmd.Flags().GetString(FlagRetirementLocation)
+			var retireJurisdiction string
+			retireJurisdiction, err = cmd.Flags().GetString(FlagRetirementJurisdiction)
 			if err != nil {
 				return err
 			}
@@ -225,11 +225,11 @@ func TxBuyDirect() *cobra.Command {
 				Buyer: clientCtx.GetFromAddress().String(),
 				Orders: []*marketplace.MsgBuyDirect_Order{
 					{
-						SellOrderId:        sellOrderId,
-						Quantity:           qtyStr,
-						BidPrice:           &bidPrice,
-						DisableAutoRetire:  disableAutoRetire,
-						RetirementLocation: retireLocation,
+						SellOrderId:            sellOrderId,
+						Quantity:               qtyStr,
+						BidPrice:               &bidPrice,
+						DisableAutoRetire:      disableAutoRetire,
+						RetirementJurisdiction: retireJurisdiction,
 					},
 				},
 			}
@@ -240,7 +240,7 @@ func TxBuyDirect() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	cmd.Flags().String(FlagRetirementLocation, "", "the location to use for retirement when auto retire is true.")
+	cmd.Flags().String(FlagRetirementJurisdiction, "", "the jurisdiction to use for retirement when auto retire is true.")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
@@ -262,7 +262,7 @@ func TxBuyDirectBatch() *cobra.Command {
 			   "quantity": "32.5",
 			   "bid_price": {"denom": "uregen", "amount": "32000000"},
 			   "disable_auto_retire": false,
-			   "retirement_location": "US-NY"
+			   "retirement_jurisdiction": "US-NY"
 			},
 		]`),
 		RunE: func(cmd *cobra.Command, args []string) error {
