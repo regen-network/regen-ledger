@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
@@ -26,7 +27,7 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
+	t            gocuke.TestingT
 	db           ormdb.ModuleDB
 	stateStore   api.StateStore
 	ctx          context.Context
@@ -39,7 +40,7 @@ type baseSuite struct {
 	sdkCtx       sdk.Context
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error

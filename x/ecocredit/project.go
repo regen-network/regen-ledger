@@ -24,11 +24,8 @@ func ValidateProjectID(projectID string) error {
 	return nil
 }
 
-// Calculate the ID to use for a new project, based on the class id and
+// FormatProjectID formats the project ID to use for a new project based on
 // the project sequence number.
-//
-// The initial version has format:
-// <class id><project seq no>
-func FormatProjectID(classID string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
+func FormatProjectID(projectSeqNo uint64) string {
+	return fmt.Sprintf("%03d", projectSeqNo)
 }

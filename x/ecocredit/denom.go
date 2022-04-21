@@ -25,23 +25,27 @@ func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
 // compatibility.
 //
 // The initial version has format:
-// <class id>-<start date>-<end date>-<batch seq no>
+// <class id>-<project id>-<start date>-<end date>-<batch seq no>
 // where:
 // - <class id> is the string ID of the credit class
+// - <project id> is the string ID of the project
 // - <start date> is the start date of the batch in form YYYYMMDD
 // - <end date> is the end date of the batch in form YYYYMMDD
 // - <batch seq no> is the sequence number of the batch, padded to at least
 //   three digits
 //
-// e.g. C01-20190101-20200101-001
+// e.g. C01-001-20190101-20200101-001
 //
 // NB: This might differ from the actual denomination used.
-func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) (string, error) {
+func FormatDenom(classId, projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
-		"%s-%s-%s-%03d",
+		"%s-%s-%s-%s-%03d",
 
 		// Class ID string
 		classId,
+
+		// Project ID string
+		projectId,
 
 		// Start Date as YYYYMMDD
 		startDate.Format("20060102"),
