@@ -16,7 +16,7 @@ import (
 const (
 	GroupInfo        = "group-info"
 	GroupMembers     = "group-members"
-	GroupAccountInfo = "group-accout-info"
+	GroupAccountInfo = "group-account-info"
 	GroupProposals   = "group-proposals"
 	GroupVote        = "group-vote"
 )
@@ -55,15 +55,16 @@ func getGroupMembers(r *rand.Rand, accounts []simtypes.Account) []*group.GroupMe
 func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.GroupAccountInfo {
 	groupAccounts := make([]*group.GroupAccountInfo, 3)
 	for i := 0; i < 3; i++ {
-		acc, _ := simtypes.RandomAcc(r, simState.Accounts)
+		acc1, _ := simtypes.RandomAcc(r, simState.Accounts)
+		acc2, _ := simtypes.RandomAcc(r, simState.Accounts)
 		any, err := codectypes.NewAnyWithValue(group.NewThresholdDecisionPolicy("10", gogotypes.Duration{Seconds: 1}))
 		if err != nil {
 			panic(err)
 		}
 		groupAccounts[i] = &group.GroupAccountInfo{
 			GroupId:        uint64(i + 1),
-			Admin:          acc.Address.String(),
-			Address:        acc.Address.String(),
+			Admin:          acc1.Address.String(),
+			Address:        acc2.Address.String(),
 			Version:        1,
 			DecisionPolicy: any,
 			Metadata:       []byte(simtypes.RandStringOfLength(r, 10)),

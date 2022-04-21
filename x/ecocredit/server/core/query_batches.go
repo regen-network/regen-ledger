@@ -19,12 +19,12 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		return nil, err
 	}
 
-	project, err := k.stateStore.ProjectInfoTable().GetByName(ctx, request.ProjectId)
+	project, err := k.stateStore.ProjectInfoTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoProjectIdIndexKey{}.WithProjectId(project.Id), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchInfoTable().List(ctx, api.BatchInfoProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 
 		info := core.BatchDetails{
 			Issuer:       issuer.String(),
-			ProjectId:    project.Name,
+			ProjectId:    project.Id,
 			BatchDenom:   batch.BatchDenom,
 			Metadata:     batch.Metadata,
 			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
@@ -56,7 +56,6 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 	if err != nil {
 		return nil, err
 	}
-
 	return &core.QueryBatchesResponse{
 		Batches:    batches,
 		Pagination: pr,

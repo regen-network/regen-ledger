@@ -22,7 +22,7 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 		return nil, err
 	}
 
-	balance, err := k.stateStore.BatchBalanceTable().Get(ctx, addr, batch.Id)
+	balance, err := k.stateStore.BatchBalanceTable().Get(ctx, addr, batch.Key)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			return &core.QueryBalanceResponse{

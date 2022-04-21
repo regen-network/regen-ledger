@@ -270,10 +270,10 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		spendable := bk.SpendableCoins(sdkCtx, issuerAcc.GetAddress())
 
 		msg := &core.MsgCreateProject{
-			Issuer:          issuer.Address.String(),
-			ClassId:         classID,
-			Metadata:        simtypes.RandStringOfLength(r, 100),
-			ProjectLocation: "AB-CDE FG1 345",
+			Issuer:              issuer.Address.String(),
+			ClassId:             classID,
+			Metadata:            simtypes.RandStringOfLength(r, 100),
+			ProjectJurisdiction: "AB-CDE FG1 345",
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -420,7 +420,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		var tradable int
 		var retired int
-		var retirementLocation string
+		var retirementJurisdiction string
 		if !tradableBalance.IsZero() {
 			i64, err := tradableBalance.Int64()
 			if err != nil {
@@ -430,7 +430,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				tradable = simtypes.RandIntBetween(r, 1, int(i64))
 				retired = simtypes.RandIntBetween(r, 0, tradable)
 				if retired != 0 {
-					retirementLocation = "AQ"
+					retirementJurisdiction = "AQ"
 				}
 			} else {
 				tradable = int(i64)
@@ -446,10 +446,10 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Recipient: recipient.Address.String(),
 			Credits: []*core.MsgSend_SendCredits{
 				{
-					BatchDenom:         batch.BatchDenom,
-					TradableAmount:     fmt.Sprintf("%d", tradable),
-					RetiredAmount:      fmt.Sprintf("%d", retired),
-					RetirementLocation: retirementLocation,
+					BatchDenom:             batch.BatchDenom,
+					TradableAmount:         fmt.Sprintf("%d", tradable),
+					RetiredAmount:          fmt.Sprintf("%d", retired),
+					RetirementJurisdiction: retirementJurisdiction,
 				},
 			},
 		}
@@ -536,7 +536,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					Amount:     randSub.String(),
 				},
 			},
-			Location: "ST-UVW XY Z12",
+			Jurisdiction: "ST-UVW XY Z12",
 		}
 
 		txCtx := simulation.OperationInput{
@@ -867,15 +867,15 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*core.BatchI
 	for i := 0; i < numIssuances; i++ {
 		recipient := accs[i]
 		retiredAmount := simtypes.RandIntBetween(r, 0, 100)
-		var retirementLocation string
+		var retirementJurisdiction string
 		if retiredAmount > 0 {
-			retirementLocation = "AD"
+			retirementJurisdiction = "AD"
 		}
 		res[i] = &core.BatchIssuance{
-			Recipient:          recipient.Address.String(),
-			TradableAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
-			RetiredAmount:      fmt.Sprintf("%d", retiredAmount),
-			RetirementLocation: retirementLocation,
+			Recipient:              recipient.Address.String(),
+			TradableAmount:         fmt.Sprintf("%d", simtypes.RandIntBetween(r, 10, 1000)),
+			RetiredAmount:          fmt.Sprintf("%d", retiredAmount),
+			RetirementJurisdiction: retirementJurisdiction,
 		}
 	}
 

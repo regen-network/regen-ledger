@@ -22,7 +22,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceAddressBatchIdIndexKey{}.WithAddress(addr), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceAddressBatchKeyIndexKey{}.WithAddress(addr), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 			return nil, err
 		}
 
-		batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchId)
+		batch, err := k.stateStore.BatchInfoTable().Get(ctx, balance.BatchKey)
 
 		info := core.BatchBalanceDetails{
 			Address:    addr.String(),

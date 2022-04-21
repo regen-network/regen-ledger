@@ -33,12 +33,12 @@ func TestQuery_BatchInfo(t *testing.T) {
 	issuanceDate := timestamppb.New(issuanceTime)
 
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name: projectId,
+		Id: projectId,
 	}))
 
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		Issuer:       issuer,
-		ProjectId:    1,
+		ProjectKey:   1,
 		BatchDenom:   batchDenom,
 		Metadata:     metadata,
 		StartDate:    startDate,
@@ -60,4 +60,9 @@ func TestQuery_BatchInfo(t *testing.T) {
 	// invalid query
 	_, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: "A00-00000000-00000000-000"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+
+	// good query
+	res, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
+	assert.NilError(t, err)
+	assert.Equal(t, projectId, res.Batch.ProjectId)
 }

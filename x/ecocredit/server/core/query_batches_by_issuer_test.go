@@ -31,7 +31,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 
 	batch1 := &api.BatchInfo{
 		Issuer:       s.addr,
-		ProjectId:    1,
+		ProjectKey:   1,
 		BatchDenom:   "C01-20200101-20200102-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
@@ -41,21 +41,21 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 
 	// insert project
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name: "P01",
+		Id: "P01",
 	}))
 
 	// insert two batches with s.addr as the issuer
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, batch1))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		Issuer:     s.addr,
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "C01-20200101-20200102-002",
 	}))
 
 	// insert one batch without s.addr as the issuer
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
 		Issuer:     otherAddr,
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "C01-20200101-20200102-003",
 	}))
 

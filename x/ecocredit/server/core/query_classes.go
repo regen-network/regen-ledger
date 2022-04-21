@@ -33,10 +33,10 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 		admin := sdk.AccAddress(class.Admin)
 
 		info := core.ClassDetails{
-			Id:               class.Name,
+			Id:               class.Id,
 			Admin:            admin.String(),
 			Metadata:         class.Metadata,
-			CreditTypeAbbrev: class.CreditType,
+			CreditTypeAbbrev: class.CreditTypeAbbrev,
 		}
 
 		classes = append(classes, &info)

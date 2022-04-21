@@ -21,22 +21,22 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	_, _, noClasses := testdata.KeyTestPubAddr()
 
 	class1 := &api.ClassInfo{
-		Name:       "C01",
+		Id:       "C01",
 		Admin:      s.addr,
 		Metadata:   "data",
-		CreditType: "C",
+		CreditTypeAbbrev: "C",
 	}
 
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, class1))
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C02",
+		Id:       "C02",
 		Admin:      s.addr,
-		CreditType: "C",
+		CreditTypeAbbrev: "C",
 	}))
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name:       "C03",
+		Id:       "C03",
 		Admin:      addr,
-		CreditType: "C",
+		CreditTypeAbbrev: "C",
 	}))
 
 	// valid query
@@ -46,10 +46,10 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Classes), 1)
-	assert.Equal(t, class1.Name, res.Classes[0].Id)
+	assert.Equal(t, class1.Id, res.Classes[0].Id)
 	assert.Equal(t, s.addr.String(), res.Classes[0].Admin)
 	assert.Equal(t, class1.Metadata, res.Classes[0].Metadata)
-	assert.Equal(t, class1.CreditType, res.Classes[0].CreditTypeAbbrev)
+	assert.Equal(t, class1.CreditTypeAbbrev, res.Classes[0].CreditTypeAbbrev)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// should be empty

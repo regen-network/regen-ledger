@@ -23,14 +23,14 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 
 	issuer := sdk.AccAddress(batch.Issuer)
 
-	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectId)
+	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectKey)
 	if err != nil {
 		return nil, err
 	}
 
 	info := core.BatchDetails{
 		Issuer:       issuer.String(),
-		ProjectId:    project.Name,
+		ProjectId:    project.Id,
 		BatchDenom:   batch.BatchDenom,
 		Metadata:     batch.Metadata,
 		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),

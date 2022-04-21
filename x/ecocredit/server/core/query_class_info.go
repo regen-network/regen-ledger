@@ -10,7 +10,7 @@ import (
 
 // ClassInfo queries for information on a credit class.
 func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoRequest) (*core.QueryClassInfoResponse, error) {
-	class, err := k.stateStore.ClassInfoTable().GetByName(ctx, request.ClassId)
+	class, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
@@ -18,10 +18,10 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 	admin := sdk.AccAddress(class.Admin)
 
 	info := core.ClassDetails{
-		Id:               class.Name,
+		Id:               class.Id,
 		Admin:            admin.String(),
 		Metadata:         class.Metadata,
-		CreditTypeAbbrev: class.CreditType,
+		CreditTypeAbbrev: class.CreditTypeAbbrev,
 	}
 
 	return &core.QueryClassInfoResponse{Class: &info}, nil

@@ -29,7 +29,7 @@ func TestQuery_BatchesByClass(t *testing.T) {
 
 	batch1 := &api.BatchInfo{
 		Issuer:       s.addr,
-		ProjectId:    1,
+		ProjectKey:   1,
 		BatchDenom:   "C01-20200101-20200102-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
@@ -39,33 +39,45 @@ func TestQuery_BatchesByClass(t *testing.T) {
 
 	// insert class
 	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
-		Name: "C01",
+		Id: "C01",
 	}))
 
 	// insert project
 	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name: "P01",
+		Id: "P01",
 	}))
 
 	// insert three batches under the project
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, batch1))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "C01-20190203-20200102-002",
+		Metadata:   "",
+		StartDate:  nil,
+		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "C01-20500404-20900102-003",
+		Metadata:   "",
+		StartDate:  nil,
+		EndDate:    nil,
 	}))
 
 	// classes that SHOULD NOT show up from a query for "C01"
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "C011-20500404-20900102-003",
+		Metadata:   "",
+		StartDate:  nil,
+		EndDate:    nil,
 	}))
 	assert.NilError(t, s.stateStore.BatchInfoTable().Insert(s.ctx, &api.BatchInfo{
-		ProjectId:  1,
+		ProjectKey: 1,
 		BatchDenom: "BIO1-20500404-20900102-003",
+		Metadata:   "",
+		StartDate:  nil,
+		EndDate:    nil,
 	}))
 
 	res, err := s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{
@@ -84,12 +96,12 @@ func TestQuery_BatchesByClass(t *testing.T) {
 func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchDetails, batch *api.BatchInfo) {
 	issuer := sdk.AccAddress(batch.Issuer)
 
-	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectId)
+	project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectKey)
 	assert.NilError(t, err)
 
 	info := core.BatchDetails{
 		Issuer:       issuer.String(),
-		ProjectId:    project.Name,
+		ProjectId:    project.Id,
 		BatchDenom:   batch.BatchDenom,
 		Metadata:     batch.Metadata,
 		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),

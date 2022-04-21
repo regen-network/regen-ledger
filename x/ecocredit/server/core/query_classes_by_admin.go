@@ -37,10 +37,10 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 		}
 
 		info := core.ClassDetails{
-			Id:               class.Name,
+			Id:               class.Id,
 			Admin:            admin.String(),
 			Metadata:         class.Metadata,
-			CreditTypeAbbrev: class.CreditType,
+			CreditTypeAbbrev: class.CreditTypeAbbrev,
 		}
 
 		classes = append(classes, &info)

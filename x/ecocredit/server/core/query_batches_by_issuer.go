@@ -38,14 +38,14 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 			return nil, err
 		}
 
-		project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectId)
+		project, err := k.stateStore.ProjectInfoTable().Get(ctx, batch.ProjectKey)
 		if err != nil {
 			return nil, err
 		}
 
 		info := core.BatchDetails{
 			Issuer:       req.Issuer,
-			ProjectId:    project.Name,
+			ProjectId:    project.Id,
 			BatchDenom:   batch.BatchDenom,
 			Metadata:     batch.Metadata,
 			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),

@@ -16,16 +16,16 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	s := setupBase(t)
 
 	// insert class
-	classId, err := s.stateStore.ClassInfoTable().InsertReturningID(s.ctx, &api.ClassInfo{
-		Name: "C01",
+	classKey, err := s.stateStore.ClassInfoTable().InsertReturningID(s.ctx, &api.ClassInfo{
+		Id: "C01",
 	})
 	assert.NilError(t, err)
 
 	// insert project
 	err = s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Name:            "P01",
-		ClassId:         classId,
-		ProjectLocation: "US-CA",
+		Id:            "P01",
+		ClassKey:         classKey,
+		ProjectJurisdiction: "US-CA",
 		Metadata:        "data",
 	})
 	assert.NilError(t, err)
