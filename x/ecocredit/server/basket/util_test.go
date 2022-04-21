@@ -79,10 +79,10 @@ func TestGetBasketBalances(t *testing.T) {
 	require.Equal(t, bIdToBalance[2], amtToDeposit)
 }
 
-func initBatch(t *testing.T, s *baseSuite, pid uint64, batchDenom string, startDate *timestamppb.Timestamp) {
+func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *timestamppb.Timestamp) {
 	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
 		ProjectKey: pid,
-		BatchDenom: batchDenom,
+		Denom:      denom,
 		StartDate:  startDate,
 		EndDate:    nil,
 	}))
