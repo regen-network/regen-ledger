@@ -132,11 +132,11 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 
 // getCreditTypeFromBatchId gets the credit type given a batch id.
 func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*core.CreditType, error) {
-	batch, err := k.coreStore.BatchInfoTable().Get(ctx, id)
+	batch, err := k.coreStore.BatchTable().Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.Denom)
 	if err != nil {
 		return nil, err
 	}

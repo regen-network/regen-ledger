@@ -14,18 +14,18 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Retire credits to the specified location.
+// Retire credits to the specified jurisdiction.
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	holder, _ := sdk.AccAddressFromBech32(req.Holder)
 
 	for _, credit := range req.Credits {
-		batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
+		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -87,10 +87,10 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		})
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:    req.Holder,
-			BatchDenom: credit.BatchDenom,
-			Amount:     credit.Amount,
-			Location:   req.Location,
+			Retirer:      req.Holder,
+			BatchDenom:   credit.BatchDenom,
+			Amount:       credit.Amount,
+			Jurisdiction: req.Jurisdiction,
 		}); err != nil {
 			return nil, err
 		}

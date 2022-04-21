@@ -16,7 +16,7 @@ import (
 func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (*core.MsgCreateProjectResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classID := req.ClassId
-	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, classID)
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, classID)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 				return nil, err
 			}
 
-			exists, err = k.stateStore.ProjectInfoTable().HasByClassKeyId(ctx, classInfo.Key, projectID)
+			exists, err = k.stateStore.ProjectTable().HasByClassKeyId(ctx, classInfo.Key, projectID)
 			if err != nil {
 				return nil, err
 			}
@@ -49,21 +49,21 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		}
 	}
 
-	if err = k.stateStore.ProjectInfoTable().Insert(ctx, &api.ProjectInfo{
-		Id:              projectID,
-		Admin:           adminAddress,
-		ClassKey:        classInfo.Key,
-		ProjectLocation: req.ProjectLocation,
-		Metadata:        req.Metadata,
+	if err = k.stateStore.ProjectTable().Insert(ctx, &api.Project{
+		Id:                  projectID,
+		Admin:               adminAddress,
+		ClassKey:            classInfo.Key,
+		ProjectJurisdiction: req.ProjectJurisdiction,
+		Metadata:            req.Metadata,
 	}); err != nil {
 		return nil, err
 	}
 
 	if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateProject{
-		ProjectId:       projectID,
-		Admin:           adminAddress.String(),
-		ClassId:         classID,
-		ProjectLocation: req.ProjectLocation,
+		ProjectId:           projectID,
+		Admin:               adminAddress.String(),
+		ClassId:             classID,
+		ProjectJurisdiction: req.ProjectJurisdiction,
 	}); err != nil {
 		return nil, err
 	}

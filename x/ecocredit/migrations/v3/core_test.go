@@ -151,7 +151,7 @@ func TestMigrations(t *testing.T) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
 	// verify credit class data
-	res, err := ss.ClassInfoTable().GetById(ctx, "C01")
+	res, err := ss.ClassTable().GetById(ctx, "C01")
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.Admin, admin1.Bytes())
@@ -174,12 +174,12 @@ func TestMigrations(t *testing.T) {
 	itr.Close()
 
 	// verify project migration
-	res1, err := ss.ProjectInfoTable().Get(ctx, 1)
+	res1, err := ss.ProjectTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
 	require.Equal(t, res1.Id, "C0101")
 	require.Equal(t, res1.Metadata, "")
-	require.Equal(t, res1.ProjectLocation, "AB-CDE FG1 345")
+	require.Equal(t, res1.ProjectJurisdiction, "AB-CDE FG1 345")
 	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 

@@ -15,12 +15,12 @@ func TestUpdateProjectAdmin_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	projectId := "VERRA1"
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              projectId,
-		Admin:           s.addr,
-		ClassKey:        1,
-		ProjectLocation: "US-NY",
-		Metadata:        "hi",
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:                  projectId,
+		Admin:               s.addr,
+		ClassKey:            1,
+		ProjectJurisdiction: "US-NY",
+		Metadata:            "hi",
 	}))
 	newAdmin := sdk.AccAddress("addr1")
 
@@ -31,7 +31,7 @@ func TestUpdateProjectAdmin_Valid(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	project, err := s.stateStore.ProjectInfoTable().GetById(s.ctx, projectId)
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, projectId)
 	assert.NilError(t, err)
 	assert.Check(t, sdk.AccAddress(project.Admin).Equals(newAdmin))
 }
@@ -40,12 +40,12 @@ func TestUpdateProjectAdmin_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	projectId := "VERRA1"
-	assert.NilError(t, s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
-		Id:              projectId,
-		Admin:           s.addr,
-		ClassKey:        1,
-		ProjectLocation: "US-NY",
-		Metadata:        "hi",
+	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
+		Id:                  projectId,
+		Admin:               s.addr,
+		ClassKey:            1,
+		ProjectJurisdiction: "US-NY",
+		Metadata:            "hi",
 	}))
 	notAdmin := sdk.AccAddress("addr1c")
 

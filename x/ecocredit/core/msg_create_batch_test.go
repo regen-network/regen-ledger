@@ -30,10 +30,10 @@ func TestMsgCreateBatch(t *testing.T) {
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2,
-						TradableAmount:     "1000",
-						RetiredAmount:      "50",
-						RetirementLocation: "ST-UVW XY Z12",
+						Recipient:              addr2,
+						TradableAmount:         "1000",
+						RetiredAmount:          "50",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 				Metadata: "hello",
@@ -66,9 +66,9 @@ func TestMsgCreateBatch(t *testing.T) {
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2,
-						RetiredAmount:      "50",
-						RetirementLocation: "ST-UVW XY Z12",
+						Recipient:              addr2,
+						RetiredAmount:          "50",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -118,7 +118,7 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg with wrong Issuance.RetirementLocation": {
+		"invalid msg with wrong Issuance.RetirementJurisdiction": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
 				ProjectId: "C01",
@@ -126,15 +126,15 @@ func TestMsgCreateBatch(t *testing.T) {
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          addr2,
-						RetiredAmount:      "50",
-						RetirementLocation: "wrong location",
+						Recipient:              addr2,
+						RetiredAmount:          "50",
+						RetirementJurisdiction: "wrong jurisdiction",
 					},
 				},
 			},
 			expErr: true,
 		},
-		"invalid msg without Issuance.RetirementLocation": {
+		"invalid msg without Issuance.RetirementJurisdiction": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
 				ProjectId: "C01",
@@ -203,9 +203,9 @@ func TestMsgCreateBatch(t *testing.T) {
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						Recipient:          "wrongRecipient",
-						RetiredAmount:      "50",
-						RetirementLocation: "ST-UVW XY Z12",
+						Recipient:              "wrongRecipient",
+						RetiredAmount:          "50",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -219,8 +219,8 @@ func TestMsgCreateBatch(t *testing.T) {
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
 					{
-						RetiredAmount:      "50",
-						RetirementLocation: "ST-UVW XY Z12",
+						RetiredAmount:          "50",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},

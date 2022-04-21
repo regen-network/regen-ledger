@@ -3,8 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/stretchr/testify/require"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgSend(t *testing.T) {
@@ -23,10 +24,10 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         batchDenom,
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             batchDenom,
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -58,10 +59,10 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -72,10 +73,10 @@ func TestMsgSend(t *testing.T) {
 				Sender: addr1,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -87,9 +88,9 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -101,9 +102,9 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -115,15 +116,15 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
 			expErr: true,
 		},
-		"invalid msg without Credits.RetirementLocation": {
+		"invalid msg without Credits.RetirementJurisdiction": {
 			src: MsgSend{
 				Sender:    addr1,
 				Recipient: addr2,
@@ -137,7 +138,7 @@ func TestMsgSend(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"valid msg without Credits.RetirementLocation(When RetiredAmount is zero)": {
+		"valid msg without Credits.RetirementJurisdiction(When RetiredAmount is zero)": {
 			src: MsgSend{
 				Sender:    addr1,
 				Recipient: addr2,

@@ -138,9 +138,9 @@ message MsgTake {
   // amount is the integer number of basket tokens to convert into credits.
   string amount = 3;
 
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if retire_on_take is true for this basket.
-  string retirement_location = 4;
+  // retirement_jurisdiction is the optional retirement jurisdiction for the
+  // credits which will be used only if retire_on_take is true for this basket.
+  string retirement_jurisdiction = 4;
 
   // retire_on_take is a boolean that dictates whether the ecocredits
   // received in exchange for the basket tokens will be received as

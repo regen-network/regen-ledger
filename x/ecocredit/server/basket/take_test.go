@@ -84,9 +84,9 @@ func setupTake(t *testing.T) *takeSuite {
 
 	batchDenoms := []string{"C1-00000000-0000000-001", "C2-00000000-0000000-001", "C3-00000000-0000000-001", "C4-00000000-0000000-001"}
 	for _, denom := range batchDenoms {
-		assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
+		assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
 			ProjectKey: 1,
-			BatchDenom: denom,
+			Denom:      denom,
 		}))
 	}
 	s.denomToId = map[string]uint64{"C1-00000000-0000000-001": 1, "C2-00000000-0000000-001": 2, "C3-00000000-0000000-001": 3, "C4-00000000-0000000-001": 4}
@@ -99,11 +99,11 @@ func TestTakeMustRetire(t *testing.T) {
 
 	// foo requires RetireOnTake
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.addr.String(),
-		BasketDenom:        "foo",
-		Amount:             "6.0",
-		RetirementLocation: "",
-		RetireOnTake:       false,
+		Owner:                  s.addr.String(),
+		BasketDenom:            "foo",
+		Amount:                 "6.0",
+		RetirementJurisdiction: "",
+		RetireOnTake:           false,
 	})
 	assert.ErrorIs(t, err, basket.ErrCantDisableRetire)
 }
@@ -117,11 +117,11 @@ func TestTakeRetire(t *testing.T) {
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, fooCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:              s.addr.String(),
-		BasketDenom:        "foo",
-		Amount:             "6000000",
-		RetirementLocation: "US",
-		RetireOnTake:       true,
+		Owner:                  s.addr.String(),
+		BasketDenom:            "foo",
+		Amount:                 "6000000",
+		RetirementJurisdiction: "US",
+		RetireOnTake:           true,
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 2, len(res.Credits))

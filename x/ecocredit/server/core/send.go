@@ -43,11 +43,11 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 }
 
 func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCredits, to, from sdk.AccAddress) error {
-	batch, err := k.stateStore.BatchInfoTable().GetByBatchDenom(ctx, credit.BatchDenom)
+	batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 	if err != nil {
 		return err
 	}
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.BatchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.Denom)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	fromBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, from, batch.Key)
 	if err != nil {
 		if err == ormerrors.NotFound {
-			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.BatchDenom)
+			return ecocredit.ErrInsufficientCredits.Wrapf("you do not have any credits from batch %s", batch.Denom)
 		}
 		return err
 	}
@@ -147,11 +147,11 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 		}); err != nil {
 			return err
 		}
-		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&ecocredit.EventRetire{
-			Retirer:    to.String(),
-			BatchDenom: credit.BatchDenom,
-			Amount:     sendAmtRetired.String(),
-			Location:   credit.RetirementLocation,
+		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventRetire{
+			Retirer:      to.String(),
+			BatchDenom:   credit.BatchDenom,
+			Amount:       sendAmtRetired.String(),
+			Jurisdiction: credit.RetirementJurisdiction,
 		}); err != nil {
 			return err
 		}

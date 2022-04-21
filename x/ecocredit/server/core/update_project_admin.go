@@ -21,7 +21,7 @@ func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProje
 		return nil, err
 	}
 
-	project, err := k.stateStore.ProjectInfoTable().GetById(ctx, req.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, req.ProjectId)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get project with id %s: %s", req.ProjectId, err.Error())
 	}
@@ -29,7 +29,15 @@ func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProje
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not the admin of project %s", req.Admin, req.ProjectId)
 	}
 	project.Admin = newAdmin
-	if err := k.stateStore.ProjectInfoTable().Update(ctx, project); err != nil {
+	if err := k.stateStore.ProjectTable().Update(ctx, project); err != nil {
+		return nil, err
+	}
+
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventProjectAdminUpdated{
+		ProjectId: project.Id,
+		OldAdmin:  req.Admin,
+		NewAdmin:  req.NewAdmin,
+	}); err != nil {
 		return nil, err
 	}
 

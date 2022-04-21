@@ -9,14 +9,14 @@ import (
 
 // ClassInfo queries for information on a credit class.
 func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoRequest) (*core.QueryClassInfoResponse, error) {
-	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, request.ClassId)
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	var ci core.ClassInfo
+	var ci core.Class
 	if err = ormutil.PulsarToGogoSlow(classInfo, &ci); err != nil {
 		return nil, err
 	}
-	return &core.QueryClassInfoResponse{Info: &ci}, nil
+	return &core.QueryClassInfoResponse{Class: &ci}, nil
 }
