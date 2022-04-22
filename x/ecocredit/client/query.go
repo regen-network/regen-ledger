@@ -138,7 +138,7 @@ Example:
 				return err
 			}
 
-			return print(ctx, res, err)
+			return printQueryResponse(ctx, res, err)
 		},
 	}
 
