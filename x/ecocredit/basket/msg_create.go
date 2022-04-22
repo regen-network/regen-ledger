@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -38,7 +39,7 @@ func (m MsgCreate) ValidateBasic() error {
 	if _, err := core.ExponentToPrefix(m.Exponent); err != nil {
 		return err
 	}
-	if err := ecocredit.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return err
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {

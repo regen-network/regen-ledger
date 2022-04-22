@@ -142,35 +142,6 @@ func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	return nil
 }
 
-// IterateSupplies iterates over supplies and calls the specified callback function `cb`
-func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
-		if err != nil {
-			return err
-		}
-		if stop {
-			break
-		}
-	}
-
-	return nil
-}
-
-// IterateBalances iterates over balances and calls the specified callback function `cb`
-func IterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		addr, denom := ParseBalanceKey(iter.Key())
-		if cb(addr.String(), string(denom), string(iter.Value())) {
-			break
-		}
-	}
-}
-
 var ModuleSchema = ormapi.ModuleSchemaDescriptor{
 	SchemaFile: []*ormapi.ModuleSchemaDescriptor_FileEntry{
 		{Id: 1, ProtoFileName: api.File_regen_ecocredit_v1_state_proto.Path()},
