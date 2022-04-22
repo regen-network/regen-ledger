@@ -52,6 +52,8 @@ func TxCmd(name string) *cobra.Command {
 		basketcli.TxTakeFromBasket(),
 		marketplacecli.TxSellCmd(),
 		marketplacecli.TxUpdateSellOrdersCmd(),
+		marketplacecli.TxBuyDirect(),
+		marketplacecli.TxBuyDirectBatch(),
 	)
 	return cmd
 }
