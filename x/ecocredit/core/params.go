@@ -141,8 +141,8 @@ func DefaultParams() Params {
 		false,
 		[]*AskDenom{
 			{
-				Denom:        "uregen",
-				DisplayDenom: "regen",
+				Denom:        sdk.DefaultBondDenom,
+				DisplayDenom: sdk.DefaultBondDenom,
 				Exponent:     18,
 			},
 		},
