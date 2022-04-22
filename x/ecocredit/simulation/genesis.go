@@ -206,7 +206,7 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 			}); err != nil {
 				return 0, err
 			}
-			return 1, nil
+			return cKey, nil
 		}
 
 		return 0, err
@@ -225,9 +225,6 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 func createProject(ctx context.Context, sStore api.StateStore, project *api.Project) (uint64, error) {
 	pKey, err := sStore.ProjectTable().InsertReturningID(ctx, project)
 	if err != nil {
-		fmt.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		fmt.Println(err.Error())
-		fmt.Println("++++++++++++++++++++++++++++++++++++++++++++++++++++")
 		return 0, err
 	}
 
@@ -240,7 +237,7 @@ func createProject(ctx context.Context, sStore api.StateStore, project *api.Proj
 			}); err != nil {
 				return 0, err
 			}
-			return 1, nil
+			return pKey, nil
 		}
 
 		return 0, err
@@ -262,7 +259,7 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 		if ormerrors.IsNotFound(err) {
 			if err := sStore.BatchSequenceTable().Save(ctx, &api.BatchSequence{
 				ProjectKey:   projectKey,
-				NextSequence: 1,
+				NextSequence: 2,
 			}); err != nil {
 				return 0, err
 			}
@@ -390,7 +387,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey3, err := ss.BatchTable().InsertReturningID(ctx,
+	bKey2, err := ss.BatchTable().InsertReturningID(ctx,
 		&api.Batch{
 			Issuer:       accs[2].Address,
 			ProjectKey:   pKey2,
@@ -416,9 +413,10 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		BatchKey: bKey3,
+		BatchKey: bKey2,
 		Address:  accs[2].Address,
 		Tradable: "100",
+		Escrowed: "10",
 		Retired:  "10",
 	}); err != nil {
 		return err
@@ -434,8 +432,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
-		BatchKey:       bKey3,
-		TradableAmount: "100",
+		BatchKey:       bKey2,
+		TradableAmount: "110",
 		RetiredAmount:  "10",
 	}); err != nil {
 		return err
