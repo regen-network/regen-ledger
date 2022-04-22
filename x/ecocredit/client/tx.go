@@ -20,6 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
+	corecli "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -45,6 +46,7 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
 		TxCreateProject(),
+		corecli.TxCreditTypeProposalCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
@@ -249,7 +251,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "project_id"": "C0101",
+                                "project_id": "C0101",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",

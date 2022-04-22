@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-
 	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
@@ -98,6 +97,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
@@ -376,13 +376,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 	app.AuthzKeeper = authzKeeper
 
-	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts, wasmOpts)
-
-	app.GovKeeper = govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govRouter,
-	)
-
 	// register custom modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
 	ecocreditModule := ecocreditmodule.NewModule(
@@ -403,6 +396,14 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		panic(err)
 	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
+
+	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewCreditTypeProposalHandler(ecocreditModule.Keeper))
+	app.GovKeeper = govkeeper.NewKeeper(
+		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
+		&stakingKeeper, govRouter,
+	)
+
+	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath, appOpts, wasmOpts)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 

@@ -42,7 +42,7 @@ type Module struct {
 	accountKeeper      ecocredit.AccountKeeper
 	bankKeeper         ecocredit.BankKeeper
 	distributionKeeper ecocredit.DistributionKeeper
-	keeper             ecocredit.Keeper
+	Keeper             server.Keeper
 }
 
 // NewModule returns a new Module object.
@@ -82,7 +82,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a *Module) RegisterServices(configurator servermodule.Configurator) {
-	a.keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
+	a.Keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper, a.distributionKeeper)
 }
 
 //nolint:errcheck
@@ -205,7 +205,7 @@ func (Module) WeightedOperations(simState module.SimulationState) []simtypes.Wei
 
 // BeginBlock checks if there are any expired sell or buy orders and removes them from state.
 func (a Module) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
-	err := ecocredit.BeginBlocker(ctx, a.keeper)
+	err := server.BeginBlocker(ctx, a.Keeper)
 	if err != nil {
 		panic(err)
 	}
