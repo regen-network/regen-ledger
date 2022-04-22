@@ -239,7 +239,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	// create few batches
 	startDate := simState.GenTimestamp
 	endDate := simState.GenTimestamp.AddDate(0, 1, 0)
-	denom, err := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
+	denom, err := core.FormatDenom("C01", 1, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -259,7 +259,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C02", 2, &startDate, &endDate)
+	denom, err = core.FormatDenom("C02", 2, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	denom, err = ecocredit.FormatDenom("C03", 3, &startDate, &endDate)
+	denom, err = core.FormatDenom("C03", 3, &startDate, &endDate)
 	if err != nil {
 		return err
 	}

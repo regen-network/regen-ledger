@@ -3,6 +3,7 @@ package v3_test
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -72,9 +73,9 @@ func TestMigrations(t *testing.T) {
 
 	startDate := sdkCtx.BlockTime().UTC()
 	endDate := startDate.AddDate(2, 0, 0)
-	bd1, _ := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
-	bd2, _ := ecocredit.FormatDenom("C01", 2, &startDate, &endDate)
-	bd3, _ := ecocredit.FormatDenom("C01", 3, &startDate, &endDate)
+	bd1, _ := core.FormatDenom("C01", 1, &startDate, &endDate)
+	bd2, _ := core.FormatDenom("C01", 2, &startDate, &endDate)
+	bd3, _ := core.FormatDenom("C01", 3, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd1,
