@@ -16,7 +16,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	s := setupBase(t)
 
 	// insert 1 project
-	err := s.stateStore.ProjectInfoTable().Insert(s.ctx, &api.ProjectInfo{
+	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
 		Id:                  "P01",
 		ClassKey:            1,
 		ProjectJurisdiction: "US-CA",
@@ -27,7 +27,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	// valid query
 	res, err := s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
-	assert.Equal(t, "P01", res.Info.Id)
+	assert.Equal(t, "P01", res.Project.Id)
 
 	// invalid query
 	_, err = s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "F01"})

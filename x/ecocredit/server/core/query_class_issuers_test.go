@@ -19,7 +19,7 @@ func TestQuery_ClassIssuers(t *testing.T) {
 	// make a class with 3 issuers.
 	addrs := genAddrs(2)
 	issuers := append(addrs, s.addr)
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &ecocreditv1.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &ecocreditv1.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",

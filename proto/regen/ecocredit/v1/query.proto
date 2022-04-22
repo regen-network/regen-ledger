@@ -113,7 +113,7 @@ message QueryClassesRequest {
 message QueryClassesResponse {
 
   // classes are the fetched credit classes.
-  repeated ClassInfo classes = 1;
+  repeated Class classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -133,7 +133,7 @@ message QueryClassesByAdminRequest {
 message QueryClassesByAdminResponse {
 
   // classes are the fetched credit classes.
-  repeated ClassInfo classes = 1;
+  repeated Class classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -149,8 +149,8 @@ message QueryClassInfoRequest {
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 message QueryClassInfoResponse {
 
-  // info is the ClassInfo for the credit class.
-  ClassInfo info = 1;
+  // class is the ClassInfo for the credit class.
+  Class class = 1;
 }
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
@@ -187,7 +187,7 @@ message QueryProjectsRequest {
 message QueryProjectsResponse {
 
   // projects are the fetched projects.
-  repeated ProjectInfo projects = 1;
+  repeated Project projects = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -203,8 +203,8 @@ message QueryProjectInfoRequest {
 // QueryProjectInfoResponse is the Query/Project response type.
 message QueryProjectInfoResponse {
 
-  // info is the ProjectInfo for the project.
-  ProjectInfo info = 1;
+  // project is the ProjectInfo for the project.
+  Project project = 1;
 }
 
 // QueryBatchesRequest is the Query/Batches request type.
@@ -221,7 +221,7 @@ message QueryBatchesRequest {
 message QueryBatchesResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated Batch batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -241,7 +241,7 @@ message QueryBatchesByIssuerRequest {
 message QueryBatchesByIssuerResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated Batch batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -261,7 +261,7 @@ message QueryBatchesByClassRequest {
 message QueryBatchesByClassResponse {
 
   // batches are the fetched credit batches within the project.
-  repeated BatchInfo batches = 1;
+  repeated Batch batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -277,8 +277,8 @@ message QueryBatchInfoRequest {
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 message QueryBatchInfoResponse {
 
-  // info is the BatchInfo for the credit batch.
-  BatchInfo info = 1;
+  // batch is the BatchInfo for the credit batch.
+  Batch batch = 1;
 }
 
 // QueryBalanceRequest is the Query/Balance request type.

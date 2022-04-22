@@ -24,19 +24,19 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchInfoTable().List(ctx, ecocreditv1.BatchInfoIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchTable().List(ctx, ecocreditv1.BatchIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	batches := make([]*core.BatchInfo, 0, 8)
+	batches := make([]*core.Batch, 0, 8)
 
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var batch core.BatchInfo
+		var batch core.Batch
 		if err = ormutil.PulsarToGogoSlow(v, &batch); err != nil {
 			return nil, err
 		}

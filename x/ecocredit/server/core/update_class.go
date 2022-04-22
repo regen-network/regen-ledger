@@ -25,7 +25,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -35,7 +35,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 	classInfo.Admin = newAdmin
-	if err = k.stateStore.ClassInfoTable().Update(ctx, classInfo); err != nil {
+	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 
@@ -58,7 +58,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		return nil, err
 	}
 
-	class, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
+	class, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -119,7 +119,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, err
 	}
 
-	classInfo, err := k.stateStore.ClassInfoTable().GetById(ctx, req.ClassId)
+	classInfo, err := k.stateStore.ClassTable().GetById(ctx, req.ClassId)
 	if err != nil {
 		return nil, sdkerrors.ErrNotFound.Wrapf("class %s not found", req.ClassId)
 	}
@@ -131,7 +131,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 
 	oldMetadata := classInfo.Metadata
 	classInfo.Metadata = req.Metadata
-	if err = k.stateStore.ClassInfoTable().Update(ctx, classInfo); err != nil {
+	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 
