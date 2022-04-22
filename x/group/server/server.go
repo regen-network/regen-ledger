@@ -7,6 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/exported"
 )
@@ -210,6 +211,6 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper expo
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 
 	// Require servers from external modules for ADR 033 message routing
-	//configurator.RequireServer((*ecocredit.MsgServer)(nil))
+	configurator.RequireServer((*core.MsgServer)(nil))
 	configurator.RequireServer((*data.MsgServer)(nil))
 }
