@@ -17704,7 +17704,7 @@ type QueryClassInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class is the ClassInfo for the credit class.
+	// class is the fetched credit class.
 	Class *ClassInfo `protobuf:"bytes,1,opt,name=class,proto3" json:"class,omitempty"`
 }
 
@@ -17962,7 +17962,7 @@ type QueryProjectInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// project is the ProjectInfo for the project.
+	// project is the fetched project.
 	Project *ProjectInfo `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 }
 
@@ -18045,7 +18045,7 @@ type QueryBatchesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -18137,7 +18137,7 @@ type QueryBatchesByIssuerResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -18229,7 +18229,7 @@ type QueryBatchesByClassResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -18312,7 +18312,7 @@ type QueryBatchInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// batch is the BatchInfo for the credit batch.
+	// batch is the fetched credit batch.
 	Batch *BatchInfo `protobuf:"bytes,1,opt,name=batch,proto3" json:"batch,omitempty"`
 }
 
@@ -18647,7 +18647,7 @@ type QueryCreditTypesResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// credit_types is a list of credit types.
+	// credit_types are the fetched credit types.
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
@@ -18894,7 +18894,8 @@ type BatchInfo struct {
 	// project_id is the unique identifier of the project within which this credit
 	// batch was created.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// denom is the unique identifier of the credit batch formed from the project name, batch sequence number and dates.
+	// denom is the unique identifier of the credit batch formed from the project
+	// name, batch sequence number and dates.
 	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 	// metadata is any arbitrary metadata attached to the credit batch.
 	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`

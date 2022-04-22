@@ -3,6 +3,7 @@ package core
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -15,24 +16,25 @@ func TestQuery_Balance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	noBalanceAddr := genAddrs(1)[0]
-	batchDenom := "C01-20200101-20220101-001"
-	tradable := "10.54321"
-	retired := "50.3214"
+	batchDenom := "C01-20200101-20210101-001"
 
-	// make a batch and give s.addr some balance
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
+	// insert batch
+	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		Denom: batchDenom,
-	}))
-	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: 1,
-		Address:  s.addr,
-		Tradable: tradable,
-		Retired:  retired,
-	}))
+	})
+	assert.NilError(t, err)
 
-	// valid query
+	balance := &api.BatchBalance{
+		BatchKey: bKey,
+		Address:  s.addr,
+		Tradable: "10.54321",
+		Retired:  "50.3214",
+	}
+
+	// insert balance for s.addr
+	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance))
+
+	// query balance for s.addr
 	res, err := s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: batchDenom,
@@ -40,21 +42,23 @@ func TestQuery_Balance(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, s.addr.String(), res.Balance.Address)
 	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
-	assert.Equal(t, tradable, res.Balance.Tradable)
-	assert.Equal(t, retired, res.Balance.Retired)
+	assert.Equal(t, balance.Tradable, res.Balance.Tradable)
+	assert.Equal(t, balance.Retired, res.Balance.Retired)
 
-	// random addr should just give 0
+	_, _, noBalance := testdata.KeyTestPubAddr()
+
+	// query balance for address with no balance
 	res, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    noBalanceAddr.String(),
+		Account:    noBalance.String(),
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, noBalanceAddr.String(), res.Balance.Address)
+	assert.Equal(t, noBalance.String(), res.Balance.Address)
 	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
 	assert.Equal(t, "0", res.Balance.Tradable)
 	assert.Equal(t, "0", res.Balance.Retired)
 
-	// query with invalid batch should return not found
+	// query balance with unknown batch denom
 	_, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    s.addr.String(),
 		BatchDenom: "A00-00000000-00000000-001",

@@ -113,11 +113,11 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expectErr         bool
-		expectedErrMsg    string
-		expectedClassInfo *core.ClassInfo
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		expectedClass  *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			name:      "valid credit class",
 			args:      []string{classId},
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
+			expectedClass: &core.ClassInfo{
 				Id:               classId,
 				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,
@@ -156,7 +156,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 				var res core.QueryClassInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedClassInfo, res.Class)
+				s.Require().Equal(tc.expectedClass, res.Class)
 			}
 		})
 	}

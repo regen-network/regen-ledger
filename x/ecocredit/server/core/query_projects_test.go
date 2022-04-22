@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"

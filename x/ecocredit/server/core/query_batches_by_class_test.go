@@ -1,14 +1,12 @@
 package core
 
 import (
-	"context"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -50,11 +48,11 @@ func TestQuery_BatchesByClass(t *testing.T) {
 		IssuanceDate: timestamppb.New(issuanceTime),
 	}
 
-	// insert three batches that are valid "C01" credit batches
+	// insert two batches that are "C01" credit batches
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch1))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C01-20200101-20210101-002"}))
 
-	// insert three batches that are not "C01" credit batches
+	// insert two batches that are not "C01" credit batches
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C011-20200101-20210101-001"}))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "BIO1-20200101-20210101-001"}))
 
@@ -65,30 +63,10 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
-	assert.Equal(t, uint64(2), res.Pagination.Total)
 	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
+	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// query batches by unknown credit class
 	_, err = s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{ClassId: "A00"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-}
-
-func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchInfo, batch *api.Batch) {
-	issuer := sdk.AccAddress(batch.Issuer)
-
-	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
-	assert.NilError(t, err)
-
-	info := core.BatchInfo{
-		Issuer:       issuer.String(),
-		ProjectId:    project.Id,
-		Denom:        batch.Denom,
-		Metadata:     batch.Metadata,
-		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
-		EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
-		IssuanceDate: types.ProtobufToGogoTimestamp(batch.IssuanceDate),
-		Open:         batch.Open,
-	}
-
-	assert.DeepEqual(t, info, *received)
 }

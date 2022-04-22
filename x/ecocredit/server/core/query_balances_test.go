@@ -22,34 +22,29 @@ func TestQuery_Balances(t *testing.T) {
 	assert.NilError(t, err)
 	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-20200101-20220101-001"})
 	assert.NilError(t, err)
-	bKey3, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C03-20200101-20220101-001"})
-	assert.NilError(t, err)
 
 	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, Tradable: "15", Retired: "15", Escrowed: "15"}
 	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: bKey2, Tradable: "19", Retired: "20", Escrowed: "33"}
 
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance1))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance2))
-	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: bKey3,
-		Address:  s.addr,
-		Tradable: "4",
-		Retired:  "5",
-		Escrowed: "6",
-	}))
 
+	// query balances for s.addr
 	res, err := s.k.Balances(s.ctx, &core.QueryBalancesRequest{
 		Account:    s.addr.String(),
-		Pagination: &query.PageRequest{CountTotal: true, Limit: 2},
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.Balances))
+	assert.Equal(t, 1, len(res.Balances))
 	assertBalanceEqual(t, s.ctx, s.k, res.Balances[0], balance1)
-	assertBalanceEqual(t, s.ctx, s.k, res.Balances[1], balance2)
-	assert.Equal(t, uint64(3), res.Pagination.Total)
+	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	_, _, noBalAddr := testdata.KeyTestPubAddr()
-	res, err = s.k.Balances(s.ctx, &core.QueryBalancesRequest{Account: noBalAddr.String()})
+
+	// query balances for address with no balance
+	res, err = s.k.Balances(s.ctx, &core.QueryBalancesRequest{
+		Account: noBalAddr.String(),
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.Balances))
 }

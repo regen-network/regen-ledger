@@ -289,7 +289,7 @@ func (m *QueryClassInfoRequest) GetClassId() string {
 
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 type QueryClassInfoResponse struct {
-	// class is the ClassInfo for the credit class.
+	// class is the fetched credit class.
 	Class *ClassInfo `protobuf:"bytes,1,opt,name=class,proto3" json:"class,omitempty"`
 }
 
@@ -601,7 +601,7 @@ func (m *QueryProjectInfoRequest) GetProjectId() string {
 
 // QueryProjectInfoResponse is the Query/Project response type.
 type QueryProjectInfoResponse struct {
-	// project is the ProjectInfo for the project.
+	// project is the fetched project.
 	Project *ProjectInfo `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 }
 
@@ -702,7 +702,7 @@ func (m *QueryBatchesRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 type QueryBatchesResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -812,7 +812,7 @@ func (m *QueryBatchesByIssuerRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
 type QueryBatchesByIssuerResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -922,7 +922,7 @@ func (m *QueryBatchesByClassRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesByClassResponse is the Query/BatchesByClass response type.
 type QueryBatchesByClassResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1023,7 +1023,7 @@ func (m *QueryBatchInfoRequest) GetBatchDenom() string {
 
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 type QueryBatchInfoResponse struct {
-	// batch is the BatchInfo for the credit batch.
+	// batch is the fetched credit batch.
 	Batch *BatchInfo `protobuf:"bytes,1,opt,name=batch,proto3" json:"batch,omitempty"`
 }
 
@@ -1431,7 +1431,7 @@ var xxx_messageInfo_QueryCreditTypesRequest proto.InternalMessageInfo
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 type QueryCreditTypesResponse struct {
-	// credit_types is a list of credit types.
+	// credit_types are the fetched credit types.
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
@@ -1724,7 +1724,8 @@ type BatchInfo struct {
 	// project_id is the unique identifier of the project within which this credit
 	// batch was created.
 	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	// denom is the unique identifier of the credit batch formed from the project name, batch sequence number and dates.
+	// denom is the unique identifier of the credit batch formed from the project
+	// name, batch sequence number and dates.
 	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 	// metadata is any arbitrary metadata attached to the credit batch.
 	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`

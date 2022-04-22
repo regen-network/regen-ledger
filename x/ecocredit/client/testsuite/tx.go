@@ -124,12 +124,12 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 	feeStr := fee.String()
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expectErr         bool
-		expectedErrMsg    string
-		respCode          uint32
-		expectedClassInfo *core.ClassInfo
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		respCode       uint32
+		expectedClass  *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
+			expectedClass: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer with from key-name",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom("node0"))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
+			expectedClass: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -175,7 +175,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON))...),
 			expectErr: false,
-			expectedClassInfo: &core.ClassInfo{
+			expectedClass: &core.ClassInfo{
 				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
@@ -219,9 +219,9 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 									var queryRes core.QueryClassInfoResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-									s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Class.Admin)
-									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Class.Metadata)
-									s.Require().Equal(tc.expectedClassInfo.CreditTypeAbbrev, queryRes.Class.CreditTypeAbbrev)
+									s.Require().Equal(tc.expectedClass.Admin, queryRes.Class.Admin)
+									s.Require().Equal(tc.expectedClass.Metadata, queryRes.Class.Metadata)
+									s.Require().Equal(tc.expectedClass.CreditTypeAbbrev, queryRes.Class.CreditTypeAbbrev)
 								}
 							}
 						}
@@ -283,12 +283,12 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expectErr         bool
-		errInTxResponse   bool
-		expectedErrMsg    string
-		expectedBatchInfo *core.BatchInfo
+		name            string
+		args            []string
+		expectErr       bool
+		errInTxResponse bool
+		expectedErrMsg  string
+		expectedBatch   *core.BatchInfo
 	}{
 		{
 			name:           "missing args",
@@ -335,7 +335,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &core.BatchInfo{
+			expectedBatch: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},
@@ -349,7 +349,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &core.BatchInfo{
+			expectedBatch: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},
@@ -364,7 +364,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatchInfo: &core.BatchInfo{
+			expectedBatch: &core.BatchInfo{
 				Issuer: val.Address.String(),
 			},
 		},
@@ -412,7 +412,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 								s.Require().NoError(err, queryOut.String())
 								var queryRes core.QueryBatchInfoResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
-								s.Require().Equal(tc.expectedBatchInfo.Issuer, queryRes.Batch.Issuer)
+								s.Require().Equal(tc.expectedBatch.Issuer, queryRes.Batch.Issuer)
 
 							}
 						}

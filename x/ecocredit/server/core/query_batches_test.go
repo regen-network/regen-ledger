@@ -1,9 +1,12 @@
 package core
 
 import (
+	"context"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -44,9 +47,30 @@ func TestQuery_Batches(t *testing.T) {
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Batches))
+	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	// query by unknown project
 	_, err = s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+}
+
+func assertBatchEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchInfo, batch *api.Batch) {
+	issuer := sdk.AccAddress(batch.Issuer)
+
+	project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
+	assert.NilError(t, err)
+
+	info := core.BatchInfo{
+		Issuer:       issuer.String(),
+		ProjectId:    project.Id,
+		Denom:        batch.Denom,
+		Metadata:     batch.Metadata,
+		StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
+		EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
+		IssuanceDate: types.ProtobufToGogoTimestamp(batch.IssuanceDate),
+		Open:         batch.Open,
+	}
+
+	assert.DeepEqual(t, info, *received)
 }
