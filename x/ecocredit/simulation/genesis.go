@@ -286,7 +286,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	cKey1, err := createClass(ctx, ss, &api.Class{
 		Id:               "C01",
 		Admin:            accs[0].Address,
-		Metadata:         simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100)),
+		Metadata:         metadata,
 		CreditTypeAbbrev: "C",
 	})
 	if err != nil {
@@ -416,8 +416,16 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		BatchKey: bKey2,
 		Address:  accs[2].Address,
 		Tradable: "100",
-		Escrowed: "10",
 		Retired:  "10",
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+		BatchKey: bKey2,
+		Address:  accs[1].Address,
+		Tradable: "100",
+		Retired:  "0",
 	}); err != nil {
 		return err
 	}
@@ -433,7 +441,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
 		BatchKey:       bKey2,
-		TradableAmount: "110",
+		TradableAmount: "200",
 		RetiredAmount:  "10",
 	}); err != nil {
 		return err
