@@ -75,7 +75,6 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	if err != nil {
 		return err
 	}
-	defer ctItr.Close()
 	for ctItr.Next() {
 		ct, err := ctItr.Value()
 		if err != nil {
@@ -83,6 +82,7 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 		}
 		abbrevToPrecision[ct.Abbreviation] = ct.Precision
 	}
+	ctItr.Close()
 
 	cItr, err := ss.ClassTable().List(ormCtx, api.ClassPrimaryKey{})
 	if err != nil {
