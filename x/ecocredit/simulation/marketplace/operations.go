@@ -53,8 +53,8 @@ func WeightedOperations(
 	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simulation.WeightedOperations {
 
 	var (
-		weightMsgAllowAskDenom int
-		// weightMsgBuyDirect       int
+		weightMsgAllowAskDenom   int
+		weightMsgBuyDirect       int
 		weightMsgSell            int
 		weightMsgUpdateSellOrder int
 		weightMsgCancelSellOrder int
@@ -66,11 +66,11 @@ func WeightedOperations(
 		},
 	)
 
-	// appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgBuyDirect = WeightBuyDirect
-	// 	},
-	// )
+	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,
+		func(_ *rand.Rand) {
+			weightMsgBuyDirect = WeightBuyDirect
+		},
+	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgSell, &weightMsgSell, nil,
 		func(_ *rand.Rand) {
@@ -91,10 +91,10 @@ func WeightedOperations(
 	)
 
 	return simulation.WeightedOperations{
-		// simulation.NewWeightedOperation(
-		// 	weightMsgBuyDirect,
-		// 	SimulateMsgBuyDirect(ak, bk, qryClient, mktQryClient),
-		// ),
+		simulation.NewWeightedOperation(
+			weightMsgBuyDirect,
+			SimulateMsgBuyDirect(ak, bk, qryClient, mktQryClient),
+		),
 		simulation.NewWeightedOperation(
 			weightMsgSell,
 			SimulateMsgSell(ak, bk, qryClient),
@@ -132,7 +132,7 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		max := 1
 		if len(sellOrders) > 1 {
-			max = simtypes.RandIntBetween(r, 2, len(sellOrders))
+			max = simtypes.RandIntBetween(r, 1, len(sellOrders))
 		}
 
 		buyOrders := make([]*marketplace.MsgBuyDirect_Order, max)
