@@ -16,8 +16,8 @@ import (
 
 const (
 	// ModuleName is the module name constant used in many places
-	ModuleName = "ecocredit"
-
+	ModuleName        = "ecocredit"
+	RouterKey         = ModuleName
 	DefaultParamspace = ModuleName
 
 	TradableBalancePrefix    byte = 0x0

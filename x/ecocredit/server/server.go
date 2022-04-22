@@ -19,28 +19,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/marketplace"
 )
 
-const (
-	ProjectInfoTablePrefix    byte = 0x10
-	ProjectInfoTableSeqPrefix byte = 0x11
-	ProjectsByClassIDIndex    byte = 0x12
-	BatchesByProjectIndex     byte = 0x13
-
-	// sell order table
-	SellOrderTablePrefix             byte = 0x20
-	SellOrderTableSeqPrefix          byte = 0x21
-	SellOrderByExpirationIndexPrefix byte = 0x22
-	SellOrderByAddressIndexPrefix    byte = 0x23
-	SellOrderByBatchDenomIndexPrefix byte = 0x24
-
-	// buy order table
-	BuyOrderTablePrefix             byte = 0x25
-	BuyOrderTableSeqPrefix          byte = 0x26
-	BuyOrderByExpirationIndexPrefix byte = 0x27
-	BuyOrderByAddressIndexPrefix    byte = 0x28
-
-	AskDenomTablePrefix byte = 0x30
-)
-
 type serverImpl struct {
 	storeKey sdk.StoreKey
 
@@ -54,6 +32,10 @@ type serverImpl struct {
 
 	db         ormdb.ModuleDB
 	stateStore api.StateStore
+}
+
+func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.AddCreditType(ctx, ctp)
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -101,7 +83,7 @@ func RegisterServices(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
+) Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper)
 
 	coretypes.RegisterMsgServer(configurator.MsgServer(), impl.coreKeeper)
