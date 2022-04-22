@@ -16,19 +16,19 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 	if err != nil {
 		return nil, err
 	}
-	it, err := k.stateStore.ClassInfoTable().List(ctx, &api.ClassInfoPrimaryKey{}, ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassTable().List(ctx, &api.ClassPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	infos := make([]*core.ClassInfo, 0)
+	infos := make([]*core.Class, 0)
 	for it.Next() {
 		info, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var ci core.ClassInfo
+		var ci core.Class
 		if err = ormutil.PulsarToGogoSlow(info, &ci); err != nil {
 			return nil, err
 		}

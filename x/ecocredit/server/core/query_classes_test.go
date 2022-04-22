@@ -14,14 +14,14 @@ import (
 func TestQuery_Classes(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	err := s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	})
 	assert.NilError(t, err)
-	err = s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{
+	err = s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               "C02",
 		Admin:            s.addr,
 		Metadata:         "",
