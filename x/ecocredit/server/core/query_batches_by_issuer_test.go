@@ -51,6 +51,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 		Denom:  "C01-20200101-20210101-002",
 	}))
 
+	// query batches by issuer s.addr
 	res, err := s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{
 		Issuer:     s.addr.String(),
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
@@ -60,14 +61,14 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch1)
 
-	// query batches by an invalid address
-	_, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: "foobar"})
-	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
-
 	_, _, notIssuer := testdata.KeyTestPubAddr()
 
 	// query batches by an address that is not an issuer
 	res, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: notIssuer.String()})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.Batches))
+
+	// query batches by an invalid address
+	_, err = s.k.BatchesByIssuer(s.ctx, &core.QueryBatchesByIssuerRequest{Issuer: "foobar"})
+	assert.ErrorContains(t, err, sdkerrors.ErrInvalidAddress.Error())
 }

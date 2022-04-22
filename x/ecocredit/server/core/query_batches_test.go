@@ -4,14 +4,14 @@ import (
 	"context"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -33,14 +33,14 @@ func TestQuery_Batches(t *testing.T) {
 		EndDate:    nil,
 	}
 
-	// insert two batches that are valid "P01" credit batches
+	// insert two batches issued under the "P01" project
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: pKey,
 		Denom:      "C01-20200101-20220101-002",
 	}))
 
-	// query batches by "P01" project
+	// query batches by the "P01" project
 	res, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{
 		ProjectId:  "P01",
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
@@ -50,7 +50,7 @@ func TestQuery_Batches(t *testing.T) {
 	assertBatchEqual(t, s.ctx, s.k, res.Batches[0], batch)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 
-	// query by unknown project
+	// query batches by unknown project
 	_, err = s.k.Batches(s.ctx, &core.QueryBatchesRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
