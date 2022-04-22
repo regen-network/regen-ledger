@@ -3,15 +3,15 @@ package core
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 

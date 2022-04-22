@@ -3,10 +3,10 @@ package core
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"

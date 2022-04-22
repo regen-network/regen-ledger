@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"gotest.tools/v3/assert"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 

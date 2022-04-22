@@ -25,7 +25,7 @@ func TestQuery_ClassInfo(t *testing.T) {
 	err := s.stateStore.ClassTable().Insert(s.ctx, class)
 	assert.NilError(t, err)
 
-	// query classes by the "C01" class id
+	// query class by the "C01" class id
 	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: class.Id})
 	assert.NilError(t, err)
 	assert.Equal(t, class.Id, res.Class.Id)
@@ -33,7 +33,7 @@ func TestQuery_ClassInfo(t *testing.T) {
 	assert.Equal(t, class.Metadata, res.Class.Metadata)
 	assert.Equal(t, class.CreditTypeAbbrev, res.Class.CreditTypeAbbrev)
 
-	// query classes by an unknown class id
+	// query class by an unknown class id
 	_, err = s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C02"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
