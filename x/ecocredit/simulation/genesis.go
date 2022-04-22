@@ -253,10 +253,10 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// create few projects
-	pKey1, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{
-			ClassKey:            cKey1,
-			Id:                  "Project1",
+	pKey1, err := ss.ProjectTable().InsertReturningID(ctx,
+		&api.Project{
+			Key:                 cKey1,
+			Id:                  "P01",
 			Admin:               accs[0].Address,
 			ProjectJurisdiction: "AQ",
 			Metadata:            metadata,
@@ -266,13 +266,13 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	pKey2, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-		&api.ProjectInfo{
-			ClassKey:            cKey2,
+	pKey2, err := ss.ProjectTable().InsertReturningID(ctx,
+		&api.Project{
+			Key:                 cKey2,
+			Id:                  "P02",
 			Admin:               accs[1].Address,
 			ProjectJurisdiction: "AQ",
 			Metadata:            metadata,
-			Id:                  "C0201",
 		},
 	)
 	if err != nil {
@@ -306,7 +306,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[0].Address,
 			ProjectKey:   pKey1,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate),
 			EndDate:      timestamppb.New(endDate),
 			Metadata:     metadata,
@@ -326,7 +326,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[1].Address,
 			ProjectKey:   pKey1,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,
@@ -346,7 +346,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		&api.BatchInfo{
 			Issuer:       accs[2].Address,
 			ProjectKey:   pKey2,
-			BatchDenom:   denom,
+			Denom:        denom,
 			StartDate:    timestamppb.New(startDate.UTC()),
 			EndDate:      timestamppb.New(endDate.UTC()),
 			Metadata:     metadata,

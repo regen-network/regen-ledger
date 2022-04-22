@@ -17,9 +17,9 @@ func TestQueryClassesByAdmin(t *testing.T) {
 	s := setupBase(t)
 	_, _, addr := testdata.KeyTestPubAddr()
 	_, _, noClasses := testdata.KeyTestPubAddr()
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C01", Admin: s.addr, CreditTypeAbbrev: "C"}))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C02", Admin: s.addr, CreditTypeAbbrev: "C"}))
-	assert.NilError(t, s.stateStore.ClassInfoTable().Insert(s.ctx, &api.ClassInfo{Id: "C03", Admin: addr, CreditTypeAbbrev: "C"}))
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{Id: "C01", Admin: s.addr, CreditTypeAbbrev: "C"}))
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{Id: "C02", Admin: s.addr, CreditTypeAbbrev: "C"}))
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{Id: "C03", Admin: addr, CreditTypeAbbrev: "C"}))
 
 	// valid query
 	res, err := s.k.ClassesByAdmin(s.ctx, &core.QueryClassesByAdminRequest{Admin: s.addr.String(), Pagination: &query.PageRequest{Limit: 1, CountTotal: true}})

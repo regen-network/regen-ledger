@@ -83,6 +83,10 @@ type serverImpl struct {
 	stateStore api.StateStore
 }
 
+func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.AddCreditType(ctx, ctp)
+}
+
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
@@ -248,7 +252,7 @@ func RegisterServices(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
+) Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
