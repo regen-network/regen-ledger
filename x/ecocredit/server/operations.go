@@ -14,14 +14,12 @@ import (
 // WeightedOperations returns all the ecocredit module operations with their respective weights.
 func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	key := s.storeKey.(servermodule.RootModuleKey)
-	queryClient := core.NewQueryClient(key)
-	basketQryClient := basket.NewQueryClient(key)
 
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
 		s.accountKeeper, s.bankKeeper,
-		queryClient,
-		basketQryClient,
+		core.NewQueryClient(key),
+		basket.NewQueryClient(key),
 		marketplace.NewQueryClient(key),
 	)
 }

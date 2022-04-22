@@ -30,7 +30,7 @@ const (
 	typeCreditTypes      = "credit_types"
 )
 
-func genAskedDenoms() []*core.AskDenom {
+func genAskDenoms() []*core.AskDenom {
 	return []*core.AskDenom{
 		{
 			Denom:        "stake",
@@ -133,7 +133,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		AllowlistEnabled:     allowListEnabled,
 		CreditTypes:          creditTypes,
 		BasketFee:            basketCreationFee,
-		AllowedAskDenoms:     genAskedDenoms(),
+		AllowedAskDenoms:     genAskDenoms(),
 	}
 
 	db := dbm.NewMemDB()
@@ -195,8 +195,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
 	// create few classes
-	cKey1, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{
+	cKey1, err := ss.ClassTable().InsertReturningID(ctx,
+		&api.Class{
 			Id:               "C01",
 			Admin:            accs[0].Address,
 			Metadata:         simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100)),
@@ -207,8 +207,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	cKey2, err := ss.ClassInfoTable().InsertReturningID(ctx,
-		&api.ClassInfo{
+	cKey2, err := ss.ClassTable().InsertReturningID(ctx,
+		&api.Class{
 			Id:               "C02",
 			Admin:            accs[1].Address,
 			Metadata:         metadata,
@@ -302,8 +302,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey1, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey1, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[0].Address,
 			ProjectKey:   pKey1,
 			Denom:        denom,
@@ -322,8 +322,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey2, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey2, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[1].Address,
 			ProjectKey:   pKey1,
 			Denom:        denom,
@@ -342,8 +342,8 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	bKey3, err := ss.BatchInfoTable().InsertReturningID(ctx,
-		&api.BatchInfo{
+	bKey3, err := ss.BatchTable().InsertReturningID(ctx,
+		&api.Batch{
 			Issuer:       accs[2].Address,
 			ProjectKey:   pKey2,
 			Denom:        denom,

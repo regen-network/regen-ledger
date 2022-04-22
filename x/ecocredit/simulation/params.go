@@ -68,7 +68,7 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 
 		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyAllowedAskDenoms),
 			func(r *rand.Rand) string {
-				bz, err := json.Marshal(genAskedDenoms())
+				bz, err := json.Marshal(genAskDenoms())
 				if err != nil {
 					panic(err)
 				}

@@ -213,7 +213,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		sellOrders := make([]*marketplace.MsgSell_Order, max)
 		for i := 0; i < max; i++ {
-			bal, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{Account: ownerAddr, BatchDenom: batches[i].BatchDenom})
+			bal, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{Account: ownerAddr, BatchDenom: batches[i].Denom})
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}
@@ -240,10 +240,10 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			askPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, int64(simtypes.RandIntBetween(r, 1, 50)))
 			sellOrders[i] = &marketplace.MsgSell_Order{
-				BatchDenom:        batches[i].BatchDenom,
+				BatchDenom:        batches[i].Denom,
 				Quantity:          fmt.Sprintf("%d", quantity),
 				AskPrice:          &askPrice,
-				DisableAutoRetire: r.Int63n(101) <= 30,
+				DisableAutoRetire: r.Int63n(101) <= 30, // 30% chance of disable auto-retire
 				Expiration:        &exp,
 			}
 		}
@@ -323,7 +323,7 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 					}
 				}(),
 				NewAskPrice:       &askPrice,
-				DisableAutoRetire: r.Int63n(101) <= 30,
+				DisableAutoRetire: r.Int63n(101) <= 30, // 30% chance of disable auto-retire
 				NewExpiration:     &exp,
 			}
 		}
