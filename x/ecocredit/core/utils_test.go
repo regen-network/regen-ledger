@@ -9,44 +9,14 @@ import (
 )
 
 func TestUtils(t *testing.T) {
-	t.Run("TestFormatClassID", rapid.MakeCheck(testFormatClassID))
+	t.Run("TestFormatClassID", rapid.MakeCheck(testFormatClassId))
 	t.Run("TestInvalidClassID", rapid.MakeCheck(testInvalidClassID))
-	t.Run("TestValidateFormatDenom", rapid.MakeCheck(testValidateFormatDenom))
+	t.Run("TestFormatBatchDenom", rapid.MakeCheck(testFormatBatchDenom))
 	t.Run("TestInvalidBatchDenom", rapid.MakeCheck(testInvalidBatchDenom))
 	t.Run("TestGetClassIdFromBatchDenom", rapid.MakeCheck(testGetClassIdFromBatchDenom))
 }
 
-// genCreditType generates an empty credit type with a random valid abbreviation
-var genCreditType = rapid.Custom(func(t *rapid.T) *CreditType {
-	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr").(string)
-	return &CreditType{
-		Abbreviation: abbr,
-	}
-})
-
-// genInvalidClassID generates strings that don't conform to the class id format
-var genInvalidClassID = rapid.OneOf(
-	rapid.StringMatching(`[a-zA-Z]*`),
-	rapid.StringMatching(`[0-9]*`),
-	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
-)
-
-// genInvalidBatchDenom generates strings that don't conform to the batch denom format
-var genInvalidBatchDenom = rapid.OneOf(
-	genInvalidClassID,
-	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
-)
-
-// genTime generates time values up to the year ~9999 to avoid overflowing the
-// denomination format.
-var genTime = rapid.Custom(func(t *rapid.T) *time.Time {
-	secs := rapid.Int64Range(0, 2e11).Draw(t, "secs").(int64)
-	nanos := rapid.Int64Range(0, 1e15).Draw(t, "nanos").(int64)
-	time := time.Unix(secs, nanos)
-	return &time
-})
-
-func testFormatClassID(t *rapid.T) {
+func testFormatClassId(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 
@@ -57,11 +27,11 @@ func testFormatClassID(t *rapid.T) {
 }
 
 func testInvalidClassID(t *rapid.T) {
-	classID := genInvalidClassID.Draw(t, "classID").(string)
+	classID := genInvalidClassId.Draw(t, "classID").(string)
 	require.Error(t, ValidateClassID(classID))
 }
 
-func testValidateFormatDenom(t *rapid.T) {
+func testFormatBatchDenom(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 	batchSeqNo := rapid.Uint64().Draw(t, "batchSeqNo").(uint64)
@@ -100,3 +70,33 @@ func testGetClassIdFromBatchDenom(t *rapid.T) {
 
 	require.Equal(t, classId, result)
 }
+
+// genCreditType generates an empty credit type with a random valid abbreviation
+var genCreditType = rapid.Custom(func(t *rapid.T) *CreditType {
+	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr").(string)
+	return &CreditType{
+		Abbreviation: abbr,
+	}
+})
+
+// genInvalidClassId generates strings that don't conform to the class id format
+var genInvalidClassId = rapid.OneOf(
+	rapid.StringMatching(`[a-zA-Z]*`),
+	rapid.StringMatching(`[0-9]*`),
+	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
+)
+
+// genInvalidBatchDenom generates strings that don't conform to the batch denom format
+var genInvalidBatchDenom = rapid.OneOf(
+	genInvalidClassId,
+	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
+)
+
+// genTime generates time values up to the year ~9999 to avoid overflowing the
+// denomination format.
+var genTime = rapid.Custom(func(t *rapid.T) *time.Time {
+	secs := rapid.Int64Range(0, 2e11).Draw(t, "secs").(int64)
+	nanos := rapid.Int64Range(0, 1e15).Draw(t, "nanos").(int64)
+	time := time.Unix(secs, nanos)
+	return &time
+})

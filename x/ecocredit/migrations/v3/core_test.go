@@ -3,7 +3,6 @@ package v3_test
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -20,6 +19,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regenorm "github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 

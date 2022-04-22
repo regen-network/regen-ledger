@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	orm "github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 type batchMapT struct {
