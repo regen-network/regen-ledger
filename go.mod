@@ -23,6 +23,8 @@ require (
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf // indirect
 )
 
+require github.com/regen-network/regen-ledger/x/axelarbridge v0.0.0-00010101000000-000000000000
+
 require (
 	filippo.io/edwards25519 v1.0.0-beta.2 // indirect
 	github.com/99designs/keyring v1.1.6 // indirect
