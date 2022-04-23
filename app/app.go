@@ -97,6 +97,7 @@ import (
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
 
@@ -544,7 +545,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			transferModule,
 			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 			data.NewModule(app.AccountKeeper, app.BankKeeper),
-			bridgemodule.NewModule(ecocredit.NewRegenAxelarHandler(app.MsgServiceRouter())),
+			bridgemodule.NewModule(ecocreditcore.NewRegenBridgeHandler(app.appCodec, app.MsgServiceRouter())),
 		}, app.setCustomSimulationManager()...)...,
 	)
 

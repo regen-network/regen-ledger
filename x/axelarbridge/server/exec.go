@@ -24,7 +24,7 @@ func (s serverImpl) ExecBridgeEvent(ctx context.Context, req *axelarbridge.MsgEx
 	if !ok {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("Undefined handler: " + event.Handler)
 	}
-	if err := handler(ctx, event.SrcChain, event.Sender, event.Payload); err != nil {
+	if err := handler(ctx, *event); err != nil {
 		return nil, err
 	}
 

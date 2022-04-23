@@ -77,3 +77,19 @@ message CreditTypeProposal {
   // passes.
   CreditType credit_type = 3;
 }
+
+// ToucanPayload is the payload to be passed.
+message ToucanPayload {
+  // recipient is the account of the recipient.
+  string recipient = 1;
+
+  // tco2_contract_address is the ERC20 smart contract of the TC02 token on Toucan.
+  string tco2_contract_address = 2;
+
+  // amount is the number of credits in this issuance that can be
+  // traded by this recipient. Decimal values are acceptable.
+  string amount = 3;
+
+  // reference note for accounting, will be passed to an event
+  string note = 4;
+}
