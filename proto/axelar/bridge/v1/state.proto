@@ -1,11 +1,18 @@
 syntax = "proto3";
 package axelar.bridge.v1;
 
+import "cosmos/orm/v1alpha1/orm.proto";
 import "google/protobuf/any.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
 
 message Event {
+  option (cosmos.orm.v1alpha1.table) = {
+    id : 1,
+    primary_key : {fields : "event_id"}
+    index : {id : 1, fields : "sender_address", unique : true}
+  };
+
   string event_id = 1;
 
   string sender_address = 2;
