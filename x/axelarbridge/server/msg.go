@@ -3,7 +3,9 @@ package server
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	api "github.com/regen-network/regen-ledger/api/axelar/bridge/v1"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
 )
@@ -27,5 +29,11 @@ func (s serverImpl) RecordBridgeEvent(ctx context.Context, req *axelarbridge.Msg
 }
 
 func (s serverImpl) SendBridgeEvent(ctx context.Context, req *axelarbridge.MsgSendBridgeEvent) (*axelarbridge.MsgSendBridgeEventResponse, error) {
-	panic("todo")
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	err := sdkCtx.EventManager().EmitTypedEvent(&axelarbridge.SendBridgeEvent{
+		Sender:  req.Sender,
+		Handler: req.Handler,
+		Payload: req.Payload,
+	})
+	return &axelarbridge.MsgSendBridgeEventResponse{}, err
 }

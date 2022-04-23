@@ -1,0 +1,17 @@
+syntax = "proto3";
+package axelar.bridge.v1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/axelarbridge";
+
+// SendBridgeEvent is a Tendermint type for the Msg/SendBridgeEvent
+// Bridge is going to listen for this events and enhance the message with
+// chain ID and origin Tx ID.
+message SendBridgeEvent {
+  string sender = 1;
+  string handler = 2;
+  bytes payload = 3;
+}

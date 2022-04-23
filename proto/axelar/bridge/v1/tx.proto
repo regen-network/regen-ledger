@@ -43,9 +43,8 @@ message MsgExecBridgeEventResponse {}
 
 message MsgSendBridgeEvent {
   string sender = 1;
-  string chain = 2;
-  string handler = 3;
-  bytes payload = 4;
+  string handler = 2;
+  bytes payload = 3;
 }
 
 // MsgMsgSendBridgeEventResponse defines the Msg/ExecLegacyContent response
