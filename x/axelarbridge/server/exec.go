@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
 )
 
@@ -19,7 +20,13 @@ func (s serverImpl) ExecBridgeEvent(ctx context.Context, req *axelarbridge.MsgEx
 		return nil, err
 	}
 
-	// TODO handler
+	handler, ok := s.handlers[event.Handler]
+	if !ok {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("Undefined handler: " + event.Handler)
+	}
+	if err := handler(ctx, event.SrcChain, event.Sender, event.Payload); err != nil {
+		return nil, err
+	}
 
 	err = s.stateStore.EventTable().Delete(ctx, event)
 	if err != nil {

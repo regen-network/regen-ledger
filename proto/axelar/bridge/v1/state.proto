@@ -14,8 +14,12 @@ message Event {
 
   uint64 event_id = 1;
 
-  string sender_address = 2;
-  string handler = 3;
-
-  bytes payload = 4;
+  string src_chain = 2;
+  bytes src_tx_id = 3;
+  // Sender is an account or a smart contract calling the bridge contract in
+  // the origin chain.
+  string sender = 4;
+  string handler = 5;
+  bytes payload = 6;
+  bytes bridge_data = 7;
 }

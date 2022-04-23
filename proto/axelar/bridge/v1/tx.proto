@@ -20,12 +20,14 @@ service Msg {
 }
 
 message MsgRecordBridgeEvent {
-  string axelar_account = 1; // Signer
+  string bridge_account = 1; // Signer
 
-  string sender_address = 2;
-  string handler = 3;
-
-  bytes payload = 4;
+  string src_chain = 2;
+  bytes src_tx_id = 3;
+  string sender = 4;
+  string handler = 5;
+  bytes payload = 6;
+  bytes bridge_data = 7;
 }
 
 // MsgRecordBridgeEventResponse defines the Msg/SubmitProposal response type.

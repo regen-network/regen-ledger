@@ -13,9 +13,11 @@ func (s serverImpl) RecordBridgeEvent(ctx context.Context, req *axelarbridge.Msg
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("Undefined handler: " + req.Handler)
 	}
 	id, err := s.stateStore.EventTable().InsertReturningID(ctx, &api.Event{
-		SenderAddress: req.SenderAddress,
-		Handler:       req.Handler,
-		Payload:       req.Payload,
+		SrcChain: req.SrcChain,
+		SrcTxId:  req.SrcTxId,
+		Sender:   req.Sender,
+		Handler:  req.Handler,
+		Payload:  req.Payload,
 	})
 	if err != nil {
 		return nil, err
