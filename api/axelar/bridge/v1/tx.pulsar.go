@@ -1890,29 +1890,29 @@ func (x *fastReflection_MsgExecBrigeEventResponse) ProtoMethods() *protoiface.Me
 }
 
 var (
-	md_MsgSendBridgeMessage              protoreflect.MessageDescriptor
-	fd_MsgSendBridgeMessage_sender       protoreflect.FieldDescriptor
-	fd_MsgSendBridgeMessage_dest_address protoreflect.FieldDescriptor
-	fd_MsgSendBridgeMessage_payload      protoreflect.FieldDescriptor
+	md_MsgSendBridgeEvent              protoreflect.MessageDescriptor
+	fd_MsgSendBridgeEvent_sender       protoreflect.FieldDescriptor
+	fd_MsgSendBridgeEvent_dest_address protoreflect.FieldDescriptor
+	fd_MsgSendBridgeEvent_payload      protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_axelar_bridge_v1_tx_proto_init()
-	md_MsgSendBridgeMessage = File_axelar_bridge_v1_tx_proto.Messages().ByName("MsgSendBridgeMessage")
-	fd_MsgSendBridgeMessage_sender = md_MsgSendBridgeMessage.Fields().ByName("sender")
-	fd_MsgSendBridgeMessage_dest_address = md_MsgSendBridgeMessage.Fields().ByName("dest_address")
-	fd_MsgSendBridgeMessage_payload = md_MsgSendBridgeMessage.Fields().ByName("payload")
+	md_MsgSendBridgeEvent = File_axelar_bridge_v1_tx_proto.Messages().ByName("MsgSendBridgeEvent")
+	fd_MsgSendBridgeEvent_sender = md_MsgSendBridgeEvent.Fields().ByName("sender")
+	fd_MsgSendBridgeEvent_dest_address = md_MsgSendBridgeEvent.Fields().ByName("dest_address")
+	fd_MsgSendBridgeEvent_payload = md_MsgSendBridgeEvent.Fields().ByName("payload")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgSendBridgeMessage)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgSendBridgeEvent)(nil)
 
-type fastReflection_MsgSendBridgeMessage MsgSendBridgeMessage
+type fastReflection_MsgSendBridgeEvent MsgSendBridgeEvent
 
-func (x *MsgSendBridgeMessage) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgSendBridgeMessage)(x)
+func (x *MsgSendBridgeEvent) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgSendBridgeEvent)(x)
 }
 
-func (x *MsgSendBridgeMessage) slowProtoReflect() protoreflect.Message {
+func (x *MsgSendBridgeEvent) slowProtoReflect() protoreflect.Message {
 	mi := &file_axelar_bridge_v1_tx_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1924,43 +1924,43 @@ func (x *MsgSendBridgeMessage) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgSendBridgeMessage_messageType fastReflection_MsgSendBridgeMessage_messageType
-var _ protoreflect.MessageType = fastReflection_MsgSendBridgeMessage_messageType{}
+var _fastReflection_MsgSendBridgeEvent_messageType fastReflection_MsgSendBridgeEvent_messageType
+var _ protoreflect.MessageType = fastReflection_MsgSendBridgeEvent_messageType{}
 
-type fastReflection_MsgSendBridgeMessage_messageType struct{}
+type fastReflection_MsgSendBridgeEvent_messageType struct{}
 
-func (x fastReflection_MsgSendBridgeMessage_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgSendBridgeMessage)(nil)
+func (x fastReflection_MsgSendBridgeEvent_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgSendBridgeEvent)(nil)
 }
-func (x fastReflection_MsgSendBridgeMessage_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgSendBridgeMessage)
+func (x fastReflection_MsgSendBridgeEvent_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgSendBridgeEvent)
 }
-func (x fastReflection_MsgSendBridgeMessage_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSendBridgeMessage
+func (x fastReflection_MsgSendBridgeEvent_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSendBridgeEvent
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgSendBridgeMessage) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSendBridgeMessage
+func (x *fastReflection_MsgSendBridgeEvent) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSendBridgeEvent
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgSendBridgeMessage) Type() protoreflect.MessageType {
-	return _fastReflection_MsgSendBridgeMessage_messageType
+func (x *fastReflection_MsgSendBridgeEvent) Type() protoreflect.MessageType {
+	return _fastReflection_MsgSendBridgeEvent_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgSendBridgeMessage) New() protoreflect.Message {
-	return new(fastReflection_MsgSendBridgeMessage)
+func (x *fastReflection_MsgSendBridgeEvent) New() protoreflect.Message {
+	return new(fastReflection_MsgSendBridgeEvent)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgSendBridgeMessage) Interface() protoreflect.ProtoMessage {
-	return (*MsgSendBridgeMessage)(x)
+func (x *fastReflection_MsgSendBridgeEvent) Interface() protoreflect.ProtoMessage {
+	return (*MsgSendBridgeEvent)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1968,22 +1968,22 @@ func (x *fastReflection_MsgSendBridgeMessage) Interface() protoreflect.ProtoMess
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgSendBridgeMessage) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgSendBridgeEvent) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Sender != "" {
 		value := protoreflect.ValueOfString(x.Sender)
-		if !f(fd_MsgSendBridgeMessage_sender, value) {
+		if !f(fd_MsgSendBridgeEvent_sender, value) {
 			return
 		}
 	}
 	if x.DestAddress != "" {
 		value := protoreflect.ValueOfString(x.DestAddress)
-		if !f(fd_MsgSendBridgeMessage_dest_address, value) {
+		if !f(fd_MsgSendBridgeEvent_dest_address, value) {
 			return
 		}
 	}
 	if len(x.Payload) != 0 {
 		value := protoreflect.ValueOfBytes(x.Payload)
-		if !f(fd_MsgSendBridgeMessage_payload, value) {
+		if !f(fd_MsgSendBridgeEvent_payload, value) {
 			return
 		}
 	}
@@ -2000,19 +2000,19 @@ func (x *fastReflection_MsgSendBridgeMessage) Range(f func(protoreflect.FieldDes
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgSendBridgeMessage) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgSendBridgeEvent) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
 		return x.Sender != ""
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
 		return x.DestAddress != ""
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
 		return len(x.Payload) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2022,19 +2022,19 @@ func (x *fastReflection_MsgSendBridgeMessage) Has(fd protoreflect.FieldDescripto
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessage) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgSendBridgeEvent) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
 		x.Sender = ""
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
 		x.DestAddress = ""
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
 		x.Payload = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2044,22 +2044,22 @@ func (x *fastReflection_MsgSendBridgeMessage) Clear(fd protoreflect.FieldDescrip
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgSendBridgeMessage) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEvent) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
 		value := x.Sender
 		return protoreflect.ValueOfString(value)
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
 		value := x.DestAddress
 		return protoreflect.ValueOfString(value)
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
 		value := x.Payload
 		return protoreflect.ValueOfBytes(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2073,19 +2073,19 @@ func (x *fastReflection_MsgSendBridgeMessage) Get(descriptor protoreflect.FieldD
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessage) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgSendBridgeEvent) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
 		x.Sender = value.Interface().(string)
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
 		x.DestAddress = value.Interface().(string)
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
 		x.Payload = value.Bytes()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2099,48 +2099,48 @@ func (x *fastReflection_MsgSendBridgeMessage) Set(fd protoreflect.FieldDescripto
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessage) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEvent) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
-		panic(fmt.Errorf("field sender of message axelar.bridge.v1.MsgSendBridgeMessage is not mutable"))
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
-		panic(fmt.Errorf("field dest_address of message axelar.bridge.v1.MsgSendBridgeMessage is not mutable"))
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
-		panic(fmt.Errorf("field payload of message axelar.bridge.v1.MsgSendBridgeMessage is not mutable"))
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
+		panic(fmt.Errorf("field sender of message axelar.bridge.v1.MsgSendBridgeEvent is not mutable"))
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
+		panic(fmt.Errorf("field dest_address of message axelar.bridge.v1.MsgSendBridgeEvent is not mutable"))
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
+		panic(fmt.Errorf("field payload of message axelar.bridge.v1.MsgSendBridgeEvent is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgSendBridgeMessage) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEvent) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "axelar.bridge.v1.MsgSendBridgeMessage.sender":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.sender":
 		return protoreflect.ValueOfString("")
-	case "axelar.bridge.v1.MsgSendBridgeMessage.dest_address":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.dest_address":
 		return protoreflect.ValueOfString("")
-	case "axelar.bridge.v1.MsgSendBridgeMessage.payload":
+	case "axelar.bridge.v1.MsgSendBridgeEvent.payload":
 		return protoreflect.ValueOfBytes(nil)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEvent"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEvent does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgSendBridgeMessage) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgSendBridgeEvent) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in axelar.bridge.v1.MsgSendBridgeMessage", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in axelar.bridge.v1.MsgSendBridgeEvent", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2148,7 +2148,7 @@ func (x *fastReflection_MsgSendBridgeMessage) WhichOneof(d protoreflect.OneofDes
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgSendBridgeMessage) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgSendBridgeEvent) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2159,7 +2159,7 @@ func (x *fastReflection_MsgSendBridgeMessage) GetUnknown() protoreflect.RawField
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessage) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgSendBridgeEvent) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2171,7 +2171,7 @@ func (x *fastReflection_MsgSendBridgeMessage) SetUnknown(fields protoreflect.Raw
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgSendBridgeMessage) IsValid() bool {
+func (x *fastReflection_MsgSendBridgeEvent) IsValid() bool {
 	return x != nil
 }
 
@@ -2181,9 +2181,9 @@ func (x *fastReflection_MsgSendBridgeMessage) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgSendBridgeMessage) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgSendBridgeEvent) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgSendBridgeMessage)
+		x := input.Message.Interface().(*MsgSendBridgeEvent)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2217,7 +2217,7 @@ func (x *fastReflection_MsgSendBridgeMessage) ProtoMethods() *protoiface.Methods
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSendBridgeMessage)
+		x := input.Message.Interface().(*MsgSendBridgeEvent)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2268,7 +2268,7 @@ func (x *fastReflection_MsgSendBridgeMessage) ProtoMethods() *protoiface.Methods
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSendBridgeMessage)
+		x := input.Message.Interface().(*MsgSendBridgeEvent)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2300,10 +2300,10 @@ func (x *fastReflection_MsgSendBridgeMessage) ProtoMethods() *protoiface.Methods
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeMessage: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeEvent: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeMessage: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeEvent: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2440,23 +2440,23 @@ func (x *fastReflection_MsgSendBridgeMessage) ProtoMethods() *protoiface.Methods
 }
 
 var (
-	md_MsgSendBridgeMessageResponse protoreflect.MessageDescriptor
+	md_MsgSendBridgeEventResponse protoreflect.MessageDescriptor
 )
 
 func init() {
 	file_axelar_bridge_v1_tx_proto_init()
-	md_MsgSendBridgeMessageResponse = File_axelar_bridge_v1_tx_proto.Messages().ByName("MsgSendBridgeMessageResponse")
+	md_MsgSendBridgeEventResponse = File_axelar_bridge_v1_tx_proto.Messages().ByName("MsgSendBridgeEventResponse")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgSendBridgeMessageResponse)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgSendBridgeEventResponse)(nil)
 
-type fastReflection_MsgSendBridgeMessageResponse MsgSendBridgeMessageResponse
+type fastReflection_MsgSendBridgeEventResponse MsgSendBridgeEventResponse
 
-func (x *MsgSendBridgeMessageResponse) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgSendBridgeMessageResponse)(x)
+func (x *MsgSendBridgeEventResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgSendBridgeEventResponse)(x)
 }
 
-func (x *MsgSendBridgeMessageResponse) slowProtoReflect() protoreflect.Message {
+func (x *MsgSendBridgeEventResponse) slowProtoReflect() protoreflect.Message {
 	mi := &file_axelar_bridge_v1_tx_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2468,43 +2468,43 @@ func (x *MsgSendBridgeMessageResponse) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgSendBridgeMessageResponse_messageType fastReflection_MsgSendBridgeMessageResponse_messageType
-var _ protoreflect.MessageType = fastReflection_MsgSendBridgeMessageResponse_messageType{}
+var _fastReflection_MsgSendBridgeEventResponse_messageType fastReflection_MsgSendBridgeEventResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgSendBridgeEventResponse_messageType{}
 
-type fastReflection_MsgSendBridgeMessageResponse_messageType struct{}
+type fastReflection_MsgSendBridgeEventResponse_messageType struct{}
 
-func (x fastReflection_MsgSendBridgeMessageResponse_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgSendBridgeMessageResponse)(nil)
+func (x fastReflection_MsgSendBridgeEventResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgSendBridgeEventResponse)(nil)
 }
-func (x fastReflection_MsgSendBridgeMessageResponse_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgSendBridgeMessageResponse)
+func (x fastReflection_MsgSendBridgeEventResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgSendBridgeEventResponse)
 }
-func (x fastReflection_MsgSendBridgeMessageResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSendBridgeMessageResponse
+func (x fastReflection_MsgSendBridgeEventResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSendBridgeEventResponse
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgSendBridgeMessageResponse
+func (x *fastReflection_MsgSendBridgeEventResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgSendBridgeEventResponse
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Type() protoreflect.MessageType {
-	return _fastReflection_MsgSendBridgeMessageResponse_messageType
+func (x *fastReflection_MsgSendBridgeEventResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgSendBridgeEventResponse_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgSendBridgeMessageResponse) New() protoreflect.Message {
-	return new(fastReflection_MsgSendBridgeMessageResponse)
+func (x *fastReflection_MsgSendBridgeEventResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgSendBridgeEventResponse)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Interface() protoreflect.ProtoMessage {
-	return (*MsgSendBridgeMessageResponse)(x)
+func (x *fastReflection_MsgSendBridgeEventResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgSendBridgeEventResponse)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -2512,7 +2512,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Interface() protoreflect.P
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgSendBridgeEventResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 }
 
 // Has reports whether a field is populated.
@@ -2526,13 +2526,13 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Range(f func(protoreflect.
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgSendBridgeEventResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2542,13 +2542,13 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Has(fd protoreflect.FieldD
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgSendBridgeEventResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2558,13 +2558,13 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Clear(fd protoreflect.Fiel
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEventResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2578,13 +2578,13 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Get(descriptor protoreflec
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgSendBridgeEventResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2598,36 +2598,36 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) Set(fd protoreflect.FieldD
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessageResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEventResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgSendBridgeMessageResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgSendBridgeEventResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeMessageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgSendBridgeEventResponse"))
 		}
-		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeMessageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message axelar.bridge.v1.MsgSendBridgeEventResponse does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgSendBridgeMessageResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgSendBridgeEventResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in axelar.bridge.v1.MsgSendBridgeMessageResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in axelar.bridge.v1.MsgSendBridgeEventResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2635,7 +2635,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) WhichOneof(d protoreflect.
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgSendBridgeMessageResponse) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgSendBridgeEventResponse) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -2646,7 +2646,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) GetUnknown() protoreflect.
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgSendBridgeMessageResponse) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgSendBridgeEventResponse) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -2658,7 +2658,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) SetUnknown(fields protoref
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgSendBridgeMessageResponse) IsValid() bool {
+func (x *fastReflection_MsgSendBridgeEventResponse) IsValid() bool {
 	return x != nil
 }
 
@@ -2668,9 +2668,9 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgSendBridgeMessageResponse) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgSendBridgeEventResponse) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgSendBridgeMessageResponse)
+		x := input.Message.Interface().(*MsgSendBridgeEventResponse)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2692,7 +2692,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) ProtoMethods() *protoiface
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSendBridgeMessageResponse)
+		x := input.Message.Interface().(*MsgSendBridgeEventResponse)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2722,7 +2722,7 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) ProtoMethods() *protoiface
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgSendBridgeMessageResponse)
+		x := input.Message.Interface().(*MsgSendBridgeEventResponse)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -2754,10 +2754,10 @@ func (x *fastReflection_MsgSendBridgeMessageResponse) ProtoMethods() *protoiface
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeMessageResponse: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeEventResponse: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeMessageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgSendBridgeEventResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			default:
@@ -2973,7 +2973,7 @@ func (*MsgExecBrigeEventResponse) Descriptor() ([]byte, []int) {
 	return file_axelar_bridge_v1_tx_proto_rawDescGZIP(), []int{3}
 }
 
-type MsgSendBridgeMessage struct {
+type MsgSendBridgeEvent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -2983,8 +2983,8 @@ type MsgSendBridgeMessage struct {
 	Payload     []byte `protobuf:"bytes,3,opt,name=payload,proto3" json:"payload,omitempty"`
 }
 
-func (x *MsgSendBridgeMessage) Reset() {
-	*x = MsgSendBridgeMessage{}
+func (x *MsgSendBridgeEvent) Reset() {
+	*x = MsgSendBridgeEvent{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_axelar_bridge_v1_tx_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2992,48 +2992,48 @@ func (x *MsgSendBridgeMessage) Reset() {
 	}
 }
 
-func (x *MsgSendBridgeMessage) String() string {
+func (x *MsgSendBridgeEvent) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgSendBridgeMessage) ProtoMessage() {}
+func (*MsgSendBridgeEvent) ProtoMessage() {}
 
-// Deprecated: Use MsgSendBridgeMessage.ProtoReflect.Descriptor instead.
-func (*MsgSendBridgeMessage) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgSendBridgeEvent.ProtoReflect.Descriptor instead.
+func (*MsgSendBridgeEvent) Descriptor() ([]byte, []int) {
 	return file_axelar_bridge_v1_tx_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *MsgSendBridgeMessage) GetSender() string {
+func (x *MsgSendBridgeEvent) GetSender() string {
 	if x != nil {
 		return x.Sender
 	}
 	return ""
 }
 
-func (x *MsgSendBridgeMessage) GetDestAddress() string {
+func (x *MsgSendBridgeEvent) GetDestAddress() string {
 	if x != nil {
 		return x.DestAddress
 	}
 	return ""
 }
 
-func (x *MsgSendBridgeMessage) GetPayload() []byte {
+func (x *MsgSendBridgeEvent) GetPayload() []byte {
 	if x != nil {
 		return x.Payload
 	}
 	return nil
 }
 
-// MsgMsgSendBridgeMessageResponse defines the Msg/ExecLegacyContent response
+// MsgMsgSendBridgeEventResponse defines the Msg/ExecLegacyContent response
 // type.
-type MsgSendBridgeMessageResponse struct {
+type MsgSendBridgeEventResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *MsgSendBridgeMessageResponse) Reset() {
-	*x = MsgSendBridgeMessageResponse{}
+func (x *MsgSendBridgeEventResponse) Reset() {
+	*x = MsgSendBridgeEventResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_axelar_bridge_v1_tx_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -3041,14 +3041,14 @@ func (x *MsgSendBridgeMessageResponse) Reset() {
 	}
 }
 
-func (x *MsgSendBridgeMessageResponse) String() string {
+func (x *MsgSendBridgeEventResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgSendBridgeMessageResponse) ProtoMessage() {}
+func (*MsgSendBridgeEventResponse) ProtoMessage() {}
 
-// Deprecated: Use MsgSendBridgeMessageResponse.ProtoReflect.Descriptor instead.
-func (*MsgSendBridgeMessageResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgSendBridgeEventResponse.ProtoReflect.Descriptor instead.
+func (*MsgSendBridgeEventResponse) Descriptor() ([]byte, []int) {
 	return file_axelar_bridge_v1_tx_proto_rawDescGZIP(), []int{5}
 }
 
@@ -3083,49 +3083,48 @@ var file_axelar_bridge_v1_tx_proto_rawDesc = []byte{
 	0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x65, 0x76, 0x65,
 	0x6e, 0x74, 0x49, 0x64, 0x22, 0x1b, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x45, 0x78, 0x65, 0x63, 0x42,
 	0x72, 0x69, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x6b, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64,
-	0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6e,
-	0x64, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65,
-	0x72, 0x12, 0x21, 0x0a, 0x0c, 0x64, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x1e,
-	0x0a, 0x1c, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xc3,
-	0x02, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x6b, 0x0a, 0x11, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x26, 0x2e, 0x61, 0x78,
-	0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d,
-	0x73, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x1a, 0x2e, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69,
-	0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x0e, 0x45, 0x78, 0x65, 0x63, 0x42, 0x72, 0x69, 0x67, 0x65,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x23, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x45, 0x78, 0x65, 0x63,
-	0x42, 0x72, 0x69, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a, 0x2b, 0x2e, 0x61, 0x78, 0x65,
-	0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73,
-	0x67, 0x45, 0x78, 0x65, 0x63, 0x42, 0x72, 0x69, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6b, 0x0a, 0x11, 0x53, 0x65, 0x6e, 0x64, 0x42,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x26, 0x2e, 0x61,
-	0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x4d, 0x65, 0x73,
-	0x73, 0x61, 0x67, 0x65, 0x1a, 0x2e, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72,
-	0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x42, 0xc6, 0x01, 0x0a, 0x14, 0x63, 0x6f, 0x6d, 0x2e, 0x61, 0x78, 0x65,
-	0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54,
-	0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x43, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2f, 0x62, 0x72, 0x69, 0x64, 0x67,
-	0x65, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03,
-	0x41, 0x42, 0x58, 0xaa, 0x02, 0x10, 0x41, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x42, 0x72, 0x69,
-	0x64, 0x67, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10, 0x41, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x5c,
-	0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1c, 0x41, 0x78, 0x65, 0x6c,
-	0x61, 0x72, 0x5c, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x12, 0x41, 0x78, 0x65, 0x6c, 0x61,
-	0x72, 0x3a, 0x3a, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x69, 0x0a, 0x12, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65,
+	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12,
+	0x21, 0x0a, 0x0c, 0x64, 0x65, 0x73, 0x74, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0c, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x1c, 0x0a, 0x1a,
+	0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xbe, 0x02, 0x0a, 0x03, 0x4d,
+	0x73, 0x67, 0x12, 0x6b, 0x0a, 0x11, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x26, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72,
+	0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a,
+	0x2e, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e,
+	0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x63, 0x0a, 0x0f, 0x45, 0x78, 0x65, 0x63, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x12, 0x23, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x45, 0x78, 0x65, 0x63, 0x42, 0x72, 0x69,
+	0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a, 0x2b, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72,
+	0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x45, 0x78,
+	0x65, 0x63, 0x42, 0x72, 0x69, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x65, 0x0a, 0x0f, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x24, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72,
+	0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65,
+	0x6e, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a, 0x2c, 0x2e,
+	0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x76, 0x31,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0xc6, 0x01, 0x0a, 0x14,
+	0x63, 0x6f, 0x6d, 0x2e, 0x61, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x2e, 0x62, 0x72, 0x69, 0x64, 0x67,
+	0x65, 0x2e, 0x76, 0x31, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x43, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d,
+	0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x78, 0x65, 0x6c, 0x61,
+	0x72, 0x2f, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x62, 0x72, 0x69, 0x64,
+	0x67, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x41, 0x42, 0x58, 0xaa, 0x02, 0x10, 0x41, 0x78, 0x65,
+	0x6c, 0x61, 0x72, 0x2e, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x10,
+	0x41, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x5c, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5c, 0x56, 0x31,
+	0xe2, 0x02, 0x1c, 0x41, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x5c, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65,
+	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x12, 0x41, 0x78, 0x65, 0x6c, 0x61, 0x72, 0x3a, 0x3a, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3146,16 +3145,16 @@ var file_axelar_bridge_v1_tx_proto_goTypes = []interface{}{
 	(*MsgRecordBridgeEventResponse)(nil), // 1: axelar.bridge.v1.MsgRecordBridgeEventResponse
 	(*MsgExecBrigeEvent)(nil),            // 2: axelar.bridge.v1.MsgExecBrigeEvent
 	(*MsgExecBrigeEventResponse)(nil),    // 3: axelar.bridge.v1.MsgExecBrigeEventResponse
-	(*MsgSendBridgeMessage)(nil),         // 4: axelar.bridge.v1.MsgSendBridgeMessage
-	(*MsgSendBridgeMessageResponse)(nil), // 5: axelar.bridge.v1.MsgSendBridgeMessageResponse
+	(*MsgSendBridgeEvent)(nil),           // 4: axelar.bridge.v1.MsgSendBridgeEvent
+	(*MsgSendBridgeEventResponse)(nil),   // 5: axelar.bridge.v1.MsgSendBridgeEventResponse
 }
 var file_axelar_bridge_v1_tx_proto_depIdxs = []int32{
 	0, // 0: axelar.bridge.v1.Msg.RecordBridgeEvent:input_type -> axelar.bridge.v1.MsgRecordBridgeEvent
-	2, // 1: axelar.bridge.v1.Msg.ExecBrigeEvent:input_type -> axelar.bridge.v1.MsgExecBrigeEvent
-	4, // 2: axelar.bridge.v1.Msg.SendBridgeMessage:input_type -> axelar.bridge.v1.MsgSendBridgeMessage
+	2, // 1: axelar.bridge.v1.Msg.ExecBridgeEvent:input_type -> axelar.bridge.v1.MsgExecBrigeEvent
+	4, // 2: axelar.bridge.v1.Msg.SendBridgeEvent:input_type -> axelar.bridge.v1.MsgSendBridgeEvent
 	1, // 3: axelar.bridge.v1.Msg.RecordBridgeEvent:output_type -> axelar.bridge.v1.MsgRecordBridgeEventResponse
-	3, // 4: axelar.bridge.v1.Msg.ExecBrigeEvent:output_type -> axelar.bridge.v1.MsgExecBrigeEventResponse
-	5, // 5: axelar.bridge.v1.Msg.SendBridgeMessage:output_type -> axelar.bridge.v1.MsgSendBridgeMessageResponse
+	3, // 4: axelar.bridge.v1.Msg.ExecBridgeEvent:output_type -> axelar.bridge.v1.MsgExecBrigeEventResponse
+	5, // 5: axelar.bridge.v1.Msg.SendBridgeEvent:output_type -> axelar.bridge.v1.MsgSendBridgeEventResponse
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -3218,7 +3217,7 @@ func file_axelar_bridge_v1_tx_proto_init() {
 			}
 		}
 		file_axelar_bridge_v1_tx_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSendBridgeMessage); i {
+			switch v := v.(*MsgSendBridgeEvent); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3230,7 +3229,7 @@ func file_axelar_bridge_v1_tx_proto_init() {
 			}
 		}
 		file_axelar_bridge_v1_tx_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSendBridgeMessageResponse); i {
+			switch v := v.(*MsgSendBridgeEventResponse); i {
 			case 0:
 				return &v.state
 			case 1:

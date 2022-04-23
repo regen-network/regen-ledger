@@ -8,12 +8,15 @@ import "google/protobuf/any.proto";
 option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
 
 service Msg {
+  // Records a bridged event and returns it's ID
   rpc RecordBridgeEvent(MsgRecordBridgeEvent)
       returns (MsgRecordBridgeEventResponse);
-  rpc ExecBrigeEvent(MsgExecBrigeEvent) returns (MsgExecBrigeEventResponse);
 
-  rpc SendBridgeMessage(MsgSendBridgeMessage)
-      returns (MsgSendBridgeMessageResponse);
+  // Queries and executes a recorded event. Once processed the event is removed.
+  rpc ExecBridgeEvent(MsgExecBrigeEvent) returns (MsgExecBrigeEventResponse);
+
+  // Sends a new event to the bridge servcie (chain)
+  rpc SendBridgeEvent(MsgSendBridgeEvent) returns (MsgSendBridgeEventResponse);
 }
 
 message MsgRecordBridgeEvent {
@@ -36,12 +39,12 @@ message MsgExecBrigeEvent {
 // MsgExecBrigeEventResponse defines the Msg/ExecLegacyContent response type.
 message MsgExecBrigeEventResponse {}
 
-message MsgSendBridgeMessage {
+message MsgSendBridgeEvent {
   string sender = 1;
   string dest_address = 2;
   bytes payload = 3;
 }
 
-// MsgMsgSendBridgeMessageResponse defines the Msg/ExecLegacyContent response
+// MsgMsgSendBridgeEventResponse defines the Msg/ExecLegacyContent response
 // type.
-message MsgSendBridgeMessageResponse {}
+message MsgSendBridgeEventResponse {}

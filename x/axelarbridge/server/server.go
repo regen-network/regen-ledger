@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/axelarbridge/v1"
+	api "github.com/regen-network/regen-ledger/api/axelar/bridge/v1"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
