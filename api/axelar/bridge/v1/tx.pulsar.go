@@ -705,8 +705,8 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Interface() protoreflect.P
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_MsgRecordBridgeEventResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.EventId != "" {
-		value := protoreflect.ValueOfString(x.EventId)
+	if x.EventId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.EventId)
 		if !f(fd_MsgRecordBridgeEventResponse_event_id, value) {
 			return
 		}
@@ -727,7 +727,7 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Range(f func(protoreflect.
 func (x *fastReflection_MsgRecordBridgeEventResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "axelar.bridge.v1.MsgRecordBridgeEventResponse.event_id":
-		return x.EventId != ""
+		return x.EventId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgRecordBridgeEventResponse"))
@@ -745,7 +745,7 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Has(fd protoreflect.FieldD
 func (x *fastReflection_MsgRecordBridgeEventResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "axelar.bridge.v1.MsgRecordBridgeEventResponse.event_id":
-		x.EventId = ""
+		x.EventId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgRecordBridgeEventResponse"))
@@ -764,7 +764,7 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Get(descriptor protoreflec
 	switch descriptor.FullName() {
 	case "axelar.bridge.v1.MsgRecordBridgeEventResponse.event_id":
 		value := x.EventId
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgRecordBridgeEventResponse"))
@@ -786,7 +786,7 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Get(descriptor protoreflec
 func (x *fastReflection_MsgRecordBridgeEventResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
 	case "axelar.bridge.v1.MsgRecordBridgeEventResponse.event_id":
-		x.EventId = value.Interface().(string)
+		x.EventId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgRecordBridgeEventResponse"))
@@ -823,7 +823,7 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) Mutable(fd protoreflect.Fi
 func (x *fastReflection_MsgRecordBridgeEventResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "axelar.bridge.v1.MsgRecordBridgeEventResponse.event_id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgRecordBridgeEventResponse"))
@@ -893,9 +893,8 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) ProtoMethods() *protoiface
 		var n int
 		var l int
 		_ = l
-		l = len(x.EventId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.EventId != 0 {
+			n += 1 + runtime.Sov(uint64(x.EventId))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -926,12 +925,10 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) ProtoMethods() *protoiface
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.EventId) > 0 {
-			i -= len(x.EventId)
-			copy(dAtA[i:], x.EventId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.EventId)))
+		if x.EventId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.EventId))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -983,10 +980,10 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) ProtoMethods() *protoiface
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventId", wireType)
 				}
-				var stringLen uint64
+				x.EventId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -996,24 +993,11 @@ func (x *fastReflection_MsgRecordBridgeEventResponse) ProtoMethods() *protoiface
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.EventId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.EventId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1133,8 +1117,8 @@ func (x *fastReflection_MsgExecBridgeEvent) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.EventId != "" {
-		value := protoreflect.ValueOfString(x.EventId)
+	if x.EventId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.EventId)
 		if !f(fd_MsgExecBridgeEvent_event_id, value) {
 			return
 		}
@@ -1157,7 +1141,7 @@ func (x *fastReflection_MsgExecBridgeEvent) Has(fd protoreflect.FieldDescriptor)
 	case "axelar.bridge.v1.MsgExecBridgeEvent.executor":
 		return x.Executor != ""
 	case "axelar.bridge.v1.MsgExecBridgeEvent.event_id":
-		return x.EventId != ""
+		return x.EventId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgExecBridgeEvent"))
@@ -1177,7 +1161,7 @@ func (x *fastReflection_MsgExecBridgeEvent) Clear(fd protoreflect.FieldDescripto
 	case "axelar.bridge.v1.MsgExecBridgeEvent.executor":
 		x.Executor = ""
 	case "axelar.bridge.v1.MsgExecBridgeEvent.event_id":
-		x.EventId = ""
+		x.EventId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgExecBridgeEvent"))
@@ -1199,7 +1183,7 @@ func (x *fastReflection_MsgExecBridgeEvent) Get(descriptor protoreflect.FieldDes
 		return protoreflect.ValueOfString(value)
 	case "axelar.bridge.v1.MsgExecBridgeEvent.event_id":
 		value := x.EventId
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgExecBridgeEvent"))
@@ -1223,7 +1207,7 @@ func (x *fastReflection_MsgExecBridgeEvent) Set(fd protoreflect.FieldDescriptor,
 	case "axelar.bridge.v1.MsgExecBridgeEvent.executor":
 		x.Executor = value.Interface().(string)
 	case "axelar.bridge.v1.MsgExecBridgeEvent.event_id":
-		x.EventId = value.Interface().(string)
+		x.EventId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgExecBridgeEvent"))
@@ -1264,7 +1248,7 @@ func (x *fastReflection_MsgExecBridgeEvent) NewField(fd protoreflect.FieldDescri
 	case "axelar.bridge.v1.MsgExecBridgeEvent.executor":
 		return protoreflect.ValueOfString("")
 	case "axelar.bridge.v1.MsgExecBridgeEvent.event_id":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: axelar.bridge.v1.MsgExecBridgeEvent"))
@@ -1338,9 +1322,8 @@ func (x *fastReflection_MsgExecBridgeEvent) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.EventId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.EventId != 0 {
+			n += 1 + runtime.Sov(uint64(x.EventId))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -1371,12 +1354,10 @@ func (x *fastReflection_MsgExecBridgeEvent) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.EventId) > 0 {
-			i -= len(x.EventId)
-			copy(dAtA[i:], x.EventId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.EventId)))
+		if x.EventId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.EventId))
 			i--
-			dAtA[i] = 0x12
+			dAtA[i] = 0x10
 		}
 		if len(x.Executor) > 0 {
 			i -= len(x.Executor)
@@ -1467,10 +1448,10 @@ func (x *fastReflection_MsgExecBridgeEvent) ProtoMethods() *protoiface.Methods {
 				x.Executor = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
-				if wireType != 2 {
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventId", wireType)
 				}
-				var stringLen uint64
+				x.EventId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1480,24 +1461,11 @@ func (x *fastReflection_MsgExecBridgeEvent) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.EventId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.EventId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -2873,7 +2841,7 @@ type MsgRecordBridgeEventResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	EventId string `protobuf:"bytes,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	EventId uint64 `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 }
 
 func (x *MsgRecordBridgeEventResponse) Reset() {
@@ -2896,11 +2864,11 @@ func (*MsgRecordBridgeEventResponse) Descriptor() ([]byte, []int) {
 	return file_axelar_bridge_v1_tx_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *MsgRecordBridgeEventResponse) GetEventId() string {
+func (x *MsgRecordBridgeEventResponse) GetEventId() uint64 {
 	if x != nil {
 		return x.EventId
 	}
-	return ""
+	return 0
 }
 
 type MsgExecBridgeEvent struct {
@@ -2909,7 +2877,7 @@ type MsgExecBridgeEvent struct {
 	unknownFields protoimpl.UnknownFields
 
 	Executor string `protobuf:"bytes,1,opt,name=executor,proto3" json:"executor,omitempty"` // Signer
-	EventId  string `protobuf:"bytes,2,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	EventId  uint64 `protobuf:"varint,2,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 }
 
 func (x *MsgExecBridgeEvent) Reset() {
@@ -2939,11 +2907,11 @@ func (x *MsgExecBridgeEvent) GetExecutor() string {
 	return ""
 }
 
-func (x *MsgExecBridgeEvent) GetEventId() string {
+func (x *MsgExecBridgeEvent) GetEventId() uint64 {
 	if x != nil {
 		return x.EventId
 	}
-	return ""
+	return 0
 }
 
 // MsgExecBridgeEventResponse defines the Msg/ExecLegacyContent response type.
@@ -3075,12 +3043,12 @@ var file_axelar_bridge_v1_tx_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x39, 0x0a,
 	0x1c, 0x4d, 0x73, 0x67, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65,
 	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x19, 0x0a,
-	0x08, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
 	0x07, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x4b, 0x0a, 0x12, 0x4d, 0x73, 0x67, 0x45,
 	0x78, 0x65, 0x63, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x1a,
 	0x0a, 0x08, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x08, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x6f, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x65, 0x76,
-	0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x65, 0x76,
 	0x65, 0x6e, 0x74, 0x49, 0x64, 0x22, 0x1c, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x45, 0x78, 0x65, 0x63,
 	0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x22, 0x69, 0x0a, 0x12, 0x4d, 0x73, 0x67, 0x53, 0x65, 0x6e, 0x64, 0x42, 0x72,
