@@ -1,0 +1,45 @@
+syntax = "proto3";
+package regen.bridge.v1;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/bridge";
+
+service Msg {
+  rpc RecordBridgeEvent(MsgRecordBridgeEvent) returns (MsgRecordBridgeEventResponse);
+  rpc ExecBrigeEvent(MsgExecBrigeEvent) returns (MsgExecBrigeEventResponse);
+
+  rpc SendBridgeMessage(MsgSendBridgeMessage) returns (MsgSendBridgeMessageResponse);
+}
+
+message MsgRecordBridgeEvent {
+  string axelar_account = 1; // Signer
+  string sender_address = 2;
+  string dest_address = 3;
+
+  google.protobuf.Any msg = 4;
+}
+
+// MsgRecordBridgeEventResponse defines the Msg/SubmitProposal response type.
+message MsgRecordBridgeEventResponse {
+  string event_id = 1;
+}
+
+message MsgExecBrigeEvent {
+  string executor = 1; // Signer
+  string event_id = 2;
+}
+
+// MsgExecBrigeEventResponse defines the Msg/ExecLegacyContent response type.
+message MsgExecBrigeEventResponse {}
+
+message MsgSendBridgeMessage {
+  string sender = 1;
+  string receiver = 2;
+  google.protobuf.Any payload = 3;
+}
+
+// MsgMsgSendBridgeMessageResponse defines the Msg/ExecLegacyContent response type.
+message MsgSendBridgeMessageResponse {}
