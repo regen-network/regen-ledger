@@ -6,7 +6,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
 )
 
-func (s serverImpl) ExecBrigeEvent(ctx context.Context, req *axelarbridge.MsgExecBrigeEvent) (*axelarbridge.MsgExecBrigeEventResponse, error) {
+func (s serverImpl) ExecBridgeEvent(ctx context.Context, req *axelarbridge.MsgExecBrigeEvent) (*axelarbridge.MsgExecBrigeEventResponse, error) {
 	panic("todo")
 }
 

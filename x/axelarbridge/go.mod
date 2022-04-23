@@ -10,6 +10,7 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/regen-network/regen-ledger/api v0.8.0
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/spf13/cobra v1.2.1
 	google.golang.org/grpc v1.44.0
