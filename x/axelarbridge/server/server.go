@@ -2,7 +2,6 @@ package server
 
 import (
 	ormv1alpha1 "github.com/cosmos/cosmos-sdk/api/cosmos/orm/v1alpha1"
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -29,10 +28,9 @@ type serverImpl struct {
 	storeKey   sdk.StoreKey
 	stateStore api.StateStore
 	db         ormdb.ModuleDB
-	router     *baseapp.MsgServiceRouter
 }
 
-func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverImpl {
+func newServer(storeKey sdk.StoreKey) serverImpl {
 	db, err := ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
@@ -47,11 +45,10 @@ func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverIm
 		storeKey:   storeKey,
 		stateStore: stateStore,
 		db:         nil, // db,
-		router:     router,
 	}
 }
 
-func RegisterServices(configurator servermodule.Configurator, router *baseapp.MsgServiceRouter) {
-	impl := newServer(configurator.ModuleKey(), router)
+func RegisterServices(configurator servermodule.Configurator) {
+	impl := newServer(configurator.ModuleKey())
 	axelarbridge.RegisterMsgServer(configurator.MsgServer(), impl)
 }

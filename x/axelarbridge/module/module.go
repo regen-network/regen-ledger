@@ -8,7 +8,6 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -29,7 +28,9 @@ import (
 )
 
 type Module struct {
-	router *baseapp.MsgServiceRouter
+	// handlerMap is a map from the handler name (called from EVM) to its
+	// handler function.
+	handlerMap map[string]axelarbridge.Handler
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -38,9 +39,9 @@ var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(router *baseapp.MsgServiceRouter) Module {
+func NewModule(handlerMap map[string]axelarbridge.Handler) Module {
 	return Module{
-		router: router,
+		handlerMap: handlerMap,
 	}
 }
 
@@ -53,7 +54,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.router)
+	server.RegisterServices(configurator)
 }
 
 //nolint:errcheck
