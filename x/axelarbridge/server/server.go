@@ -28,9 +28,10 @@ type serverImpl struct {
 	storeKey   sdk.StoreKey
 	stateStore api.StateStore
 	db         ormdb.ModuleDB
+	handlers   axelarbridge.HandlerMap
 }
 
-func newServer(storeKey sdk.StoreKey) serverImpl {
+func newServer(storeKey sdk.StoreKey, h axelarbridge.HandlerMap) serverImpl {
 	db, err := ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
 	if err != nil {
 		panic(err)
@@ -44,11 +45,12 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 	return serverImpl{
 		storeKey:   storeKey,
 		stateStore: stateStore,
-		db:         nil, // db,
+		db:         db,
+		handlers:   h,
 	}
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey())
+func RegisterServices(configurator servermodule.Configurator, h axelarbridge.HandlerMap) {
+	impl := newServer(configurator.ModuleKey(), h)
 	axelarbridge.RegisterMsgServer(configurator.MsgServer(), impl)
 }

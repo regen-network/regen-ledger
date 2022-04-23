@@ -3,14 +3,18 @@ package server
 import (
 	"context"
 
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	api "github.com/regen-network/regen-ledger/api/axelar/bridge/v1"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
 )
 
 func (s serverImpl) RecordBridgeEvent(ctx context.Context, req *axelarbridge.MsgRecordBridgeEvent) (*axelarbridge.MsgRecordBridgeEventResponse, error) {
+	if _, ok := s.handlers[req.Handler]; !ok {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("Undefined handler: " + req.Handler)
+	}
 	id, err := s.stateStore.EventTable().InsertReturningID(ctx, &api.Event{
 		SenderAddress: req.SenderAddress,
-		DestAddress:   req.DestAddress,
+		Handler:       req.Handler,
 		Payload:       req.Payload,
 	})
 	if err != nil {

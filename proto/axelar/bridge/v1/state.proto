@@ -15,7 +15,7 @@ message Event {
   uint64 event_id = 1;
 
   string sender_address = 2;
-  string dest_address = 3;
+  string handler = 3;
 
   bytes payload = 4;
 }

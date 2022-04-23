@@ -18,9 +18,6 @@ type EventTable interface {
 	Has(ctx context.Context, event_id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, event_id uint64) (*Event, error)
-	HasBySenderAddress(ctx context.Context, sender_address string) (found bool, err error)
-	// GetBySenderAddress returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetBySenderAddress(ctx context.Context, sender_address string) (*Event, error)
 	List(ctx context.Context, prefixKey EventIndexKey, opts ...ormlist.Option) (EventIterator, error)
 	ListRange(ctx context.Context, from, to EventIndexKey, opts ...ormlist.Option) (EventIterator, error)
 	DeleteBy(ctx context.Context, prefixKey EventIndexKey) error
@@ -61,19 +58,6 @@ func (this EventEventIdIndexKey) WithEventId(event_id uint64) EventEventIdIndexK
 	return this
 }
 
-type EventSenderAddressIndexKey struct {
-	vs []interface{}
-}
-
-func (x EventSenderAddressIndexKey) id() uint32            { return 1 }
-func (x EventSenderAddressIndexKey) values() []interface{} { return x.vs }
-func (x EventSenderAddressIndexKey) eventIndexKey()        {}
-
-func (this EventSenderAddressIndexKey) WithSenderAddress(sender_address string) EventSenderAddressIndexKey {
-	this.vs = []interface{}{sender_address}
-	return this
-}
-
 type eventTable struct {
 	table ormtable.AutoIncrementTable
 }
@@ -105,26 +89,6 @@ func (this eventTable) Has(ctx context.Context, event_id uint64) (found bool, er
 func (this eventTable) Get(ctx context.Context, event_id uint64) (*Event, error) {
 	var event Event
 	found, err := this.table.PrimaryKey().Get(ctx, &event, event_id)
-	if err != nil {
-		return nil, err
-	}
-	if !found {
-		return nil, ormerrors.NotFound
-	}
-	return &event, nil
-}
-
-func (this eventTable) HasBySenderAddress(ctx context.Context, sender_address string) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		sender_address,
-	)
-}
-
-func (this eventTable) GetBySenderAddress(ctx context.Context, sender_address string) (*Event, error) {
-	var event Event
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &event,
-		sender_address,
-	)
 	if err != nil {
 		return nil, err
 	}

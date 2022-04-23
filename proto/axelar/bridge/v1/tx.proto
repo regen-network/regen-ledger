@@ -23,7 +23,7 @@ message MsgRecordBridgeEvent {
   string axelar_account = 1; // Signer
 
   string sender_address = 2;
-  string dest_address = 3;
+  string handler = 3;
 
   bytes payload = 4;
 }
@@ -41,8 +41,9 @@ message MsgExecBridgeEventResponse {}
 
 message MsgSendBridgeEvent {
   string sender = 1;
-  string dest_address = 2;
-  bytes payload = 3;
+  string chain = 2;
+  string handler = 3;
+  bytes payload = 4;
 }
 
 // MsgMsgSendBridgeEventResponse defines the Msg/ExecLegacyContent response

@@ -28,9 +28,9 @@ import (
 )
 
 type Module struct {
-	// handlerMap is a map from the handler name (called from EVM) to its
+	// handlers is a map from the handler name (called from EVM) to its
 	// handler function.
-	handlerMap map[string]axelarbridge.Handler
+	handlers axelarbridge.HandlerMap
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -39,9 +39,9 @@ var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ module.AppModuleSimulation = &Module{}
 
-func NewModule(handlerMap map[string]axelarbridge.Handler) Module {
+func NewModule(h axelarbridge.HandlerMap) Module {
 	return Module{
-		handlerMap: handlerMap,
+		handlers: h,
 	}
 }
 
@@ -54,7 +54,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator)
+	server.RegisterServices(configurator, a.handlers)
 }
 
 //nolint:errcheck
