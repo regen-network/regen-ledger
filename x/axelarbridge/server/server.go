@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/bridge/v1"
+	// api "github.com/regen-network/regen-ledger/api/axelarbridge/v1"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
@@ -16,14 +16,14 @@ const (
 	ORMPrefix byte = iota
 )
 
-var _ bridge.MsgServer = serverImpl{}
+var _ axelarbridge.MsgServer = serverImpl{}
 
-var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
-	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
-		{Id: 1, ProtoFileName: api.File_regen_bridge_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
-	},
-	Prefix: []byte{ORMPrefix},
-}
+// var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
+// 	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
+// 		{Id: 1, ProtoFileName: api.File_regen_bridge_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
+// 	},
+// 	Prefix: []byte{ORMPrefix},
+// }
 
 type serverImpl struct {
 	storeKey   sdk.StoreKey
@@ -33,10 +33,10 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverImpl {
-	db, err := ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
-	if err != nil {
-		panic(err)
-	}
+	// db, err := ormstore.NewStoreKeyDB(&ModuleSchema, storeKey, ormdb.ModuleDBOptions{})
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	stateStore, err := api.NewStateStore(db)
 	if err != nil {
@@ -46,12 +46,12 @@ func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverIm
 	return serverImpl{
 		storeKey:   storeKey,
 		stateStore: stateStore,
-		db:         db,
+		db:         nil, // db,
 		router:     router,
 	}
 }
 
 func RegisterServices(configurator servermodule.Configurator, router *baseapp.MsgServiceRouter) {
 	impl := newServer(configurator.ModuleKey(), router)
-	bridge.RegisterMsgServer(configurator.MsgServer(), impl)
+	axelarbridge.RegisterMsgServer(configurator.MsgServer(), impl)
 }

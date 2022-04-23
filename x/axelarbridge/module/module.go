@@ -22,9 +22,9 @@ import (
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
-	"github.com/regen-network/regen-ledger/x/axelarbridge/client"
+	// "github.com/regen-network/regen-ledger/x/axelarbridge/client"
 	"github.com/regen-network/regen-ledger/x/axelarbridge/server"
-	"github.com/regen-network/regen-ledger/x/axelarbridge/simulation"
+	// "github.com/regen-network/regen-ledger/x/axelarbridge/simulation"
 )
 
 type Module struct {
@@ -48,7 +48,7 @@ func (a Module) Name() string {
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
-	bridge.RegisterTypes(registry)
+	axelarbridge.RegisterTypes(registry)
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
@@ -95,11 +95,11 @@ func (a Module) ValidateGenesis(_ codec.JSONCodec, _ sdkclient.TxEncodingConfig,
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
-	return client.QueryCmd(a.Name())
+	return nil // client.QueryCmd(a.Name())
 }
 
 func (a Module) GetTxCmd() *cobra.Command {
-	return client.TxCmd(a.Name())
+	return nil // client.TxCmd(a.Name())
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
@@ -110,14 +110,14 @@ func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 
 // RegisterLegacyAminoCodec registers the bridge module's types on the given LegacyAmino codec.
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	bridge.RegisterLegacyAminoCodec(cdc)
+	axelarbridge.RegisterLegacyAminoCodec(cdc)
 }
 
 // AppModuleSimulation functions
 
 // GenerateGenesisState creates a randomized GenesisState of the bridge module.
 func (Module) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
+	// simulation.RandomizedGenState(simState)
 }
 
 // ProposalContents returns all the bridge content functions used to
