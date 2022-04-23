@@ -544,7 +544,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			transferModule,
 			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 			data.NewModule(app.AccountKeeper, app.BankKeeper),
-			bridgemodule.NewModule(),
+			bridgemodule.NewModule(app.MsgServiceRouter()),
 		}, app.setCustomSimulationManager()...)...,
 	)
 
