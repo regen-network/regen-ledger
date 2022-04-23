@@ -21,10 +21,10 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/bridge"
-	"github.com/regen-network/regen-ledger/x/bridge/client"
-	"github.com/regen-network/regen-ledger/x/bridge/server"
-	"github.com/regen-network/regen-ledger/x/bridge/simulation"
+	"github.com/regen-network/regen-ledger/x/axelarbridge"
+	"github.com/regen-network/regen-ledger/x/axelarbridge/client"
+	"github.com/regen-network/regen-ledger/x/axelarbridge/server"
+	"github.com/regen-network/regen-ledger/x/axelarbridge/simulation"
 )
 
 type Module struct {

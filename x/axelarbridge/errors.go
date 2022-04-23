@@ -1,8 +1,8 @@
-package bridge
+package axelarbridge
 
 import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-const DataCodespace = "regen.bridge"
+const DataCodespace = "axelar.bridge"
 
 var (
 	ErrHashVerificationFailed      = sdkerrors.Register(DataCodespace, 1, "hash verification failed")

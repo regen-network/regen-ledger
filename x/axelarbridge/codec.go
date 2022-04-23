@@ -1,4 +1,4 @@
-package bridge
+package axelarbridge
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"

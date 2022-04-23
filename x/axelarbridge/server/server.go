@@ -9,7 +9,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/bridge/v1"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
-	"github.com/regen-network/regen-ledger/x/bridge"
+	"github.com/regen-network/regen-ledger/x/axelarbridge"
 )
 
 const (

@@ -93,7 +93,7 @@ import (
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	bridgemodule "github.com/regen-network/regen-ledger/x/bridge/module"
+	bridgemodule "github.com/regen-network/regen-ledger/x/axelarbridge/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"

@@ -3,13 +3,13 @@ package axelar.bridge.v1;
 
 import "google/protobuf/any.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/bridge";
+option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
 
 message Event {
-    string event_id = 1;
+  string event_id = 1;
 
-    string sender_address = 2;
-    string dest_address = 3;
-  
-    bytes payload = 4;
+  string sender_address = 2;
+  string dest_address = 3;
+
+  bytes payload = 4;
 }

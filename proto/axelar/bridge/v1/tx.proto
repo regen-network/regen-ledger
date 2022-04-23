@@ -5,13 +5,15 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/bridge";
+option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
 
 service Msg {
-  rpc RecordBridgeEvent(MsgRecordBridgeEvent) returns (MsgRecordBridgeEventResponse);
+  rpc RecordBridgeEvent(MsgRecordBridgeEvent)
+      returns (MsgRecordBridgeEventResponse);
   rpc ExecBrigeEvent(MsgExecBrigeEvent) returns (MsgExecBrigeEventResponse);
 
-  rpc SendBridgeMessage(MsgSendBridgeMessage) returns (MsgSendBridgeMessageResponse);
+  rpc SendBridgeMessage(MsgSendBridgeMessage)
+      returns (MsgSendBridgeMessageResponse);
 }
 
 message MsgRecordBridgeEvent {
@@ -24,9 +26,7 @@ message MsgRecordBridgeEvent {
 }
 
 // MsgRecordBridgeEventResponse defines the Msg/SubmitProposal response type.
-message MsgRecordBridgeEventResponse {
-  string event_id = 1;
-}
+message MsgRecordBridgeEventResponse { string event_id = 1; }
 
 message MsgExecBrigeEvent {
   string executor = 1; // Signer
@@ -42,5 +42,6 @@ message MsgSendBridgeMessage {
   bytes payload = 3;
 }
 
-// MsgMsgSendBridgeMessageResponse defines the Msg/ExecLegacyContent response type.
+// MsgMsgSendBridgeMessageResponse defines the Msg/ExecLegacyContent response
+// type.
 message MsgSendBridgeMessageResponse {}

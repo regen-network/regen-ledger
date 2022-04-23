@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/x/bridge
+module github.com/regen-network/regen-ledger/x/axelarbridge
 
 go 1.17
 
