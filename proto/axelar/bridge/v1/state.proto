@@ -3,7 +3,7 @@ package axelar.bridge.v1;
 
 import "google/protobuf/any.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
+option go_package = "github.com/regen-network/regen-ledger/x/axelarbridge";
 
 message Event {
   string event_id = 1;
