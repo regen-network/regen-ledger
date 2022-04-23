@@ -6,7 +6,6 @@ package data
 import (
 	context "context"
 	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
@@ -31,12 +30,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgAnchor is the Msg/Anchor request type.
 type MsgAnchor struct {
-	// sender is the address of the sender of the transaction.
-	// The sender in Anchor is not attesting to the veracity of the underlying
-	// data. They can simply be an intermediary providing services.
+	// sender is the address of the sender of the transaction. The sender in
+	// Anchor is not attesting to the veracity of the underlying data. They
+	// can simply be an intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	// hash is the hash-based identifier for the anchored content.
-	Hash *ContentHash `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	// content_hash is the content hash for the data to anchor.
+	ContentHash *ContentHash `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 
 func (m *MsgAnchor) Reset()         { *m = MsgAnchor{} }
@@ -79,19 +78,19 @@ func (m *MsgAnchor) GetSender() string {
 	return ""
 }
 
-func (m *MsgAnchor) GetHash() *ContentHash {
+func (m *MsgAnchor) GetContentHash() *ContentHash {
 	if m != nil {
-		return m.Hash
+		return m.ContentHash
 	}
 	return nil
 }
 
 // MsgAnchor is the Msg/Anchor response type.
 type MsgAnchorResponse struct {
-	// timestamp is the timestamp of the block at which the data was anchored.
-	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// iri is the IRI of the data that was anchored.
-	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+	// timestamp is the timestamp at which the data was anchored.
+	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
 func (m *MsgAnchorResponse) Reset()         { *m = MsgAnchorResponse{} }
@@ -127,13 +126,6 @@ func (m *MsgAnchorResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAnchorResponse proto.InternalMessageInfo
 
-func (m *MsgAnchorResponse) GetTimestamp() *types.Timestamp {
-	if m != nil {
-		return m.Timestamp
-	}
-	return nil
-}
-
 func (m *MsgAnchorResponse) GetIri() string {
 	if m != nil {
 		return m.Iri
@@ -141,17 +133,24 @@ func (m *MsgAnchorResponse) GetIri() string {
 	return ""
 }
 
+func (m *MsgAnchorResponse) GetTimestamp() *types.Timestamp {
+	if m != nil {
+		return m.Timestamp
+	}
+	return nil
+}
+
 // MsgAttest is the Msg/Attest request type.
 type MsgAttest struct {
-	// attestors are the addresses of the accounts attesting to the validity of
-	// the data. By making an Attest request, the attestors are attesting to the
-	// veracity of the data referenced by the cid. The precise meaning of this may
+	// attestor is the addresses of the account attesting to the veracity of the
+	// data. By making an Attest request, the attestor is attesting to the
+	// veracity of the data referenced by the IRI. The precise meaning of this may
 	// vary depending on the underlying data.
-	Attestors []string `protobuf:"bytes,1,rep,name=attestors,proto3" json:"attestors,omitempty"`
-	// hash is the hash-based identifier for the anchored content. Only RDF graph
+	Attestor string `protobuf:"bytes,1,opt,name=attestor,proto3" json:"attestor,omitempty"`
+	// content_hashes are the content hashes for anchored data. Only RDF graph
 	// data can be signed as its data model is intended to specifically convey
 	// semantic meaning.
-	Hash *ContentHash_Graph `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	ContentHashes []*ContentHash_Graph `protobuf:"bytes,2,rep,name=content_hashes,json=contentHashes,proto3" json:"content_hashes,omitempty"`
 }
 
 func (m *MsgAttest) Reset()         { *m = MsgAttest{} }
@@ -187,8 +186,26 @@ func (m *MsgAttest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAttest proto.InternalMessageInfo
 
+func (m *MsgAttest) GetAttestor() string {
+	if m != nil {
+		return m.Attestor
+	}
+	return ""
+}
+
+func (m *MsgAttest) GetContentHashes() []*ContentHash_Graph {
+	if m != nil {
+		return m.ContentHashes
+	}
+	return nil
+}
+
 // MsgAttestResponse is the Msg/Attest response type.
 type MsgAttestResponse struct {
+	// new_entries are the new attestor entries including the attestor, the IRI,
+	// and the timestamp. If the attestor attests to the same piece of data, the
+	// entry will not be updated and not included in the response.
+	NewEntries []*AttestorEntry `protobuf:"bytes,1,rep,name=new_entries,json=newEntries,proto3" json:"new_entries,omitempty"`
 }
 
 func (m *MsgAttestResponse) Reset()         { *m = MsgAttestResponse{} }
@@ -223,6 +240,13 @@ func (m *MsgAttestResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_MsgAttestResponse proto.InternalMessageInfo
+
+func (m *MsgAttestResponse) GetNewEntries() []*AttestorEntry {
+	if m != nil {
+		return m.NewEntries
+	}
+	return nil
+}
 
 // MsgDefineResolver is the Msg/DefineResolver request type.
 type MsgDefineResolver struct {
@@ -340,8 +364,9 @@ type MsgRegisterResolver struct {
 	Manager string `protobuf:"bytes,1,opt,name=manager,proto3" json:"manager,omitempty"`
 	// resolver_id is the ID of a resolver defined with Msg/DefineResolver.
 	ResolverId uint64 `protobuf:"varint,2,opt,name=resolver_id,json=resolverId,proto3" json:"resolver_id,omitempty"`
-	// data is a list of content hashes which the resolver claims to serve.
-	Data []*ContentHash `protobuf:"bytes,3,rep,name=data,proto3" json:"data,omitempty"`
+	// content_hashes is a list of content hashes which the resolver claims to
+	// serve.
+	ContentHashes []*ContentHash `protobuf:"bytes,3,rep,name=content_hashes,json=contentHashes,proto3" json:"content_hashes,omitempty"`
 }
 
 func (m *MsgRegisterResolver) Reset()         { *m = MsgRegisterResolver{} }
@@ -391,9 +416,9 @@ func (m *MsgRegisterResolver) GetResolverId() uint64 {
 	return 0
 }
 
-func (m *MsgRegisterResolver) GetData() []*ContentHash {
+func (m *MsgRegisterResolver) GetContentHashes() []*ContentHash {
 	if m != nil {
-		return m.Data
+		return m.ContentHashes
 	}
 	return nil
 }
@@ -449,40 +474,41 @@ func init() {
 func init() { proto.RegisterFile("regen/data/v1/tx.proto", fileDescriptor_c87f072557099c45) }
 
 var fileDescriptor_c87f072557099c45 = []byte{
-	// 517 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xc7, 0xe3, 0x24, 0x0a, 0xf2, 0x14, 0x50, 0xd9, 0xa2, 0xca, 0x35, 0xe0, 0x18, 0x9f, 0x22,
-	0x04, 0x6b, 0xb5, 0x70, 0x40, 0x88, 0x0b, 0x50, 0xf1, 0x71, 0x88, 0x84, 0x0c, 0x5c, 0x10, 0x52,
-	0xe4, 0x34, 0xd3, 0xb5, 0x85, 0xe3, 0xb5, 0x76, 0x37, 0xa1, 0xdc, 0x38, 0x72, 0xe4, 0x11, 0x78,
-	0x1c, 0x8e, 0x95, 0xb8, 0x70, 0x44, 0xc9, 0x8b, 0x54, 0x5e, 0x7f, 0x54, 0x71, 0x52, 0xe5, 0xb6,
-	0x33, 0xf3, 0xdf, 0x9f, 0xff, 0x33, 0xb3, 0x09, 0xec, 0x0b, 0x64, 0x98, 0xfa, 0x93, 0x50, 0x85,
-	0xfe, 0xfc, 0xd0, 0x57, 0x67, 0x34, 0x13, 0x5c, 0x71, 0x72, 0x43, 0xe7, 0x69, 0x9e, 0xa7, 0xf3,
-	0x43, 0xfb, 0x36, 0xe3, 0x8c, 0xeb, 0x8a, 0x9f, 0x9f, 0x0a, 0x91, 0xdd, 0x67, 0x9c, 0xb3, 0x04,
-	0x7d, 0x1d, 0x8d, 0x67, 0xa7, 0xbe, 0x8a, 0xa7, 0x28, 0x55, 0x38, 0xcd, 0x4a, 0xc1, 0x41, 0x83,
-	0xfe, 0x3d, 0x43, 0x59, 0x94, 0xbc, 0x0f, 0x60, 0x0e, 0x25, 0x7b, 0x91, 0x9e, 0x44, 0x5c, 0x90,
-	0x7d, 0xe8, 0x49, 0x4c, 0x27, 0x28, 0x2c, 0xc3, 0x35, 0x06, 0x66, 0x50, 0x46, 0x84, 0x42, 0x37,
-	0x0a, 0x65, 0x64, 0xb5, 0x5d, 0x63, 0xb0, 0x73, 0x64, 0xd3, 0x15, 0x53, 0xf4, 0x15, 0x4f, 0x15,
-	0xa6, 0xea, 0x6d, 0x28, 0xa3, 0x40, 0xeb, 0xbc, 0x11, 0xdc, 0xaa, 0xa1, 0x01, 0xca, 0x8c, 0xa7,
-	0x12, 0xc9, 0x53, 0x30, 0x6b, 0x5f, 0x9a, 0x9f, 0x93, 0x0a, 0xe7, 0xb4, 0x72, 0x4e, 0x3f, 0x56,
-	0x8a, 0xe0, 0x52, 0x4c, 0x76, 0xa1, 0x13, 0x8b, 0x58, 0x7f, 0xdd, 0x0c, 0xf2, 0xa3, 0x87, 0x85,
-	0x6b, 0xa5, 0x50, 0x2a, 0x72, 0x17, 0xcc, 0x50, 0x9f, 0xb8, 0x90, 0x96, 0xe1, 0x76, 0x06, 0x66,
-	0x70, 0x99, 0x20, 0x4f, 0x56, 0xbc, 0xbb, 0x57, 0x7b, 0xa7, 0x6f, 0x44, 0x98, 0x95, 0x1d, 0x3c,
-	0xeb, 0xfe, 0xfc, 0xdd, 0x6f, 0x79, 0x7b, 0x45, 0x1f, 0x9a, 0x55, 0xf5, 0xe1, 0xbd, 0xd7, 0xc9,
-	0x63, 0x3c, 0x8d, 0x53, 0x0c, 0x50, 0xf2, 0x64, 0x8e, 0x82, 0x58, 0x70, 0x6d, 0x1a, 0xa6, 0x21,
-	0xab, 0x47, 0x57, 0x85, 0xe4, 0x3e, 0x5c, 0x17, 0xa5, 0x6a, 0x34, 0x13, 0x49, 0xd9, 0xc5, 0x4e,
-	0x95, 0xfb, 0x24, 0x12, 0xef, 0x39, 0x1c, 0xac, 0x11, 0xeb, 0xb1, 0xf5, 0xa1, 0xd6, 0x8e, 0xe2,
-	0x89, 0xa6, 0x77, 0x03, 0xa8, 0x52, 0xef, 0x26, 0xde, 0x0f, 0x03, 0xf6, 0x86, 0x92, 0x05, 0xc8,
-	0x62, 0xa9, 0xf4, 0xc5, 0x6d, 0x96, 0x1a, 0xc8, 0x76, 0x13, 0x99, 0xef, 0x3b, 0x1f, 0x90, 0xd5,
-	0x71, 0x3b, 0xdb, 0xf6, 0x9d, 0x27, 0xbd, 0x7b, 0x70, 0x67, 0x83, 0x83, 0xaa, 0x85, 0xa3, 0xbf,
-	0x6d, 0xe8, 0x0c, 0x25, 0x23, 0xc7, 0xd0, 0x2b, 0x1f, 0x9a, 0xd5, 0x40, 0xd6, 0xaf, 0xc5, 0x76,
-	0xaf, 0xaa, 0xd4, 0x03, 0xc9, 0x29, 0xc5, 0xe2, 0x37, 0x51, 0x74, 0x65, 0x23, 0x65, 0x65, 0x8b,
-	0xe4, 0x0b, 0xdc, 0x6c, 0xac, 0x70, 0xc3, 0x9d, 0x55, 0x85, 0x3d, 0xd8, 0xa6, 0xa8, 0xe9, 0x63,
-	0xd8, 0x5d, 0xdb, 0x87, 0xb7, 0x7e, 0xbb, 0xa9, 0xb1, 0x1f, 0x6c, 0xd7, 0x54, 0xdf, 0x78, 0xf9,
-	0xfa, 0xcf, 0xc2, 0x31, 0xce, 0x17, 0x8e, 0xf1, 0x7f, 0xe1, 0x18, 0xbf, 0x96, 0x4e, 0xeb, 0x7c,
-	0xe9, 0xb4, 0xfe, 0x2d, 0x9d, 0xd6, 0xe7, 0x87, 0x2c, 0x56, 0xd1, 0x6c, 0x4c, 0x4f, 0xf8, 0xd4,
-	0xd7, 0xbc, 0x47, 0x29, 0xaa, 0x6f, 0x5c, 0x7c, 0x2d, 0xa3, 0x04, 0x27, 0x0c, 0x85, 0x7f, 0xa6,
-	0xff, 0x10, 0xc6, 0x3d, 0xfd, 0xe3, 0x7b, 0x7c, 0x11, 0x00, 0x00, 0xff, 0xff, 0x14, 0x83, 0x24,
-	0xfb, 0x83, 0x04, 0x00, 0x00,
+	// 540 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x94, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0x86, 0xeb, 0x04, 0x15, 0x32, 0x69, 0xab, 0xb2, 0x48, 0x95, 0x6b, 0xc0, 0x0d, 0x3e, 0x45,
+	0x08, 0x6c, 0x35, 0x5c, 0x38, 0xd0, 0x43, 0xa0, 0xa5, 0x70, 0x88, 0x84, 0x56, 0x70, 0x41, 0x48,
+	0x91, 0x93, 0x4c, 0x6d, 0x8b, 0x64, 0xd7, 0xda, 0xdd, 0x24, 0xed, 0x5b, 0x20, 0xf1, 0x52, 0x1c,
+	0x2b, 0x71, 0xe1, 0x88, 0x92, 0x17, 0x41, 0x59, 0xdb, 0xdb, 0xc6, 0x49, 0xc9, 0xcd, 0xb3, 0xf3,
+	0xef, 0x37, 0xf3, 0xcf, 0x4e, 0x02, 0x07, 0x02, 0x23, 0x64, 0xc1, 0x20, 0x54, 0x61, 0x30, 0x39,
+	0x0e, 0xd4, 0xa5, 0x9f, 0x0a, 0xae, 0x38, 0xd9, 0xd5, 0xe7, 0xfe, 0xe2, 0xdc, 0x9f, 0x1c, 0x3b,
+	0x47, 0x11, 0xe7, 0xd1, 0x10, 0x03, 0x9d, 0xec, 0x8d, 0x2f, 0x02, 0x95, 0x8c, 0x50, 0xaa, 0x70,
+	0x94, 0x66, 0x7a, 0xe7, 0xb0, 0xc4, 0xb9, 0x4a, 0x51, 0x66, 0x29, 0xaf, 0x07, 0xb5, 0x8e, 0x8c,
+	0xda, 0xac, 0x1f, 0x73, 0x41, 0x0e, 0x60, 0x5b, 0x22, 0x1b, 0xa0, 0xb0, 0xad, 0x86, 0xd5, 0xac,
+	0xd1, 0x3c, 0x22, 0x27, 0xb0, 0xd3, 0xe7, 0x4c, 0x21, 0x53, 0xdd, 0x38, 0x94, 0xb1, 0x5d, 0x69,
+	0x58, 0xcd, 0x7a, 0xcb, 0xf1, 0x97, 0xda, 0xf0, 0xdf, 0x65, 0x92, 0x0f, 0xa1, 0x8c, 0x69, 0xbd,
+	0x7f, 0x13, 0x78, 0x5d, 0x78, 0x68, 0x6a, 0x50, 0x94, 0x29, 0x67, 0x12, 0xc9, 0x3e, 0x54, 0x13,
+	0x91, 0xe4, 0x85, 0x16, 0x9f, 0xe4, 0x35, 0xd4, 0x4c, 0xe3, 0xa6, 0x44, 0x66, 0xcd, 0x2f, 0xac,
+	0xf9, 0x9f, 0x0b, 0x05, 0xbd, 0x11, 0x7b, 0x69, 0x66, 0x42, 0x29, 0x94, 0x8a, 0x38, 0xf0, 0x20,
+	0xd4, 0x5f, 0xbc, 0xb0, 0x61, 0x62, 0x72, 0x0e, 0x7b, 0xb7, 0x8d, 0xa0, 0xb4, 0x2b, 0x8d, 0x6a,
+	0xb3, 0xde, 0x6a, 0xdc, 0x6d, 0xc5, 0x3f, 0x17, 0x61, 0x1a, 0xd3, 0xdd, 0x5b, 0x86, 0x50, 0x7a,
+	0x34, 0xb3, 0xa4, 0xb9, 0xc6, 0xd2, 0x09, 0xd4, 0x19, 0x4e, 0xbb, 0xc8, 0x94, 0x48, 0x50, 0xda,
+	0x96, 0x46, 0x3f, 0x29, 0xa1, 0xdb, 0x79, 0x2f, 0x67, 0x4c, 0x89, 0x2b, 0x0a, 0x0c, 0xa7, 0x67,
+	0x99, 0xde, 0xfb, 0xa4, 0x99, 0xa7, 0x78, 0x91, 0x30, 0xa4, 0x28, 0xf9, 0x70, 0x82, 0x82, 0xd8,
+	0x70, 0x7f, 0x14, 0xb2, 0x30, 0x32, 0x6f, 0x52, 0x84, 0xe4, 0x19, 0xec, 0x88, 0x5c, 0xd5, 0x1d,
+	0x8b, 0xa1, 0x9e, 0x58, 0x8d, 0xd6, 0x8b, 0xb3, 0x2f, 0x62, 0xe8, 0xbd, 0x81, 0xc3, 0x15, 0xa2,
+	0xe9, 0xf6, 0x08, 0x8c, 0xb6, 0x9b, 0x0c, 0x34, 0xfd, 0x1e, 0x85, 0xe2, 0xe8, 0xe3, 0xc0, 0xfb,
+	0x69, 0xc1, 0xa3, 0x8e, 0x8c, 0x28, 0x46, 0x89, 0x54, 0xfa, 0xe2, 0xa6, 0x96, 0x4a, 0xc8, 0x4a,
+	0x19, 0x49, 0xda, 0x2b, 0xf3, 0xaf, 0xea, 0x21, 0xfd, 0x6f, 0x95, 0x4a, 0x93, 0x7f, 0x0a, 0x8f,
+	0xd7, 0x34, 0x55, 0xb8, 0x6a, 0xfd, 0xae, 0x40, 0xb5, 0x23, 0x23, 0x72, 0x0a, 0xdb, 0xf9, 0x52,
+	0xdb, 0x25, 0xb6, 0x59, 0x45, 0xa7, 0x71, 0x57, 0xc6, 0xcc, 0x68, 0x41, 0xc9, 0xb6, 0x6a, 0x1d,
+	0x45, 0x67, 0xd6, 0x52, 0x96, 0xf7, 0xe2, 0x1b, 0xec, 0x95, 0x5e, 0x75, 0xcd, 0x9d, 0x65, 0x85,
+	0xd3, 0xdc, 0xa4, 0x30, 0xf4, 0x1e, 0xec, 0xaf, 0x3c, 0x91, 0xb7, 0x7a, 0xbb, 0xac, 0x71, 0x9e,
+	0x6f, 0xd6, 0x14, 0x35, 0xde, 0xbe, 0xff, 0x35, 0x73, 0xad, 0xeb, 0x99, 0x6b, 0xfd, 0x9d, 0xb9,
+	0xd6, 0x8f, 0xb9, 0xbb, 0x75, 0x3d, 0x77, 0xb7, 0xfe, 0xcc, 0xdd, 0xad, 0xaf, 0x2f, 0xa2, 0x44,
+	0xc5, 0xe3, 0x9e, 0xdf, 0xe7, 0xa3, 0x40, 0xf3, 0x5e, 0x32, 0x54, 0x53, 0x2e, 0xbe, 0xe7, 0xd1,
+	0x10, 0x07, 0x11, 0x8a, 0xe0, 0x52, 0xff, 0xf9, 0xf4, 0xb6, 0xf5, 0xef, 0xf8, 0xd5, 0xbf, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x33, 0xf3, 0x06, 0xab, 0xd9, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -757,9 +783,9 @@ func (m *MsgAnchor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Hash != nil {
+	if m.ContentHash != nil {
 		{
-			size, err := m.Hash.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.ContentHash.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -799,13 +825,6 @@ func (m *MsgAnchorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Iri) > 0 {
-		i -= len(m.Iri)
-		copy(dAtA[i:], m.Iri)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Iri)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if m.Timestamp != nil {
 		{
 			size, err := m.Timestamp.MarshalToSizedBuffer(dAtA[:i])
@@ -815,6 +834,13 @@ func (m *MsgAnchorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i -= size
 			i = encodeVarintTx(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Iri) > 0 {
+		i -= len(m.Iri)
+		copy(dAtA[i:], m.Iri)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Iri)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -841,26 +867,26 @@ func (m *MsgAttest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Hash != nil {
-		{
-			size, err := m.Hash.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
+	if len(m.ContentHashes) > 0 {
+		for iNdEx := len(m.ContentHashes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ContentHashes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
 			}
-			i -= size
-			i = encodeVarintTx(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Attestors) > 0 {
-		for iNdEx := len(m.Attestors) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.Attestors[iNdEx])
-			copy(dAtA[i:], m.Attestors[iNdEx])
-			i = encodeVarintTx(dAtA, i, uint64(len(m.Attestors[iNdEx])))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x12
 		}
+	}
+	if len(m.Attestor) > 0 {
+		i -= len(m.Attestor)
+		copy(dAtA[i:], m.Attestor)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Attestor)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -885,6 +911,20 @@ func (m *MsgAttestResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.NewEntries) > 0 {
+		for iNdEx := len(m.NewEntries) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.NewEntries[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -973,10 +1013,10 @@ func (m *MsgRegisterResolver) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Data) > 0 {
-		for iNdEx := len(m.Data) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.ContentHashes) > 0 {
+		for iNdEx := len(m.ContentHashes) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.Data[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.ContentHashes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -1046,8 +1086,8 @@ func (m *MsgAnchor) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Hash != nil {
-		l = m.Hash.Size()
+	if m.ContentHash != nil {
+		l = m.ContentHash.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1059,12 +1099,12 @@ func (m *MsgAnchorResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		l = m.Timestamp.Size()
-		n += 1 + l + sovTx(uint64(l))
-	}
 	l = len(m.Iri)
 	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Timestamp != nil {
+		l = m.Timestamp.Size()
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
@@ -1076,15 +1116,15 @@ func (m *MsgAttest) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if len(m.Attestors) > 0 {
-		for _, s := range m.Attestors {
-			l = len(s)
+	l = len(m.Attestor)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.ContentHashes) > 0 {
+		for _, e := range m.ContentHashes {
+			l = e.Size()
 			n += 1 + l + sovTx(uint64(l))
 		}
-	}
-	if m.Hash != nil {
-		l = m.Hash.Size()
-		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -1095,6 +1135,12 @@ func (m *MsgAttestResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if len(m.NewEntries) > 0 {
+		for _, e := range m.NewEntries {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -1140,8 +1186,8 @@ func (m *MsgRegisterResolver) Size() (n int) {
 	if m.ResolverId != 0 {
 		n += 1 + sovTx(uint64(m.ResolverId))
 	}
-	if len(m.Data) > 0 {
-		for _, e := range m.Data {
+	if len(m.ContentHashes) > 0 {
+		for _, e := range m.ContentHashes {
 			l = e.Size()
 			n += 1 + l + sovTx(uint64(l))
 		}
@@ -1227,7 +1273,7 @@ func (m *MsgAnchor) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1254,10 +1300,10 @@ func (m *MsgAnchor) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Hash == nil {
-				m.Hash = &ContentHash{}
+			if m.ContentHash == nil {
+				m.ContentHash = &ContentHash{}
 			}
-			if err := m.Hash.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.ContentHash.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1313,6 +1359,38 @@ func (m *MsgAnchorResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Iri = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
 			}
 			var msglen int
@@ -1346,38 +1424,6 @@ func (m *MsgAnchorResponse) Unmarshal(dAtA []byte) error {
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Iri = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1431,7 +1477,7 @@ func (m *MsgAttest) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Attestors", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Attestor", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1459,11 +1505,11 @@ func (m *MsgAttest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Attestors = append(m.Attestors, string(dAtA[iNdEx:postIndex]))
+			m.Attestor = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentHashes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1490,10 +1536,8 @@ func (m *MsgAttest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Hash == nil {
-				m.Hash = &ContentHash_Graph{}
-			}
-			if err := m.Hash.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.ContentHashes = append(m.ContentHashes, &ContentHash_Graph{})
+			if err := m.ContentHashes[len(m.ContentHashes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1547,6 +1591,40 @@ func (m *MsgAttestResponse) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: MsgAttestResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NewEntries", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NewEntries = append(m.NewEntries, &AttestorEntry{})
+			if err := m.NewEntries[len(m.NewEntries)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -1833,7 +1911,7 @@ func (m *MsgRegisterResolver) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ContentHashes", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1860,8 +1938,8 @@ func (m *MsgRegisterResolver) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Data = append(m.Data, &ContentHash{})
-			if err := m.Data[len(m.Data)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.ContentHashes = append(m.ContentHashes, &ContentHash{})
+			if err := m.ContentHashes[len(m.ContentHashes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

@@ -7,8 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -78,7 +79,12 @@ type serverImpl struct {
 	coreKeeper        core.Keeper
 	marketplaceKeeper marketplace.Keeper
 
-	db ormdb.ModuleDB
+	db         ormdb.ModuleDB
+	stateStore api.StateStore
+}
+
+func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.AddCreditType(ctx, ctp)
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -232,6 +238,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err)
 	}
+	s.stateStore = ss
 	s.coreKeeper = core.NewKeeper(ss, bankKeeper, s.paramSpace)
 
 	s.marketplaceKeeper = marketplace.NewKeeper(s.db, ss, bankKeeper, s.paramSpace)
@@ -245,7 +252,7 @@ func RegisterServices(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
+) Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
@@ -261,6 +268,8 @@ func RegisterServices(
 	marketplacetypes.RegisterQueryServer(configurator.QueryServer(), impl.marketplaceKeeper)
 
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterMigrationHandler(impl.RunMigrations)
+
 	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
 	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)

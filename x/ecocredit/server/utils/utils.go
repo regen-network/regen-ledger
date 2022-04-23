@@ -3,26 +3,26 @@ package utils
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
 func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classId := ecocredit.GetClassIdFromBatchDenom(denom)
-	classInfo, err := store.ClassInfoTable().GetByName(ctx, classId)
+	classInfo, err := store.ClassTable().GetById(ctx, classId)
 	if err != nil {
 		return core.CreditType{}, err
 	}
 	p := &core.Params{}
 	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditType, p.CreditTypes)
+	return GetCreditType(classInfo.CreditTypeAbbrev, p.CreditTypes)
 }
 
 // GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.

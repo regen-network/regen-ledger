@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			name:      "invalid iri",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "key not found",
+			expErrMsg: "invalid IRI",
 		},
 		{
 			name:   "valid",
@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				s.Require().Equal(tc.expIRI, res.Entry.Iri)
-				s.Require().NotNil(res.Entry.Hash)
+				s.Require().NotNil(res.Entry.ContentHash)
 				s.Require().NotNil(res.Entry.Timestamp)
 			}
 		})
@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 
 				for i, entry := range res.Entries {
 					s.Require().Equal(tc.expIRIs[i], entry.Iri)
-					s.Require().NotNil(entry.Hash)
+					s.Require().NotNil(entry.ContentHash)
 					s.Require().NotNil(entry.Timestamp)
 				}
 			}
@@ -230,7 +230,7 @@ func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 			name:      "invalid attestor",
 			args:      []string{"foo"},
 			expErr:    true,
-			expErrMsg: "key not found",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid",
@@ -344,7 +344,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 			name:      "invalid iri",
 			args:      []string{"abcd"},
 			expErr:    true,
-			expErrMsg: "can't find",
+			expErrMsg: "not found",
 		},
 		{
 			name:   "valid test",

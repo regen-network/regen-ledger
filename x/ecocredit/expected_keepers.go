@@ -7,6 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
+//go:generate mockgen -source=expected_keepers.go -package mocks -destination mocks/expected_keepers.go
+
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
 type AccountKeeper interface {
 	// NewAccount returns a new account with the next account number. Does not save the new account to the store.
@@ -33,11 +35,6 @@ type BankKeeper interface {
 	SetDenomMetaData(ctx sdk.Context, denomMetaData banktypes.Metadata)
 	GetSupply(ctx sdk.Context, denom string) sdk.Coin
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
-}
-
-// Keeper defines the expected interface needed to prune expired buy and sell orders.
-type Keeper interface {
-	PruneOrders(ctx sdk.Context) error
 }
 
 type DistributionKeeper interface {

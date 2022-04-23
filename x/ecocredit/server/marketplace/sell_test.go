@@ -21,21 +21,12 @@ import (
 func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(2)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(4)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -76,37 +67,30 @@ func TestSell_Valid(t *testing.T) {
 func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ubar", 10)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
+	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	newCoin := sdk.NewInt64Coin("ubaz", 10)
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
-	}).Times(1)
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: newCoin.Denom}}
+	}).Times(2)
 
 	// market shouldn't exist before sell call
-	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
 	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &newCoin, DisableAutoRetire: false, Expiration: &sellTime},
 		},
 	})
 	assert.NilError(t, err)
 
 	// market should exist now
-	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, ask.Denom)
+	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, true, has)
 }
@@ -115,21 +99,13 @@ func TestSell_CreatesMarket(t *testing.T) {
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
+	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
 
 	// invalid batch
@@ -163,6 +139,27 @@ func TestSell_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "expiration must be in the future")
 }
 
+func TestSell_InvalidDenom(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	gmAny := gomock.Any()
+	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
+		p.CreditTypes = []*core.CreditType{&creditType}
+		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
+	}).Times(2)
+
+	sellTime := time.Now()
+	invalidAsk := sdk.NewInt64Coin("ubar", 10)
+	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.addr.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &invalidAsk, DisableAutoRetire: false, Expiration: &sellTime},
+		},
+	})
+	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
+}
+
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
 func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
@@ -184,18 +181,18 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
-	assert.NilError(t, s.coreStore.BatchInfoTable().Insert(s.ctx, &ecoApi.BatchInfo{
-		ProjectId:  1,
-		BatchDenom: batchDenom,
+	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
+		ProjectKey: 1,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(t, s.coreStore.ClassInfoTable().Insert(s.ctx, &ecoApi.ClassInfo{
-		Name:       classId,
-		Admin:      s.addr,
-		Metadata:   "",
-		CreditType: creditType.Abbreviation,
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+		Id:               classId,
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
 	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
@@ -209,14 +206,14 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 	//	Exponent:     1,
 	//}))
 	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		BatchKey: 1,
 		Address:  s.addr,
-		BatchId:  1,
 		Tradable: "100",
 		Retired:  "100",
 		Escrowed: "0",
 	}))
 	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
-		BatchId:        1,
+		BatchKey:       1,
 		TradableAmount: "100",
 		RetiredAmount:  "100",
 	}))

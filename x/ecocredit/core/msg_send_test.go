@@ -5,14 +5,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgSend(t *testing.T) {
 	t.Parallel()
 
-	_, _, addr1 := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
+	addr1 := testutil.GenAddress()
+	addr2 := testutil.GenAddress()
 
 	tests := map[string]struct {
 		src    MsgSend
@@ -20,14 +20,14 @@ func TestMsgSend(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "A00-00000000-00000000-000",
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             batchDenom,
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -35,8 +35,8 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg with Credits.RetiredAmount negative value": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
 						BatchDenom:     "some_denom",
@@ -49,20 +49,20 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg without credits": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 			},
 			expErr: true,
 		},
 		"invalid msg without sender": {
 			src: MsgSend{
-				Recipient: addr2.String(),
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -70,13 +70,13 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg without recipient": {
 			src: MsgSend{
-				Sender: addr1.String(),
+				Sender: addr1,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -84,13 +84,13 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						TradableAmount:     "10",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						TradableAmount:         "10",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -98,13 +98,13 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg without Credits.TradableAmount set": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						RetiredAmount:      "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						RetiredAmount:          "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
@@ -112,22 +112,22 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg without Credits.RetiredAmount set": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
-						TradableAmount:     "10",
-						RetirementLocation: "ST-UVW XY Z12",
+						BatchDenom:             "some_denom",
+						TradableAmount:         "10",
+						RetirementJurisdiction: "ST-UVW XY Z12",
 					},
 				},
 			},
 			expErr: true,
 		},
-		"invalid msg without Credits.RetirementLocation": {
+		"invalid msg without Credits.RetirementJurisdiction": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
 						BatchDenom:     "some_denom",
@@ -138,13 +138,13 @@ func TestMsgSend(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"valid msg without Credits.RetirementLocation(When RetiredAmount is zero)": {
+		"valid msg without Credits.RetirementJurisdiction(When RetiredAmount is zero)": {
 			src: MsgSend{
-				Sender:    addr1.String(),
-				Recipient: addr2.String(),
+				Sender:    addr1,
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:     "A00-00000000-00000000-000",
+						BatchDenom:     batchDenom,
 						TradableAmount: "10",
 						RetiredAmount:  "0",
 					},
@@ -155,7 +155,7 @@ func TestMsgSend(t *testing.T) {
 		"invalid msg with wrong sender": {
 			src: MsgSend{
 				Sender:    "wrongSender",
-				Recipient: addr2.String(),
+				Recipient: addr2,
 				Credits: []*MsgSend_SendCredits{
 					{
 						BatchDenom:     "some_denom",
@@ -168,7 +168,7 @@ func TestMsgSend(t *testing.T) {
 		},
 		"invalid msg with wrong recipient": {
 			src: MsgSend{
-				Sender:    addr1.String(),
+				Sender:    addr1,
 				Recipient: "wrongRecipient",
 				Credits: []*MsgSend_SendCredits{
 					{

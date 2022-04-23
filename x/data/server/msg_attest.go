@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -15,46 +16,54 @@ import (
 func (s serverImpl) Attest(ctx context.Context, request *data.MsgAttest) (*data.MsgAttestResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	iri, id, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
-	if err != nil {
-		return nil, err
-	}
+	var newEntries []*data.AttestorEntry
 
-	for _, attestor := range request.Attestors {
-		addr, err := sdk.AccAddressFromBech32(attestor)
+	for _, ch := range request.ContentHashes {
+		iri, id, _, err := s.anchorAndGetIRI(ctx, ch)
 		if err != nil {
 			return nil, err
 		}
 
-		exists, err := s.stateStore.DataAttestorTable().Has(ctx, id, addr)
+		addr, err := sdk.AccAddressFromBech32(request.Attestor)
 		if err != nil {
 			return nil, err
-		} else if exists {
+		}
+
+		found, err := s.stateStore.DataAttestorTable().Has(ctx, id, addr)
+		if err != nil {
+			return nil, err
+		} else if found {
+			// an attestor attesting to the same piece of date is a no-op
 			continue
 		}
 
+		timestamp := timestamppb.New(sdkCtx.BlockTime())
+
 		err = s.stateStore.DataAttestorTable().Insert(ctx, &api.DataAttestor{
-			Id:       id,
-			Attestor: addr,
-			Timestamp: &timestamppb.Timestamp{
-				Seconds: timestamp.Seconds,
-				Nanos:   timestamp.Nanos,
-			},
+			Id:        id,
+			Attestor:  addr,
+			Timestamp: timestamp,
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest attestor iteration")
+		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
+			Iri:      iri,
+			Attestor: request.Attestor,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		newEntries = append(newEntries, &data.AttestorEntry{
+			Iri:       iri,
+			Attestor:  addr.String(),
+			Timestamp: types.ProtobufToGogoTimestamp(timestamp),
+		})
+
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/Attest content hash iteration")
 	}
 
-	err = sdkCtx.EventManager().EmitTypedEvent(&data.EventAttest{
-		Iri:       iri,
-		Attestors: request.Attestors,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return &data.MsgAttestResponse{}, nil
+	return &data.MsgAttestResponse{NewEntries: newEntries}, nil
 }

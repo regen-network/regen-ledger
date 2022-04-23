@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -36,7 +37,7 @@ func (m MsgTake) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s must be positive", m.Amount)
 	}
 	if m.RetireOnTake {
-		if err := ecocredit.ValidateLocation(m.RetirementLocation); err != nil {
+		if err := ecocredit.ValidateJurisdiction(m.RetirementJurisdiction); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}

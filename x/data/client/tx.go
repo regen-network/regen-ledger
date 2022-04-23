@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -55,14 +56,14 @@ func MsgAnchorCmd() *cobra.Command {
 			}
 
 			attestor := clientCtx.GetFromAddress()
-			content, err := data.ParseIRI(iri)
+			contentHash, err := data.ParseIRI(iri)
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
 			}
 
 			msg := data.MsgAnchor{
-				Sender: attestor.String(),
-				Hash:   content,
+				Sender:      attestor.String(),
+				ContentHash: contentHash,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -77,9 +78,10 @@ func MsgAnchorCmd() *cobra.Command {
 // MsgAttestCmd creates a CLI command for Msg/Attest.
 func MsgAttestCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "attest [iri]",
-		Short:   `Attest to the validity of a piece of on-chain data.`,
-		Long:    `Attest to the validity of a piece of on-chain data. The data MUST be of graph type (rdf file extension).`,
+		Use:   "attest [iri]",
+		Short: `Attest to the veracity of anchored data.`,
+		Long: `Attest to the veracity of anchored data. The data MUST be of graph type (rdf file extension).
+Attest to the veracity of more than one entry using a comma-separated (no spaces) list of IRIs.`,
 		Example: "regen tx data attest regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -88,24 +90,31 @@ func MsgAttestCmd() *cobra.Command {
 				return err
 			}
 
-			iri := args[0]
-			if len(iri) == 0 {
-				return sdkerrors.ErrInvalidRequest.Wrap("iri is required")
+			attestor := clientCtx.GetFromAddress()
+
+			if len(args[0]) == 0 {
+				return sdkerrors.ErrInvalidRequest.Wrap("at least one iri is required")
 			}
 
-			attestor := clientCtx.GetFromAddress()
-			content, err := data.ParseIRI(iri)
-			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
-			}
-			graph := content.GetGraph()
-			if graph == nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("can only attest to graph data types")
+			var contentHashes []*data.ContentHash_Graph
+
+			iris := strings.Split(args[0], ",")
+
+			for i := range iris {
+				content, err := data.ParseIRI(iris[i])
+				if err != nil {
+					return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
+				}
+				graph := content.GetGraph()
+				if graph == nil {
+					return sdkerrors.ErrInvalidRequest.Wrap("can only attest to graph data types")
+				}
+				contentHashes = append(contentHashes, graph)
 			}
 
 			msg := data.MsgAttest{
-				Attestors: []string{attestor.String()},
-				Hash:      graph,
+				Attestor:      attestor.String(),
+				ContentHashes: contentHashes,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -201,9 +210,9 @@ Flags:
 			}
 
 			msg := data.MsgRegisterResolver{
-				Manager:    clientCtx.GetFromAddress().String(),
-				ResolverId: resolverID,
-				Data:       contentHashes,
+				Manager:       clientCtx.GetFromAddress().String(),
+				ResolverId:    resolverID,
+				ContentHashes: contentHashes,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -231,5 +240,5 @@ func parseContentHashes(clientCtx client.Context, filePath string) ([]*data.Cont
 		return nil, err
 	}
 
-	return contentHashes.Data, nil
+	return contentHashes.ContentHashes, nil
 }

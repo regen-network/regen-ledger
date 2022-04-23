@@ -644,27 +644,51 @@ func TestQuoExactBad(t *testing.T) {
 }
 
 func TestToBigInt(t *testing.T) {
-	intStr := "1000000000000000000000000000000000000123456789"
-	a, err := NewDecFromString(intStr)
-	require.NoError(t, err)
-	b, err := a.BigInt()
-	require.Equal(t, intStr, b.String())
+	i1 := "1000000000000000000000000000000000000123456789"
+	tcs := []struct {
+		intStr  string
+		out     string
+		isError error
+	}{
+		{i1, i1, nil},
+		{"1000000000000000000000000000000000000123456789.00000000", i1, nil},
+		{"123.456e6", "123456000", nil},
+		{"12345.6", "", ErrNonIntegeral},
+	}
+	for idx, tc := range tcs {
+		a, err := NewDecFromString(tc.intStr)
+		require.NoError(t, err)
+		b, err := a.BigInt()
+		if tc.isError == nil {
+			require.NoError(t, err, "test_%d", idx)
+			require.Equal(t, tc.out, b.String(), "test_%d", idx)
+		} else {
+			require.ErrorIs(t, err, tc.isError, "test_%d", idx)
+		}
+	}
+}
 
-	intStrWithTrailingZeros := "1000000000000000000000000000000000000123456789.00000000"
-	a, err = NewDecFromString(intStrWithTrailingZeros)
-	require.NoError(t, err)
-	b, err = a.BigInt()
-	require.Equal(t, intStr, b.String())
-
-	intStr2 := "123.456e6"
-	a, err = NewDecFromString(intStr2)
-	require.NoError(t, err)
-	b, err = a.BigInt()
-	require.Equal(t, "123456000", b.String())
-
-	intStr3 := "12345.6"
-	a, err = NewDecFromString(intStr3)
-	require.NoError(t, err)
-	_, err = a.BigInt()
-	require.ErrorIs(t, err, ErrNonIntegeral)
+func TestToSdkInt(t *testing.T) {
+	i1 := "1000000000000000000000000000000000000123456789"
+	tcs := []struct {
+		intStr string
+		out    string
+	}{
+		{i1, i1},
+		{"1000000000000000000000000000000000000123456789.00000000", i1},
+		{"123.456e6", "123456000"},
+		{"123.456e1", "1234"},
+		{"123.456", "123"},
+		{"123.956", "123"},
+		{"-123.456", "-123"},
+		{"-123.956", "-123"},
+		{"-0.956", "0"},
+		{"-0.9", "0"},
+	}
+	for idx, tc := range tcs {
+		a, err := NewDecFromString(tc.intStr)
+		require.NoError(t, err)
+		b := a.SdkIntTrim()
+		require.Equal(t, tc.out, b.String(), "test_%d", idx)
+	}
 }

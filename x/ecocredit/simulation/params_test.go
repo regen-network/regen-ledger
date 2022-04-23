@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 	"github.com/stretchr/testify/require"
 )
@@ -14,16 +14,16 @@ func TestParamChanges(t *testing.T) {
 	s := rand.NewSource(1)
 	r := rand.New(s)
 
-	bz, err := json.Marshal([]*ecocredit.CreditType{
+	bz, err := json.Marshal([]*core.CreditType{
 		{
-			Name:         "carbon",
 			Abbreviation: "C",
+			Name:         "carbon",
 			Unit:         "metric ton CO2 equivalent",
 			Precision:    6,
 		},
 		{
-			Name:         "biodiversity",
 			Abbreviation: "BIO",
+			Name:         "biodiversity",
 			Unit:         "ton",
 			Precision:    6,
 		}},

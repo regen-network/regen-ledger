@@ -5,6 +5,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/data/v1"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -14,7 +15,7 @@ import (
 func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
 	resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, msg.ResolverId)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("resolver with id %d does not exist", msg.ResolverId)
 	}
 
 	manager, err := sdk.AccAddressFromBech32(msg.Manager)
@@ -26,8 +27,8 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, data.ErrUnauthorizedResolverManager
 	}
 
-	for _, datum := range msg.Data {
-		_, id, _, err := s.anchorAndGetIRI(ctx, datum)
+	for _, ch := range msg.ContentHashes {
+		_, id, _, err := s.anchorAndGetIRI(ctx, ch)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +44,7 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 			return nil, err
 		}
 
-		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver datum iteration")
+		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver content hash iteration")
 	}
 
 	return &data.MsgRegisterResolverResponse{}, nil

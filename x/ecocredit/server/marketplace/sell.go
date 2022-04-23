@@ -3,7 +3,6 @@ package marketplace
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -13,11 +12,12 @@ import (
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	marketplacev1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // Sell creates new sell orders for credits
-func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketplacev1.MsgSellResponse, error) {
+func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
@@ -27,11 +27,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		batch, err := k.coreStore.BatchInfoTable().GetByBatchDenom(ctx, order.BatchDenom)
+		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.BatchDenom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -48,18 +48,13 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		if err != nil {
 			return nil, err
 		}
-		if err = k.escrowCredits(ctx, ownerAcc, batch.Id, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, ownerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
-		// TODO: pending param refactor https://github.com/regen-network/regen-ledger/issues/624
-		//has, err := isDenomAllowed(ctx, k.stateStore, order.AskPrice.Denom)
-		//if err != nil {
-		//	return nil, err
-		//}
-		//if !has {
-		//	return nil, ecocredit.ErrInvalidSellOrder.Wrapf("cannot use coin with denom %s in sell orders", order.AskPrice.Denom)
-		//}
+		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
+		}
 
 		var expiration *timestamppb.Timestamp
 		if order.Expiration != nil {
@@ -68,7 +63,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
-			BatchId:           batch.Id,
+			BatchId:           batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketId,
 			AskPrice:          order.AskPrice.Amount.String(),
@@ -81,9 +76,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 		}
 
 		sellOrderIds[i] = id
-		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplacev1.EventSell{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			OrderId:           id,
-			BatchDenom:        batch.BatchDenom,
+			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskPrice:          order.AskPrice,
 			DisableAutoRetire: order.DisableAutoRetire,
@@ -94,7 +89,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplacev1.MsgSell) (*marketpl
 
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
-	return &marketplacev1.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.

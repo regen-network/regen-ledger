@@ -24,18 +24,18 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 		return nil, err
 	}
 
-	it, err := k.stateStore.ClassInfoTable().List(ctx, api.ClassInfoAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
+	it, err := k.stateStore.ClassTable().List(ctx, api.ClassAdminIndexKey{}.WithAdmin(admin), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	classes := make([]*core.ClassInfo, 0)
+	classes := make([]*core.Class, 0)
 	for it.Next() {
 		v, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var ci core.ClassInfo
+		var ci core.Class
 		if err = ormutil.PulsarToGogoSlow(v, &ci); err != nil {
 			return nil, err
 		}

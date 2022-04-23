@@ -5,37 +5,37 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	"github.com/regen-network/regen-ledger/types/testutil"
 )
 
 func TestMsgUpdateClassAdmin(t *testing.T) {
 	t.Parallel()
 
-	_, _, admin := testdata.KeyTestPubAddr()
-	_, _, newAdmin := testdata.KeyTestPubAddr()
+	admin := testutil.GenAddress()
+	newAdmin := testutil.GenAddress()
 
 	tests := map[string]struct {
 		src    MsgUpdateClassAdmin
 		expErr bool
 	}{
 		"valid": {
-			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "C01"},
+			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: newAdmin, ClassId: "C01"},
 			expErr: false,
 		},
 		"invalid: same address": {
-			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: admin.String(), ClassId: "C01"},
+			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: admin, ClassId: "C01"},
 			expErr: true,
 		},
 		"invalid: bad ClassID": {
-			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "asl;dfjkdjk???fgs;dfljgk"},
+			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: newAdmin, ClassId: "asl;dfjkdjk???fgs;dfljgk"},
 			expErr: true,
 		},
 		"invalid: bad admin addr": {
-			src:    MsgUpdateClassAdmin{Admin: "?!@%)(87", NewAdmin: newAdmin.String(), ClassId: "C02"},
+			src:    MsgUpdateClassAdmin{Admin: "?!@%)(87", NewAdmin: newAdmin, ClassId: "C02"},
 			expErr: true,
 		},
 		"invalid: bad NewAdmin addr": {
-			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: "?!?@%?@$#6", ClassId: "C02"},
+			src:    MsgUpdateClassAdmin{Admin: admin, NewAdmin: "?!?@%?@$#6", ClassId: "C02"},
 			expErr: true,
 		},
 	}

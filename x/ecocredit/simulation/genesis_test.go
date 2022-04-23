@@ -16,6 +16,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
@@ -42,27 +43,11 @@ func TestRandomizedGenState(t *testing.T) {
 	var wrapper map[string]json.RawMessage
 	require.NoError(t, json.Unmarshal(simState.GenState[ecocredit.ModuleName], &wrapper))
 
-	var ecocreditGenesis ecocredit.GenesisState
-	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&ecocreditGenesis)], &ecocreditGenesis)
+	var params core.Params
+	simState.Cdc.MustUnmarshalJSON(wrapper[proto.MessageName(&core.Params{})], &params)
 
-	require.Equal(t, ecocreditGenesis.Params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
-	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-
-	require.Len(t, ecocreditGenesis.ClassInfo, 3)
-	require.Len(t, ecocreditGenesis.BatchInfo, 3)
-	require.Len(t, ecocreditGenesis.Balances, 6)
-	require.Len(t, ecocreditGenesis.Supplies, 3)
-
-	require.Equal(t, ecocreditGenesis.Sequences, []*ecocredit.CreditTypeSeq{
-		{
-			Abbreviation: "C",
-			SeqNumber:    4,
-		},
-		{
-			Abbreviation: "BIO",
-			SeqNumber:    4,
-		},
-	})
+	require.Equal(t, params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
+	require.Equal(t, params.AllowlistEnabled, true)
+	require.Equal(t, params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(9))))
+	require.Equal(t, params.AllowlistEnabled, true)
 }
