@@ -25,7 +25,7 @@ type MsgClient interface {
 	// Records a bridged event and returns it's ID
 	RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEvent, opts ...grpc.CallOption) (*MsgRecordBridgeEventResponse, error)
 	// Queries and executes a recorded event. Once processed the event is removed.
-	ExecBridgeEvent(ctx context.Context, in *MsgExecBrigeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error)
+	ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error)
 	// Sends a new event to the bridge servcie (chain)
 	SendBridgeEvent(ctx context.Context, in *MsgSendBridgeEvent, opts ...grpc.CallOption) (*MsgSendBridgeEventResponse, error)
 }
@@ -47,7 +47,7 @@ func (c *msgClient) RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEv
 	return out, nil
 }
 
-func (c *msgClient) ExecBridgeEvent(ctx context.Context, in *MsgExecBrigeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error) {
+func (c *msgClient) ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error) {
 	out := new(MsgExecBrigeEventResponse)
 	err := c.cc.Invoke(ctx, "/axelar.bridge.v1.Msg/ExecBridgeEvent", in, out, opts...)
 	if err != nil {
@@ -72,7 +72,7 @@ type MsgServer interface {
 	// Records a bridged event and returns it's ID
 	RecordBridgeEvent(context.Context, *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error)
 	// Queries and executes a recorded event. Once processed the event is removed.
-	ExecBridgeEvent(context.Context, *MsgExecBrigeEvent) (*MsgExecBrigeEventResponse, error)
+	ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBrigeEventResponse, error)
 	// Sends a new event to the bridge servcie (chain)
 	SendBridgeEvent(context.Context, *MsgSendBridgeEvent) (*MsgSendBridgeEventResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -85,7 +85,7 @@ type UnimplementedMsgServer struct {
 func (UnimplementedMsgServer) RecordBridgeEvent(context.Context, *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecordBridgeEvent not implemented")
 }
-func (UnimplementedMsgServer) ExecBridgeEvent(context.Context, *MsgExecBrigeEvent) (*MsgExecBrigeEventResponse, error) {
+func (UnimplementedMsgServer) ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBrigeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecBridgeEvent not implemented")
 }
 func (UnimplementedMsgServer) SendBridgeEvent(context.Context, *MsgSendBridgeEvent) (*MsgSendBridgeEventResponse, error) {
@@ -123,7 +123,7 @@ func _Msg_RecordBridgeEvent_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _Msg_ExecBridgeEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgExecBrigeEvent)
+	in := new(MsgExecBridgeEvent)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func _Msg_ExecBridgeEvent_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/axelar.bridge.v1.Msg/ExecBridgeEvent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ExecBridgeEvent(ctx, req.(*MsgExecBrigeEvent))
+		return srv.(MsgServer).ExecBridgeEvent(ctx, req.(*MsgExecBridgeEvent))
 	}
 	return interceptor(ctx, in, info, handler)
 }

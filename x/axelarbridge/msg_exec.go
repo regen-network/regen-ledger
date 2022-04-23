@@ -5,14 +5,14 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ sdk.Msg = &MsgExecBrigeEvent{}
+var _ sdk.Msg = &MsgExecBridgeEvent{}
 
-func (m *MsgExecBrigeEvent) GetSigners() []sdk.AccAddress {
+func (m *MsgExecBridgeEvent) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Executor)
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgExecBrigeEvent) ValidateBasic() error {
+func (m *MsgExecBridgeEvent) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Executor); err != nil {
 		return sdkerrors.Wrap(err, "sender")
 	}

@@ -143,23 +143,23 @@ func (m *MsgRecordBridgeEventResponse) GetEventId() string {
 	return ""
 }
 
-type MsgExecBrigeEvent struct {
+type MsgExecBridgeEvent struct {
 	Executor string `protobuf:"bytes,1,opt,name=executor,proto3" json:"executor,omitempty"`
 	EventId  string `protobuf:"bytes,2,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
 }
 
-func (m *MsgExecBrigeEvent) Reset()         { *m = MsgExecBrigeEvent{} }
-func (m *MsgExecBrigeEvent) String() string { return proto.CompactTextString(m) }
-func (*MsgExecBrigeEvent) ProtoMessage()    {}
-func (*MsgExecBrigeEvent) Descriptor() ([]byte, []int) {
+func (m *MsgExecBridgeEvent) Reset()         { *m = MsgExecBridgeEvent{} }
+func (m *MsgExecBridgeEvent) String() string { return proto.CompactTextString(m) }
+func (*MsgExecBridgeEvent) ProtoMessage()    {}
+func (*MsgExecBridgeEvent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3941e6e4b1c47d74, []int{2}
 }
-func (m *MsgExecBrigeEvent) XXX_Unmarshal(b []byte) error {
+func (m *MsgExecBridgeEvent) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgExecBrigeEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgExecBridgeEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgExecBrigeEvent.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgExecBridgeEvent.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -169,48 +169,48 @@ func (m *MsgExecBrigeEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgExecBrigeEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgExecBrigeEvent.Merge(m, src)
+func (m *MsgExecBridgeEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgExecBridgeEvent.Merge(m, src)
 }
-func (m *MsgExecBrigeEvent) XXX_Size() int {
+func (m *MsgExecBridgeEvent) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgExecBrigeEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgExecBrigeEvent.DiscardUnknown(m)
+func (m *MsgExecBridgeEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgExecBridgeEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgExecBrigeEvent proto.InternalMessageInfo
+var xxx_messageInfo_MsgExecBridgeEvent proto.InternalMessageInfo
 
-func (m *MsgExecBrigeEvent) GetExecutor() string {
+func (m *MsgExecBridgeEvent) GetExecutor() string {
 	if m != nil {
 		return m.Executor
 	}
 	return ""
 }
 
-func (m *MsgExecBrigeEvent) GetEventId() string {
+func (m *MsgExecBridgeEvent) GetEventId() string {
 	if m != nil {
 		return m.EventId
 	}
 	return ""
 }
 
-// MsgExecBrigeEventResponse defines the Msg/ExecLegacyContent response type.
-type MsgExecBrigeEventResponse struct {
+// MsgExecBridgeEventResponse defines the Msg/ExecLegacyContent response type.
+type MsgExecBridgeEventResponse struct {
 }
 
-func (m *MsgExecBrigeEventResponse) Reset()         { *m = MsgExecBrigeEventResponse{} }
-func (m *MsgExecBrigeEventResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgExecBrigeEventResponse) ProtoMessage()    {}
-func (*MsgExecBrigeEventResponse) Descriptor() ([]byte, []int) {
+func (m *MsgExecBridgeEventResponse) Reset()         { *m = MsgExecBridgeEventResponse{} }
+func (m *MsgExecBridgeEventResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgExecBridgeEventResponse) ProtoMessage()    {}
+func (*MsgExecBridgeEventResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_3941e6e4b1c47d74, []int{3}
 }
-func (m *MsgExecBrigeEventResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgExecBridgeEventResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgExecBrigeEventResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgExecBridgeEventResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgExecBrigeEventResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgExecBridgeEventResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -220,17 +220,17 @@ func (m *MsgExecBrigeEventResponse) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *MsgExecBrigeEventResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgExecBrigeEventResponse.Merge(m, src)
+func (m *MsgExecBridgeEventResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgExecBridgeEventResponse.Merge(m, src)
 }
-func (m *MsgExecBrigeEventResponse) XXX_Size() int {
+func (m *MsgExecBridgeEventResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgExecBrigeEventResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgExecBrigeEventResponse.DiscardUnknown(m)
+func (m *MsgExecBridgeEventResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgExecBridgeEventResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgExecBrigeEventResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgExecBridgeEventResponse proto.InternalMessageInfo
 
 type MsgSendBridgeMessage struct {
 	Sender   string     `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
@@ -332,8 +332,8 @@ var xxx_messageInfo_MsgSendBridgeMessageResponse proto.InternalMessageInfo
 func init() {
 	proto.RegisterType((*MsgRecordBridgeEvent)(nil), "regen.bridge.v1.MsgRecordBridgeEvent")
 	proto.RegisterType((*MsgRecordBridgeEventResponse)(nil), "regen.bridge.v1.MsgRecordBridgeEventResponse")
-	proto.RegisterType((*MsgExecBrigeEvent)(nil), "regen.bridge.v1.MsgExecBrigeEvent")
-	proto.RegisterType((*MsgExecBrigeEventResponse)(nil), "regen.bridge.v1.MsgExecBrigeEventResponse")
+	proto.RegisterType((*MsgExecBridgeEvent)(nil), "regen.bridge.v1.MsgExecBridgeEvent")
+	proto.RegisterType((*MsgExecBridgeEventResponse)(nil), "regen.bridge.v1.MsgExecBridgeEventResponse")
 	proto.RegisterType((*MsgSendBridgeMessage)(nil), "regen.bridge.v1.MsgSendBridgeMessage")
 	proto.RegisterType((*MsgSendBridgeMessageResponse)(nil), "regen.bridge.v1.MsgSendBridgeMessageResponse")
 }
@@ -387,7 +387,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
 	RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEvent, opts ...grpc.CallOption) (*MsgRecordBridgeEventResponse, error)
-	ExecBrigeEvent(ctx context.Context, in *MsgExecBrigeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error)
+	ExecBrigeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBridgeEventResponse, error)
 	SendBridgeMessage(ctx context.Context, in *MsgSendBridgeMessage, opts ...grpc.CallOption) (*MsgSendBridgeMessageResponse, error)
 }
 
@@ -408,8 +408,8 @@ func (c *msgClient) RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEv
 	return out, nil
 }
 
-func (c *msgClient) ExecBrigeEvent(ctx context.Context, in *MsgExecBrigeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error) {
-	out := new(MsgExecBrigeEventResponse)
+func (c *msgClient) ExecBrigeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBridgeEventResponse, error) {
+	out := new(MsgExecBridgeEventResponse)
 	err := c.cc.Invoke(ctx, "/regen.bridge.v1.Msg/ExecBrigeEvent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -429,7 +429,7 @@ func (c *msgClient) SendBridgeMessage(ctx context.Context, in *MsgSendBridgeMess
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	RecordBridgeEvent(context.Context, *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error)
-	ExecBrigeEvent(context.Context, *MsgExecBrigeEvent) (*MsgExecBrigeEventResponse, error)
+	ExecBrigeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBridgeEventResponse, error)
 	SendBridgeMessage(context.Context, *MsgSendBridgeMessage) (*MsgSendBridgeMessageResponse, error)
 }
 
@@ -440,7 +440,7 @@ type UnimplementedMsgServer struct {
 func (*UnimplementedMsgServer) RecordBridgeEvent(ctx context.Context, req *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecordBridgeEvent not implemented")
 }
-func (*UnimplementedMsgServer) ExecBrigeEvent(ctx context.Context, req *MsgExecBrigeEvent) (*MsgExecBrigeEventResponse, error) {
+func (*UnimplementedMsgServer) ExecBrigeEvent(ctx context.Context, req *MsgExecBridgeEvent) (*MsgExecBridgeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecBrigeEvent not implemented")
 }
 func (*UnimplementedMsgServer) SendBridgeMessage(ctx context.Context, req *MsgSendBridgeMessage) (*MsgSendBridgeMessageResponse, error) {
@@ -470,7 +470,7 @@ func _Msg_RecordBridgeEvent_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _Msg_ExecBrigeEvent_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgExecBrigeEvent)
+	in := new(MsgExecBridgeEvent)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -482,7 +482,7 @@ func _Msg_ExecBrigeEvent_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/regen.bridge.v1.Msg/ExecBrigeEvent",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ExecBrigeEvent(ctx, req.(*MsgExecBrigeEvent))
+		return srv.(MsgServer).ExecBrigeEvent(ctx, req.(*MsgExecBridgeEvent))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -612,7 +612,7 @@ func (m *MsgRecordBridgeEventResponse) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgExecBrigeEvent) Marshal() (dAtA []byte, err error) {
+func (m *MsgExecBridgeEvent) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -622,12 +622,12 @@ func (m *MsgExecBrigeEvent) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgExecBrigeEvent) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgExecBridgeEvent) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgExecBrigeEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgExecBridgeEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -649,7 +649,7 @@ func (m *MsgExecBrigeEvent) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgExecBrigeEventResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgExecBridgeEventResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -659,12 +659,12 @@ func (m *MsgExecBrigeEventResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgExecBrigeEventResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgExecBridgeEventResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgExecBrigeEventResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgExecBridgeEventResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -793,7 +793,7 @@ func (m *MsgRecordBridgeEventResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgExecBrigeEvent) Size() (n int) {
+func (m *MsgExecBridgeEvent) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -810,7 +810,7 @@ func (m *MsgExecBrigeEvent) Size() (n int) {
 	return n
 }
 
-func (m *MsgExecBrigeEventResponse) Size() (n int) {
+func (m *MsgExecBridgeEventResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1119,7 +1119,7 @@ func (m *MsgRecordBridgeEventResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgExecBrigeEvent) Unmarshal(dAtA []byte) error {
+func (m *MsgExecBridgeEvent) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1142,10 +1142,10 @@ func (m *MsgExecBrigeEvent) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgExecBrigeEvent: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgExecBridgeEvent: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgExecBrigeEvent: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgExecBridgeEvent: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1233,7 +1233,7 @@ func (m *MsgExecBrigeEvent) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgExecBrigeEventResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgExecBridgeEventResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1256,10 +1256,10 @@ func (m *MsgExecBrigeEventResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgExecBrigeEventResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgExecBridgeEventResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgExecBrigeEventResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgExecBridgeEventResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
