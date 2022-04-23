@@ -11,12 +11,13 @@ import (
 
 type EventTable interface {
 	Insert(ctx context.Context, event *Event) error
+	InsertReturningID(ctx context.Context, event *Event) (uint64, error)
 	Update(ctx context.Context, event *Event) error
 	Save(ctx context.Context, event *Event) error
 	Delete(ctx context.Context, event *Event) error
-	Has(ctx context.Context, event_id string) (found bool, err error)
+	Has(ctx context.Context, event_id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, event_id string) (*Event, error)
+	Get(ctx context.Context, event_id uint64) (*Event, error)
 	HasBySenderAddress(ctx context.Context, sender_address string) (found bool, err error)
 	// GetBySenderAddress returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	GetBySenderAddress(ctx context.Context, sender_address string) (*Event, error)
@@ -55,7 +56,7 @@ func (x EventEventIdIndexKey) id() uint32            { return 0 }
 func (x EventEventIdIndexKey) values() []interface{} { return x.vs }
 func (x EventEventIdIndexKey) eventIndexKey()        {}
 
-func (this EventEventIdIndexKey) WithEventId(event_id string) EventEventIdIndexKey {
+func (this EventEventIdIndexKey) WithEventId(event_id uint64) EventEventIdIndexKey {
 	this.vs = []interface{}{event_id}
 	return this
 }
@@ -74,7 +75,7 @@ func (this EventSenderAddressIndexKey) WithSenderAddress(sender_address string) 
 }
 
 type eventTable struct {
-	table ormtable.Table
+	table ormtable.AutoIncrementTable
 }
 
 func (this eventTable) Insert(ctx context.Context, event *Event) error {
@@ -93,11 +94,15 @@ func (this eventTable) Delete(ctx context.Context, event *Event) error {
 	return this.table.Delete(ctx, event)
 }
 
-func (this eventTable) Has(ctx context.Context, event_id string) (found bool, err error) {
+func (this eventTable) InsertReturningID(ctx context.Context, event *Event) (uint64, error) {
+	return this.table.InsertReturningID(ctx, event)
+}
+
+func (this eventTable) Has(ctx context.Context, event_id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, event_id)
 }
 
-func (this eventTable) Get(ctx context.Context, event_id string) (*Event, error) {
+func (this eventTable) Get(ctx context.Context, event_id uint64) (*Event, error) {
 	var event Event
 	found, err := this.table.PrimaryKey().Get(ctx, &event, event_id)
 	if err != nil {
@@ -156,7 +161,7 @@ func NewEventTable(db ormtable.Schema) (EventTable, error) {
 	if table == nil {
 		return nil, ormerrors.TableNotFound.Wrap(string((&Event{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return eventTable{table}, nil
+	return eventTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type StateStore interface {

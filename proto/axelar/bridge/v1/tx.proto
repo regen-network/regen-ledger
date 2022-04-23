@@ -29,11 +29,11 @@ message MsgRecordBridgeEvent {
 }
 
 // MsgRecordBridgeEventResponse defines the Msg/SubmitProposal response type.
-message MsgRecordBridgeEventResponse { string event_id = 1; }
+message MsgRecordBridgeEventResponse { uint64 event_id = 1; }
 
 message MsgExecBridgeEvent {
   string executor = 1; // Signer
-  string event_id = 2;
+  uint64 event_id = 2;
 }
 
 // MsgExecBridgeEventResponse defines the Msg/ExecLegacyContent response type.

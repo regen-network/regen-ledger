@@ -9,11 +9,10 @@ option go_package = "github.com/regen-network/regen-ledger/x/axelarbridge";
 message Event {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
-    primary_key : {fields : "event_id"}
-    index : {id : 1, fields : "sender_address", unique : true}
+    primary_key : {fields : "event_id", auto_increment : true}
   };
 
-  string event_id = 1;
+  uint64 event_id = 1;
 
   string sender_address = 2;
   string dest_address = 3;
