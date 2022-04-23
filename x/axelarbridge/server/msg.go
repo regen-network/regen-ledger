@@ -14,6 +14,6 @@ func (s serverImpl) RecordBridgeEvent(ctx context.Context, req *axelarbridge.Msg
 	panic("todo")
 }
 
-func (s serverImpl) SendBridgeMessage(ctx context.Context, req *axelarbridge.MsgSendBridgeMessage) (*axelarbridge.MsgSendBridgeMessageResponse, error) {
+func (s serverImpl) SendBridgeEvent(ctx context.Context, req *axelarbridge.MsgSendBridgeEvent) (*axelarbridge.MsgSendBridgeEventResponse, error) {
 	panic("todo")
 }

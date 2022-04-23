@@ -26,10 +26,10 @@ var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 }
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
-	// stateStore api.StateStore
-	db     ormdb.ModuleDB
-	router *baseapp.MsgServiceRouter
+	storeKey   sdk.StoreKey
+	stateStore api.StateStore
+	db         ormdb.ModuleDB
+	router     *baseapp.MsgServiceRouter
 }
 
 func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverImpl {
@@ -38,16 +38,16 @@ func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverIm
 		panic(err)
 	}
 
-	// stateStore, err := api.NewStateStore(db)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	stateStore, err := api.NewStateStore(db)
+	if err != nil {
+		panic(err)
+	}
 
 	return serverImpl{
-		storeKey: storeKey,
-		// stateStore: stateStore,
-		db:     nil, // db,
-		router: router,
+		storeKey:   storeKey,
+		stateStore: stateStore,
+		db:         nil, // db,
+		router:     router,
 	}
 }
 
