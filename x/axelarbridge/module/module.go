@@ -22,6 +22,7 @@ import (
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/axelarbridge"
+
 	// "github.com/regen-network/regen-ledger/x/axelarbridge/client"
 	"github.com/regen-network/regen-ledger/x/axelarbridge/server"
 	// "github.com/regen-network/regen-ledger/x/axelarbridge/simulation"
@@ -52,7 +53,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.ak, a.bk)
+	server.RegisterServices(configurator, a.router)
 }
 
 //nolint:errcheck
