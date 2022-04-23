@@ -20,16 +20,16 @@ var _ axelarbridge.MsgServer = serverImpl{}
 
 var ModuleSchema = ormv1alpha1.ModuleSchemaDescriptor{
 	SchemaFile: []*ormv1alpha1.ModuleSchemaDescriptor_FileEntry{
-		{Id: 1, ProtoFileName: api.File_regen_bridge_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
+		{Id: 1, ProtoFileName: api.File_axelar_bridge_v1_state_proto.Path(), StorageType: ormv1alpha1.StorageType_STORAGE_TYPE_DEFAULT_UNSPECIFIED},
 	},
 	Prefix: []byte{ORMPrefix},
 }
 
 type serverImpl struct {
-	storeKey   sdk.StoreKey
-	stateStore api.StateStore
-	db         ormdb.ModuleDB
-	router     *baseapp.MsgServiceRouter
+	storeKey sdk.StoreKey
+	// stateStore api.StateStore
+	db     ormdb.ModuleDB
+	router *baseapp.MsgServiceRouter
 }
 
 func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverImpl {
@@ -38,16 +38,16 @@ func newServer(storeKey sdk.StoreKey, router *baseapp.MsgServiceRouter) serverIm
 		panic(err)
 	}
 
-	stateStore, err := api.NewStateStore(db)
-	if err != nil {
-		panic(err)
-	}
+	// stateStore, err := api.NewStateStore(db)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	return serverImpl{
-		storeKey:   storeKey,
-		stateStore: stateStore,
-		db:         nil, // db,
-		router:     router,
+		storeKey: storeKey,
+		// stateStore: stateStore,
+		db:     nil, // db,
+		router: router,
 	}
 }
 
