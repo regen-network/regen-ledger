@@ -25,7 +25,7 @@ type MsgClient interface {
 	// Records a bridged event and returns it's ID
 	RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEvent, opts ...grpc.CallOption) (*MsgRecordBridgeEventResponse, error)
 	// Queries and executes a recorded event. Once processed the event is removed.
-	ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error)
+	ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBridgeEventResponse, error)
 	// Sends a new event to the bridge servcie (chain)
 	SendBridgeEvent(ctx context.Context, in *MsgSendBridgeEvent, opts ...grpc.CallOption) (*MsgSendBridgeEventResponse, error)
 }
@@ -47,8 +47,8 @@ func (c *msgClient) RecordBridgeEvent(ctx context.Context, in *MsgRecordBridgeEv
 	return out, nil
 }
 
-func (c *msgClient) ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBrigeEventResponse, error) {
-	out := new(MsgExecBrigeEventResponse)
+func (c *msgClient) ExecBridgeEvent(ctx context.Context, in *MsgExecBridgeEvent, opts ...grpc.CallOption) (*MsgExecBridgeEventResponse, error) {
+	out := new(MsgExecBridgeEventResponse)
 	err := c.cc.Invoke(ctx, "/axelar.bridge.v1.Msg/ExecBridgeEvent", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ type MsgServer interface {
 	// Records a bridged event and returns it's ID
 	RecordBridgeEvent(context.Context, *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error)
 	// Queries and executes a recorded event. Once processed the event is removed.
-	ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBrigeEventResponse, error)
+	ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBridgeEventResponse, error)
 	// Sends a new event to the bridge servcie (chain)
 	SendBridgeEvent(context.Context, *MsgSendBridgeEvent) (*MsgSendBridgeEventResponse, error)
 	mustEmbedUnimplementedMsgServer()
@@ -85,7 +85,7 @@ type UnimplementedMsgServer struct {
 func (UnimplementedMsgServer) RecordBridgeEvent(context.Context, *MsgRecordBridgeEvent) (*MsgRecordBridgeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RecordBridgeEvent not implemented")
 }
-func (UnimplementedMsgServer) ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBrigeEventResponse, error) {
+func (UnimplementedMsgServer) ExecBridgeEvent(context.Context, *MsgExecBridgeEvent) (*MsgExecBridgeEventResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecBridgeEvent not implemented")
 }
 func (UnimplementedMsgServer) SendBridgeEvent(context.Context, *MsgSendBridgeEvent) (*MsgSendBridgeEventResponse, error) {

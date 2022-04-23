@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/axelar-bridge";
+option go_package = "github.com/regen-network/regen-ledger/x/axelarbridge";
 
 service Msg {
   // Records a bridged event and returns it's ID
@@ -13,7 +13,7 @@ service Msg {
       returns (MsgRecordBridgeEventResponse);
 
   // Queries and executes a recorded event. Once processed the event is removed.
-  rpc ExecBridgeEvent(MsgExecBridgeEvent) returns (MsgExecBrigeEventResponse);
+  rpc ExecBridgeEvent(MsgExecBridgeEvent) returns (MsgExecBridgeEventResponse);
 
   // Sends a new event to the bridge servcie (chain)
   rpc SendBridgeEvent(MsgSendBridgeEvent) returns (MsgSendBridgeEventResponse);
@@ -36,8 +36,8 @@ message MsgExecBridgeEvent {
   string event_id = 2;
 }
 
-// MsgExecBrigeEventResponse defines the Msg/ExecLegacyContent response type.
-message MsgExecBrigeEventResponse {}
+// MsgExecBridgeEventResponse defines the Msg/ExecLegacyContent response type.
+message MsgExecBridgeEventResponse {}
 
 message MsgSendBridgeEvent {
   string sender = 1;
