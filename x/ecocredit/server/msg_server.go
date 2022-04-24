@@ -1038,7 +1038,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	return nil, nil
 }
 
-func (s serverImpl) genProjectID(ctx types.Context, classId string) string {
+func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
 	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
-	return ecocredit.FormatProjectID(classId, projectSeqNo)
+	return ecocredit.FormatProjectID(classID, projectSeqNo)
 }
