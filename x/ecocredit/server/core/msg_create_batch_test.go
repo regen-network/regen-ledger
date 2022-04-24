@@ -5,23 +5,24 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type createBatchSuite struct {
 	*baseSuite
-	alice   sdk.AccAddress
-	classId string
-	err     error
+	alice       sdk.AccAddress
+	creditTypes []*core.CreditType
+	classId     string
+	err         error
 }
 
 func TestCreateBatch(t *testing.T) {
-	runner := gocuke.NewRunner(t, &createBatchSuite{}).Path("./features/msg_create_batch.feature")
-	runner.Run()
+	gocuke.NewRunner(t, &createBatchSuite{}).Path("./features/msg_create_batch.feature").Run()
 }
 
 func (s *createBatchSuite) Before(t gocuke.TestingT) {
@@ -29,7 +30,13 @@ func (s *createBatchSuite) Before(t gocuke.TestingT) {
 	s.alice = s.addr
 }
 
-func (s *createBatchSuite) AliceHasCreatedACreditClass() {
+func (s *createBatchSuite) ACreditTypeExistsWithAbbreviation(a string) {
+	s.creditTypes = append(s.creditTypes, &core.CreditType{
+		Abbreviation: a,
+	})
+}
+
+func (s *createBatchSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
 	gmAny := gomock.Any()
 
 	fee := sdk.Coin{
@@ -37,16 +44,9 @@ func (s *createBatchSuite) AliceHasCreatedACreditClass() {
 		Amount: sdk.NewInt(20),
 	}
 
-	creditType := &core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "metric ton CO2 equivalent",
-		Precision:    6,
-	}
-
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.CreditClassFee = sdk.Coins{fee}
-		p.CreditTypes = []*core.CreditType{creditType}
+		p.CreditTypes = s.creditTypes
 	}).AnyTimes()
 
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).AnyTimes()
@@ -56,7 +56,7 @@ func (s *createBatchSuite) AliceHasCreatedACreditClass() {
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.alice.String(),
 		Issuers:          []string{s.alice.String()},
-		CreditTypeAbbrev: creditType.Abbreviation,
+		CreditTypeAbbrev: a,
 		Fee:              &fee,
 	})
 	require.NoError(s.t, err)
@@ -64,15 +64,34 @@ func (s *createBatchSuite) AliceHasCreatedACreditClass() {
 	s.classId = res.ClassId
 }
 
-func (s *createBatchSuite) AliceHasCreatedAProjectWithId(a string) {
+func (s *createBatchSuite) AliceHasCreatedAProjectWithCreditClassId(a string) {
 	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:              s.alice.String(),
-		ClassId:             s.classId,
-		Metadata:            "metadata",
+		ClassId:             a,
 		ProjectJurisdiction: "US",
-		ProjectId:           a,
 	})
 	require.NoError(s.t, err)
+}
+
+func (s *createBatchSuite) AliceHasCreatedACreditBatchWithProjectId(a string) {
+	startDate, err := types.ParseDate("start date", "2020-01-01")
+	require.NoError(s.t, err)
+
+	endDate, err := types.ParseDate("end date", "2021-01-01")
+	require.NoError(s.t, err)
+
+	_, s.err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.alice.String(),
+		ProjectId: a,
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.alice.String(),
+				TradableAmount: "50",
+			},
+		},
+		StartDate: &startDate,
+		EndDate:   &endDate,
+	})
 }
 
 func (s *createBatchSuite) AliceCreatesACreditBatchWithProjectId(a string) {
@@ -87,25 +106,18 @@ func (s *createBatchSuite) AliceCreatesACreditBatchWithProjectId(a string) {
 		ProjectId: a,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:              s.alice.String(),
-				TradableAmount:         "50",
-				RetiredAmount:          "0",
-				RetirementJurisdiction: "US",
+				Recipient:      s.alice.String(),
+				TradableAmount: "50",
 			},
 		},
-		Metadata:  "metadata",
 		StartDate: &startDate,
 		EndDate:   &endDate,
 	})
 }
 
 func (s *createBatchSuite) TheCreditBatchExistsWithDenom(a string) {
-	found, err := s.k.stateStore.BatchInfoTable().HasByBatchDenom(s.ctx, a)
+	batch, err := s.k.stateStore.BatchTable().GetByDenom(s.ctx, a)
 	require.NoError(s.t, err)
-	require.True(s.t, found)
+	require.Equal(s.t, a, batch.Denom)
 
-}
-
-func (s *createBatchSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }

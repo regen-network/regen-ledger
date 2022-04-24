@@ -148,7 +148,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenomStr, err := ecocredit.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenomStr, err := ecocredit.FormatDenom(projectID, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
@@ -1038,7 +1038,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	return nil, nil
 }
 
-func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
+func (s serverImpl) genProjectID(ctx types.Context, classId string) string {
 	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
-	return ecocredit.FormatProjectID(classID, projectSeqNo)
+	return ecocredit.FormatProjectID(classId, projectSeqNo)
 }

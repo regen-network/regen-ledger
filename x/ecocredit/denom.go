@@ -11,38 +11,34 @@ import (
 )
 
 // FormatClassID formats the ID to use for a new credit class, based on the credit type and
-// sequence number. This format may evolve over time, but will maintain
-// backwards compatibility.
+// sequence number. This format may evolve over time, but will maintain backwards compatibility.
 //
-// The initial version has format:
+// The current version has the format:
 // <credit type abbreviation><class seq no>
+//
+// e.g. C01
 func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatDenom formats the denomination to use for a batch, based on the batch
-// information. This format may evolve over time, but will maintain backwards
-// compatibility.
+// FormatDenom formats the denomination to use for a credit batch. This format may evolve over
+// time, but will maintain backwards compatibility.
 //
-// The initial version has format:
-// <class id>-<project id>-<start date>-<end date>-<batch seq no>
+// The current version has the format:
+// <project_id>-<start_date>-<end_date>-<batch_sequence>
+//
 // where:
-// - <class id> is the string ID of the credit class
-// - <project id> is the string ID of the project
-// - <start date> is the start date of the batch in form YYYYMMDD
-// - <end date> is the end date of the batch in form YYYYMMDD
-// - <batch seq no> is the sequence number of the batch, padded to at least
+// - <project id> is the unique identifier of the project and has the format:
+//     <credit_type_abbrev><class_id>-<project_sequence> (see FormatProjectId)
+// - <start date> is the start date of the credit batch and has the format YYYYMMDD
+// - <end date> is the end date of the credit batch and has the format YYYYMMDD
+// - <batch seq no> is the sequence number of the credit batch, padded to at least
 //   three digits
 //
 // e.g. C01-001-20190101-20200101-001
-//
-// NB: This might differ from the actual denomination used.
-func FormatDenom(classId, projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
+func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
-		"%s-%s-%s-%s-%03d",
-
-		// Class ID string
-		classId,
+		"%s-%s-%s-%03d",
 
 		// Project ID string
 		projectId,

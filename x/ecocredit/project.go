@@ -24,8 +24,13 @@ func ValidateProjectID(projectID string) error {
 	return nil
 }
 
-// FormatProjectID formats the project ID to use for a new project based on
-// the project sequence number.
-func FormatProjectID(projectSeqNo uint64) string {
-	return fmt.Sprintf("%03d", projectSeqNo)
+// FormatProjectID formats the ID to use for a new project, based on the credit class id and
+// sequence number. This format may evolve over time, but will maintain backwards compatibility.
+//
+// The current version has the format:
+// <credit_class_id>-<project_sequence>
+//
+// e.g. C01-001
+func FormatProjectID(classId string, projectSeqNo uint64) string {
+	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
 }
