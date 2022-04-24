@@ -1,5 +1,6 @@
 Feature: QueryAttestorsByHash
 
+  Attestors can be queried by content hash:
   - when provided a content hash
   - when the content entry exists
   - whether or not attestor entries exist
@@ -36,72 +37,71 @@ Feature: QueryAttestorsByHash
     }
     """
 
-    Scenario: Attestor addresses are returned if attestor entries exist
-      Given the request
-      """
-      {
-        "content_hash": {
-          "graph": {
-            "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-            "digest_algorithm": 1,
-            "canonicalization_algorithm": 1
-          }
+  Scenario: Attestor addresses are returned if attestor entries exist
+    Given the request
+    """
+    {
+      "content_hash": {
+        "graph": {
+          "hash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "digest_algorithm": 1,
+          "canonicalization_algorithm": 1
         }
       }
-      """
-      When the request is executed
-      Then the response
-      """
-      {
-        "attestors": [
-          "cosmos1rxpx674qe4j8m4hy8g64xz4rpkj5k9zx2amw8k",
-          "cosmos1wrsm9y76utae3vl6xhhm2sk2hp5pjdhjt3yx7n"
+    }
+    """
+    When the request is executed
+    Then the response
+    """
+    {
+      "attestors": [
+        "cosmos1rxpx674qe4j8m4hy8g64xz4rpkj5k9zx2amw8k",
+        "cosmos1wrsm9y76utae3vl6xhhm2sk2hp5pjdhjt3yx7n"
+      ]
+    }
+    """
 
-        ]
-      }
-      """
-
-    Scenario: Attestor addresses are not returned if attestor entries do not exist
-      Given the request
-      """
-      {
-        "content_hash": {
-          "graph": {
-            "hash": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
-            "digest_algorithm": 1,
-            "canonicalization_algorithm": 1
-          }
+  Scenario: Attestor addresses are not returned if attestor entries do not exist
+    Given the request
+    """
+    {
+      "content_hash": {
+        "graph": {
+          "hash": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
+          "digest_algorithm": 1,
+          "canonicalization_algorithm": 1
         }
       }
-      """
-      When the request is executed
-      Then the response
-      """
-      {
-        "attestors": null
-      }
-      """
+    }
+    """
+    When the request is executed
+    Then the response
+    """
+    {
+      "attestors": null
+    }
+    """
 
-    Scenario: An error is returned if the content hash is empty
-      Given the request
-      """
-      {}
-      """
-      When the request is executed
-      Then expect the error "content hash cannot be empty: invalid request"
+  Scenario: An error is returned if the content hash is empty
+    Given the request
+    """
+    {}
+    """
+    When the request is executed
+    Then expect the error "content hash cannot be empty: invalid request"
 
-    Scenario: An error is returned if the content entry does not exist
-      Given the request
-      """
-      {
-        "content_hash": {
-          "graph": {
-            "hash": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
-            "digest_algorithm": 1,
-            "canonicalization_algorithm": 1
-          }
+  Scenario: An error is returned if the content entry does not exist
+    Given the request
+    """
+    {
+      "content_hash": {
+        "graph": {
+          "hash": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=",
+          "digest_algorithm": 1,
+          "canonicalization_algorithm": 1
         }
       }
-      """
-      When the request is executed
-      Then expect the error "not found"
+    }
+    """
+    When the request is executed
+    Then expect the error "not found"

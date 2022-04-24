@@ -1,5 +1,6 @@
 Feature: QueryAttestorsByIri
 
+  Attestors can be queried by IRI:
   - when provided an IRI
   - when the content entry exists
   - whether or not attestor entries exist
@@ -36,54 +37,53 @@ Feature: QueryAttestorsByIri
     }
     """
 
-  Scenario: Attestor addresses are returned if attestor entries exist
+  Scenario: Attestor account addresses are returned if attestor entries exist
     Given the request
     """
-     {
+    {
       "iri": "regen:13toVfvC2YxrrfSXWB5h2BGHiXZURsKxWUz72uDRDSPMCrYPguGUXSC.rdf"
-     }
-     """
+    }
+    """
     When the request is executed
     Then the response
     """
-     {
+    {
       "attestors": [
         "cosmos1rxpx674qe4j8m4hy8g64xz4rpkj5k9zx2amw8k",
         "cosmos1wrsm9y76utae3vl6xhhm2sk2hp5pjdhjt3yx7n"
-
       ]
-     }
-     """
+    }
+    """
 
-  Scenario: Attestor addresses are not returned if attestor entries do not exist
+  Scenario: Attestor account addresses are not returned if attestor entries do not exist
     Given the request
     """
-     {
+    {
       "iri": "regen:13toVfwypkE1AwUzQmuBHk28WWwCa5QCynCrBuoYgMvN2iroywJ5Vi1.rdf"
-     }
-     """
+    }
+    """
     When the request is executed
     Then the response
     """
-     {
+    {
       "attestors": null
-     }
-     """
+    }
+    """
 
   Scenario: An error is returned if the IRI is empty
     Given the request
     """
-     {}
-     """
+    {}
+    """
     When the request is executed
     Then expect the error "IRI cannot be empty: invalid request"
 
   Scenario: An error is returned if the content entry does not exist
     Given the request
     """
-     {
+    {
       "iri": "foo"
-     }
-     """
+    }
+    """
     When the request is executed
     Then expect the error "not found"
