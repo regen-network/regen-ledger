@@ -200,7 +200,7 @@ func createClass(ctx context.Context, sStore api.StateStore, class *api.Class) (
 	seq, err := sStore.ClassSequenceTable().Get(ctx, class.CreditTypeAbbrev)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			if err := sStore.ClassSequenceTable().Save(ctx, &api.ClassSequence{
+			if err := sStore.ClassSequenceTable().Insert(ctx, &api.ClassSequence{
 				CreditTypeAbbrev: class.CreditTypeAbbrev,
 				NextSequence:     2,
 			}); err != nil {
@@ -231,7 +231,7 @@ func createProject(ctx context.Context, sStore api.StateStore, project *api.Proj
 	seq, err := sStore.ProjectSequenceTable().Get(ctx, project.ClassKey)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			if err := sStore.ProjectSequenceTable().Save(ctx, &api.ProjectSequence{
+			if err := sStore.ProjectSequenceTable().Insert(ctx, &api.ProjectSequence{
 				ClassKey:     project.ClassKey,
 				NextSequence: 2,
 			}); err != nil {
@@ -257,7 +257,7 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 	seq, err := sStore.BatchSequenceTable().Get(ctx, projectKey)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
-			if err := sStore.BatchSequenceTable().Save(ctx, &api.BatchSequence{
+			if err := sStore.BatchSequenceTable().Insert(ctx, &api.BatchSequence{
 				ProjectKey:   projectKey,
 				NextSequence: 2,
 			}); err != nil {
@@ -268,7 +268,7 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 		return 0, err
 	}
 
-	if err := sStore.BatchSequenceTable().Save(ctx, &api.BatchSequence{
+	if err := sStore.BatchSequenceTable().Update(ctx, &api.BatchSequence{
 		ProjectKey:   projectKey,
 		NextSequence: seq.NextSequence + 1,
 	}); err != nil {
@@ -304,25 +304,25 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// create class issuers
-	if err := ss.ClassIssuerTable().Save(ctx,
+	if err := ss.ClassIssuerTable().Insert(ctx,
 		&api.ClassIssuer{ClassKey: cKey1, Issuer: accs[0].Address},
 	); err != nil {
 		return err
 	}
 
-	if err := ss.ClassIssuerTable().Save(ctx,
+	if err := ss.ClassIssuerTable().Insert(ctx,
 		&api.ClassIssuer{ClassKey: cKey1, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
-	if err := ss.ClassIssuerTable().Save(ctx,
+	if err := ss.ClassIssuerTable().Insert(ctx,
 		&api.ClassIssuer{ClassKey: cKey2, Issuer: accs[1].Address},
 	); err != nil {
 		return err
 	}
 
-	if err := ss.ClassIssuerTable().Save(ctx,
+	if err := ss.ClassIssuerTable().Insert(ctx,
 		&api.ClassIssuer{ClassKey: cKey2, Issuer: accs[2].Address},
 	); err != nil {
 		return err
@@ -403,7 +403,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// batch balances
-	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 		BatchKey: bKey1,
 		Address:  accs[0].Address,
 		Tradable: "100",
@@ -412,7 +412,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 		BatchKey: bKey2,
 		Address:  accs[2].Address,
 		Tradable: "100",
@@ -421,7 +421,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	if err := ss.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 		BatchKey: bKey2,
 		Address:  accs[1].Address,
 		Tradable: "100",
@@ -431,7 +431,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	}
 
 	// add batch supply
-	if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
+	if err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 		BatchKey:       bKey1,
 		TradableAmount: "100",
 		RetiredAmount:  "10",
@@ -439,7 +439,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		return err
 	}
 
-	if err := ss.BatchSupplyTable().Save(ctx, &api.BatchSupply{
+	if err := ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 		BatchKey:       bKey2,
 		TradableAmount: "200",
 		RetiredAmount:  "10",
