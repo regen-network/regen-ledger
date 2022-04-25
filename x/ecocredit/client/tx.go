@@ -2,20 +2,20 @@ package client
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
+	"github.com/spf13/cobra"
+	"sigs.k8s.io/yaml"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/spf13/cobra"
-	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -46,6 +46,8 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
 		TxCreateProject(),
+		TxUpdateProjectAdminCmd(),
+		TxUpdateProjectMetadataCmd(),
 		corecli.TxCreditTypeProposalCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
@@ -58,7 +60,7 @@ func TxCmd(name string) *cobra.Command {
 	return cmd
 }
 
-func txflags(cmd *cobra.Command) *cobra.Command {
+func txFlags(cmd *cobra.Command) *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
 	cmd.MarkFlagRequired(flags.FlagFrom)
 	return cmd
@@ -66,7 +68,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 // TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "create-class [issuer[,issuer]*] [credit type abbreviation] [metadata] [fee]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(
@@ -244,7 +246,7 @@ Required Flags:
 // TxCreateBatchCmd returns a transaction command that creates a credit batch.
 func TxCreateBatchCmd() *cobra.Command {
 
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "create-batch [msg-create-batch-json-file]",
 		Short: "Issues a new credit batch",
 		Long: fmt.Sprintf(`Issues a new credit batch.
@@ -302,7 +304,7 @@ Parameters:
 // TxSendCmd returns a transaction command that sends credits from one account
 // to another.
 func TxSendCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "send [recipient] [credits]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
 		Long: `Sends credits from the transaction author (--from) to the recipient.
@@ -333,7 +335,7 @@ Parameters:
 
 // TxRetireCmd returns a transaction command that retires credits.
 func TxRetireCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "retire [credits] [retirement_jurisdiction]",
 		Short: "Retires a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amount of credits from the account of the transaction author (--from)
@@ -369,7 +371,7 @@ Parameters:
 
 // TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "cancel [credits]",
 		Short: "Cancels a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
@@ -397,7 +399,7 @@ Parameters:
 }
 
 func TxUpdateClassMetadataCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "update-class-metadata [class-id] [metadata]",
 		Short: "Updates the metadata for a specific credit class",
 		Long: `Updates the metadata for a specific credit class. the '--from' flag must equal the credit class admin.
@@ -435,7 +437,7 @@ Parameters:
 }
 
 func TxUpdateClassAdminCmd() *cobra.Command {
-	return txflags(&cobra.Command{
+	return txFlags(&cobra.Command{
 		Use:   "update-class-admin [class-id] [admin]",
 		Short: "Updates the admin for a specific credit class",
 		Long: `Updates the admin for a specific credit class. the '--from' flag must equal the current credit class admin.
@@ -475,7 +477,7 @@ Parameters:
 }
 
 func TxUpdateClassIssuersCmd() *cobra.Command {
-	cmd := txflags(&cobra.Command{
+	cmd := txFlags(&cobra.Command{
 		Use:   "update-class-issuers [class-id]",
 		Short: "Update the list of issuers for a specific credit class",
 		Long: `Update the list of issuers for a specific credit class. the '--from' flag must equal the current credit class admin.
@@ -536,7 +538,7 @@ Example:
 
 // TxCreateProject returns a transaction command that creates a new project.
 func TxCreateProject() *cobra.Command {
-	cmd := txflags(&cobra.Command{
+	cmd := txFlags(&cobra.Command{
 		Use:   "create-project [class-id] [project-jurisdiction] [metadata] --project-id [project-id]",
 		Short: "Create a new project within a credit class",
 		Long: `Create a new project within a credit class.
@@ -596,11 +598,51 @@ func TxCreateProject() *cobra.Command {
 	return cmd
 }
 
-func decodeMetadata(metadataStr string) ([]byte, error) {
-	b, err := base64.StdEncoding.DecodeString(metadataStr)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
-	}
+func TxUpdateProjectAdminCmd() *cobra.Command {
+	return txFlags(&cobra.Command{
+		Use:   "update-project-admin [project_id] [new_admin_address] [flags]",
+		Short: "Update the project admin address",
+		Long: "Update the project admin to the provided new_admin_address. Please double check the address as " +
+			"this will forfeit control of the project. Passing an invalid address could cause loss of control of the project.",
+		Example: "regen tx ecocredit update-project-admin VERRA1 regen1ynugxwpp4lfpy0epvfqwqkpuzkz62htnex3op",
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			projectId, newAdmin := args[0], args[1]
+			msg := core.MsgUpdateProjectAdmin{
+				Admin:     clientCtx.GetFromAddress().String(),
+				NewAdmin:  newAdmin,
+				ProjectId: projectId,
+			}
 
-	return b, nil
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateProjectMetadataCmd() *cobra.Command {
+	return txFlags(&cobra.Command{
+		Use:     "update-project-metadata [project-id] [new_metadata]",
+		Short:   "Update the project metadata",
+		Long:    "Update the project metadata, overwriting the project's current metadata.",
+		Example: `regen tx ecocredit update-project-metadata VERRA1 "some metadata"`,
+		Args:    cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			projectId, newMetadata := args[0], args[1]
+			msg := core.MsgUpdateProjectMetadata{
+				Admin:       clientCtx.GetFromAddress().String(),
+				NewMetadata: newMetadata,
+				ProjectId:   projectId,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
 }
