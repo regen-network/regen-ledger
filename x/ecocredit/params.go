@@ -24,11 +24,6 @@ const (
 	PRECISION uint32 = 6
 )
 
-// ParamKeyTable returns the parameter key table.
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
-
 // Implements params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{

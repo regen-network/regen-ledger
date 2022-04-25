@@ -1,9 +1,6 @@
 package ecocredit
 
 import (
-	"strings"
-	"unicode"
-
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -62,22 +59,6 @@ func (m *ClassInfo) AssertClassIssuer(issuer string) error {
 		}
 	}
 	return sdkerrors.ErrUnauthorized
-}
-
-// Normalize credit type name by removing whitespace and converting to lowercase
-func NormalizeCreditTypeName(name string) string {
-	return fastRemoveWhitespace(strings.ToLower(name))
-}
-
-func fastRemoveWhitespace(str string) string {
-	var b strings.Builder
-	b.Grow(len(str))
-	for _, ch := range str {
-		if !unicode.IsSpace(ch) {
-			b.WriteRune(ch)
-		}
-	}
-	return b.String()
 }
 
 // AssertProjectIssuer makes sure that the issuer is equals to the issuer of the credit batches for this project.
