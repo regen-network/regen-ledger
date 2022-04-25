@@ -36,7 +36,7 @@ func TestCreateClass_Valid(t *testing.T) {
 	assert.Equal(t, res.ClassId, "C01")
 
 	// check class info
-	ci, err := s.stateStore.ClassInfoTable().GetById(s.ctx, res.ClassId)
+	ci, err := s.stateStore.ClassTable().GetById(s.ctx, res.ClassId)
 	assert.NilError(t, err)
 	assert.Equal(t, res.ClassId, ci.Id)
 

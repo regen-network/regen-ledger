@@ -47,7 +47,7 @@ type OrderBook interface {
 	//OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1.BuyOrder) error
 
 	// OnInsertSellOrder gets called whenever a sell order is inserted into the marketplace state.
-	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.BatchInfo) error
+	OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.Batch) error
 
 	// ProcessBatch called in end blocker, can happen every block or at some epoch.
 	ProcessBatch(ctx context.Context) error
@@ -61,7 +61,7 @@ func (o orderbook) OnInsertBuyOrder(ctx context.Context, buyOrder *marketplacev1
 	return nil
 }
 */
-func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.BatchInfo) error {
+func (o orderbook) OnInsertSellOrder(ctx context.Context, sellOrder *marketplacev1.SellOrder, batchInfo *ecocreditv1.Batch) error {
 	return nil
 }
 

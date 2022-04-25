@@ -1,15 +1,16 @@
 package core
 
 import (
+	"context"
 	"testing"
 
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -17,33 +18,50 @@ func TestQuery_Balances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: 1, Tradable: "15", Retired: "15", Escrowed: "15"}
-	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: 2, Tradable: "19", Retired: "20", Escrowed: "33"}
+	bKey1, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C01-20200101-20220101-001"})
+	assert.NilError(t, err)
+	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-20200101-20220101-001"})
+	assert.NilError(t, err)
+
+	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, Tradable: "15", Retired: "15", Escrowed: "15"}
+	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: bKey2, Tradable: "19", Retired: "20", Escrowed: "33"}
+
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance1))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance2))
-	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: 3,
-		Address:  s.addr,
-		Tradable: "4",
-		Retired:  "5",
-		Escrowed: "6",
-	}))
 
-	res, err := s.k.Balances(s.ctx, &core.QueryBalancesRequest{Account: s.addr.String(), Pagination: &query.PageRequest{CountTotal: true, Limit: 2}})
+	// query balances for s.addr
+	res, err := s.k.Balances(s.ctx, &core.QueryBalancesRequest{
+		Account:    s.addr.String(),
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
+	})
 	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.Balances))
-	assertBalanceEqual(t, res.Balances[0], balance1)
-	assertBalanceEqual(t, res.Balances[1], balance2)
-	assert.Equal(t, uint64(3), res.Pagination.Total)
+	assert.Equal(t, 1, len(res.Balances))
+	assertBalanceEqual(t, s.ctx, s.k, res.Balances[0], balance1)
+	assert.Equal(t, uint64(2), res.Pagination.Total)
 
 	_, _, noBalAddr := testdata.KeyTestPubAddr()
-	res, err = s.k.Balances(s.ctx, &core.QueryBalancesRequest{Account: noBalAddr.String()})
+
+	// query balances for address with no balance
+	res, err = s.k.Balances(s.ctx, &core.QueryBalancesRequest{
+		Account: noBalAddr.String(),
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.Balances))
 }
 
-func assertBalanceEqual(t *testing.T, balance *core.BatchBalance, batchBalance *api.BatchBalance) {
-	var bal core.BatchBalance
-	assert.NilError(t, ormutil.PulsarToGogoSlow(batchBalance, &bal))
-	assert.DeepEqual(t, bal, *balance)
+func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *core.BatchBalanceInfo, balance *api.BatchBalance) {
+	addr := sdk.AccAddress(balance.Address)
+
+	batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
+	assert.NilError(t, err)
+
+	info := core.BatchBalanceInfo{
+		Address:    addr.String(),
+		BatchDenom: batch.Denom,
+		Tradable:   balance.Tradable,
+		Retired:    balance.Retired,
+		Escrowed:   balance.Escrowed,
+	}
+
+	assert.DeepEqual(t, info, *received)
 }

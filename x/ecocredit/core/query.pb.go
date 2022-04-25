@@ -9,6 +9,7 @@ import (
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	types "github.com/gogo/protobuf/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -288,8 +289,8 @@ func (m *QueryClassInfoRequest) GetClassId() string {
 
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 type QueryClassInfoResponse struct {
-	// info is the ClassInfo for the credit class.
-	Info *ClassInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	// class is the fetched credit class.
+	Class *ClassInfo `protobuf:"bytes,1,opt,name=class,proto3" json:"class,omitempty"`
 }
 
 func (m *QueryClassInfoResponse) Reset()         { *m = QueryClassInfoResponse{} }
@@ -325,9 +326,9 @@ func (m *QueryClassInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryClassInfoResponse proto.InternalMessageInfo
 
-func (m *QueryClassInfoResponse) GetInfo() *ClassInfo {
+func (m *QueryClassInfoResponse) GetClass() *ClassInfo {
 	if m != nil {
-		return m.Info
+		return m.Class
 	}
 	return nil
 }
@@ -600,8 +601,8 @@ func (m *QueryProjectInfoRequest) GetProjectId() string {
 
 // QueryProjectInfoResponse is the Query/Project response type.
 type QueryProjectInfoResponse struct {
-	// info is the ProjectInfo for the project.
-	Info *ProjectInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	// project is the fetched project.
+	Project *ProjectInfo `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 }
 
 func (m *QueryProjectInfoResponse) Reset()         { *m = QueryProjectInfoResponse{} }
@@ -637,9 +638,9 @@ func (m *QueryProjectInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryProjectInfoResponse proto.InternalMessageInfo
 
-func (m *QueryProjectInfoResponse) GetInfo() *ProjectInfo {
+func (m *QueryProjectInfoResponse) GetProject() *ProjectInfo {
 	if m != nil {
-		return m.Info
+		return m.Project
 	}
 	return nil
 }
@@ -701,7 +702,7 @@ func (m *QueryBatchesRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 type QueryBatchesResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -811,7 +812,7 @@ func (m *QueryBatchesByIssuerRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
 type QueryBatchesByIssuerResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -921,7 +922,7 @@ func (m *QueryBatchesByClassRequest) GetPagination() *query.PageRequest {
 
 // QueryBatchesByClassResponse is the Query/BatchesByClass response type.
 type QueryBatchesByClassResponse struct {
-	// batches are the fetched credit batches within the project.
+	// batches are the fetched credit batches.
 	Batches []*BatchInfo `protobuf:"bytes,1,rep,name=batches,proto3" json:"batches,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1022,8 +1023,8 @@ func (m *QueryBatchInfoRequest) GetBatchDenom() string {
 
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 type QueryBatchInfoResponse struct {
-	// info is the BatchInfo for the credit batch.
-	Info *BatchInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
+	// batch is the fetched credit batch.
+	Batch *BatchInfo `protobuf:"bytes,1,opt,name=batch,proto3" json:"batch,omitempty"`
 }
 
 func (m *QueryBatchInfoResponse) Reset()         { *m = QueryBatchInfoResponse{} }
@@ -1059,9 +1060,9 @@ func (m *QueryBatchInfoResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBatchInfoResponse proto.InternalMessageInfo
 
-func (m *QueryBatchInfoResponse) GetInfo() *BatchInfo {
+func (m *QueryBatchInfoResponse) GetBatch() *BatchInfo {
 	if m != nil {
-		return m.Info
+		return m.Batch
 	}
 	return nil
 }
@@ -1124,7 +1125,7 @@ func (m *QueryBalanceRequest) GetBatchDenom() string {
 // QueryBalanceResponse is the Query/Balance response type.
 type QueryBalanceResponse struct {
 	// balance is the balance of the given account.
-	Balance *BatchBalance `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
+	Balance *BatchBalanceInfo `protobuf:"bytes,1,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
 func (m *QueryBalanceResponse) Reset()         { *m = QueryBalanceResponse{} }
@@ -1160,7 +1161,7 @@ func (m *QueryBalanceResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceResponse proto.InternalMessageInfo
 
-func (m *QueryBalanceResponse) GetBalance() *BatchBalance {
+func (m *QueryBalanceResponse) GetBalance() *BatchBalanceInfo {
 	if m != nil {
 		return m.Balance
 	}
@@ -1226,7 +1227,7 @@ func (m *QueryBalancesRequest) GetPagination() *query.PageRequest {
 type QueryBalancesResponse struct {
 	// balances are a list of balances from different credit batches that the
 	// account holds.
-	Balances []*BatchBalance `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
+	Balances []*BatchBalanceInfo `protobuf:"bytes,1,rep,name=balances,proto3" json:"balances,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -1264,7 +1265,7 @@ func (m *QueryBalancesResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalancesResponse proto.InternalMessageInfo
 
-func (m *QueryBalancesResponse) GetBalances() []*BatchBalance {
+func (m *QueryBalancesResponse) GetBalances() []*BatchBalanceInfo {
 	if m != nil {
 		return m.Balances
 	}
@@ -1430,7 +1431,7 @@ var xxx_messageInfo_QueryCreditTypesRequest proto.InternalMessageInfo
 
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 type QueryCreditTypesResponse struct {
-	// list of credit types
+	// credit_types are the fetched credit types.
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
@@ -1557,6 +1558,361 @@ func (m *QueryParamsResponse) GetParams() *Params {
 	return nil
 }
 
+// ClassInfo is the human-readable credit class information.
+type ClassInfo struct {
+	// id is the unique identifier of the credit class.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// admin is the admin of the credit class.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
+	// metadata is the arbitrary metadata attached to the credit class.
+	Metadata string `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// credit_type_abbrev is the abbreviation of the credit type within which this
+	// credit class was created.
+	CreditTypeAbbrev string `protobuf:"bytes,4,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
+}
+
+func (m *ClassInfo) Reset()         { *m = ClassInfo{} }
+func (m *ClassInfo) String() string { return proto.CompactTextString(m) }
+func (*ClassInfo) ProtoMessage()    {}
+func (*ClassInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{30}
+}
+func (m *ClassInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ClassInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ClassInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ClassInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ClassInfo.Merge(m, src)
+}
+func (m *ClassInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *ClassInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_ClassInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ClassInfo proto.InternalMessageInfo
+
+func (m *ClassInfo) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *ClassInfo) GetAdmin() string {
+	if m != nil {
+		return m.Admin
+	}
+	return ""
+}
+
+func (m *ClassInfo) GetMetadata() string {
+	if m != nil {
+		return m.Metadata
+	}
+	return ""
+}
+
+func (m *ClassInfo) GetCreditTypeAbbrev() string {
+	if m != nil {
+		return m.CreditTypeAbbrev
+	}
+	return ""
+}
+
+// ProjectInfo is the human-readable project information.
+type ProjectInfo struct {
+	// id is the unique identifier of the project.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// admin is the admin of the project.
+	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
+	// class_id is the unique identifier of the credit class within which the
+	// project was created.
+	ClassId string `protobuf:"bytes,3,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	// jurisdiction is the jurisdiction of the project. Full documentation can be
+	// found in MsgCreateProject.jurisdiction.
+	Jurisdiction string `protobuf:"bytes,4,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
+	// metadata is the arbitrary metadata attached to the project.
+	Metadata string `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
+}
+
+func (m *ProjectInfo) Reset()         { *m = ProjectInfo{} }
+func (m *ProjectInfo) String() string { return proto.CompactTextString(m) }
+func (*ProjectInfo) ProtoMessage()    {}
+func (*ProjectInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{31}
+}
+func (m *ProjectInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ProjectInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ProjectInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ProjectInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ProjectInfo.Merge(m, src)
+}
+func (m *ProjectInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *ProjectInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_ProjectInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ProjectInfo proto.InternalMessageInfo
+
+func (m *ProjectInfo) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *ProjectInfo) GetAdmin() string {
+	if m != nil {
+		return m.Admin
+	}
+	return ""
+}
+
+func (m *ProjectInfo) GetClassId() string {
+	if m != nil {
+		return m.ClassId
+	}
+	return ""
+}
+
+func (m *ProjectInfo) GetJurisdiction() string {
+	if m != nil {
+		return m.Jurisdiction
+	}
+	return ""
+}
+
+func (m *ProjectInfo) GetMetadata() string {
+	if m != nil {
+		return m.Metadata
+	}
+	return ""
+}
+
+// BatchInfo is the human-readable credit batch information.
+type BatchInfo struct {
+	// issuer is the address that created the batch and the address authorized to
+	// mint new credits to the credit batch if the credit batch is open.
+	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	// project_id is the unique identifier of the project within which this credit
+	// batch was created.
+	ProjectId string `protobuf:"bytes,2,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// denom is the unique identifier of the credit batch formed from the project
+	// name, batch sequence number and dates.
+	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	// metadata is any arbitrary metadata attached to the credit batch.
+	Metadata string `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// start_date is the beginning of the period during which this credit batch
+	// was quantified and verified.
+	StartDate *types.Timestamp `protobuf:"bytes,5,opt,name=start_date,json=startDate,proto3" json:"start_date,omitempty"`
+	// end_date is the end of the period during which this credit batch was
+	// quantified and verified.
+	EndDate *types.Timestamp `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty"`
+	// issuance_date is the timestamp when the credit batch was issued.
+	IssuanceDate *types.Timestamp `protobuf:"bytes,7,opt,name=issuance_date,json=issuanceDate,proto3" json:"issuance_date,omitempty"`
+	// open determines whether or not the credit batch is open, i.e. whether or
+	// not new credits can be minted to the credit batch.
+	Open bool `protobuf:"varint,8,opt,name=open,proto3" json:"open,omitempty"`
+}
+
+func (m *BatchInfo) Reset()         { *m = BatchInfo{} }
+func (m *BatchInfo) String() string { return proto.CompactTextString(m) }
+func (*BatchInfo) ProtoMessage()    {}
+func (*BatchInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{32}
+}
+func (m *BatchInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BatchInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BatchInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BatchInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BatchInfo.Merge(m, src)
+}
+func (m *BatchInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *BatchInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_BatchInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BatchInfo proto.InternalMessageInfo
+
+func (m *BatchInfo) GetIssuer() string {
+	if m != nil {
+		return m.Issuer
+	}
+	return ""
+}
+
+func (m *BatchInfo) GetProjectId() string {
+	if m != nil {
+		return m.ProjectId
+	}
+	return ""
+}
+
+func (m *BatchInfo) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+func (m *BatchInfo) GetMetadata() string {
+	if m != nil {
+		return m.Metadata
+	}
+	return ""
+}
+
+func (m *BatchInfo) GetStartDate() *types.Timestamp {
+	if m != nil {
+		return m.StartDate
+	}
+	return nil
+}
+
+func (m *BatchInfo) GetEndDate() *types.Timestamp {
+	if m != nil {
+		return m.EndDate
+	}
+	return nil
+}
+
+func (m *BatchInfo) GetIssuanceDate() *types.Timestamp {
+	if m != nil {
+		return m.IssuanceDate
+	}
+	return nil
+}
+
+func (m *BatchInfo) GetOpen() bool {
+	if m != nil {
+		return m.Open
+	}
+	return false
+}
+
+// BatchBalanceInfo is the human-readable batch balance information.
+type BatchBalanceInfo struct {
+	// address is the address of the credit holder.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// batch_denom is the unique identifier of the credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// tradable is the tradable amount of credits.
+	Tradable string `protobuf:"bytes,3,opt,name=tradable,proto3" json:"tradable,omitempty"`
+	// retired is the retired amount of credits.
+	Retired string `protobuf:"bytes,4,opt,name=retired,proto3" json:"retired,omitempty"`
+	// escrowed is the amount of credits locked up in escrow for the marketplace.
+	Escrowed string `protobuf:"bytes,5,opt,name=escrowed,proto3" json:"escrowed,omitempty"`
+}
+
+func (m *BatchBalanceInfo) Reset()         { *m = BatchBalanceInfo{} }
+func (m *BatchBalanceInfo) String() string { return proto.CompactTextString(m) }
+func (*BatchBalanceInfo) ProtoMessage()    {}
+func (*BatchBalanceInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c85efa417eafb74b, []int{33}
+}
+func (m *BatchBalanceInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *BatchBalanceInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_BatchBalanceInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *BatchBalanceInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BatchBalanceInfo.Merge(m, src)
+}
+func (m *BatchBalanceInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *BatchBalanceInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_BatchBalanceInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_BatchBalanceInfo proto.InternalMessageInfo
+
+func (m *BatchBalanceInfo) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *BatchBalanceInfo) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *BatchBalanceInfo) GetTradable() string {
+	if m != nil {
+		return m.Tradable
+	}
+	return ""
+}
+
+func (m *BatchBalanceInfo) GetRetired() string {
+	if m != nil {
+		return m.Retired
+	}
+	return ""
+}
+
+func (m *BatchBalanceInfo) GetEscrowed() string {
+	if m != nil {
+		return m.Escrowed
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryClassesRequest)(nil), "regen.ecocredit.v1.QueryClassesRequest")
 	proto.RegisterType((*QueryClassesResponse)(nil), "regen.ecocredit.v1.QueryClassesResponse")
@@ -1588,94 +1944,115 @@ func init() {
 	proto.RegisterType((*QueryCreditTypesResponse)(nil), "regen.ecocredit.v1.QueryCreditTypesResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "regen.ecocredit.v1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "regen.ecocredit.v1.QueryParamsResponse")
+	proto.RegisterType((*ClassInfo)(nil), "regen.ecocredit.v1.ClassInfo")
+	proto.RegisterType((*ProjectInfo)(nil), "regen.ecocredit.v1.ProjectInfo")
+	proto.RegisterType((*BatchInfo)(nil), "regen.ecocredit.v1.BatchInfo")
+	proto.RegisterType((*BatchBalanceInfo)(nil), "regen.ecocredit.v1.BatchBalanceInfo")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/query.proto", fileDescriptor_c85efa417eafb74b) }
 
 var fileDescriptor_c85efa417eafb74b = []byte{
-	// 1312 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x5f, 0x6f, 0xdb, 0x54,
-	0x14, 0xef, 0xed, 0x58, 0xff, 0x9c, 0x8c, 0x16, 0x5d, 0xca, 0x68, 0xbd, 0x36, 0xab, 0x8c, 0xe8,
-	0x9f, 0x75, 0xf5, 0x6d, 0x52, 0xb1, 0x15, 0x06, 0x0f, 0x6d, 0x11, 0xa8, 0xe2, 0x81, 0x12, 0x78,
-	0x42, 0x9a, 0x22, 0xc7, 0xb9, 0xcb, 0x02, 0x89, 0x9d, 0xd9, 0x4e, 0x59, 0x08, 0x01, 0xc1, 0x17,
-	0xa0, 0x62, 0x42, 0x4c, 0x42, 0xfc, 0x13, 0xbc, 0xf0, 0x4d, 0x78, 0x9c, 0xc4, 0x0b, 0x8f, 0xa8,
-	0xe5, 0x83, 0xa0, 0xdc, 0x7b, 0xae, 0x63, 0xa7, 0xae, 0x6d, 0x4d, 0xd1, 0xd4, 0xa7, 0xd4, 0xc7,
-	0xe7, 0xdc, 0xf3, 0x3b, 0xbf, 0x7b, 0xee, 0xb9, 0x3f, 0x17, 0xf2, 0x2e, 0xaf, 0x71, 0x9b, 0x71,
-	0xcb, 0xb1, 0x5c, 0x5e, 0xad, 0xfb, 0xec, 0xa8, 0xc0, 0x1e, 0xb4, 0xb9, 0xdb, 0x31, 0x5a, 0xae,
-	0xe3, 0x3b, 0x94, 0x8a, 0xf7, 0x46, 0xf0, 0xde, 0x38, 0x2a, 0x68, 0x8b, 0x35, 0xc7, 0xa9, 0x35,
-	0x38, 0x33, 0x5b, 0x75, 0x66, 0xda, 0xb6, 0xe3, 0x9b, 0x7e, 0xdd, 0xb1, 0x3d, 0x19, 0xa1, 0xdd,
-	0xb0, 0x1c, 0xaf, 0xe9, 0x78, 0xac, 0x62, 0x7a, 0x5c, 0x2e, 0xc5, 0x8e, 0x0a, 0x15, 0xee, 0x9b,
-	0x05, 0xd6, 0x32, 0x6b, 0x75, 0x5b, 0x38, 0xa3, 0x6f, 0x5c, 0x76, 0xcf, 0x37, 0x7d, 0x9e, 0xf0,
-	0xde, 0xef, 0xb4, 0x38, 0xe6, 0xd2, 0xef, 0xc2, 0x8b, 0x1f, 0xf4, 0x33, 0xec, 0x37, 0x4c, 0xcf,
-	0xe3, 0x5e, 0x89, 0x3f, 0x68, 0x73, 0xcf, 0xa7, 0xef, 0x00, 0x0c, 0x52, 0xcd, 0x93, 0x65, 0xb2,
-	0x96, 0x2b, 0xae, 0x18, 0x12, 0x97, 0xd1, 0xc7, 0x65, 0xc8, 0x12, 0x11, 0x97, 0x71, 0x68, 0xd6,
-	0x38, 0xc6, 0x96, 0x42, 0x91, 0xfa, 0x63, 0x02, 0x73, 0xd1, 0xf5, 0xbd, 0x96, 0x63, 0x7b, 0x9c,
-	0xde, 0x86, 0x49, 0x4b, 0x9a, 0xe6, 0xc9, 0xf2, 0xa5, 0xb5, 0x5c, 0x71, 0xc9, 0x38, 0xcb, 0x93,
-	0x21, 0xa2, 0x0e, 0xec, 0x7b, 0x4e, 0x49, 0x79, 0xd3, 0x77, 0x23, 0xc8, 0xc6, 0x05, 0xb2, 0xd5,
-	0x54, 0x64, 0x32, 0x6b, 0x04, 0xda, 0xe7, 0xa0, 0x85, 0x91, 0xed, 0x75, 0x76, 0xab, 0xcd, 0xba,
-	0xad, 0x08, 0x98, 0x83, 0xcb, 0x66, 0xff, 0x59, 0xd4, 0x3e, 0x5d, 0x92, 0x0f, 0x43, 0xb4, 0x8c,
-	0x3f, 0x35, 0x2d, 0xbf, 0x10, 0xb8, 0x16, 0x9b, 0xfc, 0xc2, 0xb0, 0x53, 0x84, 0x97, 0x06, 0x00,
-	0x45, 0x0e, 0x24, 0x66, 0x01, 0xa6, 0x44, 0xb2, 0x72, 0xbd, 0x8a, 0xdc, 0xc8, 0xe4, 0x07, 0x55,
-	0xfd, 0x3d, 0xb8, 0x3a, 0x1c, 0x83, 0xf5, 0x14, 0xe0, 0xb9, 0xba, 0x7d, 0xcf, 0xc1, 0x46, 0x4a,
-	0x29, 0x46, 0xb8, 0xea, 0x3d, 0x98, 0x0f, 0x2d, 0xe6, 0x79, 0x6d, 0xee, 0x7a, 0xe9, 0x18, 0x46,
-	0xb6, 0x43, 0x5f, 0xc2, 0x42, 0x4c, 0x7a, 0x2c, 0x67, 0x1e, 0x26, 0xeb, 0xd2, 0x24, 0xb6, 0x67,
-	0xba, 0xa4, 0x1e, 0x47, 0xc7, 0x7f, 0x07, 0xcf, 0xcd, 0xa1, 0xeb, 0x7c, 0xc2, 0x2d, 0xff, 0x59,
-	0x96, 0xfe, 0x13, 0xc1, 0xbd, 0x1f, 0xe4, 0xc6, 0xba, 0xef, 0xc0, 0x54, 0x0b, 0x6d, 0xd8, 0x97,
-	0xd7, 0xe3, 0xb6, 0x12, 0xe3, 0xc4, 0x66, 0x06, 0x01, 0xa3, 0xa3, 0x66, 0x07, 0x5e, 0x0e, 0xc3,
-	0x0b, 0x37, 0xe7, 0x12, 0x00, 0xe6, 0x1b, 0xf0, 0x33, 0x8d, 0x96, 0x83, 0xaa, 0xfe, 0x3e, 0xf6,
-	0x54, 0x24, 0x12, 0x6b, 0xdb, 0x8e, 0xb4, 0x68, 0x6a, 0x5d, 0xb2, 0x49, 0xbf, 0xc0, 0xe9, 0xb9,
-	0x67, 0xfa, 0xd6, 0xfd, 0xc1, 0xf4, 0x4c, 0x86, 0x31, 0xb2, 0x8d, 0x0a, 0x86, 0x6b, 0x90, 0x7e,
-	0x30, 0x3e, 0x2a, 0xd2, 0x94, 0x34, 0x3e, 0x44, 0x94, 0x1c, 0x1f, 0xe8, 0x3d, 0xba, 0x3d, 0xea,
-	0xe1, 0x7c, 0x43, 0x64, 0x7b, 0x1d, 0x79, 0x84, 0x14, 0x41, 0x57, 0x61, 0x42, 0x9e, 0x18, 0x24,
-	0x07, 0x9f, 0x46, 0xc6, 0xcc, 0xaf, 0x04, 0x16, 0xe3, 0xf3, 0x5f, 0x18, 0x86, 0xbe, 0xc2, 0xeb,
-	0x27, 0x40, 0x28, 0x26, 0xcd, 0x33, 0x3c, 0xe6, 0xc1, 0x1d, 0x34, 0x8c, 0xe0, 0xc2, 0x50, 0xb4,
-	0x83, 0x73, 0x68, 0x90, 0x03, 0xd9, 0xb9, 0x0e, 0x39, 0x91, 0xac, 0x5c, 0xe5, 0xb6, 0xd3, 0x44,
-	0x82, 0x40, 0x98, 0xde, 0xee, 0x5b, 0x82, 0x9b, 0x28, 0x14, 0x99, 0xfd, 0x26, 0x1a, 0x04, 0xc9,
-	0x43, 0x7e, 0x18, 0x1c, 0xf2, 0x86, 0x69, 0x5b, 0x8a, 0xcb, 0xfe, 0x25, 0x60, 0x5a, 0x96, 0xd3,
-	0xb6, 0x7d, 0xb5, 0x43, 0xf8, 0x38, 0x0c, 0x6f, 0xfc, 0x0c, 0xbc, 0x52, 0x70, 0x6e, 0x71, 0x45,
-	0x04, 0xf7, 0x46, 0x9f, 0x72, 0x61, 0x42, 0x7c, 0xcb, 0xe7, 0xe2, 0x53, 0xa1, 0x2a, 0x40, 0x7f,
-	0x18, 0x5d, 0xd3, 0x4b, 0x87, 0x39, 0xaa, 0x46, 0xfa, 0x99, 0x04, 0xfb, 0xa4, 0x52, 0x63, 0x3d,
-	0x6f, 0xc2, 0x14, 0xc2, 0x53, 0x3d, 0x94, 0x5e, 0x50, 0x10, 0x31, 0xba, 0x3e, 0x7a, 0x0d, 0xa8,
-	0xc0, 0xf7, 0x61, 0xbb, 0xd5, 0x6a, 0x74, 0x32, 0x37, 0xd1, 0x31, 0xc1, 0x8d, 0x57, 0x71, 0x58,
-	0xd5, 0x2a, 0xcc, 0xfa, 0xae, 0x59, 0x35, 0x2b, 0x0d, 0x5e, 0xf6, 0xc4, 0x2b, 0x0c, 0x9e, 0x51,
-	0x66, 0x19, 0x40, 0x5f, 0x85, 0x19, 0x97, 0xfb, 0x75, 0x97, 0x57, 0x95, 0x9f, 0x6c, 0x85, 0xe7,
-	0xd1, 0x8a, 0x6e, 0xeb, 0xf0, 0x82, 0xd5, 0xaf, 0xb8, 0xd1, 0xe0, 0xd5, 0xb2, 0xd9, 0x14, 0x5b,
-	0x75, 0x49, 0x38, 0xce, 0x06, 0xf6, 0x5d, 0x61, 0xd6, 0x17, 0xf0, 0xea, 0xdb, 0x17, 0xdc, 0x7d,
-	0xd4, 0xd7, 0xf1, 0x58, 0x8e, 0x7e, 0x57, 0xe9, 0xa5, 0xf0, 0x2b, 0x44, 0xbc, 0x0b, 0x57, 0x24,
-	0xdb, 0x65, 0x21, 0xfd, 0x71, 0x2f, 0xf2, 0xb1, 0x32, 0x2c, 0x08, 0x2f, 0xe5, 0xac, 0xc1, 0x52,
-	0xfa, 0x1c, 0x72, 0x78, 0x68, 0xba, 0x66, 0x33, 0x48, 0x7a, 0x80, 0x0c, 0x29, 0x2b, 0xe6, 0x2b,
-	0xc2, 0x44, 0x4b, 0x58, 0xb0, 0x8d, 0xb5, 0xd8, 0xdb, 0x54, 0xc6, 0xa0, 0x67, 0xf1, 0x98, 0xc2,
-	0x65, 0xb1, 0x16, 0xfd, 0x9a, 0xc0, 0x24, 0xea, 0x62, 0xba, 0x1a, 0x17, 0x19, 0xf3, 0xc1, 0xa2,
-	0xad, 0xa5, 0x3b, 0x4a, 0x70, 0xfa, 0x2b, 0xdf, 0xfc, 0xfd, 0xdf, 0xa3, 0xf1, 0x25, 0x7a, 0x8d,
-	0xc5, 0x7c, 0x1a, 0x29, 0x1d, 0xfd, 0x07, 0x81, 0x99, 0xa8, 0x36, 0xa7, 0x46, 0x5a, 0x86, 0xe8,
-	0x17, 0x84, 0xc6, 0x32, 0xfb, 0x23, 0xb0, 0x82, 0x00, 0xb6, 0x41, 0xd7, 0x13, 0x80, 0x31, 0xf1,
-	0x1d, 0xc2, 0xba, 0xe2, 0xa7, 0x47, 0xbf, 0x23, 0x30, 0x1d, 0x08, 0x67, 0xba, 0x9e, 0x9c, 0x31,
-	0x34, 0x41, 0xb5, 0x1b, 0x59, 0x5c, 0x11, 0x97, 0x21, 0x70, 0xad, 0xd1, 0x95, 0x24, 0x5c, 0x5d,
-	0x75, 0x5d, 0xf5, 0xe8, 0xef, 0x04, 0xae, 0x84, 0x65, 0x33, 0xbd, 0x99, 0x92, 0x2c, 0x22, 0xee,
-	0xb5, 0xcd, 0x8c, 0xde, 0x88, 0xee, 0x96, 0x40, 0xb7, 0x45, 0x8d, 0x6c, 0xe8, 0x98, 0x52, 0xea,
-	0x8f, 0x09, 0x4c, 0x29, 0x81, 0x4b, 0xcf, 0xef, 0x9e, 0x21, 0xfd, 0xad, 0xad, 0x67, 0xf0, 0x44,
-	0x64, 0xb7, 0x05, 0xb2, 0x02, 0x65, 0x19, 0x91, 0x05, 0x4a, 0xf9, 0x47, 0x02, 0xb9, 0x90, 0xd6,
-	0xa4, 0x1b, 0x69, 0x39, 0xc3, 0x3b, 0x7b, 0x33, 0x9b, 0x73, 0x96, 0x9e, 0x53, 0x80, 0x58, 0x77,
-	0xa0, 0x66, 0x7b, 0xf4, 0x07, 0x02, 0x93, 0x28, 0x19, 0x12, 0x8e, 0x67, 0x54, 0x11, 0x27, 0x1c,
-	0xcf, 0x21, 0xed, 0xaa, 0xbf, 0x2e, 0x10, 0x6d, 0xd3, 0x42, 0x66, 0x44, 0x4c, 0x09, 0x8f, 0x3f,
-	0x09, 0xcc, 0x0e, 0x09, 0x3e, 0xca, 0xd2, 0x12, 0x0f, 0x49, 0x53, 0x6d, 0x2b, 0x7b, 0x00, 0x22,
-	0xde, 0x16, 0x88, 0x37, 0xe9, 0x46, 0x1c, 0x62, 0xc4, 0x86, 0x6d, 0xc7, 0xba, 0xf2, 0xb7, 0xd7,
-	0xc7, 0x3a, 0x13, 0x15, 0x5e, 0x09, 0x03, 0x26, 0x56, 0x23, 0x6a, 0x2c, 0xb3, 0xff, 0x53, 0x1e,
-	0x15, 0xc5, 0xeb, 0xf7, 0x04, 0xa6, 0x03, 0x51, 0x94, 0x30, 0x65, 0x86, 0x75, 0x5a, 0xc2, 0x94,
-	0x39, 0x23, 0xcc, 0x92, 0x3b, 0x51, 0xb1, 0xd8, 0x0d, 0xdd, 0xd8, 0x3d, 0xfa, 0x9b, 0xe8, 0x44,
-	0xa1, 0x16, 0x12, 0x3b, 0x31, 0x2c, 0xdb, 0x12, 0x3b, 0x31, 0xa2, 0xc6, 0xf4, 0x7d, 0x81, 0xe8,
-	0x2d, 0x7a, 0x27, 0x33, 0x22, 0x86, 0xda, 0x85, 0x75, 0x51, 0x63, 0xf5, 0xe8, 0xb7, 0x04, 0xa6,
-	0x94, 0x2e, 0xa2, 0xa9, 0xb9, 0x33, 0x8c, 0x99, 0x61, 0x91, 0x95, 0x3c, 0x9e, 0x95, 0x98, 0x0a,
-	0x21, 0x7a, 0x44, 0x60, 0x02, 0x95, 0xc7, 0xca, 0xb9, 0x59, 0x22, 0x52, 0x49, 0x5b, 0x4d, 0xf5,
-	0x43, 0x2c, 0x3b, 0x02, 0x4b, 0x91, 0x6e, 0x65, 0xa7, 0x4c, 0x2a, 0xa3, 0xfe, 0x4d, 0x96, 0x0b,
-	0x49, 0x97, 0x84, 0x99, 0x77, 0x56, 0xfb, 0x24, 0xcc, 0xbc, 0x18, 0x35, 0xa4, 0xaf, 0x09, 0x90,
-	0x3a, 0x5d, 0x8e, 0x3d, 0x06, 0xe2, 0xaf, 0x4d, 0xa1, 0x93, 0x68, 0x0f, 0x26, 0xa4, 0x4a, 0x49,
-	0x60, 0x2a, 0x22, 0x88, 0x12, 0x98, 0x8a, 0x4a, 0x24, 0x5d, 0x17, 0x20, 0x16, 0xa9, 0x16, 0x3b,
-	0xe6, 0x84, 0xef, 0xde, 0xe1, 0x5f, 0x27, 0x79, 0xf2, 0xe4, 0x24, 0x4f, 0xfe, 0x3d, 0xc9, 0x93,
-	0xe3, 0xd3, 0xfc, 0xd8, 0x93, 0xd3, 0xfc, 0xd8, 0x3f, 0xa7, 0xf9, 0xb1, 0x8f, 0x6f, 0xd5, 0xea,
-	0xfe, 0xfd, 0x76, 0xc5, 0xb0, 0x9c, 0xa6, 0x8c, 0xdf, 0xb4, 0xb9, 0xff, 0x99, 0xe3, 0x7e, 0x8a,
-	0x4f, 0x0d, 0x5e, 0xad, 0x71, 0x97, 0x3d, 0x0c, 0x2d, 0x6b, 0x39, 0x2e, 0xaf, 0x4c, 0x88, 0x7f,
-	0xfa, 0x6e, 0xff, 0x1f, 0x00, 0x00, 0xff, 0xff, 0xcc, 0x75, 0x17, 0x41, 0xb4, 0x16, 0x00, 0x00,
+	// 1577 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0x5d, 0x6f, 0xd4, 0x56,
+	0x13, 0xc6, 0x0b, 0x49, 0x36, 0x93, 0x10, 0xd0, 0x79, 0xf3, 0xf2, 0x06, 0x03, 0x4b, 0xe4, 0xb7,
+	0x25, 0x09, 0x10, 0x9b, 0x4d, 0xc4, 0x97, 0x50, 0x3f, 0x12, 0x50, 0xab, 0x5c, 0x54, 0x4a, 0xb7,
+	0xb4, 0x17, 0x95, 0xd0, 0xca, 0x6b, 0x1f, 0x96, 0xa5, 0xbb, 0xf6, 0x62, 0x7b, 0x03, 0xe9, 0x76,
+	0x5b, 0xb5, 0x3f, 0xa0, 0x45, 0x45, 0x55, 0x91, 0xaa, 0xaa, 0x9f, 0x37, 0xfd, 0x0d, 0xfd, 0x03,
+	0xbd, 0x44, 0xea, 0x4d, 0x2f, 0x2b, 0xe8, 0x0f, 0xa9, 0x3c, 0x67, 0x8e, 0xd7, 0xde, 0x38, 0xb6,
+	0x85, 0x56, 0x88, 0xab, 0xec, 0x39, 0x9e, 0x39, 0xf3, 0xcc, 0x9c, 0x99, 0x39, 0xf3, 0x04, 0x2a,
+	0x1e, 0x6f, 0x72, 0xc7, 0xe0, 0x96, 0x6b, 0x79, 0xdc, 0x6e, 0x05, 0xc6, 0x4e, 0xd5, 0xb8, 0xd7,
+	0xe3, 0xde, 0xae, 0xde, 0xf5, 0xdc, 0xc0, 0x65, 0x0c, 0xbf, 0xeb, 0xd1, 0x77, 0x7d, 0xa7, 0xaa,
+	0x9e, 0x6c, 0xba, 0x6e, 0xb3, 0xcd, 0x0d, 0xb3, 0xdb, 0x32, 0x4c, 0xc7, 0x71, 0x03, 0x33, 0x68,
+	0xb9, 0x8e, 0x2f, 0x34, 0xd4, 0xd3, 0xf4, 0x15, 0x57, 0x8d, 0xde, 0x6d, 0x23, 0x68, 0x75, 0xb8,
+	0x1f, 0x98, 0x9d, 0x2e, 0x09, 0x9c, 0xb5, 0x5c, 0xbf, 0xe3, 0xfa, 0x46, 0xc3, 0xf4, 0xb9, 0xb0,
+	0x65, 0xec, 0x54, 0x1b, 0x3c, 0x30, 0xab, 0x46, 0xd7, 0x6c, 0xb6, 0x1c, 0x3c, 0x8d, 0x64, 0xd3,
+	0xe0, 0xf9, 0x81, 0x19, 0xf0, 0x8c, 0xef, 0xc1, 0x6e, 0x97, 0x13, 0x18, 0xed, 0x16, 0xfc, 0xe7,
+	0xdd, 0xd0, 0xc2, 0xf5, 0xb6, 0xe9, 0xfb, 0xdc, 0xaf, 0xf1, 0x7b, 0x3d, 0xee, 0x07, 0xec, 0x2d,
+	0x80, 0xa1, 0xa9, 0x05, 0x65, 0x51, 0x59, 0x9e, 0x59, 0x3b, 0xa3, 0x0b, 0x5c, 0x7a, 0x88, 0x4b,
+	0x17, 0x31, 0x20, 0x5c, 0xfa, 0xb6, 0xd9, 0xe4, 0xa4, 0x5b, 0x8b, 0x69, 0x6a, 0x8f, 0x15, 0x98,
+	0x4f, 0x9e, 0xef, 0x77, 0x5d, 0xc7, 0xe7, 0xec, 0x32, 0x4c, 0x59, 0x62, 0x6b, 0x41, 0x59, 0x3c,
+	0xb8, 0x3c, 0xb3, 0x76, 0x4a, 0xdf, 0x1b, 0x48, 0x1d, 0xb5, 0xb6, 0x9c, 0xdb, 0x6e, 0x4d, 0x4a,
+	0xb3, 0xb7, 0x13, 0xc8, 0x4a, 0x88, 0x6c, 0x29, 0x17, 0x99, 0xb0, 0x9a, 0x80, 0xf6, 0x31, 0xa8,
+	0x71, 0x64, 0x9b, 0xbb, 0x1b, 0x76, 0xa7, 0xe5, 0xc8, 0x00, 0xcc, 0xc3, 0x84, 0x19, 0xae, 0xd1,
+	0xf7, 0xe9, 0x9a, 0x58, 0x8c, 0x84, 0xa5, 0xf4, 0xdc, 0x61, 0xf9, 0x41, 0x81, 0x13, 0xa9, 0xc6,
+	0x5f, 0x9a, 0xe8, 0xac, 0xc1, 0x7f, 0x87, 0x00, 0xd1, 0x06, 0x05, 0xe6, 0x38, 0x94, 0xd1, 0x58,
+	0xbd, 0x65, 0x53, 0x6c, 0x84, 0xf1, 0x2d, 0x5b, 0x7b, 0x07, 0x8e, 0x8d, 0xea, 0x90, 0x3f, 0xeb,
+	0x30, 0x81, 0x42, 0x94, 0x49, 0x39, 0xde, 0x08, 0x59, 0x6d, 0x00, 0x0b, 0xb1, 0xe3, 0x7c, 0xbf,
+	0xc7, 0x3d, 0x3f, 0x1f, 0xc5, 0xd8, 0xee, 0xe8, 0x53, 0x38, 0x9e, 0x62, 0x9e, 0x1c, 0x5a, 0x80,
+	0xa9, 0x96, 0xd8, 0xc2, 0x0b, 0x9a, 0xae, 0xc9, 0xe5, 0xf8, 0x6e, 0x60, 0x97, 0x2a, 0x67, 0xdb,
+	0x73, 0xef, 0x72, 0x2b, 0x78, 0x91, 0xae, 0x7f, 0xaf, 0xd0, 0xed, 0x0f, 0x6d, 0x93, 0xdf, 0xd7,
+	0xa0, 0xdc, 0xa5, 0x3d, 0xca, 0xcc, 0xd3, 0x69, 0x77, 0x49, 0x7a, 0x78, 0x9b, 0x91, 0xc2, 0xf8,
+	0x42, 0x73, 0x05, 0xfe, 0x17, 0x87, 0x17, 0x4f, 0xcf, 0x53, 0x00, 0x64, 0x6f, 0x18, 0x9f, 0x69,
+	0xda, 0xd9, 0xb2, 0xb5, 0xf7, 0x29, 0xa7, 0x12, 0x9a, 0xe4, 0xdb, 0x55, 0x98, 0x22, 0x41, 0x4a,
+	0xd3, 0x5c, 0xd7, 0xa4, 0xbc, 0xf6, 0x09, 0x75, 0xd1, 0x4d, 0x33, 0xb0, 0xee, 0x0c, 0xbb, 0x68,
+	0x36, 0x98, 0xb1, 0x5d, 0x57, 0xd4, 0x64, 0x23, 0xf3, 0xc3, 0x36, 0xd2, 0x10, 0x5b, 0x59, 0x6d,
+	0x04, 0xb5, 0x84, 0x3f, 0x24, 0x3d, 0xbe, 0x9b, 0x1a, 0x50, 0x9f, 0x23, 0x64, 0x9b, 0xbb, 0xa2,
+	0x90, 0x64, 0x80, 0x8e, 0xc1, 0xa4, 0xa8, 0x1b, 0x0a, 0x0e, 0xad, 0xc6, 0x16, 0x99, 0x1f, 0x15,
+	0x38, 0x99, 0x6e, 0xff, 0xa5, 0x89, 0xd0, 0x67, 0xf4, 0x0c, 0x45, 0x08, 0xb1, 0xdf, 0xbc, 0xc0,
+	0x62, 0x8f, 0xde, 0xa2, 0x51, 0x04, 0x2f, 0x4d, 0x88, 0xae, 0x50, 0x37, 0x1a, 0xda, 0xa0, 0xe8,
+	0x9c, 0x86, 0x19, 0x34, 0x56, 0xb7, 0xb9, 0xe3, 0x76, 0x28, 0x40, 0x80, 0x5b, 0x37, 0xc2, 0x9d,
+	0xe8, 0x45, 0x8a, 0x69, 0x0e, 0x5f, 0x24, 0x94, 0xcb, 0x7a, 0x91, 0x86, 0x5a, 0x42, 0x56, 0xdb,
+	0x8e, 0xca, 0xbc, 0x6d, 0x3a, 0x96, 0x8c, 0x66, 0xf8, 0x18, 0x98, 0x96, 0xe5, 0xf6, 0x9c, 0x40,
+	0xde, 0x11, 0x2d, 0x47, 0x01, 0x96, 0xf6, 0x00, 0xfc, 0x20, 0xaa, 0x5c, 0x3a, 0x91, 0xe0, 0xbd,
+	0x1e, 0x06, 0x1d, 0xb7, 0x08, 0xe0, 0x2b, 0xfb, 0x02, 0x24, 0x55, 0x19, 0x7b, 0x5c, 0x68, 0x0f,
+	0x92, 0xe7, 0xfa, 0xf9, 0x50, 0xc7, 0x95, 0x4e, 0x3f, 0x2b, 0xd1, 0x6d, 0x49, 0xd3, 0xe4, 0xd3,
+	0x9b, 0x50, 0x26, 0x78, 0x32, 0x93, 0x8a, 0x39, 0x15, 0x69, 0x8d, 0x2f, 0xa3, 0x2e, 0x02, 0x43,
+	0x8c, 0xef, 0xf5, 0xba, 0xdd, 0xf6, 0x6e, 0xe1, 0x74, 0x7a, 0xa8, 0x50, 0x02, 0x48, 0x3d, 0xf2,
+	0x6c, 0x09, 0x8e, 0x04, 0x9e, 0x69, 0x9b, 0x8d, 0x36, 0xaf, 0xfb, 0xf8, 0x89, 0x94, 0xe7, 0xe4,
+	0xb6, 0x50, 0x60, 0xaf, 0xc2, 0x9c, 0xc7, 0x83, 0x96, 0xc7, 0x6d, 0x29, 0x27, 0x52, 0xe2, 0x30,
+	0xed, 0x92, 0xd8, 0x0a, 0x1c, 0xb5, 0x42, 0x8f, 0xdb, 0x6d, 0x6e, 0xd7, 0xcd, 0x0e, 0x5e, 0xd7,
+	0x41, 0x14, 0x3c, 0x12, 0xed, 0x6f, 0xe0, 0xb6, 0x76, 0x9c, 0x9e, 0xc2, 0xeb, 0x18, 0xbf, 0x9b,
+	0xe1, 0x64, 0x4f, 0xee, 0x68, 0xb7, 0xe4, 0xfc, 0x14, 0xff, 0x44, 0x88, 0x37, 0x60, 0x56, 0x44,
+	0xbc, 0x8e, 0x64, 0x80, 0xee, 0xa3, 0x92, 0x3a, 0x97, 0x45, 0xea, 0xb5, 0x19, 0x6b, 0x78, 0x94,
+	0x36, 0x4f, 0x31, 0xdc, 0x36, 0x3d, 0xb3, 0x13, 0x19, 0xdd, 0xa2, 0x08, 0xc9, 0x5d, 0xb2, 0xb7,
+	0x06, 0x93, 0x5d, 0xdc, 0xa1, 0x74, 0x56, 0x53, 0x9f, 0x56, 0xa1, 0x43, 0x92, 0x5a, 0x1f, 0xa6,
+	0xa3, 0x99, 0x90, 0xcd, 0x41, 0x29, 0x6a, 0x81, 0xa5, 0x96, 0x3d, 0x9c, 0xcf, 0x4b, 0xf1, 0xf9,
+	0x5c, 0x85, 0x72, 0x87, 0x07, 0xa6, 0x6d, 0x06, 0x26, 0x05, 0x2c, 0x5a, 0xb3, 0xf3, 0xc0, 0x62,
+	0x2e, 0xd7, 0xcd, 0x46, 0xc3, 0xe3, 0x3b, 0x0b, 0x87, 0x50, 0xea, 0xe8, 0xd0, 0xb1, 0x0d, 0xdc,
+	0xd7, 0xbe, 0x54, 0x60, 0x26, 0xf6, 0xd4, 0x17, 0xb4, 0x1f, 0x6f, 0xd7, 0x07, 0x93, 0xed, 0x5a,
+	0x83, 0xd9, 0xbb, 0x3d, 0xaf, 0xe5, 0xdb, 0x2d, 0x0b, 0xb3, 0x57, 0x18, 0x4e, 0xec, 0x25, 0xe0,
+	0x4f, 0x24, 0xe1, 0x6b, 0xbf, 0x97, 0x60, 0x3a, 0x6a, 0x48, 0xfb, 0x3e, 0x9c, 0xc9, 0x89, 0xa3,
+	0x34, 0x3a, 0x71, 0xcc, 0xc3, 0x84, 0xc8, 0x6d, 0x01, 0x4e, 0x2c, 0x12, 0x66, 0x0f, 0x8d, 0x44,
+	0xed, 0x2a, 0x80, 0x1f, 0x98, 0x5e, 0x50, 0xb7, 0xcd, 0x80, 0x23, 0xa8, 0xf0, 0xf2, 0x04, 0x83,
+	0xd5, 0x25, 0x83, 0xd5, 0x6f, 0x4a, 0x06, 0x5b, 0x9b, 0x46, 0xe9, 0x1b, 0x66, 0xc0, 0xd9, 0x45,
+	0x28, 0x73, 0xc7, 0x16, 0x8a, 0x93, 0xb9, 0x8a, 0x53, 0xdc, 0xb1, 0x51, 0xed, 0x0d, 0x38, 0x1c,
+	0x3a, 0x13, 0xe6, 0xb9, 0xd0, 0x9d, 0xca, 0xd5, 0x9d, 0x95, 0x0a, 0x78, 0x00, 0x83, 0x43, 0x6e,
+	0x97, 0x3b, 0x0b, 0xe5, 0x45, 0x65, 0xb9, 0x5c, 0xc3, 0xdf, 0xe1, 0x23, 0x77, 0x74, 0xb4, 0xb1,
+	0x60, 0x33, 0xb4, 0x6d, 0x8f, 0x13, 0x2f, 0x09, 0x9b, 0xa1, 0x58, 0xe6, 0xf6, 0xed, 0x30, 0x64,
+	0xb2, 0xb4, 0x65, 0xa2, 0xc9, 0x75, 0x78, 0x2c, 0x95, 0x33, 0x45, 0x53, 0x2e, 0x43, 0x2d, 0xee,
+	0x5b, 0x9e, 0x7b, 0x9f, 0xdb, 0xf2, 0x7e, 0xe5, 0x7a, 0xed, 0x21, 0x83, 0x09, 0xac, 0x1c, 0xf6,
+	0xb9, 0x02, 0x53, 0xc4, 0x0b, 0xd9, 0x52, 0x5a, 0x9d, 0xa4, 0x10, 0x76, 0x75, 0x39, 0x5f, 0x50,
+	0x94, 0xa2, 0xf6, 0xff, 0x2f, 0xfe, 0xfc, 0xe7, 0x51, 0xe9, 0x14, 0x3b, 0x61, 0xa4, 0xfc, 0x6b,
+	0x40, 0xf2, 0xc8, 0x5f, 0x15, 0x98, 0x4b, 0x72, 0x53, 0xa6, 0xe7, 0x59, 0x48, 0x32, 0x68, 0xd5,
+	0x28, 0x2c, 0x4f, 0xc0, 0xaa, 0x08, 0xec, 0x1c, 0x5b, 0xc9, 0x00, 0x66, 0x60, 0x9d, 0x19, 0x7d,
+	0xfc, 0x33, 0x60, 0x5f, 0x2b, 0xf1, 0x1e, 0xb1, 0x92, 0x6d, 0x31, 0x36, 0x39, 0xa8, 0x67, 0x8b,
+	0x88, 0x12, 0x2e, 0x1d, 0x71, 0x2d, 0xb3, 0x33, 0x59, 0xb8, 0xfa, 0xb2, 0xee, 0x07, 0xec, 0x17,
+	0x05, 0x66, 0xe3, 0xa4, 0x91, 0x9d, 0xcf, 0x31, 0x96, 0xa0, 0xb6, 0xea, 0x6a, 0x41, 0x69, 0x42,
+	0x77, 0x09, 0xd1, 0x5d, 0x60, 0x7a, 0x31, 0x74, 0x86, 0xe4, 0xa9, 0x8f, 0x15, 0x28, 0x4b, 0x7a,
+	0xc7, 0xf6, 0xcf, 0x9e, 0x11, 0xf6, 0xa9, 0xae, 0x14, 0x90, 0x24, 0x64, 0x97, 0x11, 0x59, 0x95,
+	0x19, 0x05, 0x91, 0x45, 0x3c, 0xf1, 0xbb, 0x91, 0xde, 0x7b, 0x2e, 0xcf, 0x66, 0xfc, 0x66, 0xcf,
+	0x17, 0x13, 0x2e, 0x92, 0x73, 0x12, 0x90, 0xd1, 0x1f, 0xf6, 0xd4, 0x01, 0xfb, 0x56, 0x81, 0x29,
+	0x1a, 0x95, 0x33, 0xca, 0x33, 0xc9, 0x04, 0x33, 0xca, 0x73, 0x84, 0xb3, 0x69, 0x57, 0x11, 0xd1,
+	0x3a, 0xab, 0x16, 0x46, 0x64, 0xc8, 0x81, 0xfb, 0x37, 0x05, 0x8e, 0x8c, 0x10, 0x1d, 0x66, 0xe4,
+	0x19, 0x1e, 0xa1, 0x64, 0xea, 0x85, 0xe2, 0x0a, 0x84, 0x78, 0x1d, 0x11, 0xaf, 0xb2, 0x73, 0x69,
+	0x88, 0x09, 0x1b, 0xa5, 0x9d, 0xd1, 0x17, 0x7f, 0x07, 0x21, 0xd6, 0xb9, 0x24, 0xe1, 0xc8, 0x68,
+	0x30, 0xa9, 0xdc, 0x48, 0x35, 0x0a, 0xcb, 0x3f, 0x67, 0xa9, 0xc8, 0xb8, 0x7e, 0xa3, 0xc4, 0x9f,
+	0xde, 0x95, 0x6c, 0xb3, 0xc5, 0xba, 0xcc, 0x1e, 0x42, 0x92, 0x9d, 0x89, 0x32, 0x8a, 0xfd, 0xd8,
+	0xab, 0x34, 0x60, 0x3f, 0x61, 0x26, 0xe2, 0x7b, 0x96, 0x99, 0x89, 0x71, 0xb2, 0x92, 0x99, 0x89,
+	0x09, 0x0e, 0xa2, 0x5d, 0x47, 0x44, 0xaf, 0xb1, 0x6b, 0x85, 0x11, 0x19, 0x34, 0xa9, 0x1b, 0x7d,
+	0x62, 0x15, 0x03, 0xf6, 0x95, 0x02, 0x65, 0xc9, 0x04, 0x58, 0xae, 0xed, 0x02, 0x6d, 0x66, 0x94,
+	0x56, 0x64, 0xb7, 0x67, 0x49, 0x1d, 0x62, 0x88, 0x1e, 0x29, 0x30, 0x49, 0x73, 0xf6, 0x99, 0x7d,
+	0xad, 0x24, 0x88, 0x81, 0xba, 0x94, 0x2b, 0x47, 0x58, 0xae, 0x20, 0x96, 0x35, 0x76, 0xa1, 0x78,
+	0xc8, 0x04, 0x0f, 0x08, 0x5f, 0xb2, 0x99, 0xd8, 0xa0, 0x9e, 0xd1, 0xf3, 0xf6, 0x4e, 0xfa, 0x19,
+	0x3d, 0x2f, 0x65, 0xf6, 0xd7, 0x96, 0x11, 0xa4, 0xc6, 0x16, 0x53, 0xcb, 0x00, 0x7f, 0xad, 0x22,
+	0x2b, 0x60, 0x03, 0x98, 0x14, 0x33, 0x79, 0x46, 0xa4, 0x12, 0xe3, 0x7f, 0x46, 0xa4, 0x92, 0x84,
+	0x40, 0xd3, 0x10, 0xc4, 0x49, 0xa6, 0xa6, 0xb6, 0x39, 0x94, 0xdd, 0xdc, 0xfe, 0xe3, 0x69, 0x45,
+	0x79, 0xf2, 0xb4, 0xa2, 0xfc, 0xfd, 0xb4, 0xa2, 0x3c, 0x7c, 0x56, 0x39, 0xf0, 0xe4, 0x59, 0xe5,
+	0xc0, 0x5f, 0xcf, 0x2a, 0x07, 0x3e, 0xbc, 0xd4, 0x6c, 0x05, 0x77, 0x7a, 0x0d, 0xdd, 0x72, 0x3b,
+	0x42, 0x7f, 0xd5, 0xe1, 0xc1, 0x7d, 0xd7, 0xfb, 0x88, 0x56, 0x6d, 0x6e, 0x37, 0xb9, 0x67, 0x3c,
+	0x88, 0x1d, 0x6b, 0xb9, 0x1e, 0x6f, 0x4c, 0xe2, 0xf0, 0xb8, 0xfe, 0x6f, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x8e, 0x2e, 0xc7, 0x7d, 0xd5, 0x19, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2523,9 +2900,9 @@ func (m *QueryClassInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if m.Info != nil {
+	if m.Class != nil {
 		{
-			size, err := m.Info.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Class.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -2765,9 +3142,9 @@ func (m *QueryProjectInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	_ = i
 	var l int
 	_ = l
-	if m.Info != nil {
+	if m.Project != nil {
 		{
-			size, err := m.Info.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Project.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -3103,9 +3480,9 @@ func (m *QueryBatchInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if m.Info != nil {
+	if m.Batch != nil {
 		{
-			size, err := m.Info.MarshalToSizedBuffer(dAtA[:i])
+			size, err := m.Batch.MarshalToSizedBuffer(dAtA[:i])
 			if err != nil {
 				return 0, err
 			}
@@ -3473,6 +3850,270 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *ClassInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ClassInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ClassInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CreditTypeAbbrev) > 0 {
+		i -= len(m.CreditTypeAbbrev)
+		copy(dAtA[i:], m.CreditTypeAbbrev)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.CreditTypeAbbrev)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Metadata)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Admin)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ProjectInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ProjectInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ProjectInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Metadata)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Jurisdiction) > 0 {
+		i -= len(m.Jurisdiction)
+		copy(dAtA[i:], m.Jurisdiction)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Jurisdiction)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.ClassId) > 0 {
+		i -= len(m.ClassId)
+		copy(dAtA[i:], m.ClassId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ClassId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Admin) > 0 {
+		i -= len(m.Admin)
+		copy(dAtA[i:], m.Admin)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Admin)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BatchInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BatchInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Open {
+		i--
+		if m.Open {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.IssuanceDate != nil {
+		{
+			size, err := m.IssuanceDate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x3a
+	}
+	if m.EndDate != nil {
+		{
+			size, err := m.EndDate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x32
+	}
+	if m.StartDate != nil {
+		{
+			size, err := m.StartDate.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Metadata)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.ProjectId) > 0 {
+		i -= len(m.ProjectId)
+		copy(dAtA[i:], m.ProjectId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ProjectId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Issuer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *BatchBalanceInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *BatchBalanceInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *BatchBalanceInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Escrowed) > 0 {
+		i -= len(m.Escrowed)
+		copy(dAtA[i:], m.Escrowed)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Escrowed)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Retired) > 0 {
+		i -= len(m.Retired)
+		copy(dAtA[i:], m.Retired)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Retired)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.Tradable) > 0 {
+		i -= len(m.Tradable)
+		copy(dAtA[i:], m.Tradable)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Tradable)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -3571,8 +4212,8 @@ func (m *QueryClassInfoResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Info != nil {
-		l = m.Info.Size()
+	if m.Class != nil {
+		l = m.Class.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3669,8 +4310,8 @@ func (m *QueryProjectInfoResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Info != nil {
-		l = m.Info.Size()
+	if m.Project != nil {
+		l = m.Project.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3803,8 +4444,8 @@ func (m *QueryBatchInfoResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Info != nil {
-		l = m.Info.Size()
+	if m.Batch != nil {
+		l = m.Batch.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -3951,6 +4592,129 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	if m.Params != nil {
 		l = m.Params.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *ClassInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.CreditTypeAbbrev)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *ProjectInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Admin)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.ClassId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Jurisdiction)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *BatchInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Issuer)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.ProjectId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.StartDate != nil {
+		l = m.StartDate.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.EndDate != nil {
+		l = m.EndDate.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.IssuanceDate != nil {
+		l = m.IssuanceDate.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Open {
+		n += 2
+	}
+	return n
+}
+
+func (m *BatchBalanceInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Tradable)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Retired)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Escrowed)
+	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
@@ -4519,7 +5283,7 @@ func (m *QueryClassInfoResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Info", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Class", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4546,10 +5310,10 @@ func (m *QueryClassInfoResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Info == nil {
-				m.Info = &ClassInfo{}
+			if m.Class == nil {
+				m.Class = &ClassInfo{}
 			}
-			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Class.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5161,7 +5925,7 @@ func (m *QueryProjectInfoResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Info", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Project", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -5188,10 +5952,10 @@ func (m *QueryProjectInfoResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Info == nil {
-				m.Info = &ProjectInfo{}
+			if m.Project == nil {
+				m.Project = &ProjectInfo{}
 			}
-			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Project.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -6043,7 +6807,7 @@ func (m *QueryBatchInfoResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Info", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Batch", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -6070,10 +6834,10 @@ func (m *QueryBatchInfoResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.Info == nil {
-				m.Info = &BatchInfo{}
+			if m.Batch == nil {
+				m.Batch = &BatchInfo{}
 			}
-			if err := m.Info.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Batch.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -6271,7 +7035,7 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Balance == nil {
-				m.Balance = &BatchBalance{}
+				m.Balance = &BatchBalanceInfo{}
 			}
 			if err := m.Balance.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -6474,7 +7238,7 @@ func (m *QueryBalancesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Balances = append(m.Balances, &BatchBalance{})
+			m.Balances = append(m.Balances, &BatchBalanceInfo{})
 			if err := m.Balances[len(m.Balances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -7012,6 +7776,910 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ClassInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ClassInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ClassInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditTypeAbbrev", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CreditTypeAbbrev = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ProjectInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ProjectInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClassId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Jurisdiction", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Jurisdiction = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BatchInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BatchInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BatchInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Metadata = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.StartDate == nil {
+				m.StartDate = &types.Timestamp{}
+			}
+			if err := m.StartDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.EndDate == nil {
+				m.EndDate = &types.Timestamp{}
+			}
+			if err := m.EndDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IssuanceDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.IssuanceDate == nil {
+				m.IssuanceDate = &types.Timestamp{}
+			}
+			if err := m.IssuanceDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Open", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Open = bool(v != 0)
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *BatchBalanceInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: BatchBalanceInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: BatchBalanceInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Tradable", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Tradable = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Retired", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Retired = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Escrowed", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Escrowed = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

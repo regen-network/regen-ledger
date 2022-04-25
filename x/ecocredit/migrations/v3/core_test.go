@@ -19,6 +19,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regenorm "github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
 )
 
@@ -72,9 +73,9 @@ func TestMigrations(t *testing.T) {
 
 	startDate := sdkCtx.BlockTime().UTC()
 	endDate := startDate.AddDate(2, 0, 0)
-	bd1, _ := ecocredit.FormatDenom("C01", 1, &startDate, &endDate)
-	bd2, _ := ecocredit.FormatDenom("C01", 2, &startDate, &endDate)
-	bd3, _ := ecocredit.FormatDenom("C01", 3, &startDate, &endDate)
+	bd1, _ := core.FormatDenom("C01", 1, &startDate, &endDate)
+	bd2, _ := core.FormatDenom("C01", 2, &startDate, &endDate)
+	bd3, _ := core.FormatDenom("C01", 3, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd1,
@@ -151,7 +152,7 @@ func TestMigrations(t *testing.T) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
 	// verify credit class data
-	res, err := ss.ClassInfoTable().GetById(ctx, "C01")
+	res, err := ss.ClassTable().GetById(ctx, "C01")
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.Admin, admin1.Bytes())
@@ -174,7 +175,7 @@ func TestMigrations(t *testing.T) {
 	itr.Close()
 
 	// verify project migration
-	res1, err := ss.ProjectInfoTable().Get(ctx, 1)
+	res1, err := ss.ProjectTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
 	require.Equal(t, res1.Id, "C0101")

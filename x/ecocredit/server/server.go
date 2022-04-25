@@ -7,8 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/ormstore"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -80,6 +81,10 @@ type serverImpl struct {
 
 	db         ormdb.ModuleDB
 	stateStore api.StateStore
+}
+
+func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
+	return s.coreKeeper.AddCreditType(ctx, ctp)
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -247,7 +252,7 @@ func RegisterServices(
 	accountKeeper ecocredit.AccountKeeper,
 	bankKeeper ecocredit.BankKeeper,
 	distKeeper ecocredit.DistributionKeeper,
-) ecocredit.Keeper {
+) Keeper {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, distKeeper, configurator.Marshaler())
 
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
@@ -265,8 +270,7 @@ func RegisterServices(
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterMigrationHandler(impl.RunMigrations)
 
-	// TODO: uncomment when sims are refactored https://github.com/regen-network/regen-ledger/issues/920
-	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	return impl
 }

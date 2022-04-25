@@ -16,8 +16,8 @@ import (
 
 const (
 	// ModuleName is the module name constant used in many places
-	ModuleName = "ecocredit"
-
+	ModuleName        = "ecocredit"
+	RouterKey         = ModuleName
 	DefaultParamspace = ModuleName
 
 	TradableBalancePrefix    byte = 0x0
@@ -140,35 +140,6 @@ func SubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 
 	SetDecimal(store, key, value)
 	return nil
-}
-
-// IterateSupplies iterates over supplies and calls the specified callback function `cb`
-func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
-		if err != nil {
-			return err
-		}
-		if stop {
-			break
-		}
-	}
-
-	return nil
-}
-
-// IterateBalances iterates over balances and calls the specified callback function `cb`
-func IterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		addr, denom := ParseBalanceKey(iter.Key())
-		if cb(addr.String(), string(denom), string(iter.Value())) {
-			break
-		}
-	}
 }
 
 var ModuleSchema = ormapi.ModuleSchemaDescriptor{

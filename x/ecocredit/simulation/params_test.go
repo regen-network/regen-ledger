@@ -30,6 +30,15 @@ func TestParamChanges(t *testing.T) {
 	)
 	require.NoError(t, err)
 
+	bz1, err := json.Marshal([]*core.AskDenom{
+		{
+			Denom:        "stake",
+			DisplayDenom: "stake",
+			Exponent:     18,
+		},
+	})
+	require.NoError(t, err)
+
 	expected := []struct {
 		composedKey string
 		key         string
@@ -40,11 +49,11 @@ func TestParamChanges(t *testing.T) {
 		{"ecocredit/AllowlistEnabled", "AllowlistEnabled", "true", "ecocredit"},
 		{"ecocredit/AllowedClassCreators", "AllowedClassCreators", "[\"cosmos10z82e5ztmrm4pujgummvmr7aqjzwlp6ga9ams9\"]", "ecocredit"},
 		{"ecocredit/CreditTypes", "CreditTypes", string(bz), "ecocredit"},
+		{"ecocredit/AllowedAskDenoms", "AllowedAskDenoms", string(bz1), "ecocredit"},
 	}
 
 	paramChanges := simulation.ParamChanges(r)
-
-	require.Len(t, paramChanges, 4)
+	require.Len(t, paramChanges, 5)
 
 	for i, p := range paramChanges {
 		require.Equal(t, expected[i].composedKey, p.ComposedKey())

@@ -25,3 +25,11 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateProjectAdmin{}, "regen.core/MsgUpdateProjectAdmin", nil)
 	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen.core/MsgUpdateProjectMetadata", nil)
 }
+
+var (
+	amino = codec.NewLegacyAmino()
+)
+
+func init() {
+	RegisterLegacyAminoCodec(amino)
+}

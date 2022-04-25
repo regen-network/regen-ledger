@@ -5,13 +5,13 @@ import (
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	ormerrors "github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	orm "github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 type batchMapT struct {
@@ -63,13 +63,13 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		dest := api.ClassInfo{
+		dest := api.Class{
 			Id:               classInfo.ClassId,
 			Admin:            admin,
 			Metadata:         string(classInfo.Metadata),
 			CreditTypeAbbrev: classInfo.CreditType.Abbreviation,
 		}
-		classKey, err := ss.ClassInfoTable().InsertReturningID(ctx, &dest)
+		classKey, err := ss.ClassTable().InsertReturningID(ctx, &dest)
 		if err != nil {
 			return err
 		}
@@ -149,7 +149,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		if err != nil {
 			return err
 		}
-		pItr, err := ss.ProjectInfoTable().List(ctx, api.ProjectInfoAdminIndexKey{}.WithAdmin(admin.Bytes()))
+		pItr, err := ss.ProjectTable().List(ctx, api.ProjectAdminIndexKey{}.WithAdmin(admin.Bytes()))
 		if err != nil {
 			return err
 		}
@@ -182,8 +182,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			}
 
 			id := FormatProjectID(batchInfo.ClassId, projectSeq)
-			key, err := ss.ProjectInfoTable().InsertReturningID(ctx,
-				&api.ProjectInfo{
+			key, err := ss.ProjectTable().InsertReturningID(ctx,
+				&api.Project{
 					Id:                  id,
 					Admin:               admin,
 					ClassKey:            classKey,
@@ -197,21 +197,21 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			projectKey = key
 		}
 
-		bInfo := api.BatchInfo{
+		bInfo := api.Batch{
 			ProjectKey:   projectKey,
-			BatchDenom:   batchInfo.BatchDenom,
+			Denom:        batchInfo.BatchDenom,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
 			IssuanceDate: nil,
 		}
 
-		bID, err := ss.BatchInfoTable().InsertReturningID(ctx, &bInfo)
+		bID, err := ss.BatchTable().InsertReturningID(ctx, &bInfo)
 		if err != nil {
 			return err
 		}
 
-		batchDenomToBatchMap[bInfo.BatchDenom] = batchMapT{
+		batchDenomToBatchMap[bInfo.Denom] = batchMapT{
 			Id:              bID,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}

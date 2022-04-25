@@ -15,3 +15,11 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPut{}, "regen.basket/MsgPut", nil)
 	cdc.RegisterConcrete(&MsgTake{}, "regen.basket/MsgTake", nil)
 }
+
+var (
+	amino = codec.NewLegacyAmino()
+)
+
+func init() {
+	RegisterLegacyAminoCodec(amino)
+}

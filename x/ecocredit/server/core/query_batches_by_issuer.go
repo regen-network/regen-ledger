@@ -3,13 +3,14 @@ package core
 import (
 	"context"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/ormutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // BatchesByIssuer queries all batches issued from the given issuer address
@@ -24,7 +25,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchInfoTable().List(ctx, ecocreditv1.BatchInfoIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchIssuerIndexKey{}.WithIssuer(issuer), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +33,28 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 	batches := make([]*core.BatchInfo, 0, 8)
 
 	for it.Next() {
-		v, err := it.Value()
+		batch, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var batch core.BatchInfo
-		if err = ormutil.PulsarToGogoSlow(v, &batch); err != nil {
+
+		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
+		if err != nil {
 			return nil, err
 		}
-		batches = append(batches, &batch)
+
+		info := core.BatchInfo{
+			Issuer:       req.Issuer,
+			ProjectId:    project.Id,
+			Denom:        batch.Denom,
+			Metadata:     batch.Metadata,
+			StartDate:    types.ProtobufToGogoTimestamp(batch.StartDate),
+			EndDate:      types.ProtobufToGogoTimestamp(batch.EndDate),
+			IssuanceDate: types.ProtobufToGogoTimestamp(batch.IssuanceDate),
+			Open:         batch.Open,
+		}
+
+		batches = append(batches, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
