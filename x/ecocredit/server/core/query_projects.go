@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -16,33 +17,49 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 	if err != nil {
 		return nil, err
 	}
+
 	cInfo, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
 	}
+
 	it, err := k.stateStore.ProjectTable().List(ctx, api.ProjectClassKeyIdIndexKey{}.WithClassKey(cInfo.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
-	projectInfos := make([]*core.Project, 0)
+
+	projects := make([]*core.ProjectInfo, 0)
 	for it.Next() {
-		info, err := it.Value()
+		project, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var pi core.Project
-		if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
+		admin := sdk.AccAddress(project.Admin)
+
+		class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
+		if err != nil {
 			return nil, err
 		}
-		projectInfos = append(projectInfos, &pi)
+
+		info := core.ProjectInfo{
+			Id:           project.Id,
+			Admin:        admin.String(),
+			ClassId:      class.Id,
+			Jurisdiction: project.ProjectJurisdiction,
+			Metadata:     project.Metadata,
+		}
+
+		projects = append(projects, &info)
 	}
+
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
+
 	return &core.QueryProjectsResponse{
-		Projects:   projectInfos,
+		Projects:   projects,
 		Pagination: pr,
 	}, nil
 }

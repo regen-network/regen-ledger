@@ -45,7 +45,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	batchDenom, err := ecocredit.FormatDenom(classInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := core.FormatDenom(classInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}

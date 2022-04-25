@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -16,30 +17,38 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 	if err != nil {
 		return nil, err
 	}
+
 	it, err := k.stateStore.ClassTable().List(ctx, &api.ClassPrimaryKey{}, ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	infos := make([]*core.Class, 0)
+	classes := make([]*core.ClassInfo, 0)
 	for it.Next() {
-		info, err := it.Value()
+		class, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var ci core.Class
-		if err = ormutil.PulsarToGogoSlow(info, &ci); err != nil {
-			return nil, err
+		admin := sdk.AccAddress(class.Admin)
+
+		info := core.ClassInfo{
+			Id:               class.Id,
+			Admin:            admin.String(),
+			Metadata:         class.Metadata,
+			CreditTypeAbbrev: class.CreditTypeAbbrev,
 		}
-		infos = append(infos, &ci)
+
+		classes = append(classes, &info)
 	}
+
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
+
 	return &core.QueryClassesResponse{
-		Classes:    infos,
+		Classes:    classes,
 		Pagination: pr,
 	}, err
 }

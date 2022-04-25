@@ -1,4 +1,3 @@
-// DONTCOVER
 package simulation
 
 import (
@@ -60,6 +59,16 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyCreditTypes),
 			func(r *rand.Rand) string {
 				bz, err := json.Marshal(genCreditTypes(r))
+				if err != nil {
+					panic(err)
+				}
+				return string(bz)
+			},
+		),
+
+		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyAllowedAskDenoms),
+			func(r *rand.Rand) string {
+				bz, err := json.Marshal(genAskDenoms())
 				if err != nil {
 					panic(err)
 				}

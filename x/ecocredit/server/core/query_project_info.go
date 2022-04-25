@@ -3,20 +3,32 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/types/ormutil"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // ProjectInfo queries project info from the given project name.
 func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoRequest) (*core.QueryProjectInfoResponse, error) {
-	info, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
+	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
 	}
 
-	var pi core.Project
-	if err = ormutil.PulsarToGogoSlow(info, &pi); err != nil {
+	admin := sdk.AccAddress(project.Admin)
+
+	class, err := k.stateStore.ClassTable().Get(ctx, project.ClassKey)
+	if err != nil {
 		return nil, err
 	}
-	return &core.QueryProjectInfoResponse{Project: &pi}, nil
+
+	info := core.ProjectInfo{
+		Id:           project.Id,
+		Admin:        admin.String(),
+		ClassId:      class.Id,
+		Jurisdiction: project.ProjectJurisdiction,
+		Metadata:     project.Metadata,
+	}
+
+	return &core.QueryProjectInfoResponse{Project: &info}, nil
 }

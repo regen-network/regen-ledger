@@ -70,7 +70,7 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	classID := ecocredit.FormatClassID(creditType.Abbreviation, seq)
+	classID := core.FormatClassID(creditType.Abbreviation, seq)
 
 	key, err := k.stateStore.ClassTable().InsertReturningID(goCtx, &api.Class{
 		Id:               classID,
