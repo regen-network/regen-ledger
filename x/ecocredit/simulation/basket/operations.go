@@ -219,7 +219,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		rBasket := baskets[r.Intn(len(baskets))]
-		var classInfoList []core.Class
+		var classInfoList []core.ClassInfo
 		max := 0
 
 		var ownerAddr string
@@ -284,9 +284,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 				batches := batchesRes.Batches
 				if len(batches) != 0 {
 					count := 0
-					for _, item := range batches {
+					for _, batch := range batches {
 						balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-							Account: ownerAddr, BatchDenom: item.Denom,
+							Account: ownerAddr, BatchDenom: batch.Denom,
 						})
 						if err != nil {
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
@@ -306,14 +306,14 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 							if dInt == 1 {
 								credits = append(credits, &basket.BasketCredit{
-									BatchDenom: item.Denom,
+									BatchDenom: batch.Denom,
 									Amount:     "1",
 								})
 								count++
 							} else {
 								amt := simtypes.RandIntBetween(r, 1, int(dInt))
 								credits = append(credits, &basket.BasketCredit{
-									BatchDenom: item.Denom,
+									BatchDenom: batch.Denom,
 									Amount:     fmt.Sprintf("%d", amt),
 								})
 								count++

@@ -7,7 +7,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 const (
@@ -34,10 +36,10 @@ func (m MsgCreate) ValidateBasic() error {
 	if !reName.MatchString(m.Name) {
 		return errBadReq.Wrapf("name must start with an alphabetic character, and be between %d and %d alphanumeric characters long", nameMinLen, nameMaxLen)
 	}
-	if _, err := ecocredit.ExponentToPrefix(m.Exponent); err != nil {
+	if _, err := core.ExponentToPrefix(m.Exponent); err != nil {
 		return err
 	}
-	if err := ecocredit.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
+	if err := core.ValidateCreditTypeAbbreviation(m.CreditTypeAbbrev); err != nil {
 		return err
 	}
 	if err := validateDateCriteria(m.DateCriteria); err != nil {
@@ -112,7 +114,7 @@ func validateDateCriteria(d *DateCriteria) error {
 // Returns error if MsgCrete.Exponent is not supported
 func BasketDenom(name, creditTypeAbbrev string, exponent uint32) (string, string, error) {
 	const basketDenomPrefix = "eco."
-	denomPrefix, err := ecocredit.ExponentToPrefix(exponent)
+	denomPrefix, err := core.ExponentToPrefix(exponent)
 	if err != nil {
 		return "", "", err
 	}

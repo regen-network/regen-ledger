@@ -181,7 +181,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectErr      bool
 		expectedErrMsg string
 		respCode       uint32
-		expectedClass  *core.Class
+		expectedClass  *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -205,8 +205,8 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()))...),
 			expectErr: false,
-			expectedClass: &core.Class{
-				Admin:            val0.Address,
+			expectedClass: &core.ClassInfo{
+				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
@@ -215,8 +215,8 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:      "single issuer with from key-name",
 			args:      makeCreateClassArgs([]string{val0.Address.String()}, validCreditTypeAbbrev, validMetadata, feeStr, append(s.commonTxFlags(), makeFlagFrom("node0"))...),
 			expectErr: false,
-			expectedClass: &core.Class{
-				Admin:            val0.Address,
+			expectedClass: &core.ClassInfo{
+				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
@@ -227,8 +227,8 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				append(s.commonTxFlags(), makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON))...),
 			expectErr: false,
-			expectedClass: &core.Class{
-				Admin:            val0.Address,
+			expectedClass: &core.ClassInfo{
+				Admin:            val0.Address.String(),
 				Metadata:         validMetadata,
 				CreditTypeAbbrev: validCreditTypeAbbrev,
 			},
@@ -340,7 +340,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectErr       bool
 		errInTxResponse bool
 		expectedErrMsg  string
-		expectedBatch   *core.Batch
+		expectedBatch   *core.BatchInfo
 	}{
 		{
 			name:           "missing args",
@@ -387,8 +387,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatch: &core.Batch{
-				Issuer: val.Address,
+			expectedBatch: &core.BatchInfo{
+				Issuer: val.Address.String(),
 			},
 		},
 		{
@@ -401,8 +401,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatch: &core.Batch{
-				Issuer: val.Address,
+			expectedBatch: &core.BatchInfo{
+				Issuer: val.Address.String(),
 			},
 		},
 		{
@@ -416,8 +416,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr: false,
-			expectedBatch: &core.Batch{
-				Issuer: val.Address,
+			expectedBatch: &core.BatchInfo{
+				Issuer: val.Address.String(),
 			},
 		},
 	}
@@ -832,7 +832,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 				s.Require().NoError(err)
 
 				// check the admin has been changed
-				s.Require().Equal(sdk.AccAddress(res.Class.Admin).String(), tc.args[1])
+				s.Require().Equal(res.Class.Admin, tc.args[1])
 			}
 		})
 	}

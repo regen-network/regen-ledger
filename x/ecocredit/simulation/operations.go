@@ -820,7 +820,7 @@ func getClassIssuers(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, 
 	return classIssuers.Issuers, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.Project, simtypes.OperationMsg, error) {
+func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.ProjectInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{
 		ClassId: classID,
 	})
@@ -836,7 +836,7 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient c
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.Batch, simtypes.OperationMsg, error) {
+func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{
 		ProjectId: projectID,
 	})

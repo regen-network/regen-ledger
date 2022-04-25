@@ -3,16 +3,16 @@ package core
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-
-	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*core.QueryBalancesResponse, error) {
-	acc, err := sdk.AccAddressFromBech32(req.Account)
+	addr, err := sdk.AccAddressFromBech32(req.Account)
 	if err != nil {
 		return nil, err
 	}
@@ -22,22 +22,29 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceAddressBatchKeyIndexKey{}.WithAddress(acc), ormlist.Paginate(pg))
+	it, err := k.stateStore.BatchBalanceTable().List(ctx, api.BatchBalanceAddressBatchKeyIndexKey{}.WithAddress(addr), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
 
-	balances := make([]*core.BatchBalance, 0, 8) // pre-allocate some cap space
+	balances := make([]*core.BatchBalanceInfo, 0, 8) // pre-allocate some cap space
 	for it.Next() {
-		v, err := it.Value()
+		balance, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var bal core.BatchBalance
-		if err = ormutil.PulsarToGogoSlow(v, &bal); err != nil {
-			return nil, err
+
+		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
+
+		info := core.BatchBalanceInfo{
+			Address:    addr.String(),
+			BatchDenom: batch.Denom,
+			Tradable:   balance.Tradable,
+			Retired:    balance.Retired,
+			Escrowed:   balance.Escrowed,
 		}
-		balances = append(balances, &bal)
+
+		balances = append(balances, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
