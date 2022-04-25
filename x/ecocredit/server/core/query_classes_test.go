@@ -14,36 +14,29 @@ import (
 func TestQuery_Classes(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	err := s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
+
+	class := &api.Class{
 		Id:               "C01",
 		Admin:            s.addr,
-		Metadata:         "",
+		Metadata:         "data",
 		CreditTypeAbbrev: "C",
-	})
-	assert.NilError(t, err)
-	err = s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
-		Id:               "C02",
-		Admin:            s.addr,
-		Metadata:         "",
-		CreditTypeAbbrev: "C",
-	})
-	assert.NilError(t, err)
+	}
 
-	// requesting all
-	res, err := s.k.Classes(s.ctx, &core.QueryClassesRequest{})
-	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.Classes))
-	assert.Equal(t, "C01", res.Classes[0].Id)
-	assert.Equal(t, "C02", res.Classes[1].Id)
+	// insert two credit classes
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, class))
+	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
+		Id: "C02",
+	}))
 
-	// request with pagination
-	res, err = s.k.Classes(s.ctx, &core.QueryClassesRequest{Pagination: &query.PageRequest{
-		Limit:      1,
-		CountTotal: true,
-		Reverse:    true,
-	}})
+	// query all credit classes
+	res, err := s.k.Classes(s.ctx, &core.QueryClassesRequest{
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
+	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.Classes))
+	assert.Equal(t, class.Id, res.Classes[0].Id)
+	assert.Equal(t, s.addr.String(), res.Classes[0].Admin)
+	assert.Equal(t, class.Metadata, res.Classes[0].Metadata)
+	assert.Equal(t, class.CreditTypeAbbrev, res.Classes[0].CreditTypeAbbrev)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
-	assert.Equal(t, "C02", res.Classes[0].Id)
 }
