@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.marketplace.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "regen/ecocredit/marketplace/v1/state.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
@@ -49,18 +50,21 @@ service Query {
 
 // QuerySellOrderRequest is the Query/SellOrder request type.
 message QuerySellOrderRequest {
+
   // sell_order_id is the id of the requested sell order.
   uint64 sell_order_id = 1;
 }
 
 // QuerySellOrderResponse is the Query/SellOrder response type.
 message QuerySellOrderResponse {
+
   // sell_order contains all information related to a sell order.
-  SellOrder sell_order = 1;
+  SellOrderInfo sell_order = 1;
 }
 
 // QuerySellOrdersRequest is the Query/SellOrders request type.
 message QuerySellOrdersRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -69,7 +73,7 @@ message QuerySellOrdersRequest {
 message QuerySellOrdersResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -89,7 +93,7 @@ message QuerySellOrdersByBatchDenomRequest {
 message QuerySellOrdersByBatchDenomResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -111,7 +115,7 @@ message QuerySellOrdersByAddressRequest {
 message QuerySellOrdersByAddressResponse {
 
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrderInfo sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -119,6 +123,7 @@ message QuerySellOrdersByAddressResponse {
 
 // QueryAllowedDenomsRequest is the Query/AllowedDenoms request type.
 message QueryAllowedDenomsRequest {
+
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -132,4 +137,37 @@ message QueryAllowedDenomsResponse {
 
   // pagination defines an optional pagination for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// SellOrderInfo is the human-readable sell order information.
+message SellOrderInfo {
+
+  // id is the unique ID of sell order.
+  uint64 id = 1;
+
+  // seller is the account address of the owner of the credits being sold.
+  string seller = 2;
+
+  // batch_denom is denom of the credit batch being sold.
+  string batch_denom = 3;
+
+  // quantity is the decimal quantity of credits being sold.
+  string quantity = 4;
+
+  // ask_denom is the denom used in the ask price of the sell order.
+  string ask_denom = 5;
+
+  // ask_price is the integer price (encoded as a string) the seller is asking
+  // for each unit of the batch_denom. Each credit unit of the batch will be
+  // sold for at least the ask_price or more.
+  string ask_price = 6;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 7;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 9;
 }

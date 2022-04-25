@@ -981,6 +981,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				Quantity:          "5",
 				AskPrice:          "100",
 				DisableAutoRetire: false,
+				Expiration:        &gogotypes.Timestamp{},
 			},
 		},
 		{
@@ -1033,7 +1034,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 								s.Require().Equal(queryRes.SellOrder.Quantity, tc.expOrder.Quantity)
 								s.Require().Equal(tc.expOrder.DisableAutoRetire, queryRes.SellOrder.DisableAutoRetire)
-								s.Require().True(tc.expOrder.Expiration.Equal(queryRes.SellOrder.Expiration))
+								s.Require().Equal(tc.expOrder.Expiration, queryRes.SellOrder.Expiration)
 								break
 							}
 							if found {
