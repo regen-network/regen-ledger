@@ -17,7 +17,7 @@ import (
 
 // UpdateSellOrders updates the sellOrder with the provided values.
 // Note: only the DisableAutoRetire lacks field presence, so if the existing value
-// is true and you do not want to change that, you MUST provide a value of true in the update.
+// is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdateSellOrders) (*marketplace.MsgUpdateSellOrdersResponse, error) {
 	seller, err := sdk.AccAddressFromBech32(req.Owner)
@@ -46,8 +46,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *core.CreditType
 	event := marketplace.EventUpdateSellOrder{
-		Seller:      sdk.AccAddress(order.Seller).String(),
-		SellOrderId: order.Id,
+		Seller:            sdk.AccAddress(order.Seller).String(),
+		SellOrderId:       order.Id,
+		DisableAutoRetire: update.DisableAutoRetire,
 	}
 
 	order.DisableAutoRetire = update.DisableAutoRetire
@@ -72,6 +73,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			order.MarketId = marketId
 		}
 		order.AskPrice = update.NewAskPrice.Amount.String()
+		event.NewAskPrice = update.NewAskPrice
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
@@ -79,6 +81,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
+		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
 		if creditType == nil {
@@ -119,6 +122,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			}
 			order.Quantity = update.NewQuantity
 		}
+		event.NewQuantity = update.NewQuantity
 	}
 
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
