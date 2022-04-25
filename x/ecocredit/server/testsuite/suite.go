@@ -5,8 +5,9 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -188,11 +189,11 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// user2 can take all the credits from the basket
 	tRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
-		Owner:              user2.String(),
-		BasketDenom:        basketDenom,
-		Amount:             basketTokensReceived.String(),
-		RetirementLocation: "US-NY",
-		RetireOnTake:       false,
+		Owner:                  user2.String(),
+		BasketDenom:            basketDenom,
+		Amount:                 basketTokensReceived.String(),
+		RetirementJurisdiction: "US-NY",
+		RetireOnTake:           false,
 	})
 	require.NoError(err)
 	require.Equal(tRes.Credits[0].BatchDenom, batchDenom)
@@ -200,11 +201,11 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// user shouldn't be able to take any since we sent our tokens to user2
 	noRes, err := s.basketServer.Take(s.ctx, &basket.MsgTake{
-		Owner:              user.String(),
-		BasketDenom:        basketDenom,
-		Amount:             basketTokensReceived.String(),
-		RetirementLocation: "US-NY",
-		RetireOnTake:       false,
+		Owner:                  user.String(),
+		BasketDenom:            basketDenom,
+		Amount:                 basketTokensReceived.String(),
+		RetirementJurisdiction: "US-NY",
+		RetireOnTake:           false,
 	})
 	require.Error(err)
 	require.Contains(err.Error(), sdkerrors.ErrInsufficientFunds.Error())
@@ -258,11 +259,11 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// take them out of the basket, retiring them
 	tRes, err = s.basketServer.Take(s.ctx, &basket.MsgTake{
-		Owner:              user.String(),
-		BasketDenom:        basketDenom,
-		Amount:             amountBasketCoins.String(),
-		RetirementLocation: "US-NY",
-		RetireOnTake:       true,
+		Owner:                  user.String(),
+		BasketDenom:            basketDenom,
+		Amount:                 amountBasketCoins.String(),
+		RetirementJurisdiction: "US-NY",
+		RetireOnTake:           true,
 	})
 	require.NoError(err)
 	require.Len(tRes.Credits, 1) // should only be one credit
@@ -296,10 +297,10 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	end, err := time.Parse("2006-04-02", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:          admin.String(),
-		ClassId:         classId,
-		Metadata:        "",
-		ProjectLocation: "US-NY",
+		Issuer:              admin.String(),
+		ClassId:             classId,
+		Metadata:            "",
+		ProjectJurisdiction: "US-NY",
 	})
 	require.NoError(err)
 	bRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
@@ -356,11 +357,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create project
 	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		ClassId:         classId,
-		Issuer:          issuer1,
-		Metadata:        "metadata",
-		ProjectLocation: "AQ",
-		ProjectId:       "P03",
+		ClassId:             classId,
+		Issuer:              issuer1,
+		Metadata:            "metadata",
+		ProjectJurisdiction: "AQ",
+		ProjectId:           "P03",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
@@ -383,26 +384,26 @@ func (s *IntegrationTestSuite) TestScenario() {
 		EndDate:   &time2,
 		Issuance: []*core.BatchIssuance{
 			{
-				Recipient:          addr1,
-				TradableAmount:     t0,
-				RetiredAmount:      r0,
-				RetirementLocation: "GB",
+				Recipient:              addr1,
+				TradableAmount:         t0,
+				RetiredAmount:          r0,
+				RetirementJurisdiction: "GB",
 			},
 			{
-				Recipient:          addr2,
-				TradableAmount:     t1,
-				RetiredAmount:      r1,
-				RetirementLocation: "BF",
+				Recipient:              addr2,
+				TradableAmount:         t1,
+				RetiredAmount:          r1,
+				RetirementJurisdiction: "BF",
 			},
 			{
-				Recipient:          addr4,
-				TradableAmount:     t2,
-				RetiredAmount:      r2,
-				RetirementLocation: "",
+				Recipient:              addr4,
+				TradableAmount:         t2,
+				RetiredAmount:          r2,
+				RetirementJurisdiction: "",
 			},
 			{
-				Recipient:          addr5,
-				RetirementLocation: "",
+				Recipient:              addr5,
+				RetirementJurisdiction: "",
 			},
 		},
 	})
@@ -579,94 +580,94 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// retire credits
 	retireCases := []struct {
-		name               string
-		toRetire           string
-		retirementLocation string
-		expectErr          bool
-		expTradable        string
-		expRetired         string
-		expTradableSupply  string
-		expRetiredSupply   string
-		expErrMessage      string
+		name              string
+		toRetire          string
+		jurisdiction      string
+		expectErr         bool
+		expTradable       string
+		expRetired        string
+		expTradableSupply string
+		expRetiredSupply  string
+		expErrMessage     string
 	}{
 		{
-			name:               "cannot retire more credits than are tradable",
-			toRetire:           "10.371",
-			retirementLocation: "AF",
-			expectErr:          true,
-			expErrMessage:      "insufficient funds",
+			name:          "cannot retire more credits than are tradable",
+			toRetire:      "10.371",
+			jurisdiction:  "AF",
+			expectErr:     true,
+			expErrMessage: "insufficient funds",
 		},
 		{
-			name:               "can't use more precision than the credit type allows (6)",
-			toRetire:           "10.00000001",
-			retirementLocation: "AF",
-			expectErr:          true,
-			expErrMessage:      "exceeds maximum decimal places",
+			name:          "can't use more precision than the credit type allows (6)",
+			toRetire:      "10.00000001",
+			jurisdiction:  "AF",
+			expectErr:     true,
+			expErrMessage: "exceeds maximum decimal places",
 		},
 		{
-			name:               "can't retire to an invalid country",
-			toRetire:           "0.0001",
-			retirementLocation: "ZZZ",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't retire to an invalid country",
+			toRetire:      "0.0001",
+			jurisdiction:  "ZZZ",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can't retire to an invalid region",
-			toRetire:           "0.0001",
-			retirementLocation: "AF-ZZZZ",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't retire to an invalid region",
+			toRetire:      "0.0001",
+			jurisdiction:  "AF-ZZZZ",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can't retire to an invalid postal code",
-			toRetire:           "0.0001",
-			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't retire to an invalid postal code",
+			toRetire:      "0.0001",
+			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can't retire without a jurisdiction",
-			toRetire:           "0.0001",
-			retirementLocation: "",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't retire without a jurisdiction",
+			toRetire:      "0.0001",
+			jurisdiction:  "",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can retire a small amount of credits",
-			toRetire:           "0.0001",
-			retirementLocation: "AF",
-			expectErr:          false,
-			expTradable:        "9.3699",
-			expRetired:         "4.2861",
-			expTradableSupply:  "1016.7568",
-			expRetiredSupply:   "10004.74509",
+			name:              "can retire a small amount of credits",
+			toRetire:          "0.0001",
+			jurisdiction:      "AF",
+			expectErr:         false,
+			expTradable:       "9.3699",
+			expRetired:        "4.2861",
+			expTradableSupply: "1016.7568",
+			expRetiredSupply:  "10004.74509",
 		},
 		{
-			name:               "can retire more credits",
-			toRetire:           "9",
-			retirementLocation: "AF-BDS",
-			expectErr:          false,
-			expTradable:        "0.3699",
-			expRetired:         "13.2861",
-			expTradableSupply:  "1007.7568",
-			expRetiredSupply:   "10013.74509",
+			name:              "can retire more credits",
+			toRetire:          "9",
+			jurisdiction:      "AF-BDS",
+			expectErr:         false,
+			expTradable:       "0.3699",
+			expRetired:        "13.2861",
+			expTradableSupply: "1007.7568",
+			expRetiredSupply:  "10013.74509",
 		},
 		{
-			name:               "can retire all credits",
-			toRetire:           "0.3699",
-			retirementLocation: "AF-BDS 12345",
-			expectErr:          false,
-			expTradable:        "0",
-			expRetired:         "13.656",
-			expTradableSupply:  "1007.3869",
-			expRetiredSupply:   "10014.11499",
+			name:              "can retire all credits",
+			toRetire:          "0.3699",
+			jurisdiction:      "AF-BDS 12345",
+			expectErr:         false,
+			expTradable:       "0",
+			expRetired:        "13.656",
+			expTradableSupply: "1007.3869",
+			expRetiredSupply:  "10014.11499",
 		},
 		{
-			name:               "can't retire any more credits",
-			toRetire:           "1",
-			retirementLocation: "AF-BDS",
-			expectErr:          true,
-			expErrMessage:      "insufficient funds",
+			name:          "can't retire any more credits",
+			toRetire:      "1",
+			jurisdiction:  "AF-BDS",
+			expectErr:     true,
+			expErrMessage: "insufficient funds",
 		},
 	}
 
@@ -681,7 +682,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toRetire,
 					},
 				},
-				Location: tc.retirementLocation,
+				Jurisdiction: tc.jurisdiction,
 			})
 
 			if tc.expectErr {
@@ -714,7 +715,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		name                 string
 		sendTradable         string
 		sendRetired          string
-		retirementLocation   string
+		jurisdiction         string
 		expectErr            bool
 		expTradableSender    string
 		expRetiredSender     string
@@ -725,58 +726,58 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expErrMessage        string
 	}{
 		{
-			name:               "can't send an amount with more decimal places than allowed precision (6)",
-			sendTradable:       "2.123456789",
-			sendRetired:        "10.123456789",
-			retirementLocation: "AF",
-			expectErr:          true,
-			expErrMessage:      "exceeds maximum decimal places",
+			name:          "can't send an amount with more decimal places than allowed precision (6)",
+			sendTradable:  "2.123456789",
+			sendRetired:   "10.123456789",
+			jurisdiction:  "AF",
+			expectErr:     true,
+			expErrMessage: "exceeds maximum decimal places",
 		},
 		{
-			name:               "can't send more tradable than is tradable",
-			sendTradable:       "2000",
-			sendRetired:        "10",
-			retirementLocation: "AF",
-			expectErr:          true,
-			expErrMessage:      "insufficient funds",
+			name:          "can't send more tradable than is tradable",
+			sendTradable:  "2000",
+			sendRetired:   "10",
+			jurisdiction:  "AF",
+			expectErr:     true,
+			expErrMessage: "insufficient funds",
 		},
 		{
-			name:               "can't send more retired than is tradable",
-			sendTradable:       "10",
-			sendRetired:        "2000",
-			retirementLocation: "AF",
-			expectErr:          true,
-			expErrMessage:      "insufficient funds",
+			name:          "can't send more retired than is tradable",
+			sendTradable:  "10",
+			sendRetired:   "2000",
+			jurisdiction:  "AF",
+			expectErr:     true,
+			expErrMessage: "insufficient funds",
 		},
 		{
-			name:               "can't send to an invalid country",
-			sendTradable:       "10",
-			sendRetired:        "20",
-			retirementLocation: "ZZZ",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't send to an invalid country",
+			sendTradable:  "10",
+			sendRetired:   "20",
+			jurisdiction:  "ZZZ",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can't send to an invalid region",
-			sendTradable:       "10",
-			sendRetired:        "20",
-			retirementLocation: "AF-ZZZZ",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't send to an invalid region",
+			sendTradable:  "10",
+			sendRetired:   "20",
+			jurisdiction:  "AF-ZZZZ",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
-			name:               "can't send to an invalid postal code",
-			sendTradable:       "10",
-			sendRetired:        "20",
-			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
-			expectErr:          true,
-			expErrMessage:      "Invalid jurisdiction",
+			name:          "can't send to an invalid postal code",
+			sendTradable:  "10",
+			sendRetired:   "20",
+			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
+			expectErr:     true,
+			expErrMessage: "Invalid jurisdiction",
 		},
 		{
 			name:                 "can send some",
 			sendTradable:         "10",
 			sendRetired:          "20",
-			retirementLocation:   "AF",
+			jurisdiction:         "AF",
 			expectErr:            false,
 			expTradableSender:    "977.3869",
 			expRetiredSender:     "10000.45899",
@@ -789,7 +790,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			name:                 "can send with no retirement jurisdiction",
 			sendTradable:         "10",
 			sendRetired:          "0",
-			retirementLocation:   "",
+			jurisdiction:         "",
 			expectErr:            false,
 			expTradableSender:    "967.3869",
 			expRetiredSender:     "10000.45899",
@@ -802,7 +803,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			name:                 "can send all tradable",
 			sendTradable:         "67.3869",
 			sendRetired:          "900",
-			retirementLocation:   "AF",
+			jurisdiction:         "AF",
 			expectErr:            false,
 			expTradableSender:    "0",
 			expRetiredSender:     "10000.45899",
@@ -812,12 +813,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:     "10934.11499",
 		},
 		{
-			name:               "can't send any more",
-			sendTradable:       "1",
-			sendRetired:        "1",
-			expectErr:          true,
-			retirementLocation: "AF",
-			expErrMessage:      "insufficient funds",
+			name:          "can't send any more",
+			sendTradable:  "1",
+			sendRetired:   "1",
+			expectErr:     true,
+			jurisdiction:  "AF",
+			expErrMessage: "insufficient funds",
 		},
 	}
 
@@ -829,10 +830,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Recipient: addr3,
 				Credits: []*core.MsgSend_SendCredits{
 					{
-						BatchDenom:         batchDenom,
-						TradableAmount:     tc.sendTradable,
-						RetiredAmount:      tc.sendRetired,
-						RetirementLocation: tc.retirementLocation,
+						BatchDenom:             batchDenom,
+						TradableAmount:         tc.sendTradable,
+						RetiredAmount:          tc.sendRetired,
+						RetirementJurisdiction: tc.jurisdiction,
 					},
 				},
 			})
