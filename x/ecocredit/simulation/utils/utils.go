@@ -4,31 +4,15 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
-
-func GetAndShuffleClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient) ([]*core.Class, error) {
-	ctx := regentypes.Context{Context: sdkCtx}
-	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
-	if err != nil {
-		return nil, err
-	}
-
-	classes := res.Classes
-	if len(classes) <= 1 {
-		return classes, nil
-	}
-
-	r.Shuffle(len(classes), func(i, j int) { classes[i], classes[j] = classes[j], classes[i] })
-	return classes, nil
-}
 
 func RandomExponent(r *rand.Rand, precision uint32) uint32 {
 	exponents := []uint32{0, 1, 2, 3, 6, 9, 12, 15, 18, 21, 24}
@@ -96,4 +80,42 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 	}
 
 	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
+}
+
+func GetClasses(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) ([]*core.Class, simtypes.OperationMsg, error) {
+	ctx := sdk.WrapSDKContext(sdkCtx)
+	res, err := qryClient.Classes(ctx, &core.QueryClassesRequest{})
+	if err != nil {
+		if ormerrors.IsNotFound(err) {
+			return []*core.Class{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no classes"), nil
+		}
+		return []*core.Class{}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	return res.Classes, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+}
+
+func GetRandomClass(sdkCtx sdk.Context, r *rand.Rand, qryClient core.QueryClient, msgType string) (*core.Class, simtypes.OperationMsg, error) {
+	classes, op, err := GetClasses(sdkCtx, r, qryClient, msgType)
+	if len(classes) == 0 {
+		return nil, op, err
+	}
+
+	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+}
+
+func GetAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
+	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accAddr, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	account, found := simtypes.FindAccount(accs, accAddr)
+	if !found {
+		return nil, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "account not found"), nil
+	}
+
+	spendable := bk.SpendableCoins(ctx, accAddr)
+	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }

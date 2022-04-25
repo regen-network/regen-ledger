@@ -110,15 +110,6 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "not enough balance"), nil, nil
 		}
 
-		classIds, err := randomClasses(r, sdkCtx, qryClient)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
-		}
-
-		if len(classIds) == 0 {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "no classes"), nil, nil
-		}
-
 		creditType, err := randomCreditType(r, ctx, qryClient)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, err
@@ -126,6 +117,11 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		if creditType == nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, "credit type not found"), nil, nil
+		}
+
+		classIds, op, err := randomClassIds(r, sdkCtx, qryClient, creditType.Abbreviation, TypeMsgPut)
+		if len(classIds) == 0 {
+			return op, nil, err
 		}
 
 		precision := creditType.Precision
@@ -165,7 +161,7 @@ func SimulateMsgCreate(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
-			if strings.Contains(err.Error(), "unique key violation") {
+			if strings.Contains(err.Error(), "basket specified credit type") {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreate, err.Error()), nil, nil
 			}
 
@@ -217,13 +213,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no baskets"), nil, nil
 		}
 
-		classes, err := utils.GetAndShuffleClasses(sdkCtx, r, qryClient)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
-		}
-
+		classes, op, err := utils.GetClasses(sdkCtx, r, qryClient, TypeMsgPut)
 		if len(classes) == 0 {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, "no classes"), nil, nil
+			return op, nil, err
 		}
 
 		rBasket := baskets[r.Intn(len(baskets))]
@@ -468,19 +460,27 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	}
 }
 
-func randomClasses(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient) ([]string, error) {
-	classes, err := utils.GetAndShuffleClasses(ctx, r, qryClient)
-	if err != nil {
-		return nil, err
+func randomClassIds(r *rand.Rand, ctx sdk.Context, qryClient core.QueryClient,
+	creditTypeAbbrev string, msgType string) ([]string, simtypes.OperationMsg, error) {
+	classes, op, err := utils.GetClasses(ctx, r, qryClient, msgType)
+	if len(classes) == 0 {
+		return []string{}, op, err
+	}
+
+	if len(classes) == 1 {
+		return []string{classes[0].Id}, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 	}
 
 	max := simtypes.RandIntBetween(r, 1, min(5, len(classes)))
-	classIds := make([]string, max)
+	var classIds []string
 	for i := 0; i < max; i++ {
-		classIds[i] = classes[i].Id
+		class := classes[i]
+		if class.CreditTypeAbbrev == creditTypeAbbrev {
+			classIds = append(classIds, class.Id)
+		}
 	}
 
-	return classIds, nil
+	return classIds, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
 func min(x, y int) int {
