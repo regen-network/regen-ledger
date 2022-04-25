@@ -14,7 +14,7 @@ import (
 
 // ParamChanges defines the parameters that can be modified by param change proposals
 // on the simulation
-func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
+func ParamChanges() []simtypes.ParamChange {
 	allowListEnabled := false
 
 	return []simtypes.ParamChange{

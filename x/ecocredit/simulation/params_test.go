@@ -36,7 +36,7 @@ func TestParamChanges(t *testing.T) {
 		{"ecocredit/AllowedAskDenoms", "AllowedAskDenoms", string(bz1), "ecocredit"},
 	}
 
-	paramChanges := simulation.ParamChanges(r)
+	paramChanges := simulation.ParamChanges()
 	require.Len(t, paramChanges, 4)
 
 	for i, p := range paramChanges {
