@@ -562,7 +562,7 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			projectJurisdiction := args[1]
-			if err := ecocredit.ValidateJurisdiction(projectJurisdiction); err != nil {
+			if err := core.ValidateJurisdiction(projectJurisdiction); err != nil {
 				return err
 			}
 

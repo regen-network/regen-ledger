@@ -345,7 +345,7 @@ func (c Class) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
-	if err := ecocredit.ValidateClassID(c.Id); err != nil {
+	if err := ValidateClassID(c.Id); err != nil {
 		return err
 	}
 

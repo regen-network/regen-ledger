@@ -4,10 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestMsgPut_ValidateBasic(t *testing.T) {
@@ -15,7 +16,7 @@ func TestMsgPut_ValidateBasic(t *testing.T) {
 
 	_, _, addr := testdata.KeyTestPubAddr()
 	t1, t2 := time.Now(), time.Now()
-	denom, err := ecocredit.FormatDenom("C02", 1, &t1, &t2)
+	denom, err := core.FormatDenom("C02", 1, &t1, &t2)
 	require.NoError(t, err)
 
 	type fields struct {

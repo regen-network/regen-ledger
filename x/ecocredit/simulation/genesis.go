@@ -358,7 +358,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	if err != nil {
 		return err
 	}
-	denom, err := ecocredit.FormatDenom("C01", batchSeq, &startDate, &endDate)
+	denom, err := core.FormatDenom("C01", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -382,7 +382,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	if err != nil {
 		return err
 	}
-	denom, err = ecocredit.FormatDenom("C02", batchSeq, &startDate, &endDate)
+	denom, err = core.FormatDenom("C02", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}

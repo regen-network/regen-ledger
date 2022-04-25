@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -52,47 +53,54 @@ func ValidateProjectID(projectID string) error {
 	return nil
 }
 
-// FormatProjectID formats the ID to use for a new project, based on the class id and
-// the project sequence number.
-//
-// The initial version has format:
-// <class id><project seq no>
-func FormatProjectID(classID string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
+// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
 }
 
 // FormatClassID formats the ID to use for a new credit class, based on the credit type and
-// sequence number. This format may evolve over time, but will maintain
-// backwards compatibility.
+// sequence number. This format may evolve over time, but will maintain backwards compatibility.
 //
-// The initial version has format:
+// The current version has the format:
 // <credit type abbreviation><class seq no>
+//
+// e.g. C01
 func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatDenom formats the denomination to use for a batch, based on the batch
-// information. This format may evolve over time, but will maintain backwards
-// compatibility.
+// FormatProjectID formats the ID to use for a new project, based on the credit class id and
+// sequence number. This format may evolve over time, but will maintain backwards compatibility.
 //
-// The initial version has format:
-// <class id>-<start date>-<end date>-<batch seq no>
+// The current version has the format:
+// <credit_class_id>-<project_sequence>
+//
+// e.g. C01-001
+func FormatProjectID(classId string, projectSeqNo uint64) string {
+	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
+}
+
+// FormatDenom formats the denomination to use for a credit batch. This format may evolve over
+// time, but will maintain backwards compatibility.
+//
+// The current version has the format:
+// <project_id>-<start_date>-<end_date>-<batch_sequence>
+//
 // where:
-// - <class id> is the string ID of the credit class
-// - <start date> is the start date of the batch in form YYYYMMDD
-// - <end date> is the end date of the batch in form YYYYMMDD
-// - <batch seq no> is the sequence number of the batch, padded to at least
+// - <project id> is the unique identifier of the project and has the format:
+//     <credit_type_abbrev><class_id>-<project_sequence> (see FormatProjectId)
+// - <start date> is the start date of the credit batch and has the format YYYYMMDD
+// - <end date> is the end date of the credit batch and has the format YYYYMMDD
+// - <batch seq no> is the sequence number of the credit batch, padded to at least
 //   three digits
 //
-// e.g. C01-20190101-20200101-001
-//
-// NB: This might differ from the actual denomination used.
-func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) (string, error) {
+// e.g. C01-001-20190101-20200101-001
+func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
 		"%s-%s-%s-%03d",
 
-		// Class ID string
-		classId,
+		// Project ID string
+		projectId,
 
 		// Start Date as YYYYMMDD
 		startDate.Format("20060102"),
@@ -178,4 +186,15 @@ func ExponentToPrefix(exponent uint32) (string, error) {
 		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)
 	}
 	return e, nil
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }
