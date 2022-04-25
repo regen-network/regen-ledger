@@ -85,18 +85,17 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	projectSeqJSON, err := json.Marshal(projectSeq)
 	require.NoError(err)
 
-	wrapper := map[string]json.RawMessage{
-		gogoproto.MessageName(&api.Class{}):           classInfoJSON,
-		gogoproto.MessageName(&api.ClassIssuer{}):     classIssuersJSON,
-		gogoproto.MessageName(&api.Project{}):         projectInfoJSON,
-		gogoproto.MessageName(&api.Batch{}):           batchInfoJSON,
-		gogoproto.MessageName(&api.BatchBalance{}):    batchBalancesJSON,
-		gogoproto.MessageName(&api.BatchSupply{}):     batchSupplyJSON,
-		gogoproto.MessageName(&api.ClassSequence{}):   classSeqJSON,
-		gogoproto.MessageName(&api.BatchSequence{}):   batchSeqJSON,
-		gogoproto.MessageName(&api.ProjectSequence{}): projectSeqJSON,
-		gogoproto.MessageName(&api.Params{}):          paramsJSON,
-	}
+	wrapper := map[string]json.RawMessage{}
+	wrapper[gogoproto.MessageName(&core.Class{})] = classInfoJSON
+	wrapper[gogoproto.MessageName(&core.ClassIssuer{})] = classIssuersJSON
+	wrapper[gogoproto.MessageName(&core.Project{})] = projectInfoJSON
+	wrapper[gogoproto.MessageName(&core.Batch{})] = batchInfoJSON
+	wrapper[gogoproto.MessageName(&core.BatchBalance{})] = batchBalancesJSON
+	wrapper[gogoproto.MessageName(&core.BatchSupply{})] = batchSupplyJSON
+	wrapper[gogoproto.MessageName(&core.ClassSequence{})] = classSeqJSON
+	wrapper[gogoproto.MessageName(&core.BatchSequence{})] = batchSeqJSON
+	wrapper[gogoproto.MessageName(&core.ProjectSequence{})] = projectSeqJSON
+	wrapper[gogoproto.MessageName(&core.Params{})] = paramsJSON
 
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)
