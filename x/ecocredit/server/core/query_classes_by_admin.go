@@ -29,6 +29,7 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 		return nil, err
 	}
 
+	adminString := admin.String()
 	classes := make([]*core.ClassInfo, 0)
 	for it.Next() {
 		class, err := it.Value()
@@ -38,7 +39,7 @@ func (k Keeper) ClassesByAdmin(ctx context.Context, req *core.QueryClassesByAdmi
 
 		info := core.ClassInfo{
 			Id:               class.Id,
-			Admin:            admin.String(),
+			Admin:            adminString,
 			Metadata:         class.Metadata,
 			CreditTypeAbbrev: class.CreditTypeAbbrev,
 		}
