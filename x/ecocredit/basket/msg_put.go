@@ -4,8 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 var _ legacytx.LegacyMsg = &MsgPut{}
@@ -31,7 +33,7 @@ func (m MsgPut) ValidateBasic() error {
 	}
 	if len(m.Credits) > 0 {
 		for _, credit := range m.Credits {
-			if err := ecocredit.ValidateDenom(credit.BatchDenom); err != nil {
+			if err := core.ValidateDenom(credit.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 			if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {

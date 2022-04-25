@@ -94,5 +94,5 @@ func (k Keeper) genProjectID(ctx context.Context, classKey uint64, classID strin
 		return "", err
 	}
 
-	return ecocredit.FormatProjectID(classID, nextID), nil
+	return core.FormatProjectID(classID, nextID), nil
 }

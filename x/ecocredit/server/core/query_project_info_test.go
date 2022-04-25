@@ -15,21 +15,32 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	// insert 1 project
-	err := s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:                  "P01",
-		ClassKey:            1,
-		ProjectJurisdiction: "US-CA",
-		Metadata:            "",
+	// insert class
+	classKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
+		Id: "C01",
 	})
 	assert.NilError(t, err)
 
-	// valid query
+	project := &api.Project{
+		Id:                  "P01",
+		ClassKey:            classKey,
+		ProjectJurisdiction: "US-CA",
+		Metadata:            "data",
+	}
+
+	// insert project
+	err = s.stateStore.ProjectTable().Insert(s.ctx, project)
+	assert.NilError(t, err)
+
+	// query project by "P01" project id
 	res, err := s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "P01"})
 	assert.NilError(t, err)
-	assert.Equal(t, "P01", res.Project.Id)
+	assert.Equal(t, project.Id, res.Project.Id)
+	assert.Equal(t, "C01", res.Project.ClassId)
+	assert.Equal(t, project.ProjectJurisdiction, res.Project.Jurisdiction)
+	assert.Equal(t, project.Metadata, res.Project.Metadata)
 
-	// invalid query
+	// query project by unknown project id
 	_, err = s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }

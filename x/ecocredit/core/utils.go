@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -50,6 +51,11 @@ func ValidateProjectID(projectID string) error {
 	}
 
 	return nil
+}
+
+// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
 }
 
 // FormatProjectID formats the ID to use for a new project, based on the class id and
@@ -178,4 +184,15 @@ func ExponentToPrefix(exponent uint32) (string, error) {
 		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)
 	}
 	return e, nil
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }

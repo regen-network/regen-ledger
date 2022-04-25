@@ -113,11 +113,11 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expectErr         bool
-		expectedErrMsg    string
-		expectedClassInfo *core.Class
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		expectedClass  *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -135,9 +135,9 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			name:      "valid credit class",
 			args:      []string{classId},
 			expectErr: false,
-			expectedClassInfo: &core.Class{
+			expectedClass: &core.ClassInfo{
 				Id:               classId,
-				Admin:            val.Address,
+				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,
 				CreditTypeAbbrev: class.CreditTypeAbbrev,
 			},
@@ -156,8 +156,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 				var res core.QueryClassInfoResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				tc.expectedClassInfo.Key = res.Class.Key // force the db id's to be equal as we cannot know this beforehand.
-				s.Require().Equal(tc.expectedClassInfo, res.Class)
+				s.Require().Equal(tc.expectedClass, res.Class)
 			}
 		})
 	}
@@ -318,7 +317,7 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 
 				var res core.QueryBalanceResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().True(sdk.AccAddress(res.Balance.Address).Equals(val.Address))
+				s.Require().Equal(res.Balance.Address, val.Address.String())
 				s.Require().NotEmpty(res.Balance.Tradable)
 				s.Require().NotEmpty(res.Balance.Retired)
 			}

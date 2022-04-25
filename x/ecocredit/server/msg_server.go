@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
@@ -52,7 +53,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	classID := ecocredit.FormatClassID(creditType.Abbreviation, classSeqNo)
+	classID := core.FormatClassID(creditType.Abbreviation, classSeqNo)
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
@@ -148,7 +149,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenomStr, err := ecocredit.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenomStr, err := core.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}

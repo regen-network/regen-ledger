@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -121,7 +122,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 
 	}
 
-	classId := ecocredit.GetClassIdFromBatchDenom(batchInfo.Denom)
+	classId := core.GetClassIdFromBatchDenom(batchInfo.Denom)
 
 	// check credit class match
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
