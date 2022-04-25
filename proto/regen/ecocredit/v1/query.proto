@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/v1/state.proto";
 import "regen/ecocredit/v1/types.proto";
@@ -113,7 +114,7 @@ message QueryClassesRequest {
 message QueryClassesResponse {
 
   // classes are the fetched credit classes.
-  repeated Class classes = 1;
+  repeated ClassInfo classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -133,7 +134,7 @@ message QueryClassesByAdminRequest {
 message QueryClassesByAdminResponse {
 
   // classes are the fetched credit classes.
-  repeated Class classes = 1;
+  repeated ClassInfo classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -149,8 +150,8 @@ message QueryClassInfoRequest {
 // QueryClassInfoResponse is the Query/ClassInfo request type.
 message QueryClassInfoResponse {
 
-  // class is the ClassInfo for the credit class.
-  Class class = 1;
+  // class is the fetched credit class.
+  ClassInfo class = 1;
 }
 
 // QueryClassIssuersRequest is the Query/ClassIssuers request type.
@@ -187,7 +188,7 @@ message QueryProjectsRequest {
 message QueryProjectsResponse {
 
   // projects are the fetched projects.
-  repeated Project projects = 1;
+  repeated ProjectInfo projects = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -203,8 +204,8 @@ message QueryProjectInfoRequest {
 // QueryProjectInfoResponse is the Query/Project response type.
 message QueryProjectInfoResponse {
 
-  // project is the ProjectInfo for the project.
-  Project project = 1;
+  // project is the fetched project.
+  ProjectInfo project = 1;
 }
 
 // QueryBatchesRequest is the Query/Batches request type.
@@ -220,8 +221,8 @@ message QueryBatchesRequest {
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
 
-  // batches are the fetched credit batches within the project.
-  repeated Batch batches = 1;
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -240,8 +241,8 @@ message QueryBatchesByIssuerRequest {
 // QueryBatchesByIssuerResponse is the Query/BatchesByIssuer response type.
 message QueryBatchesByIssuerResponse {
 
-  // batches are the fetched credit batches within the project.
-  repeated Batch batches = 1;
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -260,8 +261,8 @@ message QueryBatchesByClassRequest {
 // QueryBatchesByClassResponse is the Query/BatchesByClass response type.
 message QueryBatchesByClassResponse {
 
-  // batches are the fetched credit batches within the project.
-  repeated Batch batches = 1;
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -277,8 +278,8 @@ message QueryBatchInfoRequest {
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
 message QueryBatchInfoResponse {
 
-  // batch is the BatchInfo for the credit batch.
-  Batch batch = 1;
+  // batch is the fetched credit batch.
+  BatchInfo batch = 1;
 }
 
 // QueryBalanceRequest is the Query/Balance request type.
@@ -295,7 +296,7 @@ message QueryBalanceRequest {
 message QueryBalanceResponse {
 
   // balance is the balance of the given account.
-  BatchBalance balance = 1;
+  BatchBalanceInfo balance = 1;
 }
 
 // QueryBalancesRequest is the Query/Balances request type.
@@ -313,7 +314,7 @@ message QueryBalancesResponse {
 
   // balances are a list of balances from different credit batches that the
   // account holds.
-  repeated BatchBalance balances = 1;
+  repeated BatchBalanceInfo balances = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -348,7 +349,7 @@ message QueryCreditTypesRequest {}
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
 
-  // list of credit types
+  // credit_types are the fetched credit types.
   repeated CreditType credit_types = 1;
 }
 
@@ -360,4 +361,95 @@ message QueryParamsResponse {
 
   // params defines the parameters of the ecocredit module.
   Params params = 1;
+}
+
+// ClassInfo is the human-readable credit class information.
+message ClassInfo {
+
+  // id is the unique identifier of the credit class.
+  string id = 1;
+
+  // admin is the admin of the credit class.
+  string admin = 2;
+
+  // metadata is the arbitrary metadata attached to the credit class.
+  string metadata = 3;
+
+  // credit_type_abbrev is the abbreviation of the credit type within which this
+  // credit class was created.
+  string credit_type_abbrev = 4;
+}
+
+// ProjectInfo is the human-readable project information.
+message ProjectInfo {
+
+  // id is the unique identifier of the project.
+  string id = 1;
+
+  // admin is the admin of the project.
+  string admin = 2;
+
+  // class_id is the unique identifier of the credit class within which the
+  // project was created.
+  string class_id = 3;
+
+  // jurisdiction is the jurisdiction of the project. Full documentation can be
+  // found in MsgCreateProject.jurisdiction.
+  string jurisdiction = 4;
+
+  // metadata is the arbitrary metadata attached to the project.
+  string metadata = 5;
+}
+
+// BatchInfo is the human-readable credit batch information.
+message BatchInfo {
+
+  // issuer is the address that created the batch and the address authorized to
+  // mint new credits to the credit batch if the credit batch is open.
+  string issuer = 1;
+
+  // project_id is the unique identifier of the project within which this credit
+  // batch was created.
+  string project_id = 2;
+
+  // denom is the unique identifier of the credit batch formed from the project
+  // name, batch sequence number and dates.
+  string denom = 3;
+
+  // metadata is any arbitrary metadata attached to the credit batch.
+  string metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5;
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6;
+
+  // issuance_date is the timestamp when the credit batch was issued.
+  google.protobuf.Timestamp issuance_date = 7;
+
+  // open determines whether or not the credit batch is open, i.e. whether or
+  // not new credits can be minted to the credit batch.
+  bool open = 8;
+}
+
+// BatchBalanceInfo is the human-readable batch balance information.
+message BatchBalanceInfo {
+
+  // address is the address of the credit holder.
+  string address = 1;
+
+  // batch_denom is the unique identifier of the credit batch.
+  string batch_denom = 2;
+
+  // tradable is the tradable amount of credits.
+  string tradable = 3;
+
+  // retired is the retired amount of credits.
+  string retired = 4;
+
+  // escrowed is the amount of credits locked up in escrow for the marketplace.
+  string escrowed = 5;
 }
