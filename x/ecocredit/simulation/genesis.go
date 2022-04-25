@@ -281,6 +281,24 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	accs := simState.Accounts
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
+	if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton c02",
+		Precision:    6,
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}); err != nil {
+		return err
+	}
+
 	// create few classes
 	cKey1, err := createClass(ctx, ss, &api.Class{
 		Id:               "C01",
