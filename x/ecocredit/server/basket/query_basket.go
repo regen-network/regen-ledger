@@ -39,23 +39,22 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 
 	it.Close()
 
-	var criteria *baskettypes.DateCriteria
-	if basket.DateCriteria != nil {
-		criteria = &baskettypes.DateCriteria{}
-		if err := ormutil.PulsarToGogoSlow(basket.DateCriteria, criteria); err != nil {
-			return nil, err
-		}
-	}
-
-	curator := sdk.AccAddress(basket.Curator)
 	basketInfo := &baskettypes.BasketInfo{
 		BasketDenom:       basket.BasketDenom,
 		Name:              basket.Name,
 		CreditTypeAbbrev:  basket.CreditTypeAbbrev,
 		DisableAutoRetire: basket.DisableAutoRetire,
 		Exponent:          basket.Exponent,
-		Curator:           curator.String(),
-		DateCriteria:      criteria,
+		Curator:           sdk.AccAddress(basket.Curator).String(),
+	}
+
+	if basket.DateCriteria != nil {
+		criteria := &baskettypes.DateCriteria{}
+		if err := ormutil.PulsarToGogoSlow(basket.DateCriteria, criteria); err != nil {
+			return nil, err
+		}
+
+		basketInfo.DateCriteria = criteria
 	}
 
 	return &baskettypes.QueryBasketResponse{Basket: basketInfo, Classes: classes}, nil

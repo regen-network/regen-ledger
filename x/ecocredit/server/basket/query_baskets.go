@@ -46,14 +46,13 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 			}
 		}
 
-		curator := sdk.AccAddress(basket.Curator)
 		res.Baskets = append(res.Baskets, &baskettypes.BasketInfo{
 			BasketDenom:       basket.BasketDenom,
 			Name:              basket.Name,
 			DisableAutoRetire: basket.DisableAutoRetire,
 			CreditTypeAbbrev:  basket.CreditTypeAbbrev,
 			Exponent:          basket.Exponent,
-			Curator:           curator.String(),
+			Curator:           sdk.AccAddress(basket.Curator).String(),
 			DateCriteria:      criteria,
 		})
 	}
