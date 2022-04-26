@@ -2,11 +2,18 @@ package testsuite
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
+	dbm "github.com/tendermint/tm-db"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,6 +40,7 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
+	codec             *codec.ProtoCodec
 	sdkCtx            sdk.Context
 	ctx               context.Context
 	msgClient         core.MsgClient
@@ -83,6 +91,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.fixture = s.fixtureFactory.Setup()
 
+	s.codec = s.fixture.Codec()
+
 	s.blockTime = time.Now().UTC()
 
 	// TODO clean up once types.Context merged upstream into sdk.Context
@@ -90,6 +100,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	s.genesisCtx = types.Context{Context: sdkCtx}
+
+	_, err := s.fixture.InitGenesis(s.sdkCtx, map[string]json.RawMessage{ecocredit.ModuleName: s.ecocreditGenesis()})
+	s.Require().NoError(err)
 
 	ecocreditParams := core.DefaultParams()
 	s.basketFee = sdk.NewInt64Coin("bfee", 20)
@@ -103,6 +116,50 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
+}
+
+func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
+	// setup temporary mem db
+	db := dbm.NewMemDB()
+	defer func() {
+		if err := db.Close(); err != nil {
+			panic(err)
+		}
+	}()
+	backend := ormtable.NewBackend(ormtable.BackendOptions{
+		CommitmentStore: db,
+		IndexStore:      db,
+	})
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.Require().NoError(err)
+	ormCtx := ormtable.WrapContextDefault(backend)
+	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	})
+	s.Require().NoError(err)
+
+	// export genesis into target
+	target := ormjson.NewRawMessageTarget()
+	err = modDB.ExportJSON(ormCtx, target)
+	s.Require().NoError(err)
+
+	// merge the params into the json target
+	coreParams := core.DefaultParams()
+	err = core.MergeParamsIntoTarget(s.codec, &coreParams, target)
+	s.Require().NoError(err)
+
+	// get raw json from target
+	ecoJsn, err := target.JSON()
+	s.Require().NoError(err)
+
+	// set the module genesis
+	return ecoJsn
 }
 
 func (s *IntegrationTestSuite) TestBasketScenario() {
@@ -948,96 +1005,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	// Disable credit class allowlist for credit type tests
-	s.paramSpace.Set(s.sdkCtx, core.KeyAllowlistEnabled, false)
-
-	/****   TEST CREDIT TYPES   ****/
-	creditTypeCases := []struct {
-		name        string
-		creditTypes []*core.CreditType
-		msg         core.MsgCreateClass
-		wantErr     bool
-	}{
-		{
-			name: "valid ecocredit creation",
-			creditTypes: []*core.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
-			},
-			msg: core.MsgCreateClass{
-				Admin:            s.signers[0].String(),
-				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:         "",
-				CreditTypeAbbrev: "C",
-				Fee:              &createClassFee,
-			},
-			wantErr: false,
-		},
-		{
-			name: "invalid request - not a valid credit type",
-			creditTypes: []*core.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
-			},
-			msg: core.MsgCreateClass{
-				Admin:            s.signers[0].String(),
-				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:         "",
-				CreditTypeAbbrev: "BIO",
-				Fee:              &createClassFee,
-			},
-			wantErr: true,
-		},
-		{
-			name: "request with strange font should be valid",
-			creditTypes: []*core.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
-			},
-			msg: core.MsgCreateClass{
-				Admin:            s.signers[0].String(),
-				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:         "",
-				CreditTypeAbbrev: "C",
-				Fee:              &createClassFee,
-			},
-			wantErr: false,
-		},
-		{
-			name:        "empty credit types should error",
-			creditTypes: []*core.CreditType{},
-			msg: core.MsgCreateClass{
-				Admin:            s.signers[0].String(),
-				Issuers:          []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:         "",
-				CreditTypeAbbrev: "C",
-				Fee:              &createClassFee,
-			},
-			wantErr: true,
-		},
-	}
-
-	for _, tc := range creditTypeCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			require := s.Require()
-			s.paramSpace.Set(s.sdkCtx, core.KeyCreditTypes, tc.creditTypes)
-			admin, err := sdk.AccAddressFromBech32(tc.msg.Admin)
-			require.NoError(err)
-
-			// fund the admin account so tx will go through
-			s.fundAccount(admin, sdk.NewCoins(sdk.NewCoin("stake", core.DefaultCreditClassFeeTokens)))
-			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
-			if tc.wantErr {
-				require.Error(err)
-				require.Nil(res)
-			} else {
-				require.NoError(err)
-				require.NotNil(res)
-			}
-		})
-	}
-
-	// reset the space to avoid corrupting other tests
-	s.paramSpace.Set(s.sdkCtx, core.KeyCreditTypes, core.DefaultParams().CreditTypes)
 	coinPrice := sdk.NewInt64Coin("stake", 1000000)
 	s.paramSpace.Set(s.sdkCtx, core.KeyAllowedAskDenoms, append(core.DefaultParams().AllowedAskDenoms, &core.AskDenom{Denom: coinPrice.Denom}))
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)

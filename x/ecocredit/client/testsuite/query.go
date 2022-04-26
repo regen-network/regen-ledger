@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/rand"
-	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -379,7 +378,6 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	creditTypes := core.DefaultParams().CreditTypes
 	testCases := []struct {
 		name           string
 		args           []string
@@ -406,7 +404,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 
 				var res core.QueryCreditTypesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				assert.DeepEqual(s.T(), res.CreditTypes, creditTypes)
+				s.Require().Greater(len(res.CreditTypes), 0)
 			}
 		})
 	}

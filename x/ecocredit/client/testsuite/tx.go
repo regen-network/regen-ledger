@@ -11,6 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,11 +23,14 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -61,8 +67,54 @@ func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch)
 	return testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
 }
 
+func (s *IntegrationTestSuite) setupCustomGenesis() {
+	// setup temporary mem db
+	db := dbm.NewMemDB()
+	defer func() {
+		if err := db.Close(); err != nil {
+			panic(err)
+		}
+	}()
+	backend := ormtable.NewBackend(ormtable.BackendOptions{
+		CommitmentStore: db,
+		IndexStore:      db,
+	})
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.Require().NoError(err)
+	ormCtx := ormtable.WrapContextDefault(backend)
+	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	})
+	s.Require().NoError(err)
+
+	// export genesis into target
+	target := ormjson.NewRawMessageTarget()
+	err = modDB.ExportJSON(ormCtx, target)
+	s.Require().NoError(err)
+
+	// merge the params into the json target
+	params := core.DefaultParams()
+	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
+	s.Require().NoError(err)
+
+	// get raw json from target
+	ecoJsn, err := target.JSON()
+	s.Require().NoError(err)
+
+	// set the module genesis
+	s.cfg.GenesisState[ecocredit.ModuleName] = ecoJsn
+}
+
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
+
+	s.setupCustomGenesis()
 
 	var err error
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
@@ -977,7 +1029,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			name: "valid",
 			args: append(
 				[]string{
-					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false}]", batchDenom),
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100stake\", disable_auto_retire: false}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -994,7 +1046,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			name: "valid with expiration",
 			args: append(
 				[]string{
-					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]", batchDenom),
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100stake\", disable_auto_retire: false, expiration: \"2024-01-01\"}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
