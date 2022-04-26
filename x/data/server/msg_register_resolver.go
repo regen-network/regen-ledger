@@ -27,8 +27,10 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 		return nil, data.ErrUnauthorizedResolverManager
 	}
 
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	for _, ch := range msg.ContentHashes {
-		_, id, _, err := s.anchorAndGetIRI(ctx, ch)
+		iri, id, _, err := s.anchorAndGetIRI(ctx, ch)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +46,15 @@ func (s serverImpl) RegisterResolver(ctx context.Context, msg *data.MsgRegisterR
 			return nil, err
 		}
 
-		sdk.UnwrapSDKContext(ctx).GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver content hash iteration")
+		err = sdkCtx.EventManager().EmitTypedEvent(&data.EventRegisterResolver{
+			Id:  msg.ResolverId,
+			Iri: iri,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		sdkCtx.GasMeter().ConsumeGas(data.GasCostPerIteration, "data/RegisterResolver content hash iteration")
 	}
 
 	return &data.MsgRegisterResolverResponse{}, nil
