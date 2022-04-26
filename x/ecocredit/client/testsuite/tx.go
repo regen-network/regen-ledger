@@ -933,7 +933,14 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
-				// TODO: check issuers list was changed when we have that query available https://github.com/regen-network/regen-ledger/issues/1025
+				// verify issuers list was changed
+				query = coreclient.QueryClassIssuersCmd()
+				out, err = cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res1 core.QueryClassIssuersResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res1)
+				s.Require().NoError(err)
+				s.Require().Subset(res1.Issuers, tc.expIssuers)
 			}
 		})
 	}
@@ -1082,6 +1089,8 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 
 	newAsk := sdk.NewInt64Coin(validAskDenom, 3)
 	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
+	s.Require().NoError(err)
+
 	gogoNewExpiration, err := gogotypes.TimestampProto(newExpiration)
 	s.Require().NoError(err)
 	s.Require().NoError(err)

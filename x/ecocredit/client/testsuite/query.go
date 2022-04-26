@@ -562,6 +562,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
+	s.Require().NoError(err)
+
 	testCases := []struct {
 		name      string
 		args      []string
@@ -623,6 +625,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
+	s.Require().NoError(err)
+
 	testCases := []struct {
 		name      string
 		args      []string
@@ -798,4 +802,71 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 		})
 	}
 
+}
+
+func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
+	val := s.network.Validators[0]
+	val2 := s.network.Validators[1]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val.Address.String(),
+		Issuers:          []string{val.Address.String(), val2.Address.String()},
+		Metadata:         "metadata",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+	})
+	require.NoError(err)
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		numItems       int
+	}{
+		{
+			name:           "no pagination flags",
+			args:           []string{classId},
+			expectErr:      false,
+			expectedErrMsg: "",
+			numItems:       -1,
+		},
+		{
+			name:           "pagination limit 1",
+			args:           []string{classId, "--limit=1"},
+			expectErr:      false,
+			expectedErrMsg: "",
+			numItems:       1,
+		},
+		{
+			name:           "class not found",
+			args:           []string{"Z100"},
+			expectErr:      true,
+			expectedErrMsg: "not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryClassIssuersCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				require.NoError(err, out.String())
+
+				var res core.QueryClassIssuersResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				if tc.numItems > 0 {
+					require.Len(res.Issuers, tc.numItems)
+				} else {
+					require.GreaterOrEqual(len(res.Issuers), 1)
+				}
+			}
+		})
+	}
 }
