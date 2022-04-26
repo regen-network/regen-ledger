@@ -384,7 +384,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.BankKeeper,
 		app.DistrKeeper,
 	)
-
 	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
 	newModules := []moduletypes.Module{ecocreditModule, dataModule}
 	err := app.smm.RegisterModules(newModules)

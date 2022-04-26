@@ -74,10 +74,10 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 		// fill the order, updating balances and the sell order in state
 		if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
-			autoRetire:         !order.DisableAutoRetire,
-			canPartialFill:     false,
-			batchDenom:         batch.Denom,
-			retirementLocation: order.RetirementJurisdiction,
+			autoRetire:     !order.DisableAutoRetire,
+			canPartialFill: false,
+			batchDenom:     batch.Denom,
+			jurisdiction:   order.RetirementJurisdiction,
 		}); err != nil {
 			return nil, fmt.Errorf("error filling order: %w", err)
 		}
