@@ -113,10 +113,10 @@ func QueryClassIssuersCmd() *cobra.Command {
 
 Args:
 	class-id: credit class id
-
-Example:
-	$ regen q ecocredit class-issuers C01
-	$ regen q ecocredit class-issuers C01 --pagination.limit 10
+		`,
+		Example: `
+$ regen q ecocredit class-issuers C01
+$ regen q ecocredit class-issuers C01 --pagination.limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
