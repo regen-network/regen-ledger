@@ -72,6 +72,12 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
+	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecocreditApi.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	}))
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
