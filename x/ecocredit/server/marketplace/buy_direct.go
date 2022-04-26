@@ -32,7 +32,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if err != nil {
 			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.Denom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
