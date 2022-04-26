@@ -40,7 +40,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
-		Curator:           msg.Curator,
+		Curator:           sender,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,

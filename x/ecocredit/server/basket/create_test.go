@@ -14,7 +14,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -84,7 +83,7 @@ func TestDuplicateDenom(t *testing.T) {
 		Name:             "foo",
 		Fee:              sdk.Coins{fee},
 	}
-	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
+	denom, _, err := baskettypes.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx,
 		&api.Basket{BasketDenom: denom},
@@ -189,7 +188,7 @@ func TestValidBasket(t *testing.T) {
 
 	bskt, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
-	assert.Equal(t, s.addr.String(), bskt.Curator)
+	assert.Equal(t, s.addr.String(), sdk.AccAddress(bskt.Curator).String())
 	assert.Equal(t, "eco.uC.foo", bskt.BasketDenom)
 	assert.Equal(t, uint32(6), bskt.Exponent)
 	assert.Equal(t, "C", bskt.CreditTypeAbbrev)

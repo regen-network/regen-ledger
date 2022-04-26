@@ -290,7 +290,7 @@ func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, crit
 		CreditTypeAbbrev:  ctAbbrev,
 		DateCriteria:      criteria,
 		Exponent:          6,
-		Curator:           s.addr.String(),
+		Curator:           s.addr,
 	})
 	assert.NilError(t, err)
 

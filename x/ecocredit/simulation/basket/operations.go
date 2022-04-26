@@ -391,8 +391,8 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no baskets"), nil, nil
 		}
 
-		var rBasket *basket.Basket
-		var bBalances []*basket.BasketBalance
+		var rBasket *basket.BasketInfo
+		var bBalances []*basket.BasketBalanceInfo
 		for _, b := range baskets {
 			balancesRes, err := bsktQryClient.BasketBalances(ctx, &basket.QueryBasketBalancesRequest{
 				BasketDenom: b.BasketDenom,

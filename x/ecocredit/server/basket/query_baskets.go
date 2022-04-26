@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types/ormutil"
@@ -37,13 +38,24 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 			return nil, err
 		}
 
-		basketGogo := &baskettypes.Basket{}
-		err = ormutil.PulsarToGogoSlow(basket, basketGogo)
-		if err != nil {
-			return nil, err
+		var criteria *baskettypes.DateCriteria
+		if basket.DateCriteria != nil {
+			criteria = &baskettypes.DateCriteria{}
+			if err := ormutil.PulsarToGogoSlow(basket.DateCriteria, criteria); err != nil {
+				return nil, err
+			}
 		}
 
-		res.Baskets = append(res.Baskets, basketGogo)
+		curator := sdk.AccAddress(basket.Curator)
+		res.Baskets = append(res.Baskets, &baskettypes.BasketInfo{
+			BasketDenom:       basket.BasketDenom,
+			Name:              basket.Name,
+			DisableAutoRetire: basket.DisableAutoRetire,
+			CreditTypeAbbrev:  basket.CreditTypeAbbrev,
+			Exponent:          basket.Exponent,
+			Curator:           curator.String(),
+			DateCriteria:      criteria,
+		})
 	}
 
 	it.Close()
