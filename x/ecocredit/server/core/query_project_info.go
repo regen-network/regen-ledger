@@ -26,7 +26,7 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 		Id:           project.Id,
 		Admin:        admin.String(),
 		ClassId:      class.Id,
-		Jurisdiction: project.ProjectJurisdiction,
+		Jurisdiction: project.Jurisdiction,
 		Metadata:     project.Metadata,
 	}
 

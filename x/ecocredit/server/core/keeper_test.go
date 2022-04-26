@@ -92,10 +92,10 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, bat
 	}))
 
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            cKey,
-		ProjectJurisdiction: "US-OR",
-		Metadata:            "",
+		Id:           projectId,
+		ClassKey:     cKey,
+		Jurisdiction: "US-OR",
+		Metadata:     "",
 	})
 	assert.NilError(t, err)
 

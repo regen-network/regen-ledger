@@ -354,10 +354,10 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	end, err := time.Parse("2006-04-02", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              admin.String(),
-		ClassId:             classId,
-		Metadata:            "",
-		ProjectJurisdiction: "US-NY",
+		Issuer:       admin.String(),
+		ClassId:      classId,
+		Metadata:     "",
+		Jurisdiction: "US-NY",
 	})
 	require.NoError(err)
 	bRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
@@ -414,11 +414,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create project
 	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
-		ClassId:             classId,
-		Issuer:              issuer1,
-		Metadata:            "metadata",
-		ProjectJurisdiction: "AQ",
-		ProjectId:           "P03",
+		ClassId:      classId,
+		Issuer:       issuer1,
+		Metadata:     "metadata",
+		Jurisdiction: "AQ",
+		ProjectId:    "P03",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
