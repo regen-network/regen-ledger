@@ -2,15 +2,13 @@ package testsuite
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	gogoproto "github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/proto"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -55,8 +53,8 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	batches := []api.Batch{
-		{Issuer: sdk.AccAddress("addr1"), ProjectKey: 1, Denom: "BIO01-00000000-00000000-001", Metadata: "metadata", IssuanceDate: timestamppb.Now()},
-		{Issuer: nil, ProjectKey: 1, Denom: "BIO02-0000000-0000000-001", Metadata: "metadata", IssuanceDate: timestamppb.Now()},
+		{Issuer: sdk.AccAddress("addr1"), ProjectKey: 1, Denom: "BIO01-00000000-00000000-001", Metadata: "metadata"},
+		{Issuer: nil, ProjectKey: 1, Denom: "BIO02-0000000-0000000-001", Metadata: "metadata"},
 	}
 	batchInfoJSON, err := json.Marshal(batches)
 	require.NoError(err)
@@ -86,20 +84,19 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	wrapper := map[string]json.RawMessage{}
-	wrapper[gogoproto.MessageName(&core.Class{})] = classInfoJSON
-	wrapper[gogoproto.MessageName(&core.ClassIssuer{})] = classIssuersJSON
-	wrapper[gogoproto.MessageName(&core.Project{})] = projectInfoJSON
-	wrapper[gogoproto.MessageName(&core.Batch{})] = batchInfoJSON
-	wrapper[gogoproto.MessageName(&core.BatchBalance{})] = batchBalancesJSON
-	wrapper[gogoproto.MessageName(&core.BatchSupply{})] = batchSupplyJSON
-	wrapper[gogoproto.MessageName(&core.ClassSequence{})] = classSeqJSON
-	wrapper[gogoproto.MessageName(&core.BatchSequence{})] = batchSeqJSON
-	wrapper[gogoproto.MessageName(&core.ProjectSequence{})] = projectSeqJSON
-	wrapper[gogoproto.MessageName(&core.Params{})] = paramsJSON
+	wrapper[string(proto.MessageName(&api.Class{}))] = classInfoJSON
+	wrapper[string(proto.MessageName(&api.ClassIssuer{}))] = classIssuersJSON
+	wrapper[string(proto.MessageName(&api.Project{}))] = projectInfoJSON
+	wrapper[string(proto.MessageName(&api.Batch{}))] = batchInfoJSON
+	wrapper[string(proto.MessageName(&api.BatchBalance{}))] = batchBalancesJSON
+	wrapper[string(proto.MessageName(&api.BatchSupply{}))] = batchSupplyJSON
+	wrapper[string(proto.MessageName(&api.ClassSequence{}))] = classSeqJSON
+	wrapper[string(proto.MessageName(&api.BatchSequence{}))] = batchSeqJSON
+	wrapper[string(proto.MessageName(&api.ProjectSequence{}))] = projectSeqJSON
+	wrapper[string(proto.MessageName(&api.Params{}))] = paramsJSON
 
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)
-	fmt.Println(string(bz))
 	wrapper = map[string]json.RawMessage{}
 	wrapper["ecocredit"] = bz
 
