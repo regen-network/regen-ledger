@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -16,10 +15,6 @@ func TestSend_Valid(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2) // this will be called for each batchDenom we send
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
@@ -64,10 +59,6 @@ func TestSend_Errors(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
 
 	// test sending more than user balance
 	_, err := s.k.Send(s.ctx, &core.MsgSend{

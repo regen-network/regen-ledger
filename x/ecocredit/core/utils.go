@@ -118,6 +118,16 @@ var (
 	reFullBatchDenom = regexp.MustCompile(fmt.Sprintf(`^%s$`, ReBatchDenom))
 )
 
+// ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring it is only 1-3 uppercase letters.
+func ValidateCreditTypeAbbreviation(abbr string) error {
+	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
+	matches := reAbbr.FindStringSubmatch(abbr)
+	if matches == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase latin letters: got %s", abbr)
+	}
+	return nil
+}
+
 // ValidateClassID validates a class ID conforms to the format described in FormatClassID. The
 // return is nil if the ID is valid.
 func ValidateClassID(classId string) error {

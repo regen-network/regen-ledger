@@ -1,6 +1,8 @@
 package core
 
 import (
+	"regexp"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -9,7 +11,7 @@ const (
 )
 
 func (m CreditType) Validate() error {
-	if err := ValidateCreditTypeAbbreviation(m.Abbreviation); err != nil {
+	if err := validateCreditTypeAbbreviation(m.Abbreviation); err != nil {
 		return err
 	}
 	if len(m.Name) == 0 {
@@ -23,6 +25,17 @@ func (m CreditType) Validate() error {
 	}
 	if m.Precision != PRECISION {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit type precision is currently locked to %d", PRECISION)
+	}
+	return nil
+}
+
+// Check that CreditType abbreviation is valid, i.e. it consists of 1-3
+// uppercase letters
+func validateCreditTypeAbbreviation(abbr string) error {
+	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
+	matches := reAbbr.FindStringSubmatch(abbr)
+	if matches == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase latin letters: got %s", abbr)
 	}
 	return nil
 }

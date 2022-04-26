@@ -27,9 +27,8 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(6)
+	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -79,9 +78,8 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(6)
+	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -126,9 +124,8 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(4)
+	}).Times(2)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -155,9 +152,8 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}, {Denom: "ubar"}}
-	}).Times(5)
+	}).Times(3)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -208,9 +204,8 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
+	}).Times(1)
 
 	future := time.Date(2077, 1, 1, 1, 1, 1, 1, time.Local)
 	middle := time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local)
@@ -262,9 +257,8 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
+	}).Times(1)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),

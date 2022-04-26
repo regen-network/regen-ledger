@@ -31,7 +31,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
-	if err = validateCreditType(params.CreditTypes, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
+	if err = k.validateCreditType(ctx, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
 	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
@@ -87,20 +87,19 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 // validateCreditType returns error if a given credit type abbreviation doesn't exist or
 // it's precision is bigger then the requested exponent.
-func validateCreditType(creditTypes []*core.CreditType, abbreviation string, exponent uint32) error {
-	for _, c := range creditTypes {
-		if c.Abbreviation == abbreviation {
-			if c.Precision > exponent {
-				return sdkerrors.ErrInvalidRequest.Wrapf(
-					"exponent %d must be >= credit type precision %d",
-					exponent,
-					c.Precision,
-				)
-			}
-			return nil
-		}
+func (k Keeper) validateCreditType(ctx context.Context, abbreviation string, exponent uint32) error {
+	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, abbreviation)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", abbreviation, err.Error())
 	}
-	return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation %q doesn't exist", abbreviation)
+	if creditType.Precision > exponent {
+		return sdkerrors.ErrInvalidRequest.Wrapf(
+			"exponent %d must be >= credit type precision %d",
+			exponent,
+			creditType.Precision,
+		)
+	}
+	return nil
 }
 
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts

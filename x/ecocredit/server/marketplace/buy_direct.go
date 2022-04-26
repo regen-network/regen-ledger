@@ -32,7 +32,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if err != nil {
 			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, k.paramsKeeper, batch.Denom)
+		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -74,10 +74,10 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 		// fill the order, updating balances and the sell order in state
 		if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
-			autoRetire:         !order.DisableAutoRetire,
-			canPartialFill:     false,
-			batchDenom:         batch.Denom,
-			retirementLocation: order.RetirementJurisdiction,
+			autoRetire:     !order.DisableAutoRetire,
+			canPartialFill: false,
+			batchDenom:     batch.Denom,
+			jurisdiction:   order.RetirementJurisdiction,
 		}); err != nil {
 			return nil, fmt.Errorf("error filling order: %w", err)
 		}

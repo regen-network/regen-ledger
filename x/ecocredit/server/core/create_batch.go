@@ -65,7 +65,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batchDenom)
+	creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batchDenom)
 	if err != nil {
 		return nil, err
 	}

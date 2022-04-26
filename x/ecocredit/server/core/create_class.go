@@ -3,8 +3,6 @@ package core
 import (
 	"context"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -47,9 +45,9 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	creditType, err := utils.GetCreditType(req.CreditTypeAbbrev, params.CreditTypes)
+	creditType, err := k.stateStore.CreditTypeTable().Get(goCtx, req.CreditTypeAbbrev)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", req.CreditTypeAbbrev, err.Error())
 	}
 
 	// default the sequence to 1 for the `not found` case.
