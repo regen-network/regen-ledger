@@ -92,6 +92,7 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, bat
 	}))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
+		Issuer:     s.addr,
 		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
