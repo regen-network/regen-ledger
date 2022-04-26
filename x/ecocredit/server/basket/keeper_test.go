@@ -68,7 +68,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
 	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
 	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
-	s.k = basket.NewKeeper(s.db, s.bankKeeper, s.distKeeper, s.paramsKeeper)
+
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	_, _, s.addr = testdata.KeyTestPubAddr()
