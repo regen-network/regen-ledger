@@ -50,7 +50,7 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, mintTradable, mintRetired, math.NewDecFromInt64(0), 6)
 }
 
-// asserts that batch credits can be minted and sent to accounts with no previous balance
+// tests that batch credits can be minted and sent to an account with no previous balance
 func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)

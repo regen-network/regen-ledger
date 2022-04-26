@@ -13,7 +13,7 @@ import (
 
 // MintBatchCredits issues additional credits from an open batch.
 func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCredits) (*core.MsgMintBatchCreditsResponse, error) {
-	minter, err := sdk.AccAddressFromBech32(req.Issuer)
+	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	if err := k.assertCanMintBatch(ctx, minter, batch); err != nil {
+	if err := k.assertCanMintBatch(issuer, batch); err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
 
@@ -40,13 +40,14 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	if err != nil {
 		return nil, err
 	}
+	precision := ct.Precision
 	for _, iss := range req.Issuance {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		recipient, err := sdk.AccAddressFromBech32(iss.Recipient)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid recipient address %s: %s", iss.Recipient, err.Error())
 		}
-		decs, err := utils.GetNonNegativeFixedDecs(ct.Precision, iss.TradableAmount, iss.RetiredAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(precision, iss.TradableAmount, iss.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -60,20 +61,20 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		if err != nil {
 			return nil, err
 		}
-		sDecs, err := utils.GetNonNegativeFixedDecs(ct.Precision, balance.Tradable, balance.Retired, supply.TradableAmount, supply.RetiredAmount)
+		decs, err = utils.GetNonNegativeFixedDecs(precision, balance.Tradable, balance.Retired, supply.TradableAmount, supply.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
 
-		balT, balR := sDecs[0], sDecs[1]
-		supT, supR := sDecs[2], sDecs[3]
+		balanceTradable, balanceRetired := decs[0], decs[1]
+		supplyTradable, supplyRetired := decs[2], decs[3]
 
 		if !retired.IsZero() {
-			balR, err = balR.Add(retired)
+			balanceRetired, err = balanceRetired.Add(retired)
 			if err != nil {
 				return nil, err
 			}
-			supR, err = supR.Add(retired)
+			supplyRetired, err = supplyRetired.Add(retired)
 			if err != nil {
 				return nil, err
 			}
@@ -85,14 +86,15 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
-
+			balance.Retired = balanceRetired.String()
+			supply.RetiredAmount = supplyRetired.String()
 		}
 		if !tradable.IsZero() {
-			balT, err = balT.Add(tradable)
+			balanceTradable, err = balanceTradable.Add(tradable)
 			if err != nil {
 				return nil, err
 			}
-			supT, err = supT.Add(tradable)
+			supplyTradable, err = supplyTradable.Add(tradable)
 			if err != nil {
 				return nil, err
 			}
@@ -106,13 +108,12 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
+			balance.Tradable = balanceTradable.String()
+			supply.TradableAmount = supplyTradable.String()
 		}
-		balance.Tradable, balance.Retired = balT.String(), balR.String()
 		if err := k.stateStore.BatchBalanceTable().Save(ctx, balance); err != nil {
 			return nil, err
 		}
-
-		supply.TradableAmount, supply.RetiredAmount = supT.String(), supR.String()
 		if err := k.stateStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 			return nil, err
 		}
@@ -120,12 +121,12 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	return &core.MsgMintBatchCreditsResponse{}, nil
 }
 
-// asserts that the batch is open for minting and that the requester address (minter) matches the batch issuer address.
-func (k Keeper) assertCanMintBatch(ctx context.Context, minter sdk.AccAddress, batch *api.Batch) error {
+// asserts that the batch is open for minting and that the requester address matches the batch issuer address.
+func (k Keeper) assertCanMintBatch(issuer sdk.AccAddress, batch *api.Batch) error {
 	if !batch.Open {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be minted in a closed batch")
 	}
-	if !sdk.AccAddress(batch.Issuer).Equals(minter) {
+	if !sdk.AccAddress(batch.Issuer).Equals(issuer) {
 		return sdkerrors.ErrUnauthorized.Wrapf("only the account that issued the batch can mint additional credits")
 	}
 	return nil
