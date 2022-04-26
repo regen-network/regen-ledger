@@ -64,7 +64,7 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = NewKeeper(s.db, s.coreStore, s.bankKeeper, s.paramsKeeper)
+	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	return s
 }

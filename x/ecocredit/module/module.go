@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -22,7 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
@@ -30,7 +31,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
 	marketplacetypes "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
@@ -53,7 +53,7 @@ func NewModule(
 	distributionKeeper ecocredit.DistributionKeeper,
 ) *Module {
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(core.ParamKeyTable())
+		paramSpace = paramSpace.WithKeyTable(coretypes.ParamKeyTable())
 	}
 
 	return &Module{
@@ -107,7 +107,7 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	}
 
 	params := coretypes.DefaultParams()
-	err = core.MergeParamsIntoTarget(cdc, &params, jsonTarget)
+	err = coretypes.MergeParamsIntoTarget(cdc, &params, jsonTarget)
 	if err != nil {
 		panic(err)
 	}
@@ -150,7 +150,7 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfi
 		return fmt.Errorf("failed to unmarshal %s params state: %w", ecocredit.ModuleName, err)
 	}
 
-	return core.ValidateGenesis(bz, params)
+	return coretypes.ValidateGenesis(bz, params)
 
 }
 
