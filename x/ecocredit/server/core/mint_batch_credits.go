@@ -118,6 +118,14 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			return nil, err
 		}
 	}
+
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMintBatchCredits{
+		BatchDenom: batch.Denom,
+		OriginTx:   req.OriginTx,
+	}); err != nil {
+		return nil, err
+	}
+
 	return &core.MsgMintBatchCreditsResponse{}, nil
 }
 
