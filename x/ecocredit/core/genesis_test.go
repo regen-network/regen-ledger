@@ -68,24 +68,25 @@ func TestValidateGenesis(t *testing.T) {
 				"project_jurisdiction":"AQ",
 				"metadata":"project metadata"
 			}
+		],
+		"regen.ecocredit.v1.CreditType": [
+			{
+				"name":"carbon",
+				"abbreviation": "C",
+				"unit":"metric ton C02 equivalent",
+				"precision":6
+			},
+			{
+				"name":"biodiversity",
+				"abbreviation": "BIO",
+				"unit":"acres",
+				"precision":6
+			}
 		]
 	}`
 
 	params := core.Params{
-		CreditTypes: []*core.CreditType{
-			{
-				Name:         "carbon",
-				Abbreviation: "C",
-				Unit:         "metric ton CO2 equivalent",
-				Precision:    6,
-			},
-			{
-				Abbreviation: "BIO",
-				Name:         "biodiversity",
-				Unit:         "ton",
-				Precision:    6,
-			},
-		},
+		AllowlistEnabled: true,
 	}
 	err := core.ValidateGenesis(json.RawMessage(x), params)
 	require.NoError(t, err)
@@ -95,23 +96,39 @@ func TestGenesisValidate(t *testing.T) {
 	defaultParams := core.DefaultParams()
 
 	testCases := []struct {
-		id          string
-		gensisState func() json.RawMessage
-		params      core.Params
-		expectErr   bool
-		errorMsg    string
+		id           string
+		genesisState func() json.RawMessage
+		params       core.Params
+		expectErr    bool
+		errorMsg     string
 	}{
 		{
 			"valid: no credit batches",
 			func() json.RawMessage {
-				return json.RawMessage(`{
+				return json.RawMessage(`
+				{
 					"regen.ecocredit.v1.Class": [
 						{
 							"id":"C01",
 							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
 							"credit_type_abbrev":"C"
 						}
-					]}`)
+					],
+					"regen.ecocredit.v1.CreditType": [
+						{
+							"name":"carbon",
+							"abbreviation": "C",
+							"unit":"metric ton C02 equivalent",
+							"precision":6
+						},
+						{
+							"name":"biodiversity",
+							"abbreviation": "BIO",
+							"unit":"acres",
+							"precision":6
+						}
+				]}
+`)
 			},
 			defaultParams,
 			false,
@@ -140,54 +157,6 @@ func TestGenesisValidate(t *testing.T) {
 			defaultParams,
 			true,
 			"credit type abbreviation must be 1-3 uppercase latin letters",
-		},
-		{
-			"invalid: credit type param",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class": [{
-						"id":"C01",
-						"admin":"v9PCozRRuFc5I5hdJOwD3k9WMOI=",
-						"credit_type_abbrev":"C"
-					}]					
-					}`)
-			},
-			func() core.Params {
-				p := core.DefaultParams()
-				p.CreditTypes[0].Precision = 7
-				return p
-			}(),
-			true,
-			"invalid precision 7: precision is currently locked to 6: invalid request",
-		},
-		{
-			"invalid: duplicate credit type",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class": [{
-						"id":"C01",
-						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
-						"credit_type_abbrev":"C"
-					}]					
-					}`)
-			},
-			func() core.Params {
-				p := core.DefaultParams()
-				p.CreditTypes = []*core.CreditType{{
-					Name:         "carbon",
-					Abbreviation: "C",
-					Unit:         "metric ton CO2 equivalent",
-					Precision:    6,
-				}, {
-					Name:         "carbon",
-					Abbreviation: "C",
-					Unit:         "metric ton CO2 equivalent",
-					Precision:    6,
-				}}
-				return p
-			}(),
-			true,
-			"duplicate credit type name in request: carbon: invalid request",
 		},
 		{
 			"invalid: bad addresses in allowlist",
@@ -261,6 +230,20 @@ func TestGenesisValidate(t *testing.T) {
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z"
 					}],
+					"regen.ecocredit.v1.CreditType": [
+						{
+							"name":"carbon",
+							"abbreviation": "C",
+							"unit":"metric ton C02 equivalent",
+							"precision":6
+						},
+						{
+							"name":"biodiversity",
+							"abbreviation": "BIO",
+							"unit":"acres",
+							"precision":6
+						}
+					],
 					"regen.ecocredit.v1.BatchBalance":[{
 						"batch_key":"1",
 						"address":"mAAyikSMAfVwmlW4BPV2Q6GmpHc=",
@@ -276,6 +259,20 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: invalid supply",
 			func() json.RawMessage {
 				return json.RawMessage(`{
+					"regen.ecocredit.v1.CreditType": [
+						{
+							"name":"carbon",
+							"abbreviation": "C",
+							"unit":"metric ton C02 equivalent",
+							"precision":6
+						},
+						{
+							"name":"biodiversity",
+							"abbreviation": "BIO",
+							"unit":"acres",
+							"precision":6
+						}
+					],
 					"regen.ecocredit.v1.Class":[{
 						"id":"C01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
@@ -314,6 +311,20 @@ func TestGenesisValidate(t *testing.T) {
 			"valid test case",
 			func() json.RawMessage {
 				return json.RawMessage(`{
+				"regen.ecocredit.v1.CreditType": [
+					{
+						"name":"carbon",
+						"abbreviation": "C",
+						"unit":"metric ton C02 equivalent",
+						"precision":6
+					},
+					{
+						"name":"biodiversity",
+						"abbreviation": "BIO",
+						"unit":"acres",
+						"precision":6
+					}
+				],
 				"regen.ecocredit.v1.Class":[{
 					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -363,6 +374,20 @@ func TestGenesisValidate(t *testing.T) {
 			"valid test case escrowed balance",
 			func() json.RawMessage {
 				return json.RawMessage(`{
+				"regen.ecocredit.v1.CreditType": [
+					{
+						"name":"carbon",
+						"abbreviation": "C",
+						"unit":"metric ton C02 equivalent",
+						"precision":6
+					},
+					{
+						"name":"biodiversity",
+						"abbreviation": "BIO",
+						"unit":"acres",
+						"precision":6
+					}
+				],
 				"regen.ecocredit.v1.Class":[{
 					"id":"C01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -415,6 +440,20 @@ func TestGenesisValidate(t *testing.T) {
 			func() json.RawMessage {
 				return json.RawMessage(`
 				{
+					"regen.ecocredit.v1.CreditType": [
+						{
+							"name":"carbon",
+							"abbreviation": "C",
+							"unit":"metric ton C02 equivalent",
+							"precision":6
+						},
+						{
+							"name":"biodiversity",
+							"abbreviation": "BIO",
+							"unit":"acres",
+							"precision":6
+						}
+					],
 					"regen.ecocredit.v1.Class": [
 					  {
 						"id": "C01",
@@ -496,7 +535,7 @@ func TestGenesisValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
-			err := core.ValidateGenesis(tc.gensisState(), tc.params)
+			err := core.ValidateGenesis(tc.genesisState(), tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)

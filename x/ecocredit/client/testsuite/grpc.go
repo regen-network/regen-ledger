@@ -176,7 +176,6 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 	val := s.network.Validators[0]
-	creditTypes := core.DefaultParams().CreditTypes
 
 	url := fmt.Sprintf("%s%scredit-types", val.APIAddress, coreRoute)
 	resp, err := rest.GetRequest(url)
@@ -185,8 +184,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	var res core.QueryCreditTypesResponse
 	err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Equal(creditTypes, res.CreditTypes)
-
+	require.Greater(len(res.CreditTypes), 0)
 }
 
 func (s *IntegrationTestSuite) TestQueryBalance() {
@@ -257,7 +255,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGRPCQueryParams() {
+func (s *IntegrationTestSuite) TestQueryParams() {
 	val := s.network.Validators[0]
 	require := s.Require()
 

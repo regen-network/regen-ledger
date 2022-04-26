@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -40,10 +39,6 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		Note: "bridged credits",
 	}
 
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = core.DefaultParams().CreditTypes
-	})
 	_, err = s.k.MintBatchCredits(ctx, &msg)
 	assert.NilError(t, err)
 
@@ -83,10 +78,6 @@ func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 		Note: "bridged credits",
 	}
 
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = core.DefaultParams().CreditTypes
-	})
 	_, err = s.k.MintBatchCredits(ctx, &msg)
 	assert.NilError(t, err)
 
