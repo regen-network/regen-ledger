@@ -59,12 +59,19 @@ func setupBase(t *testing.T) *baseSuite {
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
+	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	}))
+
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = NewKeeper(s.db, s.coreStore, s.bankKeeper, s.paramsKeeper)
+	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 	return s
 }

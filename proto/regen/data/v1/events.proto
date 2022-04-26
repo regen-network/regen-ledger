@@ -19,3 +19,18 @@ message EventAttest {
   // the data.
   string attestor = 2;
 }
+
+// EventDefineResolver is an event emitted when a resolved is defined on chain.
+message EventDefineResolver {
+  // id is the ID of the defined resolver.
+  uint64 id = 1;
+}
+
+// EventRegisterResolver is an event emitted when data is registered to a resolver on chain.
+message EventRegisterResolver {
+  // id is the ID of the resolver that the data was registered to.
+  uint64 id = 1;
+
+  // iri is the IRI of the data that was registered.
+  string iri = 2;
+}

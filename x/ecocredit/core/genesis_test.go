@@ -23,6 +23,14 @@ func TestValidateGenesis(t *testing.T) {
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
 	require.NoError(t, err)
 	ss, err := api.NewStateStore(modDB)
+
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}))
+
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&api.BatchBalance{BatchKey: 1, Address: sdk.AccAddress("addr1"), Tradable: "90.003", Retired: "9.997"}))
 
@@ -58,20 +66,7 @@ func TestValidateGenesis(t *testing.T) {
 	require.NoError(t, err)
 
 	params := core.Params{
-		CreditTypes: []*core.CreditType{
-			{
-				Name:         "carbon",
-				Abbreviation: "C",
-				Unit:         "metric ton CO2 equivalent",
-				Precision:    6,
-			},
-			{
-				Abbreviation: "BIO",
-				Name:         "biodiversity",
-				Unit:         "ton",
-				Precision:    6,
-			},
-		},
+		AllowlistEnabled: true,
 	}
 	err = core.ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
@@ -91,6 +86,12 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid: no credit batches",
 			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
 				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            dummyAddr,
@@ -170,6 +171,12 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"expect error: balances are missing",
 			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
 				denom := "C01-00000000-00000000-001"
 				key, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
@@ -206,6 +213,12 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"expect error: invalid supply",
 			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
 				denom := "C01-00000000-00000000-001"
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
@@ -251,6 +264,12 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid test case",
 			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            dummyAddr,
@@ -299,6 +318,12 @@ func TestGenesisValidate(t *testing.T) {
 		{
 			"valid test case, multiple classes",
 			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            dummyAddr,

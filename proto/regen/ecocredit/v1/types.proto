@@ -31,9 +31,6 @@ message Params {
   // creation
   bool allowlist_enabled = 4;
 
-  // credit_types is a list of definitions for credit types
-  repeated CreditType credit_types = 5;
-
   // allowed_ask_denoms is a list of denoms (and display information) allowed to
   // be used in sell order ask prices.
   repeated AskDenom allowed_ask_denoms = 6;
