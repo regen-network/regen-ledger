@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -12,8 +11,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
+// MintBatchCredits issues additional credits from an open batch.
 func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCredits) (*core.MsgMintBatchCreditsResponse, error) {
-	issuer, err := sdk.AccAddressFromBech32(req.Issuer)
+	minter, err := sdk.AccAddressFromBech32(req.Issuer)
 	if err != nil {
 		return nil, err
 	}
@@ -23,12 +23,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	if !batch.Open {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap("batch credits cannot be minted in a closed batch")
-	}
-
-	if !sdk.AccAddress(batch.Issuer).Equals(issuer) {
-		return nil, sdkerrors.ErrUnauthorized.Wrap("only the batch issuer can mint more credits")
+	if err := k.assertCanMintBatch(ctx, minter, batch); err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
 
 	if err = k.stateStore.BatchOrigTxTable().Insert(ctx, &api.BatchOrigTx{
@@ -55,16 +51,10 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			return nil, err
 		}
 		tradable, retired := decs[0], decs[1]
-		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batch.Key)
+
+		balance, err := utils.GetBalance(ctx, k.stateStore.BatchBalanceTable(), recipient, batch.Key)
 		if err != nil {
-			if ormerrors.IsNotFound(err) {
-				balance = &api.BatchBalance{
-					BatchKey: batch.Key,
-					Address:  recipient,
-				}
-			} else {
-				return nil, err
-			}
+			return nil, err
 		}
 		supply, err := k.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 		if err != nil {
@@ -128,4 +118,15 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		}
 	}
 	return &core.MsgMintBatchCreditsResponse{}, nil
+}
+
+// asserts that the batch is open for minting and that the requester address (minter) matches the batch issuer address.
+func (k Keeper) assertCanMintBatch(ctx context.Context, minter sdk.AccAddress, batch *api.Batch) error {
+	if !batch.Open {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be minted in a closed batch")
+	}
+	if !sdk.AccAddress(batch.Issuer).Equals(minter) {
+		return sdkerrors.ErrUnauthorized.Wrapf("only the account that issued the batch can mint additional credits")
+	}
+	return nil
 }

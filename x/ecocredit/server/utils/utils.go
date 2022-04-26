@@ -3,17 +3,18 @@ package utils
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
+func GetCreditTypeFromBatchDenom(ctx context.Context, store ecoApi.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	classId := core.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassTable().GetById(ctx, classId)
@@ -50,4 +51,21 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
+}
+
+// GetBalance gets the balance from the account, returning a zero value balance if no balance is found.
+// NOTE: the default value is not inserted into the balance table in the `not found` case. Calling Update when a default
+// value is returned will cause an error. Save should be used when dealing with balances from this function.
+func GetBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr types.AccAddress, key uint64) (*ecoApi.BatchBalance, error) {
+	bal, err := table.Get(ctx, addr, key)
+	if err != nil {
+		if !ormerrors.IsNotFound(err) {
+			return nil, err
+		}
+		bal = &ecoApi.BatchBalance{
+			BatchKey: key,
+			Address:  addr,
+		}
+	}
+	return bal, nil
 }
