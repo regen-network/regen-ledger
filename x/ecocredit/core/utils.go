@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"unicode"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -51,17 +50,6 @@ func FormatClassId(creditTypeAbbreviation string, classSeqNo uint64) string {
 // e.g. C01-001
 func FormatProjectId(classId string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
-}
-
-// FormatCustomProjectId formats the ID to use for a new project, based on the credit class id and
-// custom project id. This format may evolve over time, but will maintain backwards compatibility.
-//
-// The current version has the format:
-// <credit_class_id>-<custom_project_id>
-//
-// e.g. C01-VERRA1
-func FormatCustomProjectId(classId string, customId string) string {
-	return fmt.Sprintf("%s-%s", classId, customId)
 }
 
 // FormatDenom formats the denomination to use for a credit batch. This format may evolve over
@@ -162,22 +150,6 @@ func GetClassIdFromBatchDenom(denom string) string {
 		break
 	}
 	return s.String()
-}
-
-// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
-func NormalizeCreditTypeName(name string) string {
-	return fastRemoveWhitespace(strings.ToLower(name))
-}
-
-func fastRemoveWhitespace(str string) string {
-	var b strings.Builder
-	b.Grow(len(str))
-	for _, ch := range str {
-		if !unicode.IsSpace(ch) {
-			b.WriteRune(ch)
-		}
-	}
-	return b.String()
 }
 
 // exponent prefix map https://en.wikipedia.org/wiki/Metric_prefix

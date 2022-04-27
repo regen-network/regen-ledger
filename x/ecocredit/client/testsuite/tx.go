@@ -1264,7 +1264,6 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				ClassId:             classId,
 				Metadata:            "hi",
 				ProjectJurisdiction: "US-OR",
-				ProjectId:           "C01-456",
 			}),
 			false,
 			"",

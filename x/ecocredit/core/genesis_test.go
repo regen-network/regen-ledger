@@ -492,7 +492,7 @@ func TestGenesisValidate(t *testing.T) {
 					  {
 						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 						"project_key": "2",
-						"denom":"C01-001-00000000-00000000-002",
+						"denom":"C01-002-00000000-00000000-001",
 						"start_date":"2021-04-08T10:40:10.774108556Z",
 						"end_date":"2022-04-08T10:40:10.774108556Z",
 						"metadata":"meta-data"
