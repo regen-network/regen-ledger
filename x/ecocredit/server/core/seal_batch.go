@@ -22,12 +22,12 @@ func (k Keeper) SealBatch(ctx context.Context, req *core.MsgSealBatch) (*core.Ms
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	if !batch.Open {
-		return &core.MsgSealBatchResponse{}, nil
-	}
-
 	if !sdk.AccAddress(batch.Issuer).Equals(issuer) {
 		return nil, sdkerrors.ErrUnauthorized.Wrap("only the batch issuer can seal the batch")
+	}
+
+	if !batch.Open {
+		return &core.MsgSealBatchResponse{}, nil
 	}
 
 	batch.Open = false
