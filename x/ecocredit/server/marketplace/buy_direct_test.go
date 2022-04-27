@@ -4,12 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -21,15 +20,12 @@ func TestBuy_ValidTradable(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
 	sellExp := time.Now()
+	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
@@ -40,8 +36,8 @@ func TestBuy_ValidTradable(t *testing.T) {
 	sellOrderId := res.SellOrderIds[0]
 
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
-	// sell order ask price: 10ufoo, buy order of 3 credits -> 10 * 3 = 30ufoo
-	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
+	// sell order ask price: 10, buy order of 3 credits -> 10 * 3 = 30
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{userCoinBalance}).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(3)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt.String(), &ask, true, "")
@@ -64,14 +60,11 @@ func TestBuy_ValidRetired(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 30)
-
+	userBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	// make a sell order
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -106,13 +99,11 @@ func TestBuy_OrderFilled(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 100)
+	userBalance := sdk.NewInt64Coin(validAskDenom, 100)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	// make a sell order
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -144,13 +135,11 @@ func TestBuy_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 150)
+	userBalance := sdk.NewInt64Coin(validAskDenom, 150)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	// make a sell order
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).AnyTimes()
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -185,8 +174,8 @@ func TestBuy_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
 
 	// bidding more than in the bank
-	inBank := sdk.NewInt64Coin("ufoo", 10)
-	biddingWith := sdk.NewInt64Coin("ufoo", 100)
+	inBank := sdk.NewInt64Coin(validAskDenom, 10)
+	biddingWith := sdk.NewInt64Coin(validAskDenom, 100)
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, "10", &biddingWith, false, "US-NV")
 	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
@@ -196,14 +185,11 @@ func TestBuy_Decimal(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userCoinBalance := sdk.NewInt64Coin("ufoo", 50)
+	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 50)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: "ufoo"}}
-	}).Times(1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -217,8 +203,8 @@ func TestBuy_Decimal(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
 
 	purchaseAmt := "3.985321"
-	expectedCost := sdk.NewInt64Coin("ufoo", 39)
-	// sell order ask price: 10ufoo, buy order of 3.215 credits -> 10 * 3.215 = 32.15
+	expectedCost := sdk.NewInt64Coin(validAskDenom, 39)
+	// sell order ask price: 10, buy order of 3.215 credits -> 10 * 3.215 = 32.15
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{expectedCost}).Return(nil).Times(1)
 
 	_, err = buyDirect(s, buyerAddr.String(), sellOrderId, purchaseAmt, &ask, true, "")

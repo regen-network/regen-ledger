@@ -18,10 +18,14 @@ import (
 )
 
 var (
+	defaultParams = core.DefaultParams()
+	askDenoms     = defaultParams.AllowedAskDenoms
+	validAskDenom = askDenoms[0].Denom
+
 	classId    = "C01"
 	batchDenom = "C01-20200101-20200201-001"
 	start, end = timestamppb.Now(), timestamppb.Now()
-	ask        = sdk.NewInt64Coin("ufoo", 10)
+	ask        = sdk.NewInt64Coin(validAskDenom, 10)
 	creditType = core.CreditType{Name: "carbon", Abbreviation: "C", Unit: "tonnes", Precision: 6}
 )
 

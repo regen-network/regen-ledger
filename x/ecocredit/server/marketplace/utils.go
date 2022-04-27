@@ -15,9 +15,9 @@ import (
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
 func isDenomAllowed(ctx sdk.Context, denom string, pk ecocredit.ParamKeeper) bool {
-	var params core.Params
-	pk.GetParamSet(ctx, &params)
-	for _, askDenom := range params.AllowedAskDenoms {
+	var askDenoms []*core.AskDenom
+	pk.Get(ctx, core.KeyAllowedAskDenoms, &askDenoms)
+	for _, askDenom := range askDenoms {
 		if askDenom.Denom == denom {
 			return true
 		}

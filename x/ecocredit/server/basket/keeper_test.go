@@ -22,8 +22,16 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+)
+
+var (
+	gmAny         = gomock.Any()
+	defaultParams = core.DefaultParams()
+	basketFees    = defaultParams.BasketFee
+	validFee      = basketFees[0]
 )
 
 type baseSuite struct {
