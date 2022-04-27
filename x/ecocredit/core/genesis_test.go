@@ -2,6 +2,7 @@ package core_test
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
@@ -388,17 +389,8 @@ func TestGenesisValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
-			ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
-			modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-			require.NoError(t, err)
-			ss, err := api.NewStateStore(modDB)
-			require.NoError(t, err)
-			tc.setupState(ormCtx, ss)
-			target := ormjson.NewRawMessageTarget()
-			require.NoError(t, modDB.ExportJSON(ormCtx, target))
-			jsn, err := target.JSON()
-			require.NoError(t, err)
-			err = core.ValidateGenesis(jsn, tc.params)
+			jsn := setupStateAndExportJSON(t, tc.setupState)
+			err := core.ValidateGenesis(jsn, tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -407,4 +399,19 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+// setupStateAndExportJSON setups up state as defined in the setupFunc function and then exports the ORM data as JSON.
+func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss api.StateStore)) json.RawMessage {
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
+	setupFunc(ormCtx, ss)
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	jsn, err := target.JSON()
+	require.NoError(t, err)
+	return jsn
 }
