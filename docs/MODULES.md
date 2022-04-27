@@ -4,8 +4,8 @@ Regen Ledger includes native modules built and maintained within the [regen-ledg
 
 ## Regen Ledger
 
-- [Ecocredit Module](./ecocredit/)
-- [Data Module](./data/)
+- [Ecocredit Module](ecocredit/)
+- [Data Module](data/)
 
 ## Cosmos SDK
 
