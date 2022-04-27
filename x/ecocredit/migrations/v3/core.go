@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -22,7 +23,7 @@ type batchMapT struct {
 
 // MigrateState performs in-place store migrations from v3.0 to v4.0.
 func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
-	cdc codec.Codec, ss api.StateStore) error {
+	cdc codec.Codec, ss api.StateStore, subspace paramtypes.Subspace) error {
 	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ClassInfo{}, cdc)
 	if err != nil {
 		return err
@@ -41,6 +42,26 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
 
+	if !subspace.HasKeyTable() {
+		subspace.WithKeyTable(ParamKeyTable())
+	}
+
+	// migrate credit types from params to ORM table
+	var creditTypes []*CreditType
+	subspace.Get(sdkCtx, KeyCreditTypes, &creditTypes)
+
+	ctx := sdk.WrapSDKContext(sdkCtx)
+	for _, creditType := range creditTypes {
+		if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+			Abbreviation: creditType.Abbreviation,
+			Name:         creditType.Name,
+			Unit:         creditType.Unit,
+			Precision:    creditType.Precision,
+		}); err != nil {
+			return err
+		}
+	}
+
 	// migrate credit classes to ORM v1
 	classItr, err := classInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
@@ -50,7 +71,6 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 	classKeyToClassId := make(map[uint64]string) // map of a class key to a class id
 	classIdToClassKey := make(map[string]uint64) // map of a class id to a class key
-	ctx := sdk.WrapSDKContext(sdkCtx)
 	for {
 		var classInfo ClassInfo
 		if _, err := classItr.LoadNext(&classInfo); err != nil {
