@@ -11,6 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,11 +23,14 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
+	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -61,8 +67,54 @@ func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch)
 	return testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
 }
 
+func (s *IntegrationTestSuite) setupCustomGenesis() {
+	// setup temporary mem db
+	db := dbm.NewMemDB()
+	defer func() {
+		if err := db.Close(); err != nil {
+			panic(err)
+		}
+	}()
+	backend := ormtable.NewBackend(ormtable.BackendOptions{
+		CommitmentStore: db,
+		IndexStore:      db,
+	})
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	s.Require().NoError(err)
+	ormCtx := ormtable.WrapContextDefault(backend)
+	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	})
+	s.Require().NoError(err)
+
+	// export genesis into target
+	target := ormjson.NewRawMessageTarget()
+	err = modDB.ExportJSON(ormCtx, target)
+	s.Require().NoError(err)
+
+	// merge the params into the json target
+	params := core.DefaultParams()
+	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
+	s.Require().NoError(err)
+
+	// get raw json from target
+	ecoJsn, err := target.JSON()
+	s.Require().NoError(err)
+
+	// set the module genesis
+	s.cfg.GenesisState[ecocredit.ModuleName] = ecoJsn
+}
+
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
+
+	s.setupCustomGenesis()
 
 	var err error
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
@@ -248,11 +300,11 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "META2",
-		ProjectJurisdiction: "US-OR",
-		ProjectId:           "FBI",
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "META2",
+		Jurisdiction: "US-OR",
+		ProjectId:    "FBI",
 	})
 	s.Require().NoError(err)
 
@@ -977,7 +1029,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			name: "valid",
 			args: append(
 				[]string{
-					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false}]", batchDenom),
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100stake\", disable_auto_retire: false}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -988,13 +1040,14 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				Quantity:          "5",
 				AskPrice:          "100",
 				DisableAutoRetire: false,
+				Expiration:        &gogotypes.Timestamp{},
 			},
 		},
 		{
 			name: "valid with expiration",
 			args: append(
 				[]string{
-					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100uregen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]", batchDenom),
+					fmt.Sprintf("[{batch_denom: \"%s\", quantity: \"5\", ask_price: \"100stake\", disable_auto_retire: false, expiration: \"2024-01-01\"}]", batchDenom),
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -1040,7 +1093,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 								s.Require().Equal(queryRes.SellOrder.Quantity, tc.expOrder.Quantity)
 								s.Require().Equal(tc.expOrder.DisableAutoRetire, queryRes.SellOrder.DisableAutoRetire)
-								s.Require().True(tc.expOrder.Expiration.Equal(queryRes.SellOrder.Expiration))
+								s.Require().Equal(tc.expOrder.Expiration, queryRes.SellOrder.Expiration)
 								break
 							}
 							if found {
@@ -1173,7 +1226,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1199,10 +1252,10 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx without project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:              val0.Address.String(),
-				ClassId:             classId,
-				Metadata:            "hi",
-				ProjectJurisdiction: "US-OR",
+				Issuer:       val0.Address.String(),
+				ClassId:      classId,
+				Metadata:     "hi",
+				Jurisdiction: "US-OR",
 			}),
 			false,
 			"",
@@ -1210,11 +1263,11 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx with project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:              val0.Address.String(),
-				ClassId:             classId,
-				Metadata:            "hi",
-				ProjectJurisdiction: "US-OR",
-				ProjectId:           rand.Str(3),
+				Issuer:       val0.Address.String(),
+				ClassId:      classId,
+				Metadata:     "hi",
+				Jurisdiction: "US-OR",
+				ProjectId:    rand.Str(3),
 			}),
 			false,
 			"",
@@ -1260,7 +1313,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		return append(args, flags...)
 	}
 
@@ -1371,11 +1424,11 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              addr,
-		ClassId:             classId,
-		Metadata:            "meta",
-		ProjectJurisdiction: "US-OR",
-		ProjectId:           rand.Str(3),
+		Issuer:       addr,
+		ClassId:      classId,
+		Metadata:     "meta",
+		Jurisdiction: "US-OR",
+		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()

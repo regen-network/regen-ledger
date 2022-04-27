@@ -132,7 +132,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowedClassCreators,
 		AllowlistEnabled:     allowListEnabled,
-		CreditTypes:          creditTypes,
 		BasketFee:            basketCreationFee,
 		AllowedAskDenoms:     genAskDenoms(),
 	}
@@ -282,6 +281,24 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	accs := simState.Accounts
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
+	if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton c02",
+		Precision:    6,
+	}); err != nil {
+		return err
+	}
+
+	if err := ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}); err != nil {
+		return err
+	}
+
 	// create few classes
 	cKey1, err := createClass(ctx, ss, &api.Class{
 		Id:               "C01",
@@ -330,22 +347,22 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// create few projects
 	pKey1, err := createProject(ctx, ss, &api.Project{
-		ClassKey:            cKey1,
-		Id:                  "P01",
-		Admin:               accs[0].Address,
-		ProjectJurisdiction: "AQ",
-		Metadata:            metadata,
+		ClassKey:     cKey1,
+		Id:           "P01",
+		Admin:        accs[0].Address,
+		Jurisdiction: "AQ",
+		Metadata:     metadata,
 	})
 	if err != nil {
 		return err
 	}
 
 	pKey2, err := createProject(ctx, ss, &api.Project{
-		ClassKey:            cKey2,
-		Id:                  "P02",
-		Admin:               accs[1].Address,
-		ProjectJurisdiction: "AQ",
-		Metadata:            metadata,
+		ClassKey:     cKey2,
+		Id:           "P02",
+		Admin:        accs[1].Address,
+		Jurisdiction: "AQ",
+		Metadata:     metadata,
 	})
 	if err != nil {
 		return err

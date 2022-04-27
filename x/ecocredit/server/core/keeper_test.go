@@ -62,6 +62,12 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	}))
 	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
@@ -79,10 +85,10 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, bat
 		CreditTypeAbbrev: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            1,
-		ProjectJurisdiction: "US-OR",
-		Metadata:            "",
+		Id:           projectId,
+		ClassKey:     1,
+		Jurisdiction: "US-OR",
+		Metadata:     "",
 	}))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
