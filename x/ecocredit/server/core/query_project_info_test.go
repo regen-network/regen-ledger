@@ -22,10 +22,10 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	assert.NilError(t, err)
 
 	project := &api.Project{
-		Id:                  "P01",
-		ClassKey:            classKey,
-		ProjectJurisdiction: "US-CA",
-		Metadata:            "data",
+		Id:           "P01",
+		ClassKey:     classKey,
+		Jurisdiction: "US-CA",
+		Metadata:     "data",
 	}
 
 	// insert project
@@ -37,7 +37,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, project.Id, res.Project.Id)
 	assert.Equal(t, "C01", res.Project.ClassId)
-	assert.Equal(t, project.ProjectJurisdiction, res.Project.Jurisdiction)
+	assert.Equal(t, project.Jurisdiction, res.Project.Jurisdiction)
 	assert.Equal(t, project.Metadata, res.Project.Metadata)
 
 	// query project by unknown project id

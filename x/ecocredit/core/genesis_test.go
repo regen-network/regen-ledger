@@ -59,13 +59,13 @@ func TestValidateGenesis(t *testing.T) {
 				"id":"P01",
 				"admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=",
 				"class_key":"1",
-				"project_jurisdiction":"AQ"
+				"jurisdiction":"AQ"
 			},
 			{
 				"id":"P02",
 				"admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=",
 				"class_key":"2",
-				"project_jurisdiction":"AQ",
+				"jurisdiction":"AQ",
 				"metadata":"project metadata"
 			}
 		],
@@ -221,7 +221,7 @@ func TestGenesisValidate(t *testing.T) {
 						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"class_key":"1",
-						"project_jurisdiction":"AQ"
+						"jurisdiction":"AQ"
 					}],
 					"regen.ecocredit.v1.Batch":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
@@ -282,7 +282,7 @@ func TestGenesisValidate(t *testing.T) {
 						"id":"P01",
 						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
 						"class_key":"1",
-						"project_jurisdiction":"AQ"
+						"jurisdiction":"AQ"
 					}],
 					"regen.ecocredit.v1.Batch":[{
 						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
@@ -334,7 +334,7 @@ func TestGenesisValidate(t *testing.T) {
 					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"class_key":"1",
-					"project_jurisdiction":"AQ"
+					"jurisdiction":"AQ"
 				}],
 				"regen.ecocredit.v1.Batch":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -397,7 +397,7 @@ func TestGenesisValidate(t *testing.T) {
 					"id":"P01",
 					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 					"class_key":"1",
-					"project_jurisdiction":"AQ"
+					"jurisdiction":"AQ"
 				}],
 				"regen.ecocredit.v1.Batch":[{
 					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
@@ -471,13 +471,13 @@ func TestGenesisValidate(t *testing.T) {
 						"id": "P01",
 						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
 						"class_key": "1",
-						"project_jurisdiction":"AQ"
+						"jurisdiction":"AQ"
 					  },
 					  {
 						"id": "P02",
 						"admin": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
 						"class_key": "2",
-						"project_jurisdiction":"AQ"
+						"jurisdiction":"AQ"
 					  }
 					],
 					"regen.ecocredit.v1.Batch": [
