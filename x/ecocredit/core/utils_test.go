@@ -64,18 +64,18 @@ func testFormatBatchDenom(t *rapid.T) {
 
 	classId := FormatClassId(creditType.Abbreviation, classSeq)
 	projectId := FormatProjectId(classId, projectSeq)
-	denom, err := FormatDenom(projectId, batchSeq, startDate, endDate)
+	denom, err := FormatBatchDenom(projectId, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	t.Log(denom)
 
-	err = ValidateDenom(denom)
+	err = ValidateBatchDenom(denom)
 	require.NoError(t, err)
 }
 
 func testInvalidBatchDenom(t *rapid.T) {
 	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom").(string)
-	require.Error(t, ValidateDenom(batchDenom))
+	require.Error(t, ValidateBatchDenom(batchDenom))
 }
 
 func testGetClassIdFromBatchDenom(t *rapid.T) {
@@ -88,7 +88,7 @@ func testGetClassIdFromBatchDenom(t *rapid.T) {
 
 	classId := FormatClassId(creditType.Abbreviation, classSeq)
 	projectId := FormatProjectId(classId, projectSeq)
-	denom, err := FormatDenom(projectId, batchSeq, startDate, endDate)
+	denom, err := FormatBatchDenom(projectId, batchSeq, startDate, endDate)
 	require.NoError(t, err)
 
 	result := GetClassIdFromBatchDenom(denom)

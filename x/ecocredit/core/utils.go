@@ -20,14 +20,15 @@ var errBadReq = sdkerrors.ErrInvalidRequest
 const MaxMetadataLength = 256
 
 var (
-	RegexClassId    = `[A-Z]{1,3}[0-9]{2,}`
-	RegexProjectId  = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassId)
-	RegexBatchDenom = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectId)
+	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
+	RegexProjectId    = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassId)
+	RegexBatchDenom   = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectId)
+	RegexJurisdiction = fmt.Sprintf(`([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`)
 
 	regexClassId      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassId))
 	regexProjectId    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectId))
 	regexBatchDenom   = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
-	regexJurisdiction = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
+	regexJurisdiction = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexJurisdiction))
 )
 
 // FormatClassId formats the unique identifier for a new credit class, based
@@ -62,8 +63,8 @@ func FormatProjectId(classId string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
 }
 
-// FormatDenom formats the denomination to use for a credit batch. This format may evolve over
-// time, but will maintain backwards compatibility.
+// FormatBatchDenom formats the denomination to use for a credit batch. This format
+// may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <project-id>-<start_date>-<end_date>-<batch_sequence>
@@ -75,7 +76,7 @@ func FormatProjectId(classId string, projectSeqNo uint64) string {
 // three digits
 //
 // e.g. C01-001-20190101-20200101-001
-func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
+func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
 	return fmt.Sprintf(
 		"%s-%s-%s-%03d",
 
@@ -93,7 +94,8 @@ func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.T
 	), nil
 }
 
-// ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring it is only 1-3 uppercase letters.
+// ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring
+// it is only 1-3 uppercase letters. The return is nil if the ID is valid.
 func ValidateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
 	matches := reAbbr.FindStringSubmatch(abbr)
@@ -103,8 +105,8 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
-// ValidateClassId validates a class ID conforms to the format described in FormatClassId. The
-// return is nil if the ID is valid.
+// ValidateClassId validates a class ID conforms to the format described in
+// FormatClassId. The return is nil if the ID is valid.
 func ValidateClassId(classId string) error {
 	matches := regexClassId.FindStringSubmatch(classId)
 	if matches == nil {
@@ -113,8 +115,8 @@ func ValidateClassId(classId string) error {
 	return nil
 }
 
-// ValidateProjectId validates a project ID conforms to the format described in regexProjectId. The
-// return is nil if the ID is valid.
+// ValidateProjectId validates a project ID conforms to the format described
+// in FormatProjectId. The return is nil if the ID is valid.
 func ValidateProjectId(projectId string) error {
 	matches := regexProjectId.FindStringSubmatch(projectId)
 	if matches == nil {
@@ -123,9 +125,9 @@ func ValidateProjectId(projectId string) error {
 	return nil
 }
 
-// ValidateDenom validates a batch denomination conforms to the format described in
-// FormatDenom. The return is nil if the denom is valid.
-func ValidateDenom(denom string) error {
+// ValidateBatchDenom validates a batch denomination conforms to the format
+// described in FormatBatchDenom. The return is nil if the denom is valid.
+func ValidateBatchDenom(denom string) error {
 	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
 		return ecocredit.ErrParseFailure.Wrapf("invalid denom: %s", denom)
@@ -137,7 +139,7 @@ func ValidateDenom(denom string) error {
 // the postal code is valid. This is a simple regex check and doesn't check that
 // the country or subdivision codes actually exist. This is because the codes
 // could change at short notice and we don't want to hardfork to keep up-to-date
-// with that information.
+// with that information. The return is nil if the jurisdiction is valid.
 func ValidateJurisdiction(jurisdiction string) error {
 	matches := regexJurisdiction.FindStringSubmatch(jurisdiction)
 	if matches == nil {
@@ -147,7 +149,7 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
-// GetClassIdFromBatchDenom returns the classID in a batch denom
+// GetClassIdFromBatchDenom returns the credit class ID in a batch denom.
 func GetClassIdFromBatchDenom(denom string) string {
 	var s strings.Builder
 	for _, r := range denom {

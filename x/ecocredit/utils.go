@@ -54,10 +54,6 @@ func ValidateJurisdiction(jurisdiction string) error {
 	return nil
 }
 
-func FormatProjectID(classID string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
-}
-
 func NormalizeCreditTypeName(name string) string {
 	return fastRemoveWhitespace(strings.ToLower(name))
 }
