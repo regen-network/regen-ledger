@@ -49,44 +49,6 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, issuance, 6)
 }
 
-// tests that batch credits can be minted and sent to an account with no previous balance
-func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	ctx := s.ctx
-	batch := setupMintBatchTest(s, true)
-
-	newAcc := sdk.AccAddress("NewAccount")
-	balBefore, err := s.stateStore.BatchBalanceTable().Get(ctx, newAcc, batch.Key)
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-	balBefore = &api.BatchBalance{BatchKey: batch.Key, Address: newAcc}
-	supplyBefore, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
-	assert.NilError(t, err)
-
-	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
-	issuance := core.BatchIssuance{Recipient: newAcc.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"}
-	msg := core.MsgMintBatchCredits{
-		Issuer:     s.addr.String(),
-		BatchDenom: batch.Denom,
-		Issuance:   []*core.BatchIssuance{&issuance},
-		OriginTx: &core.OriginTx{
-			Typ: "Ethereum",
-			Id:  "210985091248",
-		},
-		Note: "bridged credits",
-	}
-
-	_, err = s.k.MintBatchCredits(ctx, &msg)
-	assert.NilError(t, err)
-
-	balAfter, err := s.stateStore.BatchBalanceTable().Get(ctx, newAcc, batch.Key)
-	assert.NilError(t, err)
-	supplyAfter, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
-	assert.NilError(t, err)
-
-	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, issuance, 6)
-}
-
 func TestMintBatchCredits_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
