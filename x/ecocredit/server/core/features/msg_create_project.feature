@@ -6,14 +6,14 @@ Feature: CreateProject
 
   Rule: A project id is always unique
 
-    Scenario: two projects from the same credit class
+    Scenario: multiple projects from the same credit class
       Given a credit type exists with abbreviation "A"
       And alice has created a credit class with credit type "A"
       And alice has created a project with credit class id "A01"
       When alice creates a project with credit class id "A01"
       Then the project exists with project id "A01-002"
 
-    Scenario: two projects from different credit classes
+    Scenario: multiple projects from different credit classes
       Given a credit type exists with abbreviation "A"
       And a credit type exists with abbreviation "B"
       And alice has created a credit class with credit type "A"

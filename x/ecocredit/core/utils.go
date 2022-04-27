@@ -30,22 +30,32 @@ var (
 	regexJurisdiction = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
 )
 
-// FormatClassId formats the ID to use for a new credit class, based on the credit type and
-// sequence number. This format may evolve over time, but will maintain backwards compatibility.
+// FormatClassId formats the unique identifier for a new credit class, based
+// on the credit type abbreviation and the credit class sequence number. This
+// format may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
-// <credit type abbreviation><class seq no>
+// <credit-type-abbrev><class-sequence>
+//
+// <credit-type-abbrev> is the unique identifier of the credit type
+// <class-sequence> is the sequence number of the credit class, padded to at
+// least three digits
 //
 // e.g. C01
 func FormatClassId(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatProjectId formats the ID to use for a new project, based on the credit class id and
-// sequence number. This format may evolve over time, but will maintain backwards compatibility.
+// FormatProjectId formats the ID to use for a new project, based on the credit
+// class id and project sequence number. This format may evolve over time, but
+// will maintain backwards compatibility.
 //
 // The current version has the format:
-// <credit_class_id>-<project_sequence>
+// <class-id>-<project-sequence>
+//
+// <class-id> is the unique identifier of the credit class (see FormatClassId)
+// <project-sequence> is the sequence number of the project, padded to at least
+// three digits
 //
 // e.g. C01-001
 func FormatProjectId(classId string, projectSeqNo uint64) string {
@@ -56,15 +66,13 @@ func FormatProjectId(classId string, projectSeqNo uint64) string {
 // time, but will maintain backwards compatibility.
 //
 // The current version has the format:
-// <project_id>-<start_date>-<end_date>-<batch_sequence>
+// <project-id>-<start_date>-<end_date>-<batch_sequence>
 //
-// where:
-// - <project id> is the unique identifier of the project and has the format:
-//     <credit_type_abbrev><class_id>-<project_sequence> (see FormatProjectId)
-// - <start date> is the start date of the credit batch and has the format YYYYMMDD
-// - <end date> is the end date of the credit batch and has the format YYYYMMDD
-// - <batch seq no> is the sequence number of the credit batch, padded to at least
-//   three digits
+// <project-id> is the unique identifier of the project (see FormatProjectId)
+// <start-date> is the start date of the credit batch with the format YYYYMMDD
+// <end-date> is the end date of the credit batch with the format YYYYMMDD
+// <batch-sequence> is the sequence number of the credit batch, padded to at least
+// three digits
 //
 // e.g. C01-001-20190101-20200101-001
 func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.Time) (string, error) {
