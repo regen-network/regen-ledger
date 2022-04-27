@@ -28,6 +28,18 @@ func TestSealBatch_Valid(t *testing.T) {
 	assert.Equal(t, false, batchAfter.Open)
 }
 
+func TestSealBatch_NoOp(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	_, _, batchDenom := s.setupClassProjectBatch(t)
+
+	_, err := s.k.SealBatch(s.ctx, &core.MsgSealBatch{
+		Issuer:     s.addr.String(),
+		BatchDenom: batchDenom,
+	})
+	assert.NilError(t, err)
+}
+
 func TestSealBatch_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
