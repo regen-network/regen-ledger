@@ -75,8 +75,8 @@ func TestValidateGenesis(t *testing.T) {
 
 func TestGenesisValidate(t *testing.T) {
 	defaultParams := core.DefaultParams()
-	dummyAddr := sdk.AccAddress("foobar")
-	dummyAddr2 := sdk.AccAddress("fooBarBaz")
+	addr1 := sdk.AccAddress("foobar")
+	addr2 := sdk.AccAddress("fooBarBaz")
 	testCases := []struct {
 		id         string
 		setupState func(ctx context.Context, ss api.StateStore)
@@ -95,7 +95,7 @@ func TestGenesisValidate(t *testing.T) {
 				}))
 				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				}))
 			},
@@ -114,7 +114,7 @@ func TestGenesisValidate(t *testing.T) {
 				}))
 				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				}))
 			},
@@ -127,7 +127,7 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss api.StateStore) {
 				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				}))
 				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
@@ -161,7 +161,7 @@ func TestGenesisValidate(t *testing.T) {
 			func(ctx context.Context, ss api.StateStore) {
 				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "F",
 				}))
 			},
@@ -181,20 +181,20 @@ func TestGenesisValidate(t *testing.T) {
 				denom := "C01-00000000-00000000-001"
 				key, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
 					Id:                  "P01",
-					Admin:               dummyAddr,
+					Admin:               addr1,
 					ClassKey:            key,
 					ProjectJurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
-					Issuer:       dummyAddr,
+					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
@@ -220,24 +220,30 @@ func TestGenesisValidate(t *testing.T) {
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "BIO",
+					Name:         "biodiversity",
+					Unit:         "acres",
+					Precision:    6,
+				}))
 				denom := "C01-00000000-00000000-001"
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
 					Id:                  "P01",
-					Admin:               dummyAddr,
+					Admin:               addr1,
 					ClassKey:            cKey,
 					ProjectJurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
-					Issuer:       dummyAddr,
+					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        denom,
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
@@ -247,7 +253,7 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 					BatchKey: bKey,
-					Address:  dummyAddr,
+					Address:  addr1,
 					Tradable: "100",
 					Retired:  "100",
 				}))
@@ -273,19 +279,19 @@ func TestGenesisValidate(t *testing.T) {
 				}))
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
 					Id:                  "P01",
-					Admin:               dummyAddr,
+					Admin:               addr1,
 					ClassKey:            cKey,
 					ProjectJurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
-					Issuer:       dummyAddr,
+					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
@@ -295,14 +301,14 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 					BatchKey: bKey,
-					Address:  dummyAddr,
+					Address:  addr1,
 					Tradable: "100.123",
 					Retired:  "100.123",
 					Escrowed: "10.000",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 					BatchKey: bKey,
-					Address:  dummyAddr2,
+					Address:  addr2,
 					Tradable: "100.123",
 					Retired:  "100.123",
 				}))
@@ -327,19 +333,19 @@ func TestGenesisValidate(t *testing.T) {
 				}))
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
-					Admin:            dummyAddr,
+					Admin:            addr1,
 					CreditTypeAbbrev: "C",
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
 					Id:                  "P01",
-					Admin:               dummyAddr,
+					Admin:               addr1,
 					ClassKey:            cKey,
 					ProjectJurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
-					Issuer:       dummyAddr,
+					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
@@ -348,7 +354,7 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
-					Issuer:       dummyAddr,
+					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-00000000-00000000-002",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
@@ -358,13 +364,13 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 					BatchKey: bKey,
-					Address:  dummyAddr,
+					Address:  addr1,
 					Tradable: "100.123",
 					Retired:  "100.123",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
 					BatchKey: bKey2,
-					Address:  dummyAddr2,
+					Address:  addr2,
 					Tradable: "100.123",
 					Retired:  "100.123",
 				}))
