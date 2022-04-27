@@ -30,7 +30,12 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		Issuer:     s.addr.String(),
 		BatchDenom: batch.Denom,
 		Issuance: []*core.BatchIssuance{
-			{Recipient: s.addr.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"},
+			{
+				Recipient: s.addr.String(),
+				TradableAmount: mintTradable.String(),
+				RetiredAmount: mintRetired.String(),
+				RetirementJurisdiction: "US-OR",
+			},
 		},
 		OriginTx: &core.OriginTx{
 			Typ: "Ethereum",
@@ -58,9 +63,7 @@ func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 	batch := setupMintBatchTest(s, true)
 
 	newAcc := sdk.AccAddress("NewAccount")
-	balBefore, err := s.stateStore.BatchBalanceTable().Get(ctx, newAcc, batch.Key)
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-	balBefore = &api.BatchBalance{BatchKey: batch.Key, Address: newAcc}
+	balBefore := &api.BatchBalance{BatchKey: batch.Key, Address: newAcc}
 	supplyBefore, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	assert.NilError(t, err)
 
@@ -69,7 +72,12 @@ func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 		Issuer:     s.addr.String(),
 		BatchDenom: batch.Denom,
 		Issuance: []*core.BatchIssuance{
-			{Recipient: newAcc.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"},
+			{
+				Recipient: newAcc.String(),
+				TradableAmount: mintTradable.String(),
+				RetiredAmount: mintRetired.String(),
+				RetirementJurisdiction: "US-OR",
+			},
 		},
 		OriginTx: &core.OriginTx{
 			Typ: "Ethereum",
@@ -98,9 +106,6 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, "unauthorized")
 }
@@ -114,9 +119,6 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, "credits cannot be minted in a closed batch")
 }
@@ -130,9 +132,6 @@ func TestMintBatchCredits_NotFound(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: "C05-00000000-00000000-001",
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }

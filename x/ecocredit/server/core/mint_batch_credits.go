@@ -104,7 +104,6 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				BatchDenom:     req.BatchDenom,
 				TradableAmount: iss.TradableAmount,
 				RetiredAmount:  iss.RetiredAmount,
-				BasketDenom:    "",
 			}); err != nil {
 				return nil, err
 			}
