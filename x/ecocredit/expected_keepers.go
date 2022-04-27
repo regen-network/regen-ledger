@@ -43,12 +43,10 @@ type DistributionKeeper interface {
 
 type ParamKeeper interface {
 
-	// Get queries for a parameter by key from the Subspace's KVStore and sets the
-	// value to the provided pointer. If the value does not exist, it will panic.
+	// Get fetches a parameter by key from the Subspace's KVStore and sets the provided pointer to the fetched value.
+	// If the value does not exist, this method will panic.
 	Get(ctx sdk.Context, key []byte, ptr interface{})
 
-	// GetParamSet iterates through each ParamSetPair where for each pair, it will
-	// retrieve the value and set it to the corresponding value pointer provided
-	// in the ParamSetPair by calling Subspace#Get.
+	// GetParamSet fetches each parameter in the ParamSet.
 	GetParamSet(ctx sdk.Context, ps types.ParamSet)
 }
