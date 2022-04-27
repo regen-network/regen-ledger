@@ -23,7 +23,7 @@ var (
 	RegexClassId      = `[A-Z]{1,3}[0-9]{2,}`
 	RegexProjectId    = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassId)
 	RegexBatchDenom   = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectId)
-	RegexJurisdiction = fmt.Sprintf(`([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`)
+	RegexJurisdiction = `([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?`
 
 	regexClassId      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassId))
 	regexProjectId    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectId))
@@ -47,9 +47,9 @@ func FormatClassId(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatProjectId formats the ID to use for a new project, based on the credit
-// class id and project sequence number. This format may evolve over time, but
-// will maintain backwards compatibility.
+// FormatProjectId formats the unique identifier for a new project, based on
+// the credit class id and project sequence number. This format may evolve over
+// time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <class-id>-<project-sequence>
@@ -63,8 +63,8 @@ func FormatProjectId(classId string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
 }
 
-// FormatBatchDenom formats the denomination to use for a credit batch. This format
-// may evolve over time, but will maintain backwards compatibility.
+// FormatBatchDenom formats the unique denomination for a credit batch. This
+// format may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <project-id>-<start_date>-<end_date>-<batch_sequence>
@@ -94,8 +94,8 @@ func FormatBatchDenom(projectId string, batchSeqNo uint64, startDate, endDate *t
 	), nil
 }
 
-// ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring
-// it is only 1-3 uppercase letters. The return is nil if the ID is valid.
+// ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring it
+// is only 1-3 uppercase letters. The return is nil if the abbreviation is valid.
 func ValidateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
 	matches := reAbbr.FindStringSubmatch(abbr)
