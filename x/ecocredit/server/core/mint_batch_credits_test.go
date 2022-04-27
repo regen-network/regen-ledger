@@ -26,7 +26,12 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	assert.NilError(t, err)
 
 	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
-	issuance := core.BatchIssuance{Recipient: s.addr.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"}
+	issuance := core.BatchIssuance{
+		Recipient:              s.addr.String(),
+		TradableAmount:         mintTradable.String(),
+		RetiredAmount:          mintRetired.String(),
+		RetirementJurisdiction: "US-OR",
+	}
 	msg := core.MsgMintBatchCredits{
 		Issuer:     s.addr.String(),
 		BatchDenom: batch.Denom,
@@ -58,9 +63,6 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, "unauthorized")
 }
@@ -74,9 +76,6 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, "credits cannot be minted in a closed batch")
 }
@@ -90,9 +89,6 @@ func TestMintBatchCredits_NotFound(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: "C05-00000000-00000000-001",
-		Issuance:   nil,
-		OriginTx:   nil,
-		Note:       "",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
