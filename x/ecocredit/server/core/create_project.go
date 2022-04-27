@@ -8,7 +8,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -31,22 +30,9 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
-	projectID := req.ProjectId
-	if projectID == "" {
-		exists := true
-		for exists {
-			projectID, err = k.genProjectID(ctx, classInfo.Key, classInfo.Id)
-			if err != nil {
-				return nil, err
-			}
-
-			exists, err = k.stateStore.ProjectTable().HasByClassKeyId(ctx, classInfo.Key, projectID)
-			if err != nil {
-				return nil, err
-			}
-
-			sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateProject id iteration")
-		}
+	projectID, err := k.genProjectID(ctx, classInfo.Key, classInfo.Id)
+	if err != nil {
+		return nil, err
 	}
 
 	if err = k.stateStore.ProjectTable().Insert(ctx, &api.Project{

@@ -539,7 +539,7 @@ Example:
 // TxCreateProject returns a transaction command that creates a new project.
 func TxCreateProject() *cobra.Command {
 	cmd := txFlags(&cobra.Command{
-		Use:   "create-project [class-id] [project-jurisdiction] [metadata] --project-id [project-id]",
+		Use:   "create-project [class-id] [project-jurisdiction] [metadata]",
 		Short: "Create a new project within a credit class",
 		Long: `Create a new project within a credit class.
 		
@@ -547,7 +547,6 @@ func TxCreateProject() *cobra.Command {
 		class-id: id of the class
 		project-jurisdiction: the jurisdiction of the project (see documentation for proper project-jurisdiction formats).
 		metadata: any arbitrary metadata attached to the project.
-		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -575,25 +574,17 @@ func TxCreateProject() *cobra.Command {
 				return err
 			}
 
-			projectId, err := cmd.Flags().GetString(FlagProjectId)
-			if err != nil {
-				return err
-			}
-
 			msg := core.MsgCreateProject{
 				Issuer:       clientCtx.GetFromAddress().String(),
 				ClassId:      classID,
 				Jurisdiction: projectJurisdiction,
 				Metadata:     args[2],
-				ProjectId:    projectId,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 
 		},
 	})
-
-	cmd.Flags().String(FlagProjectId, "", "id of the project")
 
 	return cmd
 }

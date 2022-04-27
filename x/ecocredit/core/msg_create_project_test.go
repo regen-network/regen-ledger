@@ -19,17 +19,6 @@ func TestMsgCreateProject(t *testing.T) {
 		expErr bool
 	}{
 		{
-			"valid msg with project id",
-			MsgCreateProject{
-				Issuer:       issuer,
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "A00-001",
-			},
-			false,
-		},
-		{
 			"valid msg without project id",
 			MsgCreateProject{
 				Issuer:       issuer,
@@ -46,17 +35,6 @@ func TestMsgCreateProject(t *testing.T) {
 				ClassId:      "A00",
 				Metadata:     "hello",
 				Jurisdiction: "AB-CDE FG1 345",
-			},
-			true,
-		},
-		{
-			"invalid project id",
-			MsgCreateProject{
-				Issuer:       issuer,
-				ClassId:      "A00",
-				Metadata:     "hello",
-				Jurisdiction: "AB-CDE FG1 345",
-				ProjectId:    "001",
 			},
 			true,
 		},

@@ -265,7 +265,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			ClassId:      class.Id,
 			Metadata:     simtypes.RandStringOfLength(r, 100),
 			Jurisdiction: "AB-CDE FG1 345",
-			ProjectId:    genProjectID(r),
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -284,14 +283,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 
 		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-}
-
-func genProjectID(r *rand.Rand) string {
-	if r.Int63n(101) <= 50 {
-		simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 16))
-	}
-
-	return ""
 }
 
 // SimulateMsgCreateBatch generates a MsgCreateBatch with random values.

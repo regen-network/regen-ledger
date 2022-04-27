@@ -1223,7 +1223,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1309,7 +1309,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		return append(args, flags...)
 	}
 

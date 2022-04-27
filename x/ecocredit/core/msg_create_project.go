@@ -40,12 +40,6 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return err
 	}
 
-	if m.ProjectId != "" {
-		if err := ValidateProjectId(m.ProjectId); err != nil {
-			return err
-		}
-	}
-
 	return nil
 }
 

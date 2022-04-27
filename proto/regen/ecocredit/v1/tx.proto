@@ -121,13 +121,6 @@ message MsgCreateProject {
   // alphanumeric characters. country-code is required, while sub-national-code
   // and postal-code are optional and can be added for increased precision.
   string jurisdiction = 4;
-
-  // project_id is an optional user-specified project ID which can be used
-  // instead of an auto-generated ID. If project_id is provided, it must be
-  // unique within the credit class and match the regex [A-Za-z0-9]{2,16}
-  // or else the operation will fail. If project_id is omitted an ID will
-  // automatically be generated.
-  string project_id = 5;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
