@@ -36,8 +36,20 @@ func TestValidateGenesis(t *testing.T) {
 		&api.BatchBalance{BatchKey: 1, Address: sdk.AccAddress("addr1"), Tradable: "90.003", Retired: "9.997"}))
 
 	batches := []*api.Batch{
-		{Issuer: sdk.AccAddress("addr2"), ProjectKey: 1, Denom: "BIO01-00000000-00000000-001", StartDate: &timestamppb.Timestamp{Seconds: 100}, EndDate: &timestamppb.Timestamp{Seconds: 101}},
-		{Issuer: sdk.AccAddress("addr3"), ProjectKey: 1, Denom: "BIO02-00000000-00000000-001", StartDate: &timestamppb.Timestamp{Seconds: 100}, EndDate: &timestamppb.Timestamp{Seconds: 101}},
+		{
+			Issuer: sdk.AccAddress("addr2"),
+			ProjectKey: 1,
+			Denom: "BIO01-00000000-00000000-001",
+			StartDate: &timestamppb.Timestamp{Seconds: 100},
+			EndDate: &timestamppb.Timestamp{Seconds: 101},
+		},
+		{
+			Issuer: sdk.AccAddress("addr3"),
+			ProjectKey: 1,
+			Denom: "BIO02-00000000-00000000-001",
+			StartDate: &timestamppb.Timestamp{Seconds: 100},
+			EndDate: &timestamppb.Timestamp{Seconds: 101},
+		},
 	}
 	for _, b := range batches {
 		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
