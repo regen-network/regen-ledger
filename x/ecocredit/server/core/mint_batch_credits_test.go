@@ -26,12 +26,11 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	assert.NilError(t, err)
 
 	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
+	issuance := core.BatchIssuance{Recipient: s.addr.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"}
 	msg := core.MsgMintBatchCredits{
 		Issuer:     s.addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance: []*core.BatchIssuance{
-			{Recipient: s.addr.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"},
-		},
+		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
 			Typ: "Ethereum",
 			Id:  "210985091248",
@@ -47,7 +46,7 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 	supplyAfter, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	assert.NilError(t, err)
 
-	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, mintTradable, mintRetired, math.NewDecFromInt64(0), 6)
+	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, issuance, 6)
 }
 
 // tests that batch credits can be minted and sent to an account with no previous balance
@@ -65,12 +64,11 @@ func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 	assert.NilError(t, err)
 
 	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
+	issuance := core.BatchIssuance{Recipient: newAcc.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"}
 	msg := core.MsgMintBatchCredits{
 		Issuer:     s.addr.String(),
 		BatchDenom: batch.Denom,
-		Issuance: []*core.BatchIssuance{
-			{Recipient: newAcc.String(), TradableAmount: mintTradable.String(), RetiredAmount: mintRetired.String(), RetirementJurisdiction: "US-OR"},
-		},
+		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
 			Typ: "Ethereum",
 			Id:  "210985091248",
@@ -86,7 +84,7 @@ func TestMintBatchCredits_MintToNewAccount(t *testing.T) {
 	supplyAfter, err := s.stateStore.BatchSupplyTable().Get(ctx, batch.Key)
 	assert.NilError(t, err)
 
-	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, mintTradable, mintRetired, math.NewDecFromInt64(0), 6)
+	assertCreditsMinted(t, balBefore, balAfter, supplyBefore, supplyAfter, issuance, 6)
 }
 
 func TestMintBatchCredits_Unauthorized(t *testing.T) {
@@ -147,12 +145,16 @@ func setupMintBatchTest(s *baseSuite, open bool) *api.Batch {
 	return batch
 }
 
-func assertCreditsMinted(t *testing.T, balBefore, balAfter *api.BatchBalance, supBefore, supAfter *api.BatchSupply, tradable, retired, escrowed math.Dec, precision uint32) {
+func assertCreditsMinted(t *testing.T, balBefore, balAfter *api.BatchBalance, supBefore, supAfter *api.BatchSupply, issuance core.BatchIssuance, precision uint32) {
 	checkFunc := func(before, after, change math.Dec) {
 		expected, err := before.Add(change)
 		assert.NilError(t, err)
 		assert.Check(t, after.Equal(expected), fmt.Sprintf("expected %s got %s", expected.String(), after.String()))
 	}
+
+	issuanceDecs, err := utils.GetNonNegativeFixedDecs(precision, issuance.TradableAmount, issuance.RetiredAmount)
+	assert.NilError(t, err)
+	tradable, retired := issuanceDecs[0], issuanceDecs[1]
 
 	tradableBefore, retiredBefore, _ := extractBalanceDecs(t, balBefore, precision)
 	tradableAfter, retiredAfter, _ := extractBalanceDecs(t, balAfter, precision)
