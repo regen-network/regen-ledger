@@ -6,10 +6,27 @@ Feature: CreateProject
 
   Rule: A project id is always unique
 
-    Scenario Outline: the project id is auto-generated
+    Scenario: two projects from the same credit class
       Given a credit type exists with abbreviation "A"
       And alice has created a credit class with credit type "A"
-      And the project sequence number is "<next_sequence>"
+      And alice has created a project with credit class id "A01"
+      When alice creates a project with credit class id "A01"
+      Then the project exists with project id "A01-002"
+
+    Scenario: two projects from different credit classes
+      Given a credit type exists with abbreviation "A"
+      And a credit type exists with abbreviation "B"
+      And alice has created a credit class with credit type "A"
+      And alice has created a credit class with credit type "B"
+      And alice has created a project with credit class id "A01"
+      And alice has created a project with credit class id "B01"
+      When alice creates a project with credit class id "B01"
+      Then the project exists with project id "B01-001"
+
+    Scenario Outline: project id is formatted correctly
+      Given a credit type exists with abbreviation "A"
+      And alice has created a credit class with credit type "A"
+      And the project sequence for credit class "A01" is "<next_sequence>"
       When alice creates a project with credit class id "A01"
       Then the project exists with project id "<project_id>"
 

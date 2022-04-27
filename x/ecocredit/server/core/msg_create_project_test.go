@@ -16,9 +16,8 @@ import (
 
 type createProjectSuite struct {
 	*baseSuite
-	alice   sdk.AccAddress
-	classId string
-	err     error
+	alice sdk.AccAddress
+	err   error
 }
 
 func TestCreateProject(t *testing.T) {
@@ -54,22 +53,28 @@ func (s *createProjectSuite) AliceHasCreatedACreditClassWithCreditType(a string)
 
 	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).AnyTimes()
 
-	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
+	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.alice.String(),
 		Issuers:          []string{s.alice.String()},
 		CreditTypeAbbrev: a,
 		Fee:              &fee,
 	})
 	require.NoError(s.t, err)
-
-	s.classId = res.ClassId
 }
 
-func (s *createProjectSuite) TheProjectSequenceNumberIs(a string) {
-	nextSequence, err := strconv.ParseUint(a, 10, 32)
+func (s *createProjectSuite) AliceHasCreatedAProjectWithCreditClassId(a string) {
+	_, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
+		Issuer:       s.alice.String(),
+		ClassId:      a,
+		Jurisdiction: "US",
+	})
+}
+
+func (s *createProjectSuite) TheProjectSequenceForCreditClassIs(a, b string) {
+	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, a)
 	require.NoError(s.t, err)
 
-	class, err := s.k.stateStore.ClassTable().GetById(s.ctx, s.classId)
+	nextSequence, err := strconv.ParseUint(b, 10, 32)
 	require.NoError(s.t, err)
 
 	err = s.k.stateStore.ProjectSequenceTable().Insert(s.ctx, &api.ProjectSequence{

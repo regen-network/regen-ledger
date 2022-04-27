@@ -16,9 +16,8 @@ import (
 
 type createBatchSuite struct {
 	*baseSuite
-	alice   sdk.AccAddress
-	classId string
-	err     error
+	alice sdk.AccAddress
+	err   error
 }
 
 func TestCreateBatch(t *testing.T) {
@@ -54,15 +53,13 @@ func (s *createBatchSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
 
 	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).AnyTimes()
 
-	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
+	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.alice.String(),
 		Issuers:          []string{s.alice.String()},
 		CreditTypeAbbrev: a,
 		Fee:              &fee,
 	})
 	require.NoError(s.t, err)
-
-	s.classId = res.ClassId
 }
 
 func (s *createBatchSuite) AliceHasCreatedAProjectWithCreditClassId(a string) {
