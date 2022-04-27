@@ -188,7 +188,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 			return err
 		}
-		err = sdkCtx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
+		err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
 			Recipient:     owner.String(),
 			BatchDenom:    batchDenom,
 			RetiredAmount: amount.String(),
