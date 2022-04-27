@@ -354,7 +354,7 @@ func (c Class) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
-	if err := ValidateClassID(c.Id); err != nil {
+	if err := ValidateClassId(c.Id); err != nil {
 		return err
 	}
 
@@ -396,7 +396,7 @@ func (p Project) Validate() error {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 
-	if err := ValidateProjectID(p.Id); err != nil {
+	if err := ValidateProjectId(p.Id); err != nil {
 		return err
 	}
 

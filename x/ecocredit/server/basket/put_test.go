@@ -26,7 +26,7 @@ func TestPut_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	userStartingBalance, basketStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(0), math.NewDecFromInt64(3)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	insertBatch(t, s, batchDenom, timestamppb.Now())
@@ -75,7 +75,7 @@ func TestPut_BasketNotFound(t *testing.T) {
 func TestPut_BatchNotFound(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	userStartingBalance, _ := math.NewDecFromInt64(10), math.NewDecFromInt64(0)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 
@@ -94,7 +94,7 @@ func TestPut_YearsIntoPast(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	currentTime, err := time.Parse("2006", "2020")
 	assert.NilError(t, err)
@@ -117,7 +117,7 @@ func TestPut_YearsIntoPast(t *testing.T) {
 	// exactly 3 years into the past should work
 	threeYearsAgo, err := time.Parse("2006", "2017")
 	assert.NilError(t, err)
-	otherBatchDenom := "C01-000000-0000000-002"
+	otherBatchDenom := "C01-001-000000-0000000-002"
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(threeYearsAgo))
 	insertBatchBalance(t, s, s.addr, 2, "10")
 	insertClassInfo(t, s, "C01", "C")
@@ -137,7 +137,7 @@ func TestPut_MinStartDate(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	currentTime, err := time.Parse("2006", "2020")
 	assert.NilError(t, err)
 
@@ -160,7 +160,7 @@ func TestPut_MinStartDate(t *testing.T) {
 	assert.ErrorContains(t, err, "basket that requires an earliest start date")
 
 	// should pass with batch start date == min start date
-	otherBatchDenom := "C01-000000-0000000-002"
+	otherBatchDenom := "C01-001-000000-0000000-002"
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(currentTime))
 	insertBatchBalance(t, s, s.addr, 2, "10")
 	insertClassInfo(t, s, "C01", "C")
@@ -180,7 +180,7 @@ func TestPut_Window(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	currentTime, err := time.Parse("2006", "2020")
 	assert.NilError(t, err)
 
@@ -203,7 +203,7 @@ func TestPut_Window(t *testing.T) {
 	assert.ErrorContains(t, err, "basket that requires an earliest start date")
 
 	// should pass with batch start date exactly 1 year before block time. (1 year window).
-	otherBatchDenom := "C01-000000-0000000-002"
+	otherBatchDenom := "C01-001-000000-0000000-002"
 	_2019, err := time.Parse("2006", "2019")
 	assert.NilError(t, err)
 	insertBatch(t, s, otherBatchDenom, timestamppb.New(_2019))
@@ -224,7 +224,7 @@ func TestPut_Window(t *testing.T) {
 func TestPut_InsufficientCredits(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom, classId := "C01-0000000-0000000-001", "C01"
+	batchDenom, classId := "C01-001-0000000-0000000-001", "C01"
 	userStartingBalance := math.NewDecFromInt64(10)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{classId})
 	insertBatch(t, s, batchDenom, timestamppb.Now())
@@ -245,7 +245,7 @@ func TestPut_InsufficientCredits(t *testing.T) {
 func TestPut_ClassNotAccepted(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-0000000-0000000-001"
+	batchDenom := "C01-001-0000000-0000000-001"
 	userStartingBalance := math.NewDecFromInt64(10)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{"C02"})
 	insertBatch(t, s, batchDenom, timestamppb.Now())
@@ -265,7 +265,7 @@ func TestPut_ClassNotAccepted(t *testing.T) {
 func TestPut_BadCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-0000000-0000000-001"
+	batchDenom := "C01-001-0000000-0000000-001"
 	userStartingBalance := math.NewDecFromInt64(10)
 	insertBasket(t, s, "foo", "basket", "C", &api.DateCriteria{YearsInThePast: 3}, []string{"C01"})
 	insertBatch(t, s, batchDenom, timestamppb.Now())

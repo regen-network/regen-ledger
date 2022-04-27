@@ -22,7 +22,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -304,7 +303,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		ClassId:             classId,
 		Metadata:            "META2",
 		ProjectJurisdiction: "US-OR",
-		ProjectId:           "FBI",
 	})
 	s.Require().NoError(err)
 
@@ -1266,7 +1264,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				ClassId:             classId,
 				Metadata:            "hi",
 				ProjectJurisdiction: "US-OR",
-				ProjectId:           rand.Str(3),
+				ProjectId:           "C01-456",
 			}),
 			false,
 			"",
@@ -1427,7 +1425,6 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		ClassId:             classId,
 		Metadata:            "meta",
 		ProjectJurisdiction: "US-OR",
-		ProjectId:           rand.Str(3),
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()

@@ -418,11 +418,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Issuer:              issuer1,
 		Metadata:            "metadata",
 		ProjectJurisdiction: "AQ",
-		ProjectId:           "P03",
+		ProjectId:           "C01-123",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
-	s.Require().Equal(createProjectRes.ProjectId, "P03")
+	s.Require().Equal("C01-123", createProjectRes.ProjectId)
 
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
@@ -436,7 +436,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    issuer1,
-		ProjectId: "P03",
+		ProjectId: "C01-123",
 		StartDate: &time1,
 		EndDate:   &time2,
 		Issuance: []*core.BatchIssuance{

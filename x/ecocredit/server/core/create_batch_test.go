@@ -28,7 +28,7 @@ func TestCreateBatch_Valid(t *testing.T) {
 	start, end := time.Now(), time.Now()
 	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
-		ProjectId: "PRO",
+		ProjectId: "C01-001",
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
@@ -86,7 +86,7 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	start, end := time.Now(), time.Now()
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
-		ProjectId: "PRO",
+		ProjectId: "C01-001",
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
@@ -105,7 +105,7 @@ func TestCreateBatch_UnauthorizedIssuer(t *testing.T) {
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
-		ProjectId: "PRO",
+		ProjectId: "C01-001",
 		Issuer:    types.AccAddress("FooBarBaz").String(),
 	})
 	assert.ErrorContains(t, err, "is not an issuer for the class")
@@ -121,9 +121,9 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 	assert.ErrorContains(t, err, "not found")
 }
 
-// creates a class "C01", with a single class issuer, and a project "PRO"
+// creates a class "C01", with a single class issuer, and a project "C01-001"
 func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (classId, projectId string) {
-	classId, projectId = "C01", "PRO"
+	classId, projectId = "C01", "C01-001"
 	classKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 		Id:               classId,
 		Admin:            addr,

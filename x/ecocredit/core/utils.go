@@ -20,64 +20,48 @@ var errBadReq = sdkerrors.ErrInvalidRequest
 // TODO: This could be used as params once x/params is upgraded to use protobuf
 const MaxMetadataLength = 256
 
-var reJurisdiction = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
+var (
+	RegexClassId    = `[A-Z]{1,3}[0-9]{2,}`
+	RegexProjectId  = fmt.Sprintf(`%s-[A-Z0-9]{2,}`, RegexClassId)
+	RegexBatchDenom = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, RegexProjectId)
 
-// ValidateJurisdiction checks that the country and region conform to ISO 3166 and
-// the postal code is valid. This is a simple regex check and doesn't check that
-// the country or subdivision codes actually exist. This is because the codes
-// could change at short notice and we don't want to hardfork to keep up-to-date
-// with that information.
-func ValidateJurisdiction(jurisdiction string) error {
-	matches := reJurisdiction.FindStringSubmatch(jurisdiction)
-	if matches == nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("Invalid jurisdiction: %s.\nJurisdiction should have format <country-code>[-<region-code>[ <postal-code>]].\n", jurisdiction)
-	}
+	regexClassId      = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexClassId))
+	regexProjectId    = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexProjectId))
+	regexBatchDenom   = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBatchDenom))
+	regexJurisdiction = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0-9 \-]{1,64}))?)?$`)
+)
 
-	return nil
-}
-
-// reProjectID defines regular expression to check if the string contains only alphanumeric characters
-// and is between 2 ~ 16 characters long.
-//
-// e.g. P01, C01P01, 123
-var reProjectID = regexp.MustCompile(`^[A-Za-z0-9]{2,16}$`)
-
-// ValidateProjectID validates a project ID conforms to the format described in reProjectID. The
-// return is nil if the ID is valid.
-func ValidateProjectID(projectID string) error {
-	matches := reProjectID.FindStringSubmatch(projectID)
-	if matches == nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid project id: %s.", projectID)
-	}
-
-	return nil
-}
-
-// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
-func NormalizeCreditTypeName(name string) string {
-	return fastRemoveWhitespace(strings.ToLower(name))
-}
-
-// FormatClassID formats the ID to use for a new credit class, based on the credit type and
+// FormatClassId formats the ID to use for a new credit class, based on the credit type and
 // sequence number. This format may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <credit type abbreviation><class seq no>
 //
 // e.g. C01
-func FormatClassID(creditTypeAbbreviation string, classSeqNo uint64) string {
+func FormatClassId(creditTypeAbbreviation string, classSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", creditTypeAbbreviation, classSeqNo)
 }
 
-// FormatProjectID formats the ID to use for a new project, based on the credit class id and
+// FormatProjectId formats the ID to use for a new project, based on the credit class id and
 // sequence number. This format may evolve over time, but will maintain backwards compatibility.
 //
 // The current version has the format:
 // <credit_class_id>-<project_sequence>
 //
 // e.g. C01-001
-func FormatProjectID(classId string, projectSeqNo uint64) string {
+func FormatProjectId(classId string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s-%03d", classId, projectSeqNo)
+}
+
+// FormatCustomProjectId formats the ID to use for a new project, based on the credit class id and
+// custom project id. This format may evolve over time, but will maintain backwards compatibility.
+//
+// The current version has the format:
+// <credit_class_id>-<custom_project_id>
+//
+// e.g. C01-VERRA1
+func FormatCustomProjectId(classId string, customId string) string {
+	return fmt.Sprintf("%s-%s", classId, customId)
 }
 
 // FormatDenom formats the denomination to use for a credit batch. This format may evolve over
@@ -113,13 +97,6 @@ func FormatDenom(projectId string, batchSeqNo uint64, startDate, endDate *time.T
 	), nil
 }
 
-var (
-	ReClassID        = `[A-Z]{1,3}[0-9]{2,}`
-	reFullClassID    = regexp.MustCompile(fmt.Sprintf(`^%s$`, ReClassID))
-	ReBatchDenom     = fmt.Sprintf(`%s-[0-9]{8}-[0-9]{8}-[0-9]{3,}`, ReClassID)
-	reFullBatchDenom = regexp.MustCompile(fmt.Sprintf(`^%s$`, ReBatchDenom))
-)
-
 // ValidateCreditTypeAbbreviation validates a credit type abbreviation, ensuring it is only 1-3 uppercase letters.
 func ValidateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
@@ -130,12 +107,22 @@ func ValidateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
-// ValidateClassID validates a class ID conforms to the format described in FormatClassID. The
+// ValidateClassId validates a class ID conforms to the format described in FormatClassId. The
 // return is nil if the ID is valid.
-func ValidateClassID(classId string) error {
-	matches := reFullClassID.FindStringSubmatch(classId)
+func ValidateClassId(classId string) error {
+	matches := regexClassId.FindStringSubmatch(classId)
 	if matches == nil {
 		return ecocredit.ErrParseFailure.Wrapf("class ID didn't match the format: expected A00, got %s", classId)
+	}
+	return nil
+}
+
+// ValidateProjectId validates a project ID conforms to the format described in regexProjectId. The
+// return is nil if the ID is valid.
+func ValidateProjectId(projectId string) error {
+	matches := regexProjectId.FindStringSubmatch(projectId)
+	if matches == nil {
+		return sdkerrors.Wrapf(ecocredit.ErrParseFailure, "invalid project id: %s", projectId)
 	}
 	return nil
 }
@@ -143,10 +130,24 @@ func ValidateClassID(classId string) error {
 // ValidateDenom validates a batch denomination conforms to the format described in
 // FormatDenom. The return is nil if the denom is valid.
 func ValidateDenom(denom string) error {
-	matches := reFullBatchDenom.FindStringSubmatch(denom)
+	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")
+		return ecocredit.ErrParseFailure.Wrapf("invalid denom: %s", denom)
 	}
+	return nil
+}
+
+// ValidateJurisdiction checks that the country and region conform to ISO 3166 and
+// the postal code is valid. This is a simple regex check and doesn't check that
+// the country or subdivision codes actually exist. This is because the codes
+// could change at short notice and we don't want to hardfork to keep up-to-date
+// with that information.
+func ValidateJurisdiction(jurisdiction string) error {
+	matches := regexJurisdiction.FindStringSubmatch(jurisdiction)
+	if matches == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("Invalid jurisdiction: %s.\nJurisdiction should have format <country-code>[-<region-code>[ <postal-code>]].\n", jurisdiction)
+	}
+
 	return nil
 }
 
@@ -163,6 +164,22 @@ func GetClassIdFromBatchDenom(denom string) string {
 	return s.String()
 }
 
+// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
+}
+
 // exponent prefix map https://en.wikipedia.org/wiki/Metric_prefix
 var exponentPrefixMap = map[uint32]string{
 	0:  "",
@@ -177,6 +194,7 @@ var exponentPrefixMap = map[uint32]string{
 	21: "z",
 	24: "y",
 }
+
 var validExponents string
 
 func init() {
@@ -196,15 +214,4 @@ func ExponentToPrefix(exponent uint32) (string, error) {
 		return "", sdkerrors.ErrInvalidRequest.Wrapf("exponent must be one of %s", validExponents)
 	}
 	return e, nil
-}
-
-func fastRemoveWhitespace(str string) string {
-	var b strings.Builder
-	b.Grow(len(str))
-	for _, ch := range str {
-		if !unicode.IsSpace(ch) {
-			b.WriteRune(ch)
-		}
-	}
-	return b.String()
 }

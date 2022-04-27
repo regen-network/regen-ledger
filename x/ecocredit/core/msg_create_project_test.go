@@ -57,7 +57,7 @@ func TestMsgCreateProject(t *testing.T) {
 				ClassId:             "A00",
 				Metadata:            "hello",
 				ProjectJurisdiction: "AB-CDE FG1 345",
-				ProjectId:           "A",
+				ProjectId:           "001",
 			},
 			true,
 		},

@@ -255,7 +255,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "project_id": "C0101",
+                                "project_id": "C01-001",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
@@ -312,7 +312,7 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "C01-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
+             eg: '[{batch_denom: "C01-001-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
              Note: "retirement_jurisdiction" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

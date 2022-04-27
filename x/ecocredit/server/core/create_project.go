@@ -94,5 +94,5 @@ func (k Keeper) genProjectID(ctx context.Context, classKey uint64, classID strin
 		return "", err
 	}
 
-	return core.FormatProjectID(classID, nextID), nil
+	return core.FormatProjectId(classID, nextID), nil
 }

@@ -78,7 +78,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 // setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
 func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, batchDenom string) {
-	classId, projectId, batchDenom = "C01", "P01", "C01-20200101-20210101-01"
+	classId, projectId, batchDenom = "C01", "C01-001", "C01-001-20200101-20210101-01"
 	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,

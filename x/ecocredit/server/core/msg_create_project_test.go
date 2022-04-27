@@ -16,10 +16,9 @@ import (
 
 type createProjectSuite struct {
 	*baseSuite
-	alice       sdk.AccAddress
-	creditTypes []*core.CreditType
-	classId     string
-	err         error
+	alice   sdk.AccAddress
+	classId string
+	err     error
 }
 
 func TestCreateProject(t *testing.T) {
@@ -32,9 +31,11 @@ func (s *createProjectSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *createProjectSuite) ACreditTypeExistsWithAbbreviation(a string) {
-	s.creditTypes = append(s.creditTypes, &core.CreditType{
+	err := s.k.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: a,
+		Name:         a,
 	})
+	require.NoError(s.t, err)
 }
 
 func (s *createProjectSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
@@ -47,7 +48,6 @@ func (s *createProjectSuite) AliceHasCreatedACreditClassWithCreditType(a string)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
 		p.CreditClassFee = sdk.Coins{fee}
-		p.CreditTypes = s.creditTypes
 	}).AnyTimes()
 
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).AnyTimes()
