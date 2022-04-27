@@ -33,16 +33,15 @@ func TestSellOrders(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	order1 := insertSellOrder(t, s, s.addr, 1)
-	order2 := insertSellOrder(t, s, addr2, 1)
+	order := insertSellOrder(t, s, s.addr, 1)
+	insertSellOrder(t, s, addr2, 1)
 
 	res, err := s.k.SellOrders(s.ctx, &marketplace.QuerySellOrdersRequest{
-		Pagination: &query.PageRequest{CountTotal: true},
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[1], order2)
+	assert.Equal(t, 1, len(res.SellOrders))
+	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order)
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
 
