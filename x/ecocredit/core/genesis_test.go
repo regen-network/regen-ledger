@@ -37,18 +37,18 @@ func TestValidateGenesis(t *testing.T) {
 
 	batches := []*api.Batch{
 		{
-			Issuer: sdk.AccAddress("addr2"),
+			Issuer:     sdk.AccAddress("addr2"),
 			ProjectKey: 1,
-			Denom: "BIO01-00000000-00000000-001",
-			StartDate: &timestamppb.Timestamp{Seconds: 100},
-			EndDate: &timestamppb.Timestamp{Seconds: 101},
+			Denom:      "BIO01-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
 		},
 		{
-			Issuer: sdk.AccAddress("addr3"),
+			Issuer:     sdk.AccAddress("addr3"),
 			ProjectKey: 1,
-			Denom: "BIO02-00000000-00000000-001",
-			StartDate: &timestamppb.Timestamp{Seconds: 100},
-			EndDate: &timestamppb.Timestamp{Seconds: 101},
+			Denom:      "BIO02-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
 		},
 	}
 	for _, b := range batches {
@@ -66,8 +66,8 @@ func TestValidateGenesis(t *testing.T) {
 	}
 
 	projects := []*api.Project{
-		{Id: "P01", Admin: sdk.AccAddress("addr6"), ClassKey: 1, ProjectJurisdiction: "AQ", Metadata: "meta"},
-		{Id: "P02", Admin: sdk.AccAddress("addr7"), ClassKey: 2, ProjectJurisdiction: "AQ", Metadata: "meta"},
+		{Id: "P01", Admin: sdk.AccAddress("addr6"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "meta"},
+		{Id: "P02", Admin: sdk.AccAddress("addr7"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "meta"},
 	}
 	for _, p := range projects {
 		require.NoError(t, ss.ProjectTable().Insert(ormCtx, p))
@@ -199,10 +199,10 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:                  "P01",
-					Admin:               addr1,
-					ClassKey:            key,
-					ProjectJurisdiction: "AQ",
+					Id:           "P01",
+					Admin:        addr1,
+					ClassKey:     key,
+					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
@@ -247,10 +247,10 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:                  "P01",
-					Admin:               addr1,
-					ClassKey:            cKey,
-					ProjectJurisdiction: "AQ",
+					Id:           "P01",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 
@@ -296,10 +296,10 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:                  "P01",
-					Admin:               addr1,
-					ClassKey:            cKey,
-					ProjectJurisdiction: "AQ",
+					Id:           "P01",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
@@ -350,10 +350,10 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:                  "P01",
-					Admin:               addr1,
-					ClassKey:            cKey,
-					ProjectJurisdiction: "AQ",
+					Id:           "P01",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{

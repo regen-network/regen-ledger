@@ -85,10 +85,10 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, bat
 		CreditTypeAbbrev: "C",
 	}))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            1,
-		ProjectJurisdiction: "US-OR",
-		Metadata:            "",
+		Id:           projectId,
+		ClassKey:     1,
+		Jurisdiction: "US-OR",
+		Metadata:     "",
 	}))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: 1,
