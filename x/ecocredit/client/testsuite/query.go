@@ -682,17 +682,17 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	})
 	s.Require().NoError(err)
 	pID, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "foo",
-		ProjectJurisdiction: "US-OR",
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "foo",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "foo",
-		ProjectJurisdiction: "US-OR",
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "foo",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	projectIds := [2]string{pID, pID2}

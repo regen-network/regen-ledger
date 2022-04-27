@@ -16,8 +16,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regenorm "github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	v3 "github.com/regen-network/regen-ledger/x/ecocredit/migrations/v3"
@@ -180,7 +181,7 @@ func TestMigrations(t *testing.T) {
 	require.NotNil(t, res1)
 	require.Equal(t, res1.Id, "C0101")
 	require.Equal(t, res1.Metadata, "")
-	require.Equal(t, res1.ProjectJurisdiction, "AB-CDE FG1 345")
+	require.Equal(t, res1.Jurisdiction, "AB-CDE FG1 345")
 	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 

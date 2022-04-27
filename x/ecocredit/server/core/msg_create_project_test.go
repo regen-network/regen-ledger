@@ -81,9 +81,9 @@ func (s *createProjectSuite) TheProjectSequenceNumberIs(a string) {
 
 func (s *createProjectSuite) AliceCreatesAProjectWithCreditClassId(a string) {
 	_, s.err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.alice.String(),
-		ClassId:             a,
-		ProjectJurisdiction: "US",
+		Issuer:       s.alice.String(),
+		ClassId:      a,
+		Jurisdiction: "US",
 	})
 }
 

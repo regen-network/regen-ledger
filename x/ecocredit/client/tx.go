@@ -581,11 +581,11 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			msg := core.MsgCreateProject{
-				Issuer:              clientCtx.GetFromAddress().String(),
-				ClassId:             classID,
-				ProjectJurisdiction: projectJurisdiction,
-				Metadata:            args[2],
-				ProjectId:           projectId,
+				Issuer:       clientCtx.GetFromAddress().String(),
+				ClassId:      classID,
+				Jurisdiction: projectJurisdiction,
+				Metadata:     args[2],
+				ProjectId:    projectId,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

@@ -36,7 +36,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return ecocredit.ErrMaxLimit.Wrap("create project metadata")
 	}
 
-	if err := ValidateJurisdiction(m.ProjectJurisdiction); err != nil {
+	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return err
 	}
 

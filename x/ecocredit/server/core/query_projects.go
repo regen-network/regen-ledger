@@ -46,7 +46,7 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 			Id:           project.Id,
 			Admin:        admin.String(),
 			ClassId:      class.Id,
-			Jurisdiction: project.ProjectJurisdiction,
+			Jurisdiction: project.Jurisdiction,
 			Metadata:     project.Metadata,
 		}
 

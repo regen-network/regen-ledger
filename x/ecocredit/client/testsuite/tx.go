@@ -299,10 +299,10 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "META2",
-		ProjectJurisdiction: "US-OR",
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "META2",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 
@@ -1223,7 +1223,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1249,10 +1249,10 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx without project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:              val0.Address.String(),
-				ClassId:             classId,
-				Metadata:            "hi",
-				ProjectJurisdiction: "US-OR",
+				Issuer:       val0.Address.String(),
+				ClassId:      classId,
+				Metadata:     "hi",
+				Jurisdiction: "US-OR",
 			}),
 			false,
 			"",
@@ -1260,10 +1260,10 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		{
 			"valid tx with project id",
 			makeArgs(&core.MsgCreateProject{
-				Issuer:              val0.Address.String(),
-				ClassId:             classId,
-				Metadata:            "hi",
-				ProjectJurisdiction: "US-OR",
+				Issuer:       val0.Address.String(),
+				ClassId:      classId,
+				Metadata:     "hi",
+				Jurisdiction: "US-OR",
 			}),
 			false,
 			"",
@@ -1309,7 +1309,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.ProjectJurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
 		return append(args, flags...)
 	}
 
@@ -1420,10 +1420,10 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              addr,
-		ClassId:             classId,
-		Metadata:            "meta",
-		ProjectJurisdiction: "US-OR",
+		Issuer:       addr,
+		ClassId:      classId,
+		Metadata:     "meta",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()
