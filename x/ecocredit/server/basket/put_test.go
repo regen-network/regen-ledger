@@ -1,12 +1,10 @@
 package basket_test
 
 import (
-	"strconv"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/regen-network/gocuke"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
@@ -16,7 +14,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	ecocreditapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -350,118 +347,4 @@ func assertCreditsDeposited(t *testing.T, s *baseSuite, startingUserBalance, sta
 
 	assert.Check(t, expectedUserBal.Equal(userTradable))
 	assert.Check(t, expectedBasketBalance.Equal(basketBalAmt))
-}
-
-type putSuite struct {
-	*baseSuite
-	basketDenom     string
-	classId         string
-	creditType      string
-	batchDenom      string
-	batchStartDate  *timestamppb.Timestamp
-	tradableCredits string
-	err             error
-}
-
-func TestPutDate(t *testing.T) {
-	gocuke.NewRunner(t, &putSuite{}).Path("../../features/basket/put_date.feature").Run()
-}
-
-func (s *putSuite) Before(t gocuke.TestingT) {
-	s.baseSuite = setupBase(t)
-	s.tradableCredits = "5"
-	s.classId = "batch"
-	s.creditType = "C"
-}
-
-func (s *putSuite) ACurrentBlockTimestampOf(a string) {
-	blockTime, err := time.Parse("2006-01-02", a)
-	assert.NilError(s.t, err)
-
-	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-}
-
-func (s *putSuite) ABasketWithDateCriteriaYearsIntoThePastOf(a string) {
-	yearsInThePast, err := strconv.ParseUint(a, 10, 32)
-	assert.NilError(s.t, err)
-
-	s.basketDenom = "basket-" + a
-
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      s.basketDenom,
-		CreditTypeAbbrev: s.creditType,
-		DateCriteria:     &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
-	})
-	assert.NilError(s.t, err)
-
-	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: basketId,
-		ClassId:  s.classId,
-	})
-	assert.NilError(s.t, err)
-}
-
-func (s *putSuite) AUserOwnsCreditsFromABatchWithStartDateOf(a string) {
-	startDate, err := time.Parse("2006-01-02", a)
-	assert.NilError(s.t, err)
-
-	s.batchDenom = "batch-" + a
-	s.batchStartDate = timestamppb.New(startDate)
-
-	key, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &ecocreditapi.Class{
-		Id:               s.classId,
-		CreditTypeAbbrev: s.creditType,
-	})
-	assert.NilError(s.t, err)
-
-	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &ecocreditapi.Project{ClassKey: key})
-	assert.NilError(s.t, err)
-
-	key, err = s.coreStore.BatchTable().InsertReturningID(s.ctx, &ecocreditapi.Batch{
-		ProjectKey: 1,
-		Denom:      s.batchDenom,
-		StartDate:  s.batchStartDate,
-	})
-	assert.NilError(s.t, err)
-
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecocreditapi.BatchBalance{
-		BatchKey: key,
-		Address:  s.addr,
-		Tradable: s.tradableCredits,
-	})
-	assert.NilError(s.t, err)
-}
-
-func (s *putSuite) TheUserAttemptsToPutTheCreditsIntoTheBasket() {
-	gmAny := gomock.Any()
-	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
-	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
-
-	s.bankKeeper.EXPECT().
-		MintCoins(gmAny, basket.BasketSubModuleName, tokenAmount).
-		Return(nil).AnyTimes() // only called if valid start date
-
-	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, tokenAmount).
-		Return(nil).AnyTimes() // only called if valid start date
-
-	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
-		Owner:       s.addr.String(),
-		BasketDenom: s.basketDenom,
-		Credits: []*basket.BasketCredit{
-			{
-				BatchDenom: s.batchDenom,
-				Amount:     s.tradableCredits,
-			},
-		},
-	})
-}
-
-func (s *putSuite) TheCreditsArePutIntoTheBasket() {
-	assert.ErrorIs(s.t, s.err, nil)
-}
-
-func (s *putSuite) TheCreditsAreNotPutIntoTheBasket() {
-	assert.ErrorContains(s.t, s.err, "cannot put a credit from a batch with start date")
 }

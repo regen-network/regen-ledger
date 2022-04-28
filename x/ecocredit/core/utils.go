@@ -161,6 +161,19 @@ func GetClassIdFromBatchDenom(denom string) string {
 	return s.String()
 }
 
+// GetCreditTypeAbbrevFromClassId returns the credit type abbreviation in a credit class id
+func GetCreditTypeAbbrevFromClassId(classId string) string {
+	var s strings.Builder
+	for _, r := range classId {
+		if !unicode.IsNumber(r) {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
 // exponent prefix map https://en.wikipedia.org/wiki/Metric_prefix
 var exponentPrefixMap = map[uint32]string{
 	0:  "",

@@ -28,9 +28,15 @@ func (m MsgPut) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf(err.Error())
 	}
+
+	if len(m.BasketDenom) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
+	}
+
 	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", m.BasketDenom)
 	}
+
 	if len(m.Credits) > 0 {
 		for _, credit := range m.Credits {
 			if err := core.ValidateDenom(credit.BatchDenom); err != nil {
