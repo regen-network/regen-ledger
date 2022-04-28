@@ -63,7 +63,7 @@ Feature: MsgPut
       When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into basket "NCT"
       Then expect error contains "could not get batch C01-20200101-20210101-001 balance"
 
-  Rule: The user credit balance must be more than or equal to the credits being put into the basket
+  Rule: The user must have a credit balance more than or equal to the credits being put into the basket
 
     Background:
       Given a basket with denom "NCT"
@@ -71,14 +71,18 @@ Feature: MsgPut
     Scenario: user owns more than amount of credits being put into the basket
       Given alice owns credit amount "100"
       When alice attempts to put credit amount "50" into basket "NCT"
-      Then the "NCT" basket has a balance of credit amount "50"
-      And alice has a balance of credit amount "50"
+      Then the "NCT" basket has a credit balance with amount "50"
+      And the "NCT" token has a total supply with amount "50"
+      And alice has a credit balance with amount "50"
+      And alice has a "NCT" token balance with amount "50"
 
     Scenario: user owns an equal amount of credits being put into the basket
       Given alice owns credit amount "100"
       When alice attempts to put credit amount "100" into basket "NCT"
-      Then the "NCT" basket has a balance of credit amount "100"
-      And alice has a balance of credit amount "0"
+      Then the "NCT" basket has a credit balance with amount "100"
+      And the "NCT" token has a total supply with amount "100"
+      And alice has a credit balance with amount "0"
+      And alice has a "NCT" token balance with amount "100"
 
     Scenario: user owns less than amount of credits being put into the basket
       Given alice owns credit amount "100"

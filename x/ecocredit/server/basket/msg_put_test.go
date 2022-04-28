@@ -283,18 +283,19 @@ func (s *putSuite) TheBlockTime(a string) {
 	blockTime, err := types.ParseDate("block time", a)
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 	gmAny := gomock.Any()
 
 	s.bankKeeper.EXPECT().
-		MintCoins(gmAny, basket.BasketSubModuleName, gmAny).
+		MintCoins(s.sdkCtx, basket.BasketSubModuleName, gmAny).
 		Return(nil).AnyTimes()
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, gmAny).
+		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, gmAny).
 		Return(nil).AnyTimes()
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -304,14 +305,15 @@ func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditAmountIntoBasket(a string, b string) {
-	gmAny := gomock.Any()
+	amount, _ := sdk.NewIntFromString(a)
+	coins := sdk.NewCoins(sdk.NewCoin(b, amount))
 
 	s.bankKeeper.EXPECT().
-		MintCoins(gmAny, basket.BasketSubModuleName, gmAny).
+		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).AnyTimes()
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, gmAny).
+		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coins).
 		Return(nil).AnyTimes()
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -327,14 +329,15 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountIntoBasket(a string, b string) 
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoBasket(a string, b string) {
-	gmAny := gomock.Any()
+	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	coins := sdk.NewCoins(sdk.NewCoin(b, amount))
 
 	s.bankKeeper.EXPECT().
-		MintCoins(gmAny, basket.BasketSubModuleName, gmAny).
+		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).AnyTimes()
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, gmAny).
+		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coins).
 		Return(nil).AnyTimes()
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -350,16 +353,15 @@ func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoBasket(a string, 
 }
 
 func (s *putSuite) AliceAttemptsToPutTheCreditsIntoTheBasket() {
-	gmAny := gomock.Any()
-	tokenInt, _ := sdk.NewIntFromString(s.tradableCredits)
-	tokenAmount := sdk.NewCoins(sdk.NewCoin(s.basketDenom, tokenInt))
+	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
-		MintCoins(gmAny, basket.BasketSubModuleName, tokenAmount).
+		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).AnyTimes()
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, tokenAmount).
+		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.addr, coins).
 		Return(nil).AnyTimes()
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
@@ -374,7 +376,7 @@ func (s *putSuite) AliceAttemptsToPutTheCreditsIntoTheBasket() {
 	})
 }
 
-func (s *putSuite) TheBasketHasABalanceOfCreditAmount(a string, b string) {
+func (s *putSuite) TheBasketHasACreditBalanceWithAmount(a string, b string) {
 	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, a)
 	require.NoError(s.t, err)
 
@@ -384,7 +386,25 @@ func (s *putSuite) TheBasketHasABalanceOfCreditAmount(a string, b string) {
 	require.Equal(s.t, b, balance.Balance)
 }
 
-func (s *putSuite) AliceHasABalanceOfCreditAmount(a string) {
+func (s *putSuite) TheTokenHasATotalSupplyWithAmount(a string, b string) {
+	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, a)
+	require.NoError(s.t, err)
+
+	amount, err := strconv.ParseInt(b, 10, 32)
+	require.NoError(s.t, err)
+
+	coin := sdk.NewInt64Coin(a, amount)
+
+	s.bankKeeper.EXPECT().
+		GetSupply(gomock.Any(), basket.BasketDenom).
+		Return(coin).AnyTimes()
+
+	supply := s.bankKeeper.GetSupply(s.sdkCtx, a)
+	require.NotNil(s.t, supply)
+	require.Equal(s.t, coin, supply)
+}
+
+func (s *putSuite) AliceHasACreditBalanceWithAmount(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
@@ -392,6 +412,24 @@ func (s *putSuite) AliceHasABalanceOfCreditAmount(a string) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, a, balance.Tradable)
+}
+
+func (s *putSuite) AliceHasATokenBalanceWithAmount(a string, b string) {
+	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, a)
+	require.NoError(s.t, err)
+
+	amount, err := strconv.ParseInt(b, 10, 32)
+	require.NoError(s.t, err)
+
+	coin := sdk.NewInt64Coin(a, amount)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.addr, basket.BasketDenom).
+		Return(coin).AnyTimes()
+
+	balance := s.bankKeeper.GetBalance(s.sdkCtx, s.alice, a)
+	require.NotNil(s.t, balance)
+	require.Equal(s.t, coin, balance)
 }
 
 func (s *putSuite) ExpectNoError() {
