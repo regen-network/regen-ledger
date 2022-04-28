@@ -22,8 +22,8 @@ func TestCreateClass_Valid(t *testing.T) {
 	creditClassFees := core.DefaultParams().CreditClassFee
 	allowList := []string{s.addr.String()}
 	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, 1)
-	utils.ExpectParamGet(&creditClassFees, s.paramsKeeper, 1)
 	utils.ExpectParamGet(&allowList, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&creditClassFees, s.paramsKeeper, 1)
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
 
