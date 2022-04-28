@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +18,6 @@ func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(2)
@@ -63,7 +61,6 @@ func TestSell_Valid(t *testing.T) {
 func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	gmAny := gomock.Any()
 	s.testSellSetup(batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
@@ -132,7 +129,6 @@ func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
 	}).Times(1)
