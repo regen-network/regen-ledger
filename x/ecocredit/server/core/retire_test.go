@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -20,11 +19,6 @@ func TestRetire_Valid(t *testing.T) {
 	// starting balance
 	// tradable: 10.5
 	// retired: 10.5
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
 
 	// starting balance -> 10.5 tradable, 10.5 retired
 	// retire 10.0 -> 0.5 leftover in tradable, retired becomes 20.5
@@ -65,11 +59,6 @@ func TestRetire_Invalid(t *testing.T) {
 		Jurisdiction: "US-NY",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
 
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{

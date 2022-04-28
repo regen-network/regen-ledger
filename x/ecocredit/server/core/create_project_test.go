@@ -18,11 +18,11 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "C01",
-		Metadata:            "",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "FOO",
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Metadata:     "",
+		Jurisdiction: "US-NY",
+		ProjectId:    "FOO",
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, "FOO")
@@ -30,7 +30,7 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 	project, err := s.stateStore.ProjectTable().GetById(s.ctx, "FOO")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, project.Admin, s.addr.Bytes())
-	assert.Equal(t, project.ProjectJurisdiction, "US-NY")
+	assert.Equal(t, project.Jurisdiction, "US-NY")
 }
 
 func TestCreateProject_GeneratedProjectID(t *testing.T) {
@@ -38,21 +38,21 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "C01",
-		Metadata:            "",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "",
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Metadata:     "",
+		Jurisdiction: "US-NY",
+		ProjectId:    "",
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, "C0101", "got project id: %s", res.ProjectId)
 
 	res, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "C01",
-		Metadata:            "",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "",
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Metadata:     "",
+		Jurisdiction: "US-NY",
+		ProjectId:    "",
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, res.ProjectId, "C0102", "got project id: %s", res.ProjectId)
@@ -62,10 +62,10 @@ func TestCreateProject_BadClassID(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "NOPE",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "",
+		Issuer:       s.addr.String(),
+		ClassId:      "NOPE",
+		Jurisdiction: "US-NY",
+		ProjectId:    "",
 	})
 	assert.ErrorContains(t, err, "not found")
 }
@@ -75,18 +75,18 @@ func TestCreateProject_NoDuplicates(t *testing.T) {
 	s := setupBase(t)
 	makeClass(t, s.ctx, s.stateStore, s.addr)
 	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "C01",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "FOO",
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Jurisdiction: "US-NY",
+		ProjectId:    "FOO",
 	})
 	assert.NilError(t, err)
 
 	_, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:              s.addr.String(),
-		ClassId:             "C01",
-		ProjectJurisdiction: "US-NY",
-		ProjectId:           "FOO",
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Jurisdiction: "US-NY",
+		ProjectId:    "FOO",
 	})
 	assert.ErrorContains(t, err, ormerrors.UniqueKeyViolation.Error())
 }

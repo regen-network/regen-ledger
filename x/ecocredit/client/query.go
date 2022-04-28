@@ -30,6 +30,7 @@ func QueryCmd(name string) *cobra.Command {
 	cmd.AddCommand(
 		QueryClassesCmd(),
 		QueryClassInfoCmd(),
+		QueryClassIssuersCmd(),
 		QueryBatchesCmd(),
 		QueryBatchInfoCmd(),
 		QueryBalanceCmd(),
@@ -100,6 +101,49 @@ func QueryClassInfoCmd() *cobra.Command {
 			return printQueryResponse(ctx, res, err)
 		},
 	})
+}
+
+// QueryClassIssuersCmd returns a query command that retrieves addresses of the
+// credit class issuers.
+func QueryClassIssuersCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "class-issuers [class-id]",
+		Short: "Retrieve addresses of the issuers for a credit class",
+		Long: `Retrieve addresses of the issuers for a credit class.
+
+Args:
+	class-id: credit class id
+		`,
+		Example: `
+$ regen q ecocredit class-issuers C01
+$ regen q ecocredit class-issuers C01 --pagination.limit 10
+		`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ClassIssuers(cmd.Context(), &core.QueryClassIssuersRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			if err != nil {
+				return err
+			}
+
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "class-issuers")
+	return qflags(cmd)
 }
 
 // QueryProjectsCmd returns a query command that retrieves projects.

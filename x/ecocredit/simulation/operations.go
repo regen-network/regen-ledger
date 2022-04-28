@@ -261,11 +261,11 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 		spendable := bk.SpendableCoins(sdkCtx, issuerAcc.GetAddress())
 
 		msg := &core.MsgCreateProject{
-			Issuer:              issuer.Address.String(),
-			ClassId:             class.Id,
-			Metadata:            simtypes.RandStringOfLength(r, 100),
-			ProjectJurisdiction: "AB-CDE FG1 345",
-			ProjectId:           genProjectID(r),
+			Issuer:       issuer.Address.String(),
+			ClassId:      class.Id,
+			Metadata:     simtypes.RandStringOfLength(r, 100),
+			Jurisdiction: "AB-CDE FG1 345",
+			ProjectId:    genProjectID(r),
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,

@@ -26,10 +26,10 @@ func isDenomAllowed(ctx sdk.Context, denom string, pk ecocredit.ParamKeeper) boo
 }
 
 type orderOptions struct {
-	autoRetire         bool
-	canPartialFill     bool
-	batchDenom         string
-	retirementLocation string
+	autoRetire     bool
+	canPartialFill bool
+	batchDenom     string
+	jurisdiction   string
 }
 
 // fillOrder moves credits and coins according to the order. It will:
@@ -163,7 +163,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			Retirer:      buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
 			Amount:       purchaseQty.String(),
-			Jurisdiction: opts.retirementLocation,
+			Jurisdiction: opts.jurisdiction,
 		}); err != nil {
 			return err
 		}

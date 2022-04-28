@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -15,11 +14,6 @@ func TestCancel_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
 
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
@@ -53,11 +47,6 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Holder: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
@@ -75,11 +64,6 @@ func TestCancel_BadPrecision(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Holder: s.addr.String(),
