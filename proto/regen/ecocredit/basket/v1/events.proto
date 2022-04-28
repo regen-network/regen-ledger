@@ -6,7 +6,7 @@ import "regen/ecocredit/basket/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/basket";
 
-// DEPRECATED: EventCreate is an event emitted when a basket is created.
+// EventCreate is an event emitted when a basket is created.
 message EventCreate {
 
   // basket_denom is the basket bank denom.
@@ -17,8 +17,8 @@ message EventCreate {
   string curator = 2;
 }
 
-// DEPRECATED: EventPut is an event emitted when credits are put into a basket
-// in return for basket tokens.
+// EventPut is an event emitted when credits are put into a basket in return for
+// basket tokens.
 message EventPut {
 
   // owner is the owner of the credits put into the basket.
@@ -28,14 +28,16 @@ message EventPut {
   string basket_denom = 2;
 
   // credits are the credits that were added to the basket.
-  repeated BasketCredit credits = 3;
+  // Deprecated: this field will always return empty and will be removed in the
+  // next version.
+  repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted from credits.
   string amount = 4;
 }
 
-// DEPRECATED: EventTake is an event emitted when credits are taken from a
-// basket starting from the oldest credits first.
+// EventTake is an event emitted when credits are taken from a basket starting
+// from the oldest credits first.
 message EventTake {
 
   // owner is the owner of the credits taken from the basket.
@@ -45,7 +47,9 @@ message EventTake {
   string basket_denom = 2;
 
   // credits are the credits that were taken from the basket.
-  repeated BasketCredit credits = 3;
+  // Deprecated: this field will always return empty and will be removed in the
+  // next version.
+  repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted to credits.
   string amount = 4;
