@@ -251,7 +251,12 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-  ],
+    'vuepress-plugin-clean-urls',
+      {
+        normalSuffix: '/',
+        indexSuffix: '/',
+      },
+    ],
   markdown: {
     extendMarkdown: md => {
       md.use(require('./markdown-it-gh'))
