@@ -111,7 +111,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		}
 	}
 	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
-	// supply is not touched in this case because supply does not distinguish between tradable/escrowed credits.
+	// supply is not updated because supply does not distinguish between tradable and escrowed credits.
 	if !opts.autoRetire {
 		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
 		if err != nil {
