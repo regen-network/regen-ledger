@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"strings"
@@ -16,6 +15,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
@@ -218,7 +218,7 @@ func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.B
 			return op, nil, err
 		}
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectMetadata, class.Id)
 		if project == nil {
 			return op, nil, err
@@ -269,7 +269,7 @@ func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectAdmin, class.Id)
 		if project == nil {
 			return op, nil, err
@@ -319,7 +319,7 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		admin, _ := simtypes.RandomAcc(r, accs)
 		issuers := randomIssuers(r, accs)
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		res, err := qryClient.Params(ctx, &core.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, err.Error()), nil, err
@@ -430,7 +430,7 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		issuer, _ := simtypes.RandomAcc(r, accs)
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCreateBatch)
 		if class == nil {
 			return op, nil, err
@@ -513,7 +513,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgSend)
 		if class == nil {
 			return op, nil, err
@@ -628,7 +628,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgRetire)
 		if class == nil {
 			return op, nil, err
@@ -713,7 +713,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
-		ctx := sdk.WrapSDKContext(sdkCtx)
+		ctx := regentypes.Context{Context: sdkCtx}
 		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgCancel)
 		if class == nil {
 			return op, nil, err
@@ -948,7 +948,7 @@ func getClassIssuers(ctx sdk.Context, r *rand.Rand, qryClient core.QueryClient, 
 	return classIssuers.Issuers, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomProjectFromClass(ctx context.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.ProjectInfo, simtypes.OperationMsg, error) {
+func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, classID string) (*core.ProjectInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Projects(ctx, &core.QueryProjectsRequest{
 		ClassId: classID,
 	})
@@ -964,7 +964,7 @@ func getRandomProjectFromClass(ctx context.Context, r *rand.Rand, qryClient core
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
-func getRandomBatchFromProject(ctx context.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
+func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{
 		ProjectId: projectID,
 	})
