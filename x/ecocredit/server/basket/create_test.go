@@ -15,7 +15,6 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -31,13 +30,13 @@ func TestFeeToLow(t *testing.T) {
 	}).Times(2)
 
 	// no fee
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err := s.k.Create(s.ctx, &basket.MsgCreate{
 		Fee: nil,
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
 
 	// fee too low
-	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err = s.k.Create(s.ctx, &basket.MsgCreate{
 		Fee: sdk.NewCoins(sdk.NewCoin("regen", sdk.NewInt(20))),
 	})
 	assert.ErrorContains(t, err, "insufficient fee")
@@ -54,7 +53,7 @@ func TestInvalidCreditType(t *testing.T) {
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// non-existent credit type should fail
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err := s.k.Create(s.ctx, &basket.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "F",
 		Fee:              sdk.Coins{basketFee},
@@ -62,7 +61,7 @@ func TestInvalidCreditType(t *testing.T) {
 	assert.ErrorContains(t, err, `could not get credit type with abbreviation F: not found`)
 
 	// exponent < precision should fail
-	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err = s.k.Create(s.ctx, &basket.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         2,
@@ -76,7 +75,7 @@ func TestDuplicateDenom(t *testing.T) {
 	s := setupBase(t)
 	gmAny := gomock.Any()
 	fee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
-	mc := baskettypes.MsgCreate{
+	mc := basket.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
@@ -113,7 +112,7 @@ func TestInvalidClass(t *testing.T) {
 	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
 
 	// class doesn't exist
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err := s.k.Create(s.ctx, &basket.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
@@ -124,7 +123,7 @@ func TestInvalidClass(t *testing.T) {
 	assert.ErrorContains(t, err, "could not get credit class")
 
 	// mismatch credit type and class's credit type
-	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err = s.k.Create(s.ctx, &basket.MsgCreate{
 		Curator:          s.addr.String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
@@ -142,7 +141,7 @@ func TestValidBasket(t *testing.T) {
 	fee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 	seconds := time.Hour * 24 * 356 * 5
-	dateCriteria := &baskettypes.DateCriteria{
+	dateCriteria := &basket.DateCriteria{
 		StartDateWindow: gogotypes.DurationProto(seconds),
 	}
 	s.bankKeeper.EXPECT().SetDenomMetaData(gmAny,
@@ -171,7 +170,7 @@ func TestValidBasket(t *testing.T) {
 		p.BasketFee = fee
 	}).Times(1)
 
-	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
+	_, err := s.k.Create(s.ctx, &basket.MsgCreate{
 		Curator:          s.addr.String(),
 		Description:      "hi",
 		Name:             "foo",

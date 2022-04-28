@@ -496,10 +496,62 @@ func (x *fastReflection_EventCreate) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_EventPut_3_list)(nil)
+
+type _EventPut_3_list struct {
+	list *[]*BasketCredit
+}
+
+func (x *_EventPut_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_EventPut_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_EventPut_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BasketCredit)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_EventPut_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BasketCredit)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_EventPut_3_list) AppendMutable() protoreflect.Value {
+	v := new(BasketCredit)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_EventPut_3_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_EventPut_3_list) NewElement() protoreflect.Value {
+	v := new(BasketCredit)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_EventPut_3_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_EventPut              protoreflect.MessageDescriptor
 	fd_EventPut_owner        protoreflect.FieldDescriptor
 	fd_EventPut_basket_denom protoreflect.FieldDescriptor
+	fd_EventPut_credits      protoreflect.FieldDescriptor
 	fd_EventPut_amount       protoreflect.FieldDescriptor
 )
 
@@ -508,6 +560,7 @@ func init() {
 	md_EventPut = File_regen_ecocredit_basket_v1_events_proto.Messages().ByName("EventPut")
 	fd_EventPut_owner = md_EventPut.Fields().ByName("owner")
 	fd_EventPut_basket_denom = md_EventPut.Fields().ByName("basket_denom")
+	fd_EventPut_credits = md_EventPut.Fields().ByName("credits")
 	fd_EventPut_amount = md_EventPut.Fields().ByName("amount")
 }
 
@@ -588,6 +641,12 @@ func (x *fastReflection_EventPut) Range(f func(protoreflect.FieldDescriptor, pro
 			return
 		}
 	}
+	if len(x.Credits) != 0 {
+		value := protoreflect.ValueOfList(&_EventPut_3_list{list: &x.Credits})
+		if !f(fd_EventPut_credits, value) {
+			return
+		}
+	}
 	if x.Amount != "" {
 		value := protoreflect.ValueOfString(x.Amount)
 		if !f(fd_EventPut_amount, value) {
@@ -613,6 +672,8 @@ func (x *fastReflection_EventPut) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Owner != ""
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
 		return x.BasketDenom != ""
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		return len(x.Credits) != 0
 	case "regen.ecocredit.basket.v1.EventPut.amount":
 		return x.Amount != ""
 	default:
@@ -635,6 +696,8 @@ func (x *fastReflection_EventPut) Clear(fd protoreflect.FieldDescriptor) {
 		x.Owner = ""
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
 		x.BasketDenom = ""
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		x.Credits = nil
 	case "regen.ecocredit.basket.v1.EventPut.amount":
 		x.Amount = ""
 	default:
@@ -659,6 +722,12 @@ func (x *fastReflection_EventPut) Get(descriptor protoreflect.FieldDescriptor) p
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
 		value := x.BasketDenom
 		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		if len(x.Credits) == 0 {
+			return protoreflect.ValueOfList(&_EventPut_3_list{})
+		}
+		listValue := &_EventPut_3_list{list: &x.Credits}
+		return protoreflect.ValueOfList(listValue)
 	case "regen.ecocredit.basket.v1.EventPut.amount":
 		value := x.Amount
 		return protoreflect.ValueOfString(value)
@@ -686,6 +755,10 @@ func (x *fastReflection_EventPut) Set(fd protoreflect.FieldDescriptor, value pro
 		x.Owner = value.Interface().(string)
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
 		x.BasketDenom = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		lv := value.List()
+		clv := lv.(*_EventPut_3_list)
+		x.Credits = *clv.list
 	case "regen.ecocredit.basket.v1.EventPut.amount":
 		x.Amount = value.Interface().(string)
 	default:
@@ -708,6 +781,12 @@ func (x *fastReflection_EventPut) Set(fd protoreflect.FieldDescriptor, value pro
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPut) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		if x.Credits == nil {
+			x.Credits = []*BasketCredit{}
+		}
+		value := &_EventPut_3_list{list: &x.Credits}
+		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.basket.v1.EventPut.owner":
 		panic(fmt.Errorf("field owner of message regen.ecocredit.basket.v1.EventPut is not mutable"))
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
@@ -731,6 +810,9 @@ func (x *fastReflection_EventPut) NewField(fd protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.basket.v1.EventPut.basket_denom":
 		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.EventPut.credits":
+		list := []*BasketCredit{}
+		return protoreflect.ValueOfList(&_EventPut_3_list{list: &list})
 	case "regen.ecocredit.basket.v1.EventPut.amount":
 		return protoreflect.ValueOfString("")
 	default:
@@ -810,6 +892,12 @@ func (x *fastReflection_EventPut) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if len(x.Credits) > 0 {
+			for _, e := range x.Credits {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		l = len(x.Amount)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -848,7 +936,23 @@ func (x *fastReflection_EventPut) ProtoMethods() *protoiface.Methods {
 			copy(dAtA[i:], x.Amount)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x22
+		}
+		if len(x.Credits) > 0 {
+			for iNdEx := len(x.Credits) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Credits[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x1a
+			}
 		}
 		if len(x.BasketDenom) > 0 {
 			i -= len(x.BasketDenom)
@@ -979,6 +1083,40 @@ func (x *fastReflection_EventPut) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Credits = append(x.Credits, &BasketCredit{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Credits[len(x.Credits)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 				}
 				var stringLen uint64
@@ -1044,10 +1182,62 @@ func (x *fastReflection_EventPut) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_EventTake_3_list)(nil)
+
+type _EventTake_3_list struct {
+	list *[]*BasketCredit
+}
+
+func (x *_EventTake_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_EventTake_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_EventTake_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BasketCredit)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_EventTake_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*BasketCredit)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_EventTake_3_list) AppendMutable() protoreflect.Value {
+	v := new(BasketCredit)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_EventTake_3_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_EventTake_3_list) NewElement() protoreflect.Value {
+	v := new(BasketCredit)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_EventTake_3_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_EventTake              protoreflect.MessageDescriptor
 	fd_EventTake_owner        protoreflect.FieldDescriptor
 	fd_EventTake_basket_denom protoreflect.FieldDescriptor
+	fd_EventTake_credits      protoreflect.FieldDescriptor
 	fd_EventTake_amount       protoreflect.FieldDescriptor
 )
 
@@ -1056,6 +1246,7 @@ func init() {
 	md_EventTake = File_regen_ecocredit_basket_v1_events_proto.Messages().ByName("EventTake")
 	fd_EventTake_owner = md_EventTake.Fields().ByName("owner")
 	fd_EventTake_basket_denom = md_EventTake.Fields().ByName("basket_denom")
+	fd_EventTake_credits = md_EventTake.Fields().ByName("credits")
 	fd_EventTake_amount = md_EventTake.Fields().ByName("amount")
 }
 
@@ -1136,6 +1327,12 @@ func (x *fastReflection_EventTake) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
+	if len(x.Credits) != 0 {
+		value := protoreflect.ValueOfList(&_EventTake_3_list{list: &x.Credits})
+		if !f(fd_EventTake_credits, value) {
+			return
+		}
+	}
 	if x.Amount != "" {
 		value := protoreflect.ValueOfString(x.Amount)
 		if !f(fd_EventTake_amount, value) {
@@ -1161,6 +1358,8 @@ func (x *fastReflection_EventTake) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Owner != ""
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
 		return x.BasketDenom != ""
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		return len(x.Credits) != 0
 	case "regen.ecocredit.basket.v1.EventTake.amount":
 		return x.Amount != ""
 	default:
@@ -1183,6 +1382,8 @@ func (x *fastReflection_EventTake) Clear(fd protoreflect.FieldDescriptor) {
 		x.Owner = ""
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
 		x.BasketDenom = ""
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		x.Credits = nil
 	case "regen.ecocredit.basket.v1.EventTake.amount":
 		x.Amount = ""
 	default:
@@ -1207,6 +1408,12 @@ func (x *fastReflection_EventTake) Get(descriptor protoreflect.FieldDescriptor) 
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
 		value := x.BasketDenom
 		return protoreflect.ValueOfString(value)
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		if len(x.Credits) == 0 {
+			return protoreflect.ValueOfList(&_EventTake_3_list{})
+		}
+		listValue := &_EventTake_3_list{list: &x.Credits}
+		return protoreflect.ValueOfList(listValue)
 	case "regen.ecocredit.basket.v1.EventTake.amount":
 		value := x.Amount
 		return protoreflect.ValueOfString(value)
@@ -1234,6 +1441,10 @@ func (x *fastReflection_EventTake) Set(fd protoreflect.FieldDescriptor, value pr
 		x.Owner = value.Interface().(string)
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
 		x.BasketDenom = value.Interface().(string)
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		lv := value.List()
+		clv := lv.(*_EventTake_3_list)
+		x.Credits = *clv.list
 	case "regen.ecocredit.basket.v1.EventTake.amount":
 		x.Amount = value.Interface().(string)
 	default:
@@ -1256,6 +1467,12 @@ func (x *fastReflection_EventTake) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventTake) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		if x.Credits == nil {
+			x.Credits = []*BasketCredit{}
+		}
+		value := &_EventTake_3_list{list: &x.Credits}
+		return protoreflect.ValueOfList(value)
 	case "regen.ecocredit.basket.v1.EventTake.owner":
 		panic(fmt.Errorf("field owner of message regen.ecocredit.basket.v1.EventTake is not mutable"))
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
@@ -1279,6 +1496,9 @@ func (x *fastReflection_EventTake) NewField(fd protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.basket.v1.EventTake.basket_denom":
 		return protoreflect.ValueOfString("")
+	case "regen.ecocredit.basket.v1.EventTake.credits":
+		list := []*BasketCredit{}
+		return protoreflect.ValueOfList(&_EventTake_3_list{list: &list})
 	case "regen.ecocredit.basket.v1.EventTake.amount":
 		return protoreflect.ValueOfString("")
 	default:
@@ -1358,6 +1578,12 @@ func (x *fastReflection_EventTake) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if len(x.Credits) > 0 {
+			for _, e := range x.Credits {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
 		l = len(x.Amount)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -1396,7 +1622,23 @@ func (x *fastReflection_EventTake) ProtoMethods() *protoiface.Methods {
 			copy(dAtA[i:], x.Amount)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Amount)))
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x22
+		}
+		if len(x.Credits) > 0 {
+			for iNdEx := len(x.Credits) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.Credits[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x1a
+			}
 		}
 		if len(x.BasketDenom) > 0 {
 			i -= len(x.BasketDenom)
@@ -1526,6 +1768,40 @@ func (x *fastReflection_EventTake) ProtoMethods() *protoiface.Methods {
 				x.BasketDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Credits = append(x.Credits, &BasketCredit{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Credits[len(x.Credits)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 				}
@@ -1663,8 +1939,10 @@ type EventPut struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// basket_denom is the basket bank denom that the credits were added to.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// credits are the credits that were added to the basket.
+	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted from credits.
-	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (x *EventPut) Reset() {
@@ -1701,6 +1979,13 @@ func (x *EventPut) GetBasketDenom() string {
 	return ""
 }
 
+func (x *EventPut) GetCredits() []*BasketCredit {
+	if x != nil {
+		return x.Credits
+	}
+	return nil
+}
+
 func (x *EventPut) GetAmount() string {
 	if x != nil {
 		return x.Amount
@@ -1719,8 +2004,10 @@ type EventTake struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// basket_denom is the basket bank denom that credits were taken from.
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// credits are the credits that were taken from the basket.
+	Credits []*BasketCredit `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 	// amount is the integer number of basket tokens converted to credits.
-	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (x *EventTake) Reset() {
@@ -1757,6 +2044,13 @@ func (x *EventTake) GetBasketDenom() string {
 	return ""
 }
 
+func (x *EventTake) GetCredits() []*BasketCredit {
+	if x != nil {
+		return x.Credits
+	}
+	return nil
+}
+
 func (x *EventTake) GetAmount() string {
 	if x != nil {
 		return x.Amount
@@ -1771,40 +2065,51 @@ var file_regen_ecocredit_basket_v1_events_proto_rawDesc = []byte{
 	0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x65, 0x76, 0x65, 0x6e,
 	0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x19, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x2e, 0x76, 0x31, 0x22, 0x4a, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x22,
-	0x5b, 0x0a, 0x08, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6f,
-	0x77, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65,
-	0x72, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x5c, 0x0a, 0x09,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x61, 0x6b, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12,
-	0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e,
-	0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x42, 0x81, 0x02, 0x0a, 0x1d, 0x63,
-	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74,
-	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65,
-	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67,
-	0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31,
-	0x3b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x42, 0xaa,
-	0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x19, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61,
-	0x73, 0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x25, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74,
-	0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
-	0x02, 0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x2e, 0x76, 0x31, 0x1a, 0x25, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4a, 0x0a, 0x0b, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x18, 0x0a, 0x07,
+	0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
+	0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x9e, 0x01, 0x0a, 0x08, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x50, 0x75, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x21, 0x0a, 0x0c, 0x62, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x41, 0x0a, 0x07,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74,
+	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x52, 0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x12,
+	0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x9f, 0x01, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x54, 0x61, 0x6b, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x21, 0x0a, 0x0c, 0x62,
+	0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0b, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x41,
+	0x0a, 0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32,
+	0x27, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x73, 0x6b,
+	0x65, 0x74, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x52, 0x07, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x42, 0x81, 0x02, 0x0a, 0x1d, 0x63, 0x6f,
+	0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2e, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x4c, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74,
+	0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65,
+	0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b,
+	0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x42, 0xaa, 0x02,
+	0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x19, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73,
+	0x6b, 0x65, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x25, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5c,
+	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x1c, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x3a, 0x3a, 0x42, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1821,16 +2126,19 @@ func file_regen_ecocredit_basket_v1_events_proto_rawDescGZIP() []byte {
 
 var file_regen_ecocredit_basket_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_regen_ecocredit_basket_v1_events_proto_goTypes = []interface{}{
-	(*EventCreate)(nil), // 0: regen.ecocredit.basket.v1.EventCreate
-	(*EventPut)(nil),    // 1: regen.ecocredit.basket.v1.EventPut
-	(*EventTake)(nil),   // 2: regen.ecocredit.basket.v1.EventTake
+	(*EventCreate)(nil),  // 0: regen.ecocredit.basket.v1.EventCreate
+	(*EventPut)(nil),     // 1: regen.ecocredit.basket.v1.EventPut
+	(*EventTake)(nil),    // 2: regen.ecocredit.basket.v1.EventTake
+	(*BasketCredit)(nil), // 3: regen.ecocredit.basket.v1.BasketCredit
 }
 var file_regen_ecocredit_basket_v1_events_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: regen.ecocredit.basket.v1.EventPut.credits:type_name -> regen.ecocredit.basket.v1.BasketCredit
+	3, // 1: regen.ecocredit.basket.v1.EventTake.credits:type_name -> regen.ecocredit.basket.v1.BasketCredit
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_basket_v1_events_proto_init() }
@@ -1838,6 +2146,7 @@ func file_regen_ecocredit_basket_v1_events_proto_init() {
 	if File_regen_ecocredit_basket_v1_events_proto != nil {
 		return
 	}
+	file_regen_ecocredit_basket_v1_types_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_regen_ecocredit_basket_v1_events_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventCreate); i {
