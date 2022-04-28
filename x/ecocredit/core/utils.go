@@ -143,7 +143,7 @@ func ValidateClassID(classId string) error {
 func ValidateDenom(denom string) error {
 	matches := reFullBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")
+		return ecocredit.ErrParseFailure.Wrap("invalid denom: expected format A00-00000000-00000000-000")
 	}
 	return nil
 }

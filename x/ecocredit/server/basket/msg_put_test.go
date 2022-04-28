@@ -31,13 +31,15 @@ type putSuite struct {
 	err              error
 }
 
-func TestPutDate(t *testing.T) {
-	gocuke.NewRunner(t, &putSuite{}).Path("./features/msg_put_date.feature").Run()
+func TestPut(t *testing.T) {
+	gocuke.NewRunner(t, &putSuite{}).Path("./features/msg_put.feature").Run()
 }
 
 func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
+
+	// values used if not specified
 	s.classId = "C01"
 	s.creditTypeAbbrev = "C"
 	s.batchDenom = "C01-20200101-20210101-001"
@@ -157,11 +159,62 @@ func (s *putSuite) ACreditBatch(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *putSuite) TheBlockTime(a string) {
-	blockTime, err := types.ParseDate("block time", a)
+func (s *putSuite) AliceOwnsCreditAmount(a string) {
+	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+
+	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+		Id:               classId,
+		CreditTypeAbbrev: creditTypeAbbrev,
+	})
 	require.NoError(s.t, err)
 
-	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		ClassKey: classKey,
+	})
+	require.NoError(s.t, err)
+
+	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+		ProjectKey: projectKey,
+		Denom:      s.batchDenom,
+	})
+	require.NoError(s.t, err)
+
+	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+		BatchKey: batchKey,
+		Address:  s.alice,
+		Tradable: a,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *putSuite) AliceOwnsCreditsFromCreditBatch(a string) {
+	classId := core.GetClassIdFromBatchDenom(a)
+	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+
+	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+		Id:               classId,
+		CreditTypeAbbrev: creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		ClassKey: classKey,
+	})
+	require.NoError(s.t, err)
+
+	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+		ProjectKey: projectKey,
+		Denom:      a,
+	})
+	require.NoError(s.t, err)
+
+	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+		BatchKey: batchKey,
+		Address:  s.alice,
+		Tradable: s.tradableCredits,
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *putSuite) AliceOwnsCreditAmountFromCreditBatch(a string, b string) {
@@ -221,6 +274,13 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	require.NoError(s.t, err)
 }
 
+func (s *putSuite) TheBlockTime(a string) {
+	blockTime, err := types.ParseDate("block time", a)
+	require.NoError(s.t, err)
+
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx.WithBlockTime(blockTime))
+}
+
 func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 	gmAny := gomock.Any()
 
@@ -238,7 +298,7 @@ func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 	})
 }
 
-func (s *putSuite) AliceAttemptsToPutCreditAmountFromCreditBatchIntoBasket(a string, b string, c string) {
+func (s *putSuite) AliceAttemptsToPutCreditAmountIntoBasket(a string, b string) {
 	gmAny := gomock.Any()
 
 	s.bankKeeper.EXPECT().
@@ -251,10 +311,10 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountFromCreditBatchIntoBasket(a str
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),
-		BasketDenom: c,
+		BasketDenom: b,
 		Credits: []*basket.BasketCredit{
 			{
-				BatchDenom: b,
+				BatchDenom: s.batchDenom,
 				Amount:     a,
 			},
 		},
@@ -262,13 +322,23 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountFromCreditBatchIntoBasket(a str
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoBasket(a string, b string) {
+	gmAny := gomock.Any()
+
+	s.bankKeeper.EXPECT().
+		MintCoins(gmAny, basket.BasketSubModuleName, gmAny).
+		Return(nil).AnyTimes()
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(gmAny, basket.BasketSubModuleName, s.addr, gmAny).
+		Return(nil).AnyTimes()
+
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),
 		BasketDenom: b,
 		Credits: []*basket.BasketCredit{
 			{
 				BatchDenom: a,
-				Amount:     "100",
+				Amount:     s.tradableCredits,
 			},
 		},
 	})

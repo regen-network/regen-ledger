@@ -65,7 +65,21 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "no credits were specified to put into the basket: invalid request"
+    Then expect the error "credits cannot be empty: invalid request"
+
+  Scenario: an error is returned if a credit batch denom is empty
+    Given the message
+    """
+    {
+      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "basket_denom": "NCT",
+      "credits": [
+        {}
+      ]
+    }
+    """
+    When the message is validated
+    Then expect the error "credit batch denom cannot be empty: invalid request"
 
   Scenario: an error is returned if a credit batch denom is not formatted
     Given the message
@@ -81,7 +95,7 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "invalid denom. Valid denom format is: A00-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "invalid denom: expected format A00-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if a credit amount is empty
     Given the message
@@ -97,7 +111,7 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "expected a positive decimal, got : invalid decimal string: invalid request"
+    Then expect the error "credit amount cannot be empty: invalid request"
 
   Scenario: an error is returned if a credit amount is not an integer
     Given the message

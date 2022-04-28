@@ -1,8 +1,12 @@
 Feature: MsgPut
 
-  A credit holder can put credits into a basket:
-  - when the credits meet the defined basket criteria
-  - ...
+  Credits can be put into a basket:
+  - when the basket exists
+  - when the credit batch exists
+  - when the credit class is allowed
+  - when the credit holder has a credit balance
+  - when the credit holder has the credit amount
+  - when the credit batch start date is allowed
 
   Rule: The basket must exist
 
@@ -18,11 +22,11 @@ Feature: MsgPut
   Rule: The credit batch denom must exist
 
     Background:
-      Given a basket with denom "NCT" and allowed credit class "C01"
+      Given a basket with denom "NCT"
 
     Scenario: batch denom exists
-      Given alice owns credit amount "100" from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "100" from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Given alice owns credits from credit batch "C01-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into basket "NCT"
       Then expect no error
 
     Scenario: batch denom does not exist
@@ -35,39 +39,49 @@ Feature: MsgPut
       Given a basket with denom "NCT" and allowed credit class "C01"
 
     Scenario: credit class is allowed
-      Given alice owns credit amount "100" from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "100" from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Given alice owns credits from credit batch "C01-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into basket "NCT"
       Then expect no error
 
     Scenario: credit class is not allowed
-      Given alice owns credit amount "100" from credit batch "A01-20200101-20210101-001"
+      Given alice owns credits from credit batch "A01-20200101-20210101-001"
       When alice attempts to put credits from credit batch "A01-20200101-20210101-001" into basket "NCT"
       Then expect the error "credit class A01 is not allowed in this basket: invalid request"
+
+  Rule: The user must have a credit balance for the credits being put into the basket
+
+    Background:
+      Given a basket with denom "NCT"
+
+    Scenario: user has a credit balance
+      Given alice owns credits from credit batch "C01-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Then expect no error
+
+    Scenario: user does not have a credit balance
+      Given a credit batch "C01-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Then expect error contains "could not get batch C01-20200101-20210101-001 balance"
 
   Rule: The user credit balance must be more than or equal to the credits being put into the basket
 
     Background:
-      Given a basket with denom "NCT" and allowed credit class "C01"
+      Given a basket with denom "NCT"
 
     Scenario: user owns more than amount of credits being put into the basket
-      Given alice owns credit amount "100" from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "50" from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Given alice owns credit amount "100"
+      When alice attempts to put credit amount "50" into basket "NCT"
       Then expect no error
 
     Scenario: user owns an equal amount of credits being put into the basket
-      Given alice owns credit amount "100" from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "100" from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Given alice owns credit amount "100"
+      When alice attempts to put credit amount "100" into basket "NCT"
       Then expect no error
 
     Scenario: user owns less than amount of credits being put into the basket
-      Given alice owns credit amount "100" from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "150" from credit batch "C01-20200101-20210101-001" into basket "NCT"
+      Given alice owns credit amount "100"
+      When alice attempts to put credit amount "150" into basket "NCT"
       Then expect error contains "cannot put 150 credits into the basket with a balance of 100"
-
-    Scenario: user owns no credits being put into the basket
-      Given a credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credit amount "100" from credit batch "C01-20200101-20210101-001" into basket "NCT"
-      Then expect error contains "could not get batch C01-20200101-20210101-001 balance"
 
   Rule: Credits from a batch with a start date more than basket minimum start date cannot be put into the basket
 
