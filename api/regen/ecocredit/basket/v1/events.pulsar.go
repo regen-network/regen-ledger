@@ -1881,7 +1881,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// EventCreate is an event emitted when a basket is created.
+// DEPRECATED: EventCreate is an event emitted when a basket is created.
 type EventCreate struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1928,8 +1928,8 @@ func (x *EventCreate) GetCurator() string {
 	return ""
 }
 
-// EventPut is an event emitted when credits are put into a basket in return
-// for basket tokens.
+// DEPRECATED: EventPut is an event emitted when credits are put into a basket
+// in return for basket tokens.
 type EventPut struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1993,8 +1993,8 @@ func (x *EventPut) GetAmount() string {
 	return ""
 }
 
-// EventTake is an event emitted when credits are taken from a basket starting
-// from the oldest credits first.
+// DEPRECATED: EventTake is an event emitted when credits are taken from a
+// basket starting from the oldest credits first.
 type EventTake struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

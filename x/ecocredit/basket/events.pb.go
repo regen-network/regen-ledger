@@ -22,7 +22,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// EventCreate is an event emitted when a basket is created.
+// DEPRECATED: EventCreate is an event emitted when a basket is created.
 type EventCreate struct {
 	// basket_denom is the basket bank denom.
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
@@ -78,8 +78,8 @@ func (m *EventCreate) GetCurator() string {
 	return ""
 }
 
-// EventPut is an event emitted when credits are put into a basket in return
-// for basket tokens.
+// DEPRECATED: EventPut is an event emitted when credits are put into a basket
+// in return for basket tokens.
 type EventPut struct {
 	// owner is the owner of the credits put into the basket.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
@@ -152,8 +152,8 @@ func (m *EventPut) GetAmount() string {
 	return ""
 }
 
-// EventTake is an event emitted when credits are taken from a basket starting
-// from the oldest credits first.
+// DEPRECATED: EventTake is an event emitted when credits are taken from a
+// basket starting from the oldest credits first.
 type EventTake struct {
 	// owner is the owner of the credits taken from the basket.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
