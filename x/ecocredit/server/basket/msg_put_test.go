@@ -7,8 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -17,7 +16,9 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type putSuite struct {
@@ -126,7 +127,9 @@ func (s *putSuite) ABasketWithYearsInThePast(a string) {
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
-		DateCriteria:     &api.DateCriteria{YearsInThePast: uint32(yearsInThePast)},
+		DateCriteria: &api.DateCriteria{
+			YearsInThePast: uint32(yearsInThePast),
+		},
 	})
 	require.NoError(s.t, err)
 
@@ -137,7 +140,7 @@ func (s *putSuite) ABasketWithYearsInThePast(a string) {
 	require.NoError(s.t, err)
 }
 
-func (s *putSuite) ACreditBatch(a string) {
+func (s *putSuite) ACreditBatchWithDenom(a string) {
 	classId := core.GetClassIdFromBatchDenom(a)
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
 
@@ -256,7 +259,9 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	})
 	require.NoError(s.t, err)
 
-	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{ClassKey: key})
+	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		ClassKey: key,
+	})
 	require.NoError(s.t, err)
 
 	key, err = s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
@@ -367,6 +372,26 @@ func (s *putSuite) AliceAttemptsToPutTheCreditsIntoTheBasket() {
 			},
 		},
 	})
+}
+
+func (s *putSuite) TheBasketHasABalanceOfCreditAmount(a string, b string) {
+	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, a)
+	require.NoError(s.t, err)
+
+	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, basket.Id, s.batchDenom)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, b, balance.Balance)
+}
+
+func (s *putSuite) AliceHasABalanceOfCreditAmount(a string) {
+	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, a, balance.Tradable)
 }
 
 func (s *putSuite) ExpectNoError() {
