@@ -159,6 +159,17 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		supply.RetiredAmount = supplyRetired.String()
+
+		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
+		if err != nil {
+			return err
+		}
+
+		newTradable, err := math.SafeSubBalance(supplyTradable, purchaseQty)
+		if err != nil {
+			return err
+		}
+		supply.TradableAmount = newTradable.String()
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Retirer:      buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
