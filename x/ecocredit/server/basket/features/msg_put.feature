@@ -67,9 +67,9 @@ Feature: MsgPut
 
     Background:
       Given a basket with denom "NCT"
+      And alice owns credit amount "100"
 
     Scenario: user owns more than amount of credits being put into the basket
-      Given alice owns credit amount "100"
       When alice attempts to put credit amount "50" into basket "NCT"
       Then the "NCT" basket has a credit balance with amount "50"
       And the "NCT" token has a total supply with amount "50"
@@ -77,7 +77,6 @@ Feature: MsgPut
       And alice has a "NCT" token balance with amount "50"
 
     Scenario: user owns an equal amount of credits being put into the basket
-      Given alice owns credit amount "100"
       When alice attempts to put credit amount "100" into basket "NCT"
       Then the "NCT" basket has a credit balance with amount "100"
       And the "NCT" token has a total supply with amount "100"
@@ -85,50 +84,47 @@ Feature: MsgPut
       And alice has a "NCT" token balance with amount "100"
 
     Scenario: user owns less than amount of credits being put into the basket
-      Given alice owns credit amount "100"
       When alice attempts to put credit amount "150" into basket "NCT"
       Then expect error contains "cannot put 150 credits into the basket with a balance of 100"
 
   Rule: Credits from a batch with a start date more than basket minimum start date cannot be put into the basket
 
-    Scenario: batch start date less than minimum start date
+    Background:
       Given a basket with minimum start date "2021-01-01"
-      And alice owns credits with start date "2022-01-01"
+
+    Scenario: batch start date less than minimum start date
+      Given alice owns credits with start date "2022-01-01"
       When alice attempts to put the credits into the basket
       Then expect no error
 
     Scenario: batch start date equal to minimum start date
-      And a basket with minimum start date "2021-01-01"
-      And alice owns credits with start date "2021-01-01"
+      Given alice owns credits with start date "2021-01-01"
       When alice attempts to put the credits into the basket
       Then expect no error
 
     Scenario: batch start date more than minimum start date
-      Given a basket with minimum start date "2021-01-01"
-      And alice owns credits with start date "2020-01-01"
+      Given alice owns credits with start date "2020-01-01"
       When alice attempts to put the credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
 
   Rule: Credits from a batch with a start date outside basket start date window cannot be put into the basket
 
-    Scenario: batch start date inside basket start date window
+    Background:
       Given the block time "2022-01-01"
       And a basket with start date window "31536000"
-      And alice owns credits with start date "2022-01-01"
+
+    Scenario: batch start date inside basket start date window
+      Given alice owns credits with start date "2022-01-01"
       When alice attempts to put the credits into the basket
       Then expect no error
 
     Scenario: batch start date equal to basket start date window
-      Given the block time "2022-01-01"
-      And a basket with start date window "31536000"
-      And alice owns credits with start date "2021-01-01"
+      Given alice owns credits with start date "2021-01-01"
       When alice attempts to put the credits into the basket
       Then expect no error
 
     Scenario: batch start date outside basket start date window
-      Given the block time "2022-01-01"
-      And a basket with start date window "31536000"
-      And alice owns credits with start date "2020-01-01"
+      Given alice owns credits with start date "2020-01-01"
       When alice attempts to put the credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
 
