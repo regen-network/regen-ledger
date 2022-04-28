@@ -269,7 +269,7 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	}
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(len(orders))
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(len(orders))
-	err = buyDirect(s, &market.MsgBuyDirect{
+	_, err = s.k.BuyDirect(s.ctx, &market.MsgBuyDirect{
 		Buyer:  buyerAddr.String(),
 		Orders: orders,
 	})

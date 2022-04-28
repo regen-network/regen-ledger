@@ -150,11 +150,6 @@ func extractSupplyDecs(t *testing.T, s *ecoApi.BatchSupply) (tradable, retired, 
 	return decs[0], decs[1], decs[2]
 }
 
-func buyDirect(s *baseSuite, msg *marketplace.MsgBuyDirect) error {
-	_, err := s.k.BuyDirect(s.ctx, msg)
-	return err
-}
-
 func buyDirectSingle(s *baseSuite, buyerAddr sdk.AccAddress, order *marketplace.MsgBuyDirect_Order) error {
 	_, err := s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer:  buyerAddr.String(),
