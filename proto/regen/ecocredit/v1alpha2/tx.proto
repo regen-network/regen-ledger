@@ -7,8 +7,6 @@ import "google/protobuf/timestamp.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "regen/ecocredit/v1alpha2/types.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
-
 // Msg is the regen.ecocredit.v1alpha1 Msg service.
 service Msg {
 

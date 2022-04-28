@@ -6,8 +6,6 @@ import "google/api/annotations.proto";
 import "regen/ecocredit/v1alpha2/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
-
 // Msg is the regen.ecocredit.v1alpha2 Query service.
 service Query {
 
