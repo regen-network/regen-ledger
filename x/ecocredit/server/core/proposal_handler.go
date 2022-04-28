@@ -6,11 +6,13 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	coretypes "github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // ProposalKeeper defines the expected interface for ecocredit module proposals.
 type ProposalKeeper interface {
 	AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error
+	AddAskDenom(ctx sdk.Context, proposal marketplace.AskDenomProposal) error
 }
 
 func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
