@@ -30,7 +30,7 @@ var (
 func TestSellOrders(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	order := insertSellOrder(t, s, s.addr, 1)
@@ -48,7 +48,7 @@ func TestSellOrders(t *testing.T) {
 func TestSellOrdersByDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make another batch
 	otherDenom := "C01-19990101-20290101-001"
@@ -94,7 +94,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 func TestSellOrdersByAddress(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noOrdersAddr := testdata.KeyTestPubAddr()

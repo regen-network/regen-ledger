@@ -20,7 +20,7 @@ func TestSell_CancelOrder(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	expir := time.Now()
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -55,7 +55,7 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	expir := time.Now()
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {

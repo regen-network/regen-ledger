@@ -18,7 +18,7 @@ import (
 func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -64,7 +64,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
@@ -94,7 +94,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
 	// invalid batch
@@ -131,7 +131,7 @@ func TestSell_Invalid(t *testing.T) {
 func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	gmAny := gomock.Any()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
