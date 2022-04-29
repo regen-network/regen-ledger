@@ -9,8 +9,8 @@ import "gogoproto/gogo.proto";
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
 
-  // seller is the owner of the sell order.
-  string seller = 1;
+  // owner is the owner of the sell order.
+  string owner = 1;
 
   // order_id is the unique ID of sell order.
   uint64 order_id = 2;
@@ -19,8 +19,8 @@ message EventSell {
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 message EventUpdateSellOrder {
 
-  // seller is the owner of the sell order.
-  string seller = 1;
+  // owner is the owner of the sell order.
+  string owner = 1;
 
   //  order_id is the ID of an existing sell order.
   uint64 order_id = 2;
