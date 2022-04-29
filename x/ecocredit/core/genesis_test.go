@@ -60,19 +60,44 @@ func TestValidateGenesis(t *testing.T) {
 		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
 	}
 
-	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx, &api.BatchSupply{BatchKey: 1, TradableAmount: "90.003", RetiredAmount: "9.997"}))
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       1,
+			TradableAmount: "90.003",
+			RetiredAmount:  "9.997",
+		}))
 
 	classes := []*api.Class{
-		{Id: "BIO001", Admin: sdk.AccAddress("addr4"), CreditTypeAbbrev: "BIO"},
-		{Id: "BIO002", Admin: sdk.AccAddress("addr5"), CreditTypeAbbrev: "BIO"},
+		{
+			Id:               "BIO001",
+			Admin:            sdk.AccAddress("addr4"),
+			CreditTypeAbbrev: "BIO",
+		},
+		{
+			Id:               "BIO002",
+			Admin:            sdk.AccAddress("addr5"),
+			CreditTypeAbbrev: "BIO",
+		},
 	}
 	for _, c := range classes {
 		require.NoError(t, ss.ClassTable().Insert(ormCtx, c))
 	}
 
 	projects := []*api.Project{
-		{Id: "P01", Admin: sdk.AccAddress("addr6"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "meta"},
-		{Id: "P02", Admin: sdk.AccAddress("addr7"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "meta"},
+		{
+			Id:           "P01",
+			Admin:        sdk.AccAddress("addr6"),
+			ClassKey:     1,
+			Jurisdiction: "AQ",
+			Metadata:     "meta",
+		},
+		{
+			Id:           "P02",
+			Admin:        sdk.AccAddress("addr7"),
+			ClassKey:     2,
+			Jurisdiction: "AQ",
+			Metadata:     "meta",
+		},
 	}
 	for _, p := range projects {
 		require.NoError(t, ss.ProjectTable().Insert(ormCtx, p))
@@ -83,9 +108,7 @@ func TestValidateGenesis(t *testing.T) {
 	genesisJson, err := target.JSON()
 	require.NoError(t, err)
 
-	params := core.Params{
-		AllowlistEnabled: true,
-	}
+	params := core.Params{AllowlistEnabled: true}
 	err = core.ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
