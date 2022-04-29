@@ -129,9 +129,9 @@ Then:
 
 #### Auto-Generated Documentation
 
-- Protobuf documentation is auto-generated and served on [Buf Schema Registry](https://buf.build/regen/regen-ledger/docs) and acts as a source of truth for the data models used in each feature.
+- Protobuf documentation is auto-generated and served on [Buf Schema Registry](https://buf.build/regen/regen-ledger/docs) using the comments written in the proto files and acts as a source of truth for the API of the application.
 - Documentation for each feature is auto-generated and served on [docs.regen.network](https://docs.regen.network) using the feature files written in Gherkin Syntax and acts as a source of truth for the intended behavior of each feature.
-- CLI documentation is auto-generated using [cobra/doc](https://pkg.go.dev/github.com/spf13/cobra/doc) and acts as a source of truth for the CLI commands available when using the `regen` binary.
+- CLI documentation is auto-generated and served on [docs.regen.network](https://docs.regen.network) using [cobra/doc](https://pkg.go.dev/github.com/spf13/cobra/doc) and acts as a source of truth for the CLI commands available when using the `regen` binary.
 
 ## The Words of Maya Angelou
 
