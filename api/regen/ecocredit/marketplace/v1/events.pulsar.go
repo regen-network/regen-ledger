@@ -4,12 +4,10 @@ package marketplacev1
 import (
 	fmt "fmt"
 	runtime "github.com/cosmos/cosmos-proto/runtime"
-	v1beta1 "github.com/cosmos/cosmos-sdk/api/cosmos/base/v1beta1"
 	_ "github.com/gogo/protobuf/gogoproto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	reflect "reflect"
 	sync "sync"
@@ -484,26 +482,16 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventUpdateSellOrder                     protoreflect.MessageDescriptor
-	fd_EventUpdateSellOrder_seller              protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_sell_order_id       protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_batch_denom         protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_new_quantity        protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_new_ask_price       protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_disable_auto_retire protoreflect.FieldDescriptor
-	fd_EventUpdateSellOrder_new_expiration      protoreflect.FieldDescriptor
+	md_EventUpdateSellOrder          protoreflect.MessageDescriptor
+	fd_EventUpdateSellOrder_seller   protoreflect.FieldDescriptor
+	fd_EventUpdateSellOrder_order_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_events_proto_init()
 	md_EventUpdateSellOrder = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventUpdateSellOrder")
 	fd_EventUpdateSellOrder_seller = md_EventUpdateSellOrder.Fields().ByName("seller")
-	fd_EventUpdateSellOrder_sell_order_id = md_EventUpdateSellOrder.Fields().ByName("sell_order_id")
-	fd_EventUpdateSellOrder_batch_denom = md_EventUpdateSellOrder.Fields().ByName("batch_denom")
-	fd_EventUpdateSellOrder_new_quantity = md_EventUpdateSellOrder.Fields().ByName("new_quantity")
-	fd_EventUpdateSellOrder_new_ask_price = md_EventUpdateSellOrder.Fields().ByName("new_ask_price")
-	fd_EventUpdateSellOrder_disable_auto_retire = md_EventUpdateSellOrder.Fields().ByName("disable_auto_retire")
-	fd_EventUpdateSellOrder_new_expiration = md_EventUpdateSellOrder.Fields().ByName("new_expiration")
+	fd_EventUpdateSellOrder_order_id = md_EventUpdateSellOrder.Fields().ByName("order_id")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventUpdateSellOrder)(nil)
@@ -577,39 +565,9 @@ func (x *fastReflection_EventUpdateSellOrder) Range(f func(protoreflect.FieldDes
 			return
 		}
 	}
-	if x.SellOrderId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.SellOrderId)
-		if !f(fd_EventUpdateSellOrder_sell_order_id, value) {
-			return
-		}
-	}
-	if x.BatchDenom != "" {
-		value := protoreflect.ValueOfString(x.BatchDenom)
-		if !f(fd_EventUpdateSellOrder_batch_denom, value) {
-			return
-		}
-	}
-	if x.NewQuantity != "" {
-		value := protoreflect.ValueOfString(x.NewQuantity)
-		if !f(fd_EventUpdateSellOrder_new_quantity, value) {
-			return
-		}
-	}
-	if x.NewAskPrice != nil {
-		value := protoreflect.ValueOfMessage(x.NewAskPrice.ProtoReflect())
-		if !f(fd_EventUpdateSellOrder_new_ask_price, value) {
-			return
-		}
-	}
-	if x.DisableAutoRetire != false {
-		value := protoreflect.ValueOfBool(x.DisableAutoRetire)
-		if !f(fd_EventUpdateSellOrder_disable_auto_retire, value) {
-			return
-		}
-	}
-	if x.NewExpiration != nil {
-		value := protoreflect.ValueOfMessage(x.NewExpiration.ProtoReflect())
-		if !f(fd_EventUpdateSellOrder_new_expiration, value) {
+	if x.OrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OrderId)
+		if !f(fd_EventUpdateSellOrder_order_id, value) {
 			return
 		}
 	}
@@ -630,18 +588,8 @@ func (x *fastReflection_EventUpdateSellOrder) Has(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		return x.Seller != ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
-		return x.SellOrderId != uint64(0)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		return x.BatchDenom != ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		return x.NewQuantity != ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		return x.NewAskPrice != nil
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		return x.DisableAutoRetire != false
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		return x.NewExpiration != nil
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+		return x.OrderId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -660,18 +608,8 @@ func (x *fastReflection_EventUpdateSellOrder) Clear(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		x.Seller = ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
-		x.SellOrderId = uint64(0)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		x.BatchDenom = ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		x.NewQuantity = ""
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		x.NewAskPrice = nil
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		x.DisableAutoRetire = false
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		x.NewExpiration = nil
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+		x.OrderId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -691,24 +629,9 @@ func (x *fastReflection_EventUpdateSellOrder) Get(descriptor protoreflect.FieldD
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		value := x.Seller
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
-		value := x.SellOrderId
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+		value := x.OrderId
 		return protoreflect.ValueOfUint64(value)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		value := x.BatchDenom
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		value := x.NewQuantity
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		value := x.NewAskPrice
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		value := x.DisableAutoRetire
-		return protoreflect.ValueOfBool(value)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		value := x.NewExpiration
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -731,18 +654,8 @@ func (x *fastReflection_EventUpdateSellOrder) Set(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		x.Seller = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
-		x.SellOrderId = value.Uint()
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		x.BatchDenom = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		x.NewQuantity = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		x.NewAskPrice = value.Message().Interface().(*v1beta1.Coin)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		x.DisableAutoRetire = value.Bool()
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		x.NewExpiration = value.Message().Interface().(*timestamppb.Timestamp)
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+		x.OrderId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -763,26 +676,10 @@ func (x *fastReflection_EventUpdateSellOrder) Set(fd protoreflect.FieldDescripto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventUpdateSellOrder) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		if x.NewAskPrice == nil {
-			x.NewAskPrice = new(v1beta1.Coin)
-		}
-		return protoreflect.ValueOfMessage(x.NewAskPrice.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		if x.NewExpiration == nil {
-			x.NewExpiration = new(timestamppb.Timestamp)
-		}
-		return protoreflect.ValueOfMessage(x.NewExpiration.ProtoReflect())
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		panic(fmt.Errorf("field seller of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
-		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		panic(fmt.Errorf("field new_quantity of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		panic(fmt.Errorf("field disable_auto_retire of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+		panic(fmt.Errorf("field order_id of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -798,20 +695,8 @@ func (x *fastReflection_EventUpdateSellOrder) NewField(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.seller":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.batch_denom":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_quantity":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price":
-		m := new(v1beta1.Coin)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.disable_auto_retire":
-		return protoreflect.ValueOfBool(false)
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration":
-		m := new(timestamppb.Timestamp)
-		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -885,27 +770,8 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.SellOrderId != 0 {
-			n += 1 + runtime.Sov(uint64(x.SellOrderId))
-		}
-		l = len(x.BatchDenom)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.NewQuantity)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.NewAskPrice != nil {
-			l = options.Size(x.NewAskPrice)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.DisableAutoRetire {
-			n += 2
-		}
-		if x.NewExpiration != nil {
-			l = options.Size(x.NewExpiration)
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.OrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.OrderId))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -936,60 +802,8 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.NewExpiration != nil {
-			encoded, err := options.Marshal(x.NewExpiration)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x3a
-		}
-		if x.DisableAutoRetire {
-			i--
-			if x.DisableAutoRetire {
-				dAtA[i] = 1
-			} else {
-				dAtA[i] = 0
-			}
-			i--
-			dAtA[i] = 0x30
-		}
-		if x.NewAskPrice != nil {
-			encoded, err := options.Marshal(x.NewAskPrice)
-			if err != nil {
-				return protoiface.MarshalOutput{
-					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-					Buf:               input.Buf,
-				}, err
-			}
-			i -= len(encoded)
-			copy(dAtA[i:], encoded)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x2a
-		}
-		if len(x.NewQuantity) > 0 {
-			i -= len(x.NewQuantity)
-			copy(dAtA[i:], x.NewQuantity)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.NewQuantity)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if len(x.BatchDenom) > 0 {
-			i -= len(x.BatchDenom)
-			copy(dAtA[i:], x.BatchDenom)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BatchDenom)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if x.SellOrderId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
+		if x.OrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OrderId))
 			i--
 			dAtA[i] = 0x10
 		}
@@ -1083,9 +897,9 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 				iNdEx = postIndex
 			case 2:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
 				}
-				x.SellOrderId = 0
+				x.OrderId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1095,167 +909,11 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.SellOrderId |= uint64(b&0x7F) << shift
+					x.OrderId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.BatchDenom = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewQuantity", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.NewQuantity = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewAskPrice", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.NewAskPrice == nil {
-					x.NewAskPrice = &v1beta1.Coin{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NewAskPrice); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
-			case 6:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
-				}
-				var v int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				x.DisableAutoRetire = bool(v != 0)
-			case 7:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field NewExpiration", wireType)
-				}
-				var msglen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					msglen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if msglen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + msglen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				if x.NewExpiration == nil {
-					x.NewExpiration = &timestamppb.Timestamp{}
-				}
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.NewExpiration); err != nil {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
-				}
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1778,21 +1436,8 @@ type EventUpdateSellOrder struct {
 
 	// seller is the owner of the sell order.
 	Seller string `protobuf:"bytes,1,opt,name=seller,proto3" json:"seller,omitempty"`
-	//  sell_order_id is the ID of an existing sell order.
-	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
-	// batch_denom is the credit batch being sold.
-	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// new_quantity is the updated quantity of credits available to sell, if it
-	// is set to zero then the order is cancelled.
-	NewQuantity string `protobuf:"bytes,4,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
-	// new_ask_price is the new ask price for this sell order
-	NewAskPrice *v1beta1.Coin `protobuf:"bytes,5,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
-	// disable_auto_retire updates the disable_auto_retire field in the sell
-	// order.
-	DisableAutoRetire bool `protobuf:"varint,6,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// new_expiration is an optional timestamp when the sell order expires. When
-	// the expiration time is reached, the sell order is removed from state.
-	NewExpiration *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=new_expiration,json=newExpiration,proto3" json:"new_expiration,omitempty"`
+	//  order_id is the ID of an existing sell order.
+	OrderId uint64 `protobuf:"varint,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
 }
 
 func (x *EventUpdateSellOrder) Reset() {
@@ -1822,46 +1467,11 @@ func (x *EventUpdateSellOrder) GetSeller() string {
 	return ""
 }
 
-func (x *EventUpdateSellOrder) GetSellOrderId() uint64 {
+func (x *EventUpdateSellOrder) GetOrderId() uint64 {
 	if x != nil {
-		return x.SellOrderId
+		return x.OrderId
 	}
 	return 0
-}
-
-func (x *EventUpdateSellOrder) GetBatchDenom() string {
-	if x != nil {
-		return x.BatchDenom
-	}
-	return ""
-}
-
-func (x *EventUpdateSellOrder) GetNewQuantity() string {
-	if x != nil {
-		return x.NewQuantity
-	}
-	return ""
-}
-
-func (x *EventUpdateSellOrder) GetNewAskPrice() *v1beta1.Coin {
-	if x != nil {
-		return x.NewAskPrice
-	}
-	return nil
-}
-
-func (x *EventUpdateSellOrder) GetDisableAutoRetire() bool {
-	if x != nil {
-		return x.DisableAutoRetire
-	}
-	return false
-}
-
-func (x *EventUpdateSellOrder) GetNewExpiration() *timestamppb.Timestamp {
-	if x != nil {
-		return x.NewExpiration
-	}
-	return nil
 }
 
 // EventAllowAskDenom is an event emitted when an ask denom is added.
@@ -1910,57 +1520,37 @@ var file_regen_ecocredit_marketplace_v1_events_proto_rawDesc = []byte{
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
 	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x1a, 0x14, 0x67,
 	0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65,
-	0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x3e, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x6c,
-	0x6c, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64,
-	0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6f, 0x72, 0x64,
-	0x65, 0x72, 0x49, 0x64, 0x22, 0xce, 0x02, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x16, 0x0a,
-	0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73,
-	0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72,
-	0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x65,
-	0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74,
-	0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a,
-	0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x21, 0x0a, 0x0c, 0x6e, 0x65,
-	0x77, 0x5f, 0x71, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x6e, 0x65, 0x77, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x3d, 0x0a,
-	0x0d, 0x6e, 0x65, 0x77, 0x5f, 0x61, 0x73, 0x6b, 0x5f, 0x70, 0x72, 0x69, 0x63, 0x65, 0x18, 0x05,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
-	0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x52,
-	0x0b, 0x6e, 0x65, 0x77, 0x41, 0x73, 0x6b, 0x50, 0x72, 0x69, 0x63, 0x65, 0x12, 0x2e, 0x0a, 0x13,
-	0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x75, 0x74, 0x6f, 0x5f, 0x72, 0x65, 0x74,
-	0x69, 0x72, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x64, 0x69, 0x73, 0x61, 0x62,
-	0x6c, 0x65, 0x41, 0x75, 0x74, 0x6f, 0x52, 0x65, 0x74, 0x69, 0x72, 0x65, 0x12, 0x47, 0x0a, 0x0e,
-	0x6e, 0x65, 0x77, 0x5f, 0x65, 0x78, 0x70, 0x69, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x07,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x42, 0x04, 0x90, 0xdf, 0x1f, 0x01, 0x52, 0x0d, 0x6e, 0x65, 0x77, 0x45, 0x78, 0x70, 0x69, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2a, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c,
-	0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x14, 0x0a, 0x05, 0x64,
-	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x42, 0xa4, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76,
-	0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
-	0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x74, 0x6f, 0x22, 0x3e, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x6c, 0x6c,
+	0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x73, 0x65, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64, 0x65,
+	0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65,
+	0x72, 0x49, 0x64, 0x22, 0x49, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x73,
+	0x65, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x6c,
+	0x6c, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x2a,
+	0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x41, 0x73, 0x6b, 0x44,
+	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x42, 0xa4, 0x02, 0x0a, 0x22, 0x63,
+	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76,
+	0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65,
+	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02,
+	0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca,
+	0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31,
+	0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
+	0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56,
+	0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56,
+	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1977,20 +1567,16 @@ func file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP() []byte {
 
 var file_regen_ecocredit_marketplace_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_regen_ecocredit_marketplace_v1_events_proto_goTypes = []interface{}{
-	(*EventSell)(nil),             // 0: regen.ecocredit.marketplace.v1.EventSell
-	(*EventUpdateSellOrder)(nil),  // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
-	(*EventAllowAskDenom)(nil),    // 2: regen.ecocredit.marketplace.v1.EventAllowAskDenom
-	(*v1beta1.Coin)(nil),          // 3: cosmos.base.v1beta1.Coin
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*EventSell)(nil),            // 0: regen.ecocredit.marketplace.v1.EventSell
+	(*EventUpdateSellOrder)(nil), // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
+	(*EventAllowAskDenom)(nil),   // 2: regen.ecocredit.marketplace.v1.EventAllowAskDenom
 }
 var file_regen_ecocredit_marketplace_v1_events_proto_depIdxs = []int32{
-	3, // 0: regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_ask_price:type_name -> cosmos.base.v1beta1.Coin
-	4, // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder.new_expiration:type_name -> google.protobuf.Timestamp
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_regen_ecocredit_marketplace_v1_events_proto_init() }

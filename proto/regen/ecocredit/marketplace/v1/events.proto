@@ -5,8 +5,6 @@ package regen.ecocredit.marketplace.v1;
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/timestamp.proto";
 
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
@@ -24,26 +22,8 @@ message EventUpdateSellOrder {
   // seller is the owner of the sell order.
   string seller = 1;
 
-  //  sell_order_id is the ID of an existing sell order.
-  uint64 sell_order_id = 2;
-
-  // batch_denom is the credit batch being sold.
-  string batch_denom = 3;
-
-  // new_quantity is the updated quantity of credits available to sell, if it
-  // is set to zero then the order is cancelled.
-  string new_quantity = 4;
-
-  // new_ask_price is the new ask price for this sell order
-  cosmos.base.v1beta1.Coin new_ask_price = 5;
-
-  // disable_auto_retire updates the disable_auto_retire field in the sell
-  // order.
-  bool disable_auto_retire = 6;
-
-  // new_expiration is an optional timestamp when the sell order expires. When
-  // the expiration time is reached, the sell order is removed from state.
-  google.protobuf.Timestamp new_expiration = 7 [ (gogoproto.stdtime) = true ];
+  //  order_id is the ID of an existing sell order.
+  uint64 order_id = 2;
 }
 
 // EventAllowAskDenom is an event emitted when an ask denom is added.

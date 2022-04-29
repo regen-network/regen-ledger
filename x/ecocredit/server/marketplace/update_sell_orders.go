@@ -45,12 +45,6 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *ecoApi.CreditType
-	event := marketplace.EventUpdateSellOrder{
-		Seller:            sdk.AccAddress(order.Seller).String(),
-		SellOrderId:       order.Id,
-		DisableAutoRetire: update.DisableAutoRetire,
-	}
-
 	order.DisableAutoRetire = update.DisableAutoRetire
 
 	if update.NewAskPrice != nil {
@@ -73,7 +67,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			order.MarketId = marketId
 		}
 		order.AskPrice = update.NewAskPrice.Amount.String()
-		event.NewAskPrice = update.NewAskPrice
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
@@ -81,7 +74,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
-		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
 		if creditType == nil {
@@ -122,14 +114,16 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			}
 			order.Quantity = update.NewQuantity
 		}
-		event.NewQuantity = update.NewQuantity
 	}
 
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
 		return err
 	}
 
-	return sdkCtx.EventManager().EmitTypedEvent(&event)
+	return sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventUpdateSellOrder{
+		Seller:  sdk.AccAddress(order.Seller).String(),
+		OrderId: order.Id,
+	})
 }
 
 // getCreditTypeFromBatchId gets the credit type given a batch id.

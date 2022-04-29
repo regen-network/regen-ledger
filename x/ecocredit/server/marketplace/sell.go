@@ -82,7 +82,6 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}); err != nil {
 			return nil, err
 		}
-
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
 	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
