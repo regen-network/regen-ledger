@@ -1,4 +1,4 @@
-package marketplace
+package core
 
 import (
 	"fmt"
@@ -12,28 +12,28 @@ import (
 var _ govtypes.Content = &AskDenomProposal{}
 
 const (
-	ProposalType = "AskDenomProposal"
+	AskDenomProposalType = "AskDenomProposal"
 )
 
 func init() {
-	govtypes.RegisterProposalType(ProposalType)
+	govtypes.RegisterProposalType(AskDenomProposalType)
 }
 
-func (m *AskDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
+func (m AskDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
-func (m *AskDenomProposal) ProposalType() string { return ProposalType }
+func (m AskDenomProposal) ProposalType() string { return AskDenomProposalType }
 
-func (m *AskDenomProposal) ValidateBasic() error {
+func (m AskDenomProposal) ValidateBasic() error {
 	if m.AskDenom == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("ask_denom cannot be nil")
 	}
 	if err := m.AskDenom.Validate(); err != nil {
 		return err
 	}
-	return govtypes.ValidateAbstract(m)
+	return govtypes.ValidateAbstract(&m)
 }
 
-func (m *AskDenomProposal) String() string {
+func (m AskDenomProposal) String() string {
 	return fmt.Sprintf(`Credit Type Proposal:
   Title:       %s
   Description: %s

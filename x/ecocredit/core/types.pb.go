@@ -222,45 +222,180 @@ func (m *CreditTypeProposal) GetCreditType() *CreditType {
 	return nil
 }
 
+type AskDenomProposal struct {
+	// title is the title of the proposal.
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// description is the description of the proposal.
+	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	// ask_denom contains coin denom information that will be added to the allowed
+	// ask denoms list for use in the marketplace.
+	AskDenom *AskDenom `protobuf:"bytes,3,opt,name=ask_denom,json=askDenom,proto3" json:"ask_denom,omitempty"`
+}
+
+func (m *AskDenomProposal) Reset()      { *m = AskDenomProposal{} }
+func (*AskDenomProposal) ProtoMessage() {}
+func (*AskDenomProposal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7b044b6b740b984f, []int{3}
+}
+func (m *AskDenomProposal) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AskDenomProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AskDenomProposal.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AskDenomProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AskDenomProposal.Merge(m, src)
+}
+func (m *AskDenomProposal) XXX_Size() int {
+	return m.Size()
+}
+func (m *AskDenomProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_AskDenomProposal.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AskDenomProposal proto.InternalMessageInfo
+
+func (m *AskDenomProposal) GetTitle() string {
+	if m != nil {
+		return m.Title
+	}
+	return ""
+}
+
+func (m *AskDenomProposal) GetDescription() string {
+	if m != nil {
+		return m.Description
+	}
+	return ""
+}
+
+func (m *AskDenomProposal) GetAskDenom() *AskDenom {
+	if m != nil {
+		return m.AskDenom
+	}
+	return nil
+}
+
+// AskDenom defines the structure for a coin denom.
+type AskDenom struct {
+	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// display_denom is the denom to display to the user and is informational
+	DisplayDenom string `protobuf:"bytes,2,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
+	// exponent is the exponent that relates the denom to the display_denom and is
+	// informational
+	Exponent uint32 `protobuf:"varint,3,opt,name=exponent,proto3" json:"exponent,omitempty"`
+}
+
+func (m *AskDenom) Reset()         { *m = AskDenom{} }
+func (m *AskDenom) String() string { return proto.CompactTextString(m) }
+func (*AskDenom) ProtoMessage()    {}
+func (*AskDenom) Descriptor() ([]byte, []int) {
+	return fileDescriptor_7b044b6b740b984f, []int{4}
+}
+func (m *AskDenom) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AskDenom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AskDenom.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AskDenom) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AskDenom.Merge(m, src)
+}
+func (m *AskDenom) XXX_Size() int {
+	return m.Size()
+}
+func (m *AskDenom) XXX_DiscardUnknown() {
+	xxx_messageInfo_AskDenom.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AskDenom proto.InternalMessageInfo
+
+func (m *AskDenom) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+func (m *AskDenom) GetDisplayDenom() string {
+	if m != nil {
+		return m.DisplayDenom
+	}
+	return ""
+}
+
+func (m *AskDenom) GetExponent() uint32 {
+	if m != nil {
+		return m.Exponent
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Params)(nil), "regen.ecocredit.v1.Params")
 	proto.RegisterType((*OriginTx)(nil), "regen.ecocredit.v1.OriginTx")
 	proto.RegisterType((*CreditTypeProposal)(nil), "regen.ecocredit.v1.CreditTypeProposal")
+	proto.RegisterType((*AskDenomProposal)(nil), "regen.ecocredit.v1.AskDenomProposal")
+	proto.RegisterType((*AskDenom)(nil), "regen.ecocredit.v1.AskDenom")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/types.proto", fileDescriptor_7b044b6b740b984f) }
 
 var fileDescriptor_7b044b6b740b984f = []byte{
-	// 457 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x92, 0x3f, 0x8f, 0xd3, 0x30,
-	0x14, 0xc0, 0xf3, 0xe7, 0x38, 0x5d, 0x5d, 0xe9, 0x54, 0xac, 0x0a, 0x85, 0x1b, 0xd2, 0xa8, 0x53,
-	0x24, 0x38, 0x87, 0x1e, 0x88, 0x81, 0x05, 0xe9, 0x2a, 0x58, 0xa9, 0xa2, 0x9b, 0x58, 0x2a, 0xc7,
-	0x79, 0x04, 0xd3, 0x34, 0x8e, 0x6c, 0x5f, 0xef, 0xfa, 0x2d, 0x90, 0x58, 0x18, 0x99, 0xf9, 0x24,
-	0x37, 0xa1, 0x1b, 0x99, 0x00, 0xb5, 0x5f, 0x04, 0xc5, 0x36, 0xa5, 0x12, 0x8c, 0x37, 0xe5, 0xf9,
-	0xfd, 0xec, 0xf7, 0xb3, 0x5f, 0x1e, 0x8a, 0x25, 0x54, 0xd0, 0x64, 0xc0, 0x04, 0x93, 0x50, 0x72,
-	0x9d, 0xad, 0x26, 0x99, 0x5e, 0xb7, 0xa0, 0x48, 0x2b, 0x85, 0x16, 0x18, 0x1b, 0x4e, 0x76, 0x9c,
-	0xac, 0x26, 0x27, 0xc3, 0x4a, 0x54, 0xc2, 0xe0, 0xac, 0x8b, 0xec, 0xce, 0x93, 0x98, 0x09, 0xb5,
-	0x14, 0x2a, 0x2b, 0xa8, 0x82, 0x6c, 0x35, 0x29, 0x40, 0xd3, 0x49, 0xc6, 0x04, 0x6f, 0xfe, 0xf0,
-	0xff, 0x98, 0x94, 0xa6, 0x1a, 0x2c, 0x1f, 0x7f, 0x0b, 0xd0, 0xe1, 0x8c, 0x4a, 0xba, 0x54, 0xf8,
-	0x12, 0x0d, 0xec, 0x9e, 0x39, 0xab, 0xa9, 0x52, 0xf3, 0x77, 0x00, 0x91, 0x9f, 0x84, 0x69, 0xff,
-	0xec, 0x21, 0xb1, 0x16, 0xd2, 0x59, 0x88, 0xb3, 0x90, 0xa9, 0xe0, 0xcd, 0xf9, 0x93, 0x9b, 0x1f,
-	0x23, 0xef, 0xeb, 0xcf, 0x51, 0x5a, 0x71, 0xfd, 0xfe, 0xb2, 0x20, 0x4c, 0x2c, 0x33, 0x77, 0x25,
-	0xfb, 0x39, 0x55, 0xe5, 0xc2, 0xbd, 0xad, 0x3b, 0xa0, 0xf2, 0x63, 0x2b, 0x99, 0x76, 0x8e, 0xd7,
-	0x00, 0xf8, 0x03, 0x42, 0x05, 0x55, 0x0b, 0xd0, 0x46, 0x18, 0xdc, 0xbd, 0xb0, 0x67, 0xcb, 0x77,
-	0xae, 0x67, 0xe8, 0x01, 0xad, 0x6b, 0x71, 0x05, 0xa5, 0x7b, 0x23, 0x93, 0x40, 0xb5, 0x90, 0x2a,
-	0x0a, 0x93, 0x30, 0xed, 0xe5, 0x43, 0x47, 0xcd, 0xe5, 0xa6, 0x8e, 0xe1, 0x47, 0xe8, 0xbe, 0xc9,
-	0xd7, 0x5c, 0xe9, 0x39, 0x34, 0xb4, 0xa8, 0xa1, 0x8c, 0x0e, 0x12, 0x3f, 0x3d, 0xca, 0x07, 0x3b,
-	0xf0, 0xca, 0xe6, 0xc7, 0x8f, 0xd1, 0xd1, 0x1b, 0xc9, 0x2b, 0xde, 0x5c, 0x5c, 0xe3, 0x01, 0x0a,
-	0xf5, 0xba, 0x8d, 0xfc, 0xc4, 0x4f, 0x7b, 0x79, 0x17, 0xe2, 0x63, 0x14, 0xf0, 0x32, 0x0a, 0x4c,
-	0x22, 0xe0, 0xe5, 0xf8, 0x93, 0x8f, 0xf0, 0xd4, 0xf4, 0xe3, 0x62, 0xdd, 0xc2, 0x4c, 0x8a, 0x56,
-	0x28, 0x5a, 0xe3, 0x21, 0xba, 0xa7, 0xb9, 0xae, 0xc1, 0x1d, 0xb5, 0x0b, 0x9c, 0xa0, 0x7e, 0x09,
-	0x8a, 0x49, 0xde, 0x6a, 0x2e, 0x1a, 0x57, 0x65, 0x3f, 0x85, 0x5f, 0xa2, 0xbe, 0xfb, 0x85, 0x5d,
-	0x03, 0xa2, 0x30, 0xf1, 0xd3, 0xfe, 0x59, 0x4c, 0xfe, 0x9d, 0x26, 0xf2, 0x57, 0x9a, 0x23, 0xb6,
-	0x8b, 0x5f, 0x1c, 0x7c, 0xfe, 0x32, 0xf2, 0xce, 0x67, 0x37, 0x9b, 0xd8, 0xbf, 0xdd, 0xc4, 0xfe,
-	0xaf, 0x4d, 0xec, 0x7f, 0xdc, 0xc6, 0xde, 0xed, 0x36, 0xf6, 0xbe, 0x6f, 0x63, 0xef, 0xed, 0xf3,
-	0xbd, 0xae, 0x9b, 0xaa, 0xa7, 0x0d, 0xe8, 0x2b, 0x21, 0x17, 0x6e, 0x55, 0x43, 0x59, 0x81, 0xcc,
-	0xae, 0xf7, 0x06, 0x8e, 0x09, 0x09, 0xc5, 0xa1, 0x99, 0xb6, 0xa7, 0xbf, 0x03, 0x00, 0x00, 0xff,
-	0xff, 0xd1, 0xf9, 0x00, 0x09, 0xf9, 0x02, 0x00, 0x00,
+	// 536 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0x31, 0x8f, 0xd3, 0x30,
+	0x14, 0xc7, 0x9b, 0xf6, 0x38, 0xb5, 0x2e, 0x77, 0x2a, 0x56, 0x85, 0x42, 0x85, 0xd2, 0xa8, 0x2c,
+	0x91, 0xe0, 0x12, 0x7a, 0x20, 0x24, 0x58, 0x10, 0x57, 0x60, 0xa5, 0x8a, 0x6e, 0x62, 0xa9, 0x9c,
+	0xe4, 0x11, 0x4c, 0x53, 0x3b, 0xb2, 0x7d, 0xbd, 0xf6, 0x33, 0xb0, 0x20, 0xb1, 0x30, 0x32, 0xf3,
+	0x49, 0x6e, 0x42, 0x37, 0x32, 0x01, 0x6a, 0xbf, 0x08, 0x8a, 0xed, 0x96, 0x4a, 0xdc, 0xc6, 0x4d,
+	0x79, 0xef, 0xfd, 0xfd, 0xde, 0xef, 0x6f, 0xc7, 0x46, 0x9e, 0x80, 0x1c, 0x58, 0x04, 0x29, 0x4f,
+	0x05, 0x64, 0x54, 0x45, 0xf3, 0x61, 0xa4, 0x96, 0x25, 0xc8, 0xb0, 0x14, 0x5c, 0x71, 0x8c, 0xb5,
+	0x1e, 0x6e, 0xf5, 0x70, 0x3e, 0xec, 0x75, 0x73, 0x9e, 0x73, 0x2d, 0x47, 0x55, 0x64, 0x56, 0xf6,
+	0xbc, 0x94, 0xcb, 0x19, 0x97, 0x51, 0x42, 0x24, 0x44, 0xf3, 0x61, 0x02, 0x8a, 0x0c, 0xa3, 0x94,
+	0x53, 0xb6, 0xd1, 0xaf, 0x20, 0x49, 0x45, 0x14, 0x18, 0x7d, 0xf0, 0xbd, 0x8e, 0xf6, 0xc7, 0x44,
+	0x90, 0x99, 0xc4, 0x67, 0xa8, 0x63, 0xd6, 0x4c, 0xd2, 0x82, 0x48, 0x39, 0x79, 0x07, 0xe0, 0x3a,
+	0x7e, 0x23, 0x68, 0x1f, 0xdf, 0x09, 0x0d, 0x25, 0xac, 0x28, 0xa1, 0xa5, 0x84, 0x23, 0x4e, 0xd9,
+	0xc9, 0xc3, 0x8b, 0x9f, 0xfd, 0xda, 0xb7, 0x5f, 0xfd, 0x20, 0xa7, 0xea, 0xfd, 0x59, 0x12, 0xa6,
+	0x7c, 0x16, 0x59, 0x4b, 0xe6, 0x73, 0x24, 0xb3, 0xa9, 0xdd, 0x5b, 0xd5, 0x20, 0xe3, 0x43, 0x03,
+	0x19, 0x55, 0x8c, 0xd7, 0x00, 0xf8, 0x03, 0x42, 0x09, 0x91, 0x53, 0x50, 0x1a, 0x58, 0xbf, 0x7e,
+	0x60, 0xcb, 0x8c, 0xaf, 0x58, 0x8f, 0xd1, 0x6d, 0x52, 0x14, 0xfc, 0x1c, 0x32, 0xbb, 0xc7, 0x54,
+	0x00, 0x51, 0x5c, 0x48, 0xb7, 0xe1, 0x37, 0x82, 0x56, 0xdc, 0xb5, 0xaa, 0x36, 0x37, 0xb2, 0x1a,
+	0xbe, 0x8f, 0x6e, 0xe9, 0x7a, 0x41, 0xa5, 0x9a, 0x00, 0x23, 0x49, 0x01, 0x99, 0xbb, 0xe7, 0x3b,
+	0x41, 0x33, 0xee, 0x6c, 0x85, 0x57, 0xa6, 0x3e, 0x78, 0x80, 0x9a, 0x6f, 0x04, 0xcd, 0x29, 0x3b,
+	0x5d, 0xe0, 0x0e, 0x6a, 0xa8, 0x65, 0xe9, 0x3a, 0xbe, 0x13, 0xb4, 0xe2, 0x2a, 0xc4, 0x87, 0xa8,
+	0x4e, 0x33, 0xb7, 0xae, 0x0b, 0x75, 0x9a, 0x0d, 0x3e, 0x3b, 0x08, 0x8f, 0xf4, 0x79, 0x9c, 0x2e,
+	0x4b, 0x18, 0x0b, 0x5e, 0x72, 0x49, 0x0a, 0xdc, 0x45, 0x37, 0x14, 0x55, 0x05, 0xd8, 0x56, 0x93,
+	0x60, 0x1f, 0xb5, 0x33, 0x90, 0xa9, 0xa0, 0xa5, 0xa2, 0x9c, 0xd9, 0x29, 0xbb, 0x25, 0xfc, 0x1c,
+	0xb5, 0xed, 0x2f, 0xac, 0x0e, 0xc0, 0x6d, 0xf8, 0x4e, 0xd0, 0x3e, 0xf6, 0xc2, 0x7f, 0x6f, 0x53,
+	0xf8, 0x17, 0x1a, 0xa3, 0x74, 0x1b, 0x3f, 0xdb, 0xfb, 0xf2, 0xb5, 0x5f, 0x1b, 0x7c, 0x74, 0x50,
+	0xe7, 0x85, 0x9c, 0xbe, 0x04, 0xc6, 0x67, 0xff, 0xed, 0xe9, 0x29, 0x6a, 0x11, 0x39, 0x9d, 0x64,
+	0xd5, 0x30, 0xeb, 0xe8, 0xee, 0x55, 0x8e, 0x36, 0xc0, 0xb8, 0x49, 0x6c, 0x64, 0xdd, 0x10, 0xd4,
+	0xdc, 0x68, 0x95, 0x09, 0x33, 0xc8, 0x9a, 0xd0, 0x09, 0xbe, 0x87, 0x0e, 0x32, 0x2a, 0xcb, 0x82,
+	0x2c, 0x2d, 0xc6, 0xd8, 0xb8, 0x69, 0x8b, 0xa6, 0xb5, 0x87, 0x9a, 0xb0, 0x28, 0x39, 0x03, 0xa6,
+	0xb4, 0x8d, 0x83, 0x78, 0x9b, 0x9f, 0x8c, 0x2f, 0x56, 0x9e, 0x73, 0xb9, 0xf2, 0x9c, 0xdf, 0x2b,
+	0xcf, 0xf9, 0xb4, 0xf6, 0x6a, 0x97, 0x6b, 0xaf, 0xf6, 0x63, 0xed, 0xd5, 0xde, 0x3e, 0xd9, 0xb9,
+	0x66, 0xda, 0xf4, 0x11, 0x03, 0x75, 0xce, 0xc5, 0xd4, 0x66, 0x05, 0x64, 0x39, 0x88, 0x68, 0xb1,
+	0xf3, 0xc2, 0x52, 0x2e, 0x20, 0xd9, 0xd7, 0xcf, 0xeb, 0xd1, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff,
+	0xb4, 0xd2, 0x4e, 0x06, 0xea, 0x03, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -419,6 +554,97 @@ func (m *CreditTypeProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *AskDenomProposal) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AskDenomProposal) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AskDenomProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AskDenom != nil {
+		{
+			size, err := m.AskDenom.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintTypes(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Description) > 0 {
+		i -= len(m.Description)
+		copy(dAtA[i:], m.Description)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Description)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Title) > 0 {
+		i -= len(m.Title)
+		copy(dAtA[i:], m.Title)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Title)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AskDenom) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AskDenom) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AskDenom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Exponent != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.Exponent))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.DisplayDenom) > 0 {
+		i -= len(m.DisplayDenom)
+		copy(dAtA[i:], m.DisplayDenom)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.DisplayDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTypes(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTypes(v)
 	base := offset
@@ -494,6 +720,47 @@ func (m *CreditTypeProposal) Size() (n int) {
 	if m.CreditType != nil {
 		l = m.CreditType.Size()
 		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *AskDenomProposal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Title)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.Description)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.AskDenom != nil {
+		l = m.AskDenom.Size()
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *AskDenom) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.DisplayDenom)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.Exponent != 0 {
+		n += 1 + sovTypes(uint64(m.Exponent))
 	}
 	return n
 }
@@ -917,6 +1184,289 @@ func (m *CreditTypeProposal) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AskDenomProposal) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AskDenomProposal: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AskDenomProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Title", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Title = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Description", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Description = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AskDenom", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.AskDenom == nil {
+				m.AskDenom = &AskDenom{}
+			}
+			if err := m.AskDenom.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AskDenom) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AskDenom: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AskDenom: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DisplayDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DisplayDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
+			}
+			m.Exponent = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Exponent |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])

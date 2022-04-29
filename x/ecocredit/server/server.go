@@ -34,6 +34,10 @@ type serverImpl struct {
 	stateStore api.StateStore
 }
 
+func (s serverImpl) AddAskDenom(ctx sdk.Context, proposal marketplacetypes.AskDenomProposal) error {
+	return s.coreKeeper.AddAskDenom(ctx, proposal)
+}
+
 func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
 	return s.coreKeeper.AddCreditType(ctx, ctp)
 }

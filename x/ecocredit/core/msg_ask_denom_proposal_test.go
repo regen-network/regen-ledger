@@ -1,14 +1,18 @@
-package marketplace
+package core
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+)
 
 func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 	type fields struct {
 		Title       string
 		Description string
-		AskDenom    *AskDenom
+		AskDenom    *marketplace.AskDenom
 	}
-	validAskDenom := &AskDenom{
+	validAskDenom := &marketplace.AskDenom{
 		Denom:        "uregen",
 		DisplayDenom: "regen",
 		Exponent:     18,
@@ -54,7 +58,7 @@ func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &AskDenomProposal{
+			m := &marketplace.AskDenomProposal{
 				Title:       tt.fields.Title,
 				Description: tt.fields.Description,
 				AskDenom:    tt.fields.AskDenom,

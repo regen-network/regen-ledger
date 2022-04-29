@@ -1,6 +1,8 @@
-package marketplace
+package core
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestAskDenom_Validate(t *testing.T) {
 	type fields struct {

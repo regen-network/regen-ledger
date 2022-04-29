@@ -15,15 +15,22 @@ type ProposalKeeper interface {
 	AddAskDenom(ctx sdk.Context, proposal marketplace.AskDenomProposal) error
 }
 
-func NewCreditTypeProposalHandler(k ProposalKeeper) govtypes.Handler {
+func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 	return func(ctx sdk.Context, content govtypes.Content) error {
 		switch c := content.(type) {
 		case *coretypes.CreditTypeProposal:
 			return handleCreditTypeProposal(ctx, k, c)
+		case *coretypes.AskDenomProposal:
+			return handleAskDenomProposal(ctx, k, c)
+
 		default:
 			return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized credit type proposal content type: %T", c)
 		}
 	}
+}
+
+func handleAskDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *coretypes.AskDenomProposal) error {
+	return nil
 }
 
 func handleCreditTypeProposal(ctx sdk.Context, k ProposalKeeper, proposal *coretypes.CreditTypeProposal) error {

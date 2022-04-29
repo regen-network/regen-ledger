@@ -13,7 +13,7 @@ import (
 func TestCreditTypeProposal_BasicValid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
@@ -34,7 +34,7 @@ func TestCreditTypeProposal_BasicValid(t *testing.T) {
 func TestCreditTypeProposal_InvalidPrecision(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "BIO",
 		Name:         "biodiversity",
@@ -52,7 +52,7 @@ func TestCreditTypeProposal_InvalidPrecision(t *testing.T) {
 func TestCreditTypeProposal_InvalidAbbreviation(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "biO",
 		Name:         "biodiversity",
@@ -70,7 +70,7 @@ func TestCreditTypeProposal_InvalidAbbreviation(t *testing.T) {
 func TestCreditTypeProposal_NoName(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "BIO",
 		Unit:         "meters squared",
@@ -87,7 +87,7 @@ func TestCreditTypeProposal_NoName(t *testing.T) {
 func TestCreditTypeProposal_NoUnit(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "BIO",
 		Name:         "FooBar",
@@ -104,7 +104,7 @@ func TestCreditTypeProposal_NoUnit(t *testing.T) {
 func TestCreditTypeProposal_Duplicate(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	handler := NewCreditTypeProposalHandler(s.k)
+	handler := NewProposalHandler(s.k)
 	ct := &coretypes.CreditType{
 		Abbreviation: "BIO",
 		Name:         "FooBar",
