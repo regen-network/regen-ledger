@@ -33,7 +33,12 @@ func TestValidateGenesis(t *testing.T) {
 	}))
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
-		&api.BatchBalance{BatchKey: 1, Address: sdk.AccAddress("addr1"), Tradable: "90.003", Retired: "9.997"}))
+		&api.BatchBalance{
+			BatchKey: 1,
+			Address:  sdk.AccAddress("addr1"),
+			Tradable: "90.003",
+			Retired:  "9.997",
+		}))
 
 	batches := []*api.Batch{
 		{
@@ -232,12 +237,6 @@ func TestGenesisValidate(t *testing.T) {
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
-					Abbreviation: "BIO",
-					Name:         "biodiversity",
-					Unit:         "acres",
-					Precision:    6,
-				}))
 				denom := "C01-00000000-00000000-001"
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
@@ -335,7 +334,7 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
-			"valid test case, multiple classes",
+			"valid test case, multiple classes and credit types",
 			func(ctx context.Context, ss api.StateStore) {
 				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
 					Abbreviation: "C",
@@ -343,10 +342,23 @@ func TestGenesisValidate(t *testing.T) {
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "BIO",
+					Name:         "biodiversity",
+					Unit:         "acres",
+					Precision:    6,
+				}))
+
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            addr1,
 					CreditTypeAbbrev: "C",
+				})
+				require.NoError(t, err)
+				cKeyBIO, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "BIO01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "BIO",
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
@@ -356,10 +368,26 @@ func TestGenesisValidate(t *testing.T) {
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
+				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P02",
+					Admin:        addr1,
+					ClassKey:     cKeyBIO,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
 					Denom:        "C01-00000000-00000000-001",
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKeyBIO,
+					Denom:        "BIO01-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -386,6 +414,19 @@ func TestGenesisValidate(t *testing.T) {
 					Tradable: "100.123",
 					Retired:  "100.123",
 				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKeyBIO,
+					Address:  addr1,
+					Tradable: "105.2",
+					Escrowed: "102.2",
+					Retired:  "207.1",
+				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKeyBIO,
+					Address:  addr2,
+					Tradable: "101.1",
+					Retired:  "404.1",
+				}))
 				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 					BatchKey:        bKey,
 					TradableAmount:  "100.123",
@@ -396,6 +437,13 @@ func TestGenesisValidate(t *testing.T) {
 					BatchKey:        bKey2,
 					TradableAmount:  "100.123",
 					RetiredAmount:   "100.123",
+					CancelledAmount: "",
+				}))
+
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:        bKeyBIO,
+					TradableAmount:  "308.5",
+					RetiredAmount:   "611.2",
 					CancelledAmount: "",
 				}))
 			},
