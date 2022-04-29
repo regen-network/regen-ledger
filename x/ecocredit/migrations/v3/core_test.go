@@ -46,8 +46,6 @@ func TestMigrations(t *testing.T) {
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	store := sdkCtx.KVStore(ecocreditKey)
 
-	// testutil.DefaultContext()
-
 	paramStore.WithKeyTable(v3.ParamKeyTable())
 	paramStore.Set(sdkCtx, v3.KeyAllowlistEnabled, true)
 

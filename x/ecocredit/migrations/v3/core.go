@@ -2,6 +2,8 @@ package v3
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"sort"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -42,13 +44,16 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
 
-	if !subspace.HasKeyTable() {
-		subspace.WithKeyTable(ParamKeyTable())
+	// migrate credit types from params to ORM table
+	bz := subspace.GetRaw(sdkCtx, KeyCreditTypes)
+	if bz == nil {
+		return fmt.Errorf("credit types empty")
 	}
 
-	// migrate credit types from params to ORM table
-	var creditTypes []*CreditType
-	subspace.Get(sdkCtx, KeyCreditTypes, &creditTypes)
+	var creditTypes []CreditType
+	if err := json.Unmarshal(bz, &creditTypes); err != nil {
+		return err
+	}
 
 	ctx := sdk.WrapSDKContext(sdkCtx)
 	for _, creditType := range creditTypes {
@@ -61,6 +66,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 	}
+	// TODO: Set AskDenom parameter https://github.com/regen-network/regen-ledger/issues/980
 
 	// migrate credit classes to ORM v1
 	classItr, err := classInfoTable.PrefixScan(sdkCtx, nil, nil)
