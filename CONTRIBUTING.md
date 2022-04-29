@@ -40,11 +40,11 @@ The type and scope of the pull request should already be defined in the issue th
 
 The scope is not required and may be excluded if the pull request does not update any golang code within a go module but the scope should be included and should reflect the location of the go module whenever golang code within a go module is updated. Only one go module should be updated at a time but in some cases multiple go modules may be updated. In the case of multiple go modules being updated, the location of the updated go modules should be separated by a `,` and no spaces.
 
-For updating proto definitions, the scope should reflect the location of the go module within which the code is being generated (e.g. `x/ecocredit` should be the scope when updating proto definitions in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This may change in the future given most of the code is now being generated and placed with the `api` go module.
+For pull requests that update proto definitions, the scope should reflect the location of the go module within which the code is being generated (e.g. `x/ecocredit` should be the scope when updating proto definitions in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This is also the location that the dummy implementation will be added for new features and changes will be made if updating existing features. This may change in the future given most of the code is now being generated and placed with the `api` go module.
 
 #### Individual Commits
 
-It is not required that each commit within a pull request uses semantic commits but the first commit should use a semantic commit (this will also auto-populate the pull request title when opening a new pull request)
+It is not required that each commit within a pull request uses semantic commits but the first commit should use a semantic commit, which will be used instead of the pull request title if the pull request only has one non-merge commit (this will also auto-populate the pull request title when opening a new pull request).
 
 ### Writing Protobuf Definitions
 
@@ -52,9 +52,7 @@ It is not required that each commit within a pull request uses semantic commits 
 
 ### Writing Acceptance Tests
 
-With Regen Ledger, we take a [Behaviour Driven Development (BDD)](https://en.wikipedia.org/wiki/Behavior-driven_development) approach to the design and implementation of new features to encourage collaboration among various stakeholders.
-
-After the proto definitions for a new feature are written, and before the new feature is implemented, acceptance tests for the new feature should be written using [Gherkin Syntax](https://cucumber.io/docs/gherkin/).
+With Regen Ledger, we take a [Behaviour Driven Development (BDD)](https://en.wikipedia.org/wiki/Behavior-driven_development) approach to the design and implementation of features to encourage collaboration among various stakeholders. After the proto definitions for a feature are written, and before the feature is implemented, acceptance tests for the feature should be written using [Gherkin Syntax](https://cucumber.io/docs/gherkin/).
 
 Writing BDD-style tests provide value at three phases of development:
 
@@ -116,7 +114,24 @@ Then:
 
 ### Writing Documentation
 
-...
+
+#### Best Practices
+
+- Always double-check for spelling and grammar.
+- Avoid using `code` format when writing in plain English.
+- Try to express your thoughts in a clear and concise and clean way.
+- RFC keywords should be used in technical documentation (uppercase) and are recommended in user documentation (lowercase). The RFC keywords are: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL". They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
+
+#### Resources
+
+- [https://developers.google.com/style](https://developers.google.com/style)
+- [https://developers.google.com/tech-writing/overview](https://developers.google.com/tech-writing/overview)
+
+#### Auto-Generated Documentation
+
+- Protobuf documentation is auto-generated and served on [Buf Schema Registry](https://buf.build/regen/regen-ledger/docs) and acts as a source of truth for the data models used in each feature.
+- Documentation for each feature is auto-generated and served on [docs.regen.network](https://docs.regen.network) using the feature files written in Gherkin Syntax and acts as a source of truth for the intended behavior of each feature.
+- CLI documentation is auto-generated using [cobra/doc](https://pkg.go.dev/github.com/spf13/cobra/doc) and acts as a source of truth for the CLI commands available when using the `regen` binary.
 
 ## The Words of Maya Angelou
 
