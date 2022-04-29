@@ -14,7 +14,7 @@ We follow an agile methodology and use ZenHub and [GitHub Issues](https://github
 
 If you are a first time contributor, check out the issues labeled "[good first issue](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+)" and "[help wanted](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)" or send us a message in the #regen-ledger channel of our [Discord Server](https://discord.gg/regen-network).
 
-### Using Github Labels
+### Using GitHub Labels
 
 We use [GitHub Labels](https://github.com/regen-network/regen-ledger/labels) for issues and pull requests. The following are some general guidelines for using labels.
 
@@ -29,7 +29,7 @@ We use [GitHub Labels](https://github.com/regen-network/regen-ledger/labels) for
 
 #### Guidelines for using labels with pull requests:
 
-- `Type`, `Scope`, and `Status` labels are not required for pull requests because we use semantic commits to define the type and scope of each pull request and each pull request should have a corresponding issue with the appropriate `Type`, `Scope`, and `Status` labels applied
+- `Type`, `Scope`, and `Status` labels are not required for pull requests because we use semantic commits to define the type and scope of each pull request and because each pull request should have a corresponding issue with the appropriate `Type`, `Scope`, and `Status` labels applied
 - ...
 
 ### Using Semantic Commits
@@ -54,12 +54,17 @@ Writing BDD-style tests provide value at three phases of development:
 
 With BDD-style tests, the approach is as follows:
 
-What are you building?
-How will you test it?
-How did you build it?
-How did you build the tests?
+- What are you building?
+- How will you test it?
+- How did you build it?
+- How did you build the tests?
 
 ...
+
+#### Rules
+
+- "Rule is a synonym for business requirement and acceptance criterion."
+- ...
 
 #### Scenarios
 
@@ -71,13 +76,23 @@ How did you build the tests?
 - "Shorter scenarios are easier to read, understand and maintain."
 - ...
 
-#### Rules
+#### Steps
 
-- "Rule is a synonym for business requirement and acceptance criterion."
+Given:
+
+- ...
+
+When:
+
+- ...
+
+Then:
+
 - ...
 
 #### Resources
 
+- [https://cucumber.io/docs/cucumber/](https://cucumber.io/docs/cucumber/)
 - [https://leanpub.com/bddbooks-discovery](https://leanpub.com/bddbooks-discovery)
 - [https://leanpub.com/bddbooks-formulation](https://leanpub.com/bddbooks-formulation)
 
@@ -89,39 +104,30 @@ How did you build the tests?
 
 ...
 
-<br>
-
----
-
-<br>
-
-And for some inspiration...
-
 ## The Words of Maya Angelou
 
-
-> We, unaccustomed to courage<br>
-exiles from delight<br>
-live coiled in shells of loneliness<br>
-until love leaves its high holy temple<br>
-and comes into our sight<br>
-to liberate us into life.<br>
-
-> Love arrives<br>
-and in its train come ecstasies<br>
-old memories of pleasure<br>
-ancient histories of pain.<br>
-Yet if we are bold,<br>
-love strikes away the chains of fear<br>
-from our souls.<br>
-
-> We are weaned from our timidity<br>
-In the flush of love's light<br>
-we dare be brave<br>
-And suddenly we see<br>
-that love costs all we are<br>
-and will ever be.<br>
-Yet it is only love<br>
-which sets us free.<br>
-
-> ― Maya Angelou<br>
+> We, unaccustomed to courage
+exiles from delight
+live coiled in shells of loneliness
+until love leaves its high holy temple
+and comes into our sight
+to liberate us into life.
+>
+> Love arrives
+and in its train come ecstasies
+old memories of pleasure
+ancient histories of pain.
+Yet if we are bold,
+love strikes away the chains of fear
+from our souls.
+>
+> We are weaned from our timidity
+In the flush of love's light
+we dare be brave
+And suddenly we see
+that love costs all we are
+and will ever be.
+Yet it is only love
+which sets us free.
+>
+> ― Maya Angelou
