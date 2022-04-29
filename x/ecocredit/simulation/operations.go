@@ -3,7 +3,6 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -88,6 +87,12 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateProject = WeightCreateProject
+		},
+	)
+
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateBatch, &weightMsgCreateBatch, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateBatch = WeightCreateBatch
@@ -130,16 +135,14 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateProject = WeightCreateProject
-		},
-	)
-
 	ops := simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
 			SimulateMsgCreateClass(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgCreateProject,
+			SimulateMsgCreateProject(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateBatch,
@@ -168,10 +171,6 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassMetadata,
 			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgCreateProject,
-			SimulateMsgCreateProject(ak, bk, qryClient),
 		),
 	}
 
@@ -356,11 +355,6 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
-			// TODO: remove this check once batch denom creation is fixed #1032
-			if strings.Contains(err.Error(), "unique key violation") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "batch denom already exists"), nil, nil
-			}
-
 			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
