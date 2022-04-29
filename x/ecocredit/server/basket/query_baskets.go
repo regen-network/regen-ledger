@@ -37,6 +37,12 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 		if err != nil {
 			return nil, err
 		}
+		basketGogo := &baskettypes.Basket{}
+		err = ormutil.PulsarToGogoSlow(basket, basketGogo)
+		if err != nil {
+			return nil, err
+		}
+		res.Baskets = append(res.Baskets, basketGogo)
 
 		var criteria *baskettypes.DateCriteria
 		if basket.DateCriteria != nil {
@@ -46,7 +52,7 @@ func (k Keeper) Baskets(ctx context.Context, request *baskettypes.QueryBasketsRe
 			}
 		}
 
-		res.Baskets = append(res.Baskets, &baskettypes.BasketInfo{
+		res.BasketsInfo = append(res.BasketsInfo, &baskettypes.BasketInfo{
 			BasketDenom:       basket.BasketDenom,
 			Name:              basket.Name,
 			DisableAutoRetire: basket.DisableAutoRetire,

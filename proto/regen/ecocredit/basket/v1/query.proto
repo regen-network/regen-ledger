@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.basket.v1;
 
 import "google/api/annotations.proto";
+import "regen/ecocredit/basket/v1/state.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/basket/v1/types.proto";
@@ -47,10 +48,15 @@ message QueryBasketRequest {
 // QueryBasketResponse is the Query/Basket response type.
 message QueryBasketResponse {
   // basket is the queried basket.
-  BasketInfo basket = 1;
-
+  // Deprecated: This field is still populated and will be removed in the
+  // next version. Use basket_info instead.
+  Basket basket = 1 [ deprecated = true ];
+  
   // classes are the credit classes that can be deposited in the basket.
   repeated string classes = 2;
+
+  // basket_info is the queried basket.
+  BasketInfo basket_info = 3;
 }
 
 // QueryBasketsRequest is the Query/Baskets request type.
@@ -62,10 +68,15 @@ message QueryBasketsRequest {
 // QueryBasketsResponse is the Query/Baskets response type.
 message QueryBasketsResponse {
   // baskets are the fetched baskets.
-  repeated BasketInfo baskets = 1;
+  // Deprecated: This field is still populated and will be removed in the
+  // next version. Use baskets_info instead.
+  repeated Basket baskets = 1 [deprecated=true];
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+
+  // baskets_info are the fetched baskets.
+  repeated BasketInfo baskets_info = 3;
 }
 
 // QueryBasketBalancesRequest is the Query/BasketBalances request type.
@@ -80,10 +91,15 @@ message QueryBasketBalancesRequest {
 // QueryBasketBalancesResponse is the Query/BasketBalances response type.
 message QueryBasketBalancesResponse {
   // balances is a list of credit balances in the basket.
-  repeated BasketBalanceInfo balances = 1;
+  // Deprecated: This field is still populated and will be removed in the
+  // next version. Use balances_info instead.
+  repeated BasketBalance balances = 1 [deprecated=true];
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+
+  // balances_info is a list of credit balances in the basket.
+  repeated BasketBalanceInfo balances_info = 3;
 }
 
 // QueryBasketBalanceRequest is the Query/BasketBalance request type.

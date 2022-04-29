@@ -386,7 +386,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
 		}
 
-		baskets := res.Baskets
+		baskets := res.BasketsInfo
 		if len(baskets) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, "no baskets"), nil, nil
 		}
@@ -400,7 +400,7 @@ func SimulateMsgTake(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgTake, err.Error()), nil, err
 			}
-			balances := balancesRes.Balances
+			balances := balancesRes.BalancesInfo
 			if len(balances) != 0 {
 				rBasket = b
 				bBalances = balances

@@ -22,6 +22,12 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		return nil, err
 	}
 
+	basketGogo := &baskettypes.Basket{}
+	err = ormutil.PulsarToGogoSlow(basket, basketGogo)
+	if err != nil {
+		return nil, err
+	}
+
 	it, err := k.stateStore.BasketClassTable().List(ctx, api.BasketClassPrimaryKey{}.WithBasketId(basket.Id))
 	if err != nil {
 		return nil, err
@@ -57,5 +63,5 @@ func (k Keeper) Basket(ctx context.Context, request *baskettypes.QueryBasketRequ
 		basketInfo.DateCriteria = criteria
 	}
 
-	return &baskettypes.QueryBasketResponse{Basket: basketInfo, Classes: classes}, nil
+	return &baskettypes.QueryBasketResponse{Basket: basketGogo, BasketInfo: basketInfo, Classes: classes}, nil
 }
