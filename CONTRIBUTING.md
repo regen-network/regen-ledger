@@ -10,7 +10,7 @@
 
 ## Our Software Development Workflow
 
-We follow an agile methodology and use ZenHub and [GitHub Issues](https://github.com/regen-network/regen-ledger/issues) for ticket tracking. To understand our current priorities and roadmap, check out [GitHub Milestones](https://github.com/regen-network/regen-ledger/milestones). If you are a first time contributor, check out the issues labeled ["good first issue"](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+) and ["help wanted"](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22) or send us a message in the **#regen-ledger** channel of our [Discord Server](https://discord.gg/regen-network).
+We follow an agile methodology and use ZenHub and [GitHub Issues](https://github.com/regen-network/regen-ledger/issues) for ticket tracking. To understand our current priorities and roadmap, check out [GitHub Milestones](https://github.com/regen-network/regen-ledger/milestones). If you are a first time contributor, check out the issues labeled "[good first issue](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22+)" and "[help wanted](https://github.com/regen-network/regen-ledger/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)" or send us a message in the **#regen-ledger** channel of our [Discord Server](https://discord.gg/regen-network).
 
 ### Using GitHub Labels
 
@@ -27,20 +27,37 @@ We use [GitHub Labels](https://github.com/regen-network/regen-ledger/labels) for
 
 #### Using Labels With Pull Requests
 
-- `Type`, `Scope`, and `Status` labels are not required for pull requests because pull request titles must be written using semantic commits and therefore the title should already include the type and scope of each pull request and because each pull request should have a corresponding issue with the appropriate `Type`, `Scope`, and `Status` labels applied
+- `Type`, `Scope`, and `Status` labels are not required for pull requests because pull request titles must be written using semantic commits (i.e. the title should already include the type and scope of the pull request) and because each pull request should have a corresponding issue with the appropriate `Type`, `Scope`, and `Status` labels applied
 - ...
 
 ### Using Semantic Commits
 
+We use [semantic commits](https://www.conventionalcommits.org/en/v1.0.0/) for pull request titles and recommend using semantic commits for individual commit messages.
+
 #### Pull Request Titles
 
-We use "squash and merge" when merging pull requests, which uses the title of the pull request as the merged commit. For this reason, pull requests titles must follow the format of [semantic commits](https://www.conventionalcommits.org/en/v1.0.0/) and should include the appropriate type and scope, and `!` should be added to the type prefix if the pull request introduces an API or client breaking change.
+We use "squash and merge" when merging pull requests, which uses the title of the pull request as the merged commit. For this reason, pull requests titles must follow the format of semantic commits and should include the appropriate type and scope, and `!` should be added to the type prefix if the pull request introduces an API or client breaking change.
 
 The type and scope of the pull request should already be defined in the issue that the pull request is addressing. The format of the pull request title is checked during the CI process and the allowed types are defined in [this json file](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json).
 
 The scope is not required and may be excluded if the pull request does not update any golang code within a go module but the scope should be included and should reflect the location of the go module whenever golang code within a go module is updated. Only one go module should be updated at a time but in some cases multiple go modules may be updated. In the case of multiple go modules being updated, the location of the updated go modules should be separated by a `,` and no spaces.
 
-For pull requests that update proto definitions, the scope should reflect the location of the go module within which the code is being generated (e.g. `x/ecocredit` should be the scope when updating proto definitions in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This is also the location that the dummy implementation will be added for new features and changes will be made if updating existing features. This may change in the future given most of the code is now being generated and placed with the `api` go module.
+For pull requests that update proto files, the scope should reflect the location of the go module within which the code will be generated (e.g. `x/ecocredit` should be the scope when updating proto files in `proto/regen/ecocredit` or `proto/regen/ecocredit/basket`). This is also the location of the module in which a dummy implementation will be added when implementing new features and where changes will be made if updating existing features. This use of scope in relation to updating proto files may change in the future provided that code is now being generated and placed with the `api` go module as well.
+
+Examples of pull request titles using semantic commits:
+
+```
+docs: update contributing guidelines
+feat(x/ecocredit): add query for all credit classes
+fix(x/data): update attest to store correct timestamp
+refactor(x/ecocredit): update location to jurisdiction
+style(x/data): format proto files and fix whitespace
+perf(x/ecocredit): move redundant calls outside of for loop
+test(x/data): add acceptance tests for anchoring data
+build: bump cosmos-sdk version to latest patch release
+ci: add github action workflow for proto lint check
+chore: update gitignore to include test output
+```
 
 #### Individual Commits
 
@@ -114,12 +131,19 @@ Then:
 
 ### Writing Documentation
 
+Regen Ledger documentation is hosted at [docs.regen.network](https://docs.regen.network) and the site is statically generated using [Vuepress](https://vuepress.vuejs.org/). Each webpage is generated from a markdown file that is either written and maintained within the `docs` directory or the `spec` folder of a module (e.g. `x/ecocredit/spec`), or the markdown file is auto-generated when building the site (see [Auto-Generated Documentation](#auto-generated-documentation)).
 
-#### Best Practices
+To start up a local development server for the documentation site, run the following make command:
+
+```bash
+make docs-dev
+```
+
+#### Guidelines
 
 - Always double-check for spelling and grammar.
 - Avoid using `code` format when writing in plain English.
-- Try to express your thoughts in a clear and concise and clean way.
+- Try to express your thoughts in a clear and concise way.
 - RFC keywords should be used in technical documentation (uppercase) and are recommended in user documentation (lowercase). The RFC keywords are: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL". They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
 #### Resources
@@ -129,34 +153,34 @@ Then:
 
 #### Auto-Generated Documentation
 
-- Protobuf documentation is auto-generated and served on [Buf Schema Registry](https://buf.build/regen/regen-ledger/docs) using the comments written in the proto files and acts as a source of truth for the API of the application.
-- Documentation for each feature is auto-generated and served on [docs.regen.network](https://docs.regen.network) using the feature files written in Gherkin Syntax and acts as a source of truth for the intended behavior of each feature.
-- CLI documentation is auto-generated and served on [docs.regen.network](https://docs.regen.network) using [cobra/doc](https://pkg.go.dev/github.com/spf13/cobra/doc) and acts as a source of truth for the CLI commands available when using the `regen` binary.
+- Protobuf documentation is auto-generated and served on [Buf Schema Registry](https://buf.build/regen/regen-ledger/docs) using the comments written in the proto files. This documentation acts as a source of truth for the API of the application.
+- Documentation for each feature is auto-generated and served on [docs.regen.network](https://docs.regen.network) using the feature files written in Gherkin Syntax. This documentation acts as a source of truth for the intended behavior of each feature.
+- CLI documentation is auto-generated and served on [docs.regen.network](https://docs.regen.network) using the [cobra/doc](https://pkg.go.dev/github.com/spf13/cobra/doc) package. This documentation acts as a source of truth for the CLI commands available when using the `regen` binary.
 
 ## The Words of Maya Angelou
 
-> We, unaccustomed to courage
-> exiles from delight
-> live coiled in shells of loneliness
-> until love leaves its high holy temple
-> and comes into our sight
-> to liberate us into life.
+> We, unaccustomed to courage  
+> exiles from delight  
+> live coiled in shells of loneliness  
+> until love leaves its high holy temple  
+> and comes into our sight  
+> to liberate us into life.  
 >
-> Love arrives
-> and in its train come ecstasies
-> old memories of pleasure
-> ancient histories of pain.
-> Yet if we are bold,
-> love strikes away the chains of fear
-> from our souls.
+> Love arrives  
+> and in its train come ecstasies  
+> old memories of pleasure  
+> ancient histories of pain.  
+> Yet if we are bold,  
+> love strikes away the chains of fear  
+> from our souls.  
 >
-> We are weaned from our timidity
-> In the flush of love's light
-> we dare be brave
-> And suddenly we see
-> that love costs all we are
-> and will ever be.
-> Yet it is only love
-> which sets us free.
+> We are weaned from our timidity  
+> In the flush of love's light  
+> we dare be brave  
+> And suddenly we see  
+> that love costs all we are  
+> and will ever be.  
+> Yet it is only love  
+> which sets us free.  
 >
 > ― Maya Angelou
