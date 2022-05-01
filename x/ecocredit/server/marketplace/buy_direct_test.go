@@ -12,7 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	market "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestBuyDirect_ValidTradable(t *testing.T) {
@@ -24,9 +24,9 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 
 	// make a sell order
 	sellExp := time.Now()
-	sellOrderId := s.createSellOrder(&market.MsgSell{
+	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})[0]
@@ -40,7 +40,7 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	order := &market.MsgBuyDirect_Order{
+	order := &marketplace.MsgBuyDirect_Order{
 		SellOrderId:       sellOrderId,
 		Quantity:          purchaseAmt.String(),
 		BidPrice:          &ask,
@@ -49,7 +49,7 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	assert.NilError(t, err)
 
 	balAfter, supAfter := s.getBalanceAndSupply(batch.Key, buyerAddr)
-	s.assertBalanceAndSupplyUpdated([]*market.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
+	s.assertBalanceAndSupplyUpdated([]*marketplace.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
 }
 
 func TestBuyDirect_ValidRetired(t *testing.T) {
@@ -60,9 +60,9 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	sellExp := time.Now()
-	sellOrderId := s.createSellOrder(&market.MsgSell{
+	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})[0]
@@ -75,7 +75,7 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	purchaseAmt := math.NewDecFromInt64(3)
-	order := &market.MsgBuyDirect_Order{
+	order := &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               purchaseAmt.String(),
 		BidPrice:               &ask,
@@ -86,7 +86,7 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	assert.NilError(t, err)
 
 	balAfter, supAfter := s.getBalanceAndSupply(batch.Key, buyerAddr)
-	s.assertBalanceAndSupplyUpdated([]*market.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
+	s.assertBalanceAndSupplyUpdated([]*marketplace.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
 }
 
 func TestBuyDirect_OrderFilled(t *testing.T) {
@@ -96,9 +96,9 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	userBalance := sdk.NewInt64Coin("ufoo", 100)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	sellExp := time.Now()
-	sellOrderId := s.createSellOrder(&market.MsgSell{
+	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})[0]
@@ -111,7 +111,7 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	balBefore, supBefore := s.getBalanceAndSupply(batch.Key, buyerAddr)
 
 	purchaseAmt := math.NewDecFromInt64(10)
-	order := &market.MsgBuyDirect_Order{
+	order := &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               purchaseAmt.String(),
 		BidPrice:               &ask,
@@ -125,7 +125,7 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	// order was filled, so sell order should no longer exist
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, sellOrderId)
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-	s.assertBalanceAndSupplyUpdated([]*market.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
+	s.assertBalanceAndSupplyUpdated([]*marketplace.MsgBuyDirect_Order{order}, balBefore, balAfter, supBefore, supAfter)
 }
 
 func TestBuyDirect_Invalid(t *testing.T) {
@@ -136,9 +136,9 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	sellExp := time.Now()
-	sellOrderId := s.createSellOrder(&market.MsgSell{
+	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
 	})[0]
@@ -146,7 +146,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userBalance).Times(1)
 
 	// sell order not found
-	err := buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err := buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            532,
 		Quantity:               "10",
 		BidPrice:               &ask,
@@ -154,7 +154,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 
 	// exceeds decimal precision
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               "10.3235235235",
 		BidPrice:               &ask,
@@ -162,7 +162,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")
 
 	// mismatch auto retire settings
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:       sellOrderId,
 		Quantity:          "10",
 		BidPrice:          &ask,
@@ -170,7 +170,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "cannot disable auto retire")
 
 	// cannot buy more credits than available
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               "11",
 		BidPrice:               &ask,
@@ -179,7 +179,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 
 	// mismatchDenom
 	wrongDenom := sdk.NewInt64Coin("ubar", 10)
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               "10",
 		BidPrice:               &wrongDenom,
@@ -190,7 +190,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	inBank := sdk.NewInt64Coin("ufoo", 10)
 	biddingWith := sdk.NewInt64Coin("ufoo", 100)
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
 		Quantity:               "10",
 		BidPrice:               &biddingWith,
@@ -206,9 +206,9 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	sellExp := time.Now()
-	sellOrderId := s.createSellOrder(&market.MsgSell{
+	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
 	})[0]
@@ -224,7 +224,7 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	// sell order ask price: 10ufoo, buy order of 3.215 credits -> 10 * 3.215 = 32.15
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{expectedCost}).Return(nil).Times(1)
 
-	err = buyDirectSingle(s, buyerAddr, &market.MsgBuyDirect_Order{
+	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:       sellOrderId,
 		Quantity:          purchaseAmt,
 		BidPrice:          &ask,
@@ -233,7 +233,7 @@ func TestBuyDirect_Decimal(t *testing.T) {
 
 	balAfter, supAfter := s.getBalanceAndSupply(batch.Key, buyerAddr)
 
-	s.assertBalanceAndSupplyUpdated([]*market.MsgBuyDirect_Order{{
+	s.assertBalanceAndSupplyUpdated([]*marketplace.MsgBuyDirect_Order{{
 		Quantity:          purchaseAmt,
 		DisableAutoRetire: true,
 	}}, balBefore, balAfter, supBefore, supAfter)
@@ -248,9 +248,9 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	sellExp := time.Now()
-	sellOrderIds := s.createSellOrder(&market.MsgSell{
+	sellOrderIds := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
-		Orders: []*market.MsgSell_Order{
+		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "12.3531", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 			{BatchDenom: batchDenom, Quantity: "15.39201", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -263,13 +263,13 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	purchaseAmt1 := "12.3531"
 	purchaseAmt2 := "15.39201"
 
-	orders := []*market.MsgBuyDirect_Order{
+	orders := []*marketplace.MsgBuyDirect_Order{
 		{sellOrderIds[0], purchaseAmt1, &ask, true, ""},
 		{sellOrderIds[1], purchaseAmt2, &ask, false, ""},
 	}
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(len(orders))
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(len(orders))
-	_, err = s.k.BuyDirect(s.ctx, &market.MsgBuyDirect{
+	_, err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer:  buyerAddr.String(),
 		Orders: orders,
 	})
