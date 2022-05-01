@@ -21,7 +21,7 @@ func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 2)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -66,7 +66,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
 	askDenomsWithBaz := append(askDenoms, &core.AskDenom{Denom: "ubaz", DisplayDenom: "baz", Exponent: 18})
-	utils.ExpectParamGet(&askDenomsWithBaz, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenomsWithBaz, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 
 	// market shouldn't exist before sell call
 	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
@@ -129,7 +129,7 @@ func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, validAskDenom, validAskDenom[1:], "C01", start, end, creditType)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)

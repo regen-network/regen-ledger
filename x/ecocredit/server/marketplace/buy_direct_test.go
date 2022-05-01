@@ -7,6 +7,7 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
@@ -23,7 +24,7 @@ func TestBuy_ValidTradable(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -64,7 +65,7 @@ func TestBuy_ValidRetired(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -103,7 +104,7 @@ func TestBuy_OrderFilled(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -139,7 +140,7 @@ func TestBuy_Invalid(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -189,7 +190,7 @@ func TestBuy_Decimal(t *testing.T) {
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),

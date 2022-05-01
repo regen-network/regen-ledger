@@ -16,27 +16,27 @@ import (
 //		*param = *obj
 //	}).Times(times)
 // }
-func ExpectParamGet(obj interface{}, paramKeeper *mocks.MockParamKeeper, times int) {
+func ExpectParamGet(obj interface{}, paramKeeper *mocks.MockParamKeeper, key []byte, times int) {
 	gmAny := gomock.Any()
 	switch obj.(type) {
 	case *[]string:
 		s := obj.(*[]string)
-		paramKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, param *[]string) {
+		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]string) {
 			*param = *s
 		}).Times(times)
 	case *sdk.Coins:
 		coins := obj.(*sdk.Coins)
-		paramKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, param *sdk.Coins) {
+		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *sdk.Coins) {
 			*param = *coins
 		}).Times(times)
 	case *bool:
 		b := obj.(*bool)
-		paramKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, param *bool) {
+		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *bool) {
 			*param = *b
 		}).Times(times)
 	case *[]*core.AskDenom:
 		askDenoms := obj.(*[]*core.AskDenom)
-		paramKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ interface{}, param *[]*core.AskDenom) {
+		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]*core.AskDenom) {
 			*param = *askDenoms
 		}).Times(times)
 	}

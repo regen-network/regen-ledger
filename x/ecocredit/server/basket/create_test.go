@@ -15,13 +15,14 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestCreate_InvalidFees(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	utils.ExpectParamGet(&basketFees, s.paramsKeeper, 2)
+	utils.ExpectParamGet(&basketFees, s.paramsKeeper, core.KeyBasketCreationFee, 2)
 
 	// no fee
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -39,7 +40,7 @@ func TestCreate_InvalidFees(t *testing.T) {
 func TestCreate_InvalidCreditType(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	utils.ExpectParamGet(&basketFees, s.paramsKeeper, 2)
+	utils.ExpectParamGet(&basketFees, s.paramsKeeper, core.KeyBasketCreationFee, 2)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
 	// non-existent credit type should fail
@@ -76,7 +77,7 @@ func TestCreate_DuplicateDenom(t *testing.T) {
 		&api.Basket{BasketDenom: denom},
 	))
 
-	utils.ExpectParamGet(&basketFees, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&basketFees, s.paramsKeeper, core.KeyBasketCreationFee, 1)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 
 	_, err = s.k.Create(s.ctx, &mc)
@@ -91,7 +92,7 @@ func TestCreate_InvalidClass(t *testing.T) {
 		CreditTypeAbbrev: "BIO",
 	}))
 
-	utils.ExpectParamGet(&basketFees, s.paramsKeeper, 2)
+	utils.ExpectParamGet(&basketFees, s.paramsKeeper, core.KeyBasketCreationFee, 2)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Return(nil).Times(2)
 
 	// class doesn't exist
@@ -147,7 +148,7 @@ func TestCreate_ValidBasket(t *testing.T) {
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
 	}))
-	utils.ExpectParamGet(&basketFees, s.paramsKeeper, 1)
+	utils.ExpectParamGet(&basketFees, s.paramsKeeper, core.KeyBasketCreationFee, 1)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
 		Curator:          s.addr.String(),
