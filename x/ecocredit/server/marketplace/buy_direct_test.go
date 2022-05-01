@@ -209,7 +209,13 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
+			{
+				BatchDenom:        batchDenom,
+				Quantity:          "10",
+				AskPrice:          &ask,
+				DisableAutoRetire: true,
+				Expiration:        &sellExp,
+			},
 		},
 	})[0]
 
@@ -251,8 +257,20 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	sellOrderIds := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
-			{BatchDenom: batchDenom, Quantity: "12.3531", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
-			{BatchDenom: batchDenom, Quantity: "15.39201", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
+			{
+				BatchDenom:        batchDenom,
+				Quantity:          "12.3531",
+				AskPrice:          &ask,
+				DisableAutoRetire: true,
+				Expiration:        &sellExp,
+			},
+			{
+				BatchDenom:        batchDenom,
+				Quantity:          "15.39201",
+				AskPrice:          &ask,
+				DisableAutoRetire: false,
+				Expiration:        &sellExp,
+			},
 		},
 	})
 
