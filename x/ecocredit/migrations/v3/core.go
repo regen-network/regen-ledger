@@ -66,7 +66,6 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 	}
-	// TODO: Set AskDenom parameter https://github.com/regen-network/regen-ledger/issues/980
 
 	// migrate credit classes to ORM v1
 	classItr, err := classInfoTable.PrefixScan(sdkCtx, nil, nil)
