@@ -101,8 +101,8 @@ func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, bat
 
 	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
 		ProjectKey: pKey,
-		Denom:      batchDenom,
 		Issuer:     s.addr,
+		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
