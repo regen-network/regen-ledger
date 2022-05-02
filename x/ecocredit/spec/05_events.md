@@ -4,6 +4,7 @@ The ecocredit module emits events upon the successful execution of messages. The
 
 ## Ecocredit Core
 
+- [EventBatchSealed](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventBatchSealed)
 - [EventCancel](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCancel)
 - [EventClassAdminUpdated](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventClassAdminUpdated)
 - [EventClassIssuersUpdated](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventClassIssuersUpdated)
