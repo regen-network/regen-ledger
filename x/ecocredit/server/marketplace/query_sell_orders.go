@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -25,18 +26,37 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 	}
 	defer it.Close()
 
-	orders := make([]*marketplace.SellOrder, 0, 10)
+	orders := make([]*marketplace.SellOrderInfo, 0, 10)
 	for it.Next() {
-		v, err := it.Value()
+		order, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
-		var order marketplace.SellOrder
-		err = ormutil.PulsarToGogoSlow(v, &order)
+
+		seller := sdk.AccAddress(order.Seller)
+
+		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
 		if err != nil {
 			return nil, err
 		}
-		orders = append(orders, &order)
+
+		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
+		if err != nil {
+			return nil, err
+		}
+
+		info := marketplace.SellOrderInfo{
+			Id:                order.Id,
+			Seller:            seller.String(),
+			BatchDenom:        batch.Denom,
+			Quantity:          order.Quantity,
+			AskDenom:          market.BankDenom,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
+		}
+
+		orders = append(orders, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
@@ -65,20 +85,32 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 	}
 	defer it.Close()
 
-	orders := make([]*marketplace.SellOrder, 0, 10)
+	orders := make([]*marketplace.SellOrderInfo, 0, 10)
 	for it.Next() {
-		v, err := it.Value()
+		order, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var order marketplace.SellOrder
-		err = ormutil.PulsarToGogoSlow(v, &order)
+		seller := sdk.AccAddress(order.Seller)
+
+		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
 			return nil, err
 		}
 
-		orders = append(orders, &order)
+		info := marketplace.SellOrderInfo{
+			Id:                order.Id,
+			Seller:            seller.String(),
+			BatchDenom:        batch.Denom,
+			Quantity:          order.Quantity,
+			AskDenom:          market.BankDenom,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
+		}
+
+		orders = append(orders, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
@@ -107,20 +139,36 @@ func (k Keeper) SellOrdersByAddress(ctx context.Context, req *marketplace.QueryS
 	}
 	defer it.Close()
 
-	orders := make([]*marketplace.SellOrder, 0, 10)
+	sellerString := seller.String()
+	orders := make([]*marketplace.SellOrderInfo, 0, 10)
 	for it.Next() {
-		v, err := it.Value()
+		order, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 
-		var order marketplace.SellOrder
-		err = ormutil.PulsarToGogoSlow(v, &order)
+		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
 		if err != nil {
 			return nil, err
 		}
 
-		orders = append(orders, &order)
+		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
+		if err != nil {
+			return nil, err
+		}
+
+		info := marketplace.SellOrderInfo{
+			Id:                order.Id,
+			Seller:            sellerString,
+			BatchDenom:        batch.Denom,
+			Quantity:          order.Quantity,
+			AskDenom:          market.BankDenom,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
+		}
+
+		orders = append(orders, &info)
 	}
 
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
