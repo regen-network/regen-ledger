@@ -11,8 +11,10 @@ The ecocredit module emits events upon the successful execution of messages. The
 - [EventCreateBatch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCreateBatch)
 - [EventCreateClass](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCreateClass)
 - [EventCreateProject](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCreateProject)
+- [EventMintBatchCredits](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventMintBatchCredits)
+- [EventProjectAdminUpdated](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventProjectAdminUpdated)
+- [EventProjectMetadataUpdated](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventProjectMetadataUpdated)
 - [EventReceive](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventReceive)
-- [EventRetire](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventRetire)
 - [EventRetire](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventRetire)
 
 ## Basket Submodule
@@ -24,7 +26,5 @@ The ecocredit module emits events upon the successful execution of messages. The
 ## Marketplace Submodule
 
 - [EventAllowAskDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.EventAllowAskDenom)
-- [EventBuyOrderCreated](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.EventBuyOrderCreated)
-- [EventBuyOrderFilled](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.EventBuyOrderFilled)
 - [EventSell](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.EventSell)
 - [EventUpdateSellOrder](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.EventUpdateSellOrder)
