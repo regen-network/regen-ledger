@@ -23,6 +23,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// AskDenomProposal is a gov Content type for approving a denom for use in the
+// marketplace.
 type AskDenomProposal struct {
 	// title is the title of the proposal.
 	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`

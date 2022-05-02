@@ -7,6 +7,8 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
+// AskDenomProposal is a gov Content type for approving a denom for use in the
+// marketplace.
 message AskDenomProposal {
   option (gogoproto.goproto_stringer) = false;
 

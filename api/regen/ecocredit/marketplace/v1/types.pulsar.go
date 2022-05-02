@@ -589,6 +589,8 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// AskDenomProposal is a gov Content type for approving a denom for use in the
+// marketplace.
 type AskDenomProposal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
