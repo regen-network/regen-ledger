@@ -490,7 +490,7 @@ func TestGenesisValidate(t *testing.T) {
 	}
 }
 
-// setupStateAndExportJSON setups up state as defined in the setupFunc function and then exports the ORM data as JSON.
+// setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
 func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss api.StateStore)) json.RawMessage {
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
