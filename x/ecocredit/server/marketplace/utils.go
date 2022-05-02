@@ -103,7 +103,9 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 	}
-	if !opts.autoRetire { // if auto retire is disabled, we move the credits into the buyer's/supply's tradable balance.
+	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
+	// supply is not updated because supply does not distinguish between tradable and escrowed credits.
+	if !opts.autoRetire {
 		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
 		if err != nil {
 			return err
@@ -113,16 +115,6 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		buyerBal.Tradable = tradableBalance.String()
-
-		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
-		if err != nil {
-			return err
-		}
-		supplyTradable, err = math.SafeAddBalance(supplyTradable, purchaseQty)
-		if err != nil {
-			return err
-		}
-		supply.TradableAmount = supplyTradable.String()
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
 			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
 			Recipient:      buyerAcc.String(),
@@ -143,6 +135,16 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		}
 		buyerBal.Retired = retiredBalance.String()
 
+		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
+		if err != nil {
+			return err
+		}
+		supplyTradable, err = math.SafeSubBalance(supplyTradable, purchaseQty)
+		if err != nil {
+			return err
+		}
+		supply.TradableAmount = supplyTradable.String()
+
 		supplyRetired, err := math.NewDecFromString(supply.RetiredAmount)
 		if err != nil {
 			return err
@@ -152,6 +154,9 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		supply.RetiredAmount = supplyRetired.String()
+		if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
+			return err
+		}
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Retirer:      buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
@@ -160,9 +165,6 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		}); err != nil {
 			return err
 		}
-	}
-	if err = k.coreStore.BatchSupplyTable().Update(ctx, supply); err != nil {
-		return err
 	}
 	if err = k.coreStore.BatchBalanceTable().Save(ctx, buyerBal); err != nil {
 		return err

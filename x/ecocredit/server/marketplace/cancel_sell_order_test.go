@@ -18,7 +18,7 @@ func TestSell_CancelOrder(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	expir := time.Now()
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -49,7 +49,7 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	expir := time.Now()
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 

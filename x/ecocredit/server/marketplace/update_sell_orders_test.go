@@ -1,7 +1,6 @@
 package marketplace
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -21,7 +19,7 @@ import (
 func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -33,7 +31,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balBefore, supBefore := getBalanceAndSupply(t, s.ctx, s.coreStore, 1, s.addr)
+	balBefore, supBefore := s.getBalanceAndSupply(1, s.addr)
 
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
@@ -44,7 +42,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balAfter, supAfter := getBalanceAndSupply(t, s.ctx, s.coreStore, 1, s.addr)
+	balAfter, supAfter := s.getBalanceAndSupply(1, s.addr)
 
 	// sellOrder 1: 5.22 originally, increased by 10 = change of 4.78
 	// sellOrder 2: 30 originally, decreased by 28.7232 = change of -1.2768
@@ -69,7 +67,8 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -111,7 +110,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -136,7 +135,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -189,7 +188,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 func TestUpdateSellOrder_Expiration(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	future := time.Date(2077, 1, 1, 1, 1, 1, 1, time.Local)
 	middle := time.Date(2022, 1, 1, 1, 1, 1, 1, time.Local)
@@ -238,7 +237,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 func TestSellOrder_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
@@ -248,12 +247,4 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
-}
-
-func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecoApi.StateStore, batchId uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
-	bal, err := store.BatchBalanceTable().Get(ctx, addr, batchId)
-	assert.NilError(t, err)
-	sup, err := store.BatchSupplyTable().Get(ctx, batchId)
-	assert.NilError(t, err)
-	return bal, sup
 }

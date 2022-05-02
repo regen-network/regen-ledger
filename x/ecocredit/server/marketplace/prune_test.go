@@ -16,7 +16,7 @@ import (
 func TestSell_Prune(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
 	assert.NilError(t, err)

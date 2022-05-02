@@ -30,25 +30,29 @@ var (
 func TestSellOrders(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	order := insertSellOrder(t, s, s.addr, 1)
-	insertSellOrder(t, s, addr2, 1)
+	order1 := insertSellOrder(t, s, s.addr, 1)
+	order2 := insertSellOrder(t, s, addr2, 1)
 
 	res, err := s.k.SellOrders(s.ctx, &marketplace.QuerySellOrdersRequest{
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 1, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order)
+	if res.SellOrders[0].Id == order1.Id {
+		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
+	} else {
+		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
+	}
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
 
 func TestSellOrdersByDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make another batch
 	otherDenom := "C01-19990101-20290101-001"
@@ -94,7 +98,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 func TestSellOrdersByAddress(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 	_, _, noOrdersAddr := testdata.KeyTestPubAddr()
