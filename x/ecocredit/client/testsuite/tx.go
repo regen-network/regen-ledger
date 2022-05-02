@@ -19,12 +19,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -169,6 +167,7 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
+/*
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -1286,6 +1285,87 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				var res sdk.TxResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(uint32(0), res.Code)
+			}
+		})
+	}
+}
+*/
+func (s *IntegrationTestSuite) TestBuyDirect() {
+	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
+	clientCtx := val0.ClientCtx
+	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
+	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &askCoin, false, &expiration},
+		},
+	})
+	s.Require().NoError(err)
+	orderId := orderIds[0]
+	orderIdRetired := orderIds[1]
+
+	makeArgs := func(sellOrderId uint64, qty, bidPrice string, disableAutoRetire bool, from sdk.Address) []string {
+		args := []string{
+			strconv.FormatUint(sellOrderId, 10),
+			qty, bidPrice, fmt.Sprintf("%t", disableAutoRetire),
+		}
+		if !disableAutoRetire {
+			args = append(args, fmt.Sprintf(`--%s=US-OR`, marketplaceclient.FlagRetirementJurisdiction))
+		}
+		args = append(args, makeFlagFrom(from.String()))
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			"minimum args",
+			[]string{},
+			true,
+			"accepts 4 arg(s), received 0",
+		},
+		{
+			"too many args",
+			[]string{"C01", "foo", "bar", "baz", "qux"},
+			true,
+			"accepts 4 arg(s), received 5",
+		},
+		{
+			"valid tx purchase tradable",
+			makeArgs(orderId, "10", askCoin.String(), true, val0.Address),
+			false,
+			"",
+		},
+		{
+			"valid tx purchase retired",
+			makeArgs(orderIdRetired, "10", askCoin.String(), false, val0.Address),
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := marketplaceclient.TxBuyDirect()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
 			}
 		})
 	}
