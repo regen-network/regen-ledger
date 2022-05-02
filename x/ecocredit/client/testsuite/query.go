@@ -1,6 +1,5 @@
 package testsuite
 
-/*
 import (
 	"fmt"
 
@@ -868,6 +867,3 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		})
 	}
 }
-
-
-*/
