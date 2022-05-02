@@ -37,12 +37,15 @@ func TestSellOrders(t *testing.T) {
 	order2 := insertSellOrder(t, s, addr2, 1)
 
 	res, err := s.k.SellOrders(s.ctx, &marketplace.QuerySellOrdersRequest{
-		Pagination: &query.PageRequest{CountTotal: true},
+		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, 2, len(res.SellOrders))
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
-	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[1], order2)
+	assert.Equal(t, 1, len(res.SellOrders))
+	if res.SellOrders[0].Id == order1.Id {
+		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
+	} else {
+		assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order2)
+	}
 	assert.Equal(t, uint64(2), res.Pagination.Total)
 }
 
