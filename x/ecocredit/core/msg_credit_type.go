@@ -33,8 +33,7 @@ func (m CreditType) Validate() error {
 // uppercase letters
 func validateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
-	matches := reAbbr.FindStringSubmatch(abbr)
-	if matches == nil {
+	if !reAbbr.Match([]byte(abbr)) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase latin letters: got %s", abbr)
 	}
 	return nil
