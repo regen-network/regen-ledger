@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -18,12 +17,10 @@ import (
 func TestSell_Prune(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	gmAny := gomock.Any()
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{&creditType}
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(4)
+	}).Times(2)
 
 	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
 	assert.NilError(t, err)

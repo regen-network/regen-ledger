@@ -18,7 +18,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	corecli "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
@@ -86,8 +85,8 @@ Parameters:
   credit type abbreviation:    the name of the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	               arbitrary data attached to the credit class info
   fee:                         fee to pay for the creation of the credit class (e.g. 10uatom, 10uregen)`,
-			ecocredit.KeyAllowedClassCreators,
-			ecocredit.KeyCreditClassFee,
+			core.KeyAllowedClassCreators,
+			core.KeyCreditClassFee,
 		),
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -581,11 +580,11 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			msg := core.MsgCreateProject{
-				Issuer:              clientCtx.GetFromAddress().String(),
-				ClassId:             classID,
-				ProjectJurisdiction: projectJurisdiction,
-				Metadata:            args[2],
-				ProjectId:           projectId,
+				Issuer:       clientCtx.GetFromAddress().String(),
+				ClassId:      classID,
+				Jurisdiction: projectJurisdiction,
+				Metadata:     args[2],
+				ProjectId:    projectId,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

@@ -24,5 +24,12 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, data.ErrResolverURLExists
 	}
 
+	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&data.EventDefineResolver{
+		Id: id,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &data.MsgDefineResolverResponse{ResolverId: id}, nil
 }

@@ -114,13 +114,13 @@ message MsgCreateProject {
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 3;
 
-  // project_jurisdiction is the jurisdiction of the project backing the credits
+  // jurisdiction is the jurisdiction of the project backing the credits
   // in this batch. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
   // and postal-code are optional and can be added for increased precision.
-  string project_jurisdiction = 4;
+  string jurisdiction = 4;
 
   // project_id is an optional user-specified project ID which can be used
   // instead of an auto-generated ID. If project_id is provided, it must be

@@ -3,9 +3,6 @@ package server_test
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -16,6 +13,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
@@ -27,12 +26,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
-// TODO: uncomment after clean up legacy code https://github.com/regen-network/regen-ledger/issues/995
-// func TestServer(t *testing.T) {
-// 	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
-// 	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
-// 	suite.Run(t, s)
-// }
+func TestServer(t *testing.T) {
+	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
+	suite.Run(t, s)
+}
 
 func TestGenesis(t *testing.T) {
 	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)

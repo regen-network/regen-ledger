@@ -230,3 +230,10 @@ message EventProjectMetadataUpdated {
   // new_metadata is the metadata after the update.
   string new_metadata = 3;
 }
+
+// EventBatchSealed is emitted when a batch is sealed.
+message EventBatchSealed {
+
+  // batch_denom is the denom of the batch that was sealed.
+  string batch_denom = 1;
+}

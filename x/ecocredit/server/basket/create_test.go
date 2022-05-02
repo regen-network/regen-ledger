@@ -49,7 +49,6 @@ func TestInvalidCreditType(t *testing.T) {
 	basketFee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{basketFee}
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny).Times(2)
 
@@ -59,7 +58,7 @@ func TestInvalidCreditType(t *testing.T) {
 		CreditTypeAbbrev: "F",
 		Fee:              sdk.Coins{basketFee},
 	})
-	assert.ErrorContains(t, err, `credit type abbreviation "F" doesn't exist`)
+	assert.ErrorContains(t, err, `could not get credit type with abbreviation F: not found`)
 
 	// exponent < precision should fail
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
@@ -91,7 +90,6 @@ func TestDuplicateDenom(t *testing.T) {
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = sdk.Coins{fee}
-		p.CreditTypes = []*core.CreditType{{Precision: 6, Abbreviation: "C"}}
 	}).Times(1)
 	s.distKeeper.EXPECT().FundCommunityPool(gmAny, gmAny, gmAny)
 
@@ -110,7 +108,6 @@ func TestInvalidClass(t *testing.T) {
 	basketFee := sdk.Coins{sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}}
 	s.paramsKeeper.EXPECT().GetParamSet(mockAny, mockAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = basketFee
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(2)
 	s.distKeeper.EXPECT().FundCommunityPool(mockAny, mockAny, mockAny).Return(nil).Times(2)
 
@@ -171,7 +168,6 @@ func TestValidBasket(t *testing.T) {
 	}))
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.BasketFee = fee
-		p.CreditTypes = []*core.CreditType{{Abbreviation: "C", Precision: 6}}
 	}).Times(1)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{

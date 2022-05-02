@@ -2,40 +2,24 @@ package utils
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // GetCreditTypeFromBatchDenom extracts the classId from a batch denom string, then retrieves it from the params.
-func GetCreditTypeFromBatchDenom(ctx context.Context, store ecocreditv1.StateStore, k ecocredit.ParamKeeper, denom string) (core.CreditType, error) {
-	sdkCtx := types.UnwrapSDKContext(ctx)
+func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, denom string) (*api.CreditType, error) {
 	classId := core.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassTable().GetById(ctx, classId)
 	if err != nil {
-		return core.CreditType{}, err
+		return nil, fmt.Errorf("could not get class with ID %s: %w", classId, err)
 	}
-	p := &core.Params{}
-	k.GetParamSet(sdkCtx, p)
-	return GetCreditType(classInfo.CreditTypeAbbrev, p.CreditTypes)
-}
-
-// GetCreditType searches for a credit type that matches the given abbreviation within a credit type slice.
-func GetCreditType(ctAbbrev string, creditTypes []*core.CreditType) (core.CreditType, error) {
-	//creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
-	for _, creditType := range creditTypes {
-		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
-		// be normalized here.
-		if creditType.Abbreviation == ctAbbrev {
-			return *creditType, nil
-		}
-	}
-	return core.CreditType{}, errors.ErrInvalidType.Wrapf("%s is not a valid credit type", ctAbbrev)
+	return store.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
 }
 
 // GetNonNegativeFixedDecs takes an arbitrary amount of decimal strings, and returns their corresponding fixed decimals
@@ -50,4 +34,24 @@ func GetNonNegativeFixedDecs(precision uint32, decimals ...string) ([]math.Dec, 
 		decs[i] = dec
 	}
 	return decs, nil
+}
+
+// GetBalance gets the balance from the account, returning a default, zero value balance if no balance is found.
+// NOTE: the default value is not inserted into the balance table in the `not found` case. Calling Update when the default
+// value is returned will cause an error. The `Save` method should be used when dealing with balances from this function.
+func GetBalance(ctx context.Context, table api.BatchBalanceTable, addr types.AccAddress, key uint64) (*api.BatchBalance, error) {
+	bal, err := table.Get(ctx, addr, key)
+	if err != nil {
+		if !ormerrors.IsNotFound(err) {
+			return nil, err
+		}
+		bal = &api.BatchBalance{
+			BatchKey: key,
+			Address:  addr,
+			Tradable: "0",
+			Retired:  "0",
+			Escrowed: "0",
+		}
+	}
+	return bal, nil
 }

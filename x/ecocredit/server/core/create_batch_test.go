@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -25,13 +24,6 @@ func TestCreateBatch_Valid(t *testing.T) {
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
 	s.ctx = types.WrapSDKContext(s.sdkCtx)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
 
 	start, end := time.Now(), time.Now()
 	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
@@ -91,13 +83,6 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	start, end := time.Now(), time.Now()
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
@@ -152,10 +137,10 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 	})
 	assert.NilError(t, err)
 	_, err = ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            classKey,
-		ProjectJurisdiction: "",
-		Metadata:            "",
+		Id:           projectId,
+		ClassKey:     classKey,
+		Jurisdiction: "",
+		Metadata:     "",
 	})
 	assert.NilError(t, err)
 	return

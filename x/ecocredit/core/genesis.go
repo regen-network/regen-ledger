@@ -71,9 +71,18 @@ func ValidateGenesis(data json.RawMessage, params Params) error {
 	}
 
 	abbrevToPrecision := make(map[string]uint32) // map of credit abbreviation to precision
-	for _, ct := range params.CreditTypes {
+	ctItr, err := ss.CreditTypeTable().List(ormCtx, &api.CreditTypePrimaryKey{})
+	if err != nil {
+		return err
+	}
+	for ctItr.Next() {
+		ct, err := ctItr.Value()
+		if err != nil {
+			return err
+		}
 		abbrevToPrecision[ct.Abbreviation] = ct.Precision
 	}
+	ctItr.Close()
 
 	cItr, err := ss.ClassTable().List(ormCtx, api.ClassPrimaryKey{})
 	if err != nil {
@@ -333,7 +342,7 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 
 // Validate performs a basic validation of credit class
 func (c Class) Validate() error {
-	if len(c.Metadata) > ecocredit.MaxMetadataLength {
+	if len(c.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
 
@@ -379,11 +388,11 @@ func (p Project) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("class key cannot be zero")
 	}
 
-	if err := ValidateJurisdiction(p.ProjectJurisdiction); err != nil {
+	if err := ValidateJurisdiction(p.Jurisdiction); err != nil {
 		return err
 	}
 
-	if len(p.Metadata) > ecocredit.MaxMetadataLength {
+	if len(p.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 

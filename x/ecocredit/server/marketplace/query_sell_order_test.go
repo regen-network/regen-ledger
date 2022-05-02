@@ -3,31 +3,20 @@ package marketplace
 import (
 	"testing"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestQuery_SellOrder(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-20200101-20200201-001"
-	start, end := timestamppb.Now(), timestamppb.Now()
-	ask := sdk.NewInt64Coin("ufoo", 10)
-	creditType := core.CreditType{
-		Name:         "carbon",
-		Abbreviation: "C",
-		Unit:         "tonnes",
-		Precision:    6,
-	}
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	// make a sell order
 	order := api.SellOrder{
@@ -48,7 +37,13 @@ func TestQuery_SellOrder(t *testing.T) {
 
 	res, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id})
 	assert.NilError(t, err)
-	assert.DeepEqual(t, *res.SellOrder, gogoOrder)
+	assert.Equal(t, s.addr.String(), res.SellOrder.Seller)
+	assert.Equal(t, batchDenom, res.SellOrder.BatchDenom)
+	assert.Equal(t, order.Quantity, res.SellOrder.Quantity)
+	assert.Equal(t, ask.Denom, res.SellOrder.AskDenom)
+	assert.Equal(t, order.AskPrice, res.SellOrder.AskPrice)
+	assert.Equal(t, order.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
+	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(order.Expiration), res.SellOrder.Expiration)
 
 	// invalid order id should fail
 	_, err = s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: 404})

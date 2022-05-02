@@ -10,8 +10,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 )
 
 type batchMapT struct {
@@ -162,7 +163,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 
-			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.ProjectJurisdiction == batchInfo.ProjectLocation {
+			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.Jurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
 				projectKey = pInfo.Key
 				break
@@ -184,11 +185,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			id := FormatProjectID(batchInfo.ClassId, projectSeq)
 			key, err := ss.ProjectTable().InsertReturningID(ctx,
 				&api.Project{
-					Id:                  id,
-					Admin:               admin,
-					ClassKey:            classKey,
-					ProjectJurisdiction: batchInfo.ProjectLocation,
-					Metadata:            "",
+					Id:           id,
+					Admin:        admin,
+					ClassKey:     classKey,
+					Jurisdiction: batchInfo.ProjectLocation,
+					Metadata:     "",
 				},
 			)
 			if err != nil {
