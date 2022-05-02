@@ -62,7 +62,7 @@ The release process for a major release starts once all changes for the major re
 - In the `master` branch, update `CHANGELOG.md` to reflect the changes for the official release.
   - The official release must include all changes since the last official release.
   - The updates should be merged to `master` and then backported to the release branch.
-- In the release branch, tag the official release using an annotated git tag (e.g. `git -a v2.0.0`)
+- In the release branch, tag the official release using an annotated git tag (e.g. `git -a v2.0.0`).
 - Push the release tag and update the release description to include the changes for the official release.
 
 ## Minor Release Process
@@ -79,7 +79,7 @@ Any changes to a release branch should be done on `master` and then backported t
 - In the `master` branch, update `CHANGELOG.md` to reflect the changes for the minor release.
   - The minor release must include all changes since the last release.
   - The updates should be merged to `master` and then backported to the release branch.
-- In the release branch, tag the minor release using an annotated git tag (e.g. `git -a v1.2.0`)
+- In the release branch, tag the minor release using an annotated git tag (e.g. `git -a v1.2.0`).
 - Push the release tag and update the release description to include the changes for the minor release.
 
 ## Patch Release Process
