@@ -3,6 +3,7 @@ package testsuite
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,6 +16,7 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -379,9 +381,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 	issuer2 := s.signers[2].String()
 	addr1 := s.signers[3].String()
 	addr2 := s.signers[4].String()
-	addr3 := s.signers[5].String()
+	acc3 := s.signers[5]
+	addr3 := acc3.String()
 	addr4 := s.signers[6].String()
-	addr5 := s.signers[7].String()
+	acc5 := s.signers[7]
+	addr5 := acc5.String()
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -1010,19 +1014,24 @@ func (s *IntegrationTestSuite) TestScenario() {
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 
+	order1Qty, order2Qty := "10.54321", "15.54321"
+	order1QtyDec, err := math.NewDecFromString(order1Qty)
+	s.Require().NoError(err)
+	order2QtyDec, err := math.NewDecFromString(order2Qty)
+	s.Require().NoError(err)
 	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: addr3,
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
-				Quantity:          "1.0",
+				Quantity:          order1Qty,
 				AskPrice:          &coinPrice,
-				DisableAutoRetire: true,
+				DisableAutoRetire: false,
 				Expiration:        &expiration,
 			},
 			{
 				BatchDenom:        batchDenom,
-				Quantity:          "1.0",
+				Quantity:          order2Qty,
 				AskPrice:          &coinPrice,
 				DisableAutoRetire: true,
 				Expiration:        &expiration,
@@ -1031,6 +1040,86 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().Nil(err)
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
+	orderId1 := createSellOrder.SellOrderIds[0]
+	orderId2 := createSellOrder.SellOrderIds[1]
+
+	// now we buy these orders
+	buyerAcc := acc5
+	expectedTotalCost := sdk.NewInt64Coin(coinPrice.Denom, 26_086_420)
+	// this is the exact amount it should cost to purchase both orders
+	s.fundAccount(buyerAcc, sdk.Coins{expectedTotalCost})
+
+	buyerAccBefore := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
+	sellerAccBefore := s.getAccountInfo(acc3, batchDenom, coinPrice.Denom)
+	_, err = s.marketServer.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer: buyerAcc.String(),
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId:            orderId1,
+				Quantity:               order1Qty,
+				BidPrice:               &coinPrice,
+				DisableAutoRetire:      false,
+				RetirementJurisdiction: "US-OR",
+			},
+			{
+				SellOrderId:       orderId2,
+				Quantity:          order2Qty,
+				BidPrice:          &coinPrice,
+				DisableAutoRetire: true,
+			},
+		},
+	})
+	s.Require().NoError(err)
+	buyerAccAfter := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
+	sellerAccAfter := s.getAccountInfo(acc3, batchDenom, coinPrice.Denom)
+
+	s.assertSellerBalancesUpdated(sellerAccBefore, sellerAccAfter, order2QtyDec, order1QtyDec, expectedTotalCost)
+	s.assertBuyerBalancesUpdated(buyerAccBefore, buyerAccAfter, order2QtyDec, order1QtyDec, expectedTotalCost)
+}
+
+type accountInfo struct {
+	address                     sdk.AccAddress
+	tradable, retired, escrowed math.Dec
+	bankBalance                 sdk.Coin
+}
+
+func (s *IntegrationTestSuite) assertSellerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
+	expectedEscrowed := accBefore.escrowed // account before the order was bought. should have tradable + retired in escrow
+
+	// subtract the tradable+retired amounts from escrow
+	var err error
+	expectedEscrowed, err = expectedEscrowed.Sub(tradable)
+	s.Require().NoError(err)
+	expectedEscrowed, err = expectedEscrowed.Sub(retired)
+	s.Require().NoError(err)
+
+	s.Require().True(expectedEscrowed.Equal(accAfter.escrowed), fmt.Sprintf("expected %v, got %v", expectedEscrowed, accAfter.escrowed))
+	s.Require().True(accBefore.tradable.Equal(accAfter.tradable))
+	s.Require().True(accBefore.retired.Equal(accAfter.retired))
+
+	expectedBankBal := accBefore.bankBalance
+	expectedBankBal = expectedBankBal.Add(totalCost)
+	s.Require().True(expectedBankBal.Equal(accAfter.bankBalance))
+}
+
+func (s *IntegrationTestSuite) assertBuyerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
+
+	expectedTradable := accBefore.tradable
+	expectedRetired := accBefore.retired
+
+	var err error
+	expectedTradable, err = expectedTradable.Add(tradable)
+	s.Require().NoError(err)
+	expectedRetired, err = expectedRetired.Add(retired)
+	s.Require().NoError(err)
+
+	s.Require().True(accBefore.escrowed.Equal(accAfter.escrowed))
+	s.Require().True(expectedTradable.Equal(accAfter.tradable), fmt.Sprintf("expected %v got %v", expectedTradable, accAfter.tradable))
+	s.Require().True(expectedRetired.Equal(accAfter.retired), fmt.Sprintf("expected %v got %v", expectedRetired, accAfter.retired))
+
+	expectedBankBal := accBefore.bankBalance
+	expectedBankBal = expectedBankBal.Sub(totalCost)
+	s.Require().True(expectedBankBal.Equal(accAfter.bankBalance))
 }
 
 func (s *IntegrationTestSuite) getUserBalance(addr sdk.AccAddress, denom string) sdk.Coin {
@@ -1062,4 +1151,36 @@ func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata str
 	res, err := s.msgClient.CreateClass(s.ctx, &core.MsgCreateClass{Admin: admin, Issuers: issuers, Metadata: metadata, CreditTypeAbbrev: creditTypeAbbrev, Fee: &createClassFee})
 	s.Require().NoError(err)
 	return res.ClassId
+}
+
+func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {
+	coinBalance := s.getUserBalance(addr, bankDenom)
+	t, r, e := s.getUserBalanceDecs(addr, batchDenom)
+	return accountInfo{
+		address:     addr,
+		tradable:    t,
+		retired:     r,
+		escrowed:    e,
+		bankBalance: coinBalance,
+	}
+}
+
+func (s *IntegrationTestSuite) getUserBalanceDecs(addr sdk.AccAddress, denom string) (traable, retired, escrowed math.Dec) {
+	bal := s.getUserBatchBalance(addr, denom)
+	return s.getBalanceDecimals(bal)
+}
+
+func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom string) *core.BatchBalanceInfo {
+	bal, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
+		Account:    addr.String(),
+		BatchDenom: denom,
+	})
+	s.Require().NoError(err)
+	return bal.Balance
+}
+
+func (s *IntegrationTestSuite) getBalanceDecimals(bal *core.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
+	decs, err := utils.GetNonNegativeFixedDecs(6, bal.Tradable, bal.Retired, bal.Escrowed)
+	s.Require().NoError(err)
+	return decs[0], decs[1], decs[2]
 }
