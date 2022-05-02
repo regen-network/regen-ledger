@@ -56,31 +56,3 @@ message CreditTypeProposal {
   // passes.
   CreditType credit_type = 3;
 }
-
-message AskDenomProposal {
-  option (gogoproto.goproto_stringer) = false;
-
-  // title is the title of the proposal.
-  string title = 1;
-
-  // description is the description of the proposal.
-  string description = 2;
-
-  // ask_denom contains coin denom information that will be added to the allowed
-  // ask denoms list for use in the marketplace.
-  AskDenom ask_denom = 3;
-}
-
-// AskDenom defines the structure for a coin denom.
-message AskDenom {
-
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-  string denom = 1;
-
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 2;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 3;
-}

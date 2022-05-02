@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package regen.ecocredit.marketplace.v1;
+
+import "regen/ecocredit/marketplace/v1/state.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
+
+message AskDenomProposal {
+  option (gogoproto.goproto_stringer) = false;
+
+  // title is the title of the proposal.
+  string title = 1;
+
+  // description is the description of the proposal.
+  string description = 2;
+
+  // allowed_denom contains coin denom information that will be added to the
+  // allowed ask denoms list for use in the marketplace.
+  AllowedDenom allowed_denom = 3;
+}

@@ -1,4 +1,4 @@
-package core
+package marketplace
 
 import (
 	"fmt"
@@ -24,10 +24,10 @@ func (m AskDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 func (m AskDenomProposal) ProposalType() string { return AskDenomProposalType }
 
 func (m AskDenomProposal) ValidateBasic() error {
-	if m.AskDenom == nil {
+	if m.AllowedDenom == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("ask_denom cannot be nil")
 	}
-	if err := m.AskDenom.Validate(); err != nil {
+	if err := m.AllowedDenom.Validate(); err != nil {
 		return err
 	}
 	return govtypes.ValidateAbstract(&m)
@@ -38,5 +38,5 @@ func (m AskDenomProposal) String() string {
   Title:       %s
   Description: %s
   Ask Denom: %v
-`, m.Title, m.Description, m.AskDenom)
+`, m.Title, m.Description, m.AllowedDenom)
 }

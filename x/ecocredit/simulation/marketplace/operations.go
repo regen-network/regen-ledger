@@ -40,7 +40,6 @@ const (
 
 // ecocredit message types
 var (
-	TypeMsgAllowAskDenom   = marketplace.MsgAllowAskDenom{}.Route()
 	TypeMsgBuyDirect       = marketplace.MsgBuyDirect{}.Route()
 	TypeMsgSell            = marketplace.MsgSell{}.Route()
 	TypeMsgUpdateSellOrder = marketplace.MsgUpdateSellOrders{}.Route()

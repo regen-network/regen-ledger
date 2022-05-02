@@ -34,14 +34,6 @@ type serverImpl struct {
 	stateStore api.StateStore
 }
 
-func (s serverImpl) AddAskDenom(ctx sdk.Context, proposal marketplacetypes.AskDenomProposal) error {
-	return s.coreKeeper.AddAskDenom(ctx, proposal)
-}
-
-func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
-	return s.coreKeeper.AddCreditType(ctx, ctp)
-}
-
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) serverImpl {
 	s := serverImpl{
@@ -58,10 +50,10 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 
 	coreStore, basketStore, marketStore := getStateStores(s.db)
+	s.stateStore = coreStore
 	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, distKeeper, s.paramSpace)
 	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace)
 	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)
-
 	return s
 }
 

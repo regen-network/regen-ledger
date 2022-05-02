@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"gotest.tools/v3/assert"
 
@@ -12,7 +11,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -21,10 +19,6 @@ func TestSell_CancelOrder(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
 
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -56,11 +50,6 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 

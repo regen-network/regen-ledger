@@ -1,4 +1,4 @@
-package core
+package marketplace
 
 import (
 	"testing"
@@ -69,8 +69,8 @@ func TestAskDenom_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := AskDenom{
-				Denom:        tt.fields.Denom,
+			m := AllowedDenom{
+				BankDenom:    tt.fields.Denom,
 				DisplayDenom: tt.fields.DisplayDenom,
 				Exponent:     tt.fields.Exponent,
 			}

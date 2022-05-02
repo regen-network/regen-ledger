@@ -1006,7 +1006,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	coinPrice := sdk.NewInt64Coin("stake", 1000000)
-	s.paramSpace.Set(s.sdkCtx, core.KeyAllowedAskDenoms, append(core.DefaultParams().AllowedAskDenoms, &core.AskDenom{Denom: coinPrice.Denom}))
+	// TODO(Tyler): fix this
+	//s.paramSpace.Set(s.sdkCtx, core.KeyAllowedAskDenoms, append(core.DefaultParams().AllowedAskDenoms, &core.AskDenom{Denom: coinPrice.Denom}))
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 

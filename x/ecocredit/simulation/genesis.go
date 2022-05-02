@@ -31,15 +31,16 @@ const (
 	typeCreditTypes      = "credit_types"
 )
 
-func genAskDenoms() []*core.AskDenom {
-	return []*core.AskDenom{
-		{
-			Denom:        "stake",
-			DisplayDenom: "stake",
-			Exponent:     18,
-		},
-	}
-}
+// TODO(Tyler): fix this
+//func genAskDenoms() []*core.AskDenom {
+//	return []*core.AskDenom{
+//		{
+//			Denom:        "stake",
+//			DisplayDenom: "stake",
+//			Exponent:     18,
+//		},
+//	}
+//}
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
@@ -133,7 +134,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 		AllowedClassCreators: allowedClassCreators,
 		AllowlistEnabled:     allowListEnabled,
 		BasketFee:            basketCreationFee,
-		AllowedAskDenoms:     genAskDenoms(),
 	}
 
 	db := dbm.NewMemDB()

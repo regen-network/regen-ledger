@@ -15,13 +15,13 @@ func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AskDenomProposal) er
 	if err := p.ValidateBasic(); err != nil {
 		return err
 	}
-	askDenom := p.AskDenom
+	askDenom := p.AllowedDenom
 	if err := k.stateStore.AllowedDenomTable().Insert(sdk.WrapSDKContext(ctx), &api.AllowedDenom{
-		BankDenom:    askDenom.Denom,
+		BankDenom:    askDenom.BankDenom,
 		DisplayDenom: askDenom.DisplayDenom,
 		Exponent:     askDenom.Exponent,
 	}); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", askDenom.Denom, err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", askDenom.BankDenom, err.Error())
 	}
 	return nil
 }

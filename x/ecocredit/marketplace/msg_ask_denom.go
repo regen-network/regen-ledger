@@ -1,12 +1,12 @@
-package core
+package marketplace
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (m AskDenom) Validate() error {
-	if err := sdk.ValidateDenom(m.Denom); err != nil {
+func (m AllowedDenom) Validate() error {
+	if err := sdk.ValidateDenom(m.BankDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("invalid denom: %s", err.Error())
 	}
 	if err := sdk.ValidateDenom(m.DisplayDenom); err != nil {

@@ -1,19 +1,17 @@
-package core
+package marketplace
 
 import (
 	"testing"
-
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 	type fields struct {
-		Title       string
-		Description string
-		AskDenom    *marketplace.AskDenom
+		Title        string
+		Description  string
+		AllowedDenom *AllowedDenom
 	}
-	validAskDenom := &marketplace.AskDenom{
-		Denom:        "uregen",
+	validAskDenom := &AllowedDenom{
+		BankDenom:    "uregen",
 		DisplayDenom: "regen",
 		Exponent:     18,
 	}
@@ -25,25 +23,25 @@ func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 		{
 			name: "valid",
 			fields: fields{
-				Title:       "foo",
-				Description: "bar",
-				AskDenom:    validAskDenom,
+				Title:        "foo",
+				Description:  "bar",
+				AllowedDenom: validAskDenom,
 			},
 			wantErr: false,
 		},
 		{
 			name: "no title",
 			fields: fields{
-				Description: "foo",
-				AskDenom:    validAskDenom,
+				Description:  "foo",
+				AllowedDenom: validAskDenom,
 			},
 			wantErr: true,
 		},
 		{
 			name: "no desc",
 			fields: fields{
-				Title:    "foo",
-				AskDenom: validAskDenom,
+				Title:        "foo",
+				AllowedDenom: validAskDenom,
 			},
 			wantErr: true,
 		},
@@ -58,10 +56,10 @@ func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &marketplace.AskDenomProposal{
-				Title:       tt.fields.Title,
-				Description: tt.fields.Description,
-				AskDenom:    tt.fields.AskDenom,
+			m := &AskDenomProposal{
+				Title:        tt.fields.Title,
+				Description:  tt.fields.Description,
+				AllowedDenom: tt.fields.AllowedDenom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

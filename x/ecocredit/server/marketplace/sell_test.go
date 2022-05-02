@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -22,10 +21,6 @@ func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -66,13 +61,14 @@ func TestSell_Valid(t *testing.T) {
 func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	gmAny := gomock.Any()
 	testSellSetup(t, s, batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: newCoin.Denom}}
-	}).Times(1)
+	assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    newCoin.Denom,
+		DisplayDenom: newCoin.Denom,
+		Exponent:     18,
+	}))
 
 	// market shouldn't exist before sell call
 	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
@@ -135,10 +131,6 @@ func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	gmAny := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
 
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
@@ -191,11 +183,11 @@ func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDen
 		PrecisionModifier: 0,
 	}))
 	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
-	//	BankDenom:    bankDenom,
-	//	DisplayDenom: displayDenom,
-	//	Exponent:     1,
-	//}))
+	assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    bankDenom,
+		DisplayDenom: displayDenom,
+		Exponent:     1,
+	}))
 	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey: 1,
 		Address:  s.addr,

@@ -1,0 +1,84 @@
+package marketplace
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"strings"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/spf13/cobra"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+)
+
+var AllowedAskDenomProposal = govclient.NewProposalHandler(TxAllowedAskDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
+	return rest.ProposalRESTHandler{
+		SubRoute: "",
+		Handler:  nil,
+	}
+})
+
+func TxAllowedAskDenomProposal() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "ask-denom-proposal [path_to_file.json] [flags]",
+		Args:  cobra.ExactArgs(1),
+		Short: "Submit a proposal for a new allowed ask denom",
+		Long: strings.TrimSpace(`Submit a proposal to add a new credit type. 
+The json file MUST take the following form:
+{
+	"title": "some title",
+	"description": "some description",
+	"allowed_denom": {
+					"bank_denom": "uregen",
+					"display_denom": "regen",
+					"exponent": 18
+	}
+}
+The bank denom is the underlying coin denom (i.e. ibc/CDC4587874B85BEA4FCEC3CEA5A1195139799A1FEE711A07D972537E18FD). 
+Display denom is used for display purposes, and serves as the name of the coin denom (i.e. ATOM). Exponent is the precision of the coin. TODO(Tyler): better description pls`),
+		Example: `regen tx gov submit-proposal credit-type-proposal my_file.json`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			proposalFile, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			var proposal marketplace.AskDenomProposal
+			err = json.Unmarshal(proposalFile, &proposal)
+			if err != nil {
+				return err
+			}
+			if err := proposal.ValidateBasic(); err != nil {
+				return fmt.Errorf("invalid proposal: %w", err)
+			}
+
+			depositStr, err := cmd.Flags().GetString(cli.FlagDeposit)
+			if err != nil {
+				return err
+			}
+			deposit, err := sdk.ParseCoinsNormalized(depositStr)
+			if err != nil {
+				return err
+			}
+			var content types.Content = &proposal
+			msg, err := types.NewMsgSubmitProposal(content, deposit, clientCtx.GetFromAddress())
+			if err != nil {
+				return err
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
+		},
+	}
+	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	return cmd
+}
