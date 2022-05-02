@@ -198,7 +198,6 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
-	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
 	assert.NilError(s.t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
 		BankDenom:    bankDenom,
 		DisplayDenom: displayDenom,

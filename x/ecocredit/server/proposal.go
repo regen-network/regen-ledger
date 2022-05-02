@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// ProposalKeeper defines the expected interface for ecocredit module proposals.
+// ProposalKeeper defines methods for ecocredit gov handlers.
 type ProposalKeeper interface {
 	AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error
 	AddAskDenom(ctx sdk.Context, proposal *marketplace.AskDenomProposal) error

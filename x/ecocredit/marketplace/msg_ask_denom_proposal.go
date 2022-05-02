@@ -37,6 +37,6 @@ func (m AskDenomProposal) String() string {
 	return fmt.Sprintf(`Credit Type Proposal:
   Title:       %s
   Description: %s
-  Ask Denom: %v
+  Allowed Denom: %v
 `, m.Title, m.Description, m.AllowedDenom)
 }
