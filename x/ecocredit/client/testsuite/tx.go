@@ -7,6 +7,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/rand"
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -18,13 +26,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/rand"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -32,7 +33,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	marketplaceClient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -1065,7 +1066,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceClient.TxSellCmd()
+			cmd := marketplaceclient.TxSellCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -1085,7 +1086,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 								orderIdStr := strings.Trim(attr.Value, "\"")
 								_, err := strconv.ParseUint(orderIdStr, 10, 64)
 								s.Require().NoError(err)
-								queryCmd := marketplaceClient.QuerySellOrderCmd()
+								queryCmd := marketplaceclient.QuerySellOrderCmd()
 								queryArgs := []string{orderIdStr, flagOutputJSON}
 								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 								s.Require().NoError(err, queryOut.String())
@@ -1190,7 +1191,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceClient.TxUpdateSellOrdersCmd()
+			cmd := marketplaceclient.TxUpdateSellOrdersCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -1201,7 +1202,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				s.Require().Equal(uint32(0), res.Code, res)
 
 				// query sell order
-				queryCmd := marketplaceClient.QuerySellOrderCmd()
+				queryCmd := marketplaceclient.QuerySellOrderCmd()
 				queryArgs := []string{tc.sellOrderId, flagOutputJSON}
 				queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 				s.Require().NoError(err, queryOut.String())
@@ -1317,7 +1318,7 @@ func (s *IntegrationTestSuite) TestBuyDirect() {
 			qty, bidPrice, fmt.Sprintf("%t", disableAutoRetire),
 		}
 		if !disableAutoRetire {
-			args = append(args, fmt.Sprintf(`--%s=US-OR`, marketplaceClient.FlagRetirementJurisdiction))
+			args = append(args, fmt.Sprintf(`--%s=US-OR`, marketplaceclient.FlagRetirementJurisdiction))
 		}
 		args = append(args, makeFlagFrom(from.String()))
 		return append(args, s.commonTxFlags()...)
@@ -1357,7 +1358,7 @@ func (s *IntegrationTestSuite) TestBuyDirect() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceClient.TxBuyDirect()
+			cmd := marketplaceclient.TxBuyDirect()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -1436,7 +1437,7 @@ func (s *IntegrationTestSuite) createBatch(clientCtx client.Context, msg *core.M
 }
 
 func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *marketplace.MsgSell) ([]uint64, error) {
-	cmd := marketplaceClient.TxSellCmd()
+	cmd := marketplaceclient.TxSellCmd()
 
 	// order format closure
 	formatOrder := func(o *marketplace.MsgSell_Order) string {
