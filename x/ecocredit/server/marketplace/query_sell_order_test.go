@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -36,7 +37,13 @@ func TestQuery_SellOrder(t *testing.T) {
 
 	res, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id})
 	assert.NilError(t, err)
-	assert.DeepEqual(t, *res.SellOrder, gogoOrder)
+	assert.Equal(t, s.addr.String(), res.SellOrder.Seller)
+	assert.Equal(t, batchDenom, res.SellOrder.BatchDenom)
+	assert.Equal(t, order.Quantity, res.SellOrder.Quantity)
+	assert.Equal(t, ask.Denom, res.SellOrder.AskDenom)
+	assert.Equal(t, order.AskPrice, res.SellOrder.AskPrice)
+	assert.Equal(t, order.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
+	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(order.Expiration), res.SellOrder.Expiration)
 
 	// invalid order id should fail
 	_, err = s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: 404})
