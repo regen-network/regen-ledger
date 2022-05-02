@@ -42,7 +42,8 @@ The json file MUST take the following form:
 	}
 }
 The bank denom is the underlying coin denom (i.e. ibc/CDC4587874B85BEA4FCEC3CEA5A1195139799A1FEE711A07D972537E18FD). 
-Display denom is used for display purposes, and serves as the name of the coin denom (i.e. ATOM). Exponent is the precision of the coin. TODO(Tyler): better description pls`),
+Display denom is used for display purposes, and serves as the name of the coin denom (i.e. ATOM). Exponent is the 
+amount micro coins makes up one whole coin. TODO(Tyler): not sure about this description...`),
 		Example: `regen tx gov submit-proposal credit-type-proposal my_file.json`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)

@@ -18,9 +18,11 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	dbm "github.com/tendermint/tm-db"
 
+	marketplaceapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // Simulation parameter constants
@@ -29,18 +31,18 @@ const (
 	allowedCreators      = "allowed_class_creators"
 	typeAllowListEnabled = "allow_list_enabled"
 	typeCreditTypes      = "credit_types"
+	typeAllowedDenom     = "allowed_denom"
 )
 
-// TODO(Tyler): fix this
-//func genAskDenoms() []*core.AskDenom {
-//	return []*core.AskDenom{
-//		{
-//			Denom:        "stake",
-//			DisplayDenom: "stake",
-//			Exponent:     18,
-//		},
-//	}
-//}
+func genAllowedDenoms() []*marketplace.AllowedDenom {
+	return []*marketplace.AllowedDenom{
+		{
+			BankDenom:    sdk.DefaultBondDenom,
+			DisplayDenom: sdk.DefaultBondDenom,
+			Exponent:     18,
+		},
+	}
+}
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
@@ -100,6 +102,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		allowedClassCreators []string
 		allowListEnabled     bool
 		creditTypes          []*core.CreditType
+		allowedDenoms        []*marketplace.AllowedDenom
 		basketCreationFee    sdk.Coins
 	)
 
@@ -129,6 +132,11 @@ func RandomizedGenState(simState *module.SimulationState) {
 		func(r *rand.Rand) { creditTypes = genCreditTypes(r) },
 	)
 
+	simState.AppParams.GetOrGenerate(
+		simState.Cdc, typeAllowedDenom, &allowedDenoms, simState.Rand,
+		func(r *rand.Rand) { allowedDenoms = genAllowedDenoms() },
+	)
+
 	params := &core.Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowedClassCreators,
@@ -152,11 +160,15 @@ func RandomizedGenState(simState *module.SimulationState) {
 	if err != nil {
 		panic(err)
 	}
+	ms, err := marketplaceapi.NewStateStore(ormdb)
+	if err != nil {
+		panic(err)
+	}
 
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, typeCreditTypes, &creditTypes, simState.Rand,
 		func(r *rand.Rand) {
-			if err := genGenesisState(ormCtx, r, simState, ss); err != nil {
+			if err := genGenesisState(ormCtx, r, simState, ss, ms); err != nil {
 				panic(err)
 			}
 		})
@@ -277,7 +289,7 @@ func getBatchSequence(ctx context.Context, sStore api.StateStore, projectKey uin
 	return seq.NextSequence, nil
 }
 
-func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.SimulationState, ss api.StateStore) error {
+func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.SimulationState, ss api.StateStore, ms marketplaceapi.StateStore) error {
 	accs := simState.Accounts
 	metadata := simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 5, 100))
 
@@ -295,6 +307,14 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 		Name:         "biodiversity",
 		Unit:         "acres",
 		Precision:    6,
+	}); err != nil {
+		return err
+	}
+
+	if err := ms.AllowedDenomTable().Insert(ctx, &marketplaceapi.AllowedDenom{
+		BankDenom:    sdk.DefaultBondDenom,
+		DisplayDenom: sdk.DefaultBondDenom,
+		Exponent:     18,
 	}); err != nil {
 		return err
 	}
