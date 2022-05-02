@@ -30,7 +30,7 @@ func TxAllowedAskDenomProposal() *cobra.Command {
 		Use:   "ask-denom-proposal [path_to_file.json] [flags]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Submit a proposal for a new allowed ask denom",
-		Long: strings.TrimSpace(`Submit a proposal to add a new credit type. 
+		Long: strings.TrimSpace(`Submit a proposal to add a new allowed ask denom. 
 The json file MUST take the following form:
 {
 	"title": "some title",

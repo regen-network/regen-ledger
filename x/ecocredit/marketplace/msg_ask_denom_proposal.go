@@ -25,7 +25,7 @@ func (m AskDenomProposal) ProposalType() string { return AskDenomProposalType }
 
 func (m AskDenomProposal) ValidateBasic() error {
 	if m.AllowedDenom == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("ask_denom cannot be nil")
+		return sdkerrors.ErrInvalidRequest.Wrap("allowed_denom cannot be nil")
 	}
 	if err := m.AllowedDenom.Validate(); err != nil {
 		return err
