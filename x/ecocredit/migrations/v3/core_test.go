@@ -47,7 +47,6 @@ func TestMigrations(t *testing.T) {
 	store := sdkCtx.KVStore(ecocreditKey)
 
 	paramStore.WithKeyTable(v3.ParamKeyTable())
-	paramStore.Set(sdkCtx, v3.KeyAllowlistEnabled, true)
 
 	ctypes := []*v3.CreditType{
 		{
