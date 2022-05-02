@@ -230,3 +230,10 @@ message EventProjectMetadataUpdated {
   // new_metadata is the metadata after the update.
   string new_metadata = 3;
 }
+
+// EventCreditTypeAdded is emitted when governance approves a new credit type.
+message EventCreditTypeAdded {
+
+  // abbreviation is the abbreviation of the credit type.
+  string abbreviation = 1;
+}

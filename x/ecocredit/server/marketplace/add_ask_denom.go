@@ -8,6 +8,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
+// AddAskDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
+// marketplace.
 func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AskDenomProposal) error {
 	if p == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
@@ -23,5 +25,9 @@ func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AskDenomProposal) er
 	}); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", askDenom.BankDenom, err.Error())
 	}
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowAskDenom{
+		Denom:        askDenom.BankDenom,
+		DisplayDenom: askDenom.DisplayDenom,
+		Exponent:     askDenom.Exponent,
+	})
 }
