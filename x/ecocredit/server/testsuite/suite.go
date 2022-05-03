@@ -1155,7 +1155,8 @@ func (s *IntegrationTestSuite) createClass(admin, creditTypeAbbrev, metadata str
 
 func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, bankDenom string) accountInfo {
 	coinBalance := s.getUserBalance(addr, bankDenom)
-	t, r, e := s.getUserBalanceDecs(addr, batchDenom)
+	bal := s.getUserBatchBalance(addr, batchDenom)
+	t, r, e := s.getDecimalsFromBalance(bal)
 	return accountInfo{
 		address:     addr,
 		tradable:    t,
@@ -1163,11 +1164,6 @@ func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, b
 		escrowed:    e,
 		bankBalance: coinBalance,
 	}
-}
-
-func (s *IntegrationTestSuite) getUserBalanceDecs(addr sdk.AccAddress, denom string) (traable, retired, escrowed math.Dec) {
-	bal := s.getUserBatchBalance(addr, denom)
-	return s.getBalanceDecimals(bal)
 }
 
 func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom string) *core.BatchBalanceInfo {
@@ -1179,7 +1175,7 @@ func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom st
 	return bal.Balance
 }
 
-func (s *IntegrationTestSuite) getBalanceDecimals(bal *core.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
+func (s *IntegrationTestSuite) getDecimalsFromBalance(bal *core.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, bal.Tradable, bal.Retired, bal.Escrowed)
 	s.Require().NoError(err)
 	return decs[0], decs[1], decs[2]
