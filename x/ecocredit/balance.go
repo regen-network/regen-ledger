@@ -8,7 +8,7 @@ type balance interface {
 	GetRetired() string
 }
 
-// GetDecimalsFromBalance takes a balance struct and returns the fields as decimal.
+// GetDecimalsFromBalance takes a balance interface and returns the fields as decimals.
 func GetDecimalsFromBalance(b balance) (tradable, retired, escrowed math.Dec, err error) {
 	tradable, err = math.NewDecFromString(b.GetTradable())
 	if err != nil {
