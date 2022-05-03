@@ -10,7 +10,7 @@ import (
 
 // AddAskDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
 // marketplace.
-func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AskDenomProposal) error {
+func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
 	if p == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
 	}

@@ -9,21 +9,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ govtypes.Content = &AskDenomProposal{}
+var _ govtypes.Content = &AllowedDenomProposal{}
 
 const (
-	AskDenomProposalType = "AskDenomProposal"
+	AskDenomProposalType = "AllowedDenomProposal"
 )
 
 func init() {
 	govtypes.RegisterProposalType(AskDenomProposalType)
 }
 
-func (m AskDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
+func (m AllowedDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
-func (m AskDenomProposal) ProposalType() string { return AskDenomProposalType }
+func (m AllowedDenomProposal) ProposalType() string { return AskDenomProposalType }
 
-func (m AskDenomProposal) ValidateBasic() error {
+func (m AllowedDenomProposal) ValidateBasic() error {
 	if m.AllowedDenom == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("allowed_denom cannot be nil")
 	}
@@ -33,7 +33,7 @@ func (m AskDenomProposal) ValidateBasic() error {
 	return govtypes.ValidateAbstract(&m)
 }
 
-func (m AskDenomProposal) String() string {
+func (m AllowedDenomProposal) String() string {
 	return fmt.Sprintf(`Credit Type Proposal:
   Title:       %s
   Description: %s

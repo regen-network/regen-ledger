@@ -55,7 +55,7 @@ amount micro coins makes up one whole coin. TODO(Tyler): not sure about this des
 				return err
 			}
 
-			var proposal marketplace.AskDenomProposal
+			var proposal marketplace.AllowedDenomProposal
 			err = json.Unmarshal(proposalFile, &proposal)
 			if err != nil {
 				return err

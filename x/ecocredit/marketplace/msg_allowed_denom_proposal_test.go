@@ -56,7 +56,7 @@ func TestAskDenomProposal_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &AskDenomProposal{
+			m := &AllowedDenomProposal{
 				Title:        tt.fields.Title,
 				Description:  tt.fields.Description,
 				AllowedDenom: tt.fields.AllowedDenom,

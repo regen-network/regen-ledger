@@ -70,7 +70,7 @@ func TestProposal_AskDenom(t *testing.T) {
 	t.Parallel()
 	s := setup(t)
 	handler := NewProposalHandler(s.server)
-	askDenomProposal := marketplace.AskDenomProposal{
+	askDenomProposal := marketplace.AllowedDenomProposal{
 		Title:       "carbon type",
 		Description: "i would like to add a carbon type",
 		AllowedDenom: &marketplace.AllowedDenom{
