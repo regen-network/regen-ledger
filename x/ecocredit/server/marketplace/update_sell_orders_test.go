@@ -1,7 +1,6 @@
 package marketplace
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -24,7 +22,7 @@ var gmAny = gomock.Any()
 func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -39,7 +37,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balBefore, supBefore := getBalanceAndSupply(t, s.ctx, s.coreStore, 1, s.addr)
+	balBefore, supBefore := s.getBalanceAndSupply(1, s.addr)
 
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
@@ -50,7 +48,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balAfter, supAfter := getBalanceAndSupply(t, s.ctx, s.coreStore, 1, s.addr)
+	balAfter, supAfter := s.getBalanceAndSupply(1, s.addr)
 
 	// sellOrder 1: 5.22 originally, increased by 10 = change of 4.78
 	// sellOrder 2: 30 originally, decreased by 28.7232 = change of -1.2768
@@ -75,7 +73,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -121,7 +119,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	_, _, unauthorized := testdata.KeyTestPubAddr()
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -149,7 +147,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}, {Denom: "ubar"}}
@@ -201,7 +199,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 func TestUpdateSellOrder_Expiration(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -254,7 +252,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 func TestSellOrder_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
 	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
 		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
@@ -267,12 +265,4 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
-}
-
-func getBalanceAndSupply(t *testing.T, ctx context.Context, store ecoApi.StateStore, batchId uint64, addr sdk.AccAddress) (*ecoApi.BatchBalance, *ecoApi.BatchSupply) {
-	bal, err := store.BatchBalanceTable().Get(ctx, addr, batchId)
-	assert.NilError(t, err)
-	sup, err := store.BatchSupplyTable().Get(ctx, batchId)
-	assert.NilError(t, err)
-	return bal, sup
 }
