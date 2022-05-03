@@ -25,4 +25,12 @@ func TestGetDecimalsFromBalance(t *testing.T) {
 	assert.Check(t, expectedTradable.Equal(tradable))
 	assert.Check(t, expectedRetired.Equal(retired))
 	assert.Check(t, expectedEscrowed.Equal(escrowed))
+
+	bal = api.BatchBalance{
+		Tradable: "bar",
+		Retired:  "foo",
+		Escrowed: "325k.as/d",
+	}
+	_, _, _, err = GetDecimalsFromBalance(&bal)
+	assert.Check(t, err != nil)
 }
