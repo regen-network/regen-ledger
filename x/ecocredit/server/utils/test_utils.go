@@ -14,7 +14,7 @@ import (
 //	gmAny := gomock.Any()
 //	paramKeeper.EXPECT().Get(gmAny, gmAny, gmAny).Do(func(_, _ any, param *T) {
 //		*param = *obj
-//	}).Times(times)
+//	}).AnyTimes()
 // }
 func ExpectParamGet(obj interface{}, paramKeeper *mocks.MockParamKeeper, key []byte, times int) {
 	gmAny := gomock.Any()
@@ -23,21 +23,21 @@ func ExpectParamGet(obj interface{}, paramKeeper *mocks.MockParamKeeper, key []b
 		s := obj.(*[]string)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]string) {
 			*param = *s
-		}).Times(times)
+		}).AnyTimes()
 	case *sdk.Coins:
 		coins := obj.(*sdk.Coins)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *sdk.Coins) {
 			*param = *coins
-		}).Times(times)
+		}).AnyTimes()
 	case *bool:
 		b := obj.(*bool)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *bool) {
 			*param = *b
-		}).Times(times)
+		}).AnyTimes()
 	case *[]*core.AskDenom:
 		askDenoms := obj.(*[]*core.AskDenom)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]*core.AskDenom) {
 			*param = *askDenoms
-		}).Times(times)
+		}).AnyTimes()
 	}
 }

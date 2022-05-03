@@ -4,13 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -20,7 +18,7 @@ import (
 func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
@@ -62,7 +60,7 @@ func TestSell_Valid(t *testing.T) {
 func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, validAskDenom, validAskDenom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, validAskDenom, validAskDenom, "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
 	askDenomsWithBaz := append(askDenoms, &core.AskDenom{Denom: "ubaz", DisplayDenom: "baz", Exponent: 18})
@@ -91,7 +89,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 	sellTime := time.Now()
 
 	// invalid batch
@@ -128,7 +126,7 @@ func TestSell_Invalid(t *testing.T) {
 func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, validAskDenom, validAskDenom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, validAskDenom, validAskDenom[1:], "C01", start, end, creditType)
 	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 
 	sellTime := time.Now()
@@ -140,63 +138,4 @@ func TestSell_InvalidDenom(t *testing.T) {
 		},
 	})
 	assert.ErrorContains(t, err, "ubar is not allowed to be used in sell orders")
-}
-
-// assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
-		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount)
-	assert.NilError(t, err)
-
-	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed := decs[0], decs[1], decs[2], decs[3]
-
-	// check the resulting balance -> tradableBefore - orderAmt = tradableAfter
-	calculatedTradable, err := balBeforeTradable.Sub(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedTradable.Equal(balAfterTradable))
-
-	// check the resulting escrow balance -> escrowedBefore + orderAmt = escrowedAfter
-	calculatedEscrow, err := balBeforeEscrowed.Add(orderAmt)
-	assert.NilError(t, err)
-	assert.Check(t, calculatedEscrow.Equal(balAfterEscrowed), "calculated: %s, actual: %s", calculatedEscrow.String(), balAfterEscrowed.String())
-}
-
-// testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
-func testSellSetup(t *testing.T, s *baseSuite, batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
-	assert.NilError(t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
-		ProjectKey: 1,
-		Denom:      batchDenom,
-		Metadata:   "",
-		StartDate:  start,
-		EndDate:    end,
-	}))
-	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
-		Id:               classId,
-		Admin:            s.addr,
-		Metadata:         "",
-		CreditTypeAbbrev: creditType.Abbreviation,
-	}))
-	assert.NilError(t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
-		CreditType:        creditType.Abbreviation,
-		BankDenom:         bankDenom,
-		PrecisionModifier: 0,
-	}))
-	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
-	//	BankDenom:    bankDenom,
-	//	DisplayDenom: displayDenom,
-	//	Exponent:     1,
-	//}))
-	assert.NilError(t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
-		BatchKey: 1,
-		Address:  s.addr,
-		Tradable: "100",
-		Retired:  "100",
-		Escrowed: "0",
-	}))
-	assert.NilError(t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
-		BatchKey:       1,
-		TradableAmount: "100",
-		RetiredAmount:  "100",
-	}))
 }
