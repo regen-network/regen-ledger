@@ -37,6 +37,7 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -1305,7 +1306,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestBuyDirect() {
+func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
@@ -1394,39 +1395,78 @@ func (s *IntegrationTestSuite) TestBuyDirect() {
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), tc.expErrMsg)
 			} else {
-				coinBefore := s.getBankBalance(clientCtx, fields.buyerAddr, fields.askPrice.Denom)
-				balBefore := s.getBalance(clientCtx, fields.buyerAddr, batchDenom)
+				qtyDec, err := math.NewDecFromString(fields.qty)
+				s.Require().NoError(err)
+				costDec, err := math.NewDecFromString(askCoin.Amount.String())
+				s.Require().NoError(err)
+				totalCostDec, err := qtyDec.Mul(costDec)
+				s.Require().NoError(err)
+				totalCostInt := totalCostDec.SdkIntTrim()
+				totalCost := sdk.NewCoin(askCoin.Denom, totalCostInt)
+				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+
 				cmd := marketplaceclient.TxBuyDirect()
 				out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
 				s.Require().NoError(err)
+
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(uint32(0), res.Code)
-				balAfter := s.getBalance(clientCtx, fields.buyerAddr, batchDenom)
-				coinAfter := s.getBankBalance(clientCtx, fields.buyerAddr, fields.askPrice.Denom)
-				fmt.Printf("coin before: %v\t coin after: %v", coinBefore, coinAfter)
-				// cost should be 100stake -> 10 credits * 10stake per credit + 10stake gas fee
-				expectedCost := sdk.NewInt64Coin(sdk.DefaultBondDenom, 110)
-				expectedCoinAfter := coinBefore.Sub(expectedCost)
-				s.Require().True(coinAfter.Equal(expectedCoinAfter), fmt.Sprintf("expected %v got %v", expectedCoinAfter, coinAfter))
-				tBefore, rBefore, _, err := ecocredit.GetDecimalsFromBalance(balBefore)
-				s.Require().NoError(err)
-				tAfter, rAfter, _, err := ecocredit.GetDecimalsFromBalance(balAfter)
-				s.Require().NoError(err)
-				purchaseQtyDec, err := math.NewDecFromString(fields.qty)
-				s.Require().NoError(err)
-				if fields.disableAutoRetire {
-					expected, err := tBefore.Add(purchaseQtyDec)
-					s.Require().NoError(err)
-					s.Require().True(expected.Equal(tAfter))
-				} else {
-					expected, err := rBefore.Add(purchaseQtyDec)
-					s.Require().NoError(err)
-					s.Require().True(expected.Equal(rAfter))
-				}
+
+				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+				s.assertMarketBalancesUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, math.NewDecFromInt64(10), totalCost, !fields.disableAutoRetire)
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
+	// check sellers coins
+	expectedSellerGain := sb.coinBal.Add(totalCost)
+	s.Require().True(expectedSellerGain.Equal(sa.coinBal))
+
+	// check buyers coins
+	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
+	expectedBuyerCost := bb.coinBal.Sub(totalCost)
+	s.Require().True(ba.coinBal.IsLT(expectedBuyerCost))
+
+	// check sellers credits
+	expectedEscrowed, err := sb.escrowed.Sub(qtySold)
+	s.Require().NoError(err)
+	s.Require().True(expectedEscrowed.Equal(sa.escrowed))
+	s.Require().True(sb.tradable.Equal(sa.tradable))
+	s.Require().True(sb.retired.Equal(sa.retired))
+
+	// check buyers credits
+	if retired {
+		expectedRetired, err := bb.retired.Add(qtySold)
+		s.Require().NoError(err)
+		s.Require().True(expectedRetired.Equal(ba.retired))
+		s.Require().True(bb.tradable.Equal(bb.tradable))
+	} else {
+		expectedTradable, err := bb.tradable.Add(qtySold)
+		s.Require().NoError(err)
+		s.Require().True(expectedTradable.Equal(ba.tradable))
+		s.Require().True(bb.retired.Equal(bb.retired))
+	}
+	s.Require().True(bb.escrowed.Equal(bb.escrowed))
+}
+
+type accountInfo struct {
+	coinBal                     sdk.Coin
+	tradable, retired, escrowed math.Dec
+}
+
+func (s *IntegrationTestSuite) getAccountInfo(clientCtx client.Context, addr sdk.AccAddress, bankDenom, batchDenom string) accountInfo {
+	a := accountInfo{}
+	a.coinBal = s.getBankBalance(clientCtx, addr, bankDenom)
+	batchBal := s.getBalance(clientCtx, addr, batchDenom)
+	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.Tradable, batchBal.Retired, batchBal.Escrowed)
+	s.Require().NoError(err)
+	a.tradable, a.retired, a.escrowed = decs[0], decs[1], decs[2]
+	return a
 }
 
 func (s *IntegrationTestSuite) getBankBalance(clientCtx client.Context, addr sdk.AccAddress, denom string) sdk.Coin {
