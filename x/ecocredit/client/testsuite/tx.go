@@ -1352,9 +1352,8 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 		buyerAddr         sdk.AccAddress
 	}
 	testCases := []struct {
-		name   string
-		fields fields
-
+		name      string
+		fields    fields
 		expErr    bool
 		expErrMsg string
 	}{
