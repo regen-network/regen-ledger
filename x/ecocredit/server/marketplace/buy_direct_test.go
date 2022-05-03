@@ -57,6 +57,7 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
 	userBalance := sdk.NewInt64Coin("ufoo", 30)
+
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
