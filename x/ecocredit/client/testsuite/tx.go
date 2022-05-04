@@ -1128,7 +1128,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
 		Owner: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
-			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &allowedCoin, true, &expiration},
 		},
 	})
 	s.Require().NoError(err)
@@ -1145,7 +1145,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		return append(args, s.commonTxFlags()...)
 	}
 
-	newAsk := sdk.NewInt64Coin(askCoin.Denom, 3)
+	newAsk := sdk.NewInt64Coin(allowedCoin.Denom, 3)
 	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
 	s.Require().NoError(err)
 
