@@ -25,7 +25,7 @@ func TestQuery_BatchesByClass(t *testing.T) {
 
 	// insert project
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: "P01",
+		Id: "C01-001",
 	})
 	assert.NilError(t, err)
 
@@ -41,7 +41,7 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	batch1 := &api.Batch{
 		Issuer:       s.addr,
 		ProjectKey:   pKey,
-		Denom:        "C01-20200101-20210101-001",
+		Denom:        "C01-001-20200101-20210101-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
@@ -53,8 +53,8 @@ func TestQuery_BatchesByClass(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C01-20200101-20210101-002"}))
 
 	// insert two batches that are not "C01" credit batches
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C011-20200101-20210101-001"}))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "BIO1-20200101-20210101-001"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "C011-001-20200101-20210101-001"}))
+	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{Denom: "BIO1-001-20200101-20210101-001"}))
 
 	// query batches by "C01" credit class
 	res, err := s.k.BatchesByClass(s.ctx, &core.QueryBatchesByClassRequest{

@@ -1922,7 +1922,8 @@ func (x *EventDefineResolver) GetId() uint64 {
 	return 0
 }
 
-// EventRegisterResolver is an event emitted when data is registered to a resolver on chain.
+// EventRegisterResolver is an event emitted when data is registered to a
+// resolver on chain.
 type EventRegisterResolver struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

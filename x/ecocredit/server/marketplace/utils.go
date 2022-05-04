@@ -3,14 +3,13 @@ package marketplace
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
@@ -96,19 +95,9 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		return err
 	}
-	buyerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, buyerAcc, sellOrder.BatchId)
+	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchId)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			buyerBal = &ecoApi.BatchBalance{
-				BatchKey: sellOrder.BatchId,
-				Address:  buyerAcc,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
+		return err
 	}
 	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
 	// supply is not updated because supply does not distinguish between tradable and escrowed credits.

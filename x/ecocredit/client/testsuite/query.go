@@ -5,11 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/rand"
-
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -26,7 +23,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classId2, err := s.createClass(clientCtx, &core.MsgCreateClass{
@@ -34,7 +31,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classIds := [2]string{classId, classId2}
@@ -510,7 +507,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*ecocredit.SellOrder
+		expOrders []*marketplace.SellOrder
 	}{
 		{
 			name:      "too many args",
@@ -688,7 +685,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
@@ -696,7 +692,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	projectIds := [2]string{pID, pID2}
@@ -814,7 +809,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	require.NoError(err)
 
