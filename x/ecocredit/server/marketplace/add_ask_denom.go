@@ -8,9 +8,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// AddAskDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
+// AddAllowedDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
 // marketplace.
-func (k Keeper) AddAskDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
+func (k Keeper) AddAllowedDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
 	if p == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
 	}

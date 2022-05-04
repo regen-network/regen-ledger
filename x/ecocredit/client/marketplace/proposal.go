@@ -18,19 +18,19 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-var AllowedAskDenomProposal = govclient.NewProposalHandler(TxAllowedAskDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
+var AllowedDenomProposal = govclient.NewProposalHandler(TxAllowedDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
 	return rest.ProposalRESTHandler{
 		SubRoute: "",
 		Handler:  nil,
 	}
 })
 
-func TxAllowedAskDenomProposal() *cobra.Command {
+func TxAllowedDenomProposal() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allowed-denom-proposal [path_to_file.json] [flags]",
 		Args:  cobra.ExactArgs(1),
-		Short: "Submit a proposal for a new allowed ask denom",
-		Long: strings.TrimSpace(`Submit a proposal to add a new allowed ask denom. 
+		Short: "Submit a proposal to add a denom to the list of allowed denoms",
+		Long: strings.TrimSpace(`Submit a proposal to add a denom to the list of allowed denoms for use in the marketplace. 
 The json file MUST take the following form:
 {
 	"title": "some title",

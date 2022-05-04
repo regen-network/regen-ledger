@@ -4,13 +4,13 @@ import (
 	"testing"
 )
 
-func TestAskDenomProposal_ValidateBasic(t *testing.T) {
+func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 	type fields struct {
 		Title        string
 		Description  string
 		AllowedDenom *AllowedDenom
 	}
-	validAskDenom := &AllowedDenom{
+	validAllowedDenom := &AllowedDenom{
 		BankDenom:    "uregen",
 		DisplayDenom: "regen",
 		Exponent:     18,
