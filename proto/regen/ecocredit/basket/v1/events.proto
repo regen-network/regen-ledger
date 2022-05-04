@@ -17,8 +17,8 @@ message EventCreate {
   string curator = 2;
 }
 
-// EventPut is an event emitted when credits are put into a basket in return
-// for basket tokens.
+// EventPut is an event emitted when credits are put into a basket in return for
+// basket tokens.
 message EventPut {
 
   // owner is the owner of the credits put into the basket.
@@ -28,7 +28,9 @@ message EventPut {
   string basket_denom = 2;
 
   // credits are the credits that were added to the basket.
-  repeated BasketCredit credits = 3;
+  // Deprecated: this field will always return empty and will be removed in the
+  // next version.
+  repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted from credits.
   string amount = 4;
@@ -45,7 +47,9 @@ message EventTake {
   string basket_denom = 2;
 
   // credits are the credits that were taken from the basket.
-  repeated BasketCredit credits = 3;
+  // Deprecated: this field will always return empty and will be removed in the
+  // next version.
+  repeated BasketCredit credits = 3 [ deprecated = true ];
 
   // amount is the integer number of basket tokens converted to credits.
   string amount = 4;
