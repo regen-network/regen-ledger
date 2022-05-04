@@ -46,8 +46,8 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	projects := []api.Project{
-		{Id: "P01", Admin: sdk.AccAddress("addr1"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "metadata"},
-		{Id: "P02", Admin: sdk.AccAddress("addr2"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "metadata"},
+		{Id: "C01-001", Admin: sdk.AccAddress("addr1"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "metadata"},
+		{Id: "C01-002", Admin: sdk.AccAddress("addr2"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "metadata"},
 	}
 	projectInfoJSON, err := json.Marshal(projects)
 	require.NoError(err)

@@ -44,14 +44,14 @@ func TestValidateGenesis(t *testing.T) {
 		{
 			Issuer:     sdk.AccAddress("addr2"),
 			ProjectKey: 1,
-			Denom:      "BIO01-00000000-00000000-001",
+			Denom:      "BIO01-001-00000000-00000000-001",
 			StartDate:  &timestamppb.Timestamp{Seconds: 100},
 			EndDate:    &timestamppb.Timestamp{Seconds: 101},
 		},
 		{
 			Issuer:     sdk.AccAddress("addr3"),
 			ProjectKey: 1,
-			Denom:      "BIO02-00000000-00000000-001",
+			Denom:      "BIO02-001-00000000-00000000-001",
 			StartDate:  &timestamppb.Timestamp{Seconds: 100},
 			EndDate:    &timestamppb.Timestamp{Seconds: 101},
 		},
@@ -85,14 +85,14 @@ func TestValidateGenesis(t *testing.T) {
 
 	projects := []*api.Project{
 		{
-			Id:           "P01",
+			Id:           "P01-001",
 			Admin:        sdk.AccAddress("addr6"),
 			ClassKey:     1,
 			Jurisdiction: "AQ",
 			Metadata:     "meta",
 		},
 		{
-			Id:           "P02",
+			Id:           "P02-001",
 			Admin:        sdk.AccAddress("addr7"),
 			ClassKey:     2,
 			Jurisdiction: "AQ",
@@ -218,7 +218,7 @@ func TestGenesisValidate(t *testing.T) {
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				denom := "C01-00000000-00000000-001"
+				denom := "C01-001-00000000-00000000-001"
 				key, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            addr1,
@@ -227,7 +227,7 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:           "P01",
+					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     key,
 					Jurisdiction: "AQ",
@@ -260,7 +260,7 @@ func TestGenesisValidate(t *testing.T) {
 					Unit:         "metric ton C02 equivalent",
 					Precision:    6,
 				}))
-				denom := "C01-00000000-00000000-001"
+				denom := "C01-001-00000000-00000000-001"
 				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 					Id:               "C01",
 					Admin:            addr1,
@@ -269,7 +269,7 @@ func TestGenesisValidate(t *testing.T) {
 				require.NoError(t, err)
 
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:           "P01",
+					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
 					Jurisdiction: "AQ",
@@ -318,7 +318,7 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:           "P01",
+					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
 					Jurisdiction: "AQ",
@@ -327,7 +327,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
-					Denom:        "C01-00000000-00000000-001",
+					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -385,14 +385,14 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:           "P01",
+					Id:           "P01-001",
 					Admin:        addr1,
 					ClassKey:     cKey,
 					Jurisdiction: "AQ",
 				})
 				require.NoError(t, err)
 				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-					Id:           "P02",
+					Id:           "P02-001",
 					Admin:        addr1,
 					ClassKey:     cKeyBIO,
 					Jurisdiction: "AQ",
@@ -401,7 +401,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
-					Denom:        "C01-00000000-00000000-001",
+					Denom:        "C01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -410,7 +410,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKeyBIO,
-					Denom:        "BIO01-00000000-00000000-001",
+					Denom:        "BIO01-001-00000000-00000000-001",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
@@ -419,7 +419,7 @@ func TestGenesisValidate(t *testing.T) {
 				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
 					Issuer:       addr1,
 					ProjectKey:   pKey,
-					Denom:        "C01-00000000-00000000-002",
+					Denom:        "C01-001-00000000-00000000-002",
 					StartDate:    &timestamppb.Timestamp{Seconds: 100},
 					EndDate:      &timestamppb.Timestamp{Seconds: 101},
 					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
