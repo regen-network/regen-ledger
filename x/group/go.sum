@@ -856,6 +856,8 @@ github.com/regen-network/gocuke v0.6.2 h1:pHviZ0kKAq2U2hN2q3smKNxct6hS0mGByFMHGn
 github.com/regen-network/gocuke v0.6.2/go.mod h1:zYaqIHZobHyd0xOrHGPQjbhGJsuZ1oElx150u2o1xuk=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
+github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=
+github.com/regen-network/regen-ledger/orm v1.0.0-beta1/go.mod h1:iWlJmID0OfhKaIOoSsr35+gevY7h9OgpfemKNlLu7YU=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
