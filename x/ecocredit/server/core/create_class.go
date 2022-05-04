@@ -24,11 +24,11 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 	if err := k.assertCanCreateClass(sdkCtx, adminAddress); err != nil {
 		return nil, err
 	}
 
+	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
 	var fee sdk.Coins
 	k.paramsKeeper.Get(sdkCtx, core.KeyCreditClassFee, &fee)
 

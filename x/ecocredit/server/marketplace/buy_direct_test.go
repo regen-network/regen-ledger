@@ -12,9 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestBuyDirect_ValidTradable(t *testing.T) {
@@ -40,8 +38,6 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
 	// sell order ask price: 10, buy order of 3 credits -> 10 * 3 = 30
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{userCoinBalance}).Return(nil).Times(1)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
-
 	purchaseAmt := math.NewDecFromInt64(3)
 	order := &marketplace.MsgBuyDirect_Order{
 		SellOrderId:       sellOrderId,
@@ -63,7 +59,6 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -102,7 +97,6 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -144,7 +138,6 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	userBalance := sdk.NewInt64Coin(validAskDenom, 150)
 
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -215,7 +208,6 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 50)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),

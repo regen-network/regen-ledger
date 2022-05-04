@@ -23,21 +23,21 @@ func ExpectParamGet(obj interface{}, paramKeeper *mocks.MockParamKeeper, key []b
 		s := obj.(*[]string)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]string) {
 			*param = *s
-		}).AnyTimes()
+		}).Times(times)
 	case *sdk.Coins:
 		coins := obj.(*sdk.Coins)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *sdk.Coins) {
 			*param = *coins
-		}).AnyTimes()
+		}).Times(times)
 	case *bool:
 		b := obj.(*bool)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *bool) {
 			*param = *b
-		}).AnyTimes()
+		}).Times(times)
 	case *[]*core.AskDenom:
 		askDenoms := obj.(*[]*core.AskDenom)
 		paramKeeper.EXPECT().Get(gmAny, key, gmAny).Do(func(_, _ interface{}, param *[]*core.AskDenom) {
 			*param = *askDenoms
-		}).AnyTimes()
+		}).Times(times)
 	}
 }
