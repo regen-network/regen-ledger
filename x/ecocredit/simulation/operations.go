@@ -3,13 +3,11 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -28,39 +26,45 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreateClass         = "op_weight_msg_create_class"
-	OpWeightMsgCreateBatch         = "op_weight_msg_create_batch"
-	OpWeightMsgSend                = "op_weight_msg_send"
-	OpWeightMsgRetire              = "op_weight_msg_retire"
-	OpWeightMsgCancel              = "op_weight_msg_cancel"
-	OpWeightMsgUpdateClassAdmin    = "op_weight_msg_update_class_admin"
-	OpWeightMsgUpdateClassMetadata = "op_weight_msg_update_class_metadata"
-	OpWeightMsgUpdateClassIssuers  = "op_weight_msg_update_class_issuers"
-	OpWeightMsgCreateProject       = "op_weight_msg_create_project"
+	OpWeightMsgCreateClass           = "op_weight_msg_create_class"
+	OpWeightMsgCreateBatch           = "op_weight_msg_create_batch"
+	OpWeightMsgSend                  = "op_weight_msg_send"
+	OpWeightMsgRetire                = "op_weight_msg_retire"
+	OpWeightMsgCancel                = "op_weight_msg_cancel"
+	OpWeightMsgUpdateClassAdmin      = "op_weight_msg_update_class_admin"
+	OpWeightMsgUpdateClassMetadata   = "op_weight_msg_update_class_metadata"
+	OpWeightMsgUpdateClassIssuers    = "op_weight_msg_update_class_issuers"
+	OpWeightMsgCreateProject         = "op_weight_msg_create_project"
+	OpWeightMsgUpdateProjectAdmin    = "op_weight_msg_update_project_admin"
+	OpWeightMsgUpdateProjectMetadata = "op_weight_msg_update_project_metadata"
 )
 
 // ecocredit operations weights
 const (
-	WeightCreateClass   = 10
-	WeightCreateProject = 20
-	WeightCreateBatch   = 50
-	WeightSend          = 100
-	WeightRetire        = 80
-	WeightCancel        = 30
-	WeightUpdateClass   = 30
+	WeightCreateClass           = 10
+	WeightCreateProject         = 20
+	WeightCreateBatch           = 50
+	WeightSend                  = 100
+	WeightRetire                = 80
+	WeightCancel                = 30
+	WeightUpdateClass           = 30
+	WeightUpdateProjectAdmin    = 30
+	WeightUpdateProjectMetadata = 30
 )
 
 // ecocredit message types
 var (
-	TypeMsgCreateClass         = sdk.MsgTypeURL(&core.MsgCreateClass{})
-	TypeMsgCreateProject       = sdk.MsgTypeURL(&core.MsgCreateProject{})
-	TypeMsgCreateBatch         = sdk.MsgTypeURL(&core.MsgCreateBatch{})
-	TypeMsgSend                = sdk.MsgTypeURL(&core.MsgSend{})
-	TypeMsgRetire              = sdk.MsgTypeURL(&core.MsgRetire{})
-	TypeMsgCancel              = sdk.MsgTypeURL(&core.MsgCancel{})
-	TypeMsgUpdateClassAdmin    = sdk.MsgTypeURL(&core.MsgUpdateClassAdmin{})
-	TypeMsgUpdateClassIssuers  = sdk.MsgTypeURL(&core.MsgUpdateClassIssuers{})
-	TypeMsgUpdateClassMetadata = sdk.MsgTypeURL(&core.MsgUpdateClassMetadata{})
+	TypeMsgCreateClass           = sdk.MsgTypeURL(&core.MsgCreateClass{})
+	TypeMsgCreateProject         = sdk.MsgTypeURL(&core.MsgCreateProject{})
+	TypeMsgCreateBatch           = sdk.MsgTypeURL(&core.MsgCreateBatch{})
+	TypeMsgSend                  = sdk.MsgTypeURL(&core.MsgSend{})
+	TypeMsgRetire                = sdk.MsgTypeURL(&core.MsgRetire{})
+	TypeMsgCancel                = sdk.MsgTypeURL(&core.MsgCancel{})
+	TypeMsgUpdateClassAdmin      = sdk.MsgTypeURL(&core.MsgUpdateClassAdmin{})
+	TypeMsgUpdateClassIssuers    = sdk.MsgTypeURL(&core.MsgUpdateClassIssuers{})
+	TypeMsgUpdateClassMetadata   = sdk.MsgTypeURL(&core.MsgUpdateClassMetadata{})
+	TypeMsgUpdateProjectMetadata = sdk.MsgTypeURL(&core.MsgUpdateProjectMetadata{})
+	TypeMsgUpdateProjectAdmin    = sdk.MsgTypeURL(&core.MsgUpdateProjectAdmin{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -71,20 +75,28 @@ func WeightedOperations(
 	mktQryClient marketplace.QueryClient) simulation.WeightedOperations {
 
 	var (
-		weightMsgCreateClass         int
-		weightMsgCreateBatch         int
-		weightMsgSend                int
-		weightMsgRetire              int
-		weightMsgCancel              int
-		weightMsgUpdateClassAdmin    int
-		weightMsgUpdateClassIssuers  int
-		weightMsgUpdateClassMetadata int
-		weightMsgCreateProject       int
+		weightMsgCreateClass           int
+		weightMsgCreateBatch           int
+		weightMsgSend                  int
+		weightMsgRetire                int
+		weightMsgCancel                int
+		weightMsgUpdateClassAdmin      int
+		weightMsgUpdateClassIssuers    int
+		weightMsgUpdateClassMetadata   int
+		weightMsgCreateProject         int
+		weightMsgUpdateProjectMetadata int
+		weightMsgUpdateProjectAdmin    int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateClass = WeightCreateClass
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateProject = WeightCreateProject
 		},
 	)
 
@@ -130,9 +142,15 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectAdmin, &weightMsgUpdateProjectAdmin, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateProject = WeightCreateProject
+			weightMsgUpdateProjectAdmin = WeightUpdateProjectAdmin
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateProjectMetadata = WeightUpdateProjectMetadata
 		},
 	)
 
@@ -140,6 +158,10 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
 			SimulateMsgCreateClass(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgCreateProject,
+			SimulateMsgCreateProject(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateBatch,
@@ -170,8 +192,12 @@ func WeightedOperations(
 			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgCreateProject,
-			SimulateMsgCreateProject(ak, bk, qryClient),
+			weightMsgUpdateClassAdmin,
+			SimulateMsgUpdateProjectAdmin(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateProjectMetadata,
+			SimulateMsgUpdateProjectMetadata(ak, bk, qryClient),
 		),
 	}
 
@@ -180,6 +206,108 @@ func WeightedOperations(
 
 	ops = append(ops, basketOps...)
 	return append(ops, marketplaceOps...)
+}
+
+// SimulateMsgUpdateProjectMetadata generates a MsgUpdateProjectMetadata with random values.
+func SimulateMsgUpdateProjectMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient core.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateProjectMetadata)
+		if err != nil {
+			return op, nil, err
+		}
+
+		ctx := regentypes.Context{Context: sdkCtx}
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectMetadata, class.Id)
+		if project == nil {
+			return op, nil, err
+		}
+
+		admin, err := sdk.AccAddressFromBech32(project.Admin)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateProjectMetadata, err.Error()), nil, err
+		}
+
+		msg := &core.MsgUpdateProjectMetadata{
+			Admin:       admin.String(),
+			ProjectId:   project.Id,
+			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, core.MaxMetadataLength)),
+		}
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, admin.String(), TypeMsgUpdateProjectMetadata)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
+	}
+}
+
+// SimulateMsgUpdateProjectAdmin generates a MsgUpdateProjectAdmin with random values.
+func SimulateMsgUpdateProjectAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient core.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		class, op, err := utils.GetRandomClass(sdkCtx, r, qryClient, TypeMsgUpdateProjectAdmin)
+		if err != nil {
+			return op, nil, err
+		}
+
+		ctx := regentypes.Context{Context: sdkCtx}
+		project, op, err := getRandomProjectFromClass(ctx, r, qryClient, TypeMsgUpdateProjectAdmin, class.Id)
+		if project == nil {
+			return op, nil, err
+		}
+
+		newAdmin, _ := simtypes.RandomAcc(r, accs)
+		if project.Admin == newAdmin.Address.String() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateProjectAdmin, "old and new admin are same"), nil, nil
+		}
+
+		msg := &core.MsgUpdateProjectAdmin{
+			Admin:     project.Admin,
+			NewAdmin:  newAdmin.Address.String(),
+			ProjectId: project.Id,
+		}
+
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, project.Admin, TypeMsgUpdateProjectAdmin)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
+	}
 }
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
@@ -265,7 +393,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			ClassId:      class.Id,
 			Metadata:     simtypes.RandStringOfLength(r, 100),
 			Jurisdiction: "AB-CDE FG1 345",
-			ProjectId:    genProjectID(r),
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -284,14 +411,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 
 		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-}
-
-func genProjectID(r *rand.Rand) string {
-	if r.Int63n(101) <= 50 {
-		simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 16))
-	}
-
-	return ""
 }
 
 // SimulateMsgCreateBatch generates a MsgCreateBatch with random values.
@@ -342,40 +461,23 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Metadata:  simtypes.RandStringOfLength(r, 10),
 		}
 
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "fee error"), nil, err
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      issuer,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
 		}
 
-		account := ak.GetAccount(sdkCtx, issuer.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			2000000,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			issuer.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "unable to generate mock tx"), nil, err
-		}
-
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
-			// TODO: remove this check once batch denom creation is fixed #1032
-			if strings.Contains(err.Error(), "unique key violation") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "batch denom already exists"), nil, nil
-			}
-
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
-		}
-
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-
 }
 
 // SimulateMsgSend generates a MsgSend with random values.

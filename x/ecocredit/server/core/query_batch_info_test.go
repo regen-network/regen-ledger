@@ -20,7 +20,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 
 	// insert project
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: "P01",
+		Id: "C01-001",
 	})
 	assert.NilError(t, err)
 
@@ -39,7 +39,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	batch := &api.Batch{
 		Issuer:       issuer,
 		ProjectKey:   pKey,
-		Denom:        "C01-20200101-20220101-001",
+		Denom:        "C01-001-20200101-20220101-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
@@ -49,10 +49,10 @@ func TestQuery_BatchInfo(t *testing.T) {
 	// insert batch
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
 
-	// query batch by "C01-20200101-20220101-001" batch denom
+	// query batch by "C01-001-20200101-20220101-001" batch denom
 	res, err := s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batch.Denom})
 	assert.NilError(t, err)
-	assert.Equal(t, "P01", res.Batch.ProjectId)
+	assert.Equal(t, "C01-001", res.Batch.ProjectId)
 	assert.Equal(t, batch.Denom, res.Batch.Denom)
 	assert.Equal(t, batch.Metadata, res.Batch.Metadata)
 	assert.Equal(t, issuer.String(), res.Batch.Issuer)
@@ -61,6 +61,6 @@ func TestQuery_BatchInfo(t *testing.T) {
 	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(batch.IssuanceDate), res.Batch.IssuanceDate)
 
 	// query batch by unknown batch denom
-	_, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: "A00-00000000-00000000-000"})
+	_, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: "A00-000-00000000-00000000-000"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }

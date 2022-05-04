@@ -31,7 +31,7 @@ func (m *MsgMintBatchCredits) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrap(err, "malformed issuer address")
 	}
-	if err := ValidateDenom(m.BatchDenom); err != nil {
+	if err := ValidateBatchDenom(m.BatchDenom); err != nil {
 		return err
 	}
 	if len(m.Note) > 512 {

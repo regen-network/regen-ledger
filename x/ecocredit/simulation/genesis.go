@@ -348,7 +348,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	// create few projects
 	pKey1, err := createProject(ctx, ss, &api.Project{
 		ClassKey:     cKey1,
-		Id:           "P01",
+		Id:           "C01-001",
 		Admin:        accs[0].Address,
 		Jurisdiction: "AQ",
 		Metadata:     metadata,
@@ -359,7 +359,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	pKey2, err := createProject(ctx, ss, &api.Project{
 		ClassKey:     cKey2,
-		Id:           "P02",
+		Id:           "C01-002",
 		Admin:        accs[1].Address,
 		Jurisdiction: "AQ",
 		Metadata:     metadata,
@@ -375,7 +375,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	if err != nil {
 		return err
 	}
-	denom, err := core.FormatDenom("C01", batchSeq, &startDate, &endDate)
+	denom, err := core.FormatBatchDenom("C01-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
@@ -399,7 +399,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 	if err != nil {
 		return err
 	}
-	denom, err = core.FormatDenom("C02", batchSeq, &startDate, &endDate)
+	denom, err = core.FormatBatchDenom("C02-001", batchSeq, &startDate, &endDate)
 	if err != nil {
 		return err
 	}
