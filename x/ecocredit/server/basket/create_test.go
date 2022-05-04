@@ -82,7 +82,7 @@ func TestDuplicateDenom(t *testing.T) {
 		Name:             "foo",
 		Fee:              sdk.Coins{fee},
 	}
-	denom, _, err := baskettypes.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
+	denom, _, err := basket.BasketDenom(mc.Name, mc.CreditTypeAbbrev, mc.Exponent)
 	assert.NilError(t, err)
 	assert.NilError(t, s.stateStore.BasketTable().Insert(s.ctx,
 		&api.Basket{BasketDenom: denom},
