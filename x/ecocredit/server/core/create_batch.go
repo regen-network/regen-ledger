@@ -92,7 +92,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:      recipient.String(),
+				Owner:        recipient.String(),
 				BatchDenom:   batchDenom,
 				Amount:       retired.String(),
 				Jurisdiction: issuance.RetirementJurisdiction,
@@ -109,7 +109,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			return nil, err
 		}
 
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+			Sender:         ecocredit.ModuleName,
 			Recipient:      recipient.String(),
 			BatchDenom:     batchDenom,
 			RetiredAmount:  retired.String(),

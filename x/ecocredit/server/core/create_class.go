@@ -97,7 +97,6 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 
 	err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateClass{
 		ClassId: classID,
-		Admin:   req.Admin,
 	})
 	if err != nil {
 		return nil, err

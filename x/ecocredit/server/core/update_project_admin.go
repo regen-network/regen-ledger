@@ -35,8 +35,6 @@ func (k Keeper) UpdateProjectAdmin(ctx context.Context, req *core.MsgUpdateProje
 
 	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventProjectAdminUpdated{
 		ProjectId: project.Id,
-		OldAdmin:  req.Admin,
-		NewAdmin:  req.NewAdmin,
 	}); err != nil {
 		return nil, err
 	}

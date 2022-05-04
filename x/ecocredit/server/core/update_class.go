@@ -40,9 +40,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassAdminUpdated{
-		ClassId:  req.ClassId,
-		OldAdmin: reqAddr.String(),
-		NewAdmin: newAdmin.String(),
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}
@@ -101,9 +99,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassIssuersUpdated{
-		ClassId:        req.ClassId,
-		AddedIssuers:   req.AddIssuers,
-		RemovedIssuers: req.RemoveIssuers,
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}
@@ -129,16 +125,13 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 
-	oldMetadata := classInfo.Metadata
 	classInfo.Metadata = req.Metadata
 	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassMetadataUpdated{
-		ClassId:     req.ClassId,
-		OldMetadata: oldMetadata,
-		NewMetadata: req.Metadata,
+		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
 	}

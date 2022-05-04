@@ -79,7 +79,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				return nil, err
 			}
 			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:      iss.Recipient,
+				Owner:        iss.Recipient,
 				BatchDenom:   req.BatchDenom,
 				Amount:       iss.RetiredAmount,
 				Jurisdiction: iss.RetirementJurisdiction,
@@ -98,7 +98,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			if err != nil {
 				return nil, err
 			}
-			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 				Sender:         req.Issuer,
 				Recipient:      iss.Recipient,
 				BatchDenom:     req.BatchDenom,
@@ -118,7 +118,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		}
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMintBatchCredits{
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
 		BatchDenom: batch.Denom,
 		OriginTx:   req.OriginTx,
 	}); err != nil {
