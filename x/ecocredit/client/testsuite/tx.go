@@ -19,12 +19,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	cli2 "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -167,37 +171,6 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
-func (s *IntegrationTestSuite) TestTxProposal() {
-	val0 := s.network.Validators[0]
-	clientCtx := val0.ClientCtx
-	cmd := proposalclient.TxCreditTypeProposalCmd()
-	proposal := core.CreditTypeProposal{
-		Title:       "tree type",
-		Description: "a credit type for trees",
-		CreditType: &core.CreditType{
-			Abbreviation: "T",
-			Name:         "tree",
-			Unit:         "tree",
-			Precision:    6,
-		},
-	}
-	bz, err := clientCtx.Codec.MarshalJSON(&proposal)
-	s.Require().NoError(err)
-	proposalFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
-	args := []string{proposalFile}
-	args = append(args, s.commonTxFlags()...)
-	args = append(args, makeFlagFrom(val0.Address.String()))
-	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
-	s.Require().NoError(err)
-	fmt.Println(out.String())
-
-	cmd = cli2.GetCmdQueryProposals()
-	out, err = cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-	s.Require().NoError(err)
-	fmt.Println(out.String())
-}
-
-/*
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -1317,7 +1290,45 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		})
 	}
 }
-*/
+
+func (s *IntegrationTestSuite) TestTxProposal() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+	cmd := proposalclient.TxCreditTypeProposalCmd()
+	proposal := core.CreditTypeProposal{
+		Title:       "tree type",
+		Description: "a credit type for trees",
+		CreditType: &core.CreditType{
+			Abbreviation: "T",
+			Name:         "tree",
+			Unit:         "tree",
+			Precision:    6,
+		},
+	}
+	bz, err := clientCtx.Codec.MarshalJSON(&proposal)
+	s.Require().NoError(err)
+	proposalFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	args := []string{proposalFile, makeFlagFrom(val0.Address.String())}
+	args = append(args, s.commonTxFlags()...)
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+
+	cmd = cli2.GetCmdQueryProposals()
+	out, err = cli.ExecTestCLICmd(clientCtx, cmd, []string{flagOutputJSON})
+	s.Require().NoError(err)
+
+	var res govtypes.QueryProposalsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().Len(res.Proposals, 1)
+
+	var content govtypes.Content
+	s.Require().NoError(clientCtx.Codec.UnpackAny(res.Proposals[0].Content, &content))
+
+	gotProposal, ok := content.(*core.CreditTypeProposal)
+	s.Require().True(ok)
+	s.Require().Equal(proposal, *gotProposal)
+}
+
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
 	args := makeCreateClassArgs(msg.Issuers, msg.CreditTypeAbbrev, msg.Metadata, msg.Fee.String(), append(s.commonTxFlags(), makeFlagFrom(msg.Admin))...)
 	cmd := coreclient.TxCreateClassCmd()

@@ -1,6 +1,5 @@
 package testsuite
 
-/*
 import (
 	"fmt"
 
@@ -469,4 +468,3 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 		})
 	}
 }
-*/

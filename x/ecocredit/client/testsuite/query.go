@@ -1,11 +1,11 @@
 package testsuite
 
-/*
 import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -864,4 +864,3 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		})
 	}
 }
-*/
