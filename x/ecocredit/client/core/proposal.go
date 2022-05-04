@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/spf13/cobra"
@@ -82,5 +83,6 @@ The credit type abbreviation MUST be unique, else the proposal will fail upon ex
 		},
 	}
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }

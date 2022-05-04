@@ -18,19 +18,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	cli2 "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
+	proposalclient "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
@@ -168,6 +167,37 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
+func (s *IntegrationTestSuite) TestTxProposal() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+	cmd := proposalclient.TxCreditTypeProposalCmd()
+	proposal := core.CreditTypeProposal{
+		Title:       "tree type",
+		Description: "a credit type for trees",
+		CreditType: &core.CreditType{
+			Abbreviation: "T",
+			Name:         "tree",
+			Unit:         "tree",
+			Precision:    6,
+		},
+	}
+	bz, err := clientCtx.Codec.MarshalJSON(&proposal)
+	s.Require().NoError(err)
+	proposalFile := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+	args := []string{proposalFile}
+	args = append(args, s.commonTxFlags()...)
+	args = append(args, makeFlagFrom(val0.Address.String()))
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	fmt.Println(out.String())
+
+	cmd = cli2.GetCmdQueryProposals()
+	out, err = cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	s.Require().NoError(err)
+	fmt.Println(out.String())
+}
+
+/*
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -1287,7 +1317,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		})
 	}
 }
-
+*/
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
 	args := makeCreateClassArgs(msg.Issuers, msg.CreditTypeAbbrev, msg.Metadata, msg.Fee.String(), append(s.commonTxFlags(), makeFlagFrom(msg.Admin))...)
 	cmd := coreclient.TxCreateClassCmd()
