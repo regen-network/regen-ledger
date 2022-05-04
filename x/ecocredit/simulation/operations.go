@@ -43,13 +43,15 @@ const (
 
 // ecocredit operations weights
 const (
-	WeightCreateClass   = 10
-	WeightCreateProject = 20
-	WeightCreateBatch   = 50
-	WeightSend          = 100
-	WeightRetire        = 80
-	WeightCancel        = 30
-	WeightUpdateClass   = 30
+	WeightCreateClass           = 10
+	WeightCreateProject         = 20
+	WeightCreateBatch           = 50
+	WeightSend                  = 100
+	WeightRetire                = 80
+	WeightCancel                = 30
+	WeightUpdateClass           = 30
+	WeightUpdateProjectAdmin    = 30
+	WeightUpdateProjectMetadata = 30
 )
 
 // ecocredit message types
@@ -144,13 +146,13 @@ func WeightedOperations(
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectAdmin, &weightMsgUpdateProjectAdmin, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateProjectAdmin = WeightUpdateClass
+			weightMsgUpdateProjectAdmin = WeightUpdateProjectAdmin
 		},
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectMetadata, &weightMsgUpdateProjectMetadata, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateProjectMetadata = WeightUpdateClass
+			weightMsgUpdateProjectMetadata = WeightUpdateProjectMetadata
 		},
 	)
 
