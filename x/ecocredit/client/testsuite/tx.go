@@ -1123,7 +1123,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-	askCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
+	allowedCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "3020-04-15")
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)

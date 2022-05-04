@@ -19,6 +19,6 @@ message AllowedDenomProposal {
   string description = 2;
 
   // allowed_denom contains coin denom information that will be added to the
-  // allowed ask denoms list for use in the marketplace.
+  // list of allowed denoms for use in the marketplace.
   AllowedDenom allowed_denom = 3;
 }

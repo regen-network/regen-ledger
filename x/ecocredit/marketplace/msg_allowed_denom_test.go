@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestAskDenom_Validate(t *testing.T) {
+func TestAllowedDenom_Validate(t *testing.T) {
 	type fields struct {
 		Denom        string
 		DisplayDenom string
