@@ -57,6 +57,15 @@ func TestAllowedDenom_Validate(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "invalid exponent",
+			fields: fields{
+				Denom:        "uregen",
+				DisplayDenom: "regen",
+				Exponent:     20,
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
