@@ -28,7 +28,7 @@ func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Admin:       addr,
 				NewMetadata: "new meta data",
-				ProjectId:   "PRO1",
+				ProjectId:   "C01-001",
 			},
 		},
 		{
@@ -51,7 +51,7 @@ func TestMsgUpdateProjectMetadata_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Admin:       addr,
 				NewMetadata: "new metadata",
-				ProjectId:   "P!R.O-J3C&T",
+				ProjectId:   "001",
 			},
 			errMsg: "invalid project id",
 		},

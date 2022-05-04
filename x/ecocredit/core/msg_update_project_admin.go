@@ -22,7 +22,7 @@ func (m MsgUpdateProjectAdmin) ValidateBasic() error {
 	if addr1.Equals(addr2) {
 		return sdkerrors.ErrInvalidRequest.Wrap("new_admin and admin addresses cannot be the same")
 	}
-	if err := ValidateProjectID(m.ProjectId); err != nil {
+	if err := ValidateProjectId(m.ProjectId); err != nil {
 		return err
 	}
 	return nil

@@ -28,7 +28,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
+	if err := ValidateClassId(m.ClassId); err != nil {
 		return err
 	}
 
@@ -38,12 +38,6 @@ func (m *MsgCreateProject) ValidateBasic() error {
 
 	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return err
-	}
-
-	if m.ProjectId != "" {
-		if err := ValidateProjectID(m.ProjectId); err != nil {
-			return err
-		}
 	}
 
 	return nil
