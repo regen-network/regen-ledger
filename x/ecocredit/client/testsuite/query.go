@@ -481,7 +481,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 
 				var res marketplace.QuerySellOrderResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().True(sdk.AccAddress(res.SellOrder.Seller).Equals(val.Address))
+				s.Require().Equal(res.SellOrder.Seller, val.Address.String())
 				s.Require().Equal(res.SellOrder.Quantity, "10")
 			}
 		})
