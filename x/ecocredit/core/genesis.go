@@ -257,26 +257,27 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		if _, ok := batchIdToPrecision[balance.BatchKey]; !ok {
+		precision, ok := batchIdToPrecision[balance.BatchKey]
+		if !ok {
 			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchKey)
 		}
 
 		if balance.Tradable != "" {
-			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, batchIdToPrecision[balance.BatchKey])
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, precision)
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Retired != "" {
-			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, precision)
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Escrowed != "" {
-			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Escrowed, precision)
 			if err != nil {
 				return err
 			}
@@ -307,6 +308,12 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 }
 
 func validateSupply(batchIdToSupplyCal, batchIdToSupply map[uint64]math.Dec) error {
+	if len(batchIdToSupplyCal) == 0 && len(batchIdToSupply) > 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch supply was given but no balances were found")
+	}
+	if len(batchIdToSupply) == 0 && len(batchIdToSupplyCal) > 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch balances were given but no supplies were found")
+	}
 	for denom, cs := range batchIdToSupplyCal {
 		if s, ok := batchIdToSupply[denom]; ok {
 			if s.Cmp(cs) != math.EqualTo {

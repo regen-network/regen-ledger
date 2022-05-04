@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"time"
 
-	gogoproto "github.com/gogo/protobuf/proto"
-	"github.com/stretchr/testify/suite"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/proto"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -29,51 +29,71 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	paramsJSON, err := s.fixture.Codec().MarshalJSON(&defaultParams)
 	require.NoError(err)
 
-	classIssuersJSON := `[
-	{"class_key":"1","issuer":"1ygCfmJaPVMIvVEcpx6r+2gpurM="},
-	{"class_key":"1","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
-	{"class_key":"2","issuer":"KoXfzfqe+V/9x7C4XjnqDFB2Tl4="},
-	{"class_key":"2","issuer":"lEjmu9Vooa24qp9vCMIlXGrMZoU="}
-	]`
+	classIssuers := []api.ClassIssuer{
+		{ClassKey: 1, Issuer: sdk.AccAddress("addr1")},
+		{ClassKey: 1, Issuer: sdk.AccAddress("addr2")},
+		{ClassKey: 2, Issuer: sdk.AccAddress("addr2")},
+		{ClassKey: 2, Issuer: sdk.AccAddress("addr3")},
+	}
+	classIssuersJSON, err := json.Marshal(classIssuers)
+	require.NoError(err)
 
-	classInfoJSON := `[
-		{"id":"BIO001","admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=","metadata":"credit class metadata","credit_type_abbrev":"BIO"},
-		{"id":"BIO02","admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=","metadata":"credit class metadata","credit_type_abbrev":"BIO"}	
-	]`
+	classes := []api.Class{
+		{Id: "BIO001", Admin: sdk.AccAddress("addr1"), Metadata: "metadata", CreditTypeAbbrev: "BIO"},
+		{Id: "BIO002", Admin: sdk.AccAddress("addr2"), Metadata: "metadata", CreditTypeAbbrev: "BIO"},
+	}
+	classInfoJSON, err := json.Marshal(classes)
+	require.NoError(err)
 
-	projectInfoJSON := `[
-		{"id":"C01-001","admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=","class_key":"1","jurisdiction":"AQ","metadata":"project metadata"},
-		{"id":"C01-002","admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=","class_key":"2","jurisdiction":"AQ","metadata":"project metadata"}	
-	]`
+	projects := []api.Project{
+		{Id: "C01-001", Admin: sdk.AccAddress("addr1"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "metadata"},
+		{Id: "C01-002", Admin: sdk.AccAddress("addr2"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "metadata"},
+	}
+	projectInfoJSON, err := json.Marshal(projects)
+	require.NoError(err)
 
-	batchInfoJSON := `[
-	{"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=","project_key":"1","denom":"BIO01-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108141Z"},
-	{"issuer":null,"project_key":"1","denom":"BIO02-00000000-00000000-001","metadata":"batch metadata","start_date":null,"end_date":null,"issuance_date":"2022-04-08T10:40:10.774108556Z"}
-	]`
+	batches := []api.Batch{
+		{Issuer: sdk.AccAddress("addr1"), ProjectKey: 1, Denom: "BIO01-00000000-00000000-001", Metadata: "metadata"},
+		{Issuer: nil, ProjectKey: 1, Denom: "BIO02-0000000-0000000-001", Metadata: "metadata"},
+	}
+	batchInfoJSON, err := json.Marshal(batches)
+	require.NoError(err)
 
-	batchBalancesJSON := `[
-	{"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=","batch_key":"1","tradable":"90.003","retired":"9.997","escrowed":""}
-	]`
+	balances := []api.BatchBalance{
+		{Address: sdk.AccAddress("addr1"), BatchKey: 1, Tradable: "90.003", Retired: "9.997", Escrowed: ""},
+	}
+	batchBalancesJSON, err := json.Marshal(balances)
+	require.NoError(err)
 
-	batchSupplyJSON := `[
-		{"batch_key":"1","tradable_amount":"90.003","retired_amount":"9.997","cancelled_amount":""}
-	]`
+	supply := []api.BatchSupply{
+		{BatchKey: 1, TradableAmount: "90.003", RetiredAmount: "9.997", CancelledAmount: ""},
+	}
+	batchSupplyJSON, err := json.Marshal(supply)
+	require.NoError(err)
 
-	classSeqJSON := `[{"credit_type_abbrev":"BIO","next_sequence":"3"}]`
-	batchSeqJSON := `[{"project_key":"1","next_sequence":"3"}]`
-	projectSeqJSON := `[{"class_key":"1","next_sequence":"3"}]`
+	classSeq := []api.ClassSequence{{CreditTypeAbbrev: "BIO", NextSequence: 3}}
+	classSeqJSON, err := json.Marshal(classSeq)
+	require.NoError(err)
+
+	batchSeq := []api.BatchSequence{{ProjectKey: 1, NextSequence: 3}}
+	batchSeqJSON, err := json.Marshal(batchSeq)
+	require.NoError(err)
+
+	projectSeq := []api.ProjectSequence{{ClassKey: 1, NextSequence: 3}}
+	projectSeqJSON, err := json.Marshal(projectSeq)
+	require.NoError(err)
 
 	wrapper := map[string]json.RawMessage{}
-	wrapper[gogoproto.MessageName(&core.Class{})] = []byte(classInfoJSON)
-	wrapper[gogoproto.MessageName(&core.ClassIssuer{})] = []byte(classIssuersJSON)
-	wrapper[gogoproto.MessageName(&core.Project{})] = []byte(projectInfoJSON)
-	wrapper[gogoproto.MessageName(&core.Batch{})] = []byte(batchInfoJSON)
-	wrapper[gogoproto.MessageName(&core.BatchBalance{})] = []byte(batchBalancesJSON)
-	wrapper[gogoproto.MessageName(&core.BatchSupply{})] = []byte(batchSupplyJSON)
-	wrapper[gogoproto.MessageName(&core.ClassSequence{})] = []byte(classSeqJSON)
-	wrapper[gogoproto.MessageName(&core.BatchSequence{})] = []byte(batchSeqJSON)
-	wrapper[gogoproto.MessageName(&core.ProjectSequence{})] = []byte(projectSeqJSON)
-	wrapper[gogoproto.MessageName(&core.Params{})] = []byte(paramsJSON)
+	wrapper[string(proto.MessageName(&api.Class{}))] = classInfoJSON
+	wrapper[string(proto.MessageName(&api.ClassIssuer{}))] = classIssuersJSON
+	wrapper[string(proto.MessageName(&api.Project{}))] = projectInfoJSON
+	wrapper[string(proto.MessageName(&api.Batch{}))] = batchInfoJSON
+	wrapper[string(proto.MessageName(&api.BatchBalance{}))] = batchBalancesJSON
+	wrapper[string(proto.MessageName(&api.BatchSupply{}))] = batchSupplyJSON
+	wrapper[string(proto.MessageName(&api.ClassSequence{}))] = classSeqJSON
+	wrapper[string(proto.MessageName(&api.BatchSequence{}))] = batchSeqJSON
+	wrapper[string(proto.MessageName(&api.ProjectSequence{}))] = projectSeqJSON
+	wrapper[string(proto.MessageName(&api.Params{}))] = paramsJSON
 
 	bz, err := json.Marshal(wrapper)
 	require.NoError(err)

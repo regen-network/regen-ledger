@@ -1,134 +1,143 @@
 package core_test
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 func TestValidateGenesis(t *testing.T) {
-	x := `{
-		"regen.ecocredit.v1.BatchBalance":[
-			{
-				"batch_key":"1",
-				"address":"gydQIvR2RUi0N1RJnmgOLVSkcd4=",
-				"tradable":"90.003",
-				"retired":"9.997"
-			}
-		],
-		"regen.ecocredit.v1.Batch":[
-			{
-				"issuer":"WCBEyNFP/N5RoS4h43AqkjC6zA8=",
-				"project_key":"1",
-				"denom":"BIO01-001-00000000-00000000-001",
-				"start_date":"2021-04-08T10:40:10.774108556Z",
-				"end_date":"2022-04-08T10:40:10.774108556Z"
-			},
-		    {
-				"issuer":"gydQIvR2RUi0N1RJnmgOLVSkcd4=",
-				"project_key":"1",
-				"denom":"BIO02-001-00000000-00000000-001",
-				"start_date":"2021-04-08T10:40:10.774108556Z",
-				"end_date":"2022-04-08T10:40:10.774108556Z"
-			}
-		],
-		"regen.ecocredit.v1.BatchSupply":[
-			{
-				"batch_key":"1",
-				"tradable_amount":"90.003",
-				"retired_amount":"9.997"
-			}
-		],
-		"regen.ecocredit.v1.Class":[
-			{
-				"id":"BIO001",
-				"admin":"4A/V6LMEL2lZv9PZnkWSIDQzZM4=",
-				"credit_type_abbrev":"BIO"
-			},
-		    {
-				"id":"BIO02",
-				"admin":"HK9YDsBMN1hU8tjfLTNy+qjbqLE=",
-				"credit_type_abbrev":"BIO"
-			}
-		],
-		"regen.ecocredit.v1.Project":[
-			{
-				"id":"C01-001",
-				"admin":"gPFuHL7Hn+uVYD6XOR00du3C/Xg=",
-				"class_key":"1",
-				"jurisdiction":"AQ"
-			},
-			{
-				"id":"C01-002",
-				"admin":"CHkV2Tv6A7RXPJYTivVklbxXWP8=",
-				"class_key":"2",
-				"jurisdiction":"AQ",
-				"metadata":"project metadata"
-			}
-		],
-		"regen.ecocredit.v1.CreditType": [
-			{
-				"name":"carbon",
-				"abbreviation": "C",
-				"unit":"metric ton C02 equivalent",
-				"precision":6
-			},
-			{
-				"name":"biodiversity",
-				"abbreviation": "BIO",
-				"unit":"acres",
-				"precision":6
-			}
-		]
-	}`
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := api.NewStateStore(modDB)
 
-	params := core.Params{
-		AllowlistEnabled: true,
+	require.NoError(t, ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
+		Abbreviation: "BIO",
+		Name:         "biodiversity",
+		Unit:         "acres",
+		Precision:    6,
+	}))
+
+	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
+		&api.BatchBalance{
+			BatchKey: 1,
+			Address:  sdk.AccAddress("addr1"),
+			Tradable: "90.003",
+			Retired:  "9.997",
+		}))
+
+	batches := []*api.Batch{
+		{
+			Issuer:     sdk.AccAddress("addr2"),
+			ProjectKey: 1,
+			Denom:      "BIO01-001-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
+		{
+			Issuer:     sdk.AccAddress("addr3"),
+			ProjectKey: 1,
+			Denom:      "BIO02-001-00000000-00000000-001",
+			StartDate:  &timestamppb.Timestamp{Seconds: 100},
+			EndDate:    &timestamppb.Timestamp{Seconds: 101},
+		},
 	}
-	err := core.ValidateGenesis(json.RawMessage(x), params)
+	for _, b := range batches {
+		require.NoError(t, ss.BatchTable().Insert(ormCtx, b))
+	}
+
+	require.NoError(t, ss.BatchSupplyTable().Insert(ormCtx,
+		&api.BatchSupply{
+			BatchKey:       1,
+			TradableAmount: "90.003",
+			RetiredAmount:  "9.997",
+		}))
+
+	classes := []*api.Class{
+		{
+			Id:               "BIO001",
+			Admin:            sdk.AccAddress("addr4"),
+			CreditTypeAbbrev: "BIO",
+		},
+		{
+			Id:               "BIO002",
+			Admin:            sdk.AccAddress("addr5"),
+			CreditTypeAbbrev: "BIO",
+		},
+	}
+	for _, c := range classes {
+		require.NoError(t, ss.ClassTable().Insert(ormCtx, c))
+	}
+
+	projects := []*api.Project{
+		{
+			Id:           "P01-001",
+			Admin:        sdk.AccAddress("addr6"),
+			ClassKey:     1,
+			Jurisdiction: "AQ",
+			Metadata:     "meta",
+		},
+		{
+			Id:           "P02-001",
+			Admin:        sdk.AccAddress("addr7"),
+			ClassKey:     2,
+			Jurisdiction: "AQ",
+			Metadata:     "meta",
+		},
+	}
+	for _, p := range projects {
+		require.NoError(t, ss.ProjectTable().Insert(ormCtx, p))
+	}
+
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	genesisJson, err := target.JSON()
+	require.NoError(t, err)
+
+	params := core.Params{AllowlistEnabled: true}
+	err = core.ValidateGenesis(genesisJson, params)
 	require.NoError(t, err)
 }
 
 func TestGenesisValidate(t *testing.T) {
 	defaultParams := core.DefaultParams()
-
+	addr1 := sdk.AccAddress("foobar")
+	addr2 := sdk.AccAddress("fooBarBaz")
 	testCases := []struct {
-		id           string
-		genesisState func() json.RawMessage
-		params       core.Params
-		expectErr    bool
-		errorMsg     string
+		id         string
+		setupState func(ctx context.Context, ss api.StateStore)
+		params     core.Params
+		expectErr  bool
+		errorMsg   string
 	}{
 		{
 			"valid: no credit batches",
-			func() json.RawMessage {
-				return json.RawMessage(`
-				{
-					"regen.ecocredit.v1.Class": [
-						{
-							"id":"C01",
-							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
-							"credit_type_abbrev":"C"
-						}
-					],
-					"regen.ecocredit.v1.CreditType": [
-						{
-							"name":"carbon",
-							"abbreviation": "C",
-							"unit":"metric ton C02 equivalent",
-							"precision":6
-						},
-						{
-							"name":"biodiversity",
-							"abbreviation": "BIO",
-							"unit":"acres",
-							"precision":6
-						}
-				]}
-`)
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
+				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				}))
 			},
 			defaultParams,
 			false,
@@ -136,38 +145,47 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid credit type abbreviation",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.CreditType": [
-						{
-							"name": "carbon",
-							"abbreviation":"1234",
-							"unit":"kg",
-							"precision":"6"
-						}
-					],
-					"regen.ecocredit.v1.Class": [
-						{
-							"id":"C01",
-							"admin":"0lxfU2Ca/sqly8hyRhD8/lNBrvM=",
-							"credit_type_abbrev":"C"
-						}
-					]}`)
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "1234",
+					Name:         "carbon",
+					Unit:         "kg",
+					Precision:    6,
+				}))
+				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				}))
 			},
 			defaultParams,
 			true,
 			"credit type abbreviation must be 1-3 uppercase latin letters",
 		},
 		{
+			"invalid: credit type param",
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				}))
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "kg",
+					Precision:    7,
+				}))
+			},
+			func() core.Params {
+				return defaultParams
+			}(),
+			true,
+			"credit type precision is currently locked to 6",
+		},
+		{
 			"invalid: bad addresses in allowlist",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class": [{
-						"id":"C01",
-						"admin":"OFX2S1F4zl9HmpAILrS4O6I7zEk=",
-						"credit_type_abbrev":"C"
-					}]					
-				}`)
+			func(ctx context.Context, ss api.StateStore) {
 			},
 			func() core.Params {
 				p := core.DefaultParams()
@@ -180,128 +198,105 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"invalid: type id does not match param id",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class": [{
-						"id":"C01",
-						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
-						"credit_type_abbrev":"F"
-					}]
-				}`)
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.ClassTable().Insert(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "F",
+				}))
 			},
 			defaultParams,
 			true,
 			"credit type not exist",
 		},
 		{
-			"invalid: non-existent abbreviation",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class": [{
-						"id":"C01",
-						"admin":"gm+Xr47EcefPFePZxYYL6WaK6V8=",
-						"credit_type_abbrev":"F"
-					}]	
-				}`)
+			"expect error: balances are missing",
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
+				denom := "C01-001-00000000-00000000-001"
+				key, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				})
+				require.NoError(t, err)
+
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P01-001",
+					Admin:        addr1,
+					ClassKey:     key,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKey,
+					Denom:        denom,
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 400},
+				})
+				require.NoError(t, err)
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:       bKey,
+					TradableAmount: "400.456",
+				}))
 			},
 			defaultParams,
 			true,
-			"credit type not exist for F abbreviation: not found",
-		},
-		{
-			"expect error: supply is missing",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.Class":[{
-						"id":"C01",
-						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"credit_type_abbrev":"C"
-					}],
-					"regen.ecocredit.v1.Project":[{
-						"id":"C01-001",
-						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"class_key":"1",
-						"jurisdiction":"AQ"
-					}],
-					"regen.ecocredit.v1.Batch":[{
-						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"project_key":"1",
-						"denom":"C01-001-00000000-00000000-001",
-						"start_date":"2021-04-08T10:40:10.774108556Z",
-						"end_date":"2022-04-08T10:40:10.774108556Z"
-					}],
-					"regen.ecocredit.v1.CreditType": [
-						{
-							"name":"carbon",
-							"abbreviation": "C",
-							"unit":"metric ton C02 equivalent",
-							"precision":6
-						},
-						{
-							"name":"biodiversity",
-							"abbreviation": "BIO",
-							"unit":"acres",
-							"precision":6
-						}
-					],
-					"regen.ecocredit.v1.BatchBalance":[{
-						"batch_key":"1",
-						"address":"mAAyikSMAfVwmlW4BPV2Q6GmpHc=",
-						"tradable":"400.456"
-					}]
-				}`)
-			},
-			defaultParams,
-			true,
-			"supply is not found",
+			"no balances were found",
 		},
 		{
 			"expect error: invalid supply",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-					"regen.ecocredit.v1.CreditType": [
-						{
-							"name":"carbon",
-							"abbreviation": "C",
-							"unit":"metric ton C02 equivalent",
-							"precision":6
-						},
-						{
-							"name":"biodiversity",
-							"abbreviation": "BIO",
-							"unit":"acres",
-							"precision":6
-						}
-					],
-					"regen.ecocredit.v1.Class":[{
-						"id":"C01",
-						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"credit_type_abbrev":"C"
-					}],
-					"regen.ecocredit.v1.Project":[{
-						"id":"C01-001",
-						"admin":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"class_key":"1",
-						"jurisdiction":"AQ"
-					}],
-					"regen.ecocredit.v1.Batch":[{
-						"issuer":"PPUOsQeEHJyQV0ABQzU91iytr9s=",
-						"project_key":"1",
-						"denom":"C01-001-00000000-00000000-001",
-						"start_date":"2021-04-08T10:40:10.774108556Z",
-						"end_date":"2022-04-08T10:40:10.774108556Z"
-					}],
-					"regen.ecocredit.v1.BatchBalance":[{
-						"batch_key":"1",
-						"address":"mAAyikSMAfVwmlW4BPV2Q6GmpHc=",
-						"tradable":"100",
-						"retired":"100"
-					}],
-					"regen.ecocredit.v1.BatchSupply":[{
-						"batch_key":"1",
-						"tradable_amount":"10"
-					}]
-				}`)
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
+				denom := "C01-001-00000000-00000000-001"
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				})
+				require.NoError(t, err)
+
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P01-001",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKey,
+					Denom:        denom,
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKey,
+					Address:  addr1,
+					Tradable: "100",
+					Retired:  "100",
+				}))
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:        bKey,
+					TradableAmount:  "10",
+					RetiredAmount:   "",
+					CancelledAmount: "",
+				}))
 			},
 			defaultParams,
 			true,
@@ -309,223 +304,171 @@ func TestGenesisValidate(t *testing.T) {
 		},
 		{
 			"valid test case",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-				"regen.ecocredit.v1.CreditType": [
-					{
-						"name":"carbon",
-						"abbreviation": "C",
-						"unit":"metric ton C02 equivalent",
-						"precision":6
-					},
-					{
-						"name":"biodiversity",
-						"abbreviation": "BIO",
-						"unit":"acres",
-						"precision":6
-					}
-				],
-				"regen.ecocredit.v1.Class":[{
-					"id":"C01",
-					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"credit_type_abbrev":"C"
-				}],
-				"regen.ecocredit.v1.Project":[{
-					"id":"C01-001",
-					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"class_key":"1",
-					"jurisdiction":"AQ"
-				}],
-				"regen.ecocredit.v1.Batch":[{
-					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"project_key":"1",
-					"denom":"C01-001-00000000-00000000-001",
-					"start_date":"2021-04-08T10:40:10.774108556Z",
-					"end_date":"2022-04-08T10:40:10.774108556Z"
-				}],
-				"regen.ecocredit.v1.BatchBalance":[
-					{
-						"batch_key":"1",
-						"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"tradable":"100.123",
-						"retired":"100.123"
-					},
-					{
-						"batch_key":"1",
-						"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"tradable":"100.123",
-						"retired":"100.123"
-					}
-				],
-				"regen.ecocredit.v1.BatchSupply":[
-					{
-						"batch_key":"1",
-						"tradable_amount":"200.246",
-						"retired_amount":"200.246"
-					}
-				]
-			}`)
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				})
+				require.NoError(t, err)
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P01-001",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKey,
+					Denom:        "C01-001-00000000-00000000-001",
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKey,
+					Address:  addr1,
+					Tradable: "100.123",
+					Retired:  "100.123",
+					Escrowed: "10.000",
+				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKey,
+					Address:  addr2,
+					Tradable: "100.123",
+					Retired:  "100.123",
+				}))
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:       bKey,
+					TradableAmount: "210.246",
+					RetiredAmount:  "200.246",
+				}))
 			},
 			defaultParams,
 			false,
 			"",
 		},
 		{
-			"valid test case escrowed balance",
-			func() json.RawMessage {
-				return json.RawMessage(`{
-				"regen.ecocredit.v1.CreditType": [
-					{
-						"name":"carbon",
-						"abbreviation": "C",
-						"unit":"metric ton C02 equivalent",
-						"precision":6
-					},
-					{
-						"name":"biodiversity",
-						"abbreviation": "BIO",
-						"unit":"acres",
-						"precision":6
-					}
-				],
-				"regen.ecocredit.v1.Class":[{
-					"id":"C01",
-					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"credit_type_abbrev":"C"
-				}],
-				"regen.ecocredit.v1.Project":[{
-					"id":"C01-001",
-					"admin":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"class_key":"1",
-					"jurisdiction":"AQ"
-				}],
-				"regen.ecocredit.v1.Batch":[{
-					"issuer":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-					"project_key":"1",
-					"denom":"C01-001-00000000-00000000-001",
-					"start_date":"2021-04-08T10:40:10.774108556Z",
-					"end_date":"2022-04-08T10:40:10.774108556Z",
-					"metadata":"meta-data"
-				}],
-				"regen.ecocredit.v1.BatchBalance":[
-					{
-						"batch_key":"1",
-						"address":"Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"tradable":"100.123",
-						"retired":"100.123",
-						"escrowed":"100.123"
-					},
-					{
-						"batch_key":"1",
-						"address":"OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"tradable":"100.123",
-						"retired":"100.123"
-					}
-				],
-				"regen.ecocredit.v1.BatchSupply":[
-					{
-						"batch_key":"1",
-						"tradable_amount":"300.369",
-						"retired_amount":"200.246"
-					}
-				]
-			}`)
-			},
-			defaultParams,
-			false,
-			"",
-		},
-		{
-			"valid test case, multiple classes",
-			func() json.RawMessage {
-				return json.RawMessage(`
-				{
-					"regen.ecocredit.v1.CreditType": [
-						{
-							"name":"carbon",
-							"abbreviation": "C",
-							"unit":"metric ton C02 equivalent",
-							"precision":6
-						},
-						{
-							"name":"biodiversity",
-							"abbreviation": "BIO",
-							"unit":"acres",
-							"precision":6
-						}
-					],
-					"regen.ecocredit.v1.Class": [
-					  {
-						"id": "C01",
-						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"credit_type_abbrev": "C"
-					  },
-					  {
-						"id": "C02",
-						"admin": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"credit_type_abbrev": "C"
-					  }
-					],
-					"regen.ecocredit.v1.Project": [
-					  {
-						"id": "C01-001",
-						"admin": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"class_key": "1",
-						"jurisdiction":"AQ"
-					  },
-					  {
-						"id": "C02-001",
-						"admin": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"class_key": "2",
-						"jurisdiction":"AQ"
-					  }
-					],
-					"regen.ecocredit.v1.Batch": [
-					  {
-						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"project_key": "1",
-						"denom":"C01-001-00000000-00000000-001",
-						"start_date":"2021-04-08T10:40:10.774108556Z",
-						"end_date":"2022-04-08T10:40:10.774108556Z",
-						"metadata":"meta-data"
-					  },
-					  {
-						"issuer": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"project_key": "2",
-						"denom":"C01-002-00000000-00000000-001",
-						"start_date":"2021-04-08T10:40:10.774108556Z",
-						"end_date":"2022-04-08T10:40:10.774108556Z",
-						"metadata":"meta-data"
-					  }
-					],
-					"regen.ecocredit.v1.BatchBalance": [
-					  {
-						"batch_key": "1",
-						"address": "Ak5WDUYGfdv4gNMF500MFF86NWA=",
-						"tradable": "100.123",
-						"retired": "100.123"
-					  },
-					  {
-						"batch_key": "2",
-						"address": "OfVGZ+vChK/1gQfbXZ6rxsz3QNQ=",
-						"tradable": "100.123",
-						"retired": "100.123"
-					  }
-					],
-					"regen.ecocredit.v1.BatchSupply": [
-					  {
-						"batch_key": "1",
-						"tradable_amount": "100.123",
-						"retired_amount": "100.123"
-					  },
-					  {
-						"batch_key": "2",
-						"tradable_amount": "100.123",
-						"retired_amount": "100.123"
-					  }
-					]
-				  }
-				`)
+			"valid test case, multiple classes and credit types",
+			func(ctx context.Context, ss api.StateStore) {
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "C",
+					Name:         "carbon",
+					Unit:         "metric ton C02 equivalent",
+					Precision:    6,
+				}))
+				require.NoError(t, ss.CreditTypeTable().Insert(ctx, &api.CreditType{
+					Abbreviation: "BIO",
+					Name:         "biodiversity",
+					Unit:         "acres",
+					Precision:    6,
+				}))
+
+				cKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "C01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "C",
+				})
+				require.NoError(t, err)
+				cKeyBIO, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
+					Id:               "BIO01",
+					Admin:            addr1,
+					CreditTypeAbbrev: "BIO",
+				})
+				require.NoError(t, err)
+				pKey, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P01-001",
+					Admin:        addr1,
+					ClassKey:     cKey,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				pKeyBIO, err := ss.ProjectTable().InsertReturningID(ctx, &api.Project{
+					Id:           "P02-001",
+					Admin:        addr1,
+					ClassKey:     cKeyBIO,
+					Jurisdiction: "AQ",
+				})
+				require.NoError(t, err)
+				bKey, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKey,
+					Denom:        "C01-001-00000000-00000000-001",
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				bKeyBIO, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKeyBIO,
+					Denom:        "BIO01-001-00000000-00000000-001",
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				bKey2, err := ss.BatchTable().InsertReturningID(ctx, &api.Batch{
+					Issuer:       addr1,
+					ProjectKey:   pKey,
+					Denom:        "C01-001-00000000-00000000-002",
+					StartDate:    &timestamppb.Timestamp{Seconds: 100},
+					EndDate:      &timestamppb.Timestamp{Seconds: 101},
+					IssuanceDate: &timestamppb.Timestamp{Seconds: 102},
+				})
+				require.NoError(t, err)
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKey,
+					Address:  addr1,
+					Tradable: "100.123",
+					Retired:  "100.123",
+				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKey2,
+					Address:  addr2,
+					Tradable: "100.123",
+					Retired:  "100.123",
+				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKeyBIO,
+					Address:  addr1,
+					Tradable: "105.2",
+					Escrowed: "102.2",
+					Retired:  "207.1",
+				}))
+				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
+					BatchKey: bKeyBIO,
+					Address:  addr2,
+					Tradable: "101.1",
+					Retired:  "404.1",
+				}))
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:        bKey,
+					TradableAmount:  "100.123",
+					RetiredAmount:   "100.123",
+					CancelledAmount: "",
+				}))
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:        bKey2,
+					TradableAmount:  "100.123",
+					RetiredAmount:   "100.123",
+					CancelledAmount: "",
+				}))
+
+				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
+					BatchKey:        bKeyBIO,
+					TradableAmount:  "308.5",
+					RetiredAmount:   "611.2",
+					CancelledAmount: "",
+				}))
 			},
 			defaultParams,
 			false,
@@ -535,7 +478,8 @@ func TestGenesisValidate(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.id, func(t *testing.T) {
-			err := core.ValidateGenesis(tc.genesisState(), tc.params)
+			jsn := setupStateAndExportJSON(t, tc.setupState)
+			err := core.ValidateGenesis(jsn, tc.params)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errorMsg)
@@ -544,4 +488,19 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+// setupStateAndExportJSON sets up state as defined in the setupFunc function and then exports the ORM data as JSON.
+func setupStateAndExportJSON(t *testing.T, setupFunc func(ctx context.Context, ss api.StateStore)) json.RawMessage {
+	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
+	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
+	require.NoError(t, err)
+	ss, err := api.NewStateStore(modDB)
+	require.NoError(t, err)
+	setupFunc(ormCtx, ss)
+	target := ormjson.NewRawMessageTarget()
+	require.NoError(t, modDB.ExportJSON(ormCtx, target))
+	jsn, err := target.JSON()
+	require.NoError(t, err)
+	return jsn
 }
