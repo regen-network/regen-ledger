@@ -26,7 +26,8 @@ message EventDefineResolver {
   uint64 id = 1;
 }
 
-// EventRegisterResolver is an event emitted when data is registered to a resolver on chain.
+// EventRegisterResolver is an event emitted when data is registered to a
+// resolver on chain.
 message EventRegisterResolver {
   // id is the ID of the resolver that the data was registered to.
   uint64 id = 1;

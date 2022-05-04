@@ -5,6 +5,7 @@ import (
 
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,19 +27,9 @@ func (k Keeper) assertClassIssuer(goCtx context.Context, classID uint64, addr sd
 
 // AddAndSaveBalance adds 'amt' to the addr's tradable balance.
 func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr sdk.AccAddress, batchKey uint64, amt math.Dec) error {
-	bal, err := table.Get(ctx, addr, batchKey)
+	bal, err := utils.GetBalance(ctx, table, addr, batchKey)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			bal = &ecoApi.BatchBalance{
-				BatchKey: batchKey,
-				Address:  addr,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
+		return err
 	}
 	tradable, err := math.NewDecFromString(bal.Tradable)
 	if err != nil {
