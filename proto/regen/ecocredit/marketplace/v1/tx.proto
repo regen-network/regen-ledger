@@ -23,10 +23,6 @@ service Msg {
 
   // BuyDirect purchases credits directly from the specified sell order.
   rpc BuyDirect(MsgBuyDirect) returns (MsgBuyDirectResponse);
-
-  // AllowAskDenom is a governance operation which authorizes a new ask denom to
-  // be used in sell orders
-  rpc AllowAskDenom(MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
 }
 
 // MsgSell is the Msg/Sell request type.
@@ -158,23 +154,3 @@ message MsgBuyDirect {
 
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
 message MsgBuyDirectResponse {}
-
-// MsgAllowAskDenom is the Msg/AllowAskDenom request type.
-message MsgAllowAskDenom {
-  // root_address is the address of the governance account which can authorize
-  // ask denoms
-  string root_address = 1;
-
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-  string denom = 2;
-
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 3;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 4;
-}
-
-// MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
-message MsgAllowAskDenomResponse {}

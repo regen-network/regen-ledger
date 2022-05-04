@@ -75,7 +75,6 @@ func (a Module) Name() string {
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
-	ecocredit.RegisterTypes(registry)
 	baskettypes.RegisterTypes(registry)
 	coretypes.RegisterTypes(registry)
 	marketplacetypes.RegisterTypes(registry)
@@ -88,7 +87,6 @@ func (a *Module) RegisterServices(configurator servermodule.Configurator) {
 //nolint:errcheck
 func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ctx := context.Background()
-	ecocredit.RegisterQueryHandlerClient(ctx, mux, ecocredit.NewQueryClient(clientCtx))
 	baskettypes.RegisterQueryHandlerClient(ctx, mux, baskettypes.NewQueryClient(clientCtx))
 	marketplacetypes.RegisterQueryHandlerClient(ctx, mux, marketplacetypes.NewQueryClient(clientCtx))
 	coretypes.RegisterQueryHandlerClient(ctx, mux, coretypes.NewQueryClient(clientCtx))
@@ -168,7 +166,6 @@ func (Module) ConsensusVersion() uint64 { return 2 }
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	ecocredit.RegisterLegacyAminoCodec(cdc)
 	baskettypes.RegisterLegacyAminoCodec(cdc)
 	coretypes.RegisterLegacyAminoCodec(cdc)
 	marketplacetypes.RegisterLegacyAminoCodec(cdc)
