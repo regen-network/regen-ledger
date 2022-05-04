@@ -427,11 +427,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Issuer:       issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
-		ProjectId:    "P03",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
-	s.Require().Equal(createProjectRes.ProjectId, "P03")
+	s.Require().Equal("C02-001", createProjectRes.ProjectId)
 
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
@@ -445,7 +444,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    issuer1,
-		ProjectId: "P03",
+		ProjectId: "C02-001",
 		StartDate: &time1,
 		EndDate:   &time2,
 		Issuance: []*core.BatchIssuance{
@@ -675,28 +674,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire to an invalid region",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire to an invalid postal code",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire without a jurisdiction",
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -821,7 +820,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't send to an invalid region",
@@ -829,7 +828,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't send to an invalid postal code",
@@ -837,7 +836,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:                 "can send some",

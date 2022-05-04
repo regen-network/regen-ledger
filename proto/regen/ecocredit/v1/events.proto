@@ -24,58 +24,16 @@ message EventCreateProject {
 
   // admin is the admin of the project.
   string admin = 2;
-
-  // class_id is the unique identifier of the credit class within which the
-  // project was created.
-  string class_id = 3;
-
-  // project_jurisdiction is the jurisdiction of the project.
-  // Full documentation can be found in MsgCreateProject.project_jurisdiction.
-  string project_jurisdiction = 4;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
 
-  // class_id is the unique identifier of the credit class within which the
-  // credit batch was created.
-  string class_id = 1;
-
   // batch_denom is the unique identifier of the credit batch.
-  string batch_denom = 2;
+  string batch_denom = 1;
 
   // issuer is the account address of the issuer of the credit batch.
-  string issuer = 3;
-
-  // total_amount is the total number of credits in the credit batch.
-  string total_amount = 4;
-
-  // start_date is the beginning of the period during which this credit batch
-  // was quantified and verified.
-  string start_date = 5;
-
-  // end_date is the end of the period during which this credit batch was
-  // quantified and verified.
-  string end_date = 6;
-
-  // issuance_date is the timestamp when the credit batch was issued.
-  string issuance_date = 7;
-
-  // project_jurisdiction is the jurisdiction of the project backing the credits
-  // in this batch. Full documentation can be found in
-  // MsgCreateBatch.project_jurisdiction.
-  string project_jurisdiction = 8;
-
-  // project_id is the unique identifier of the project within which the credit
-  // batch was created.
-  string project_id = 9;
-
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from other chain or registry.
-  OriginTx origin_tx = 10;
-
-  // reference note for accounting, will be passed to an event
-  string note = 11;
+  string issuer = 2;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.

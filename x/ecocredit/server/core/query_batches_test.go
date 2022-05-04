@@ -21,7 +21,7 @@ func TestQuery_Batches(t *testing.T) {
 
 	// insert project
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: "P01",
+		Id: "C01-001",
 	})
 	assert.NilError(t, err)
 
@@ -33,16 +33,16 @@ func TestQuery_Batches(t *testing.T) {
 		EndDate:    nil,
 	}
 
-	// insert two batches issued under the "P01" project
+	// insert two batches issued under the "C01-001" project
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
 		ProjectKey: pKey,
 		Denom:      "C01-20200101-20220101-002",
 	}))
 
-	// query batches by the "P01" project
+	// query batches by the "C01-001" project
 	res, err := s.k.Batches(s.ctx, &core.QueryBatchesRequest{
-		ProjectId:  "P01",
+		ProjectId:  "C01-001",
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)

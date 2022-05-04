@@ -25,9 +25,5 @@ func (k Keeper) AddAllowedDenom(ctx sdk.Context, p *marketplace.AllowedDenomProp
 	}); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", denom.BankDenom, err.Error())
 	}
-	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowedDenomAdded{
-		Denom:        denom.BankDenom,
-		DisplayDenom: denom.DisplayDenom,
-		Exponent:     denom.Exponent,
-	})
+	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowedDenomAdded{Denom: denom.BankDenom})
 }

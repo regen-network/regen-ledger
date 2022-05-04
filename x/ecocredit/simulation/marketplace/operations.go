@@ -22,7 +22,6 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgAllowAskDenom   = "op_weight_msg_allow_sdk_denom"
 	OpWeightMsgBuy             = "op_weight_msg_buy_direct"
 	OpWeightMsgSell            = "op_weight_msg_sell"
 	OpWeightMsgUpdateSellOrder = "op_weight_msg_update_sell_order"
@@ -31,7 +30,6 @@ const (
 
 // basket operations weights
 const (
-	WeightAllowAskDenom   = 100
 	WeightBuyDirect       = 100
 	WeightSell            = 100
 	WeightUpdateSellOrder = 100
@@ -52,17 +50,10 @@ func WeightedOperations(
 	qryClient core.QueryClient, mktQryClient marketplace.QueryClient) simulation.WeightedOperations {
 
 	var (
-		weightMsgAllowAskDenom   int
 		weightMsgBuyDirect       int
 		weightMsgSell            int
 		weightMsgUpdateSellOrder int
 		weightMsgCancelSellOrder int
-	)
-
-	appParams.GetOrGenerate(cdc, OpWeightMsgAllowAskDenom, &weightMsgAllowAskDenom, nil,
-		func(_ *rand.Rand) {
-			weightMsgAllowAskDenom = WeightAllowAskDenom
-		},
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgBuy, &weightMsgBuyDirect, nil,

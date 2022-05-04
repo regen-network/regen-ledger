@@ -5,22 +5,16 @@ package marketplace
 
 import (
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
-var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -30,23 +24,10 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // EventSell is an event emitted when a sell order is created.
 type EventSell struct {
+	// owner is the owner of the sell order.
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// order_id is the unique ID of sell order.
-	OrderId uint64 `protobuf:"varint,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
-	// batch_denom is the credit batch being sold.
-	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// quantity is the quantity of credits being sold.
-	Quantity string `protobuf:"bytes,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
-	// ask_price is the price the seller is asking for each unit of the
-	// batch_denom. Each credit unit of the batch will be sold for at least the
-	// ask_price or more.
-	AskPrice *types.Coin `protobuf:"bytes,4,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
-	// disable_auto_retire disables auto-retirement of credits which allows a
-	// buyer to disable auto-retirement in their buy order enabling them to
-	// resell the credits to another buyer.
-	DisableAutoRetire bool `protobuf:"varint,5,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// expiration is an optional timestamp when the sell order expires. When the
-	// expiration time is reached, the sell order is removed from state.
-	Expiration *time.Time `protobuf:"bytes,6,opt,name=expiration,proto3,stdtime" json:"expiration,omitempty"`
+	OrderId uint64 `protobuf:"varint,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
 }
 
 func (m *EventSell) Reset()         { *m = EventSell{} }
@@ -82,6 +63,13 @@ func (m *EventSell) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventSell proto.InternalMessageInfo
 
+func (m *EventSell) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
 func (m *EventSell) GetOrderId() uint64 {
 	if m != nil {
 		return m.OrderId
@@ -89,60 +77,12 @@ func (m *EventSell) GetOrderId() uint64 {
 	return 0
 }
 
-func (m *EventSell) GetBatchDenom() string {
-	if m != nil {
-		return m.BatchDenom
-	}
-	return ""
-}
-
-func (m *EventSell) GetQuantity() string {
-	if m != nil {
-		return m.Quantity
-	}
-	return ""
-}
-
-func (m *EventSell) GetAskPrice() *types.Coin {
-	if m != nil {
-		return m.AskPrice
-	}
-	return nil
-}
-
-func (m *EventSell) GetDisableAutoRetire() bool {
-	if m != nil {
-		return m.DisableAutoRetire
-	}
-	return false
-}
-
-func (m *EventSell) GetExpiration() *time.Time {
-	if m != nil {
-		return m.Expiration
-	}
-	return nil
-}
-
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 type EventUpdateSellOrder struct {
-	// owner is the owner of the sell orders.
+	// owner is the owner of the sell order.
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
-	//  sell_order_id is the ID of an existing sell order.
-	SellOrderId uint64 `protobuf:"varint,2,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
-	// batch_denom is the credit batch being sold.
-	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// new_quantity is the updated quantity of credits available to sell, if it
-	// is set to zero then the order is cancelled.
-	NewQuantity string `protobuf:"bytes,4,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
-	// new_ask_price is the new ask price for this sell order
-	NewAskPrice *types.Coin `protobuf:"bytes,5,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
-	// disable_auto_retire updates the disable_auto_retire field in the sell
-	// order.
-	DisableAutoRetire bool `protobuf:"varint,6,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// new_expiration is an optional timestamp when the sell order expires. When
-	// the expiration time is reached, the sell order is removed from state.
-	NewExpiration *time.Time `protobuf:"bytes,7,opt,name=new_expiration,json=newExpiration,proto3,stdtime" json:"new_expiration,omitempty"`
+	//  order_id is the ID of an existing sell order.
+	OrderId uint64 `protobuf:"varint,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
 }
 
 func (m *EventUpdateSellOrder) Reset()         { *m = EventUpdateSellOrder{} }
@@ -185,46 +125,11 @@ func (m *EventUpdateSellOrder) GetOwner() string {
 	return ""
 }
 
-func (m *EventUpdateSellOrder) GetSellOrderId() uint64 {
+func (m *EventUpdateSellOrder) GetOrderId() uint64 {
 	if m != nil {
-		return m.SellOrderId
+		return m.OrderId
 	}
 	return 0
-}
-
-func (m *EventUpdateSellOrder) GetBatchDenom() string {
-	if m != nil {
-		return m.BatchDenom
-	}
-	return ""
-}
-
-func (m *EventUpdateSellOrder) GetNewQuantity() string {
-	if m != nil {
-		return m.NewQuantity
-	}
-	return ""
-}
-
-func (m *EventUpdateSellOrder) GetNewAskPrice() *types.Coin {
-	if m != nil {
-		return m.NewAskPrice
-	}
-	return nil
-}
-
-func (m *EventUpdateSellOrder) GetDisableAutoRetire() bool {
-	if m != nil {
-		return m.DisableAutoRetire
-	}
-	return false
-}
-
-func (m *EventUpdateSellOrder) GetNewExpiration() *time.Time {
-	if m != nil {
-		return m.NewExpiration
-	}
-	return nil
 }
 
 // EventAllowedDenomAdded is an event emitted when a new denom is added for use
@@ -232,8 +137,6 @@ func (m *EventUpdateSellOrder) GetNewExpiration() *time.Time {
 type EventAllowedDenomAdded struct {
 	// denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
-	// display_denom is the denom to display to the user and is informational
-	DisplayDenom string `protobuf:"bytes,2,opt,name=display_denom,json=displayDenom,proto3" json:"display_denom,omitempty"`
 }
 
 func (m *EventAllowedDenomAdded) Reset()         { *m = EventAllowedDenomAdded{} }
@@ -276,13 +179,6 @@ func (m *EventAllowedDenomAdded) GetDenom() string {
 	return ""
 }
 
-func (m *EventAllowedDenomAdded) GetDisplayDenom() string {
-	if m != nil {
-		return m.DisplayDenom
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*EventSell)(nil), "regen.ecocredit.marketplace.v1.EventSell")
 	proto.RegisterType((*EventUpdateSellOrder)(nil), "regen.ecocredit.marketplace.v1.EventUpdateSellOrder")
@@ -294,41 +190,23 @@ func init() {
 }
 
 var fileDescriptor_68b71b54d42cf1d9 = []byte{
-	// 532 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0xd3, 0x41, 0x6f, 0xd3, 0x30,
-	0x14, 0x07, 0xf0, 0xa5, 0xeb, 0xba, 0xd6, 0x5d, 0x91, 0x08, 0x15, 0xca, 0x7a, 0x48, 0x4b, 0xb9,
-	0x54, 0x42, 0x38, 0x2a, 0x48, 0xdc, 0x26, 0xd1, 0xc1, 0x84, 0x38, 0x01, 0x19, 0x08, 0x89, 0x4b,
-	0xe4, 0xc4, 0x8f, 0xcc, 0x6a, 0x62, 0x07, 0xdb, 0x6d, 0xb7, 0x0f, 0x81, 0xb4, 0x8f, 0xc5, 0x81,
-	0xc3, 0x8e, 0xdc, 0x40, 0xed, 0x17, 0x41, 0x76, 0xd2, 0xae, 0x68, 0xa0, 0x71, 0xeb, 0xf3, 0xfb,
-	0xbf, 0xe6, 0xe5, 0xa7, 0x18, 0x3d, 0x92, 0x90, 0x02, 0x0f, 0x20, 0x11, 0x89, 0x04, 0xca, 0x74,
-	0x90, 0x13, 0x39, 0x05, 0x5d, 0x64, 0x24, 0x81, 0x60, 0x3e, 0x0e, 0x60, 0x0e, 0x5c, 0x2b, 0x5c,
-	0x48, 0xa1, 0x85, 0xeb, 0xdb, 0x30, 0xde, 0x84, 0xf1, 0x56, 0x18, 0xcf, 0xc7, 0xbd, 0x6e, 0x2a,
-	0x52, 0x61, 0xa3, 0x81, 0xf9, 0x55, 0x4e, 0xf5, 0xfc, 0x44, 0xa8, 0x5c, 0xa8, 0x20, 0x26, 0xca,
-	0xfc, 0x65, 0x0c, 0x9a, 0x8c, 0x83, 0x44, 0x30, 0x5e, 0xf5, 0xfb, 0xa9, 0x10, 0x69, 0x06, 0x81,
-	0xad, 0xe2, 0xd9, 0xe7, 0x40, 0xb3, 0x1c, 0x94, 0x26, 0x79, 0x51, 0x06, 0x86, 0x5f, 0x6b, 0xa8,
-	0x75, 0x62, 0xf6, 0x38, 0x85, 0x2c, 0x73, 0x0f, 0x51, 0x53, 0x48, 0x0a, 0x32, 0x62, 0xd4, 0x73,
-	0x06, 0xce, 0xa8, 0x1e, 0xee, 0xdb, 0xfa, 0x35, 0x75, 0xfb, 0xa8, 0x1d, 0x13, 0x9d, 0x9c, 0x45,
-	0x14, 0xb8, 0xc8, 0xbd, 0xda, 0xc0, 0x19, 0xb5, 0x42, 0x64, 0x8f, 0x5e, 0x9a, 0x13, 0xb7, 0x87,
-	0x9a, 0x5f, 0x66, 0x84, 0x6b, 0xa6, 0x2f, 0xbc, 0x5d, 0xdb, 0xdd, 0xd4, 0xee, 0x33, 0xd4, 0x22,
-	0x6a, 0x1a, 0x15, 0x92, 0x25, 0xe0, 0xd5, 0x07, 0xce, 0xa8, 0xfd, 0xe4, 0x10, 0x97, 0xab, 0x63,
-	0xb3, 0x3a, 0xae, 0x56, 0xc7, 0x2f, 0x04, 0xe3, 0x61, 0x93, 0xa8, 0xe9, 0x5b, 0x13, 0x75, 0x31,
-	0xba, 0x47, 0x99, 0x22, 0x71, 0x06, 0x11, 0x99, 0x69, 0x11, 0x49, 0xd0, 0x4c, 0x82, 0xb7, 0x37,
-	0x70, 0x46, 0xcd, 0xf0, 0x6e, 0xd5, 0x9a, 0xcc, 0xb4, 0x08, 0x6d, 0xc3, 0x7d, 0x8e, 0x10, 0x9c,
-	0x17, 0x4c, 0x12, 0xcd, 0x04, 0xf7, 0x1a, 0xf6, 0x41, 0x3d, 0x5c, 0x1a, 0xe0, 0xb5, 0x01, 0x7e,
-	0xbf, 0x36, 0x38, 0xae, 0x5f, 0xfe, 0xec, 0x3b, 0xe1, 0xd6, 0xcc, 0xf0, 0x7b, 0x0d, 0x75, 0xad,
-	0xc7, 0x87, 0x82, 0x12, 0x0d, 0x46, 0xe5, 0x8d, 0x11, 0x70, 0xbb, 0x68, 0x4f, 0x2c, 0x38, 0x48,
-	0xeb, 0xd2, 0x0a, 0xcb, 0xc2, 0x1d, 0xa2, 0x8e, 0x82, 0x2c, 0x8b, 0x36, 0x6a, 0x35, 0xab, 0xd6,
-	0x56, 0xeb, 0xb9, 0x9b, 0x72, 0xbb, 0x37, 0xe4, 0x1e, 0xa0, 0x03, 0x0e, 0x8b, 0x68, 0xa3, 0x57,
-	0xb7, 0x89, 0x36, 0x87, 0xc5, 0xbb, 0x35, 0xe0, 0x11, 0xea, 0x98, 0xc8, 0x35, 0xe2, 0xde, 0x6d,
-	0x88, 0x66, 0x7c, 0x72, 0x8b, 0x63, 0xe3, 0x5f, 0x8e, 0xaf, 0xd0, 0x1d, 0xf3, 0xb8, 0x2d, 0xcb,
-	0xfd, 0xff, 0xb4, 0x34, 0x6b, 0x9e, 0x5c, 0x73, 0x9e, 0xa2, 0xfb, 0x56, 0x73, 0x92, 0x65, 0x62,
-	0x01, 0xd4, 0xbe, 0xef, 0x84, 0x52, 0xa0, 0xc6, 0xb3, 0xf4, 0xa8, 0x3c, 0x6d, 0xe1, 0x3e, 0x44,
-	0x1d, 0xca, 0x54, 0x91, 0x91, 0x8b, 0x3f, 0xbe, 0xb3, 0x83, 0xea, 0xd0, 0xce, 0x1f, 0x7f, 0xfc,
-	0xb6, 0xf4, 0x9d, 0xab, 0xa5, 0xef, 0xfc, 0x5a, 0xfa, 0xce, 0xe5, 0xca, 0xdf, 0xb9, 0x5a, 0xf9,
-	0x3b, 0x3f, 0x56, 0xfe, 0xce, 0xa7, 0xa3, 0x94, 0xe9, 0xb3, 0x59, 0x8c, 0x13, 0x91, 0x07, 0xf6,
-	0x3e, 0x3d, 0xe6, 0xa0, 0x17, 0x42, 0x4e, 0xab, 0x2a, 0x03, 0x9a, 0x82, 0x0c, 0xce, 0xff, 0x7e,
-	0x27, 0xe3, 0x86, 0x7d, 0xad, 0xa7, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x78, 0x83, 0x32, 0x7f,
-	0xb9, 0x03, 0x00, 0x00,
+	// 252 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x90, 0x3d, 0x4b, 0x03, 0x31,
+	0x1c, 0x87, 0x2f, 0xe2, 0x5b, 0x33, 0x1e, 0x45, 0xea, 0x12, 0x4a, 0xa7, 0x82, 0x98, 0x50, 0x5c,
+	0x75, 0xa8, 0x28, 0xe2, 0x24, 0x54, 0x44, 0x70, 0x91, 0xeb, 0xfd, 0x7f, 0x9c, 0x47, 0x73, 0xc9,
+	0x11, 0xe3, 0x9d, 0x1f, 0xc3, 0x8f, 0xe5, 0xd8, 0xd1, 0x51, 0xee, 0xbe, 0x88, 0x24, 0xbe, 0xe0,
+	0xe0, 0xe2, 0xf8, 0x90, 0x27, 0x0f, 0xfc, 0x7f, 0xfc, 0xc0, 0xa1, 0x80, 0x51, 0xc8, 0x6d, 0xee,
+	0x40, 0xa5, 0x57, 0x55, 0xe6, 0x56, 0xf0, 0xb5, 0xce, 0x72, 0xa8, 0x66, 0xa6, 0xd0, 0xc0, 0xf8,
+	0x47, 0x59, 0x3b, 0xeb, 0x6d, 0x2a, 0xa2, 0x2c, 0x7f, 0x64, 0xf9, 0x4b, 0x96, 0xcd, 0x6c, 0x72,
+	0xcc, 0x07, 0xe7, 0xc1, 0xbf, 0x86, 0xd6, 0xe9, 0x90, 0x6f, 0xd9, 0xd6, 0xc0, 0x8d, 0xd8, 0x98,
+	0x4d, 0x07, 0x8b, 0x4f, 0x48, 0xf7, 0xf9, 0xae, 0x75, 0x04, 0x77, 0x5f, 0xd2, 0x68, 0x63, 0xcc,
+	0xa6, 0x9b, 0x8b, 0x9d, 0xc8, 0x97, 0x34, 0xb9, 0xe0, 0xc3, 0xf8, 0xfb, 0xa6, 0xa6, 0xcc, 0x23,
+	0x34, 0xae, 0xc2, 0xcb, 0xff, 0x43, 0x92, 0xef, 0xc5, 0xd0, 0x5c, 0x6b, 0xdb, 0x82, 0xce, 0x60,
+	0x6c, 0x35, 0x27, 0x02, 0x85, 0x14, 0x05, 0xfa, 0x4e, 0x45, 0x38, 0xbd, 0x7d, 0xed, 0x04, 0x5b,
+	0x77, 0x82, 0xbd, 0x77, 0x82, 0xbd, 0xf4, 0x22, 0x59, 0xf7, 0x22, 0x79, 0xeb, 0x45, 0x72, 0x77,
+	0x52, 0x94, 0xfe, 0xe1, 0x69, 0x29, 0x73, 0x5b, 0xa9, 0x78, 0xfb, 0xa1, 0x81, 0x6f, 0xad, 0x5b,
+	0x7d, 0x91, 0x06, 0x15, 0x70, 0xea, 0xf9, 0xef, 0xfd, 0x96, 0xdb, 0x71, 0xb6, 0xa3, 0x8f, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x0d, 0xc6, 0x03, 0x68, 0x65, 0x01, 0x00, 0x00,
 }
 
 func (m *EventSell) Marshal() (dAtA []byte, err error) {
@@ -351,56 +229,17 @@ func (m *EventSell) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Expiration != nil {
-		n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.Expiration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiration):])
-		if err1 != nil {
-			return 0, err1
-		}
-		i -= n1
-		i = encodeVarintEvents(dAtA, i, uint64(n1))
-		i--
-		dAtA[i] = 0x32
-	}
-	if m.DisableAutoRetire {
-		i--
-		if m.DisableAutoRetire {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x28
-	}
-	if m.AskPrice != nil {
-		{
-			size, err := m.AskPrice.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.Quantity) > 0 {
-		i -= len(m.Quantity)
-		copy(dAtA[i:], m.Quantity)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Quantity)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.BatchDenom)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if m.OrderId != 0 {
 		i = encodeVarintEvents(dAtA, i, uint64(m.OrderId))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x10
+	}
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Owner)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -425,54 +264,8 @@ func (m *EventUpdateSellOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.NewExpiration != nil {
-		n3, err3 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.NewExpiration, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.NewExpiration):])
-		if err3 != nil {
-			return 0, err3
-		}
-		i -= n3
-		i = encodeVarintEvents(dAtA, i, uint64(n3))
-		i--
-		dAtA[i] = 0x3a
-	}
-	if m.DisableAutoRetire {
-		i--
-		if m.DisableAutoRetire {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x30
-	}
-	if m.NewAskPrice != nil {
-		{
-			size, err := m.NewAskPrice.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.NewQuantity) > 0 {
-		i -= len(m.NewQuantity)
-		copy(dAtA[i:], m.NewQuantity)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.NewQuantity)))
-		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.BatchDenom)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if m.SellOrderId != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.SellOrderId))
+	if m.OrderId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.OrderId))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -506,13 +299,6 @@ func (m *EventAllowedDenomAdded) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if len(m.DisplayDenom) > 0 {
-		i -= len(m.DisplayDenom)
-		copy(dAtA[i:], m.DisplayDenom)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.DisplayDenom)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.Denom) > 0 {
 		i -= len(m.Denom)
 		copy(dAtA[i:], m.Denom)
@@ -540,27 +326,12 @@ func (m *EventSell) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
 	if m.OrderId != 0 {
 		n += 1 + sovEvents(uint64(m.OrderId))
-	}
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.Quantity)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.AskPrice != nil {
-		l = m.AskPrice.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.DisableAutoRetire {
-		n += 2
-	}
-	if m.Expiration != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.Expiration)
-		n += 1 + l + sovEvents(uint64(l))
 	}
 	return n
 }
@@ -575,27 +346,8 @@ func (m *EventUpdateSellOrder) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if m.SellOrderId != 0 {
-		n += 1 + sovEvents(uint64(m.SellOrderId))
-	}
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.NewQuantity)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.NewAskPrice != nil {
-		l = m.NewAskPrice.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	if m.DisableAutoRetire {
-		n += 2
-	}
-	if m.NewExpiration != nil {
-		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.NewExpiration)
-		n += 1 + l + sovEvents(uint64(l))
+	if m.OrderId != 0 {
+		n += 1 + sovEvents(uint64(m.OrderId))
 	}
 	return n
 }
@@ -607,10 +359,6 @@ func (m *EventAllowedDenomAdded) Size() (n int) {
 	var l int
 	_ = l
 	l = len(m.Denom)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.DisplayDenom)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -653,6 +401,38 @@ func (m *EventSell) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
 			}
@@ -671,162 +451,6 @@ func (m *EventSell) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Quantity", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Quantity = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AskPrice", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.AskPrice == nil {
-				m.AskPrice = &types.Coin{}
-			}
-			if err := m.AskPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.DisableAutoRetire = bool(v != 0)
-		case 6:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Expiration", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Expiration == nil {
-				m.Expiration = new(time.Time)
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.Expiration, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -911,9 +535,9 @@ func (m *EventUpdateSellOrder) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
 			}
-			m.SellOrderId = 0
+			m.OrderId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowEvents
@@ -923,167 +547,11 @@ func (m *EventUpdateSellOrder) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.SellOrderId |= uint64(b&0x7F) << shift
+				m.OrderId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewQuantity", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.NewQuantity = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewAskPrice", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.NewAskPrice == nil {
-				m.NewAskPrice = &types.Coin{}
-			}
-			if err := m.NewAskPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.DisableAutoRetire = bool(v != 0)
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NewExpiration", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.NewExpiration == nil {
-				m.NewExpiration = new(time.Time)
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.NewExpiration, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -1165,38 +633,6 @@ func (m *EventAllowedDenomAdded) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Denom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DisplayDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DisplayDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
