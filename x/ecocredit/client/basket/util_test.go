@@ -14,11 +14,11 @@ func TestParseCredits(t *testing.T) {
 	invalidContent := testutil.WriteToNewTempFile(t, `{}`).Name()
 	validCredits := testutil.WriteToNewTempFile(t, `[
 		{
-			"batch_denom": "C01-20210101-20220101-001",
+			"batch_denom": "C01-001-20210101-20220101-001",
 			"amount": "10"
 		},
 		{
-			"batch_denom": "C01-20210101-20220101-001",
+			"batch_denom": "C01-001-20210101-20220101-001",
 			"amount": "10.555"
 		}
 	]`).Name()
@@ -50,11 +50,11 @@ func TestParseCredits(t *testing.T) {
 			false,
 			[]*basket.BasketCredit{
 				{
-					BatchDenom: "C01-20210101-20220101-001",
+					BatchDenom: "C01-001-20210101-20220101-001",
 					Amount:     "10",
 				},
 				{
-					BatchDenom: "C01-20210101-20220101-001",
+					BatchDenom: "C01-001-20210101-20220101-001",
 					Amount:     "10.555",
 				},
 			},

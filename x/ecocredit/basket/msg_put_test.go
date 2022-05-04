@@ -16,7 +16,7 @@ func TestMsgPut_ValidateBasic(t *testing.T) {
 
 	_, _, addr := testdata.KeyTestPubAddr()
 	t1, t2 := time.Now(), time.Now()
-	denom, err := core.FormatDenom("C02", 1, &t1, &t2)
+	denom, err := core.FormatBatchDenom("C02-001", 1, &t1, &t2)
 	require.NoError(t, err)
 
 	type fields struct {
