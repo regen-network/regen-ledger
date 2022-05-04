@@ -17,6 +17,7 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(AllowedDenomProposalType)
+	govtypes.RegisterProposalTypeCodec(&AllowedDenomProposal{}, "regen/AllowedDenomProposal")
 }
 
 func (m AllowedDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }

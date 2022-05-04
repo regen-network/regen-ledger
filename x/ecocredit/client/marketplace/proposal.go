@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -82,5 +83,6 @@ relate the bank_denom to the display_denom and is informational`),
 		},
 	}
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
+	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
