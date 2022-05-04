@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -332,35 +331,23 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Metadata:  simtypes.RandStringOfLength(r, 10),
 		}
 
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "fee error"), nil, err
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      issuer,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
 		}
 
-		account := ak.GetAccount(sdkCtx, issuer.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			2000000,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			issuer.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "unable to generate mock tx"), nil, err
-		}
-
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
-		}
-
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-
 }
 
 // SimulateMsgSend generates a MsgSend with random values.
