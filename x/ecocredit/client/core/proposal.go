@@ -6,15 +6,15 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	"github.com/cosmos/cosmos-sdk/x/gov/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
