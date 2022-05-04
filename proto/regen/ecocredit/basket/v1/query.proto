@@ -4,7 +4,6 @@ package regen.ecocredit.basket.v1;
 
 import "google/api/annotations.proto";
 import "regen/ecocredit/basket/v1/state.proto";
-import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/ecocredit/basket/v1/types.proto";
 
