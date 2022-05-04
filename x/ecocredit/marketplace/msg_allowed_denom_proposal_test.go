@@ -25,7 +25,7 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Title:        "foo",
 				Description:  "bar",
-				AllowedDenom: validAskDenom,
+				AllowedDenom: validAllowedDenom,
 			},
 			wantErr: false,
 		},
@@ -33,7 +33,7 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 			name: "no title",
 			fields: fields{
 				Description:  "foo",
-				AllowedDenom: validAskDenom,
+				AllowedDenom: validAllowedDenom,
 			},
 			wantErr: true,
 		},
@@ -41,12 +41,12 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 			name: "no desc",
 			fields: fields{
 				Title:        "foo",
-				AllowedDenom: validAskDenom,
+				AllowedDenom: validAllowedDenom,
 			},
 			wantErr: true,
 		},
 		{
-			name: "no ask denom",
+			name: "no allowed denom",
 			fields: fields{
 				Title:       "foo",
 				Description: "bar",

@@ -17,17 +17,17 @@ func (k Keeper) AddAllowedDenom(ctx sdk.Context, p *marketplace.AllowedDenomProp
 	if err := p.ValidateBasic(); err != nil {
 		return err
 	}
-	askDenom := p.AllowedDenom
+	denom := p.AllowedDenom
 	if err := k.stateStore.AllowedDenomTable().Insert(sdk.WrapSDKContext(ctx), &api.AllowedDenom{
-		BankDenom:    askDenom.BankDenom,
-		DisplayDenom: askDenom.DisplayDenom,
-		Exponent:     askDenom.Exponent,
+		BankDenom:    denom.BankDenom,
+		DisplayDenom: denom.DisplayDenom,
+		Exponent:     denom.Exponent,
 	}); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", askDenom.BankDenom, err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", denom.BankDenom, err.Error())
 	}
-	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowAskDenom{
-		Denom:        askDenom.BankDenom,
-		DisplayDenom: askDenom.DisplayDenom,
-		Exponent:     askDenom.Exponent,
+	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowedDenomAdded{
+		Denom:        denom.BankDenom,
+		DisplayDenom: denom.DisplayDenom,
+		Exponent:     denom.Exponent,
 	})
 }

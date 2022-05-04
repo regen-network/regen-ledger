@@ -85,7 +85,6 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.Equal(t, true, has)
 }
 
-// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)

@@ -12,16 +12,16 @@ import (
 var _ govtypes.Content = &AllowedDenomProposal{}
 
 const (
-	AskDenomProposalType = "AllowedDenomProposal"
+	AllowedDenomProposalType = "AllowedDenomProposal"
 )
 
 func init() {
-	govtypes.RegisterProposalType(AskDenomProposalType)
+	govtypes.RegisterProposalType(AllowedDenomProposalType)
 }
 
 func (m AllowedDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
-func (m AllowedDenomProposal) ProposalType() string { return AskDenomProposalType }
+func (m AllowedDenomProposal) ProposalType() string { return AllowedDenomProposalType }
 
 func (m AllowedDenomProposal) ValidateBasic() error {
 	if m.AllowedDenom == nil {

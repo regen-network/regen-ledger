@@ -19,21 +19,21 @@ func (k Keeper) AllowedDenoms(ctx context.Context, req *marketplace.QueryAllowed
 	it, err := k.stateStore.AllowedDenomTable().List(ctx, &marketplacev1.AllowedDenomPrimaryKey{}, ormlist.Paginate(pg))
 	defer it.Close()
 
-	askDenoms := make([]*marketplace.AllowedDenom, 0)
+	allowedDenoms := make([]*marketplace.AllowedDenom, 0)
 	for it.Next() {
-		askDenom, err := it.Value()
+		allowedDenom, err := it.Value()
 		if err != nil {
 			return nil, err
 		}
 		var ad marketplace.AllowedDenom
-		if err = ormutil.PulsarToGogoSlow(askDenom, &ad); err != nil {
+		if err = ormutil.PulsarToGogoSlow(allowedDenom, &ad); err != nil {
 			return nil, err
 		}
-		askDenoms = append(askDenoms, &ad)
+		allowedDenoms = append(allowedDenoms, &ad)
 	}
 	pr, err := ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
 	if err != nil {
 		return nil, err
 	}
-	return &marketplace.QueryAllowedDenomsResponse{AllowedDenoms: askDenoms, Pagination: pr}, nil
+	return &marketplace.QueryAllowedDenomsResponse{AllowedDenoms: allowedDenoms, Pagination: pr}, nil
 }

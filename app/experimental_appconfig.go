@@ -42,7 +42,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 				wasmclient.ProposalHandlers,
 				paramsclient.ProposalHandler, distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-				core.CreditTypeProposalHandler, marketplace.AllowedAskDenomProposal,
+				core.CreditTypeProposalHandler, marketplace.AllowedDenomProposal,
 			)...,
 		),
 		wasm.AppModuleBasic{},

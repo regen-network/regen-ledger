@@ -16,7 +16,7 @@ type ProposalKeeper interface {
 }
 
 func (s serverImpl) AddAskDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error {
-	return s.marketplaceKeeper.AddAskDenom(ctx, proposal)
+	return s.marketplaceKeeper.AddAllowedDenom(ctx, proposal)
 }
 
 func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error {
@@ -29,14 +29,14 @@ func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 		case *core.CreditTypeProposal:
 			return handleCreditTypeProposal(ctx, k, c)
 		case *marketplace.AllowedDenomProposal:
-			return handleAskDenomProposal(ctx, k, c)
+			return handleAllowedDenomProposal(ctx, k, c)
 		default:
 			return sdkerrors.ErrUnknownRequest.Wrapf("unrecognized proposal content type: %T", c)
 		}
 	}
 }
 
-func handleAskDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowedDenomProposal) error {
+func handleAllowedDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowedDenomProposal) error {
 	return k.AddAskDenom(ctx, proposal)
 }
 

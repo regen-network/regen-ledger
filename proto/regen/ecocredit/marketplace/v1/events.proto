@@ -63,16 +63,13 @@ message EventUpdateSellOrder {
   google.protobuf.Timestamp new_expiration = 7 [ (gogoproto.stdtime) = true ];
 }
 
-// EventAllowAskDenom is an event emitted when an ask denom is added.
-message EventAllowAskDenom {
+// EventAllowedDenomAdded is an event emitted when a new denom is added for use
+// in the marketplace.
+message EventAllowedDenomAdded {
 
   // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 1;
 
   // display_denom is the denom to display to the user and is informational
   string display_denom = 2;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 3;
 }

@@ -66,25 +66,25 @@ func TestProposal_CreditType(t *testing.T) {
 	assert.DeepEqual(t, creditTypeProposal.CreditType, res.CreditTypes[0])
 }
 
-func TestProposal_AskDenom(t *testing.T) {
+func TestProposal_AllowedDenom(t *testing.T) {
 	t.Parallel()
 	s := setup(t)
 	handler := NewProposalHandler(s.server)
-	askDenomProposal := marketplace.AllowedDenomProposal{
-		Title:       "carbon type",
-		Description: "i would like to add a carbon type",
+	proposal := marketplace.AllowedDenomProposal{
+		Title:       "regen token",
+		Description: "i would like to use the regen token in the marketplace",
 		AllowedDenom: &marketplace.AllowedDenom{
 			BankDenom:    "uregen",
 			DisplayDenom: "regen",
 			Exponent:     18,
 		},
 	}
-	err := handler(s.sdkCtx, &askDenomProposal)
+	err := handler(s.sdkCtx, &proposal)
 	assert.NilError(t, err)
 	res, err := s.server.marketplaceKeeper.AllowedDenoms(s.ctx, &marketplace.QueryAllowedDenomsRequest{})
 	assert.NilError(t, err)
 	assert.Check(t, len(res.AllowedDenoms) == 1)
-	assert.DeepEqual(t, askDenomProposal.AllowedDenom, res.AllowedDenoms[0])
+	assert.DeepEqual(t, proposal.AllowedDenom, res.AllowedDenoms[0])
 }
 
 func TestProposal_Invalid(t *testing.T) {

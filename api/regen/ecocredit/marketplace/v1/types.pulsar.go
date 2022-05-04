@@ -601,7 +601,7 @@ type AllowedDenomProposal struct {
 	// description is the description of the proposal.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	// allowed_denom contains coin denom information that will be added to the
-	// allowed ask denoms list for use in the marketplace.
+	// list of allowed denoms for use in the marketplace.
 	AllowedDenom *AllowedDenom `protobuf:"bytes,3,opt,name=allowed_denom,json=allowedDenom,proto3" json:"allowed_denom,omitempty"`
 }
 

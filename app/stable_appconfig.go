@@ -33,7 +33,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-			ecocreditcore.CreditTypeProposalHandler, marketplace.AllowedAskDenomProposal,
+			ecocreditcore.CreditTypeProposalHandler, marketplace.AllowedDenomProposal,
 		),
 	}
 }
