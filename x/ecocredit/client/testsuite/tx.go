@@ -1291,7 +1291,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestTxProposal() {
+func (s *IntegrationTestSuite) TestCreditTypeProposal() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 	cmd := proposalclient.TxCreditTypeProposalCmd()
