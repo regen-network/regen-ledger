@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/ormutil"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
@@ -50,10 +49,8 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		res.Balances = append(res.Balances, balanceGogo)
 
 		res.BalancesInfo = append(res.BalancesInfo, &baskettypes.BasketBalanceInfo{
-			BatchDenom:     bal.BatchDenom,
-			Balance:        bal.Balance,
-			BasketDenom:    basket.BasketDenom,
-			BatchStartDate: types.ProtobufToGogoTimestamp(bal.BatchStartDate),
+			BatchDenom: bal.BatchDenom,
+			Balance:    bal.Balance,
 		})
 	}
 	it.Close()

@@ -145,6 +145,7 @@ message BasketInfo {
   // basket settings.
   string curator = 7;
 }
+
 // BasketBalanceInfo is the human-readable basket balance information.
 message BasketBalanceInfo {
   // batch_denom is the denom of the credit batch
@@ -152,11 +153,4 @@ message BasketBalanceInfo {
 
   // balance is the amount of ecocredits held in the basket
   string balance = 2;
-
-  // basket_denom is the basket bank denom.
-  string basket_denom = 3;
-
-  // batch_start_date is the start date of the batch. This field is used
-  // to create an index which is used to remove the oldest credits first.
-  google.protobuf.Timestamp batch_start_date = 4;
 }
