@@ -3,13 +3,11 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -96,6 +94,12 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateProject = WeightCreateProject
+		},
+	)
+
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateBatch, &weightMsgCreateBatch, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateBatch = WeightCreateBatch
@@ -138,12 +142,6 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgCreateProject, &weightMsgCreateProject, nil,
-		func(_ *rand.Rand) {
-			weightMsgCreateProject = WeightCreateProject
-		},
-	)
-
 	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateProjectAdmin, &weightMsgUpdateProjectAdmin, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateProjectAdmin = WeightUpdateProjectAdmin
@@ -160,6 +158,10 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
 			SimulateMsgCreateClass(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgCreateProject,
+			SimulateMsgCreateProject(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateBatch,
@@ -188,10 +190,6 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassMetadata,
 			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgCreateProject,
-			SimulateMsgCreateProject(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateClassAdmin,
@@ -395,7 +393,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			ClassId:      class.Id,
 			Metadata:     simtypes.RandStringOfLength(r, 100),
 			Jurisdiction: "AB-CDE FG1 345",
-			ProjectId:    genProjectID(r),
 		}
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -414,14 +411,6 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 
 		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-}
-
-func genProjectID(r *rand.Rand) string {
-	if r.Int63n(101) <= 50 {
-		simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 16))
-	}
-
-	return ""
 }
 
 // SimulateMsgCreateBatch generates a MsgCreateBatch with random values.
@@ -472,40 +461,23 @@ func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Metadata:  simtypes.RandStringOfLength(r, 10),
 		}
 
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendable)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "fee error"), nil, err
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      issuer,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
 		}
 
-		account := ak.GetAccount(sdkCtx, issuer.Address)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			2000000,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			issuer.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateBatch, "unable to generate mock tx"), nil, err
-		}
-
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
-			// TODO: remove this check once batch denom creation is fixed #1032
-			if strings.Contains(err.Error(), "unique key violation") {
-				return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "batch denom already exists"), nil, nil
-			}
-
-			return simtypes.NoOpMsg(ecocredit.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
-		}
-
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return utils.GenAndDeliverTxWithRandFees(txCtx)
 	}
-
 }
 
 // SimulateMsgSend generates a MsgSend with random values.

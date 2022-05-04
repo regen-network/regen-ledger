@@ -51,7 +51,7 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 		Holder: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
-				BatchDenom: "C01-20200101-20210101-01",
+				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "100000",
 			},
 		},
@@ -69,7 +69,7 @@ func TestCancel_BadPrecision(t *testing.T) {
 		Holder: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
-				BatchDenom: "C01-20200101-20210101-01",
+				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "10.5290385029385820935",
 			},
 		},

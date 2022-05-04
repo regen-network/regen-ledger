@@ -30,7 +30,7 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	for _, order := range m.Orders {
-		if err := core.ValidateDenom(order.BatchDenom); err != nil {
+		if err := core.ValidateBatchDenom(order.BatchDenom); err != nil {
 			return err
 		}
 
