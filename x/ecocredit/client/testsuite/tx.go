@@ -37,6 +37,7 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -1461,9 +1462,9 @@ func (s *IntegrationTestSuite) getAccountInfo(clientCtx client.Context, addr sdk
 	a := accountInfo{}
 	a.coinBal = s.getBankBalance(clientCtx, addr, bankDenom)
 	batchBal := s.getBalance(clientCtx, addr, batchDenom)
-	var err error
-	a.tradable, a.retired, a.escrowed, err = ecocredit.GetDecimalsFromBalance(batchBal)
+	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.Tradable, batchBal.Retired, batchBal.Escrowed)
 	s.Require().NoError(err)
+	a.tradable, a.retired, a.escrowed = decs[0], decs[1], decs[2]
 	return a
 }
 
