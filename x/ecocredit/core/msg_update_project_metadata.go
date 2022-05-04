@@ -17,7 +17,7 @@ func (m MsgUpdateProjectMetadata) ValidateBasic() error {
 	if len(m.NewMetadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrapf("create project metadata: max length is %d", MaxMetadataLength)
 	}
-	if err := ValidateProjectID(m.ProjectId); err != nil {
+	if err := ValidateProjectId(m.ProjectId); err != nil {
 		return err
 	}
 	return nil

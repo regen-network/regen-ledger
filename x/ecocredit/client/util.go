@@ -54,7 +54,7 @@ type credits struct {
 
 var (
 	reCreditAmt = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
-	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, core.ReBatchDenom))
+	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, core.RegexBatchDenom))
 )
 
 func parseCancelCreditsList(creditsListStr string) ([]*core.MsgCancel_CancelCredits, error) {
