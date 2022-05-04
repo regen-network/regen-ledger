@@ -12,8 +12,5 @@ func (m AllowedDenom) Validate() error {
 	if err := sdk.ValidateDenom(m.DisplayDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("invalid display_denom: %s", err.Error())
 	}
-	if m.Exponent > 18 {
-		return sdkerrors.ErrInvalidRequest.Wrap("exponent cannot be more than 18")
-	}
 	return nil
 }
