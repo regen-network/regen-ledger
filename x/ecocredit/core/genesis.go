@@ -349,7 +349,7 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 
 // Validate performs a basic validation of credit class
 func (c Class) Validate() error {
-	if len(c.Metadata) > ecocredit.MaxMetadataLength {
+	if len(c.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
 
@@ -399,7 +399,7 @@ func (p Project) Validate() error {
 		return err
 	}
 
-	if len(p.Metadata) > ecocredit.MaxMetadataLength {
+	if len(p.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 

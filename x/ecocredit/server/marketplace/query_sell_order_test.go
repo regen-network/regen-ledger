@@ -16,7 +16,7 @@ import (
 func TestQuery_SellOrder(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	testSellSetup(t, s, batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	// make a sell order
 	order := api.SellOrder{
