@@ -6,7 +6,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 var (
@@ -20,11 +19,8 @@ var (
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
 
-// TODO: Revisit this once we have proper gas fee framework.
-// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
 const GasCostPerIteration = uint64(10)
 
-// TODO: remove after we open governance changes for precision
 const (
 	PRECISION uint32 = 6
 )
@@ -118,7 +114,7 @@ func validateCreditTypes(i interface{}) error {
 	seenAbbrs := make(map[string]bool)
 	for _, creditType := range creditTypes {
 		// Validate name
-		T := core.NormalizeCreditTypeName(creditType.Name)
+		T := NormalizeCreditTypeName(creditType.Name)
 		if T != creditType.Name {
 			return sdkerrors.ErrInvalidRequest.Wrapf("credit type name should be normalized: got %s, should be %s", creditType.Name, T)
 		}
@@ -140,7 +136,6 @@ func validateCreditTypes(i interface{}) error {
 		}
 
 		// Validate precision
-		// TODO: remove after we open governance changes for precision
 		if creditType.Precision != PRECISION {
 			return sdkerrors.ErrInvalidRequest.Wrapf("invalid precision %d: precision is currently locked to %d", creditType.Precision, PRECISION)
 		}
