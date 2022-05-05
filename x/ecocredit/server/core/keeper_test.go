@@ -36,7 +36,6 @@ type baseSuite struct {
 	addr         sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
-	moduleAddress sdk.AccAddress
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
@@ -64,14 +63,14 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	_, _, s.moduleAddress = testdata.KeyTestPubAddr()
 	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.moduleAddress)
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

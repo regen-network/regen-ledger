@@ -1,0 +1,10 @@
+{
+        "title": "some title",
+        "description": "some description",
+        "credit_type": {
+                                        "abbreviation": "B",
+                                        "name": "barbon",
+                                        "unit": "metric ton B02",
+                                        "precision": 6
+        }
+}

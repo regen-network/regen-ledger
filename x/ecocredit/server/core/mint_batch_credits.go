@@ -121,7 +121,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 
 	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
 		BatchDenom: batch.Denom,
-		Issuer:     issuer.String(),
+		Issuer:     req.Issuer,
 		OriginTx:   req.OriginTx,
 	}); err != nil {
 		return nil, err
