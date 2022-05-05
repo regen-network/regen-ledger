@@ -34,13 +34,13 @@ func TxAllowDenomProposal() *cobra.Command {
 		Long: strings.TrimSpace(`Submit a proposal to add a denom to the list of allowed denoms for use in the marketplace. 
 The json file MUST take the following form:
 {
-	"title": "some title",
-	"description": "some description",
-	"allowed_denom": {
-					"bank_denom": "uregen",
-					"display_denom": "regen",
-					"exponent": 18
-	}
+    "title": "some title",
+    "description": "some description",
+    "denom": {
+	"bank_denom": "uregen",
+        "display_denom": "regen",
+        "exponent": 6
+    }
 }
 The bank denom is the underlying coin denom (i.e. ibc/CDC4587874B85BEA4FCEC3CEA5A1195139799A1FEE711A07D972537E18FD). 
 Display denom is used for display purposes, and serves as the name of the coin denom (i.e. ATOM). Exponent is used to 
