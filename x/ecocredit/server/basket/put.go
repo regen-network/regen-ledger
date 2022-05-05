@@ -7,13 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 // Put deposits ecocredits into a basket, returning fungible coins to the depositor.
@@ -82,7 +82,6 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	if err = sdkCtx.EventManager().EmitTypedEvent(&baskettypes.EventPut{
 		Owner:       ownerAddr.String(),
 		BasketDenom: basket.BasketDenom,
-		Credits:     req.Credits,
 		Amount:      amountReceived.String(),
 	}); err != nil {
 		return nil, err

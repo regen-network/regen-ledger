@@ -41,11 +41,17 @@ func (k Keeper) BasketBalances(ctx context.Context, request *baskettypes.QueryBa
 		if err != nil {
 			return nil, err
 		}
+
 		balanceGogo := &baskettypes.BasketBalance{}
 		if err = ormutil.PulsarToGogoSlow(bal, balanceGogo); err != nil {
 			return nil, err
 		}
 		res.Balances = append(res.Balances, balanceGogo)
+
+		res.BalancesInfo = append(res.BalancesInfo, &baskettypes.BasketBalanceInfo{
+			BatchDenom: bal.BatchDenom,
+			Balance:    bal.Balance,
+		})
 	}
 	it.Close()
 

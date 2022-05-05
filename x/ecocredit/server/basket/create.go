@@ -22,12 +22,13 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
 		return nil, err
 	}
-	sender, err := sdk.AccAddressFromBech32(msg.Curator)
+
+	curator, err := sdk.AccAddressFromBech32(msg.Curator)
 	if err != nil {
 		return nil, err
 	}
 
-	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, sender)
+	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, curator)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +41,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	}
 
 	id, err := k.stateStore.BasketTable().InsertReturningID(ctx, &api.Basket{
-		Curator:           msg.Curator,
+		Curator:           curator,
 		BasketDenom:       denom,
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,

@@ -30,7 +30,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 
 	// insert project
 	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
-		Id: "P01",
+		Id: "C01-001",
 	})
 	assert.NilError(t, err)
 
