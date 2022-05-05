@@ -14,29 +14,29 @@ import (
 )
 
 var (
-	md_AllowedDenomProposal             protoreflect.MessageDescriptor
-	fd_AllowedDenomProposal_title       protoreflect.FieldDescriptor
-	fd_AllowedDenomProposal_description protoreflect.FieldDescriptor
-	fd_AllowedDenomProposal_denom       protoreflect.FieldDescriptor
+	md_AllowDenomProposal             protoreflect.MessageDescriptor
+	fd_AllowDenomProposal_title       protoreflect.FieldDescriptor
+	fd_AllowDenomProposal_description protoreflect.FieldDescriptor
+	fd_AllowDenomProposal_denom       protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_types_proto_init()
-	md_AllowedDenomProposal = File_regen_ecocredit_marketplace_v1_types_proto.Messages().ByName("AllowedDenomProposal")
-	fd_AllowedDenomProposal_title = md_AllowedDenomProposal.Fields().ByName("title")
-	fd_AllowedDenomProposal_description = md_AllowedDenomProposal.Fields().ByName("description")
-	fd_AllowedDenomProposal_denom = md_AllowedDenomProposal.Fields().ByName("denom")
+	md_AllowDenomProposal = File_regen_ecocredit_marketplace_v1_types_proto.Messages().ByName("AllowDenomProposal")
+	fd_AllowDenomProposal_title = md_AllowDenomProposal.Fields().ByName("title")
+	fd_AllowDenomProposal_description = md_AllowDenomProposal.Fields().ByName("description")
+	fd_AllowDenomProposal_denom = md_AllowDenomProposal.Fields().ByName("denom")
 }
 
-var _ protoreflect.Message = (*fastReflection_AllowedDenomProposal)(nil)
+var _ protoreflect.Message = (*fastReflection_AllowDenomProposal)(nil)
 
-type fastReflection_AllowedDenomProposal AllowedDenomProposal
+type fastReflection_AllowDenomProposal AllowDenomProposal
 
-func (x *AllowedDenomProposal) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_AllowedDenomProposal)(x)
+func (x *AllowDenomProposal) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AllowDenomProposal)(x)
 }
 
-func (x *AllowedDenomProposal) slowProtoReflect() protoreflect.Message {
+func (x *AllowDenomProposal) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_marketplace_v1_types_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -48,43 +48,43 @@ func (x *AllowedDenomProposal) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_AllowedDenomProposal_messageType fastReflection_AllowedDenomProposal_messageType
-var _ protoreflect.MessageType = fastReflection_AllowedDenomProposal_messageType{}
+var _fastReflection_AllowDenomProposal_messageType fastReflection_AllowDenomProposal_messageType
+var _ protoreflect.MessageType = fastReflection_AllowDenomProposal_messageType{}
 
-type fastReflection_AllowedDenomProposal_messageType struct{}
+type fastReflection_AllowDenomProposal_messageType struct{}
 
-func (x fastReflection_AllowedDenomProposal_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_AllowedDenomProposal)(nil)
+func (x fastReflection_AllowDenomProposal_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AllowDenomProposal)(nil)
 }
-func (x fastReflection_AllowedDenomProposal_messageType) New() protoreflect.Message {
-	return new(fastReflection_AllowedDenomProposal)
+func (x fastReflection_AllowDenomProposal_messageType) New() protoreflect.Message {
+	return new(fastReflection_AllowDenomProposal)
 }
-func (x fastReflection_AllowedDenomProposal_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_AllowedDenomProposal
+func (x fastReflection_AllowDenomProposal_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowDenomProposal
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_AllowedDenomProposal) Descriptor() protoreflect.MessageDescriptor {
-	return md_AllowedDenomProposal
+func (x *fastReflection_AllowDenomProposal) Descriptor() protoreflect.MessageDescriptor {
+	return md_AllowDenomProposal
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_AllowedDenomProposal) Type() protoreflect.MessageType {
-	return _fastReflection_AllowedDenomProposal_messageType
+func (x *fastReflection_AllowDenomProposal) Type() protoreflect.MessageType {
+	return _fastReflection_AllowDenomProposal_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_AllowedDenomProposal) New() protoreflect.Message {
-	return new(fastReflection_AllowedDenomProposal)
+func (x *fastReflection_AllowDenomProposal) New() protoreflect.Message {
+	return new(fastReflection_AllowDenomProposal)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_AllowedDenomProposal) Interface() protoreflect.ProtoMessage {
-	return (*AllowedDenomProposal)(x)
+func (x *fastReflection_AllowDenomProposal) Interface() protoreflect.ProtoMessage {
+	return (*AllowDenomProposal)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -92,22 +92,22 @@ func (x *fastReflection_AllowedDenomProposal) Interface() protoreflect.ProtoMess
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_AllowedDenomProposal) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_AllowDenomProposal) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Title != "" {
 		value := protoreflect.ValueOfString(x.Title)
-		if !f(fd_AllowedDenomProposal_title, value) {
+		if !f(fd_AllowDenomProposal_title, value) {
 			return
 		}
 	}
 	if x.Description != "" {
 		value := protoreflect.ValueOfString(x.Description)
-		if !f(fd_AllowedDenomProposal_description, value) {
+		if !f(fd_AllowDenomProposal_description, value) {
 			return
 		}
 	}
 	if x.Denom != nil {
 		value := protoreflect.ValueOfMessage(x.Denom.ProtoReflect())
-		if !f(fd_AllowedDenomProposal_denom, value) {
+		if !f(fd_AllowDenomProposal_denom, value) {
 			return
 		}
 	}
@@ -124,19 +124,19 @@ func (x *fastReflection_AllowedDenomProposal) Range(f func(protoreflect.FieldDes
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_AllowedDenomProposal) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_AllowDenomProposal) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
 		return x.Title != ""
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
 		return x.Description != ""
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		return x.Denom != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -146,19 +146,19 @@ func (x *fastReflection_AllowedDenomProposal) Has(fd protoreflect.FieldDescripto
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowedDenomProposal) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_AllowDenomProposal) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
 		x.Title = ""
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
 		x.Description = ""
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		x.Denom = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -168,22 +168,22 @@ func (x *fastReflection_AllowedDenomProposal) Clear(fd protoreflect.FieldDescrip
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_AllowedDenomProposal) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowDenomProposal) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
 		value := x.Title
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
 		value := x.Description
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		value := x.Denom
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -197,19 +197,19 @@ func (x *fastReflection_AllowedDenomProposal) Get(descriptor protoreflect.FieldD
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowedDenomProposal) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_AllowDenomProposal) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
 		x.Title = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
 		x.Description = value.Interface().(string)
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		x.Denom = value.Message().Interface().(*AllowedDenom)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -223,52 +223,52 @@ func (x *fastReflection_AllowedDenomProposal) Set(fd protoreflect.FieldDescripto
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowedDenomProposal) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowDenomProposal) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		if x.Denom == nil {
 			x.Denom = new(AllowedDenom)
 		}
 		return protoreflect.ValueOfMessage(x.Denom.ProtoReflect())
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
-		panic(fmt.Errorf("field title of message regen.ecocredit.marketplace.v1.AllowedDenomProposal is not mutable"))
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
-		panic(fmt.Errorf("field description of message regen.ecocredit.marketplace.v1.AllowedDenomProposal is not mutable"))
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
+		panic(fmt.Errorf("field title of message regen.ecocredit.marketplace.v1.AllowDenomProposal is not mutable"))
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
+		panic(fmt.Errorf("field description of message regen.ecocredit.marketplace.v1.AllowDenomProposal is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_AllowedDenomProposal) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_AllowDenomProposal) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.title":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.title":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.description":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.description":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom":
+	case "regen.ecocredit.marketplace.v1.AllowDenomProposal.denom":
 		m := new(AllowedDenom)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowedDenomProposal"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.AllowDenomProposal"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowedDenomProposal does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.AllowDenomProposal does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_AllowedDenomProposal) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_AllowDenomProposal) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.AllowedDenomProposal", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.AllowDenomProposal", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -276,7 +276,7 @@ func (x *fastReflection_AllowedDenomProposal) WhichOneof(d protoreflect.OneofDes
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_AllowedDenomProposal) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_AllowDenomProposal) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -287,7 +287,7 @@ func (x *fastReflection_AllowedDenomProposal) GetUnknown() protoreflect.RawField
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_AllowedDenomProposal) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_AllowDenomProposal) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -299,7 +299,7 @@ func (x *fastReflection_AllowedDenomProposal) SetUnknown(fields protoreflect.Raw
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_AllowedDenomProposal) IsValid() bool {
+func (x *fastReflection_AllowDenomProposal) IsValid() bool {
 	return x != nil
 }
 
@@ -309,9 +309,9 @@ func (x *fastReflection_AllowedDenomProposal) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_AllowedDenomProposal) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_AllowDenomProposal) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*AllowedDenomProposal)
+		x := input.Message.Interface().(*AllowDenomProposal)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -345,7 +345,7 @@ func (x *fastReflection_AllowedDenomProposal) ProtoMethods() *protoiface.Methods
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*AllowedDenomProposal)
+		x := input.Message.Interface().(*AllowDenomProposal)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -403,7 +403,7 @@ func (x *fastReflection_AllowedDenomProposal) ProtoMethods() *protoiface.Methods
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*AllowedDenomProposal)
+		x := input.Message.Interface().(*AllowDenomProposal)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -435,10 +435,10 @@ func (x *fastReflection_AllowedDenomProposal) ProtoMethods() *protoiface.Methods
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedDenomProposal: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowDenomProposal: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowedDenomProposal: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AllowDenomProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -589,9 +589,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AllowedDenomProposal is a gov Content type for approving a denom for use in
-// the marketplace.
-type AllowedDenomProposal struct {
+// AllowDenomProposal is a gov Content type for approving a denom for use in the
+// marketplace.
+type AllowDenomProposal struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -605,8 +605,8 @@ type AllowedDenomProposal struct {
 	Denom *AllowedDenom `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
-func (x *AllowedDenomProposal) Reset() {
-	*x = AllowedDenomProposal{}
+func (x *AllowDenomProposal) Reset() {
+	*x = AllowDenomProposal{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_marketplace_v1_types_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -614,32 +614,32 @@ func (x *AllowedDenomProposal) Reset() {
 	}
 }
 
-func (x *AllowedDenomProposal) String() string {
+func (x *AllowDenomProposal) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AllowedDenomProposal) ProtoMessage() {}
+func (*AllowDenomProposal) ProtoMessage() {}
 
-// Deprecated: Use AllowedDenomProposal.ProtoReflect.Descriptor instead.
-func (*AllowedDenomProposal) Descriptor() ([]byte, []int) {
+// Deprecated: Use AllowDenomProposal.ProtoReflect.Descriptor instead.
+func (*AllowDenomProposal) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_types_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AllowedDenomProposal) GetTitle() string {
+func (x *AllowDenomProposal) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *AllowedDenomProposal) GetDescription() string {
+func (x *AllowDenomProposal) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *AllowedDenomProposal) GetDenom() *AllowedDenom {
+func (x *AllowDenomProposal) GetDenom() *AllowedDenom {
 	if x != nil {
 		return x.Denom
 	}
@@ -657,36 +657,36 @@ var file_regen_ecocredit_marketplace_v1_types_proto_rawDesc = []byte{
 	0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61,
 	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x61,
 	0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x98,
-	0x01, 0x0a, 0x14, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x50,
-	0x72, 0x6f, 0x70, 0x6f, 0x73, 0x61, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x20, 0x0a,
-	0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12,
-	0x42, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e,
-	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x05, 0x64, 0x65,
-	0x6e, 0x6f, 0x6d, 0x3a, 0x04, 0x98, 0xa0, 0x1f, 0x00, 0x42, 0xa3, 0x02, 0x0a, 0x22, 0x63, 0x6f,
-	0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31,
-	0x42, 0x0a, 0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56,
-	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c,
-	0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c,
-	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02,
-	0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a,
-	0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x96,
+	0x01, 0x0a, 0x12, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x50, 0x72, 0x6f,
+	0x70, 0x6f, 0x73, 0x61, 0x6c, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x69, 0x74, 0x6c, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x64,
+	0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x64, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x42, 0x0a,
+	0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2c, 0x2e, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x6c,
+	0x6c, 0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f,
+	0x6d, 0x3a, 0x04, 0x98, 0xa0, 0x1f, 0x00, 0x42, 0xa3, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0a,
+	0x54, 0x79, 0x70, 0x65, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
+	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
+	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
+	0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -703,11 +703,11 @@ func file_regen_ecocredit_marketplace_v1_types_proto_rawDescGZIP() []byte {
 
 var file_regen_ecocredit_marketplace_v1_types_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_regen_ecocredit_marketplace_v1_types_proto_goTypes = []interface{}{
-	(*AllowedDenomProposal)(nil), // 0: regen.ecocredit.marketplace.v1.AllowedDenomProposal
-	(*AllowedDenom)(nil),         // 1: regen.ecocredit.marketplace.v1.AllowedDenom
+	(*AllowDenomProposal)(nil), // 0: regen.ecocredit.marketplace.v1.AllowDenomProposal
+	(*AllowedDenom)(nil),       // 1: regen.ecocredit.marketplace.v1.AllowedDenom
 }
 var file_regen_ecocredit_marketplace_v1_types_proto_depIdxs = []int32{
-	1, // 0: regen.ecocredit.marketplace.v1.AllowedDenomProposal.denom:type_name -> regen.ecocredit.marketplace.v1.AllowedDenom
+	1, // 0: regen.ecocredit.marketplace.v1.AllowDenomProposal.denom:type_name -> regen.ecocredit.marketplace.v1.AllowedDenom
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -723,7 +723,7 @@ func file_regen_ecocredit_marketplace_v1_types_proto_init() {
 	file_regen_ecocredit_marketplace_v1_state_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_regen_ecocredit_marketplace_v1_types_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AllowedDenomProposal); i {
+			switch v := v.(*AllowDenomProposal); i {
 			case 0:
 				return &v.state
 			case 1:

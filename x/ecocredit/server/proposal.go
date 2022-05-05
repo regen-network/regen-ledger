@@ -12,10 +12,10 @@ import (
 // ProposalKeeper defines methods for ecocredit gov handlers.
 type ProposalKeeper interface {
 	AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error
-	AllowDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error
+	AllowDenom(ctx sdk.Context, proposal *marketplace.AllowDenomProposal) error
 }
 
-func (s serverImpl) AllowDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error {
+func (s serverImpl) AllowDenom(ctx sdk.Context, proposal *marketplace.AllowDenomProposal) error {
 	return s.marketplaceKeeper.AllowDenom(ctx, proposal)
 }
 
@@ -28,7 +28,7 @@ func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 		switch c := content.(type) {
 		case *core.CreditTypeProposal:
 			return handleCreditTypeProposal(ctx, k, c)
-		case *marketplace.AllowedDenomProposal:
+		case *marketplace.AllowDenomProposal:
 			return handleAllowedDenomProposal(ctx, k, c)
 		default:
 			return sdkerrors.ErrUnknownRequest.Wrapf("unrecognized proposal content type: %T", c)
@@ -36,7 +36,7 @@ func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 	}
 }
 
-func handleAllowedDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowedDenomProposal) error {
+func handleAllowedDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowDenomProposal) error {
 	return k.AllowDenom(ctx, proposal)
 }
 

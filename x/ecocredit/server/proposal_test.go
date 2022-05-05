@@ -70,7 +70,7 @@ func TestProposal_AllowedDenom(t *testing.T) {
 	t.Parallel()
 	s := setup(t)
 	handler := NewProposalHandler(s.server)
-	proposal := marketplace.AllowedDenomProposal{
+	proposal := marketplace.AllowDenomProposal{
 		Title:       "regen token",
 		Description: "i would like to use the regen token in the marketplace",
 		Denom: &marketplace.AllowedDenom{

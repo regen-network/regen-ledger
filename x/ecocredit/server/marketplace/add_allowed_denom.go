@@ -10,7 +10,7 @@ import (
 
 // AllowDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
 // marketplace.
-func (k Keeper) AllowDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
+func (k Keeper) AllowDenom(ctx sdk.Context, p *marketplace.AllowDenomProposal) error {
 	if p == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
 	}

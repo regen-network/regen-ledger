@@ -9,22 +9,22 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-var _ govtypes.Content = &AllowedDenomProposal{}
+var _ govtypes.Content = &AllowDenomProposal{}
 
 const (
-	AllowedDenomProposalType = "AllowedDenomProposal"
+	AllowedDenomProposalType = "AllowDenomProposal"
 )
 
 func init() {
 	govtypes.RegisterProposalType(AllowedDenomProposalType)
-	govtypes.RegisterProposalTypeCodec(&AllowedDenomProposal{}, "regen/AllowedDenomProposal")
+	govtypes.RegisterProposalTypeCodec(&AllowDenomProposal{}, "regen/AllowDenomProposal")
 }
 
-func (m AllowedDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
+func (m AllowDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
-func (m AllowedDenomProposal) ProposalType() string { return AllowedDenomProposalType }
+func (m AllowDenomProposal) ProposalType() string { return AllowedDenomProposalType }
 
-func (m AllowedDenomProposal) ValidateBasic() error {
+func (m AllowDenomProposal) ValidateBasic() error {
 	if m.Denom == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("allowed denom cannot be nil")
 	}
@@ -34,7 +34,7 @@ func (m AllowedDenomProposal) ValidateBasic() error {
 	return govtypes.ValidateAbstract(&m)
 }
 
-func (m AllowedDenomProposal) String() string {
+func (m AllowDenomProposal) String() string {
 	return fmt.Sprintf(`Credit Type Proposal:
   Title:       %s
   Description: %s

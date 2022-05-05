@@ -57,7 +57,7 @@ relate the bank_denom to the display_denom and is informational`),
 				return err
 			}
 
-			var proposal marketplace.AllowedDenomProposal
+			var proposal marketplace.AllowDenomProposal
 			err = json.Unmarshal(proposalFile, &proposal)
 			if err != nil {
 				return err
