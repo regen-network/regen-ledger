@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	regenorm "github.com/regen-network/regen-ledger/orm"
 
@@ -31,27 +32,48 @@ func TestMigrations(t *testing.T) {
 	recipient1 := sdk.AccAddress("recipient1")
 	recipient2 := sdk.AccAddress("recipient2")
 
-	cdc := simapp.MakeTestEncodingConfig().Marshaler
-
 	ecocreditKey := sdk.NewKVStoreKey("ecocredit")
+	tecocreditKey := sdk.NewTransientStoreKey("transient_test")
+	encCfg := simapp.MakeTestEncodingConfig()
+	paramStore := paramtypes.NewSubspace(encCfg.Marshaler, encCfg.Amino, ecocreditKey, tecocreditKey, ecocredit.ModuleName)
+
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(ecocreditKey, sdk.StoreTypeIAVL, db)
+	cms.MountStoreWithDB(tecocreditKey, sdk.StoreTypeTransient, db)
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	store := sdkCtx.KVStore(ecocreditKey)
 
-	classInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.ClassInfoTablePrefix, ecocreditKey, &v3.ClassInfo{}, cdc)
+	paramStore.WithKeyTable(v3.ParamKeyTable())
+
+	ctypes := []*v3.CreditType{
+		{
+			Name:         "carbon",
+			Abbreviation: "C",
+			Unit:         "metric ton CO2 equivalent",
+			Precision:    6,
+		},
+		{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "ton",
+			Precision:    6,
+		},
+	}
+	paramStore.Set(sdkCtx, v3.KeyCreditTypes, &ctypes)
+
+	classInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.ClassInfoTablePrefix, ecocreditKey, &v3.ClassInfo{}, encCfg.Marshaler)
 	require.NoError(t, err)
 
 	classInfoTable := classInfoTableBuilder.Build()
-	batchInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.BatchInfoTablePrefix, ecocreditKey, &v3.BatchInfo{}, cdc)
+	batchInfoTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.BatchInfoTablePrefix, ecocreditKey, &v3.BatchInfo{}, encCfg.Marshaler)
 	require.NoError(t, err)
 
 	batchInfoTable := batchInfoTableBuilder.Build()
 
-	creditTypeSeqTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.CreditTypeSeqTablePrefix, ecocreditKey, &v3.CreditTypeSeq{}, cdc)
+	creditTypeSeqTableBuilder, err := regenorm.NewPrimaryKeyTableBuilder(v3.CreditTypeSeqTablePrefix, ecocreditKey, &v3.CreditTypeSeq{}, encCfg.Marshaler)
 	require.NoError(t, err)
 
 	creditTypeSeqTable := creditTypeSeqTableBuilder.Build()
@@ -147,7 +169,7 @@ func TestMigrations(t *testing.T) {
 	ss, err := api.NewStateStore(ormdb)
 	require.Nil(t, err)
 
-	err = v3.MigrateState(sdkCtx, ecocreditKey, cdc, ss)
+	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, paramStore)
 	require.NoError(t, err)
 
 	ctx := sdk.WrapSDKContext(sdkCtx)
@@ -242,6 +264,21 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, bs.TradableAmount, "610")
 	require.Equal(t, bs.RetiredAmount, "390")
 	require.Equal(t, bs.CancelledAmount, "0")
+
+	// verify credit types migration
+	carbon, err := ss.CreditTypeTable().Get(ctx, "C")
+	require.NoError(t, err)
+	require.Equal(t, carbon.Abbreviation, ctypes[0].Abbreviation)
+	require.Equal(t, carbon.Name, ctypes[0].Name)
+	require.Equal(t, carbon.Precision, ctypes[0].Precision)
+	require.Equal(t, carbon.Unit, ctypes[0].Unit)
+
+	bio, err := ss.CreditTypeTable().Get(ctx, "BIO")
+	require.NoError(t, err)
+	require.Equal(t, bio.Abbreviation, ctypes[1].Abbreviation)
+	require.Equal(t, bio.Name, ctypes[1].Name)
+	require.Equal(t, bio.Precision, ctypes[1].Precision)
+	require.Equal(t, bio.Unit, ctypes[1].Unit)
 
 	// verify old state is deleted
 	require.False(t, classInfoTable.Has(sdkCtx, regenorm.RowID("C01")))
