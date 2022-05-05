@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -27,16 +28,17 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            coreserver.Keeper
-	ctrl         *gomock.Controller
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *sdk.KVStoreKey
-	sdkCtx       sdk.Context
+	t             *testing.T
+	db            ormdb.ModuleDB
+	stateStore    api.StateStore
+	ctx           context.Context
+	k             coreserver.Keeper
+	ctrl          *gomock.Controller
+	bankKeeper    *mocks.MockBankKeeper
+	paramsKeeper  *mocks.MockParamKeeper
+	moduleAddress sdk.AccAddress
+	storeKey      *sdk.KVStoreKey
+	sdkCtx        sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -62,7 +64,8 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	_, _, s.moduleAddress = testdata.KeyTestPubAddr()
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.moduleAddress)
 
 	return s
 }

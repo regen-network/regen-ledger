@@ -41,6 +41,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, err
 	}
 	precision := ct.Precision
+	moduleAddrString := k.moduleAddress.String()
 	for _, iss := range req.Issuance {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		recipient, err := sdk.AccAddressFromBech32(iss.Recipient)
@@ -99,7 +100,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				return nil, err
 			}
 			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
-				Sender:         req.Issuer,
+				Sender:         moduleAddrString, // ecocredit module
 				Recipient:      iss.Recipient,
 				BatchDenom:     req.BatchDenom,
 				TradableAmount: iss.TradableAmount,

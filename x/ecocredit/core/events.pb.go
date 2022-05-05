@@ -242,12 +242,12 @@ type EventTransfer struct {
 	// sender is the sender of the credits. In the case that the credits were
 	// transferred from a base account, this will be the account address. In the
 	// case that the credits were transferred from a module, this will be the
-	// module name.
+	// module address.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// recipient is the recipient of the credits. In the case that the credits
 	// were transferred to a base account, this will be the account address. In
 	// the case that the credits were transferred to a module, this will be the
-	// module name.
+	// module address.
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`

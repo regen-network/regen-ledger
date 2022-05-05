@@ -27,19 +27,20 @@ import (
 )
 
 type baseSuite struct {
-	t            gocuke.TestingT
-	db           ormdb.ModuleDB
-	ctx          context.Context
-	k            basket.Keeper
-	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
-	stateStore   api.StateStore
-	coreStore    ecocreditApi.StateStore
-	paramsKeeper *mocks2.MockParamKeeper
-	bankKeeper   *mocks2.MockBankKeeper
-	storeKey     *sdk.KVStoreKey
-	sdkCtx       sdk.Context
-	distKeeper   *mocks2.MockDistributionKeeper
+	t             gocuke.TestingT
+	db            ormdb.ModuleDB
+	ctx           context.Context
+	k             basket.Keeper
+	ctrl          *gomock.Controller
+	addr          sdk.AccAddress
+	stateStore    api.StateStore
+	coreStore     ecocreditApi.StateStore
+	bankKeeper    *mocks2.MockBankKeeper
+	distKeeper    *mocks2.MockDistributionKeeper
+	paramsKeeper  *mocks2.MockParamKeeper
+	moduleAddress sdk.AccAddress
+	storeKey      *sdk.KVStoreKey
+	sdkCtx        sdk.Context
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -68,8 +69,9 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
 	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
 	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	_, _, s.moduleAddress = testdata.KeyTestPubAddr()
 
-	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper)
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper, s.moduleAddress)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecocreditApi.CreditType{

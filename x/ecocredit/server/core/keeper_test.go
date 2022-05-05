@@ -26,17 +26,18 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
-	db           ormdb.ModuleDB
-	stateStore   api.StateStore
-	ctx          context.Context
-	k            Keeper
-	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
-	bankKeeper   *mocks.MockBankKeeper
-	paramsKeeper *mocks.MockParamKeeper
-	storeKey     *sdk.KVStoreKey
-	sdkCtx       sdk.Context
+	t             *testing.T
+	db            ormdb.ModuleDB
+	stateStore    api.StateStore
+	ctx           context.Context
+	k             Keeper
+	ctrl          *gomock.Controller
+	addr          sdk.AccAddress
+	bankKeeper    *mocks.MockBankKeeper
+	paramsKeeper  *mocks.MockParamKeeper
+	moduleAddress sdk.AccAddress
+	storeKey      *sdk.KVStoreKey
+	sdkCtx        sdk.Context
 }
 
 func setupBase(t *testing.T) *baseSuite {
@@ -62,13 +63,14 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
+	_, _, s.moduleAddress = testdata.KeyTestPubAddr()
 	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
 		Abbreviation: "C",
 		Name:         "carbon",
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, s.moduleAddress)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

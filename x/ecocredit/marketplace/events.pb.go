@@ -114,25 +114,24 @@ func (m *EventUpdateSellOrder) GetOrderId() uint64 {
 	return 0
 }
 
-// EventAllowAskDenom is an event emitted when an ask denom is added.
-type EventAllowAskDenom struct {
-	// ask_denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS) when creating
-	// sell orders.
-	AskDenom string `protobuf:"bytes,1,opt,name=ask_denom,json=askDenom,proto3" json:"ask_denom,omitempty"`
+// EventAllowDenom is an event emitted when a denom is added to the list of allowed denoms for use in the marketplace.
+type EventAllowDenom struct {
+	// allowed_denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list of allowed denoms for use in the marketplace.
+	AllowedDenom string `protobuf:"bytes,1,opt,name=allowed_denom,json=allowedDenom,proto3" json:"allowed_denom,omitempty"`
 }
 
-func (m *EventAllowAskDenom) Reset()         { *m = EventAllowAskDenom{} }
-func (m *EventAllowAskDenom) String() string { return proto.CompactTextString(m) }
-func (*EventAllowAskDenom) ProtoMessage()    {}
-func (*EventAllowAskDenom) Descriptor() ([]byte, []int) {
+func (m *EventAllowDenom) Reset()         { *m = EventAllowDenom{} }
+func (m *EventAllowDenom) String() string { return proto.CompactTextString(m) }
+func (*EventAllowDenom) ProtoMessage()    {}
+func (*EventAllowDenom) Descriptor() ([]byte, []int) {
 	return fileDescriptor_68b71b54d42cf1d9, []int{2}
 }
-func (m *EventAllowAskDenom) XXX_Unmarshal(b []byte) error {
+func (m *EventAllowDenom) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventAllowAskDenom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventAllowDenom) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventAllowAskDenom.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventAllowDenom.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -142,21 +141,21 @@ func (m *EventAllowAskDenom) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *EventAllowAskDenom) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAllowAskDenom.Merge(m, src)
+func (m *EventAllowDenom) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAllowDenom.Merge(m, src)
 }
-func (m *EventAllowAskDenom) XXX_Size() int {
+func (m *EventAllowDenom) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventAllowAskDenom) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAllowAskDenom.DiscardUnknown(m)
+func (m *EventAllowDenom) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAllowDenom.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventAllowAskDenom proto.InternalMessageInfo
+var xxx_messageInfo_EventAllowDenom proto.InternalMessageInfo
 
-func (m *EventAllowAskDenom) GetAskDenom() string {
+func (m *EventAllowDenom) GetAllowedDenom() string {
 	if m != nil {
-		return m.AskDenom
+		return m.AllowedDenom
 	}
 	return ""
 }
@@ -164,7 +163,7 @@ func (m *EventAllowAskDenom) GetAskDenom() string {
 func init() {
 	proto.RegisterType((*EventSell)(nil), "regen.ecocredit.marketplace.v1.EventSell")
 	proto.RegisterType((*EventUpdateSellOrder)(nil), "regen.ecocredit.marketplace.v1.EventUpdateSellOrder")
-	proto.RegisterType((*EventAllowAskDenom)(nil), "regen.ecocredit.marketplace.v1.EventAllowAskDenom")
+	proto.RegisterType((*EventAllowDenom)(nil), "regen.ecocredit.marketplace.v1.EventAllowDenom")
 }
 
 func init() {
@@ -172,7 +171,7 @@ func init() {
 }
 
 var fileDescriptor_68b71b54d42cf1d9 = []byte{
-	// 239 bytes of a gzipped FileDescriptorProto
+	// 241 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xd2, 0x2e, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x4d, 0xce, 0x4f, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0xd1, 0xcf, 0x4d, 0x2c, 0xca,
 	0x4e, 0x2d, 0x29, 0xc8, 0x49, 0x4c, 0x4e, 0xd5, 0x2f, 0x33, 0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b,
@@ -180,14 +179,15 @@ var fileDescriptor_68b71b54d42cf1d9 = []byte{
 	0x52, 0xac, 0x57, 0x66, 0xa8, 0xa4, 0xc6, 0xc5, 0xe9, 0x0a, 0x52, 0x1f, 0x9c, 0x9a, 0x93, 0x23,
 	0x24, 0xc9, 0xc5, 0x91, 0x5f, 0x94, 0x92, 0x5a, 0x14, 0x9f, 0x99, 0x22, 0xc1, 0xa8, 0xc0, 0xa8,
 	0xc1, 0x12, 0xc4, 0x0e, 0xe6, 0x7b, 0xa6, 0x28, 0x19, 0x72, 0x89, 0x80, 0xd5, 0x85, 0x16, 0xa4,
-	0x24, 0x96, 0xa4, 0x82, 0x54, 0xfb, 0x83, 0x64, 0xf0, 0x6b, 0x11, 0x02, 0x6b, 0x71, 0xcc, 0xc9,
-	0xc9, 0x2f, 0x77, 0x2c, 0xce, 0x76, 0x49, 0xcd, 0xcb, 0xcf, 0x15, 0x92, 0xe6, 0xe2, 0x4c, 0x2c,
-	0xce, 0x8e, 0x4f, 0x01, 0x71, 0xc0, 0x3a, 0x38, 0x83, 0x38, 0x12, 0xa1, 0x92, 0x4e, 0xe1, 0x27,
-	0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c,
-	0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0x65, 0x9b, 0x9e, 0x59, 0x92, 0x51, 0x9a,
-	0xa4, 0x97, 0x9c, 0x9f, 0xab, 0x0f, 0xf6, 0x92, 0x6e, 0x5e, 0x6a, 0x49, 0x79, 0x7e, 0x51, 0x36,
-	0x94, 0x97, 0x93, 0x9a, 0x92, 0x9e, 0x5a, 0xa4, 0x5f, 0x81, 0x3d, 0x58, 0x92, 0xd8, 0xc0, 0xa1,
-	0x61, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xfa, 0x0d, 0x4e, 0x30, 0x3c, 0x01, 0x00, 0x00,
+	0x24, 0x96, 0xa4, 0x82, 0x54, 0xfb, 0x83, 0x64, 0xf0, 0x69, 0x31, 0xe3, 0xe2, 0x07, 0x6b, 0x71,
+	0xcc, 0xc9, 0xc9, 0x2f, 0x77, 0x49, 0xcd, 0xcb, 0xcf, 0x15, 0x52, 0xe6, 0xe2, 0x4d, 0x04, 0xf1,
+	0x52, 0x53, 0xe2, 0x53, 0x40, 0x02, 0x60, 0x2d, 0x9c, 0x41, 0x3c, 0x50, 0x41, 0xb0, 0x22, 0xa7,
+	0xf0, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63,
+	0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0xb2, 0x4d, 0xcf, 0x2c, 0xc9,
+	0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x07, 0xfb, 0x4b, 0x37, 0x2f, 0xb5, 0xa4, 0x3c, 0xbf,
+	0x28, 0x1b, 0xca, 0xcb, 0x49, 0x4d, 0x49, 0x4f, 0x2d, 0xd2, 0xaf, 0xc0, 0x1e, 0x36, 0x49, 0x6c,
+	0xe0, 0x20, 0x31, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x79, 0xa5, 0x77, 0x41, 0x41, 0x01, 0x00,
+	0x00,
 }
 
 func (m *EventSell) Marshal() (dAtA []byte, err error) {
@@ -246,7 +246,7 @@ func (m *EventUpdateSellOrder) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventAllowAskDenom) Marshal() (dAtA []byte, err error) {
+func (m *EventAllowDenom) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -256,20 +256,20 @@ func (m *EventAllowAskDenom) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAllowAskDenom) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventAllowDenom) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAllowAskDenom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventAllowDenom) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.AskDenom) > 0 {
-		i -= len(m.AskDenom)
-		copy(dAtA[i:], m.AskDenom)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.AskDenom)))
+	if len(m.AllowedDenom) > 0 {
+		i -= len(m.AllowedDenom)
+		copy(dAtA[i:], m.AllowedDenom)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.AllowedDenom)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -311,13 +311,13 @@ func (m *EventUpdateSellOrder) Size() (n int) {
 	return n
 }
 
-func (m *EventAllowAskDenom) Size() (n int) {
+func (m *EventAllowDenom) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.AskDenom)
+	l = len(m.AllowedDenom)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -468,7 +468,7 @@ func (m *EventUpdateSellOrder) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventAllowAskDenom) Unmarshal(dAtA []byte) error {
+func (m *EventAllowDenom) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -491,15 +491,15 @@ func (m *EventAllowAskDenom) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventAllowAskDenom: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventAllowDenom: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAllowAskDenom: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventAllowDenom: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AskDenom", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowedDenom", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -527,7 +527,7 @@ func (m *EventAllowAskDenom) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AskDenom = string(dAtA[iNdEx:postIndex])
+			m.AllowedDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

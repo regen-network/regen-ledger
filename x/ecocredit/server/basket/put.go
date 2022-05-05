@@ -37,6 +37,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	amountReceived := sdk.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	ownerString := ownerAddr.String()
+	moduleAddrString := k.moduleAddress.String()
 	for _, credit := range req.Credits {
 		// get credit batch info
 		batchInfo, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
@@ -70,7 +71,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         ownerString,
-			Recipient:      baskettypes.BasketSubModuleName,
+			Recipient:      moduleAddrString, // basket submodule
 			BatchDenom:     credit.BatchDenom,
 			TradableAmount: credit.Amount,
 		}); err != nil {

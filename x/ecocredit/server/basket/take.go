@@ -157,8 +157,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&baskettypes.EventTake{
 		Owner:       msg.Owner,
 		BasketDenom: msg.BasketDenom,
-		Credits:     credits,
-		Amount:      msg.Amount,
+		Credits:     credits,    // deprecated
+		Amount:      msg.Amount, // deprecated
 	})
 	return &baskettypes.MsgTakeResponse{
 		Credits: credits,
@@ -176,7 +176,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			return err
 		}
 		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
-			Sender:         baskettypes.BasketSubModuleName,
+			Sender:         k.moduleAddress.String(), // basket submodule
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
 			TradableAmount: amount.String(),
@@ -189,7 +189,7 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 			return err
 		}
 		err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
-			Sender:        baskettypes.BasketSubModuleName,
+			Sender:        k.moduleAddress.String(), // basket submodule
 			Recipient:     owner.String(),
 			BatchDenom:    batchDenom,
 			RetiredAmount: amount.String(),

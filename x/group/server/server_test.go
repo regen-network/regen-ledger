@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -50,11 +51,12 @@ func TestServer(t *testing.T) {
 	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
-		authtypes.FeeCollectorName:     nil,
-		minttypes.ModuleName:           {authtypes.Minter},
-		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		ecocredittypes.ModuleName:      {authtypes.Burner},
+		authtypes.FeeCollectorName:      nil,
+		minttypes.ModuleName:            {authtypes.Minter},
+		stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+		ecocredittypes.ModuleName:       {authtypes.Burner},
+		baskettypes.BasketSubModuleName: {authtypes.Burner, authtypes.Minter},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
