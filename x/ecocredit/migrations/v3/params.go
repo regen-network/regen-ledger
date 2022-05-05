@@ -1,4 +1,4 @@
-package ecocredit
+package v3
 
 import (
 	"regexp"
@@ -19,10 +19,16 @@ var (
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
 
-// TODO: remove after we open governance changes for precision
+const GasCostPerIteration = uint64(10)
+
 const (
 	PRECISION uint32 = 6
 )
+
+// ParamKeyTable returns the parameter key table.
+func ParamKeyTable() paramtypes.KeyTable {
+	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
+}
 
 // Implements params.ParamSet
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
@@ -130,7 +136,6 @@ func validateCreditTypes(i interface{}) error {
 		}
 
 		// Validate precision
-		// TODO: remove after we open governance changes for precision
 		if creditType.Precision != PRECISION {
 			return sdkerrors.ErrInvalidRequest.Wrapf("invalid precision %d: precision is currently locked to %d", creditType.Precision, PRECISION)
 		}
@@ -148,8 +153,7 @@ func validateCreditTypes(i interface{}) error {
 	return nil
 }
 
-// Check that CreditType abbreviation is valid, i.e. it consists of 1-3
-// uppercase letters
+// ValidateCreditTypeAbbreviation asserts that the argument is 1-3 latin alphabet uppercase letters
 func ValidateCreditTypeAbbreviation(abbr string) error {
 	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
 	matches := reAbbr.FindStringSubmatch(abbr)
@@ -170,33 +174,4 @@ func validateBasketCreationFee(i interface{}) error {
 	}
 
 	return nil
-}
-
-// NewParams creates a new Params object.
-func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType, basketCreationFee sdk.Coins) Params {
-	return Params{
-		CreditClassFee:       creditClassFee,
-		AllowedClassCreators: allowlist,
-		AllowlistEnabled:     allowlistEnabled,
-		CreditTypes:          creditTypes,
-		BasketCreationFee:    basketCreationFee,
-	}
-}
-
-// DefaultParams returns a default set of parameters.
-func DefaultParams() Params {
-	return NewParams(
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
-		[]string{},
-		false,
-		[]*CreditType{
-			{
-				Name:         "carbon",
-				Abbreviation: "C",
-				Unit:         "metric ton CO2 equivalent",
-				Precision:    PRECISION,
-			},
-		},
-		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
-	)
 }

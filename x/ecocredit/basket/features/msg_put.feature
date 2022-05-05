@@ -8,7 +8,7 @@ Feature: MsgPut
       "basket_denom": "NCT",
       "credits": [
         {
-          "batch_denom": "C01-20200101-20210101-001",
+          "batch_denom": "C01-001-20200101-20210101-001",
           "amount": "100"
         }
       ]
@@ -95,7 +95,7 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "invalid denom: expected format A00-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "invalid denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if a credit amount is empty
     Given the message
@@ -105,7 +105,7 @@ Feature: MsgPut
       "basket_denom": "NCT",
       "credits": [
         {
-          "batch_denom": "C01-20200101-20210101-001"
+          "batch_denom": "C01-001-20200101-20210101-001"
         }
       ]
     }
@@ -121,7 +121,7 @@ Feature: MsgPut
       "basket_denom": "NCT",
       "credits": [
         {
-          "batch_denom": "C01-20200101-20210101-001",
+          "batch_denom": "C01-001-20200101-20210101-001",
           "amount": "foo"
         }
       ]
@@ -138,7 +138,7 @@ Feature: MsgPut
       "basket_denom": "NCT",
       "credits": [
         {
-          "batch_denom": "C01-20200101-20210101-001",
+          "batch_denom": "C01-001-20200101-20210101-001",
           "amount": "-100"
         }
       ]

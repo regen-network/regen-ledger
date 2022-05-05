@@ -43,7 +43,7 @@ func (m MsgPut) ValidateBasic() error {
 				return sdkerrors.ErrInvalidRequest.Wrap("credit batch denom cannot be empty")
 			}
 
-			if err := core.ValidateDenom(credit.BatchDenom); err != nil {
+			if err := core.ValidateBatchDenom(credit.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 

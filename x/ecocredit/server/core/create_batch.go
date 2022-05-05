@@ -45,7 +45,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	batchDenom, err := core.FormatDenom(classInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenom, err := core.FormatBatchDenom(projectInfo.Id, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -130,21 +130,9 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	totalAmount, err := tradableSupply.Add(retiredSupply)
-	if err != nil {
-		return nil, err
-	}
-
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
-		ClassId:             classInfo.Id,
-		BatchDenom:          batchDenom,
-		Issuer:              req.Issuer,
-		TotalAmount:         totalAmount.String(),
-		StartDate:           startDate.String(),
-		EndDate:             endDate.String(),
-		IssuanceDate:        issuanceDate.String(),
-		ProjectJurisdiction: projectInfo.Jurisdiction,
-		ProjectId:           projectInfo.Id,
+		BatchDenom: batchDenom,
+		Issuer:     req.Issuer,
 	}); err != nil {
 		return nil, err
 	}

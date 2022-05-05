@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/regen-network/gocuke"
-
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -40,8 +39,6 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
 	s.bob = s.addrs[1]
-
-	// values used if not specified
 	s.classId = "C01"
 	s.creditTypeAbbrev = "C"
 	s.batchDenom = "C01-20200101-20210101-001"
@@ -287,12 +284,12 @@ func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 	s.bankKeeper.EXPECT().
 		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.alice, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),
@@ -313,12 +310,12 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountIntoTheBasket(a string) {
 	s.bankKeeper.EXPECT().
 		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.alice, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),
@@ -339,12 +336,12 @@ func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a strin
 	s.bankKeeper.EXPECT().
 		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.alice, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),
@@ -365,12 +362,12 @@ func (s *putSuite) BobAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a string)
 	s.bankKeeper.EXPECT().
 		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.bob, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.bob.String(),
@@ -391,12 +388,12 @@ func (s *putSuite) AliceAttemptsToPutCreditsIntoTheBasket() {
 	s.bankKeeper.EXPECT().
 		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.alice, coins).
 		Return(nil).
-		AnyTimes() // may not be called on failed attempt
+		AnyTimes() // not expected on failed attempt
 
 	_, s.err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.alice.String(),

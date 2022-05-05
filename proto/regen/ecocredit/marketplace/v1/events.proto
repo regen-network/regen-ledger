@@ -2,65 +2,26 @@ syntax = "proto3";
 
 package regen.ecocredit.marketplace.v1;
 
-import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/timestamp.proto";
-
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketplace";
 
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
 
+  // owner is the owner of the sell order.
+  string owner = 1;
+
   // order_id is the unique ID of sell order.
-  uint64 order_id = 1;
-
-  // batch_denom is the credit batch being sold.
-  string batch_denom = 2;
-
-  // quantity is the quantity of credits being sold.
-  string quantity = 3;
-
-  // ask_price is the price the seller is asking for each unit of the
-  // batch_denom. Each credit unit of the batch will be sold for at least the
-  // ask_price or more.
-  cosmos.base.v1beta1.Coin ask_price = 4;
-
-  // disable_auto_retire disables auto-retirement of credits which allows a
-  // buyer to disable auto-retirement in their buy order enabling them to
-  // resell the credits to another buyer.
-  bool disable_auto_retire = 5;
-
-  // expiration is an optional timestamp when the sell order expires. When the
-  // expiration time is reached, the sell order is removed from state.
-  google.protobuf.Timestamp expiration = 6 [ (gogoproto.stdtime) = true ];
+  uint64 order_id = 2;
 }
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 message EventUpdateSellOrder {
 
-  // owner is the owner of the sell orders.
+  // owner is the owner of the sell order.
   string owner = 1;
 
-  //  sell_order_id is the ID of an existing sell order.
-  uint64 sell_order_id = 2;
-
-  // batch_denom is the credit batch being sold.
-  string batch_denom = 3;
-
-  // new_quantity is the updated quantity of credits available to sell, if it
-  // is set to zero then the order is cancelled.
-  string new_quantity = 4;
-
-  // new_ask_price is the new ask price for this sell order
-  cosmos.base.v1beta1.Coin new_ask_price = 5;
-
-  // disable_auto_retire updates the disable_auto_retire field in the sell
-  // order.
-  bool disable_auto_retire = 6;
-
-  // new_expiration is an optional timestamp when the sell order expires. When
-  // the expiration time is reached, the sell order is removed from state.
-  google.protobuf.Timestamp new_expiration = 7 [ (gogoproto.stdtime) = true ];
+  //  order_id is the ID of an existing sell order.
+  uint64 order_id = 2;
 }
 
 // EventAllowAskDenom is an event emitted when an ask denom is added.
@@ -68,11 +29,4 @@ message EventAllowAskDenom {
 
   // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 1;
-
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 2;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 3;
 }
