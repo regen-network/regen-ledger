@@ -73,7 +73,7 @@ func TestProposal_AllowedDenom(t *testing.T) {
 	proposal := marketplace.AllowedDenomProposal{
 		Title:       "regen token",
 		Description: "i would like to use the regen token in the marketplace",
-		AllowedDenom: &marketplace.AllowedDenom{
+		Denom: &marketplace.AllowedDenom{
 			BankDenom:    "uregen",
 			DisplayDenom: "regen",
 			Exponent:     18,
@@ -84,7 +84,7 @@ func TestProposal_AllowedDenom(t *testing.T) {
 	res, err := s.server.marketplaceKeeper.AllowedDenoms(s.ctx, &marketplace.QueryAllowedDenomsRequest{})
 	assert.NilError(t, err)
 	assert.Check(t, len(res.AllowedDenoms) == 1)
-	assert.DeepEqual(t, proposal.AllowedDenom, res.AllowedDenoms[0])
+	assert.DeepEqual(t, proposal.Denom, res.AllowedDenoms[0])
 }
 
 func TestProposal_Invalid(t *testing.T) {

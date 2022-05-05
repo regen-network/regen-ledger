@@ -949,25 +949,25 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 }
 
 var (
-	md_EventAllowedDenomAdded       protoreflect.MessageDescriptor
-	fd_EventAllowedDenomAdded_denom protoreflect.FieldDescriptor
+	md_EventAllowDenom       protoreflect.MessageDescriptor
+	fd_EventAllowDenom_denom protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_events_proto_init()
-	md_EventAllowedDenomAdded = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventAllowedDenomAdded")
-	fd_EventAllowedDenomAdded_denom = md_EventAllowedDenomAdded.Fields().ByName("denom")
+	md_EventAllowDenom = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventAllowDenom")
+	fd_EventAllowDenom_denom = md_EventAllowDenom.Fields().ByName("denom")
 }
 
-var _ protoreflect.Message = (*fastReflection_EventAllowedDenomAdded)(nil)
+var _ protoreflect.Message = (*fastReflection_EventAllowDenom)(nil)
 
-type fastReflection_EventAllowedDenomAdded EventAllowedDenomAdded
+type fastReflection_EventAllowDenom EventAllowDenom
 
-func (x *EventAllowedDenomAdded) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_EventAllowedDenomAdded)(x)
+func (x *EventAllowDenom) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventAllowDenom)(x)
 }
 
-func (x *EventAllowedDenomAdded) slowProtoReflect() protoreflect.Message {
+func (x *EventAllowDenom) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -979,43 +979,43 @@ func (x *EventAllowedDenomAdded) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_EventAllowedDenomAdded_messageType fastReflection_EventAllowedDenomAdded_messageType
-var _ protoreflect.MessageType = fastReflection_EventAllowedDenomAdded_messageType{}
+var _fastReflection_EventAllowDenom_messageType fastReflection_EventAllowDenom_messageType
+var _ protoreflect.MessageType = fastReflection_EventAllowDenom_messageType{}
 
-type fastReflection_EventAllowedDenomAdded_messageType struct{}
+type fastReflection_EventAllowDenom_messageType struct{}
 
-func (x fastReflection_EventAllowedDenomAdded_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_EventAllowedDenomAdded)(nil)
+func (x fastReflection_EventAllowDenom_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventAllowDenom)(nil)
 }
-func (x fastReflection_EventAllowedDenomAdded_messageType) New() protoreflect.Message {
-	return new(fastReflection_EventAllowedDenomAdded)
+func (x fastReflection_EventAllowDenom_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventAllowDenom)
 }
-func (x fastReflection_EventAllowedDenomAdded_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventAllowedDenomAdded
+func (x fastReflection_EventAllowDenom_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAllowDenom
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_EventAllowedDenomAdded) Descriptor() protoreflect.MessageDescriptor {
-	return md_EventAllowedDenomAdded
+func (x *fastReflection_EventAllowDenom) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventAllowDenom
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_EventAllowedDenomAdded) Type() protoreflect.MessageType {
-	return _fastReflection_EventAllowedDenomAdded_messageType
+func (x *fastReflection_EventAllowDenom) Type() protoreflect.MessageType {
+	return _fastReflection_EventAllowDenom_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_EventAllowedDenomAdded) New() protoreflect.Message {
-	return new(fastReflection_EventAllowedDenomAdded)
+func (x *fastReflection_EventAllowDenom) New() protoreflect.Message {
+	return new(fastReflection_EventAllowDenom)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_EventAllowedDenomAdded) Interface() protoreflect.ProtoMessage {
-	return (*EventAllowedDenomAdded)(x)
+func (x *fastReflection_EventAllowDenom) Interface() protoreflect.ProtoMessage {
+	return (*EventAllowDenom)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1023,10 +1023,10 @@ func (x *fastReflection_EventAllowedDenomAdded) Interface() protoreflect.ProtoMe
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_EventAllowedDenomAdded) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_EventAllowDenom) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Denom != "" {
 		value := protoreflect.ValueOfString(x.Denom)
-		if !f(fd_EventAllowedDenomAdded_denom, value) {
+		if !f(fd_EventAllowDenom_denom, value) {
 			return
 		}
 	}
@@ -1043,15 +1043,15 @@ func (x *fastReflection_EventAllowedDenomAdded) Range(f func(protoreflect.FieldD
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_EventAllowedDenomAdded) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_EventAllowDenom) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
 		return x.Denom != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1061,15 +1061,15 @@ func (x *fastReflection_EventAllowedDenomAdded) Has(fd protoreflect.FieldDescrip
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAllowedDenomAdded) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_EventAllowDenom) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
 		x.Denom = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1079,16 +1079,16 @@ func (x *fastReflection_EventAllowedDenomAdded) Clear(fd protoreflect.FieldDescr
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_EventAllowedDenomAdded) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAllowDenom) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
 		value := x.Denom
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1102,15 +1102,15 @@ func (x *fastReflection_EventAllowedDenomAdded) Get(descriptor protoreflect.Fiel
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAllowedDenomAdded) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_EventAllowDenom) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
 		x.Denom = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1124,40 +1124,40 @@ func (x *fastReflection_EventAllowedDenomAdded) Set(fd protoreflect.FieldDescrip
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAllowedDenomAdded) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAllowDenom) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
-		panic(fmt.Errorf("field denom of message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded is not mutable"))
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
+		panic(fmt.Errorf("field denom of message regen.ecocredit.marketplace.v1.EventAllowDenom is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_EventAllowedDenomAdded) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_EventAllowDenom) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventAllowedDenomAdded.denom":
+	case "regen.ecocredit.marketplace.v1.EventAllowDenom.denom":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventAllowDenom"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowedDenomAdded does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventAllowDenom does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_EventAllowedDenomAdded) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_EventAllowDenom) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.EventAllowedDenomAdded", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.EventAllowDenom", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1165,7 +1165,7 @@ func (x *fastReflection_EventAllowedDenomAdded) WhichOneof(d protoreflect.OneofD
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_EventAllowedDenomAdded) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_EventAllowDenom) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1176,7 +1176,7 @@ func (x *fastReflection_EventAllowedDenomAdded) GetUnknown() protoreflect.RawFie
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_EventAllowedDenomAdded) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_EventAllowDenom) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1188,7 +1188,7 @@ func (x *fastReflection_EventAllowedDenomAdded) SetUnknown(fields protoreflect.R
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_EventAllowedDenomAdded) IsValid() bool {
+func (x *fastReflection_EventAllowDenom) IsValid() bool {
 	return x != nil
 }
 
@@ -1198,9 +1198,9 @@ func (x *fastReflection_EventAllowedDenomAdded) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_EventAllowedDenomAdded) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_EventAllowDenom) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*EventAllowedDenomAdded)
+		x := input.Message.Interface().(*EventAllowDenom)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1226,7 +1226,7 @@ func (x *fastReflection_EventAllowedDenomAdded) ProtoMethods() *protoiface.Metho
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*EventAllowedDenomAdded)
+		x := input.Message.Interface().(*EventAllowDenom)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1263,7 +1263,7 @@ func (x *fastReflection_EventAllowedDenomAdded) ProtoMethods() *protoiface.Metho
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*EventAllowedDenomAdded)
+		x := input.Message.Interface().(*EventAllowDenom)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1295,10 +1295,10 @@ func (x *fastReflection_EventAllowedDenomAdded) ProtoMethods() *protoiface.Metho
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAllowedDenomAdded: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAllowDenom: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAllowedDenomAdded: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAllowDenom: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -1473,9 +1473,9 @@ func (x *EventUpdateSellOrder) GetOrderId() uint64 {
 	return 0
 }
 
-// EventAllowedDenomAdded is an event emitted when a new denom is added for use
-// in the marketplace.
-type EventAllowedDenomAdded struct {
+// EventAllowDenom is an event emitted when a new denom is added for use in the
+// marketplace.
+type EventAllowDenom struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -1484,8 +1484,8 @@ type EventAllowedDenomAdded struct {
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
-func (x *EventAllowedDenomAdded) Reset() {
-	*x = EventAllowedDenomAdded{}
+func (x *EventAllowDenom) Reset() {
+	*x = EventAllowDenom{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1493,18 +1493,18 @@ func (x *EventAllowedDenomAdded) Reset() {
 	}
 }
 
-func (x *EventAllowedDenomAdded) String() string {
+func (x *EventAllowDenom) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*EventAllowedDenomAdded) ProtoMessage() {}
+func (*EventAllowDenom) ProtoMessage() {}
 
-// Deprecated: Use EventAllowedDenomAdded.ProtoReflect.Descriptor instead.
-func (*EventAllowedDenomAdded) Descriptor() ([]byte, []int) {
+// Deprecated: Use EventAllowDenom.ProtoReflect.Descriptor instead.
+func (*EventAllowDenom) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *EventAllowedDenomAdded) GetDenom() string {
+func (x *EventAllowDenom) GetDenom() string {
 	if x != nil {
 		return x.Denom
 	}
@@ -1527,29 +1527,28 @@ var file_regen_ecocredit_marketplace_v1_events_proto_rawDesc = []byte{
 	0x64, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72, 0x64,
 	0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6f, 0x72, 0x64,
-	0x65, 0x72, 0x49, 0x64, 0x22, 0x2e, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c,
-	0x6f, 0x77, 0x65, 0x64, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x41, 0x64, 0x64, 0x65, 0x64, 0x12, 0x14,
-	0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64,
-	0x65, 0x6e, 0x6f, 0x6d, 0x42, 0xa4, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74,
-	0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65,
-	0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
-	0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
-	0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65,
-	0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72,
-	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a,
-	0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b,
-	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x72, 0x49, 0x64, 0x22, 0x27, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c,
+	0x6f, 0x77, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x42, 0xa4, 0x02,
+	0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
+	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72,
+	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
+	0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
+	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
+	0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
+	0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65,
+	0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1566,9 +1565,9 @@ func file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP() []byte {
 
 var file_regen_ecocredit_marketplace_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_regen_ecocredit_marketplace_v1_events_proto_goTypes = []interface{}{
-	(*EventSell)(nil),              // 0: regen.ecocredit.marketplace.v1.EventSell
-	(*EventUpdateSellOrder)(nil),   // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
-	(*EventAllowedDenomAdded)(nil), // 2: regen.ecocredit.marketplace.v1.EventAllowedDenomAdded
+	(*EventSell)(nil),            // 0: regen.ecocredit.marketplace.v1.EventSell
+	(*EventUpdateSellOrder)(nil), // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
+	(*EventAllowDenom)(nil),      // 2: regen.ecocredit.marketplace.v1.EventAllowDenom
 }
 var file_regen_ecocredit_marketplace_v1_events_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -1609,7 +1608,7 @@ func file_regen_ecocredit_marketplace_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAllowedDenomAdded); i {
+			switch v := v.(*EventAllowDenom); i {
 			case 0:
 				return &v.state
 			case 1:

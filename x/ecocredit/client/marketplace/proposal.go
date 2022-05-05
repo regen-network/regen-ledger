@@ -20,16 +20,16 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-var AllowedDenomProposal = govclient.NewProposalHandler(TxAllowedDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
+var AllowDenomProposalHandler = govclient.NewProposalHandler(TxAllowDenomProposal, func(context client.Context) rest.ProposalRESTHandler {
 	return rest.ProposalRESTHandler{
 		SubRoute: "",
 		Handler:  nil,
 	}
 })
 
-func TxAllowedDenomProposal() *cobra.Command {
+func TxAllowDenomProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "allowed-denom-proposal [path_to_file.json] [flags]",
+		Use:   "allow-denom-proposal [path_to_file.json] [flags]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Submit a proposal to add a denom to the list of allowed denoms",
 		Long: strings.TrimSpace(`Submit a proposal to add a denom to the list of allowed denoms for use in the marketplace. 

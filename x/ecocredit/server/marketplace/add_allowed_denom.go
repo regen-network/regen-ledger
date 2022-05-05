@@ -8,16 +8,16 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
-// AddAllowedDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
+// AllowDenom is a gov handler method that adds a denom to the list of approved denoms that may be used in the
 // marketplace.
-func (k Keeper) AddAllowedDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
+func (k Keeper) AllowDenom(ctx sdk.Context, p *marketplace.AllowedDenomProposal) error {
 	if p == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
 	}
 	if err := p.ValidateBasic(); err != nil {
 		return err
 	}
-	denom := p.AllowedDenom
+	denom := p.Denom
 	if err := k.stateStore.AllowedDenomTable().Insert(sdk.WrapSDKContext(ctx), &api.AllowedDenom{
 		BankDenom:    denom.BankDenom,
 		DisplayDenom: denom.DisplayDenom,
@@ -25,5 +25,5 @@ func (k Keeper) AddAllowedDenom(ctx sdk.Context, p *marketplace.AllowedDenomProp
 	}); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not add denom %s: %s", denom.BankDenom, err.Error())
 	}
-	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowedDenomAdded{Denom: denom.BankDenom})
+	return ctx.EventManager().EmitTypedEvent(&marketplace.EventAllowDenom{Denom: denom.BankDenom})
 }

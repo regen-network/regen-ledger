@@ -24,9 +24,9 @@ message EventUpdateSellOrder {
   uint64 order_id = 2;
 }
 
-// EventAllowedDenomAdded is an event emitted when a new denom is added for use
-// in the marketplace.
-message EventAllowedDenomAdded {
+// EventAllowDenom is an event emitted when a new denom is added for use in the
+// marketplace.
+message EventAllowDenom {
 
   // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 1;

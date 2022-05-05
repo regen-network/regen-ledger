@@ -57,9 +57,9 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &AllowedDenomProposal{
-				Title:        tt.fields.Title,
-				Description:  tt.fields.Description,
-				AllowedDenom: tt.fields.AllowedDenom,
+				Title:       tt.fields.Title,
+				Description: tt.fields.Description,
+				Denom:       tt.fields.AllowedDenom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

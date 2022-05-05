@@ -12,11 +12,11 @@ import (
 // ProposalKeeper defines methods for ecocredit gov handlers.
 type ProposalKeeper interface {
 	AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error
-	AddAskDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error
+	AllowDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error
 }
 
-func (s serverImpl) AddAskDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error {
-	return s.marketplaceKeeper.AddAllowedDenom(ctx, proposal)
+func (s serverImpl) AllowDenom(ctx sdk.Context, proposal *marketplace.AllowedDenomProposal) error {
+	return s.marketplaceKeeper.AllowDenom(ctx, proposal)
 }
 
 func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error {
@@ -37,7 +37,7 @@ func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 }
 
 func handleAllowedDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowedDenomProposal) error {
-	return k.AddAskDenom(ctx, proposal)
+	return k.AllowDenom(ctx, proposal)
 }
 
 func handleCreditTypeProposal(ctx sdk.Context, k ProposalKeeper, proposal *core.CreditTypeProposal) error {

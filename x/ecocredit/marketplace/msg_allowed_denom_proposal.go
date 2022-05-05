@@ -25,10 +25,10 @@ func (m AllowedDenomProposal) ProposalRoute() string { return ecocredit.RouterKe
 func (m AllowedDenomProposal) ProposalType() string { return AllowedDenomProposalType }
 
 func (m AllowedDenomProposal) ValidateBasic() error {
-	if m.AllowedDenom == nil {
+	if m.Denom == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("allowed denom cannot be nil")
 	}
-	if err := m.AllowedDenom.Validate(); err != nil {
+	if err := m.Denom.Validate(); err != nil {
 		return err
 	}
 	return govtypes.ValidateAbstract(&m)
@@ -39,5 +39,5 @@ func (m AllowedDenomProposal) String() string {
   Title:       %s
   Description: %s
   Allowed Denom: %v
-`, m.Title, m.Description, m.AllowedDenom)
+`, m.Title, m.Description, m.Denom)
 }
