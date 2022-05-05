@@ -6,18 +6,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
-
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
+	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
+	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -25,15 +21,17 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
+	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -42,16 +40,15 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	codec             *codec.ProtoCodec
-	sdkCtx            sdk.Context
-	ctx               context.Context
-	msgClient         core.MsgClient
-	marketServer      marketServer
-	basketServer      basketServer
-	queryClient       core.QueryClient
-	paramsQueryClient params.QueryClient
-	signers           []sdk.AccAddress
-	basketFee         sdk.Coin
+	codec        *codec.ProtoCodec
+	sdkCtx       sdk.Context
+	ctx          context.Context
+	msgClient    core.MsgClient
+	marketServer marketServer
+	basketServer basketServer
+	queryClient  core.QueryClient
+	signers      []sdk.AccAddress
+	basketFee    sdk.Coin
 
 	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
@@ -117,7 +114,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
-	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {

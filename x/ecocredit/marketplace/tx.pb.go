@@ -771,7 +771,7 @@ type msgClient struct {
 	cc grpc1.ClientConn
 }
 
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
+func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc}
 }
 
