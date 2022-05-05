@@ -29,14 +29,14 @@ func NewProposalHandler(k ProposalKeeper) govtypes.Handler {
 		case *core.CreditTypeProposal:
 			return handleCreditTypeProposal(ctx, k, c)
 		case *marketplace.AllowDenomProposal:
-			return handleAllowedDenomProposal(ctx, k, c)
+			return handleAllowDenomProposal(ctx, k, c)
 		default:
 			return sdkerrors.ErrUnknownRequest.Wrapf("unrecognized proposal content type: %T", c)
 		}
 	}
 }
 
-func handleAllowedDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowDenomProposal) error {
+func handleAllowDenomProposal(ctx sdk.Context, k ProposalKeeper, proposal *marketplace.AllowDenomProposal) error {
 	return k.AllowDenom(ctx, proposal)
 }
 
