@@ -196,8 +196,8 @@ message EventBatchSealed {
   string batch_denom = 1;
 }
 
-// EventCreditTypeAdded is emitted when governance approves a new credit type.
-message EventCreditTypeAdded {
+// EventAddCreditType is emitted when governance approves a new credit type.
+message EventAddCreditType {
 
   // abbreviation is the abbreviation of the credit type.
   string abbreviation = 1;

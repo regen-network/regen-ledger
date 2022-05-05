@@ -25,5 +25,5 @@ func (k Keeper) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) err
 	}); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not insert credit type with abbreviation %s: %s", ct.Abbreviation, err.Error())
 	}
-	return ctx.EventManager().EmitTypedEvent(&core.EventCreditTypeAdded{Abbreviation: ct.Abbreviation})
+	return ctx.EventManager().EmitTypedEvent(&core.EventAddCreditType{Abbreviation: ct.Abbreviation})
 }

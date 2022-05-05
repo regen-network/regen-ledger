@@ -9,7 +9,7 @@ import (
 
 func (m AllowedDenom) Validate() error {
 	if err := sdk.ValidateDenom(m.BankDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid denom: %s", err.Error())
+		return sdkerrors.ErrInvalidRequest.Wrapf("invalid bank denom: %s", err.Error())
 	}
 	if err := sdk.ValidateDenom(m.DisplayDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("invalid display_denom: %s", err.Error())

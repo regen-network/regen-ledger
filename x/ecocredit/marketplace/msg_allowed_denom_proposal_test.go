@@ -4,13 +4,13 @@ import (
 	"testing"
 )
 
-func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
+func TestAllowDenomProposal_ValidateBasic(t *testing.T) {
 	type fields struct {
-		Title        string
-		Description  string
-		AllowedDenom *AllowedDenom
+		Title       string
+		Description string
+		Denom       *AllowedDenom
 	}
-	validAllowedDenom := &AllowedDenom{
+	validDenom := &AllowedDenom{
 		BankDenom:    "uregen",
 		DisplayDenom: "regen",
 		Exponent:     18,
@@ -23,25 +23,25 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 		{
 			name: "valid",
 			fields: fields{
-				Title:        "foo",
-				Description:  "bar",
-				AllowedDenom: validAllowedDenom,
+				Title:       "foo",
+				Description: "bar",
+				Denom:       validDenom,
 			},
 			wantErr: false,
 		},
 		{
 			name: "no title",
 			fields: fields{
-				Description:  "foo",
-				AllowedDenom: validAllowedDenom,
+				Description: "foo",
+				Denom:       validDenom,
 			},
 			wantErr: true,
 		},
 		{
 			name: "no desc",
 			fields: fields{
-				Title:        "foo",
-				AllowedDenom: validAllowedDenom,
+				Title: "foo",
+				Denom: validDenom,
 			},
 			wantErr: true,
 		},
@@ -59,7 +59,7 @@ func TestAllowedDenomProposal_ValidateBasic(t *testing.T) {
 			m := &AllowDenomProposal{
 				Title:       tt.fields.Title,
 				Description: tt.fields.Description,
-				Denom:       tt.fields.AllowedDenom,
+				Denom:       tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

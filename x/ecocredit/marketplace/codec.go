@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
-	registry.RegisterImplementations((govtypes.Content)(nil), &AllowDenomProposal{})
+	registry.RegisterImplementations((*govtypes.Content)(nil), &AllowDenomProposal{})
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
@@ -17,7 +17,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSell{}, "regen.marketplace/MsgSell", nil)
 	cdc.RegisterConcrete(&MsgCancelSellOrder{}, "regen.marketplace/MsgCancelSellOrder", nil)
 	cdc.RegisterConcrete(&MsgUpdateSellOrders{}, "regen.marketplace/MsgUpdateSellOrders", nil)
-	cdc.RegisterConcrete(&AllowDenomProposal{}, "regen.marketplace/AllowDenomProposal", nil)
 }
 
 var (

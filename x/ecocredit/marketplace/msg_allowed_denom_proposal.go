@@ -12,21 +12,21 @@ import (
 var _ govtypes.Content = &AllowDenomProposal{}
 
 const (
-	AllowedDenomProposalType = "AllowDenomProposal"
+	AllowDenomProposalType = "AllowDenomProposal"
 )
 
 func init() {
-	govtypes.RegisterProposalType(AllowedDenomProposalType)
+	govtypes.RegisterProposalType(AllowDenomProposalType)
 	govtypes.RegisterProposalTypeCodec(&AllowDenomProposal{}, "regen/AllowDenomProposal")
 }
 
 func (m AllowDenomProposal) ProposalRoute() string { return ecocredit.RouterKey }
 
-func (m AllowDenomProposal) ProposalType() string { return AllowedDenomProposalType }
+func (m AllowDenomProposal) ProposalType() string { return AllowDenomProposalType }
 
 func (m AllowDenomProposal) ValidateBasic() error {
 	if m.Denom == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("allowed denom cannot be nil")
+		return sdkerrors.ErrInvalidRequest.Wrap("denom cannot be empty")
 	}
 	if err := m.Denom.Validate(); err != nil {
 		return err
