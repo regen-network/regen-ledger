@@ -37,14 +37,14 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	amountReceived := sdk.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	for _, credit := range req.Credits {
-		// get credit batch info
-		batchInfo, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
+		// get credit batch
+		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch %s: %s", credit.BatchDenom, err.Error())
 		}
 
 		// validate that the credit batch adheres to the basket's specifications
-		if err := k.canBasketAcceptCredit(ctx, basket, batchInfo); err != nil {
+		if err := k.canBasketAcceptCredit(ctx, basket, batch); err != nil {
 			return nil, err
 		}
 		// get the amount of credits in dec
@@ -53,7 +53,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			return nil, err
 		}
 		// update the user and basket balances
-		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batchInfo); err != nil {
+		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batch); err != nil {
 			if sdkerrors.ErrInsufficientFunds.Is(err) {
 				return nil, ecocredit.ErrInsufficientCredits
 			}
@@ -94,7 +94,7 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 //  - batch's start time is within the basket's specified time window or min start date
 //  - class is in the basket's allowed class store
 //  - type matches the baskets specified credit type.
-func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batchInfo *ecoApi.Batch) error {
+func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, batch *ecoApi.Batch) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	blockTime := sdkCtx.BlockTime()
 	errInvalidReq := sdkerrors.ErrInvalidRequest
@@ -113,15 +113,15 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 			minStartDate = time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC)
 		}
 
-		startDate := batchInfo.StartDate.AsTime()
+		startDate := batch.StartDate.AsTime()
 		if startDate.Before(minStartDate) {
 			return errInvalidReq.Wrapf("cannot put a credit from a batch with start date %s "+
-				"into a basket that requires an earliest start date of %s", batchInfo.StartDate.AsTime().String(), minStartDate.String())
+				"into a basket that requires an earliest start date of %s", batch.StartDate.AsTime().String(), minStartDate.String())
 		}
 
 	}
 
-	classId := core.GetClassIdFromBatchDenom(batchInfo.Denom)
+	classId := core.GetClassIdFromBatchDenom(batch.Denom)
 
 	// check credit class match
 	found, err := k.stateStore.BasketClassTable().Has(ctx, basket.Id, classId)
@@ -145,11 +145,11 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batchInfo *ecoApi.Batch) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batch *ecoApi.Batch) error {
 	// update user balance, subtracting from their tradable balance
-	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batchInfo.Key)
+	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
 	if err != nil {
-		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batchInfo.Denom, sender.String())
+		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batch.Denom, sender.String())
 	}
 	tradable, err := regenmath.NewPositiveDecFromString(userBal.Tradable)
 	if err != nil {
@@ -166,14 +166,14 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 
 	// update basket balance with amount sent, adding to the basket's balance.
 	var bal *api.BasketBalance
-	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batchInfo.Denom)
+	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batch.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
 				BasketId:       basket.Id,
-				BatchDenom:     batchInfo.Denom,
+				BatchDenom:     batch.Denom,
 				Balance:        amt.String(),
-				BatchStartDate: batchInfo.StartDate,
+				BatchStartDate: batch.StartDate,
 			}
 		} else {
 			return err
