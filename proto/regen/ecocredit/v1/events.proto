@@ -30,7 +30,7 @@ message EventCreateBatch {
   string issuer = 2;
 }
 
-// EventMint is an event emitted when a credits are minted to a credit batch.
+// EventMint is an event emitted when credits are minted to a credit batch.
 message EventMint {
 
   // batch_denom is the unique identifier of the credit batch within which the
