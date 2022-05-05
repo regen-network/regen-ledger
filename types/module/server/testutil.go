@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	gogogrpc "github.com/gogo/protobuf/grpc"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 
@@ -108,11 +109,11 @@ func (f fixture) Context() context.Context {
 	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
 }
 
-func (f fixture) TxConn() grpc.ClientConnInterface {
+func (f fixture) TxConn() gogogrpc.ClientConn {
 	return testKey{invokerFactory: f.router.testTxFactory(f.signers)}
 }
 
-func (f fixture) QueryConn() grpc.ClientConnInterface {
+func (f fixture) QueryConn() gogogrpc.ClientConn {
 	return testKey{invokerFactory: f.router.testQueryFactory()}
 }
 

@@ -15,8 +15,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"google.golang.org/grpc"
 )
 
 // FixtureFactory defines an interface for creating server test fixtures
@@ -34,10 +34,10 @@ type Fixture interface {
 	Context() context.Context
 
 	// TxConn is the grpc.ClientConnInterface to be used when constructing Msg service clients.
-	TxConn() grpc.ClientConnInterface
+	TxConn() gogogrpc.ClientConn
 
 	// QueryConn is the grpc.ClientConnInterface to be used when constructing Query service clients.
-	QueryConn() grpc.ClientConnInterface
+	QueryConn() gogogrpc.ClientConn
 
 	// Signers are a list of addresses which can be used to sign transactions. They may either be
 	// random or correspond to nodes in a test network which have keyrings.
