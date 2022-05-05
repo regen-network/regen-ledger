@@ -23,7 +23,7 @@ func TestQuery_Projects(t *testing.T) {
 	assert.NilError(t, err)
 
 	project := &api.Project{
-		Id:           "P01",
+		Id:           "C01-001",
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",

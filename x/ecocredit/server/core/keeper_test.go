@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
@@ -26,21 +27,21 @@ import (
 )
 
 type baseSuite struct {
-	t             *testing.T
-	db            ormdb.ModuleDB
-	stateStore    api.StateStore
-	ctx           context.Context
-	k             Keeper
-	ctrl          *gomock.Controller
-	addr          sdk.AccAddress
-	bankKeeper    *mocks.MockBankKeeper
-	paramsKeeper  *mocks.MockParamKeeper
+	t            gocuke.TestingT
+	db           ormdb.ModuleDB
+	stateStore   api.StateStore
+	ctx          context.Context
+	k            Keeper
+	ctrl         *gomock.Controller
+	addr         sdk.AccAddress
+	bankKeeper   *mocks.MockBankKeeper
+	paramsKeeper *mocks.MockParamKeeper
 	moduleAddress sdk.AccAddress
-	storeKey      *sdk.KVStoreKey
-	sdkCtx        sdk.Context
+	storeKey     *sdk.KVStoreKey
+	sdkCtx       sdk.Context
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -78,8 +79,8 @@ func setupBase(t *testing.T) *baseSuite {
 
 // setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
-func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, batchDenom string) {
-	classId, projectId, batchDenom = "C01", "P01", "C01-20200101-20210101-01"
+func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId, batchDenom string) {
+	classId, projectId, batchDenom = "C01", "C01-001", "C01-001-20200101-20210101-01"
 	cKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,

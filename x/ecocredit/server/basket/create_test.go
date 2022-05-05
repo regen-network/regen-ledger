@@ -184,7 +184,7 @@ func TestValidBasket(t *testing.T) {
 
 	bskt, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
-	assert.Equal(t, s.addr.String(), bskt.Curator)
+	assert.Equal(t, s.addr.String(), sdk.AccAddress(bskt.Curator).String())
 	assert.Equal(t, "eco.uC.foo", bskt.BasketDenom)
 	assert.Equal(t, uint32(6), bskt.Exponent)
 	assert.Equal(t, "C", bskt.CreditTypeAbbrev)
