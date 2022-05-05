@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -46,7 +45,7 @@ The json file MUST take the following form:
 The bank denom is the underlying coin denom (i.e. ibc/CDC4587874B85BEA4FCEC3CEA5A1195139799A1FEE711A07D972537E18FD). 
 Display denom is used for display purposes, and serves as the name of the coin denom (i.e. ATOM). Exponent is used to 
 relate the bank_denom to the display_denom and is informational`),
-		Example: `regen tx gov submit-proposal allowed-denom-proposal my_file.json`,
+		Example: `regen tx gov submit-proposal allow-denom-proposal my_file.json --deposit=100regen`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -83,6 +82,5 @@ relate the bank_denom to the display_denom and is informational`),
 		},
 	}
 	cmd.Flags().String(cli.FlagDeposit, "", "deposit of proposal")
-	flags.AddTxFlagsToCmd(cmd)
 	return cmd
 }
