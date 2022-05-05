@@ -263,11 +263,11 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 								if attr.Key == "class_id" {
 									classIdFound = true
 									classId := strings.Trim(attr.Value, "\"")
-									queryCmd := coreclient.QueryClassInfoCmd()
+									queryCmd := coreclient.QueryClassCmd()
 									queryArgs := []string{classId, flagOutputJSON}
 									queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 									s.Require().NoError(err, queryOut.String())
-									var queryRes core.QueryClassInfoResponse
+									var queryRes core.QueryClassResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
 									s.Require().Equal(tc.expectedClass.Admin, queryRes.Class.Admin)
@@ -456,11 +456,11 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 								batchDenomFound = true
 								batchDenom := strings.Trim(attr.Value, "\"")
 
-								queryCmd := coreclient.QueryBatchInfoCmd()
+								queryCmd := coreclient.QueryBatchCmd()
 								queryArgs := []string{batchDenom, flagOutputJSON}
 								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 								s.Require().NoError(err, queryOut.String())
-								var queryRes core.QueryBatchInfoResponse
+								var queryRes core.QueryBatchResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 								s.Require().Equal(tc.expectedBatch.Issuer, queryRes.Batch.Issuer)
 
@@ -822,10 +822,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 				s.Require().NoError(err)
 
 				// query the class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
@@ -896,10 +896,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 				s.Require().NoError(err)
 
 				// query the credit class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
@@ -976,10 +976,10 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 				s.Require().NoError(err)
 
 				// query the credit class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 

@@ -627,7 +627,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
 				// query batchInfo
-				queryBatchInfoRes, err := s.queryClient.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
+				queryBatchInfoRes, err := s.queryClient.Batch(s.ctx, &core.QueryBatchRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBatchInfoRes)
 			}
