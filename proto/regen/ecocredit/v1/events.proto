@@ -25,9 +25,6 @@ message EventCreateBatch {
 
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 1;
-
-  // issuer is the account address of the issuer of the credit batch.
-  string issuer = 2;
 }
 
 // EventMint is an event emitted when credits are minted to a credit batch.
@@ -37,13 +34,9 @@ message EventMint {
   // credits were minted.
   string batch_denom = 1;
 
-  // issuer is the account address of the issuer of the credit batch that has
-  // minted credits to the credit batch.
-  string issuer = 2;
-
   // origin_tx is the transaction from another chain or registry that triggered
   // the minting of credits within the credit batch.
-  OriginTx origin_tx = 3;
+  OriginTx origin_tx = 2;
 }
 
 // EventTransfer is an event emitted when credits are transferred from one

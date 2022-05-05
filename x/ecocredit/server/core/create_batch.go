@@ -134,7 +134,6 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
 		BatchDenom: batchDenom,
-		Issuer:     req.Issuer,
 	}); err != nil {
 		return nil, err
 	}

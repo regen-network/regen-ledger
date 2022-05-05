@@ -855,14 +855,12 @@ func (x *fastReflection_EventCreateProject) ProtoMethods() *protoiface.Methods {
 var (
 	md_EventCreateBatch             protoreflect.MessageDescriptor
 	fd_EventCreateBatch_batch_denom protoreflect.FieldDescriptor
-	fd_EventCreateBatch_issuer      protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventCreateBatch = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventCreateBatch")
 	fd_EventCreateBatch_batch_denom = md_EventCreateBatch.Fields().ByName("batch_denom")
-	fd_EventCreateBatch_issuer = md_EventCreateBatch.Fields().ByName("issuer")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventCreateBatch)(nil)
@@ -936,12 +934,6 @@ func (x *fastReflection_EventCreateBatch) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
-	if x.Issuer != "" {
-		value := protoreflect.ValueOfString(x.Issuer)
-		if !f(fd_EventCreateBatch_issuer, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -959,8 +951,6 @@ func (x *fastReflection_EventCreateBatch) Has(fd protoreflect.FieldDescriptor) b
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
 		return x.BatchDenom != ""
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
-		return x.Issuer != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -979,8 +969,6 @@ func (x *fastReflection_EventCreateBatch) Clear(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
 		x.BatchDenom = ""
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
-		x.Issuer = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -999,9 +987,6 @@ func (x *fastReflection_EventCreateBatch) Get(descriptor protoreflect.FieldDescr
 	switch descriptor.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
 		value := x.BatchDenom
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
-		value := x.Issuer
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -1025,8 +1010,6 @@ func (x *fastReflection_EventCreateBatch) Set(fd protoreflect.FieldDescriptor, v
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
 		x.BatchDenom = value.Interface().(string)
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
-		x.Issuer = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1049,8 +1032,6 @@ func (x *fastReflection_EventCreateBatch) Mutable(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
 		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
-		panic(fmt.Errorf("field issuer of message regen.ecocredit.v1.EventCreateBatch is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventCreateBatch"))
@@ -1065,8 +1046,6 @@ func (x *fastReflection_EventCreateBatch) Mutable(fd protoreflect.FieldDescripto
 func (x *fastReflection_EventCreateBatch) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventCreateBatch.batch_denom":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.EventCreateBatch.issuer":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -1141,10 +1120,6 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Issuer)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -1173,13 +1148,6 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if len(x.Issuer) > 0 {
-			i -= len(x.Issuer)
-			copy(dAtA[i:], x.Issuer)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Issuer)))
-			i--
-			dAtA[i] = 0x12
 		}
 		if len(x.BatchDenom) > 0 {
 			i -= len(x.BatchDenom)
@@ -1269,38 +1237,6 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 				}
 				x.BatchDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Issuer = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1339,7 +1275,6 @@ func (x *fastReflection_EventCreateBatch) ProtoMethods() *protoiface.Methods {
 var (
 	md_EventMint             protoreflect.MessageDescriptor
 	fd_EventMint_batch_denom protoreflect.FieldDescriptor
-	fd_EventMint_issuer      protoreflect.FieldDescriptor
 	fd_EventMint_origin_tx   protoreflect.FieldDescriptor
 )
 
@@ -1347,7 +1282,6 @@ func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventMint = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventMint")
 	fd_EventMint_batch_denom = md_EventMint.Fields().ByName("batch_denom")
-	fd_EventMint_issuer = md_EventMint.Fields().ByName("issuer")
 	fd_EventMint_origin_tx = md_EventMint.Fields().ByName("origin_tx")
 }
 
@@ -1422,12 +1356,6 @@ func (x *fastReflection_EventMint) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.Issuer != "" {
-		value := protoreflect.ValueOfString(x.Issuer)
-		if !f(fd_EventMint_issuer, value) {
-			return
-		}
-	}
 	if x.OriginTx != nil {
 		value := protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
 		if !f(fd_EventMint_origin_tx, value) {
@@ -1451,8 +1379,6 @@ func (x *fastReflection_EventMint) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventMint.batch_denom":
 		return x.BatchDenom != ""
-	case "regen.ecocredit.v1.EventMint.issuer":
-		return x.Issuer != ""
 	case "regen.ecocredit.v1.EventMint.origin_tx":
 		return x.OriginTx != nil
 	default:
@@ -1473,8 +1399,6 @@ func (x *fastReflection_EventMint) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventMint.batch_denom":
 		x.BatchDenom = ""
-	case "regen.ecocredit.v1.EventMint.issuer":
-		x.Issuer = ""
 	case "regen.ecocredit.v1.EventMint.origin_tx":
 		x.OriginTx = nil
 	default:
@@ -1495,9 +1419,6 @@ func (x *fastReflection_EventMint) Get(descriptor protoreflect.FieldDescriptor) 
 	switch descriptor.FullName() {
 	case "regen.ecocredit.v1.EventMint.batch_denom":
 		value := x.BatchDenom
-		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.EventMint.issuer":
-		value := x.Issuer
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.EventMint.origin_tx":
 		value := x.OriginTx
@@ -1524,8 +1445,6 @@ func (x *fastReflection_EventMint) Set(fd protoreflect.FieldDescriptor, value pr
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventMint.batch_denom":
 		x.BatchDenom = value.Interface().(string)
-	case "regen.ecocredit.v1.EventMint.issuer":
-		x.Issuer = value.Interface().(string)
 	case "regen.ecocredit.v1.EventMint.origin_tx":
 		x.OriginTx = value.Message().Interface().(*OriginTx)
 	default:
@@ -1555,8 +1474,6 @@ func (x *fastReflection_EventMint) Mutable(fd protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfMessage(x.OriginTx.ProtoReflect())
 	case "regen.ecocredit.v1.EventMint.batch_denom":
 		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.v1.EventMint is not mutable"))
-	case "regen.ecocredit.v1.EventMint.issuer":
-		panic(fmt.Errorf("field issuer of message regen.ecocredit.v1.EventMint is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventMint"))
@@ -1571,8 +1488,6 @@ func (x *fastReflection_EventMint) Mutable(fd protoreflect.FieldDescriptor) prot
 func (x *fastReflection_EventMint) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
 	case "regen.ecocredit.v1.EventMint.batch_denom":
-		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.EventMint.issuer":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.EventMint.origin_tx":
 		m := new(OriginTx)
@@ -1650,10 +1565,6 @@ func (x *fastReflection_EventMint) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Issuer)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.OriginTx != nil {
 			l = options.Size(x.OriginTx)
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -1698,13 +1609,6 @@ func (x *fastReflection_EventMint) ProtoMethods() *protoiface.Methods {
 			i -= len(encoded)
 			copy(dAtA[i:], encoded)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-			i--
-			dAtA[i] = 0x1a
-		}
-		if len(x.Issuer) > 0 {
-			i -= len(x.Issuer)
-			copy(dAtA[i:], x.Issuer)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Issuer)))
 			i--
 			dAtA[i] = 0x12
 		}
@@ -1797,38 +1701,6 @@ func (x *fastReflection_EventMint) ProtoMethods() *protoiface.Methods {
 				x.BatchDenom = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Issuer = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OriginTx", wireType)
 				}
@@ -6350,8 +6222,6 @@ type EventCreateBatch struct {
 
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// issuer is the account address of the issuer of the credit batch.
-	Issuer string `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 }
 
 func (x *EventCreateBatch) Reset() {
@@ -6381,14 +6251,7 @@ func (x *EventCreateBatch) GetBatchDenom() string {
 	return ""
 }
 
-func (x *EventCreateBatch) GetIssuer() string {
-	if x != nil {
-		return x.Issuer
-	}
-	return ""
-}
-
-// EventMint is an event emitted when a credits are minted to a credit batch.
+// EventMint is an event emitted when credits are minted to a credit batch.
 type EventMint struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -6397,12 +6260,9 @@ type EventMint struct {
 	// batch_denom is the unique identifier of the credit batch within which the
 	// credits were minted.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// issuer is the account address of the issuer of the credit batch that has
-	// minted credits to the credit batch.
-	Issuer string `protobuf:"bytes,2,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// origin_tx is the transaction from another chain or registry that triggered
 	// the minting of credits within the credit batch.
-	OriginTx *OriginTx `protobuf:"bytes,3,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
 }
 
 func (x *EventMint) Reset() {
@@ -6428,13 +6288,6 @@ func (*EventMint) Descriptor() ([]byte, []int) {
 func (x *EventMint) GetBatchDenom() string {
 	if x != nil {
 		return x.BatchDenom
-	}
-	return ""
-}
-
-func (x *EventMint) GetIssuer() string {
-	if x != nil {
-		return x.Issuer
 	}
 	return ""
 }
@@ -6898,17 +6751,14 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x73, 0x73, 0x49, 0x64, 0x22, 0x33, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x72, 0x65,
 	0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x70, 0x72,
 	0x6f, 0x6a, 0x65, 0x63, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09,
-	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x4b, 0x0a, 0x10, 0x45, 0x76, 0x65,
+	0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x33, 0x0a, 0x10, 0x45, 0x76, 0x65,
 	0x6e, 0x74, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x42, 0x61, 0x74, 0x63, 0x68, 0x12, 0x1f, 0x0a,
 	0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16,
-	0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
-	0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x22, 0x7f, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4d,
-	0x69, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e,
-	0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x12, 0x39, 0x0a, 0x09,
-	0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x67,
+	0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4d, 0x69, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62,
+	0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x39, 0x0a, 0x09,
+	0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x5f, 0x74, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32,
 	0x1c, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
 	0x74, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x52, 0x08, 0x6f,
 	0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78, 0x22, 0xb6, 0x01, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e,
