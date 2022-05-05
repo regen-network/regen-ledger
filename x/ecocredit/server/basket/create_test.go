@@ -55,7 +55,7 @@ func TestInvalidCreditType(t *testing.T) {
 
 	// non-existent credit type should fail
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		CreditTypeAbbrev: "F",
 		Fee:              sdk.Coins{basketFee},
 	})
@@ -63,7 +63,7 @@ func TestInvalidCreditType(t *testing.T) {
 
 	// exponent < precision should fail
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         2,
 		Fee:              sdk.Coins{basketFee},
@@ -77,7 +77,7 @@ func TestDuplicateDenom(t *testing.T) {
 	gmAny := gomock.Any()
 	fee := sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)}
 	mc := baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "foo",
@@ -114,7 +114,7 @@ func TestInvalidClass(t *testing.T) {
 
 	// class doesn't exist
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "foo",
@@ -125,7 +125,7 @@ func TestInvalidClass(t *testing.T) {
 
 	// mismatch credit type and class's credit type
 	_, err = s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		CreditTypeAbbrev: "C",
 		Exponent:         6,
 		Name:             "bar",
@@ -172,7 +172,7 @@ func TestValidBasket(t *testing.T) {
 	}).Times(1)
 
 	_, err := s.k.Create(s.ctx, &baskettypes.MsgCreate{
-		Curator:          s.addr.String(),
+		Curator:          s.addrs[0].String(),
 		Description:      "hi",
 		Name:             "foo",
 		CreditTypeAbbrev: "C",
@@ -185,7 +185,7 @@ func TestValidBasket(t *testing.T) {
 
 	bskt, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, "eco.uC.foo")
 	assert.NilError(t, err)
-	assert.Equal(t, s.addr.String(), bskt.Curator)
+	assert.Equal(t, s.addrs[0].String(), bskt.Curator)
 	assert.Equal(t, "eco.uC.foo", bskt.BasketDenom)
 	assert.Equal(t, uint32(6), bskt.Exponent)
 	assert.Equal(t, "C", bskt.CreditTypeAbbrev)
