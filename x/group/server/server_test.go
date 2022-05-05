@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -23,6 +22,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"

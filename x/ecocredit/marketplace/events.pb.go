@@ -114,9 +114,11 @@ func (m *EventUpdateSellOrder) GetOrderId() uint64 {
 	return 0
 }
 
-// EventAllowDenom is an event emitted when a denom is added to the list of allowed denoms for use in the marketplace.
+// EventAllowDenom is an event emitted when a denom is added to the list of
+// allowed denoms for use in the marketplace.
 type EventAllowDenom struct {
-	// allowed_denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list of allowed denoms for use in the marketplace.
+	// allowed_denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list
+	// of allowed denoms for use in the marketplace.
 	AllowedDenom string `protobuf:"bytes,1,opt,name=allowed_denom,json=allowedDenom,proto3" json:"allowed_denom,omitempty"`
 }
 

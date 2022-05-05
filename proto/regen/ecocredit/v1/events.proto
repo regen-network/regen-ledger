@@ -53,13 +53,13 @@ message EventTransfer {
   // sender is the sender of the credits. In the case that the credits were
   // transferred from a base account, this will be the account address. In the
   // case that the credits were transferred from a module, this will be the
-  // module address.
+  // module address (i.e. either the ecocredit module or basket submodule).
   string sender = 1;
 
   // recipient is the recipient of the credits. In the case that the credits
   // were transferred to a base account, this will be the account address. In
   // the case that the credits were transferred to a module, this will be the
-  // module address.
+  // module address (i.e. either the ecocredit module or basket submodule).
   string recipient = 2;
 
   // batch_denom is the unique identifier of the credit batch.

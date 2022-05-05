@@ -18,9 +18,11 @@ message EventUpdateSellOrder {
   uint64 order_id = 1;
 }
 
-// EventAllowDenom is an event emitted when a denom is added to the list of allowed denoms for use in the marketplace.
+// EventAllowDenom is an event emitted when a denom is added to the list of
+// allowed denoms for use in the marketplace.
 message EventAllowDenom {
 
-  // allowed_denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list of allowed denoms for use in the marketplace.
+  // allowed_denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list
+  // of allowed denoms for use in the marketplace.
   string allowed_denom = 1;
 }
