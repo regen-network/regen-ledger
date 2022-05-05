@@ -115,46 +115,46 @@ message EventCancel {
   string amount = 3;
 }
 
-// EventClassAdminUpdated is emitted when the admin address of a credit class is
+// EventUpdateClassAdmin is emitted when the admin address of a credit class is
 // changed.
-message EventClassAdminUpdated {
+message EventUpdateClassAdmin {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
 }
 
-// EventClassIssuersUpdated is emitted when the issuer list for a credit class
+// EventUpdateClassIssuers is emitted when the issuer list for a credit class
 // is updated.
-message EventClassIssuersUpdated {
+message EventUpdateClassIssuers {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
 }
 
-// EventClassMetadataUpdated is emitted when the credit class metadata is
+// EventUpdateClassMetadata is emitted when the credit class metadata is
 // changed.
-message EventClassMetadataUpdated {
+message EventUpdateClassMetadata {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
 }
 
-// EventProjectAdminUpdated is emitted when the project admin is changed.
-message EventProjectAdminUpdated {
+// EventUpdateProjectAdmin is emitted when the project admin is changed.
+message EventUpdateProjectAdmin {
 
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
 }
 
-// EventProjectMetadataUpdated is emitted when the project metadata is changed.
-message EventProjectMetadataUpdated {
+// EventUpdateProjectMetadata is emitted when the project metadata is changed.
+message EventUpdateProjectMetadata {
 
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
 }
 
-// EventBatchSealed is emitted when a batch is sealed.
-message EventBatchSealed {
+// EventSealBatch is emitted when a batch is sealed.
+message EventSealBatch {
 
   // batch_denom is the denom of the batch that was sealed.
   string batch_denom = 1;

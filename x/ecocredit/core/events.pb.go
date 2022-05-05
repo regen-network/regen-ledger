@@ -242,12 +242,12 @@ type EventTransfer struct {
 	// sender is the sender of the credits. In the case that the credits were
 	// transferred from a base account, this will be the account address. In the
 	// case that the credits were transferred from a module, this will be the
-	// module address.
+	// module address (i.e. either the ecocredit module or basket submodule).
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// recipient is the recipient of the credits. In the case that the credits
 	// were transferred to a base account, this will be the account address. In
 	// the case that the credits were transferred to a module, this will be the
-	// module address.
+	// module address (i.e. either the ecocredit module or basket submodule).
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -476,25 +476,25 @@ func (m *EventCancel) GetAmount() string {
 	return ""
 }
 
-// EventClassAdminUpdated is emitted when the admin address of a credit class is
+// EventUpdateClassAdmin is emitted when the admin address of a credit class is
 // changed.
-type EventClassAdminUpdated struct {
+type EventUpdateClassAdmin struct {
 	// class_id is the unique identifier of the class that was updated.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
-func (m *EventClassAdminUpdated) Reset()         { *m = EventClassAdminUpdated{} }
-func (m *EventClassAdminUpdated) String() string { return proto.CompactTextString(m) }
-func (*EventClassAdminUpdated) ProtoMessage()    {}
-func (*EventClassAdminUpdated) Descriptor() ([]byte, []int) {
+func (m *EventUpdateClassAdmin) Reset()         { *m = EventUpdateClassAdmin{} }
+func (m *EventUpdateClassAdmin) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateClassAdmin) ProtoMessage()    {}
+func (*EventUpdateClassAdmin) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{7}
 }
-func (m *EventClassAdminUpdated) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateClassAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventClassAdminUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateClassAdmin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventClassAdminUpdated.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateClassAdmin.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -504,44 +504,44 @@ func (m *EventClassAdminUpdated) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *EventClassAdminUpdated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventClassAdminUpdated.Merge(m, src)
+func (m *EventUpdateClassAdmin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateClassAdmin.Merge(m, src)
 }
-func (m *EventClassAdminUpdated) XXX_Size() int {
+func (m *EventUpdateClassAdmin) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventClassAdminUpdated) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventClassAdminUpdated.DiscardUnknown(m)
+func (m *EventUpdateClassAdmin) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateClassAdmin.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventClassAdminUpdated proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateClassAdmin proto.InternalMessageInfo
 
-func (m *EventClassAdminUpdated) GetClassId() string {
+func (m *EventUpdateClassAdmin) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-// EventClassIssuersUpdated is emitted when the issuer list for a credit class
+// EventUpdateClassIssuers is emitted when the issuer list for a credit class
 // is updated.
-type EventClassIssuersUpdated struct {
+type EventUpdateClassIssuers struct {
 	// class_id is the unique identifier of the class that was updated.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
-func (m *EventClassIssuersUpdated) Reset()         { *m = EventClassIssuersUpdated{} }
-func (m *EventClassIssuersUpdated) String() string { return proto.CompactTextString(m) }
-func (*EventClassIssuersUpdated) ProtoMessage()    {}
-func (*EventClassIssuersUpdated) Descriptor() ([]byte, []int) {
+func (m *EventUpdateClassIssuers) Reset()         { *m = EventUpdateClassIssuers{} }
+func (m *EventUpdateClassIssuers) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateClassIssuers) ProtoMessage()    {}
+func (*EventUpdateClassIssuers) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{8}
 }
-func (m *EventClassIssuersUpdated) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateClassIssuers) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventClassIssuersUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateClassIssuers) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventClassIssuersUpdated.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateClassIssuers.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -551,44 +551,44 @@ func (m *EventClassIssuersUpdated) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *EventClassIssuersUpdated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventClassIssuersUpdated.Merge(m, src)
+func (m *EventUpdateClassIssuers) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateClassIssuers.Merge(m, src)
 }
-func (m *EventClassIssuersUpdated) XXX_Size() int {
+func (m *EventUpdateClassIssuers) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventClassIssuersUpdated) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventClassIssuersUpdated.DiscardUnknown(m)
+func (m *EventUpdateClassIssuers) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateClassIssuers.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventClassIssuersUpdated proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateClassIssuers proto.InternalMessageInfo
 
-func (m *EventClassIssuersUpdated) GetClassId() string {
+func (m *EventUpdateClassIssuers) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-// EventClassMetadataUpdated is emitted when the credit class metadata is
+// EventUpdateClassMetadata is emitted when the credit class metadata is
 // changed.
-type EventClassMetadataUpdated struct {
+type EventUpdateClassMetadata struct {
 	// class_id is the unique identifier of the class that was updated.
 	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
-func (m *EventClassMetadataUpdated) Reset()         { *m = EventClassMetadataUpdated{} }
-func (m *EventClassMetadataUpdated) String() string { return proto.CompactTextString(m) }
-func (*EventClassMetadataUpdated) ProtoMessage()    {}
-func (*EventClassMetadataUpdated) Descriptor() ([]byte, []int) {
+func (m *EventUpdateClassMetadata) Reset()         { *m = EventUpdateClassMetadata{} }
+func (m *EventUpdateClassMetadata) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateClassMetadata) ProtoMessage()    {}
+func (*EventUpdateClassMetadata) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{9}
 }
-func (m *EventClassMetadataUpdated) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateClassMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventClassMetadataUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateClassMetadata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventClassMetadataUpdated.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateClassMetadata.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -598,43 +598,43 @@ func (m *EventClassMetadataUpdated) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *EventClassMetadataUpdated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventClassMetadataUpdated.Merge(m, src)
+func (m *EventUpdateClassMetadata) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateClassMetadata.Merge(m, src)
 }
-func (m *EventClassMetadataUpdated) XXX_Size() int {
+func (m *EventUpdateClassMetadata) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventClassMetadataUpdated) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventClassMetadataUpdated.DiscardUnknown(m)
+func (m *EventUpdateClassMetadata) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateClassMetadata.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventClassMetadataUpdated proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateClassMetadata proto.InternalMessageInfo
 
-func (m *EventClassMetadataUpdated) GetClassId() string {
+func (m *EventUpdateClassMetadata) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-// EventProjectAdminUpdated is emitted when the project admin is changed.
-type EventProjectAdminUpdated struct {
+// EventUpdateProjectAdmin is emitted when the project admin is changed.
+type EventUpdateProjectAdmin struct {
 	// project_id is the unique identifier of the project that was updated.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
-func (m *EventProjectAdminUpdated) Reset()         { *m = EventProjectAdminUpdated{} }
-func (m *EventProjectAdminUpdated) String() string { return proto.CompactTextString(m) }
-func (*EventProjectAdminUpdated) ProtoMessage()    {}
-func (*EventProjectAdminUpdated) Descriptor() ([]byte, []int) {
+func (m *EventUpdateProjectAdmin) Reset()         { *m = EventUpdateProjectAdmin{} }
+func (m *EventUpdateProjectAdmin) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateProjectAdmin) ProtoMessage()    {}
+func (*EventUpdateProjectAdmin) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{10}
 }
-func (m *EventProjectAdminUpdated) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateProjectAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventProjectAdminUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateProjectAdmin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventProjectAdminUpdated.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateProjectAdmin.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -644,43 +644,43 @@ func (m *EventProjectAdminUpdated) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *EventProjectAdminUpdated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventProjectAdminUpdated.Merge(m, src)
+func (m *EventUpdateProjectAdmin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateProjectAdmin.Merge(m, src)
 }
-func (m *EventProjectAdminUpdated) XXX_Size() int {
+func (m *EventUpdateProjectAdmin) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventProjectAdminUpdated) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventProjectAdminUpdated.DiscardUnknown(m)
+func (m *EventUpdateProjectAdmin) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateProjectAdmin.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventProjectAdminUpdated proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateProjectAdmin proto.InternalMessageInfo
 
-func (m *EventProjectAdminUpdated) GetProjectId() string {
+func (m *EventUpdateProjectAdmin) GetProjectId() string {
 	if m != nil {
 		return m.ProjectId
 	}
 	return ""
 }
 
-// EventProjectMetadataUpdated is emitted when the project metadata is changed.
-type EventProjectMetadataUpdated struct {
+// EventUpdateProjectMetadata is emitted when the project metadata is changed.
+type EventUpdateProjectMetadata struct {
 	// project_id is the unique identifier of the project that was updated.
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 }
 
-func (m *EventProjectMetadataUpdated) Reset()         { *m = EventProjectMetadataUpdated{} }
-func (m *EventProjectMetadataUpdated) String() string { return proto.CompactTextString(m) }
-func (*EventProjectMetadataUpdated) ProtoMessage()    {}
-func (*EventProjectMetadataUpdated) Descriptor() ([]byte, []int) {
+func (m *EventUpdateProjectMetadata) Reset()         { *m = EventUpdateProjectMetadata{} }
+func (m *EventUpdateProjectMetadata) String() string { return proto.CompactTextString(m) }
+func (*EventUpdateProjectMetadata) ProtoMessage()    {}
+func (*EventUpdateProjectMetadata) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{11}
 }
-func (m *EventProjectMetadataUpdated) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdateProjectMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventProjectMetadataUpdated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdateProjectMetadata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventProjectMetadataUpdated.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdateProjectMetadata.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -690,43 +690,43 @@ func (m *EventProjectMetadataUpdated) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *EventProjectMetadataUpdated) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventProjectMetadataUpdated.Merge(m, src)
+func (m *EventUpdateProjectMetadata) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdateProjectMetadata.Merge(m, src)
 }
-func (m *EventProjectMetadataUpdated) XXX_Size() int {
+func (m *EventUpdateProjectMetadata) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventProjectMetadataUpdated) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventProjectMetadataUpdated.DiscardUnknown(m)
+func (m *EventUpdateProjectMetadata) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdateProjectMetadata.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventProjectMetadataUpdated proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdateProjectMetadata proto.InternalMessageInfo
 
-func (m *EventProjectMetadataUpdated) GetProjectId() string {
+func (m *EventUpdateProjectMetadata) GetProjectId() string {
 	if m != nil {
 		return m.ProjectId
 	}
 	return ""
 }
 
-// EventBatchSealed is emitted when a batch is sealed.
-type EventBatchSealed struct {
+// EventSealBatch is emitted when a batch is sealed.
+type EventSealBatch struct {
 	// batch_denom is the denom of the batch that was sealed.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
-func (m *EventBatchSealed) Reset()         { *m = EventBatchSealed{} }
-func (m *EventBatchSealed) String() string { return proto.CompactTextString(m) }
-func (*EventBatchSealed) ProtoMessage()    {}
-func (*EventBatchSealed) Descriptor() ([]byte, []int) {
+func (m *EventSealBatch) Reset()         { *m = EventSealBatch{} }
+func (m *EventSealBatch) String() string { return proto.CompactTextString(m) }
+func (*EventSealBatch) ProtoMessage()    {}
+func (*EventSealBatch) Descriptor() ([]byte, []int) {
 	return fileDescriptor_e32415575ff8b4b2, []int{12}
 }
-func (m *EventBatchSealed) XXX_Unmarshal(b []byte) error {
+func (m *EventSealBatch) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventBatchSealed) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventSealBatch) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventBatchSealed.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventSealBatch.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -736,19 +736,19 @@ func (m *EventBatchSealed) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *EventBatchSealed) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventBatchSealed.Merge(m, src)
+func (m *EventSealBatch) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSealBatch.Merge(m, src)
 }
-func (m *EventBatchSealed) XXX_Size() int {
+func (m *EventSealBatch) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventBatchSealed) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventBatchSealed.DiscardUnknown(m)
+func (m *EventSealBatch) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSealBatch.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventBatchSealed proto.InternalMessageInfo
+var xxx_messageInfo_EventSealBatch proto.InternalMessageInfo
 
-func (m *EventBatchSealed) GetBatchDenom() string {
+func (m *EventSealBatch) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
@@ -763,51 +763,51 @@ func init() {
 	proto.RegisterType((*EventTransfer)(nil), "regen.ecocredit.v1.EventTransfer")
 	proto.RegisterType((*EventRetire)(nil), "regen.ecocredit.v1.EventRetire")
 	proto.RegisterType((*EventCancel)(nil), "regen.ecocredit.v1.EventCancel")
-	proto.RegisterType((*EventClassAdminUpdated)(nil), "regen.ecocredit.v1.EventClassAdminUpdated")
-	proto.RegisterType((*EventClassIssuersUpdated)(nil), "regen.ecocredit.v1.EventClassIssuersUpdated")
-	proto.RegisterType((*EventClassMetadataUpdated)(nil), "regen.ecocredit.v1.EventClassMetadataUpdated")
-	proto.RegisterType((*EventProjectAdminUpdated)(nil), "regen.ecocredit.v1.EventProjectAdminUpdated")
-	proto.RegisterType((*EventProjectMetadataUpdated)(nil), "regen.ecocredit.v1.EventProjectMetadataUpdated")
-	proto.RegisterType((*EventBatchSealed)(nil), "regen.ecocredit.v1.EventBatchSealed")
+	proto.RegisterType((*EventUpdateClassAdmin)(nil), "regen.ecocredit.v1.EventUpdateClassAdmin")
+	proto.RegisterType((*EventUpdateClassIssuers)(nil), "regen.ecocredit.v1.EventUpdateClassIssuers")
+	proto.RegisterType((*EventUpdateClassMetadata)(nil), "regen.ecocredit.v1.EventUpdateClassMetadata")
+	proto.RegisterType((*EventUpdateProjectAdmin)(nil), "regen.ecocredit.v1.EventUpdateProjectAdmin")
+	proto.RegisterType((*EventUpdateProjectMetadata)(nil), "regen.ecocredit.v1.EventUpdateProjectMetadata")
+	proto.RegisterType((*EventSealBatch)(nil), "regen.ecocredit.v1.EventSealBatch")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1/events.proto", fileDescriptor_e32415575ff8b4b2) }
 
 var fileDescriptor_e32415575ff8b4b2 = []byte{
-	// 525 bytes of a gzipped FileDescriptorProto
+	// 521 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0x5d, 0x4f, 0x13, 0x41,
-	0x14, 0x65, 0x41, 0x90, 0xbd, 0x15, 0x34, 0x13, 0x43, 0x16, 0xc5, 0x85, 0x6c, 0x62, 0xe4, 0x85,
-	0xdd, 0x60, 0x23, 0x09, 0x89, 0x2f, 0x50, 0x7d, 0x68, 0x0c, 0x91, 0x54, 0x7c, 0x31, 0x26, 0xcd,
-	0x74, 0xe6, 0x5a, 0x06, 0xb7, 0x33, 0x9b, 0xd9, 0x69, 0xa9, 0x4f, 0xfa, 0x13, 0xfc, 0x35, 0xfe,
-	0x06, 0x1f, 0x79, 0xf4, 0xd1, 0xb4, 0x7f, 0xc4, 0xec, 0xec, 0x40, 0x3f, 0x20, 0x96, 0x18, 0xdf,
-	0xee, 0x3d, 0x7b, 0xce, 0xbd, 0x27, 0x9b, 0x7b, 0x06, 0x36, 0x35, 0xb6, 0x51, 0x26, 0xc8, 0x14,
-	0xd3, 0xc8, 0x85, 0x49, 0x7a, 0xbb, 0x09, 0xf6, 0x50, 0x9a, 0x3c, 0xce, 0xb4, 0x32, 0x8a, 0x10,
-	0x4b, 0x88, 0xaf, 0x08, 0x71, 0x6f, 0xf7, 0x51, 0x78, 0x83, 0xc8, 0x7c, 0xc9, 0xd0, 0x69, 0xa2,
-	0x1d, 0x78, 0xf0, 0xba, 0x98, 0x51, 0xd3, 0x48, 0x0d, 0xd6, 0x52, 0x9a, 0xe7, 0x64, 0x1d, 0x96,
-	0x59, 0x51, 0x34, 0x05, 0x0f, 0xbc, 0x2d, 0x6f, 0xdb, 0x6f, 0xdc, 0xb5, 0x7d, 0x9d, 0x47, 0x55,
-	0x20, 0x63, 0xf4, 0x63, 0xad, 0xce, 0x90, 0x19, 0xf2, 0x04, 0x20, 0x2b, 0xcb, 0x91, 0xc4, 0x77,
-	0x48, 0x9d, 0x47, 0x6f, 0x26, 0x76, 0x1c, 0x52, 0xc3, 0x4e, 0xc9, 0x26, 0x54, 0x5a, 0x45, 0xd1,
-	0xe4, 0x28, 0x55, 0xc7, 0x69, 0xc0, 0x42, 0xaf, 0x0a, 0x84, 0xac, 0xc1, 0x92, 0xc8, 0xf3, 0x2e,
-	0xea, 0x60, 0xde, 0x7e, 0x73, 0x5d, 0xf4, 0x15, 0x7c, 0x3b, 0xec, 0x48, 0x48, 0xf3, 0xcf, 0x53,
-	0xc8, 0x3e, 0xf8, 0x4a, 0x8b, 0xb6, 0x90, 0x4d, 0xd3, 0x0f, 0x16, 0xb6, 0xbc, 0xed, 0xca, 0xf3,
-	0x8d, 0xf8, 0xfa, 0xef, 0x8b, 0xdf, 0x5a, 0xd2, 0x49, 0xbf, 0xb1, 0xac, 0x5c, 0x15, 0xfd, 0xf0,
-	0x60, 0xc5, 0x3a, 0x38, 0xd1, 0x54, 0xe6, 0x9f, 0x50, 0x17, 0x4b, 0x72, 0x94, 0x1c, 0xb5, 0x33,
-	0xe0, 0x3a, 0xb2, 0x01, 0xbe, 0x46, 0x26, 0x32, 0x81, 0xd2, 0xb8, 0xfd, 0x23, 0x60, 0xda, 0xfb,
-	0xc2, 0x35, 0xef, 0xcf, 0xe0, 0xbe, 0xd1, 0x94, 0xd3, 0x56, 0x8a, 0x4d, 0xda, 0x51, 0x5d, 0x69,
-	0x82, 0x3b, 0x96, 0xb4, 0x7a, 0x09, 0x1f, 0x58, 0x94, 0x3c, 0x85, 0x55, 0x8d, 0x46, 0x68, 0xe4,
-	0x97, 0xbc, 0x45, 0xcb, 0x5b, 0x71, 0x68, 0x49, 0x8b, 0xbe, 0x79, 0x50, 0xb1, 0xc6, 0x1b, 0x16,
-	0x26, 0x0f, 0x61, 0x51, 0x9d, 0xcb, 0x2b, 0xd7, 0x65, 0x33, 0x6d, 0x6b, 0xfe, 0xa6, 0x5f, 0xea,
-	0xb6, 0x94, 0x96, 0x5d, 0x47, 0x22, 0xb8, 0x77, 0xd6, 0xd5, 0x22, 0xe7, 0x82, 0x19, 0xa1, 0xa4,
-	0xf3, 0x3a, 0x81, 0x45, 0x1f, 0x9d, 0x83, 0x1a, 0x95, 0x0c, 0xd3, 0xff, 0xec, 0x20, 0xaa, 0xc2,
-	0x5a, 0x39, 0xbd, 0x38, 0xd6, 0x03, 0xde, 0x11, 0xf2, 0x7d, 0xc6, 0xa9, 0x41, 0xfe, 0xb7, 0x8b,
-	0x7e, 0x01, 0xc1, 0x48, 0x54, 0xb7, 0xd7, 0x91, 0xdf, 0x42, 0xb6, 0x07, 0xeb, 0x23, 0xd9, 0x11,
-	0x1a, 0xca, 0xa9, 0xa1, 0xb7, 0xd0, 0xed, 0xbb, 0x75, 0x2e, 0x3a, 0x13, 0x2e, 0x67, 0xc4, 0xe8,
-	0x25, 0x3c, 0x1e, 0x97, 0x4e, 0x2f, 0x9d, 0xa1, 0xae, 0xba, 0x10, 0xda, 0xf8, 0xbd, 0x43, 0x9a,
-	0x22, 0x9f, 0x19, 0x9f, 0xc3, 0xe3, 0x9f, 0x83, 0xd0, 0xbb, 0x18, 0x84, 0xde, 0xef, 0x41, 0xe8,
-	0x7d, 0x1f, 0x86, 0x73, 0x17, 0xc3, 0x70, 0xee, 0xd7, 0x30, 0x9c, 0xfb, 0xb0, 0xd7, 0x16, 0xe6,
-	0xb4, 0xdb, 0x8a, 0x99, 0xea, 0x24, 0x36, 0x37, 0x3b, 0x12, 0xcd, 0xb9, 0xd2, 0x9f, 0x5d, 0x97,
-	0x22, 0x6f, 0xa3, 0x4e, 0xfa, 0x63, 0x2f, 0x0f, 0x53, 0x1a, 0x5b, 0x4b, 0xf6, 0xd9, 0xa9, 0xfe,
-	0x09, 0x00, 0x00, 0xff, 0xff, 0xfa, 0xa8, 0x06, 0x58, 0xcd, 0x04, 0x00, 0x00,
+	0x14, 0xed, 0x82, 0x20, 0xbd, 0x95, 0x6a, 0x26, 0x7e, 0x54, 0x82, 0x0b, 0xd9, 0xc4, 0xc8, 0x0b,
+	0xbb, 0x29, 0xa8, 0xd1, 0xf8, 0x04, 0xd5, 0x87, 0xc6, 0x10, 0x49, 0xc5, 0x17, 0x63, 0xd2, 0x4c,
+	0x67, 0xae, 0x65, 0x70, 0x3b, 0xb3, 0x99, 0x9d, 0x96, 0xfa, 0xa4, 0x3f, 0xc1, 0x5f, 0xe3, 0x6f,
+	0xf0, 0x91, 0x47, 0x1f, 0x4d, 0xfb, 0x47, 0xcc, 0xce, 0x4e, 0x0b, 0x6d, 0x49, 0x31, 0x86, 0xb7,
+	0x7b, 0xcf, 0x9e, 0x73, 0xcf, 0xc9, 0xe6, 0xde, 0x81, 0x0d, 0x8d, 0x6d, 0x94, 0x11, 0x32, 0xc5,
+	0x34, 0x72, 0x61, 0xa2, 0x5e, 0x35, 0xc2, 0x1e, 0x4a, 0x93, 0x86, 0x89, 0x56, 0x46, 0x11, 0x62,
+	0x09, 0xe1, 0x98, 0x10, 0xf6, 0xaa, 0x6b, 0xfe, 0x25, 0x22, 0xf3, 0x35, 0x41, 0xa7, 0x09, 0xb6,
+	0xe1, 0xce, 0x9b, 0x6c, 0x46, 0x4d, 0x23, 0x35, 0x58, 0x8b, 0x69, 0x9a, 0x92, 0x87, 0xb0, 0xc2,
+	0xb2, 0xa2, 0x29, 0x78, 0xc5, 0xdb, 0xf4, 0xb6, 0x8a, 0x8d, 0x9b, 0xb6, 0xaf, 0xf3, 0x60, 0x17,
+	0xc8, 0x05, 0xfa, 0xa1, 0x56, 0x27, 0xc8, 0x0c, 0x79, 0x04, 0x90, 0xe4, 0xe5, 0xb9, 0xa4, 0xe8,
+	0x90, 0x3a, 0x0f, 0xde, 0x4e, 0x78, 0xec, 0x53, 0xc3, 0x8e, 0xc9, 0x06, 0x94, 0x5a, 0x59, 0xd1,
+	0xe4, 0x28, 0x55, 0xc7, 0x69, 0xc0, 0x42, 0xaf, 0x33, 0x84, 0xdc, 0x87, 0x65, 0x91, 0xa6, 0x5d,
+	0xd4, 0x95, 0x05, 0xfb, 0xcd, 0x75, 0xc1, 0x37, 0x28, 0xda, 0x61, 0x07, 0x42, 0x9a, 0xff, 0x9e,
+	0x42, 0x5e, 0x42, 0x51, 0x69, 0xd1, 0x16, 0xb2, 0x69, 0xfa, 0x95, 0xc5, 0x4d, 0x6f, 0xab, 0xb4,
+	0xb3, 0x1e, 0xce, 0xfe, 0xbe, 0xf0, 0x9d, 0x25, 0x1d, 0xf5, 0x1b, 0x2b, 0xca, 0x55, 0xc1, 0x4f,
+	0x0f, 0x56, 0x6d, 0x82, 0x23, 0x4d, 0x65, 0xfa, 0x19, 0x75, 0x66, 0x92, 0xa2, 0xe4, 0xa8, 0x5d,
+	0x00, 0xd7, 0x91, 0x75, 0x28, 0x6a, 0x64, 0x22, 0x11, 0x28, 0x8d, 0xf3, 0x3f, 0x07, 0xa6, 0xb3,
+	0x2f, 0xce, 0x64, 0x7f, 0x02, 0xb7, 0x8d, 0xa6, 0x9c, 0xb6, 0x62, 0x6c, 0xd2, 0x8e, 0xea, 0x4a,
+	0x53, 0xb9, 0x61, 0x49, 0xe5, 0x11, 0xbc, 0x67, 0x51, 0xf2, 0x18, 0xca, 0x1a, 0x8d, 0xd0, 0xc8,
+	0x47, 0xbc, 0x25, 0xcb, 0x5b, 0x75, 0x68, 0x4e, 0x0b, 0xbe, 0x7b, 0x50, 0xb2, 0xc1, 0x1b, 0x16,
+	0x26, 0x77, 0x61, 0x49, 0x9d, 0xca, 0x71, 0xea, 0xbc, 0x99, 0x8e, 0xb5, 0x70, 0xd9, 0x2f, 0x75,
+	0x2e, 0x79, 0x64, 0xd7, 0x91, 0x00, 0x6e, 0x9d, 0x74, 0xb5, 0x48, 0xb9, 0x60, 0x46, 0x28, 0xe9,
+	0xb2, 0x4e, 0x60, 0xc1, 0x27, 0x97, 0xa0, 0x46, 0x25, 0xc3, 0xf8, 0x9a, 0x13, 0x04, 0x3b, 0x70,
+	0xcf, 0x4e, 0xff, 0x90, 0xf0, 0xd1, 0x2e, 0xef, 0xf1, 0x8e, 0x90, 0xf3, 0x16, 0xfa, 0x29, 0x3c,
+	0x98, 0xd6, 0xd4, 0xed, 0x8a, 0xcc, 0x3d, 0x83, 0x67, 0x50, 0x99, 0x56, 0x1d, 0xa0, 0xa1, 0x9c,
+	0x1a, 0x3a, 0x4f, 0xf6, 0x62, 0xc2, 0xcc, 0x5d, 0x4f, 0x1e, 0xf1, 0x8a, 0x13, 0x7a, 0x05, 0x6b,
+	0xb3, 0xca, 0xb1, 0xe5, 0x15, 0xe2, 0x2a, 0x94, 0xad, 0xf8, 0x3d, 0xd2, 0xf8, 0xdf, 0xae, 0x6f,
+	0xff, 0xf0, 0xd7, 0xc0, 0xf7, 0xce, 0x06, 0xbe, 0xf7, 0x67, 0xe0, 0x7b, 0x3f, 0x86, 0x7e, 0xe1,
+	0x6c, 0xe8, 0x17, 0x7e, 0x0f, 0xfd, 0xc2, 0xc7, 0xe7, 0x6d, 0x61, 0x8e, 0xbb, 0xad, 0x90, 0xa9,
+	0x4e, 0x64, 0x0f, 0x66, 0x5b, 0xa2, 0x39, 0x55, 0xfa, 0x8b, 0xeb, 0x62, 0xe4, 0x6d, 0xd4, 0x51,
+	0xff, 0xc2, 0x93, 0xc3, 0x94, 0xc6, 0xd6, 0xb2, 0x7d, 0x6f, 0x76, 0xff, 0x06, 0x00, 0x00, 0xff,
+	0xff, 0x27, 0x64, 0x1e, 0x5a, 0xc6, 0x04, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -1109,7 +1109,7 @@ func (m *EventCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventClassAdminUpdated) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateClassAdmin) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1119,12 +1119,12 @@ func (m *EventClassAdminUpdated) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventClassAdminUpdated) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateClassAdmin) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventClassAdminUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateClassAdmin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1139,7 +1139,7 @@ func (m *EventClassAdminUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *EventClassIssuersUpdated) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateClassIssuers) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1149,12 +1149,12 @@ func (m *EventClassIssuersUpdated) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventClassIssuersUpdated) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateClassIssuers) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventClassIssuersUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateClassIssuers) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1169,7 +1169,7 @@ func (m *EventClassIssuersUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *EventClassMetadataUpdated) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateClassMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1179,12 +1179,12 @@ func (m *EventClassMetadataUpdated) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventClassMetadataUpdated) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateClassMetadata) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventClassMetadataUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateClassMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1199,7 +1199,7 @@ func (m *EventClassMetadataUpdated) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *EventProjectAdminUpdated) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateProjectAdmin) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1209,12 +1209,12 @@ func (m *EventProjectAdminUpdated) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventProjectAdminUpdated) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectAdmin) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventProjectAdminUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectAdmin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1229,7 +1229,7 @@ func (m *EventProjectAdminUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *EventProjectMetadataUpdated) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdateProjectMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1239,12 +1239,12 @@ func (m *EventProjectMetadataUpdated) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventProjectMetadataUpdated) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectMetadata) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventProjectMetadataUpdated) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdateProjectMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1259,7 +1259,7 @@ func (m *EventProjectMetadataUpdated) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *EventBatchSealed) Marshal() (dAtA []byte, err error) {
+func (m *EventSealBatch) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1269,12 +1269,12 @@ func (m *EventBatchSealed) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventBatchSealed) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventSealBatch) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventBatchSealed) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventSealBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1439,7 +1439,7 @@ func (m *EventCancel) Size() (n int) {
 	return n
 }
 
-func (m *EventClassAdminUpdated) Size() (n int) {
+func (m *EventUpdateClassAdmin) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1452,7 +1452,7 @@ func (m *EventClassAdminUpdated) Size() (n int) {
 	return n
 }
 
-func (m *EventClassIssuersUpdated) Size() (n int) {
+func (m *EventUpdateClassIssuers) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1465,7 +1465,7 @@ func (m *EventClassIssuersUpdated) Size() (n int) {
 	return n
 }
 
-func (m *EventClassMetadataUpdated) Size() (n int) {
+func (m *EventUpdateClassMetadata) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1478,7 +1478,7 @@ func (m *EventClassMetadataUpdated) Size() (n int) {
 	return n
 }
 
-func (m *EventProjectAdminUpdated) Size() (n int) {
+func (m *EventUpdateProjectAdmin) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1491,7 +1491,7 @@ func (m *EventProjectAdminUpdated) Size() (n int) {
 	return n
 }
 
-func (m *EventProjectMetadataUpdated) Size() (n int) {
+func (m *EventUpdateProjectMetadata) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1504,7 +1504,7 @@ func (m *EventProjectMetadataUpdated) Size() (n int) {
 	return n
 }
 
-func (m *EventBatchSealed) Size() (n int) {
+func (m *EventSealBatch) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2485,7 +2485,7 @@ func (m *EventCancel) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventClassAdminUpdated) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateClassAdmin) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2508,10 +2508,10 @@ func (m *EventClassAdminUpdated) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventClassAdminUpdated: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateClassAdmin: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventClassAdminUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateClassAdmin: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2567,7 +2567,7 @@ func (m *EventClassAdminUpdated) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventClassIssuersUpdated) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateClassIssuers) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2590,10 +2590,10 @@ func (m *EventClassIssuersUpdated) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventClassIssuersUpdated: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateClassIssuers: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventClassIssuersUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateClassIssuers: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2649,7 +2649,7 @@ func (m *EventClassIssuersUpdated) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventClassMetadataUpdated) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateClassMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2672,10 +2672,10 @@ func (m *EventClassMetadataUpdated) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventClassMetadataUpdated: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateClassMetadata: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventClassMetadataUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateClassMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2731,7 +2731,7 @@ func (m *EventClassMetadataUpdated) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventProjectAdminUpdated) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateProjectAdmin) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2754,10 +2754,10 @@ func (m *EventProjectAdminUpdated) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventProjectAdminUpdated: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateProjectAdmin: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventProjectAdminUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateProjectAdmin: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2813,7 +2813,7 @@ func (m *EventProjectAdminUpdated) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventProjectMetadataUpdated) Unmarshal(dAtA []byte) error {
+func (m *EventUpdateProjectMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2836,10 +2836,10 @@ func (m *EventProjectMetadataUpdated) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventProjectMetadataUpdated: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdateProjectMetadata: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventProjectMetadataUpdated: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdateProjectMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2895,7 +2895,7 @@ func (m *EventProjectMetadataUpdated) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventBatchSealed) Unmarshal(dAtA []byte) error {
+func (m *EventSealBatch) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2918,10 +2918,10 @@ func (m *EventBatchSealed) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventBatchSealed: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventSealBatch: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventBatchSealed: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventSealBatch: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

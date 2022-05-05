@@ -27,7 +27,7 @@ func (k Keeper) UpdateProjectMetadata(ctx context.Context, req *core.MsgUpdatePr
 		return nil, err
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventProjectMetadataUpdated{
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventUpdateProjectMetadata{
 		ProjectId: project.Id,
 	}); err != nil {
 		return nil, err

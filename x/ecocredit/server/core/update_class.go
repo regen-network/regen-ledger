@@ -39,7 +39,7 @@ func (k Keeper) UpdateClassAdmin(ctx context.Context, req *core.MsgUpdateClassAd
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassAdminUpdated{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassAdmin{
 		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (k Keeper) UpdateClassIssuers(ctx context.Context, req *core.MsgUpdateClass
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgUpdateClassIssuers issuer iteration")
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassIssuersUpdated{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassIssuers{
 		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
@@ -130,7 +130,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, err
 	}
 
-	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventClassMetadataUpdated{
+	if err = sdkCtx.EventManager().EmitTypedEvent(&api.EventUpdateClassMetadata{
 		ClassId: req.ClassId,
 	}); err != nil {
 		return nil, err
