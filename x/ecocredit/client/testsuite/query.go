@@ -5,8 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/rand"
-
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -687,7 +685,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
@@ -695,7 +692,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	projectIds := [2]string{pID, pID2}

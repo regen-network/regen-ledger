@@ -18,8 +18,8 @@ func TestGetBasketBalances(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	gmAny := gomock.Any()
-	batchDenom1, classId1 := "C01-0000000-0000000-001", "C01"
-	batchDenom2, classId2 := "C02-0000000-0000000-002", "C02"
+	batchDenom1, classId1 := "C01-001-0000000-0000000-001", "C01"
+	batchDenom2, classId2 := "C02-001-0000000-0000000-002", "C02"
 	userStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(3)
 	insertClassInfo(t, s, "C01", "C")
 	insertClassInfo(t, s, "C02", "C")

@@ -1,6 +1,6 @@
 module github.com/regen-network/regen-ledger/types
 
-go 1.17
+go 1.18
 
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2

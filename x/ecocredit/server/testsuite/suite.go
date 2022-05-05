@@ -25,7 +25,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -42,16 +41,15 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	codec             *codec.ProtoCodec
-	sdkCtx            sdk.Context
-	ctx               context.Context
-	msgClient         core.MsgClient
-	marketServer      marketServer
-	basketServer      basketServer
-	queryClient       core.QueryClient
-	paramsQueryClient params.QueryClient
-	signers           []sdk.AccAddress
-	basketFee         sdk.Coin
+	codec        *codec.ProtoCodec
+	sdkCtx       sdk.Context
+	ctx          context.Context
+	msgClient    core.MsgClient
+	marketServer marketServer
+	basketServer basketServer
+	queryClient  core.QueryClient
+	signers      []sdk.AccAddress
+	basketFee    sdk.Coin
 
 	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
@@ -117,7 +115,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
-	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
@@ -422,11 +419,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Issuer:       issuer1,
 		Metadata:     "metadata",
 		Jurisdiction: "AQ",
-		ProjectId:    "P03",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createProjectRes)
-	s.Require().Equal(createProjectRes.ProjectId, "P03")
+	s.Require().Equal("C02-001", createProjectRes.ProjectId)
 	projectId := createProjectRes.ProjectId
 
 	// create batch
@@ -671,28 +667,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:      "0.0001",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire to an invalid region",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire to an invalid postal code",
 			toRetire:      "0.0001",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't retire without a jurisdiction",
 			toRetire:      "0.0001",
 			jurisdiction:  "",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:              "can retire a small amount of credits",
@@ -817,7 +813,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "ZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't send to an invalid region",
@@ -825,7 +821,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-ZZZZ",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:          "can't send to an invalid postal code",
@@ -833,7 +829,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:   "20",
 			jurisdiction:  "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:     true,
-			expErrMessage: "Invalid jurisdiction",
+			expErrMessage: "invalid jurisdiction",
 		},
 		{
 			name:                 "can send some",

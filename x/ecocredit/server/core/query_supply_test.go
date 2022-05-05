@@ -14,7 +14,7 @@ import (
 func TestQuery_Supply(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	batchDenom := "C01-20200101-20220101-001"
+	batchDenom := "C01-001-20200101-20220101-001"
 	tradable := "10.54321"
 	retired := "50.3214"
 	cancelled := "0.3215"
