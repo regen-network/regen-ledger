@@ -1,6 +1,11 @@
 package v3
 
-import orm "github.com/regen-network/regen-ledger/orm"
+import (
+	"strings"
+	"unicode"
+
+	orm "github.com/regen-network/regen-ledger/orm"
+)
 
 type BatchDenomT string
 
@@ -22,4 +27,20 @@ func (m *BatchInfo) PrimaryKeyFields() []interface{} {
 // primary key for CreditTypeSeq.
 func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.Abbreviation}
+}
+
+// NormalizeCreditTypeName credit type name by removing whitespace and converting to lowercase.
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }

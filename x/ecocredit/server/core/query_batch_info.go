@@ -11,7 +11,7 @@ import (
 
 // BatchInfo queries for information on a credit batch.
 func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoRequest) (*core.QueryBatchInfoResponse, error) {
-	if err := core.ValidateDenom(request.BatchDenom); err != nil {
+	if err := core.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 

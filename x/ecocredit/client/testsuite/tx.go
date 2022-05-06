@@ -11,7 +11,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -320,7 +319,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		ClassId:      classId,
 		Metadata:     "META2",
 		Jurisdiction: "US-OR",
-		ProjectId:    "FBI",
 	})
 	s.Require().NoError(err)
 
@@ -1242,7 +1240,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1283,7 +1281,6 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				ClassId:      classId,
 				Metadata:     "hi",
 				Jurisdiction: "US-OR",
-				ProjectId:    rand.Str(3),
 			}),
 			false,
 			"",
@@ -1517,7 +1514,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		return append(args, flags...)
 	}
 
@@ -1632,7 +1629,6 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		ClassId:      classId,
 		Metadata:     "meta",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()

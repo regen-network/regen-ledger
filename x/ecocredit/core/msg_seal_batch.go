@@ -27,7 +27,7 @@ func (m *MsgSealBatch) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrap(err, "malformed issuer address")
 	}
-	return ValidateDenom(m.BatchDenom)
+	return ValidateBatchDenom(m.BatchDenom)
 }
 
 // GetSigners returns the expected signers for MsgSealBatch.
