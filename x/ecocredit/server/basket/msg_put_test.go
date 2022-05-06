@@ -47,28 +47,28 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 }
 
 func (s *putSuite) ABasket() {
-	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: id,
+		BasketId: basketId,
 		ClassId:  s.classId,
 	})
 	require.NoError(s.t, err)
 }
 
 func (s *putSuite) ABasketWithDenom(a string) {
-	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      a,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: id,
+		BasketId: basketId,
 		ClassId:  s.classId,
 	})
 	require.NoError(s.t, err)
@@ -77,14 +77,14 @@ func (s *putSuite) ABasketWithDenom(a string) {
 func (s *putSuite) ABasketWithAllowedCreditClass(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
 
-	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
 	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
-		BasketId: id,
+		BasketId: basketId,
 		ClassId:  a,
 	})
 	require.NoError(s.t, err)
@@ -243,26 +243,26 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	startDate, err := time.Parse("2006-01-02", a)
 	require.NoError(s.t, err)
 
-	key, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
 		Id:               s.classId,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
 	})
 	require.NoError(s.t, err)
 
-	key, err = s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
-		ClassKey: key,
+	pKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		ClassKey: classKey,
 	})
 	require.NoError(s.t, err)
 
-	key, err = s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
-		ProjectKey: 1,
+	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+		ProjectKey: pKey,
 		Denom:      s.batchDenom,
 		StartDate:  timestamppb.New(startDate),
 	})
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: key,
+		BatchKey: batchKey,
 		Address:  s.alice,
 		Tradable: s.tradableCredits,
 	})
