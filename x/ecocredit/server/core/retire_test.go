@@ -26,7 +26,7 @@ func TestRetire_Valid(t *testing.T) {
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Holder: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
-			{BatchDenom: "C01-20200101-20210101-01", Amount: "10.0"},
+			{BatchDenom: "C01-001-20200101-20210101-01", Amount: "10.0"},
 		},
 		Jurisdiction: "US-NY",
 	})

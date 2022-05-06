@@ -170,7 +170,8 @@ func (m *EventDefineResolver) GetId() uint64 {
 	return 0
 }
 
-// EventRegisterResolver is an event emitted when data is registered to a resolver on chain.
+// EventRegisterResolver is an event emitted when data is registered to a
+// resolver on chain.
 type EventRegisterResolver struct {
 	// id is the ID of the resolver that the data was registered to.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`

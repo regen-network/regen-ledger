@@ -30,9 +30,6 @@ type MsgClient interface {
 	CancelSellOrder(ctx context.Context, in *MsgCancelSellOrder, opts ...grpc.CallOption) (*MsgCancelSellOrderResponse, error)
 	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grpc.CallOption) (*MsgBuyDirectResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to
-	// be used in sell orders
-	AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error)
 }
 
 type msgClient struct {
@@ -79,15 +76,6 @@ func (c *msgClient) BuyDirect(ctx context.Context, in *MsgBuyDirect, opts ...grp
 	return out, nil
 }
 
-func (c *msgClient) AllowAskDenom(ctx context.Context, in *MsgAllowAskDenom, opts ...grpc.CallOption) (*MsgAllowAskDenomResponse, error) {
-	out := new(MsgAllowAskDenomResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Msg/AllowAskDenom", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -100,9 +88,6 @@ type MsgServer interface {
 	CancelSellOrder(context.Context, *MsgCancelSellOrder) (*MsgCancelSellOrderResponse, error)
 	// BuyDirect purchases credits directly from the specified sell order.
 	BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error)
-	// AllowAskDenom is a governance operation which authorizes a new ask denom to
-	// be used in sell orders
-	AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -121,9 +106,6 @@ func (UnimplementedMsgServer) CancelSellOrder(context.Context, *MsgCancelSellOrd
 }
 func (UnimplementedMsgServer) BuyDirect(context.Context, *MsgBuyDirect) (*MsgBuyDirectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BuyDirect not implemented")
-}
-func (UnimplementedMsgServer) AllowAskDenom(context.Context, *MsgAllowAskDenom) (*MsgAllowAskDenomResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AllowAskDenom not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -210,24 +192,6 @@ func _Msg_BuyDirect_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_AllowAskDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAllowAskDenom)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).AllowAskDenom(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Msg/AllowAskDenom",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AllowAskDenom(ctx, req.(*MsgAllowAskDenom))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,10 +214,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BuyDirect",
 			Handler:    _Msg_BuyDirect_Handler,
-		},
-		{
-			MethodName: "AllowAskDenom",
-			Handler:    _Msg_AllowAskDenom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

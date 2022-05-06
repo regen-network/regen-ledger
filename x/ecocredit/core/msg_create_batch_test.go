@@ -25,7 +25,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -43,7 +43,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg with minimal fields": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 			},
@@ -52,7 +52,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid with  wrong issuer": {
 			src: MsgCreateBatch{
 				Issuer:    "wrongIssuer",
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 			},
@@ -61,7 +61,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -77,7 +77,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg with wrong Issuance.TradableAmount": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -92,7 +92,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -106,7 +106,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg with wrong Issuance.RetiredAmount": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -121,7 +121,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg with wrong Issuance.RetirementJurisdiction": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -137,7 +137,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg without Issuance.RetirementJurisdiction": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -151,7 +151,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		},
 		"invalid msg without issuer": {
 			src: MsgCreateBatch{
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Metadata:  "hello",
@@ -170,7 +170,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg without start date": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				EndDate:   &endDate,
 				Metadata:  "hello",
 			},
@@ -179,7 +179,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg without enddate": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				Metadata:  "hello",
 			},
@@ -188,7 +188,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg with enddate < startdate": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &endDate,
 				EndDate:   &startDate,
 				Metadata:  "hello",
@@ -198,7 +198,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid with wrong recipient": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -214,7 +214,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg without recipient address": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*BatchIssuance{
@@ -229,7 +229,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateBatch{
 				Issuer:    issuer,
-				ProjectId: "C01",
+				ProjectId: "C01-001",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Metadata:  strings.Repeat("x", 288),

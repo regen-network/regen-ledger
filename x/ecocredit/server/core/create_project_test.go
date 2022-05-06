@@ -6,7 +6,6 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -22,12 +21,11 @@ func TestCreateProject_ValidProjectState(t *testing.T) {
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
-		ProjectId:    "FOO",
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, res.ProjectId, "FOO")
+	assert.Equal(t, "C01-001", res.ProjectId)
 
-	project, err := s.stateStore.ProjectTable().GetById(s.ctx, "FOO")
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, "C01-001")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, project.Admin, s.addr.Bytes())
 	assert.Equal(t, project.Jurisdiction, "US-NY")
@@ -42,20 +40,18 @@ func TestCreateProject_GeneratedProjectID(t *testing.T) {
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
-		ProjectId:    "",
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, res.ProjectId, "C0101", "got project id: %s", res.ProjectId)
+	assert.Equal(t, res.ProjectId, "C01-001", "got project id: %s", res.ProjectId)
 
 	res, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:       s.addr.String(),
 		ClassId:      "C01",
 		Metadata:     "",
 		Jurisdiction: "US-NY",
-		ProjectId:    "",
 	})
 	assert.NilError(t, err)
-	assert.Equal(t, res.ProjectId, "C0102", "got project id: %s", res.ProjectId)
+	assert.Equal(t, res.ProjectId, "C01-002", "got project id: %s", res.ProjectId)
 }
 
 func TestCreateProject_BadClassID(t *testing.T) {
@@ -65,30 +61,8 @@ func TestCreateProject_BadClassID(t *testing.T) {
 		Issuer:       s.addr.String(),
 		ClassId:      "NOPE",
 		Jurisdiction: "US-NY",
-		ProjectId:    "",
 	})
 	assert.ErrorContains(t, err, "not found")
-}
-
-func TestCreateProject_NoDuplicates(t *testing.T) {
-	t.Parallel()
-	s := setupBase(t)
-	makeClass(t, s.ctx, s.stateStore, s.addr)
-	_, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
-		ClassId:      "C01",
-		Jurisdiction: "US-NY",
-		ProjectId:    "FOO",
-	})
-	assert.NilError(t, err)
-
-	_, err = s.k.CreateProject(s.ctx, &core.MsgCreateProject{
-		Issuer:       s.addr.String(),
-		ClassId:      "C01",
-		Jurisdiction: "US-NY",
-		ProjectId:    "FOO",
-	})
-	assert.ErrorContains(t, err, ormerrors.UniqueKeyViolation.Error())
 }
 
 func makeClass(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) {

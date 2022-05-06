@@ -26,7 +26,7 @@ func TestMsgSell(t *testing.T) {
 				Owner: a1.String(),
 				Orders: []*MsgSell_Order{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: "A00-000-00000000-00000000-000",
 						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
 							Denom:  "uregen",
@@ -44,7 +44,7 @@ func TestMsgSell(t *testing.T) {
 				Owner: "foobar",
 				Orders: []*MsgSell_Order{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: "A00-000-00000000-00000000-000",
 						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
 							Denom:  "uregen",
@@ -78,7 +78,7 @@ func TestMsgSell(t *testing.T) {
 				Owner: a1.String(),
 				Orders: []*MsgSell_Order{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: "A00-000-00000000-00000000-000",
 						Quantity:   "-1.5",
 						AskPrice: &sdk.Coin{
 							Denom:  "uregen",
@@ -95,7 +95,7 @@ func TestMsgSell(t *testing.T) {
 				Owner: a1.String(),
 				Orders: []*MsgSell_Order{
 					{
-						BatchDenom: "A00-00000000-00000000-000",
+						BatchDenom: "A00-000-00000000-00000000-000",
 						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
 							Denom:  "uregen",

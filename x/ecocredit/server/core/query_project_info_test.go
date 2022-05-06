@@ -11,7 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestQuery_ProjectInfo(t *testing.T) {
+func TestQuery_Project(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
@@ -22,7 +22,7 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	assert.NilError(t, err)
 
 	project := &api.Project{
-		Id:           "P01",
+		Id:           "C01-001",
 		ClassKey:     classKey,
 		Jurisdiction: "US-CA",
 		Metadata:     "data",
@@ -32,8 +32,8 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	err = s.stateStore.ProjectTable().Insert(s.ctx, project)
 	assert.NilError(t, err)
 
-	// query project by "P01" project id
-	res, err := s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "P01"})
+	// query project by "C01-001" project id
+	res, err := s.k.Project(s.ctx, &core.QueryProjectRequest{ProjectId: "C01-001"})
 	assert.NilError(t, err)
 	assert.Equal(t, project.Id, res.Project.Id)
 	assert.Equal(t, "C01", res.Project.ClassId)
@@ -41,6 +41,6 @@ func TestQuery_ProjectInfo(t *testing.T) {
 	assert.Equal(t, project.Metadata, res.Project.Metadata)
 
 	// query project by unknown project id
-	_, err = s.k.ProjectInfo(s.ctx, &core.QueryProjectInfoRequest{ProjectId: "F01"})
+	_, err = s.k.Project(s.ctx, &core.QueryProjectRequest{ProjectId: "F01"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }

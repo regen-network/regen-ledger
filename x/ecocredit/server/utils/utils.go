@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +17,7 @@ func GetCreditTypeFromBatchDenom(ctx context.Context, store api.StateStore, deno
 	classId := core.GetClassIdFromBatchDenom(denom)
 	classInfo, err := store.ClassTable().GetById(ctx, classId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not get class with ID %s: %w", classId, err)
 	}
 	return store.CreditTypeTable().Get(ctx, classInfo.CreditTypeAbbrev)
 }

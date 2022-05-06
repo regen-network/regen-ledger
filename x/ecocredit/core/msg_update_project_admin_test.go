@@ -26,7 +26,7 @@ func TestMsgUpdateProjectAdmin_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Admin:     addr,
 				NewAdmin:  addr2,
-				ProjectId: "PRO1",
+				ProjectId: "C01-001",
 			},
 		},
 		{
@@ -57,7 +57,7 @@ func TestMsgUpdateProjectAdmin_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Admin:     addr,
 				NewAdmin:  addr2,
-				ProjectId: "P!R.J-ECT",
+				ProjectId: "001",
 			},
 			errMsg: "invalid project id",
 		},
