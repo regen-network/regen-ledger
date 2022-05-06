@@ -4,9 +4,13 @@ Feature: MsgPut
   - when the basket exists
   - when the credit batch exists
   - when the credit class is allowed
-  - when the credit holder has a credit balance
-  - when the credit holder has the credit amount
+  - when the signer has a credit balance
+  - when the signer has the credit amount
   - when the credit batch start date is allowed
+  - the user credit balance is updated
+  - the basket credit balance is updated
+  - the user token balance is updated
+  - the basket token supply is updated
 
   Rule: The basket must exist
 
@@ -72,17 +76,14 @@ Feature: MsgPut
       Given a basket
 
     Scenario Outline: user owns more than or equal amount of credits being put into the basket
-      Given alice owns credit amount "<user-balance-before>"
+      Given alice owns credit amount "<credit-balance>"
       When alice attempts to put credit amount "<put-amount>" into the basket
-      Then the basket has a credit balance with amount "<put-amount>"
-      And the basket token has a total supply with amount "<put-amount>"
-      And alice has a credit balance with amount "<user-balance-after>"
-      And alice has a basket token balance with amount "<put-amount>"
+      Then expect no error
 
       Examples:
-        | description | user-balance-before | put-amount | user-balance-after |
-        | more than   | 100                 | 50         | 50                 |
-        | equal to    | 100                 | 100        | 0                  |
+        | description | credit-balance | put-amount |
+        | more than   | 100            | 50         |
+        | equal to    | 100            | 100        |
 
     Scenario: user owns less than amount of credits being put into the basket
       Given alice owns credit amount "100"
@@ -95,7 +96,7 @@ Feature: MsgPut
       Given a basket with minimum start date "2021-01-01"
 
     Scenario Outline: batch start date less than or equal to minimum start date
-      Given alice owns credits with start date "2022-01-01"
+      Given alice owns credits with start date "<batch-start-date>"
       When alice attempts to put credits into the basket
       Then expect no error
 
@@ -160,3 +161,56 @@ Feature: MsgPut
         | year before, day before | 2022-04-01 | 10                | 2011-01-01       |
         | year before, day equal  | 2022-04-01 | 10                | 2011-04-01       |
         | year before, day after  | 2022-04-01 | 10                | 2011-07-01       |
+
+  Scenario: user credit balance is updated
+    Given a basket
+    And alice owns credit amount "100"
+    When alice attempts to put credit amount "100" into the basket
+    Then alice has a credit balance with amount "0"
+
+  Scenario: basket credit balance is updated
+    Given a basket
+    And alice owns credit amount "100"
+    When alice attempts to put credit amount "100" into the basket
+    Then the basket has a credit balance with amount "100"
+
+  Scenario Outline: user token balance is updated
+    Given a basket with exponent "<exponent>"
+    And alice owns credit amount "<credit-amount>"
+    When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+    And alice has a basket token balance with amount "<token-amount>"
+
+    Examples:
+      | exponent | credit-amount | token-amount |
+      | 0        | 10            | 10           |
+      | 1        | 10            | 100          |
+      | 5        | 10            | 1000000      |
+
+  Scenario Outline: basket token supply is updated
+    Given a basket with exponent "<exponent>"
+    And alice owns credit amount "<credit-amount>"
+    When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+    Then the basket token has a total supply with amount "<token-amount>"
+
+    Examples:
+      | exponent | credit-amount | token-amount |
+      | 0        | 10            | 10           |
+      | 1        | 10            | 100          |
+      | 5        | 10            | 1000000      |
+
+  Scenario Outline: message response includes basket token amount received
+    Given a basket with exponent "<exponent>"
+    And alice owns credit amount "<credit-amount>"
+    When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+    Then expect the response
+    """
+    {
+    "amount_received": "<token-amount>"
+    }
+    """
+
+    Examples:
+      | exponent | credit-amount | token-amount |
+      | 0        | 10            | 10           |
+      | 1        | 10            | 100          |
+      | 5        | 10            | 1000000      |

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -15,6 +16,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -28,6 +30,7 @@ type putSuite struct {
 	batchDenom       string
 	basketDenom      string
 	tradableCredits  string
+	res              *basket.MsgPutResponse
 	err              error
 }
 
@@ -50,6 +53,24 @@ func (s *putSuite) ABasket() {
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:      s.basketDenom,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	err = s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
+		BasketId: basketId,
+		ClassId:  s.classId,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *putSuite) ABasketWithExponent(a string) {
+	exponent, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:      s.basketDenom,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		Exponent:         uint32(exponent),
 	})
 	require.NoError(s.t, err)
 
@@ -333,6 +354,31 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountIntoTheBasket(a string) {
 	})
 }
 
+func (s *putSuite) AliceAttemptsToPutCreditAmountIntoTheBasketWithExponent(a string) {
+	coins := s.calculateExpectedCoins(a)
+
+	s.bankKeeper.EXPECT().
+		MintCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromModuleToAccount(s.sdkCtx, basket.BasketSubModuleName, s.alice, coins).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.res, s.err = s.k.Put(s.ctx, &basket.MsgPut{
+		Owner:       s.alice.String(),
+		BasketDenom: s.basketDenom,
+		Credits: []*basket.BasketCredit{
+			{
+				BatchDenom: s.batchDenom,
+				Amount:     a,
+			},
+		},
+	})
+}
+
 func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a string) {
 	amount, ok := sdk.NewIntFromString(s.tradableCredits)
 	require.True(s.t, ok)
@@ -423,6 +469,7 @@ func (s *putSuite) TheBasketHasACreditBalanceWithAmount(a string) {
 
 	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, basket.Id, s.batchDenom)
 	require.NoError(s.t, err)
+
 	require.Equal(s.t, a, balance.Balance)
 }
 
@@ -450,6 +497,7 @@ func (s *putSuite) AliceHasACreditBalanceWithAmount(a string) {
 
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
+
 	require.Equal(s.t, a, balance.Tradable)
 }
 
@@ -481,4 +529,28 @@ func (s *putSuite) ExpectTheError(a string) {
 
 func (s *putSuite) ExpectErrorContains(a string) {
 	require.ErrorContains(s.t, s.err, a)
+}
+
+func (s *putSuite) ExpectTheResponse(a gocuke.DocString) {
+	res := &basket.MsgPutResponse{}
+	err := jsonpb.UnmarshalString(a.Content, res)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, res, s.res)
+}
+
+func (s *putSuite) calculateExpectedCoins(amount string) sdk.Coins {
+	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, s.basketDenom)
+	require.NoError(s.t, err)
+
+	dec, err := math.NewPositiveFixedDecFromString(amount, basket.Exponent)
+	require.NoError(s.t, err)
+
+	tokenAmt, err := math.NewDecFinite(1, int32(basket.Exponent)).MulExact(dec)
+	require.NoError(s.t, err)
+
+	amtInt, err := tokenAmt.BigInt()
+	require.NoError(s.t, err)
+
+	return sdk.Coins{sdk.NewCoin(s.basketDenom, sdk.NewIntFromBigInt(amtInt))}
 }
