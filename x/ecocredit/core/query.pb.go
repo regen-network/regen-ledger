@@ -555,7 +555,7 @@ func (m *QueryProjectsResponse) GetPagination() *query.PageResponse {
 
 // QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request type.
 type QueryProjectsByReferenceIdRequest struct {
-	// class_id is the unique identifier of the credit class to query.
+	// reference_id is the project reference id.
 	ReferenceId string `protobuf:"bytes,1,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
