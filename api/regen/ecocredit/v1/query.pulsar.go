@@ -19061,7 +19061,7 @@ type QueryProjectsByReferenceIdRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// class_id is the unique identifier of the credit class to query.
+	// reference_id is the project reference id.
 	ReferenceId string `protobuf:"bytes,1,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
