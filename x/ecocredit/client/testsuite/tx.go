@@ -25,6 +25,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -82,6 +83,13 @@ func (s *IntegrationTestSuite) setupCustomGenesis() {
 	s.Require().NoError(err)
 	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+	ms, err := marketApi.NewStateStore(modDB)
+
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+		BankDenom:    sdk.DefaultBondDenom,
+		DisplayDenom: sdk.DefaultBondDenom,
+	})
 	s.Require().NoError(err)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
@@ -1113,8 +1121,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
-	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+	askCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "3020-04-15")
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
@@ -1138,7 +1145,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		return append(args, s.commonTxFlags()...)
 	}
 
-	newAsk := sdk.NewInt64Coin(validAskDenom, 3)
+	newAsk := sdk.NewInt64Coin(askCoin.Denom, 3)
 	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
 	s.Require().NoError(err)
 
