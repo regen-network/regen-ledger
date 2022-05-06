@@ -278,7 +278,9 @@ func (s *putSuite) TheBlockTime(a string) {
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
-	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	amount, ok := sdk.NewIntFromString(s.tradableCredits)
+	require.True(s.t, ok)
+
 	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
@@ -304,7 +306,9 @@ func (s *putSuite) AliceAttemptsToPutCreditsIntoBasket(a string) {
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditAmountIntoTheBasket(a string) {
-	amount, _ := sdk.NewIntFromString(a)
+	amount, ok := sdk.NewIntFromString(a)
+	require.True(s.t, ok)
+
 	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
@@ -330,7 +334,9 @@ func (s *putSuite) AliceAttemptsToPutCreditAmountIntoTheBasket(a string) {
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a string) {
-	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	amount, ok := sdk.NewIntFromString(s.tradableCredits)
+	require.True(s.t, ok)
+
 	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
@@ -356,7 +362,9 @@ func (s *putSuite) AliceAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a strin
 }
 
 func (s *putSuite) BobAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a string) {
-	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	amount, ok := sdk.NewIntFromString(s.tradableCredits)
+	require.True(s.t, ok)
+
 	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
@@ -382,7 +390,9 @@ func (s *putSuite) BobAttemptsToPutCreditsFromCreditBatchIntoTheBasket(a string)
 }
 
 func (s *putSuite) AliceAttemptsToPutCreditsIntoTheBasket() {
-	amount, _ := sdk.NewIntFromString(s.tradableCredits)
+	amount, ok := sdk.NewIntFromString(s.tradableCredits)
+	require.True(s.t, ok)
+
 	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
 
 	s.bankKeeper.EXPECT().
@@ -413,7 +423,6 @@ func (s *putSuite) TheBasketHasACreditBalanceWithAmount(a string) {
 
 	balance, err := s.stateStore.BasketBalanceTable().Get(s.ctx, basket.Id, s.batchDenom)
 	require.NoError(s.t, err)
-
 	require.Equal(s.t, a, balance.Balance)
 }
 
@@ -432,7 +441,6 @@ func (s *putSuite) TheBasketTokenHasATotalSupplyWithAmount(a string) {
 		Times(1)
 
 	supply := s.bankKeeper.GetSupply(s.sdkCtx, s.basketDenom)
-	require.NotNil(s.t, supply)
 	require.Equal(s.t, coin, supply)
 }
 
@@ -442,7 +450,6 @@ func (s *putSuite) AliceHasACreditBalanceWithAmount(a string) {
 
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
-
 	require.Equal(s.t, a, balance.Tradable)
 }
 
@@ -461,7 +468,6 @@ func (s *putSuite) AliceHasABasketTokenBalanceWithAmount(a string) {
 		AnyTimes()
 
 	balance := s.bankKeeper.GetBalance(s.sdkCtx, s.alice, basket.BasketDenom)
-	require.NotNil(s.t, balance)
 	require.Equal(s.t, coin, balance)
 }
 
