@@ -35,13 +35,19 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
-	if err = k.stateStore.ProjectTable().Insert(ctx, &api.Project{
+	project := &api.Project{
 		Id:           projectID,
 		Admin:        adminAddress,
 		ClassKey:     classInfo.Key,
 		Jurisdiction: req.Jurisdiction,
 		Metadata:     req.Metadata,
-	}); err != nil {
+	}
+
+	if req.ReferenceId != "" {
+		project.ReferenceId = req.ReferenceId
+	}
+
+	if err = k.stateStore.ProjectTable().Insert(ctx, project); err != nil {
 		return nil, err
 	}
 
