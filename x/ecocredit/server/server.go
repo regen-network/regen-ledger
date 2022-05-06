@@ -36,10 +36,6 @@ type serverImpl struct {
 	stateStore api.StateStore
 }
 
-func (s serverImpl) AddCreditType(ctx sdk.Context, ctp *coretypes.CreditTypeProposal) error {
-	return s.coreKeeper.AddCreditType(ctx, ctp)
-}
-
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, distKeeper ecocredit.DistributionKeeper) serverImpl {
 	s := serverImpl{
@@ -68,6 +64,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 
 	coreStore, basketStore, marketStore := getStateStores(s.db)
+	s.stateStore = coreStore
 	s.coreKeeper = core.NewKeeper(coreStore, bankKeeper, s.paramSpace, coreAddr)
 	s.basketKeeper = basket.NewKeeper(basketStore, coreStore, bankKeeper, distKeeper, s.paramSpace, basketAddr)
 	s.marketplaceKeeper = marketplace.NewKeeper(marketStore, coreStore, bankKeeper, s.paramSpace)

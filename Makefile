@@ -189,11 +189,11 @@ tidy:
 
 docs-dev:
 	@echo "Starting regen-ledger static documentation site..."
-	@cd docs && yarn dev
+	@cd docs && yarn && yarn dev
 
 docs-build:
 	@echo "Building regen-ledger static documentation site..."
-	@cd docs && yarn dev
+	@cd docs && yarn && yarn build
 
 godocs:
 	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v3/"

@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// AddCreditType adds a new credit type to the network
+// AddCreditType is a gov handler method that adds a new credit type to the network
 func (k Keeper) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) error {
 	if ctp == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("nil proposal")
@@ -25,5 +25,5 @@ func (k Keeper) AddCreditType(ctx sdk.Context, ctp *core.CreditTypeProposal) err
 	}); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrapf("could not insert credit type with abbreviation %s: %s", ct.Abbreviation, err.Error())
 	}
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&core.EventAddCreditType{Abbreviation: ct.Abbreviation})
 }
