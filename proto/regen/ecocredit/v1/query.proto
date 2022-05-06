@@ -25,8 +25,8 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/classes/admin/{admin}";
   }
 
-  // ClassInfo queries for information on a credit class.
-  rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
+  // Class queries for information on a credit class.
+  rpc Class(QueryClassRequest) returns (QueryClassResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/classes/{class_id}";
   }
 
@@ -43,8 +43,8 @@ service Query {
         "/regen/ecocredit/v1/classes/{class_id}/projects";
   }
 
-  // ClassInfo queries for information on a project.
-  rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
+  // Project queries for information on a project.
+  rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
   }
 
@@ -68,8 +68,8 @@ service Query {
         "/regen/ecocredit/v1/classes/{class_id}/batches";
   }
 
-  // BatchInfo queries for information on a credit batch.
-  rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
+  // Batch queries for information on a credit batch.
+  rpc Batch(QueryBatchRequest) returns (QueryBatchResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/batches/{batch_denom}";
   }
 
@@ -140,15 +140,15 @@ message QueryClassesByAdminResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryClassInfoRequest is the Query/ClassInfo request type.
-message QueryClassInfoRequest {
+// QueryClassRequest is the Query/Class request type.
+message QueryClassRequest {
 
   // class_id is the unique identifier of the credit class to query.
   string class_id = 1;
 }
 
-// QueryClassInfoResponse is the Query/ClassInfo request type.
-message QueryClassInfoResponse {
+// QueryClassResponse is the Query/Class request type.
+message QueryClassResponse {
 
   // class is the fetched credit class.
   ClassInfo class = 1;
@@ -194,15 +194,15 @@ message QueryProjectsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryProjectInfoRequest is the Query/Project request type.
-message QueryProjectInfoRequest {
+// QueryProjectRequest is the Query/Project request type.
+message QueryProjectRequest {
 
   // project_id is the unique identifier of the project to query.
   string project_id = 1;
 }
 
-// QueryProjectInfoResponse is the Query/Project response type.
-message QueryProjectInfoResponse {
+// QueryProjectResponse is the Query/Project response type.
+message QueryProjectResponse {
 
   // project is the fetched project.
   ProjectInfo project = 1;
@@ -268,15 +268,15 @@ message QueryBatchesByClassResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBatchInfoRequest is the Query/BatchInfo request type.
-message QueryBatchInfoRequest {
+// QueryBatchRequest is the Query/Batch request type.
+message QueryBatchRequest {
 
   // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 1;
 }
 
-// QueryBatchInfoResponse is the Query/BatchInfo response type.
-message QueryBatchInfoResponse {
+// QueryBatchResponse is the Query/Batch response type.
+message QueryBatchResponse {
 
   // batch is the fetched credit batch.
   BatchInfo batch = 1;

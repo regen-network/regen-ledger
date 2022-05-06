@@ -8,8 +8,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// ClassInfo queries for information on a credit class.
-func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoRequest) (*core.QueryClassInfoResponse, error) {
+// Class queries for information on a credit class.
+func (k Keeper) Class(ctx context.Context, request *core.QueryClassRequest) (*core.QueryClassResponse, error) {
 	class, err := k.stateStore.ClassTable().GetById(ctx, request.ClassId)
 	if err != nil {
 		return nil, err
@@ -24,5 +24,5 @@ func (k Keeper) ClassInfo(ctx context.Context, request *core.QueryClassInfoReque
 		CreditTypeAbbrev: class.CreditTypeAbbrev,
 	}
 
-	return &core.QueryClassInfoResponse{Class: &info}, nil
+	return &core.QueryClassResponse{Class: &info}, nil
 }
