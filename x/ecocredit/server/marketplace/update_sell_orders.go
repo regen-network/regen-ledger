@@ -52,9 +52,15 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		if err != nil {
 			return err
 		}
-		if !isDenomAllowed(sdkCtx, update.NewAskPrice.Denom, k.paramsKeeper) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s cannot be used in sell orders", update.NewAskPrice.Denom)
+
+		allowed, err := isDenomAllowed(ctx, update.NewAskPrice.Denom, k.stateStore.AllowedDenomTable())
+		if err != nil {
+			return err
 		}
+		if !allowed {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", update.NewAskPrice.Denom)
+		}
+
 		if market.BankDenom != update.NewAskPrice.Denom {
 			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {

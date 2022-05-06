@@ -270,7 +270,7 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -311,7 +311,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -365,7 +365,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -418,7 +418,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{

@@ -195,3 +195,10 @@ message EventBatchSealed {
   // batch_denom is the denom of the batch that was sealed.
   string batch_denom = 1;
 }
+
+// EventAddCreditType is emitted when governance approves a new credit type.
+message EventAddCreditType {
+
+  // abbreviation is the abbreviation of the credit type.
+  string abbreviation = 1;
+}

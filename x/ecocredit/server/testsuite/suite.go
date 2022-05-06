@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 
@@ -134,6 +135,14 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+	ms, err := marketApi.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+		BankDenom:    sdk.DefaultBondDenom,
+		DisplayDenom: sdk.DefaultBondDenom,
+	})
 	s.Require().NoError(err)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
@@ -1004,8 +1013,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	coinPrice := sdk.NewInt64Coin("stake", 1000000)
-	s.paramSpace.Set(s.sdkCtx, core.KeyAllowedAskDenoms, append(core.DefaultParams().AllowedAskDenoms, &core.AskDenom{Denom: coinPrice.Denom}))
+	coinPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000)
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 

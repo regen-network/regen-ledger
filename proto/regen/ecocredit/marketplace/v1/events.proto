@@ -24,8 +24,9 @@ message EventUpdateSellOrder {
   uint64 order_id = 2;
 }
 
-// EventAllowAskDenom is an event emitted when an ask denom is added.
-message EventAllowAskDenom {
+// EventAllowDenom is an event emitted when a new denom is added for use in the
+// marketplace.
+message EventAllowDenom {
 
   // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 1;

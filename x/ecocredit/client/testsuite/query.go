@@ -429,7 +429,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -490,7 +490,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -609,7 +609,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
