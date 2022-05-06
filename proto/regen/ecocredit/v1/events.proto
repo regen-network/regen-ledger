@@ -11,9 +11,6 @@ message EventCreateClass {
 
   // class_id is the unique identifier of the credit class.
   string class_id = 1;
-
-  // admin is the admin of the credit class.
-  string admin = 2;
 }
 
 // EventCreateProject is an event emitted when a project is created.
@@ -21,9 +18,6 @@ message EventCreateProject {
 
   // project_id is the unique identifier of the project.
   string project_id = 1;
-
-  // admin is the admin of the project.
-  string admin = 2;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
@@ -31,35 +25,34 @@ message EventCreateBatch {
 
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 1;
-
-  // issuer is the account address of the issuer of the credit batch.
-  string issuer = 2;
 }
 
-// EventCreateBatch is an event emitted when a credit batch is created.
-message EventMintBatchCredits {
+// EventMint is an event emitted when credits are minted to a credit batch.
+message EventMint {
 
   // batch_denom is the unique identifier of the credit batch within which the
   // credits were minted.
   string batch_denom = 1;
 
-  // A reference to a transaction or an event referencing the transaction
-  // which caused the transfer from other chain or registry.
+  // origin_tx is the transaction from another chain or registry that triggered
+  // the minting of credits within the credit batch.
   OriginTx origin_tx = 2;
 }
 
-// EventReceive is an event emitted when credits are received either via
-// creation of a new batch, transfer of credits, or taking credits from a
-// basket. Each batch_denom created, transferred or taken from a basket will
-// result in a separate EventReceive for easy indexing.
-message EventReceive {
+// EventTransfer is an event emitted when credits are transferred from one
+// account to another including transfers to or from a module account.
+message EventTransfer {
 
-  // sender is the sender of the credits in the case that this event is the
-  // result of a transfer. It will not be set when credits are received at
-  // initial issuance or taken from a basket.
+  // sender is the sender of the credits. In the case that the credits were
+  // transferred from a base account, this will be the account address. In the
+  // case that the credits were transferred from a module, this will be the
+  // module address (i.e. either the ecocredit module or basket submodule).
   string sender = 1;
 
-  // recipient is the recipient of the credits.
+  // recipient is the recipient of the credits. In the case that the credits
+  // were transferred to a base account, this will be the account address. In
+  // the case that the credits were transferred to a module, this will be the
+  // module address (i.e. either the ecocredit module or basket submodule).
   string recipient = 2;
 
   // batch_denom is the unique identifier of the credit batch.
@@ -70,12 +63,6 @@ message EventReceive {
 
   // retired_amount is the decimal number of retired credits received.
   string retired_amount = 5;
-
-  // basket_denom is the denom of the basket. When the basket_denom field is
-  // set, it indicates that this event was triggered by the transfer of credits
-  // from a basket. It will not be set if the credits were transferred or
-  // received at initial issuance.
-  string basket_denom = 6;
 }
 
 // EventRetire is an event emitted when credits are retired. When credits are
@@ -83,10 +70,12 @@ message EventReceive {
 // emitted for each batch_denom. This allows for easier indexing.
 message EventRetire {
 
-  // retirer is the account which has done the "retiring". This will be the
+  // owner is the account that owns the retired credits. This will be the
   // account receiving credits in the case that credits were retired upon
-  // issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
-  string retirer = 1;
+  // issuance using Msg/CreateBatch, retired upon transfer using Msg/Send,
+  // retired upon taking from a basket using basket.Msg/Take, or retired
+  // upon purchase using marketplace.Msg/BuyDirect.
+  string owner = 1;
 
   // batch_denom is the unique identifier of the credit batch within which the
   // credits were retired.
@@ -108,9 +97,8 @@ message EventRetire {
 // emitted for each batch_denom. This allows for easier indexing.
 message EventCancel {
 
-  // canceller is the account which has cancelled the credits, which should be
-  // the holder of the credits.
-  string canceller = 1;
+  // owner is the account which has cancelled the credits.
+  string owner = 1;
 
   // batch_denom is the unique identifier of the credit batch within which the
   // credits were cancelled.
@@ -120,77 +108,46 @@ message EventCancel {
   string amount = 3;
 }
 
-// EventClassAdminUpdated is emitted when the admin address of a credit class is
+// EventUpdateClassAdmin is emitted when the admin address of a credit class is
 // changed.
-message EventClassAdminUpdated {
+message EventUpdateClassAdmin {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
-
-  // old_admin is the admin of the credit class before the update.
-  string old_admin = 2;
-
-  // new_admin is the admin of the credit class after the update.
-  string new_admin = 3;
 }
 
-// EventClassIssuersUpdated is emitted when the issuer list for a credit class
+// EventUpdateClassIssuers is emitted when the issuer list for a credit class
 // is updated.
-message EventClassIssuersUpdated {
+message EventUpdateClassIssuers {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
-
-  // added_issuers contains all the addresses added to the class issuer list.
-  repeated string added_issuers = 2;
-
-  // removed_issuers contains all the addresses removed from the class issuer
-  // list.
-  repeated string removed_issuers = 3;
 }
 
-// EventClassMetadataUpdated is emitted when the credit class metadata is
+// EventUpdateClassMetadata is emitted when the credit class metadata is
 // changed.
-message EventClassMetadataUpdated {
+message EventUpdateClassMetadata {
 
   // class_id is the unique identifier of the class that was updated.
   string class_id = 1;
-
-  // old_metadata is the metadata before the update.
-  string old_metadata = 2;
-
-  // new_metadata is the metadata after the update.
-  string new_metadata = 3;
 }
 
-// EventProjectAdminUpdated is emitted when the project admin is changed.
-message EventProjectAdminUpdated {
+// EventUpdateProjectAdmin is emitted when the project admin is changed.
+message EventUpdateProjectAdmin {
 
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
-
-  // old_admin is the admin address before the update.
-  string old_admin = 2;
-
-  // new_admin is the admin address after the update.
-  string new_admin = 3;
 }
 
-// EventProjectMetadataUpdated is emitted when the project metadata is changed.
-message EventProjectMetadataUpdated {
+// EventUpdateProjectMetadata is emitted when the project metadata is changed.
+message EventUpdateProjectMetadata {
 
   // project_id is the unique identifier of the project that was updated.
   string project_id = 1;
-
-  // old_metadata is the metadata before the update.
-  string old_metadata = 2;
-
-  // new_metadata is the metadata after the update.
-  string new_metadata = 3;
 }
 
-// EventBatchSealed is emitted when a batch is sealed.
-message EventBatchSealed {
+// EventSealBatch is emitted when a batch is sealed.
+message EventSealBatch {
 
   // batch_denom is the denom of the batch that was sealed.
   string batch_denom = 1;

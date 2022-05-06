@@ -36,6 +36,8 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	ownerString := ownerAddr.String()
+	moduleAddrString := k.moduleAddress.String()
 	for _, credit := range req.Credits {
 		// get credit batch
 		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
@@ -67,6 +69,15 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		// update the total amount received so far
 		amountReceived = amountReceived.Add(tokens[0].Amount)
 
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+			Sender:         ownerString,
+			Recipient:      moduleAddrString, // basket submodule
+			BatchDenom:     credit.BatchDenom,
+			TradableAmount: credit.Amount,
+		}); err != nil {
+			return nil, err
+		}
+
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/basket/MsgPut credit iteration")
 	}
 
@@ -79,15 +90,18 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		return nil, err
 	}
 
+	amountReceivedString := amountReceived.String()
+
 	if err = sdkCtx.EventManager().EmitTypedEvent(&baskettypes.EventPut{
-		Owner:       ownerAddr.String(),
+		Owner:       ownerString,
 		BasketDenom: basket.BasketDenom,
-		Amount:      amountReceived.String(),
+		Credits:     req.Credits,          // deprecated
+		Amount:      amountReceivedString, // deprecated
 	}); err != nil {
 		return nil, err
 	}
 
-	return &baskettypes.MsgPutResponse{AmountReceived: amountReceived.String()}, nil
+	return &baskettypes.MsgPutResponse{AmountReceived: amountReceivedString}, nil
 }
 
 // canBasketAcceptCredit checks that a credit adheres to the specifications of a basket. Specifically, it checks:

@@ -7,27 +7,22 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
 
-  // owner is the owner of the sell order.
-  string owner = 1;
-
-  // order_id is the unique ID of sell order.
-  uint64 order_id = 2;
+  // order_id is the unique identifier of the sell order.
+  uint64 order_id = 1;
 }
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 message EventUpdateSellOrder {
 
-  // owner is the owner of the sell order.
-  string owner = 1;
-
-  //  order_id is the ID of an existing sell order.
-  uint64 order_id = 2;
+  //  order_id is the unique identifier of the sell order.
+  uint64 order_id = 1;
 }
 
 // EventAllowDenom is an event emitted when a new denom is added for use in the
 // marketplace.
 message EventAllowDenom {
 
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  // denom is the bank denom (e.g. ibc/GLKHDSG423SGS) added to the list of
+  // allowed denoms for use in the marketplace.
   string denom = 1;
 }
