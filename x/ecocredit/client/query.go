@@ -331,3 +331,41 @@ $%s q %s params
 		},
 	})
 }
+
+// QueryProjectsByReferenceIdCmd returns command that retrieves list of projects by reference id with pagination.
+func QueryProjectsByReferenceIdCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects-by-reference-id [reference-id]",
+		Short: "Retrieve list of projects by reference-id with pagination flags",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Retrieve list of projects by reference-id with pagination flags
+			
+Examples:
+$%s query %s projects-by-reference-id R1
+$%s q %s projects-by-reference-id R1 --limit 10
+			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectsByReferenceId(cmd.Context(), &core.QueryProjectsByReferenceIdRequest{
+				ReferenceId: args[0],
+				Pagination:  pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "projects-by-reference-id")
+
+	return qflags(cmd)
+}
