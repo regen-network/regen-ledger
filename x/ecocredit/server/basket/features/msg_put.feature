@@ -8,13 +8,13 @@ Feature: MsgPut
   - when the user has the credit amount
   - when the credit amount does not exceed maximum decimal places
   - when the credit batch start date is more than or equal to minimum start date
-  - when the credit batch start date is more than or equal to start date window
+  - when the credit batch start date is within or at the limit of start date window
   - when the credit batch start date is more than or equal to years in the past
   - the user credit balance is updated
   - the basket credit balance is updated
   - the user token balance is updated
   - the basket token supply is updated
-  - the massage response includes basket token amount received
+  - the response includes basket token amount received
 
   Rule: The basket must exist
 
@@ -140,13 +140,13 @@ Feature: MsgPut
       When alice attempts to put credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
 
-  Rule: Credits from a batch with a start date more than basket start date window cannot be put into the basket
+  Rule: Credits from a batch with a start date outside basket start date window cannot be put into the basket
 
     Background:
       Given the block time "2022-01-01"
       And a basket with start date window "31536000"
 
-    Scenario Outline: batch start date less than or equal to basket start date window
+    Scenario Outline: batch start date within or at the limit of basket start date window
       Given alice owns credits with start date "<batch-start-date>"
       When alice attempts to put credits into the basket
       Then expect no error
@@ -156,7 +156,7 @@ Feature: MsgPut
         | less than   | 2022-01-01       |
         | equal to    | 2021-01-01       |
 
-    Scenario: batch start date more than basket start date window
+    Scenario: batch start date outside of basket start date window
       Given alice owns credits with start date "2020-01-01"
       When alice attempts to put credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
@@ -263,4 +263,4 @@ Feature: MsgPut
         | exponent non-zero, amount whole   | 6        | 2             | 2000000      |
         | exponent non-zero, amount decimal | 6        | 2.5           | 2500000      |
 
-    # no failing scenario - response should always be empty upon failing scenario
+    # no failing scenario - response should always be empty when message execution fails
