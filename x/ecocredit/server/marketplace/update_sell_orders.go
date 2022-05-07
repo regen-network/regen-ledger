@@ -17,7 +17,7 @@ import (
 
 // UpdateSellOrders updates the sellOrder with the provided values.
 // Note: only the DisableAutoRetire lacks field presence, so if the existing value
-// is true and you do not want to change that, you MUST provide a value of true in the update.
+// is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdateSellOrders) (*marketplace.MsgUpdateSellOrdersResponse, error) {
 	seller, err := sdk.AccAddressFromBech32(req.Owner)
@@ -45,19 +45,22 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *ecoApi.CreditType
-	event := marketplace.EventUpdateSellOrder{}
-
 	order.DisableAutoRetire = update.DisableAutoRetire
-	event.DisableAutoRetire = update.DisableAutoRetire
 
 	if update.NewAskPrice != nil {
 		market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
 		if err != nil {
 			return err
 		}
-		if !isDenomAllowed(sdkCtx, update.NewAskPrice.Denom, k.paramsKeeper) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s cannot be used in sell orders", update.NewAskPrice.Denom)
+
+		allowed, err := isDenomAllowed(ctx, update.NewAskPrice.Denom, k.stateStore.AllowedDenomTable())
+		if err != nil {
+			return err
 		}
+		if !allowed {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", update.NewAskPrice.Denom)
+		}
+
 		if market.BankDenom != update.NewAskPrice.Denom {
 			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
 			if err != nil {
@@ -70,7 +73,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			order.MarketId = marketId
 		}
 		order.AskPrice = update.NewAskPrice.Amount.String()
-		event.NewAskPrice = update.NewAskPrice
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
@@ -78,7 +80,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
-		event.NewExpiration = update.NewExpiration
 	}
 	if update.NewQuantity != "" {
 		if creditType == nil {
@@ -109,7 +110,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 				return err
 			}
 			order.Quantity = update.NewQuantity
-			event.NewQuantity = update.NewQuantity
 		case math.LessThan:
 			amtToUnescrow, err := existingQty.Sub(newQty)
 			if err != nil {
@@ -119,7 +119,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 				return err
 			}
 			order.Quantity = update.NewQuantity
-			event.NewQuantity = update.NewQuantity
 		}
 	}
 
@@ -127,7 +126,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 		return err
 	}
 
-	return sdkCtx.EventManager().EmitTypedEvent(&event)
+	return sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventUpdateSellOrder{
+		OrderId: order.Id,
+	})
 }
 
 // getCreditTypeFromBatchId gets the credit type given a batch id.

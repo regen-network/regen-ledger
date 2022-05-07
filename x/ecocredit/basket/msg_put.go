@@ -33,7 +33,7 @@ func (m MsgPut) ValidateBasic() error {
 	}
 	if len(m.Credits) > 0 {
 		for _, credit := range m.Credits {
-			if err := core.ValidateDenom(credit.BatchDenom); err != nil {
+			if err := core.ValidateBatchDenom(credit.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 			if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {

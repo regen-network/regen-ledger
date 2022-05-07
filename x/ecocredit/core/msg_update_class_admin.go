@@ -31,7 +31,7 @@ func (m *MsgUpdateClassAdmin) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
+	if err := ValidateClassId(m.ClassId); err != nil {
 		return err
 	}
 

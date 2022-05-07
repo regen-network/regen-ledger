@@ -48,7 +48,7 @@ message Basket {
   // basket settings.
   //
   // Since Revision 1
-  string curator = 8;
+  bytes curator = 8;
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.

@@ -92,8 +92,8 @@ module.exports = {
           collapsable: false,
           children: [
             '/ledger/get-started/',
+            '/ledger/get-started/local-testnet',
             '/ledger/get-started/live-networks',
-            '/ledger/get-started/prerequisites',
           ],
         },
         {
@@ -164,9 +164,11 @@ module.exports = {
           title: 'Get Started',
           collapsable: false,
           children: [
+            '/validators/get-started/',
+            '/validators/get-started/install-regen',
+            '/validators/get-started/install-cosmovisor',
             '/validators/get-started/run-a-full-node',
             '/validators/get-started/create-a-validator',
-            '/validators/get-started/prerequisites',
           ]
         },
         {
@@ -251,11 +253,6 @@ module.exports = {
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-    'vuepress-plugin-clean-urls',
-      {
-        normalSuffix: '/',
-        indexSuffix: '/',
-      },
     ],
   markdown: {
     extendMarkdown: md => {

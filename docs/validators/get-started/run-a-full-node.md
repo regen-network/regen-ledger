@@ -2,15 +2,11 @@
 
 This document provides instructions for running a full node for a [live network](../../ledger/get-started/live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
-## Prerequisites
+The following instructions assume that you have already completed the following:
 
-In order to install the `cosmovisor` and `regen` binaries, you'll need the following: 
-
-- Git `>=2`
-- Make `>=4`
-- Go `>=1.17`
-
-For more information (including hardware recommendations), see [Prerequisites](prerequisites.md). 
+- [Initial Setup](README)
+- [Install Regen](install-regen.md)
+- [Install Cosmovisor](install-cosmovisor.md)
 
 ## Quickstart
 
@@ -18,66 +14,6 @@ If you would like to manually set up a full node, skip to the [next section](#in
 
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/regen-network/mainnet/blob/main/scripts/mainnet-val-setup.sh)
-```
-
-## Install Regen
-
-Clone the `regen-ledger` repository:
-
-```bash
-git clone https://github.com/regen-network/regen-ledger
-```
-
-Change to the `regen-ledger` directory:
-
-```bash
-cd regen-ledger
-```
-
-Check out the version that the network launched with.
-
-*For Regen Mainnet:*
-
-```bash
-git checkout v1.0.0
-```
-
-*For Redwood Testnet:*
-
-```bash
-git checkout v1.0.0
-```
-
-*For Hambach Testnet:*
-
-```bash
-git checkout v2.0.0-beta1
-```
-
-Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
-
-*For Regen Mainnet:*
-
-```bash
-make install
-```
-
-*For Redwood Testnet:*
-
-```bash
-make install
-```
-
-*For Hambach Testnet:*
-
-```bash
-EXPERIMENTAL=true make install
-```
-
-Check to ensure the install was successful:
-
-```bash
-regen version
 ```
 
 ## Initialize Node
@@ -130,8 +66,6 @@ curl http://hambach.regen.network:26657/genesis | jq .result.genesis > ~/.regen/
 
 Add a seed node for initial peer discovery.
 
-<!-- TODO: update to use dedicated full node operated by RND -->
-
 *For Regen Mainnet:*
 
 ```bash
@@ -161,22 +95,6 @@ Start node:
 
 ```bash
 regen start
-```
-
-## Install Cosmovisor
-
-[Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
-
-To install `cosmovisor`, run the following command:
-
-```bash
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
-```
-
-Check to ensure the installation was successful:
-
-```bash
-cosmovisor version
 ```
 
 ## Set Genesis Binary

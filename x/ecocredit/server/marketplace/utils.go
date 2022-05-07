@@ -3,26 +3,18 @@ package marketplace
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 // isDenomAllowed checks if the denom is allowed to be used in orders.
-func isDenomAllowed(ctx sdk.Context, denom string, pk ecocredit.ParamKeeper) bool {
-	var params core.Params
-	pk.GetParamSet(ctx, &params)
-	for _, askDenom := range params.AllowedAskDenoms {
-		if askDenom.Denom == denom {
-			return true
-		}
-	}
-	return false
+func isDenomAllowed(ctx context.Context, bankDenom string, table api.AllowedDenomTable) (bool, error) {
+	return table.Has(ctx, bankDenom)
 }
 
 type orderOptions struct {
@@ -96,19 +88,9 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		return err
 	}
-	buyerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, buyerAcc, sellOrder.BatchId)
+	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchId)
 	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			buyerBal = &ecoApi.BatchBalance{
-				BatchKey: sellOrder.BatchId,
-				Address:  buyerAcc,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
-			}
-		} else {
-			return err
-		}
+		return err
 	}
 	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
 	// supply is not updated because supply does not distinguish between tradable and escrowed credits.
@@ -122,7 +104,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		buyerBal.Tradable = tradableBalance.String()
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
 			Recipient:      buyerAcc.String(),
 			BatchDenom:     opts.batchDenom,
@@ -165,7 +147,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:      buyerAcc.String(),
+			Owner:        buyerAcc.String(),
 			BatchDenom:   opts.batchDenom,
 			Amount:       purchaseQty.String(),
 			Jurisdiction: opts.jurisdiction,

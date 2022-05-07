@@ -22,10 +22,10 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -83,6 +83,13 @@ func (s *IntegrationTestSuite) setupCustomGenesis() {
 	s.Require().NoError(err)
 	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+	ms, err := marketApi.NewStateStore(modDB)
+
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+		BankDenom:    sdk.DefaultBondDenom,
+		DisplayDenom: sdk.DefaultBondDenom,
+	})
 	s.Require().NoError(err)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
@@ -264,11 +271,11 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 								if attr.Key == "class_id" {
 									classIdFound = true
 									classId := strings.Trim(attr.Value, "\"")
-									queryCmd := coreclient.QueryClassInfoCmd()
+									queryCmd := coreclient.QueryClassCmd()
 									queryArgs := []string{classId, flagOutputJSON}
 									queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 									s.Require().NoError(err, queryOut.String())
-									var queryRes core.QueryClassInfoResponse
+									var queryRes core.QueryClassResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
 									s.Require().Equal(tc.expectedClass.Admin, queryRes.Class.Admin)
@@ -304,7 +311,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		ClassId:      classId,
 		Metadata:     "META2",
 		Jurisdiction: "US-OR",
-		ProjectId:    "FBI",
 	})
 	s.Require().NoError(err)
 
@@ -458,11 +464,11 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 								batchDenomFound = true
 								batchDenom := strings.Trim(attr.Value, "\"")
 
-								queryCmd := coreclient.QueryBatchInfoCmd()
+								queryCmd := coreclient.QueryBatchCmd()
 								queryArgs := []string{batchDenom, flagOutputJSON}
 								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
 								s.Require().NoError(err, queryOut.String())
-								var queryRes core.QueryBatchInfoResponse
+								var queryRes core.QueryBatchResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 								s.Require().Equal(tc.expectedBatch.Issuer, queryRes.Batch.Issuer)
 
@@ -824,10 +830,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 				s.Require().NoError(err)
 
 				// query the class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
@@ -898,10 +904,10 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 				s.Require().NoError(err)
 
 				// query the credit class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
@@ -978,10 +984,10 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 				s.Require().NoError(err)
 
 				// query the credit class info
-				query := coreclient.QueryClassInfoCmd()
+				query := coreclient.QueryClassCmd()
 				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
 				s.Require().NoError(err, out.String())
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
 				s.Require().NoError(err)
 
@@ -1115,8 +1121,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
-	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
-	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+	askCoin := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "3020-04-15")
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
@@ -1140,7 +1145,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		return append(args, s.commonTxFlags()...)
 	}
 
-	newAsk := sdk.NewInt64Coin(validAskDenom, 3)
+	newAsk := sdk.NewInt64Coin(askCoin.Denom, 3)
 	newExpiration, err := types.ParseDate("newExpiration", "2049-07-15")
 	s.Require().NoError(err)
 
@@ -1226,7 +1231,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	s.Require().NoError(err)
 
 	makeArgs := func(msg *core.MsgCreateProject) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		args = append(args, makeFlagFrom(msg.Issuer))
 		return append(args, s.commonTxFlags()...)
 	}
@@ -1267,7 +1272,6 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 				ClassId:      classId,
 				Metadata:     "hi",
 				Jurisdiction: "US-OR",
-				ProjectId:    rand.Str(3),
 			}),
 			false,
 			"",
@@ -1313,7 +1317,7 @@ func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.M
 func (s *IntegrationTestSuite) createProject(clientCtx client.Context, msg *core.MsgCreateProject) (string, error) {
 	cmd := coreclient.TxCreateProject()
 	makeCreateProjectArgs := func(msg *core.MsgCreateProject, flags ...string) []string {
-		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata, fmt.Sprintf("--%s=%s", coreclient.FlagProjectId, msg.ProjectId)}
+		args := []string{msg.ClassId, msg.Jurisdiction, msg.Metadata}
 		return append(args, flags...)
 	}
 
@@ -1428,7 +1432,6 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		ClassId:      classId,
 		Metadata:     "meta",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()

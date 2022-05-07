@@ -52,7 +52,11 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 
-		if !isDenomAllowed(sdkCtx, order.AskPrice.Denom, k.paramsKeeper) {
+		allowed, err := isDenomAllowed(ctx, order.AskPrice.Denom, k.stateStore.AllowedDenomTable())
+		if err != nil {
+			return nil, err
+		}
+		if !allowed {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
 		}
 
@@ -77,16 +81,10 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 
 		sellOrderIds[i] = id
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
-			OrderId:           id,
-			BatchDenom:        batch.Denom,
-			Quantity:          order.Quantity,
-			AskPrice:          order.AskPrice,
-			DisableAutoRetire: order.DisableAutoRetire,
-			Expiration:        order.Expiration,
+			OrderId: id,
 		}); err != nil {
 			return nil, err
 		}
-
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
 	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
