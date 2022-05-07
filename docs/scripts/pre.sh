@@ -4,7 +4,7 @@
 
 mkdir -p modules
 
-cp MODULES.md modules/README.md
+cp README_modules.md modules/README.md
 
 for D in ../x/*; do
   if [ -d "${D}" ]; then
@@ -17,6 +17,6 @@ done
 
 mkdir -p commands
 
-cp COMMANDS.md commands/README.md
+cp README_commands.md commands/README.md
 
 go run ../scripts/generate-cli-docs.go

@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -62,7 +63,8 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = coreserver.NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
 
 	return s
 }

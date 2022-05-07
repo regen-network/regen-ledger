@@ -69,7 +69,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s

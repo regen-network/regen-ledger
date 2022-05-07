@@ -14,7 +14,7 @@ Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 When starting a full node or a validator node from genesis, you will need to start the node with the `v1.0.0` version (the "genesis binary"). For more information about preparing your node to migrate to the latest version, see [Upgrade Overview](../../validators/migrations/upgrade.md).
 
-The following URL is the node address for a full node operated by VitWit:
+The following URL is the node address for a full node operated by RND and VitWit:
 
 - [http://mainnet.regen.network:26657/](http://mainnet.regen.network:26657/)
 - [http://regen.rpc.vitwit.com:26657/](http://regen.rpc.vitwit.com:26657/)
@@ -42,7 +42,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` using the experimental build (`EXPERIMENTAL=true`).
 
-When the time comes to introduce new experimental features, Hambach Testnet will be restarted with an incremented chain ID rather than going through the upgrade process due to the inability to support migrations for experimental modules. It's important to keep this in mind when developing with Hambach Testnet and we recommend creating scripts that can be used to reseed the network following a restart.
+Hambach Testnet will be restarted with an incremented chain ID rather than going through the upgrade process due to the inability to support migrations for experimental modules. It's important to keep this in mind when developing with Hambach Testnet and we recommend creating scripts that can be used to reseed the network following a restart.
 
 The following URLs are node addresses for full nodes operated by RND and VitWit:
 
@@ -75,7 +75,7 @@ To check the status of the Hambach Testnet node, run the following command:
 regen status --node http://hambach.regen.network:26657
 ```
 
-If you are using `v2.0.0` or later, you can set the node address once using the `config` command rather than adding the `--node` flag to each command.
+You can also set the node address once using the `config` command rather than adding the `--node` flag to each command:
 
 ```bash
 regen config node http://mainnet.regen.network:26657

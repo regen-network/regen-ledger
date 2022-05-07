@@ -8,8 +8,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// ProjectInfo queries project info from the given project name.
-func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoRequest) (*core.QueryProjectInfoResponse, error) {
+// Project queries project info from the given project name.
+func (k Keeper) Project(ctx context.Context, request *core.QueryProjectRequest) (*core.QueryProjectResponse, error) {
 	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
 	if err != nil {
 		return nil, err
@@ -30,5 +30,5 @@ func (k Keeper) ProjectInfo(ctx context.Context, request *core.QueryProjectInfoR
 		Metadata:     project.Metadata,
 	}
 
-	return &core.QueryProjectInfoResponse{Project: &info}, nil
+	return &core.QueryProjectResponse{Project: &info}, nil
 }

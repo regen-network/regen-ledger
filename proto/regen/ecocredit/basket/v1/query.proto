@@ -50,7 +50,7 @@ message QueryBasketResponse {
   // Deprecated: This field is still populated and will be removed in the
   // next version. Use basket_info instead.
   Basket basket = 1 [ deprecated = true ];
-  
+
   // classes are the credit classes that can be deposited in the basket.
   repeated string classes = 2;
 
@@ -69,7 +69,7 @@ message QueryBasketsResponse {
   // baskets are the fetched baskets.
   // Deprecated: This field is still populated and will be removed in the
   // next version. Use baskets_info instead.
-  repeated Basket baskets = 1 [deprecated=true];
+  repeated Basket baskets = 1 [ deprecated = true ];
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -92,7 +92,7 @@ message QueryBasketBalancesResponse {
   // balances is a list of credit balances in the basket.
   // Deprecated: This field is still populated and will be removed in the
   // next version. Use balances_info instead.
-  repeated BasketBalance balances = 1 [deprecated=true];
+  repeated BasketBalance balances = 1 [ deprecated = true ];
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
