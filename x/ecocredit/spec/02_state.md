@@ -4,9 +4,11 @@ The `ecocredit` module uses the `orm` package as an abstraction layer over the `
 
 ## Ecocredit Core
 
+<!-- listed alphabetically -->
+
 - [Batch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Batch)
 - [BatchBalance](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchBalance)
-- [BatchOriginTx](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchOriginTx)
+- [BatchOrigTx](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchOrigTx)
 - [BatchSequence](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchSequence)
 - [BatchSupply](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.BatchSupply)
 - [Class](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Class)
@@ -18,11 +20,15 @@ The `ecocredit` module uses the `orm` package as an abstraction layer over the `
 
 ## Basket Submodule
 
+<!-- listed alphabetically -->
+
 - [Basket](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Basket)
 - [BasketBalance](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.BasketBalance)
 - [BasketClass](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.BasketClass)
 
 ## Marketplace Submodule
+
+<!-- listed alphabetically -->
 
 - [AllowedDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.AllowedDenom)
 - [Market](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Market)
