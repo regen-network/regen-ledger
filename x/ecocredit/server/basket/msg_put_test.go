@@ -2,6 +2,7 @@ package basket_test
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -544,6 +545,10 @@ func (s *putSuite) calculateExpectedCoins(amount string) sdk.Coins {
 	require.NoError(s.t, err)
 
 	dec, err := math.NewPositiveFixedDecFromString(amount, basket.Exponent)
+	if err != nil && strings.Contains(err.Error(), "exceeds maximum decimal places") {
+		// expected coins irrelevant if amount exceeds maximum decimal places
+		return sdk.Coins{}
+	}
 	require.NoError(s.t, err)
 
 	tokenAmt, err := math.NewDecFinite(1, int32(basket.Exponent)).MulExact(dec)
