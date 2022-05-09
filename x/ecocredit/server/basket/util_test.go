@@ -88,6 +88,25 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 	}))
 }
 
+func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
+	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		BatchKey: batchKey,
+		Address:  user,
+		Tradable: amount,
+		Retired:  "",
+		Escrowed: "",
+	}))
+}
+
+func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+		Id:               name,
+		Admin:            s.addrs[0],
+		Metadata:         "",
+		CreditTypeAbbrev: creditTypeAbb,
+	}))
+}
+
 func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
 	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       denom,
@@ -106,23 +125,4 @@ func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, crit
 			ClassId:  class,
 		}))
 	}
-}
-
-func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
-	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  user,
-		Tradable: amount,
-		Retired:  "",
-		Escrowed: "",
-	}))
-}
-
-func insertClassInfo(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
-	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
-		Id:               name,
-		Admin:            s.addrs[0],
-		Metadata:         "",
-		CreditTypeAbbrev: creditTypeAbb,
-	}))
 }
