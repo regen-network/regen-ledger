@@ -26,7 +26,7 @@ func TestQuery_ClassInfo(t *testing.T) {
 	assert.NilError(t, err)
 
 	// query class by the "C01" class id
-	res, err := s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: class.Id})
+	res, err := s.k.Class(s.ctx, &core.QueryClassRequest{ClassId: class.Id})
 	assert.NilError(t, err)
 	assert.Equal(t, class.Id, res.Class.Id)
 	assert.Equal(t, s.addr.String(), res.Class.Admin)
@@ -34,6 +34,6 @@ func TestQuery_ClassInfo(t *testing.T) {
 	assert.Equal(t, class.CreditTypeAbbrev, res.Class.CreditTypeAbbrev)
 
 	// query class by an unknown class id
-	_, err = s.k.ClassInfo(s.ctx, &core.QueryClassInfoRequest{ClassId: "C02"})
+	_, err = s.k.Class(s.ctx, &core.QueryClassRequest{ClassId: "C02"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }

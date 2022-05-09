@@ -4,9 +4,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
+	registry.RegisterImplementations((*govtypes.Content)(nil), &CreditTypeProposal{})
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 
@@ -24,6 +26,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateClassIssuers{}, "regen.core/MsgUpdateClassIssuers", nil)
 	cdc.RegisterConcrete(&MsgUpdateProjectAdmin{}, "regen.core/MsgUpdateProjectAdmin", nil)
 	cdc.RegisterConcrete(&MsgUpdateProjectMetadata{}, "regen.core/MsgUpdateProjectMetadata", nil)
+	cdc.RegisterConcrete(&CreditTypeProposal{}, "regen.core/CreditTypeProposal", nil)
 }
 
 var (

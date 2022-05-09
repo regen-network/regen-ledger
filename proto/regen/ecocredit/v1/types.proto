@@ -30,24 +30,6 @@ message Params {
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation
   bool allowlist_enabled = 4;
-
-  // allowed_ask_denoms is a list of denoms (and display information) allowed to
-  // be used in sell order ask prices.
-  repeated AskDenom allowed_ask_denoms = 6;
-}
-
-// AskDenom defines the structure for a coin denom.
-message AskDenom {
-
-  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-  string denom = 1;
-
-  // display_denom is the denom to display to the user and is informational
-  string display_denom = 2;
-
-  // exponent is the exponent that relates the denom to the display_denom and is
-  // informational
-  uint32 exponent = 3;
 }
 
 // OriginTx is a reference to an external transaction or an operation

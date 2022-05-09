@@ -141,8 +141,8 @@ func local_request_Query_ClassesByAdmin_0(ctx context.Context, marshaler runtime
 
 }
 
-func request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryClassInfoRequest
+func request_Query_Class_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryClassRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -163,13 +163,13 @@ func request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
 	}
 
-	msg, err := client.ClassInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Class(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryClassInfoRequest
+func local_request_Query_Class_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryClassRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -190,7 +190,7 @@ func local_request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
 	}
 
-	msg, err := server.ClassInfo(ctx, &protoReq)
+	msg, err := server.Class(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -339,8 +339,8 @@ func local_request_Query_Projects_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-func request_Query_ProjectInfo_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryProjectInfoRequest
+func request_Query_Project_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryProjectRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -361,13 +361,13 @@ func request_Query_ProjectInfo_0(ctx context.Context, marshaler runtime.Marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "project_id", err)
 	}
 
-	msg, err := client.ProjectInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Project(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_ProjectInfo_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryProjectInfoRequest
+func local_request_Query_Project_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryProjectRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -388,7 +388,7 @@ func local_request_Query_ProjectInfo_0(ctx context.Context, marshaler runtime.Ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "project_id", err)
 	}
 
-	msg, err := server.ProjectInfo(ctx, &protoReq)
+	msg, err := server.Project(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -609,8 +609,8 @@ func local_request_Query_BatchesByClass_0(ctx context.Context, marshaler runtime
 
 }
 
-func request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryBatchInfoRequest
+func request_Query_Batch_0(ctx context.Context, marshaler runtime.Marshaler, client QueryClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryBatchRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -631,13 +631,13 @@ func request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := client.BatchInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Batch(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq QueryBatchInfoRequest
+func local_request_Query_Batch_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryBatchRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -658,7 +658,7 @@ func local_request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := server.BatchInfo(ctx, &protoReq)
+	msg, err := server.Batch(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -953,7 +953,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_ClassInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Class_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -964,7 +964,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_ClassInfo_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_Class_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -972,7 +972,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_ClassInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Class_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1022,7 +1022,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_ProjectInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Project_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1033,7 +1033,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_ProjectInfo_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_Project_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1041,7 +1041,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_ProjectInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Project_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1114,7 +1114,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 
 	})
 
-	mux.Handle("GET", pattern_Query_BatchInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Batch_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -1125,7 +1125,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Query_BatchInfo_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Query_Batch_0(rctx, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
@@ -1133,7 +1133,7 @@ func RegisterQueryHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Query_BatchInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Batch_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1333,7 +1333,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_ClassInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Class_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1342,14 +1342,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ClassInfo_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_Class_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_ClassInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Class_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1393,7 +1393,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_ProjectInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Project_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1402,14 +1402,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_ProjectInfo_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_Project_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_ProjectInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Project_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1473,7 +1473,7 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 
 	})
 
-	mux.Handle("GET", pattern_Query_BatchInfo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Query_Batch_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -1482,14 +1482,14 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Query_BatchInfo_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Query_Batch_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Query_BatchInfo_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Query_Batch_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1601,13 +1601,13 @@ var (
 
 	pattern_Query_ClassesByAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "classes", "admin"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ClassInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "classes", "class_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Class_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "classes", "class_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_ClassIssuers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1", "classes", "class_id", "issuers"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_Projects_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1", "classes", "class_id", "projects"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ProjectInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "projects", "project_id"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Project_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "projects", "project_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_Batches_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1", "projects", "project_id", "batches"}, "", runtime.AssumeColonVerbOpt(false)))
 
@@ -1615,7 +1615,7 @@ var (
 
 	pattern_Query_BatchesByClass_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1", "classes", "class_id", "batches"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BatchInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "batches", "batch_denom"}, "", runtime.AssumeColonVerbOpt(false)))
+	pattern_Query_Batch_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1", "batches", "batch_denom"}, "", runtime.AssumeColonVerbOpt(false)))
 
 	pattern_Query_Balance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "ecocredit", "v1", "batches", "batch_denom", "balance", "account"}, "", runtime.AssumeColonVerbOpt(false)))
 
@@ -1633,13 +1633,13 @@ var (
 
 	forward_Query_ClassesByAdmin_0 = runtime.ForwardResponseMessage
 
-	forward_Query_ClassInfo_0 = runtime.ForwardResponseMessage
+	forward_Query_Class_0 = runtime.ForwardResponseMessage
 
 	forward_Query_ClassIssuers_0 = runtime.ForwardResponseMessage
 
 	forward_Query_Projects_0 = runtime.ForwardResponseMessage
 
-	forward_Query_ProjectInfo_0 = runtime.ForwardResponseMessage
+	forward_Query_Project_0 = runtime.ForwardResponseMessage
 
 	forward_Query_Batches_0 = runtime.ForwardResponseMessage
 
@@ -1647,7 +1647,7 @@ var (
 
 	forward_Query_BatchesByClass_0 = runtime.ForwardResponseMessage
 
-	forward_Query_BatchInfo_0 = runtime.ForwardResponseMessage
+	forward_Query_Batch_0 = runtime.ForwardResponseMessage
 
 	forward_Query_Balance_0 = runtime.ForwardResponseMessage
 

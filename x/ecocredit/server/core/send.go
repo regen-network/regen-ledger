@@ -27,7 +27,7 @@ func (k Keeper) Send(ctx context.Context, req *core.MsgSend) (*core.MsgSendRespo
 		if err != nil {
 			return nil, err
 		}
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         req.Sender,
 			Recipient:      req.Recipient,
 			BatchDenom:     credit.BatchDenom,
@@ -148,7 +148,7 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 			return err
 		}
 		if err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:      to.String(),
+			Owner:        to.String(),
 			BatchDenom:   credit.BatchDenom,
 			Amount:       sendAmtRetired.String(),
 			Jurisdiction: credit.RetirementJurisdiction,
