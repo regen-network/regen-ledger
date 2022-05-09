@@ -6919,7 +6919,7 @@ type Project struct {
 	Jurisdiction string `protobuf:"bytes,5,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
 	// metadata is any arbitrary metadata attached to the project.
 	Metadata string `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// reference_id is any arbitrary string that can be use to reference project.
+	// reference_id is any arbitrary string used to reference the project.
 	ReferenceId string `protobuf:"bytes,7,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 }
 

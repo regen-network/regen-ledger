@@ -15617,7 +15617,7 @@ type MsgCreateProject struct {
 	// alphanumeric characters. country-code is required, while sub-national-code
 	// and postal-code are optional and can be added for increased precision.
 	Jurisdiction string `protobuf:"bytes,4,opt,name=jurisdiction,proto3" json:"jurisdiction,omitempty"`
-	// reference_id is any arbitrary string that can be use to reference project.
+	// reference_id is any arbitrary string used to reference the project.
 	ReferenceId string `protobuf:"bytes,5,opt,name=reference_id,json=referenceId,proto3" json:"reference_id,omitempty"`
 }
 
