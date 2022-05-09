@@ -122,7 +122,7 @@ message MsgCreateProject {
   // and postal-code are optional and can be added for increased precision.
   string jurisdiction = 4;
 
-  // reference_id is any arbitrary string that can be use to reference project.
+  // reference_id is any arbitrary string used to reference the project.
   string reference_id = 5;
 }
 
