@@ -13,9 +13,9 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/regen-network/regen-ledger/orm"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type batchMapT struct {
@@ -182,6 +182,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 		projectExists := false
 		var projectKey uint64
+		var projectId string
 		for pItr.Next() {
 			pInfo, err := pItr.Value()
 			if err != nil {
@@ -191,6 +192,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.Jurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
 				projectKey = pInfo.Key
+				projectId = pInfo.Id
 				break
 			}
 
@@ -221,11 +223,27 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 			projectKey = key
+			projectId = id
+		}
+
+		startDate, endDate, err := parseBatchDenom(batchInfo.BatchDenom)
+		if err != nil {
+			return err
+		}
+
+		var batchSeq uint64 = 1
+		if v, ok := projectKeyToBatchSeq[projectKey]; ok {
+			batchSeq = v
+		}
+
+		bd, err := core.FormatBatchDenom(projectId, batchSeq, startDate, endDate)
+		if err != nil {
+			return err
 		}
 
 		bInfo := api.Batch{
 			ProjectKey:   projectKey,
-			Denom:        batchInfo.BatchDenom,
+			Denom:        bd,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
@@ -237,7 +255,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
-		batchDenomToBatchMap[bInfo.Denom] = batchMapT{
+		batchDenomToBatchMap[batchInfo.BatchDenom] = batchMapT{
 			Id:              bID,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}

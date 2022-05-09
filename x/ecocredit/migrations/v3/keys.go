@@ -2,6 +2,8 @@ package v3
 
 import (
 	fmt "fmt"
+	"strings"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
@@ -99,4 +101,22 @@ func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 // <class id><project seq no>
 func FormatProjectID(classID string, projectSeqNo uint64) string {
 	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
+}
+
+func parseBatchDenom(denom string) (*time.Time, *time.Time, error) {
+	// batch denom format: <class id>-<start date>-<end date>-<batch seq no>
+	result := strings.Split(denom, "-")
+	if len(result) != 4 {
+		return nil, nil, fmt.Errorf("invalid batch denom %s", denom)
+	}
+
+	sd, err := time.Parse("20060102", result[1])
+	if err != nil {
+		return nil, nil, err
+	}
+	ed, err := time.Parse("20060102", result[2])
+	if err != nil {
+		return nil, nil, err
+	}
+	return &sd, &ed, nil
 }
