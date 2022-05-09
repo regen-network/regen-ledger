@@ -14,7 +14,6 @@ var (
 	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
-	KeyAllowedAskDenoms         = []byte("AllowedAskDenoms")
 )
 
 // TODO: remove after we open governance changes for precision
@@ -34,7 +33,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyBasketCreationFee, &p.BasketFee, validateBasketCreationFee),
-		paramtypes.NewParamSetPair(KeyAllowedAskDenoms, &p.AllowedAskDenoms, validateAllowedAskDenoms),
 	}
 }
 
@@ -56,7 +54,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	return validateAllowedAskDenoms(p.AllowedAskDenoms)
+	return nil
 }
 
 func validateCreditClassFee(i interface{}) error {
@@ -108,27 +106,13 @@ func validateBasketCreationFee(i interface{}) error {
 	return nil
 }
 
-func validateAllowedAskDenoms(i interface{}) error {
-	v, ok := i.([]*AskDenom)
-	if !ok {
-		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T, expected: %T", i, []*AskDenom{})
-	}
-	for _, askDenom := range v {
-		if err := sdk.ValidateDenom(askDenom.Denom); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // NewParams creates a new Params object.
-func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool, allowedAskDenoms []*AskDenom) Params {
+func NewParams(creditClassFee, basketCreationFee sdk.Coins, allowlist []string, allowlistEnabled bool) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
 		AllowedClassCreators: allowlist,
 		AllowlistEnabled:     allowlistEnabled,
 		BasketFee:            basketCreationFee,
-		AllowedAskDenoms:     allowedAskDenoms,
 	}
 }
 
@@ -139,12 +123,5 @@ func DefaultParams() Params {
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultBasketCreationFee)),
 		[]string{},
 		false,
-		[]*AskDenom{
-			{
-				Denom:        sdk.DefaultBondDenom,
-				DisplayDenom: sdk.DefaultBondDenom,
-				Exponent:     18,
-			},
-		},
 	)
 }

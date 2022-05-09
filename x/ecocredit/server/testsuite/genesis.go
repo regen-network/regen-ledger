@@ -42,21 +42,21 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 		{Id: "BIO001", Admin: sdk.AccAddress("addr1"), Metadata: "metadata", CreditTypeAbbrev: "BIO"},
 		{Id: "BIO002", Admin: sdk.AccAddress("addr2"), Metadata: "metadata", CreditTypeAbbrev: "BIO"},
 	}
-	classInfoJSON, err := json.Marshal(classes)
+	classJSON, err := json.Marshal(classes)
 	require.NoError(err)
 
 	projects := []api.Project{
 		{Id: "C01-001", Admin: sdk.AccAddress("addr1"), ClassKey: 1, Jurisdiction: "AQ", Metadata: "metadata"},
 		{Id: "C01-002", Admin: sdk.AccAddress("addr2"), ClassKey: 2, Jurisdiction: "AQ", Metadata: "metadata"},
 	}
-	projectInfoJSON, err := json.Marshal(projects)
+	projectJSON, err := json.Marshal(projects)
 	require.NoError(err)
 
 	batches := []api.Batch{
 		{Issuer: sdk.AccAddress("addr1"), ProjectKey: 1, Denom: "BIO01-00000000-00000000-001", Metadata: "metadata"},
 		{Issuer: nil, ProjectKey: 1, Denom: "BIO02-0000000-0000000-001", Metadata: "metadata"},
 	}
-	batchInfoJSON, err := json.Marshal(batches)
+	batchJSON, err := json.Marshal(batches)
 	require.NoError(err)
 
 	balances := []api.BatchBalance{
@@ -84,10 +84,10 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	wrapper := map[string]json.RawMessage{}
-	wrapper[string(proto.MessageName(&api.Class{}))] = classInfoJSON
+	wrapper[string(proto.MessageName(&api.Class{}))] = classJSON
 	wrapper[string(proto.MessageName(&api.ClassIssuer{}))] = classIssuersJSON
-	wrapper[string(proto.MessageName(&api.Project{}))] = projectInfoJSON
-	wrapper[string(proto.MessageName(&api.Batch{}))] = batchInfoJSON
+	wrapper[string(proto.MessageName(&api.Project{}))] = projectJSON
+	wrapper[string(proto.MessageName(&api.Batch{}))] = batchJSON
 	wrapper[string(proto.MessageName(&api.BatchBalance{}))] = batchBalancesJSON
 	wrapper[string(proto.MessageName(&api.BatchSupply{}))] = batchSupplyJSON
 	wrapper[string(proto.MessageName(&api.ClassSequence{}))] = classSeqJSON

@@ -56,15 +56,5 @@ func ParamChanges() []simtypes.ParamChange {
 				return string(bz)
 			},
 		),
-
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(core.KeyAllowedAskDenoms),
-			func(r *rand.Rand) string {
-				bz, err := json.Marshal(genAskDenoms())
-				if err != nil {
-					panic(err)
-				}
-				return string(bz)
-			},
-		),
 	}
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-func TestQuery_BatchInfo(t *testing.T) {
+func TestQuery_Batch(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
@@ -50,7 +50,7 @@ func TestQuery_BatchInfo(t *testing.T) {
 	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, batch))
 
 	// query batch by "C01-001-20200101-20220101-001" batch denom
-	res, err := s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batch.Denom})
+	res, err := s.k.Batch(s.ctx, &core.QueryBatchRequest{BatchDenom: batch.Denom})
 	assert.NilError(t, err)
 	assert.Equal(t, "C01-001", res.Batch.ProjectId)
 	assert.Equal(t, batch.Denom, res.Batch.Denom)
@@ -61,6 +61,6 @@ func TestQuery_BatchInfo(t *testing.T) {
 	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(batch.IssuanceDate), res.Batch.IssuanceDate)
 
 	// query batch by unknown batch denom
-	_, err = s.k.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: "A00-000-00000000-00000000-000"})
+	_, err = s.k.Batch(s.ctx, &core.QueryBatchRequest{BatchDenom: "A00-000-00000000-00000000-000"})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
