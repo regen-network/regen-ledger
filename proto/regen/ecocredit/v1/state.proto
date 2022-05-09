@@ -107,7 +107,7 @@ message Project {
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 6;
 
-  // reference_id is any arbitrary string that can be use to reference project.
+  // reference_id is any arbitrary string used to reference the project.
   string reference_id = 7;
 }
 
