@@ -32,7 +32,7 @@ type baseSuite struct {
 	ctx          context.Context
 	k            basket.Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
+	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
 	coreStore    ecocreditApi.StateStore
 	bankKeeper   *mocks2.MockBankKeeper
@@ -79,7 +79,11 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	_, _, s.addr = testdata.KeyTestPubAddr()
+
+	// add test addresses
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	s.addrs = append(s.addrs, addr1, addr2)
 
 	return s
 }
