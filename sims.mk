@@ -1,7 +1,10 @@
 #!/usr/bin/make -f
 
-########################################
-### Simulations
+###############################################################################
+###                               Simulation                                ###
+###############################################################################
+
+APP_DIR = ./app
 
 simulation_tags=""
 
@@ -13,6 +16,7 @@ sim-regen-nondeterminism:
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h -tags="$(simulation_tags)"
+
 sim-regen-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
 	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
