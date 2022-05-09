@@ -35,11 +35,11 @@ for dir in $proto_dirs; do
   fi
 done
 
-# download Cosmos SDK swagger yaml files and update filename
+# download Cosmos SDK swagger yaml file
 echo "SDK version ${SDK_VERSION}"
 wget "${SDK_RAW_URL}" -O ${SWAGGER_DIR}/swagger-sdk.yaml
 
-# download IBC swagger yaml files and update filename
+# download IBC swagger yaml file
 echo "IBC version ${IBC_VERSION}"
 wget "${IBC_RAW_URL}" -O ${SWAGGER_DIR}/swagger-ibc.yaml
 
@@ -51,7 +51,7 @@ swagger-combine ${SWAGGER_DIR}/config.json -f yaml \
   --includeDefinitions true
 
 # if swagger-ui does not exist locally, download swagger-ui and move dist directory to
-# swagger-ui directory, then remove zip file and directory specific to swagger version
+# swagger-ui directory, then remove zip file and unzipped swagger-ui directory
 if [ ! -d ${SWAGGER_UI_DIR} ]; then
   # download swagger-ui
   wget ${SWAGGER_UI_DOWNLOAD_URL} -O ${SWAGGER_UI_PACKAGE_NAME}.zip
@@ -59,7 +59,7 @@ if [ ! -d ${SWAGGER_UI_DIR} ]; then
   unzip ${SWAGGER_UI_PACKAGE_NAME}.zip -d ${SWAGGER_DIR}
   # move swagger-ui dist directory to swagger-ui directory
   mv ${SWAGGER_UI_PACKAGE_NAME}/dist ${SWAGGER_UI_DIR}
-  # remove swagger-ui zip file and unzipped directory
+  # remove swagger-ui zip file and unzipped swagger-ui directory
   rm -rf ${SWAGGER_UI_PACKAGE_NAME}.zip ${SWAGGER_UI_PACKAGE_NAME}
 fi
 
