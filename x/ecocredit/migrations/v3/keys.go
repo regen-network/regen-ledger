@@ -94,15 +94,6 @@ func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 	return nil
 }
 
-// Calculate the ID to use for a new project, based on the class id and
-// the project sequence number.
-//
-// The initial version has format:
-// <class id><project seq no>
-func FormatProjectID(classID string, projectSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
-}
-
 func parseBatchDenom(denom string) (*time.Time, *time.Time, error) {
 	// batch denom format: <class id>-<start date>-<end date>-<batch seq no>
 	result := strings.Split(denom, "-")

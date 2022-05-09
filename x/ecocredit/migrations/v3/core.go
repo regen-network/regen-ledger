@@ -209,7 +209,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				classKeyToProjectSeq[classKey] = 2
 			}
 
-			id := FormatProjectID(batchInfo.ClassId, projectSeq)
+			id := core.FormatProjectId(batchInfo.ClassId, projectSeq)
 			key, err := ss.ProjectTable().InsertReturningID(ctx,
 				&api.Project{
 					Id:           id,
