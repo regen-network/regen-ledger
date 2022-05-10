@@ -16,22 +16,22 @@ Feature: MsgTake
 
     Scenario: basket exists
       Given a basket with denom "NCT"
-      And alice owns basket tokens from basket "NCT"
-      When alice attempts to take credits from basket "NCT"
+      And alice owns tokens with denom "NCT"
+      When alice attempts to take credits with basket denom "NCT"
       Then expect no error
 
     Scenario: basket does not exist
-      When alice attempts to take credits from basket "NCT"
+      When alice attempts to take credits with basket denom "NCT"
       Then expect the error "basket NCT not found: not found"
 
   Rule: The user token balance must be greater than or equal to the token amount
 
     Background:
-      Given a basket with denom "NCT"
+      Given a basket
 
     Scenario Outline: user token balance is greater than or equal to token amount
-      Given alice owns basket token amount "<token-balance>" from basket "NCT"
-      When alice attempts to take credits from basket "NCT" with token amount "<token-amount>"
+      Given alice owns basket token amount "<token-balance>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect no error
 
       Examples:
@@ -40,8 +40,8 @@ Feature: MsgTake
         | balance equal   | 100            | 100          |
 
     Scenario Outline: user token balance is less than token amount
-      Given alice owns basket token amount "<token-balance>" from basket "NCT"
-      When alice attempts to take credits from basket "NCT" with token amount "<token-amount>"
+      Given alice owns basket token amount "<token-balance>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect the error "insufficient token balance for bank denom NCT: insufficient funds"
 
       Examples:
@@ -52,9 +52,9 @@ Feature: MsgTake
   Rule: The user must set retire on take to true if auto-retire is enabled
 
     Scenario Outline: basket auto-retire disabled
-      Given a basket with denom "NCT" and disable auto retire "true"
-      And alice owns basket tokens from basket "NCT"
-      When alice attempts to take credits from basket "NCT" with retire on take "<retire-on-take>"
+      Given a basket with disable auto retire "true"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "<retire-on-take>"
       Then expect no error
 
       Examples:
@@ -63,15 +63,15 @@ Feature: MsgTake
         | false          |
 
     Scenario: basket auto-retire enabled and user sets retire on take to true
-      Given a basket with denom "NCT" and disable auto retire "false"
-      And alice owns basket tokens from basket "NCT"
-      When alice attempts to take credits from basket "NCT" with retire on take "true"
+      Given a basket with disable auto retire "false"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "true"
       Then expect no error
 
     Scenario: basket auto-retire enabled and user sets retire on take to false
-      Given a basket with denom "NCT" and disable auto retire "false"
-      And alice owns basket tokens from basket "NCT"
-      When alice attempts to take credits from basket "NCT" with retire on take "false"
+      Given a basket with disable auto retire "false"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "false"
       Then expect the error "can't disable retirement when taking from this basket"
 
  Rule: The user token balance is updated when credits are taken from the basket
@@ -79,8 +79,8 @@ Feature: MsgTake
     Scenario: user token balance is updated
       Given a basket
       And alice owns basket token amount "100"
-      When alice attempts to take credits from the basket with token amount "50"
-      # Then alice has a basket token balance with amount "50"
+      When alice attempts to take credits with basket token amount "50"
+      Then alice has a basket token balance with amount "50"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -89,7 +89,7 @@ Feature: MsgTake
     Scenario: basket token supply is updated
       Given a basket
       And alice owns basket token amount "150"
-      When alice attempts to take credits from the basket with token amount "100"
+      When alice attempts to take credits with basket token amount "100"
       Then the basket token has a total supply with amount "50"
 
     # no failing scenario - state transitions only occur upon successful message execution
@@ -99,7 +99,7 @@ Feature: MsgTake
     Scenario Outline: user credit balance is updated
       Given a basket with exponent "<exponent>"
       And alice owns basket token amount "<token-amount>"
-      When alice attempts to take credits from the basket with token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
       Then alice has a credit balance with amount "<credit-amount>"
 
       Examples:
@@ -115,7 +115,7 @@ Feature: MsgTake
     Scenario Outline: basket credit balance is updated
       Given a basket with exponent "<exponent>" and credit balance "100"
       And alice owns basket token amount "<token-amount>"
-      When alice attempts to take credits from the basket with token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
       Then the basket has a credit balance with amount "<credit-amount>"
 
       Examples:
@@ -131,7 +131,7 @@ Feature: MsgTake
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>" and credit balance "100"
       And alice owns basket token amount "<token-amount>"
-      When alice attempts to take credits from the basket with token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect the response
       """
       {
