@@ -8,7 +8,8 @@ Feature: MsgTake
   - when auto-retire is enabled and the user sets retire on take to true
   - the user token balance is updated
   - the basket token supply is updated
-  - the user credit balance is updated
+  - the user retired credit balance is updated when the user sets retire on take to false
+  - the user tradable credit balance is updated when the user sets retire on take to true
   - the basket credit balance is updated
   - the response includes the credits received
 
@@ -100,27 +101,27 @@ Feature: MsgTake
       Given a basket with exponent "<exponent>" and disable auto retire "false"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "true"
-      Then alice has a retired credit balance with amount "<retired-amount>"
+      Then alice has a retired credit balance with amount "<retired-credits>"
       And alice has a tradable credit balance with amount "0"
 
       Examples:
-        | description                        | exponent | token-amount | retired-amount |
-        | exponent zero, credits whole       | 0        | 2            | 2              |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000       |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000       |
+        | description                        | exponent | token-amount | retired-credits |
+        | exponent zero, credits whole       | 0        | 2            | 2               |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000        |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000        |
 
     Scenario Outline: user tradable credit balance is updated
       Given a basket with exponent "<exponent>" and disable auto retire "true"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "false"
-      Then alice has a tradable credit balance with amount "<tradable-amount>"
+      Then alice has a tradable credit balance with amount "<tradable-credits>"
       And alice has a retired credit balance with amount "0"
 
       Examples:
-        | description                        | exponent | token-amount | tradable-amount |
-        | exponent zero, credits whole       | 0        | 2            | 2               |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000        |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000        |
+        | description                        | exponent | token-amount | tradable-credits |
+        | exponent zero, credits whole       | 0        | 2            | 2                |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000         |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000         |
 
     # no failing scenario - state transitions only occur upon successful message execution
 
