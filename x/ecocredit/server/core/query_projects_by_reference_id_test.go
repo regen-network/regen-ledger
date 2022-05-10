@@ -32,7 +32,7 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 	// insert two projects with "R1" reference id and one without reference id
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, project))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:          "P02",
+		Id:          "C01-002",
 		ClassKey:    classKey,
 		ReferenceId: "R1",
 	}))
