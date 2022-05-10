@@ -50,8 +50,7 @@ func (s *takeSuite) Before(t gocuke.TestingT) {
 
 func (s *takeSuite) ABasket() {
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      s.basketDenom,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
+		BasketDenom: s.basketDenom,
 	})
 	require.NoError(s.t, err)
 
@@ -61,8 +60,7 @@ func (s *takeSuite) ABasket() {
 
 func (s *takeSuite) ABasketWithDenom(a string) {
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      a,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
+		BasketDenom: a,
 	})
 	require.NoError(s.t, err)
 
@@ -76,23 +74,7 @@ func (s *takeSuite) ABasketWithDisableAutoRetire(a string) {
 
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
 		BasketDenom:       s.basketDenom,
-		CreditTypeAbbrev:  s.creditTypeAbbrev,
 		DisableAutoRetire: disableAutoRetire,
-	})
-	require.NoError(s.t, err)
-
-	// add balance with credit amount = token amount
-	s.addBasketClassAndBalance(basketId, s.tokenAmount)
-}
-
-func (s *takeSuite) ABasketWithExponent(a string) {
-	exponent, err := strconv.ParseUint(a, 10, 32)
-	require.NoError(s.t, err)
-
-	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      s.basketDenom,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Exponent:         uint32(exponent),
 	})
 	require.NoError(s.t, err)
 
@@ -102,12 +84,29 @@ func (s *takeSuite) ABasketWithExponent(a string) {
 
 func (s *takeSuite) ABasketWithCreditBalance(a string) {
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      s.basketDenom,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
+		BasketDenom: s.basketDenom,
 	})
 	require.NoError(s.t, err)
 
 	s.addBasketClassAndBalance(basketId, a)
+}
+
+func (s *takeSuite) ABasketWithExponentAndDisableAutoRetire(a string, b string) {
+	exponent, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	disableAutoRetire, err := strconv.ParseBool(b)
+	require.NoError(s.t, err)
+
+	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:       s.basketDenom,
+		Exponent:          uint32(exponent),
+		DisableAutoRetire: disableAutoRetire,
+	})
+	require.NoError(s.t, err)
+
+	// add balance with credit amount = token amount
+	s.addBasketClassAndBalance(basketId, s.tokenAmount)
 }
 
 func (s *takeSuite) ABasketWithExponentAndCreditBalance(a string, b string) {
@@ -115,9 +114,8 @@ func (s *takeSuite) ABasketWithExponentAndCreditBalance(a string, b string) {
 	require.NoError(s.t, err)
 
 	basketId, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
-		BasketDenom:      s.basketDenom,
-		CreditTypeAbbrev: s.creditTypeAbbrev,
-		Exponent:         uint32(exponent),
+		BasketDenom: s.basketDenom,
+		Exponent:    uint32(exponent),
 	})
 	require.NoError(s.t, err)
 
@@ -148,7 +146,7 @@ func (s *takeSuite) AliceOwnsTokensWithDenom(a string) {
 func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketDenom(a string) {
 	var coins sdk.Coins
 
-	// send full balance when token amount not specified
+	// send balance when amount not specified
 	if !s.aliceTokenBalance.Equal(sdk.Coin{}) {
 		coins = sdk.NewCoins(s.aliceTokenBalance)
 	}
@@ -173,7 +171,7 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketDenom(a string) {
 		BasketDenom:            a,
 		Amount:                 s.aliceTokenBalance.Amount.String(),
 		RetirementJurisdiction: s.jurisdiction,
-		RetireOnTake:           true,
+		RetireOnTake:           true, // satisfy default auto-retire
 	})
 }
 
@@ -203,7 +201,40 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmount(a string) {
 		BasketDenom:            s.basketDenom,
 		Amount:                 a,
 		RetirementJurisdiction: s.jurisdiction,
-		RetireOnTake:           true,
+		RetireOnTake:           true, // satisfy default auto-retire
+	})
+}
+
+func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTake(a string, b string) {
+	amount, ok := sdk.NewIntFromString(a)
+	require.True(s.t, ok)
+
+	retireOnTake, err := strconv.ParseBool(b)
+	require.NoError(s.t, err)
+
+	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.alice, s.basketDenom).
+		Return(s.aliceTokenBalance).
+		Times(1)
+
+	s.bankKeeper.EXPECT().
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.res, s.err = s.k.Take(s.ctx, &basket.MsgTake{
+		Owner:                  s.alice.String(),
+		BasketDenom:            s.basketDenom,
+		Amount:                 a,
+		RetirementJurisdiction: s.jurisdiction,
+		RetireOnTake:           retireOnTake,
 	})
 }
 
@@ -213,7 +244,7 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 
 	var coins sdk.Coins
 
-	// send balance when token amount not specified
+	// send balance when amount not specified
 	if !s.aliceTokenBalance.Equal(sdk.Coin{}) {
 		coins = sdk.NewCoins(s.aliceTokenBalance)
 	}
@@ -242,7 +273,17 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 	})
 }
 
-func (s *takeSuite) AliceHasACreditBalanceWithAmount(a string) {
+func (s *takeSuite) AliceHasATradableCreditBalanceWithAmount(a string) {
+	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, a, balance.Tradable)
+}
+
+func (s *takeSuite) AliceHasARetiredCreditBalanceWithAmount(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
