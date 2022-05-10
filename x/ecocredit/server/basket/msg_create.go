@@ -19,8 +19,8 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	var params core.Params
 	k.paramsKeeper.GetParamSet(sdkCtx, &params)
 	fee := params.BasketFee
-	if err := basket.ValidateMsgCreate(msg, fee); err != nil {
-		return nil, err
+	if !msg.Fee.IsAllGTE(fee) {
+		return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
 	}
 
 	curator, err := sdk.AccAddressFromBech32(msg.Curator)
@@ -35,7 +35,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err = k.validateCreditType(ctx, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
-	denom, displayDenom, err := basket.BasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
+	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
 	if err != nil {
 		return nil, err
 	}

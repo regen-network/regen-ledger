@@ -1,4 +1,4 @@
-Feature: Create
+Feature: MsgCreate
 
   Scenario: basket fee exceeds minimum basket fee
     When user tries to create a basket
@@ -52,24 +52,6 @@ Feature: Create
     And user provides name=Foo, exponent=6, credit_type_abbrev=C
     Then basket is NOT created
 
-  Scenario: basket name must start with alphabetic character
-    Given a credit type with abbreviation C exists
-    When user tries to create a basket
-    And user provides name=1Foo, exponent=6, credit_type_abbrev=C
-    Then basket is NOT created
-
-  Scenario: basket name does not meet required length
-    Given a credit type with abbreviation C exists
-    When user tries to create a basket
-    And user provides name=fo, exponent=6, credit_type_abbrev=C
-    Then basket is NOT created
-
-  Scenario: basket name exceeds required length
-    Given a credit type with abbreviation C exists
-    When user tries to create a basket
-    And user provides name=foobarbaz, exponent=6, credit_type_abbrev=C
-    Then basket is NOT created
-
   Scenario: basket exponent must be greater than or equal to the precision of the credit type
     Given a credit type with abbreviation C exists
     And the precision of credit type C is 6
@@ -77,34 +59,8 @@ Feature: Create
     And user provides name=foobarbaz, exponent=3, credit_type_abbrev=C
     Then basket is NOT created
 
-  Scenario: basket exponent must be a value with an official SI prefix
-    Given a credit type with abbreviation C exists
-    When user tries to create a basket
-    And user provides name=foobarbaz, exponent=7, credit_type_abbrev=C
-    Then basket is NOT created
-
   Scenario: basket credit type abbreviation must reference a valid credit type
     Given a credit type with abbreviation X does not exist
     When user tries to create a basket
     And user provides name=foobarbaz, exponent=6, credit_type_abbrev=X
-    Then basket is NOT created
-
-  Scenario: basket description must not exceed 256 characters
-    When user tries to create a basket
-    And user provides a description that exceeds 256 characters
-    Then basket is NOT created
-
-  Scenario: basket can only specify one date criteria option
-    When user tries to create a basket
-    And user provides values for both a minimum start date and a start date window
-    Then basket is NOT created
-
-  Scenario: basket minimum start date must be a valid timestamp
-    When user tries to create a basket
-    And user provides a minimum start date that is before 1900-01-01
-    Then basket is NOT created
-
-  Scenario: basket start date window must be a valid duration
-    When user tries to create a basket
-    And user provides a minimum start date that is less than 1 day
     Then basket is NOT created
