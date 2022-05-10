@@ -37,7 +37,7 @@ func TestQuery_ProjectsByReferenceId(t *testing.T) {
 		ReferenceId: "R1",
 	}))
 	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:       "P03",
+		Id:       "C01-003",
 		ClassKey: classKey,
 	}))
 
