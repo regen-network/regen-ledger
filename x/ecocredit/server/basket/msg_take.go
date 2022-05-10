@@ -46,7 +46,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	ownerBalance := k.bankKeeper.GetBalance(sdkCtx, acct, basket.BasketDenom)
 	if ownerBalance.IsNil() || ownerBalance.IsLT(basketCoins[0]) {
-		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient token balance for bank denom %s", basket.BasketDenom)
+		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for basket denom %s", basket.BasketDenom)
 	}
 
 	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, acct, baskettypes.BasketSubModuleName, basketCoins)

@@ -42,7 +42,7 @@ Feature: MsgTake
     Scenario Outline: user token balance is less than token amount
       Given alice owns basket token amount "<token-balance>"
       When alice attempts to take credits with basket token amount "<token-amount>"
-      Then expect the error "insufficient token balance for bank denom NCT: insufficient funds"
+      Then expect the error "insufficient balance for basket denom NCT: insufficient funds"
 
       Examples:
         | description  | token-balance  | token-amount |
