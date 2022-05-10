@@ -184,15 +184,15 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		var projectKey uint64
 		var projectId string
 		for pItr.Next() {
-			pInfo, err := pItr.Value()
+			project, err := pItr.Value()
 			if err != nil {
 				return err
 			}
 
-			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.Jurisdiction == batchInfo.ProjectLocation {
+			if project.ClassKey == classIdToClassKey[batchInfo.ClassId] && project.Jurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
-				projectKey = pInfo.Key
-				projectId = pInfo.Id
+				projectKey = project.Key
+				projectId = project.Id
 				break
 			}
 
@@ -236,21 +236,21 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			batchSeq = v
 		}
 
-		bd, err := core.FormatBatchDenom(projectId, batchSeq, startDate, endDate)
+		batchDenom, err := core.FormatBatchDenom(projectId, batchSeq, startDate, endDate)
 		if err != nil {
 			return err
 		}
 
-		bInfo := api.Batch{
+		batch := api.Batch{
 			ProjectKey:   projectKey,
-			Denom:        bd,
+			Denom:        batchDenom,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
 			IssuanceDate: nil,
 		}
 
-		bID, err := ss.BatchTable().InsertReturningID(ctx, &bInfo)
+		bID, err := ss.BatchTable().InsertReturningID(ctx, &batch)
 		if err != nil {
 			return err
 		}
@@ -260,10 +260,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}
 
-		if v, ok := projectKeyToBatchSeq[bInfo.ProjectKey]; ok {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = v + 1
+		if v, ok := projectKeyToBatchSeq[batch.ProjectKey]; ok {
+			projectKeyToBatchSeq[batch.ProjectKey] = v + 1
 		} else {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = 2
+			projectKeyToBatchSeq[batch.ProjectKey] = 2
 		}
 
 		// delete credit batch from old store
