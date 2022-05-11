@@ -19,11 +19,11 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userCoinBalance := sdk.NewInt64Coin("ufoo", 30)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 
 	// make a sell order
 	sellExp := time.Now()
+	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
@@ -36,9 +36,8 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	balBefore, supBefore := s.getBalanceAndSupply(batch.Key, buyerAddr)
 
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
-	// sell order ask price: 10ufoo, buy order of 3 credits -> 10 * 3 = 30ufoo
-	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{sdk.NewInt64Coin("ufoo", 30)}).Return(nil).Times(1)
-
+	// sell order ask price: 10, buy order of 3 credits -> 10 * 3 = 30
+	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{userCoinBalance}).Return(nil).Times(1)
 	purchaseAmt := math.NewDecFromInt64(3)
 	order := &marketplace.MsgBuyDirect_Order{
 		SellOrderId:       sellOrderId,
@@ -56,9 +55,10 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 30)
-
+	userBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
+	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -93,8 +93,10 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 100)
+	userBalance := sdk.NewInt64Coin(validAskDenom, 100)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+
+	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
 		Owner: s.addr.String(),
@@ -132,8 +134,9 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userBalance := sdk.NewInt64Coin("ufoo", 150)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
+	userBalance := sdk.NewInt64Coin(validAskDenom, 150)
+
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
@@ -187,8 +190,8 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	assert.ErrorContains(t, err, "bid price denom does not match ask price denom")
 
 	// bidding more than in the bank
-	inBank := sdk.NewInt64Coin("ufoo", 10)
-	biddingWith := sdk.NewInt64Coin("ufoo", 100)
+	inBank := sdk.NewInt64Coin(validAskDenom, 10)
+	biddingWith := sdk.NewInt64Coin(validAskDenom, 100)
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(inBank).Times(1)
 	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
 		SellOrderId:            sellOrderId,
@@ -202,7 +205,7 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, buyerAddr := testdata.KeyTestPubAddr()
-	userCoinBalance := sdk.NewInt64Coin("ufoo", 50)
+	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 50)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
 	// make a sell order
 	sellExp := time.Now()
@@ -226,8 +229,8 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	s.bankKeeper.EXPECT().GetBalance(gmAny, gmAny, gmAny).Return(userCoinBalance).Times(1)
 
 	purchaseAmt := "3.985321"
-	expectedCost := sdk.NewInt64Coin("ufoo", 39)
-	// sell order ask price: 10ufoo, buy order of 3.215 credits -> 10 * 3.215 = 32.15
+	expectedCost := sdk.NewInt64Coin(validAskDenom, 39)
+	// sell order ask price: 10, buy order of 3.215 credits -> 10 * 3.215 = 32.15
 	s.bankKeeper.EXPECT().SendCoins(gmAny, gmAny, gmAny, sdk.Coins{expectedCost}).Return(nil).Times(1)
 
 	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
