@@ -10,16 +10,13 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -60,11 +57,14 @@ func TestSell_Valid(t *testing.T) {
 func TestSell_CreatesMarket(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.testSellSetup(batchDenom, validAskDenom, validAskDenom, "C01", start, end, creditType)
+	s.testSellSetup(batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
-	askDenomsWithBaz := append(askDenoms, &core.AskDenom{Denom: "ubaz", DisplayDenom: "baz", Exponent: 18})
-	utils.ExpectParamGet(&askDenomsWithBaz, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
+	assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    newCoin.Denom,
+		DisplayDenom: newCoin.Denom,
+		Exponent:     18,
+	}))
 
 	// market shouldn't exist before sell call
 	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
@@ -85,7 +85,6 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.Equal(t, true, has)
 }
 
-// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
@@ -126,8 +125,7 @@ func TestSell_Invalid(t *testing.T) {
 func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	s.testSellSetup(batchDenom, validAskDenom, validAskDenom[1:], "C01", start, end, creditType)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)

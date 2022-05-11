@@ -9,8 +9,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// BatchInfo queries for information on a credit batch.
-func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoRequest) (*core.QueryBatchInfoResponse, error) {
+// Batch queries for information on a credit batch.
+func (k Keeper) Batch(ctx context.Context, request *core.QueryBatchRequest) (*core.QueryBatchResponse, error) {
 	if err := core.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
@@ -38,5 +38,5 @@ func (k Keeper) BatchInfo(ctx context.Context, request *core.QueryBatchInfoReque
 		Open:         batch.Open,
 	}
 
-	return &core.QueryBatchInfoResponse{Batch: &info}, nil
+	return &core.QueryBatchResponse{Batch: &info}, nil
 }

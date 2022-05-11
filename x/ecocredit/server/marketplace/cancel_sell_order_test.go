@@ -11,9 +11,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestSell_CancelOrder(t *testing.T) {
@@ -21,7 +19,6 @@ func TestSell_CancelOrder(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 
 	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -53,8 +50,6 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	s := setupBase(t)
 	expir := time.Now()
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, 1)
 
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 

@@ -29,6 +29,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
+var (
+	gmAny = gomock.Any()
+)
+
 type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
@@ -82,7 +86,6 @@ func setupBase(t *testing.T) *baseSuite {
 }
 
 func (s *baseSuite) createSellOrder(msg *marketplace.MsgSell) []uint64 {
-	utils.ExpectParamGet(&askDenoms, s.paramsKeeper, core.KeyAllowedAskDenoms, len(msg.Orders))
 	res, err := s.k.Sell(s.ctx, msg)
 	assert.NilError(s.t, err)
 	return res.SellOrderIds
@@ -196,12 +199,11 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
-	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(s.t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
-	//	BankDenom:    bankDenom,
-	//	DisplayDenom: displayDenom,
-	//	Exponent:     1,
-	//}))
+	assert.NilError(s.t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    bankDenom,
+		DisplayDenom: displayDenom,
+		Exponent:     1,
+	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey: 1,
 		Address:  s.addr,

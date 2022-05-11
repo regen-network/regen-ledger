@@ -99,7 +99,7 @@ func TestTakeMustRetire(t *testing.T) {
 
 	// foo requires RetireOnTake
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:                  s.addr.String(),
+		Owner:                  s.addrs[0].String(),
 		BasketDenom:            "foo",
 		Amount:                 "6.0",
 		RetirementJurisdiction: "",
@@ -113,11 +113,11 @@ func TestTakeRetire(t *testing.T) {
 	s := setupTake(t)
 
 	fooCoins := sdk.NewCoins(sdk.NewCoin("foo", sdk.NewInt(6000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, fooCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addrs[0], baskettypes.BasketSubModuleName, fooCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, fooCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:                  s.addr.String(),
+		Owner:                  s.addrs[0].String(),
 		BasketDenom:            "foo",
 		Amount:                 "6000000",
 		RetirementJurisdiction: "US",
@@ -151,11 +151,11 @@ func TestTakeTradable(t *testing.T) {
 	s := setupTake(t)
 
 	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(10000000)))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addrs[0], baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:        s.addr.String(),
+		Owner:        s.addrs[0].String(),
 		BasketDenom:  "bar",
 		Amount:       "10000000",
 		RetireOnTake: false,
@@ -190,11 +190,11 @@ func TestTakeTooMuchTradable(t *testing.T) {
 	// Try to take more than what's in the basket, should error.
 	amount := sdk.NewInt(99999999999)
 	barCoins := sdk.NewCoins(sdk.NewCoin("bar", amount))
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addrs[0], baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	_, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:        s.addr.String(),
+		Owner:        s.addrs[0].String(),
 		BasketDenom:  "bar",
 		Amount:       amount.String(),
 		RetireOnTake: false,
@@ -209,11 +209,11 @@ func TestTakeAllTradable(t *testing.T) {
 	s := setupTake(t)
 
 	barCoins := sdk.NewCoins(sdk.NewCoin("bar", sdk.NewInt(11000000))) // == 7C4 + 4C4
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addr, baskettypes.BasketSubModuleName, barCoins)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), s.addrs[0], baskettypes.BasketSubModuleName, barCoins)
 	s.bankKeeper.EXPECT().BurnCoins(gomock.Any(), baskettypes.BasketSubModuleName, barCoins)
 
 	res, err := s.k.Take(s.ctx, &baskettypes.MsgTake{
-		Owner:        s.addr.String(),
+		Owner:        s.addrs[0].String(),
 		BasketDenom:  "bar",
 		Amount:       "11000000",
 		RetireOnTake: false,
@@ -295,11 +295,11 @@ func (s takeSuite) setTradableSupply(batchId uint64, amount string) {
 
 func (s takeSuite) getUserBalance(batchDenom string) *ecoApi.BatchBalance {
 	id := s.denomToId[batchDenom]
-	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, id)
+	bal, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], id)
 	if ormerrors.IsNotFound(err) {
 		bal = &ecoApi.BatchBalance{
 			BatchKey: id,
-			Address:  s.addr,
+			Address:  s.addrs[0],
 			Tradable: "0",
 			Retired:  "0",
 			Escrowed: "0",

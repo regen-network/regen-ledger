@@ -157,7 +157,8 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 	err = sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&baskettypes.EventTake{
 		Owner:       msg.Owner,
 		BasketDenom: msg.BasketDenom,
-		Amount:      msg.Amount,
+		Credits:     credits,    // deprecated
+		Amount:      msg.Amount, // deprecated
 	})
 	return &baskettypes.MsgTakeResponse{
 		Credits: credits,
@@ -174,11 +175,11 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		if err = core.AddAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
 			return err
 		}
-		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventReceive{
+		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
+			Sender:         k.moduleAddress.String(), // basket submodule
 			Recipient:      owner.String(),
 			BatchDenom:     batchDenom,
 			TradableAmount: amount.String(),
-			BasketDenom:    basketDenom,
 		})
 	} else {
 		if err = core.RetireAndSaveBalance(ctx, k.coreStore.BatchBalanceTable(), owner, batch.Key, amount); err != nil {
@@ -187,17 +188,17 @@ func (k Keeper) addCreditBalance(ctx context.Context, owner sdk.AccAddress, batc
 		if err = core.RetireSupply(ctx, k.coreStore.BatchSupplyTable(), batch.Key, amount); err != nil {
 			return err
 		}
-		err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventReceive{
+		err = sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventTransfer{
+			Sender:        k.moduleAddress.String(), // basket submodule
 			Recipient:     owner.String(),
 			BatchDenom:    batchDenom,
 			RetiredAmount: amount.String(),
-			BasketDenom:   basketDenom,
 		})
 		if err != nil {
 			return err
 		}
 		return sdkCtx.EventManager().EmitTypedEvent(&coretypes.EventRetire{
-			Retirer:      owner.String(),
+			Owner:        owner.String(),
 			BatchDenom:   batchDenom,
 			Amount:       amount.String(),
 			Jurisdiction: retirementJurisdiction,

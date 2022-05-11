@@ -16,6 +16,7 @@ func TestUtils(t *testing.T) {
 	t.Run("TestFormatBatchDenom", rapid.MakeCheck(testFormatBatchDenom))
 	t.Run("TestInvalidBatchDenom", rapid.MakeCheck(testInvalidBatchDenom))
 	t.Run("TestGetClassIdFromBatchDenom", rapid.MakeCheck(testGetClassIdFromBatchDenom))
+	t.Run("GetCreditTypeAbbrevFromClassId", rapid.MakeCheck(testGetCreditTypeAbbrevFromClassId))
 }
 
 func testFormatClassId(t *rapid.T) {
@@ -93,6 +94,15 @@ func testGetClassIdFromBatchDenom(t *rapid.T) {
 
 	result := GetClassIdFromBatchDenom(denom)
 	require.Equal(t, classId, result)
+}
+
+func testGetCreditTypeAbbrevFromClassId(t *rapid.T) {
+	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
+	classSeq := rapid.Uint64().Draw(t, "classSeq").(uint64)
+
+	classId := FormatClassId(creditType.Abbreviation, classSeq)
+	result := GetCreditTypeAbbrevFromClassId(classId)
+	require.Equal(t, creditType.Abbreviation, result)
 }
 
 // genCreditType generates an empty credit type with a random valid abbreviation
