@@ -257,26 +257,27 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return err
 		}
 
-		if _, ok := batchIdToPrecision[balance.BatchKey]; !ok {
+		precision, ok := batchIdToPrecision[balance.BatchKey]
+		if !ok {
 			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchKey)
 		}
 
 		if balance.Tradable != "" {
-			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, batchIdToPrecision[balance.BatchKey])
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, precision)
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Retired != "" {
-			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, precision)
 			if err != nil {
 				return err
 			}
 		}
 
 		if balance.Escrowed != "" {
-			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Retired, batchIdToPrecision[balance.BatchKey])
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Escrowed, precision)
 			if err != nil {
 				return err
 			}
@@ -307,6 +308,12 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 }
 
 func validateSupply(batchIdToSupplyCal, batchIdToSupply map[uint64]math.Dec) error {
+	if len(batchIdToSupplyCal) == 0 && len(batchIdToSupply) > 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch supply was given but no balances were found")
+	}
+	if len(batchIdToSupply) == 0 && len(batchIdToSupplyCal) > 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("batch balances were given but no supplies were found")
+	}
 	for denom, cs := range batchIdToSupplyCal {
 		if s, ok := batchIdToSupply[denom]; ok {
 			if s.Cmp(cs) != math.EqualTo {
@@ -342,7 +349,7 @@ func MergeParamsIntoTarget(cdc codec.JSONCodec, message gogoproto.Message, targe
 
 // Validate performs a basic validation of credit class
 func (c Class) Validate() error {
-	if len(c.Metadata) > ecocredit.MaxMetadataLength {
+	if len(c.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("credit class metadata")
 	}
 
@@ -354,7 +361,7 @@ func (c Class) Validate() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("class id cannot be empty")
 	}
 
-	if err := ValidateClassID(c.Id); err != nil {
+	if err := ValidateClassId(c.Id); err != nil {
 		return err
 	}
 
@@ -392,11 +399,11 @@ func (p Project) Validate() error {
 		return err
 	}
 
-	if len(p.Metadata) > ecocredit.MaxMetadataLength {
+	if len(p.Metadata) > MaxMetadataLength {
 		return ecocredit.ErrMaxLimit.Wrap("project metadata")
 	}
 
-	if err := ValidateProjectID(p.Id); err != nil {
+	if err := ValidateProjectId(p.Id); err != nil {
 		return err
 	}
 
@@ -405,7 +412,7 @@ func (p Project) Validate() error {
 
 // Validate performs a basic validation of credit batch
 func (b Batch) Validate() error {
-	if err := ValidateDenom(b.Denom); err != nil {
+	if err := ValidateBatchDenom(b.Denom); err != nil {
 		return err
 	}
 

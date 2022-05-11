@@ -6,22 +6,35 @@ For examples on how to interact with state using the `regen` binary, see [regen 
 
 ## Ecocredit Core
 
-- [CreateClass](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#CreateClass)
-- [CreateProject](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#CreateProject)
-- [CreateBatch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#CreateBatch)
-- [Send](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#Send)
-- [Retire](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#Retire)
-- [Cancel](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#Cancel)
+<!-- listed alphabetically -->
+
+- [Cancel](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.Cancel)
+- [CreateBatch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.CreateBatch)
+- [CreateClass](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.CreateClass)
+- [CreateProject](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.CreateProject)
+- [MintBatchCredits](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.MintBatchCredits)
+- [Retire](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.Retire)
+- [SealBatch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.SealBatch)
+- [Send](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.Send)
+- [UpdateClassAdmin](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateClassAdmin)
+- [UpdateClassIssuers](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateClassIssuers)
+- [UpdateClassMetadata](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateClassMetadata)
+- [UpdateProjectAdmin](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateProjectAdmin)
+- [UpdateProjectMetadata](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.Msg.UpdateProjectMetadata)
 
 ## Basket Submodule
 
-- [Create](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#Create)
-- [Put](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#Put)
-- [Take](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#Take)
+<!-- listed alphabetically -->
+
+- [Create](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.Create)
+- [Put](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.Put)
+- [Take](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.basket.v1#regen.ecocredit.basket.v1.Msg.Take)
 
 ## Marketplace Submodule
 
-- [Sell](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#Sell)
-- [UpdateSellOrders](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#UpdateSellOrders)
-- [Buy](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#Buy)
-- [AllowAskDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#AllowAskDenom)
+<!-- listed alphabetically -->
+
+- [BuyDirect](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.BuyDirect)
+- [CancelSellOrder](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.CancelSellOrder)
+- [Sell](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.Sell)
+- [UpdateSellOrders](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Msg.UpdateSellOrders)

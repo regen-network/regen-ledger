@@ -32,14 +32,14 @@ type baseSuite struct {
 	ctx          context.Context
 	k            basket.Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
+	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
 	coreStore    ecocreditApi.StateStore
-	paramsKeeper *mocks2.MockParamKeeper
 	bankKeeper   *mocks2.MockBankKeeper
+	distKeeper   *mocks2.MockDistributionKeeper
+	paramsKeeper *mocks2.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
-	distKeeper   *mocks2.MockDistributionKeeper
 }
 
 func setupBase(t gocuke.TestingT) *baseSuite {
@@ -69,7 +69,8 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
 	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
 
-	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper)
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper, moduleAddress)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
 	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecocreditApi.CreditType{
@@ -78,7 +79,11 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	_, _, s.addr = testdata.KeyTestPubAddr()
+
+	// add test addresses
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	s.addrs = append(s.addrs, addr1, addr2)
 
 	return s
 }

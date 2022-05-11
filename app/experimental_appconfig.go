@@ -31,6 +31,7 @@ import (
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
@@ -41,7 +42,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 				wasmclient.ProposalHandlers,
 				paramsclient.ProposalHandler, distrclient.ProposalHandler,
 				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
-				core.CreditTypeProposalHandler,
+				core.CreditTypeProposalHandler, marketplace.AllowDenomProposalHandler,
 			)...,
 		),
 		wasm.AppModuleBasic{},

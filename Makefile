@@ -189,11 +189,11 @@ tidy:
 
 docs-dev:
 	@echo "Starting regen-ledger static documentation site..."
-	@cd docs && yarn dev
+	@cd docs && yarn && yarn dev
 
 docs-build:
 	@echo "Building regen-ledger static documentation site..."
-	@cd docs && yarn dev
+	@cd docs && yarn && yarn build
 
 godocs:
 	@echo "Wait a few seconds and then visit http://localhost:6060/pkg/github.com/regen-network/regen-ledger/v3/"
@@ -326,7 +326,7 @@ devdoc-update:
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=v0.6
+containerProtoVer=v0.7
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
 containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)

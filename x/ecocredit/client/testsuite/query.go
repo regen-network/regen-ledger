@@ -5,11 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/rand"
-
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -26,7 +23,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classId2, err := s.createClass(clientCtx, &core.MsgCreateClass{
@@ -34,7 +31,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classIds := [2]string{classId, classId2}
@@ -97,7 +94,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -145,7 +142,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassInfoCmd()
+			cmd := coreclient.QueryClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -153,7 +150,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedClass, res.Class)
 			}
@@ -220,7 +217,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -253,7 +250,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchInfoCmd()
+			cmd := coreclient.QueryBatchCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -261,7 +258,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchInfoResponse
+				var res core.QueryBatchResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Batch.Denom, batchDenom)
 			}
@@ -432,7 +429,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -493,7 +490,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
@@ -510,7 +507,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*ecocredit.SellOrder
+		expOrders []*marketplace.SellOrder
 	}{
 		{
 			name:      "too many args",
@@ -550,7 +547,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -612,7 +609,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
@@ -688,7 +685,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
@@ -696,7 +692,6 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
-		ProjectId:    rand.Str(3),
 	})
 	s.Require().NoError(err)
 	projectIds := [2]string{pID, pID2}
@@ -750,7 +745,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -785,7 +780,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectInfoCmd()
+			cmd := coreclient.QueryProjectCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -793,7 +788,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 			} else {
 				require.NoError(err, out.String())
 
-				var res core.QueryProjectInfoResponse
+				var res core.QueryProjectResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(projectId, res.Project.Id)
 			}
@@ -814,7 +809,7 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	require.NoError(err)
 
