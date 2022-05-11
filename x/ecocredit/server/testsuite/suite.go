@@ -21,7 +21,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
+	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -40,15 +42,16 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	codec        *codec.ProtoCodec
-	sdkCtx       sdk.Context
-	ctx          context.Context
-	msgClient    core.MsgClient
-	marketServer marketServer
-	basketServer basketServer
-	queryClient  core.QueryClient
-	signers      []sdk.AccAddress
-	basketFee    sdk.Coin
+	codec             *codec.ProtoCodec
+	sdkCtx            sdk.Context
+	ctx               context.Context
+	msgClient         core.MsgClient
+	marketServer      marketServer
+	basketServer      basketServer
+	queryClient       core.QueryClient
+	paramsQueryClient params.QueryClient
+	signers           []sdk.AccAddress
+	basketFee         sdk.Coin
 
 	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
@@ -114,6 +117,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.marketServer = marketServer{marketplace.NewQueryClient(s.fixture.QueryConn()), marketplace.NewMsgClient(s.fixture.TxConn())}
 	s.msgClient = core.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = core.NewQueryClient(s.fixture.QueryConn())
+	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
@@ -132,6 +136,14 @@ func (s *IntegrationTestSuite) ecocreditGenesis() json.RawMessage {
 	s.Require().NoError(err)
 	ormCtx := ormtable.WrapContextDefault(backend)
 	ss, err := api.NewStateStore(modDB)
+	s.Require().NoError(err)
+	ms, err := marketApi.NewStateStore(modDB)
+	s.Require().NoError(err)
+
+	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
+		BankDenom:    sdk.DefaultBondDenom,
+		DisplayDenom: sdk.DefaultBondDenom,
+	})
 	s.Require().NoError(err)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
@@ -627,10 +639,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.assertDecStrEqual(rSupply0, querySupplyRes.RetiredSupply)
 				s.assertDecStrEqual(tc.expAmountCancelled, querySupplyRes.CancelledAmount)
 
-				// query batchInfo
-				queryBatchInfoRes, err := s.queryClient.BatchInfo(s.ctx, &core.QueryBatchInfoRequest{BatchDenom: batchDenom})
+				// query batch
+				queryBatchRes, err := s.queryClient.Batch(s.ctx, &core.QueryBatchRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
-				s.Require().NotNil(queryBatchInfoRes)
+				s.Require().NotNil(queryBatchRes)
 			}
 		})
 	}
@@ -1005,8 +1017,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	coinPrice := sdk.NewInt64Coin("stake", 1000000)
-	s.paramSpace.Set(s.sdkCtx, core.KeyAllowedAskDenoms, append(core.DefaultParams().AllowedAskDenoms, &core.AskDenom{Denom: coinPrice.Denom}))
+	coinPrice := sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000)
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 

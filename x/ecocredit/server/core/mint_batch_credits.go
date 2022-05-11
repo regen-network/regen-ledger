@@ -41,6 +41,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, err
 	}
 	precision := ct.Precision
+	moduleAddrString := k.moduleAddress.String()
 	for _, iss := range req.Issuance {
 		sdkCtx := sdk.UnwrapSDKContext(ctx)
 		recipient, err := sdk.AccAddressFromBech32(iss.Recipient)
@@ -79,7 +80,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 				return nil, err
 			}
 			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:      iss.Recipient,
+				Owner:        iss.Recipient,
 				BatchDenom:   req.BatchDenom,
 				Amount:       iss.RetiredAmount,
 				Jurisdiction: iss.RetirementJurisdiction,
@@ -98,8 +99,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			if err != nil {
 				return nil, err
 			}
-			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
-				Sender:         req.Issuer,
+			if err := sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+				Sender:         moduleAddrString, // ecocredit module
 				Recipient:      iss.Recipient,
 				BatchDenom:     req.BatchDenom,
 				TradableAmount: iss.TradableAmount,
@@ -118,7 +119,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		}
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMintBatchCredits{
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
 		BatchDenom: batch.Denom,
 		OriginTx:   req.OriginTx,
 	}); err != nil {
