@@ -19,15 +19,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -35,6 +28,9 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
 )
 
 type IntegrationTestSuite struct {
@@ -176,6 +172,7 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
+/*
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -1294,6 +1291,68 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		})
 	}
 }
+*/
+
+func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+	val := s.network.Validators[0]
+	updateTo := s.network.Validators[1].Address.String()
+	clientCtx := val.ClientCtx
+	_, projectId, _ := s.createClassProjectBatch(clientCtx, val.Address.String())
+	cmd := coreclient.TxUpdateProjectAdminCmd()
+	makeArgs := func(projectId, newAdminAddr, from string) []string {
+		args := make([]string, 0, 6)
+		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name          string
+		args          []string
+		errMsg        string
+		expectedAdmin string
+	}{
+		{
+			name:   "min args",
+			args:   []string{},
+			errMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:   "max args",
+			args:   []string{"foo", "bar", "baz"},
+			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:          "valid update",
+			args:          makeArgs(projectId, updateTo, val.Address.String()),
+			expectedAdmin: updateTo,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if len(tc.errMsg) != 0 {
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
+				gotProject := s.queryProject(clientCtx, projectId)
+				s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) queryProject(ctx client.Context, projectId string) *core.ProjectInfo {
+	cmd := coreclient.QueryProjectInfoCmd()
+	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
+	s.Require().NoError(err)
+	var res core.QueryProjectInfoResponse
+	s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	return res.Project
+}
 
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
 	args := makeCreateClassArgs(msg.Issuers, msg.CreditTypeAbbrev, msg.Metadata, msg.Fee.String(), append(s.commonTxFlags(), makeFlagFrom(msg.Admin))...)
@@ -1418,7 +1477,7 @@ func formatTime(t *time.Time) string {
 }
 
 // createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
-func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (classId, projectId, batchDenom string) {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
 		Issuers:          []string{addr},
@@ -1427,7 +1486,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
-	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       addr,
 		ClassId:      classId,
 		Metadata:     "meta",
@@ -1435,7 +1494,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	})
 	s.Require().NoError(err)
 	start, end := time.Now(), time.Now()
-	batchDenom, err := s.createBatch(clientCtx, &core.MsgCreateBatch{
+	batchDenom, err = s.createBatch(clientCtx, &core.MsgCreateBatch{
 		Issuer:    addr,
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
@@ -1449,7 +1508,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Note:      "",
 	})
 	s.Require().NoError(err)
-	return classId, projectId, batchDenom
+	return
 }
 
 func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {
