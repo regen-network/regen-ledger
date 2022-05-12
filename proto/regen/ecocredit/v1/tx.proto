@@ -72,9 +72,8 @@ service Msg {
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
-  // MsgBridge wraps MsgCancel and also emits bridge events.
-  rpc MsgBridge(MsgBridgeRequest)
-      returns (MsgBridgeResponse);
+  // Bridge wraps MsgCancel and also emits bridge events.
+  rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -426,8 +425,8 @@ message MsgUpdateProjectMetadata {
 // response type.
 message MsgUpdateProjectMetadataResponse {}
 
-// MsgBridgeRequest is the Msg/MsgBridge request type.
-message MsgBridgeRequest {
+// MsgBridge is the Msg/Bridge request type.
+message MsgBridge {
   // MsgCancel is the MsgCancel message type.
   MsgCancel msg_cancel = 1;
 
@@ -436,7 +435,7 @@ message MsgBridgeRequest {
   // bridge_recipient is the recipient address.
   string bridge_recipient = 3;
 
-  //  bridge_contract is the contract address.
+  // bridge_contract is the contract address.
   string bridge_contract = 4;
 }
 

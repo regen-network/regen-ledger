@@ -63,8 +63,8 @@ type MsgClient interface {
 	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
-	// MsgBridge wraps MsgCancel and also emits bridge events.
-	MsgBridge(ctx context.Context, in *MsgBridgeRequest, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
+	// Bridge wraps MsgCancel and also emits bridge events.
+	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
 }
 
 type msgClient struct {
@@ -192,9 +192,9 @@ func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProj
 	return out, nil
 }
 
-func (c *msgClient) MsgBridge(ctx context.Context, in *MsgBridgeRequest, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
+func (c *msgClient) Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
 	out := new(MsgBridgeResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/MsgBridge", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/Bridge", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -246,8 +246,8 @@ type MsgServer interface {
 	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
-	// MsgBridge wraps MsgCancel and also emits bridge events.
-	MsgBridge(context.Context, *MsgBridgeRequest) (*MsgBridgeResponse, error)
+	// Bridge wraps MsgCancel and also emits bridge events.
+	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -294,8 +294,8 @@ func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProj
 func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
 }
-func (UnimplementedMsgServer) MsgBridge(context.Context, *MsgBridgeRequest) (*MsgBridgeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgBridge not implemented")
+func (UnimplementedMsgServer) Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Bridge not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -544,20 +544,20 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_MsgBridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgBridgeRequest)
+func _Msg_Bridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBridge)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).MsgBridge(ctx, in)
+		return srv.(MsgServer).Bridge(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Msg/MsgBridge",
+		FullMethod: "/regen.ecocredit.v1.Msg/Bridge",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).MsgBridge(ctx, req.(*MsgBridgeRequest))
+		return srv.(MsgServer).Bridge(ctx, req.(*MsgBridge))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -622,8 +622,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
 		},
 		{
-			MethodName: "MsgBridge",
-			Handler:    _Msg_MsgBridge_Handler,
+			MethodName: "Bridge",
+			Handler:    _Msg_Bridge_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
