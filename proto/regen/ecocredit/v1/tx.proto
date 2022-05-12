@@ -318,6 +318,9 @@ message MsgCancel {
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 2;
 
+  // reason is any arbitary encoded data, will be passed to an event.
+  string reason = 3;
+
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
@@ -418,3 +421,20 @@ message MsgUpdateProjectMetadata {
 // MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
 // response type.
 message MsgUpdateProjectMetadataResponse {}
+
+// MsgBridgeRequest is the Msg/MsgBridge request type.
+message MsgBridgeRequest {
+  // MsgCancel is the MsgCancel message type.
+  MsgCancel msg_cancel = 1;
+
+  string bridge_target = 2;
+
+  // bridge_recipient is the recipient address.
+  string bridge_recipient = 3;
+
+  //  bridge_contract is the contract address.
+  string bridge_contract = 4;
+}
+
+// MsgBridgeResponse is the Msg/MsgBridge response type.
+message MsgBridgeResponse {}
