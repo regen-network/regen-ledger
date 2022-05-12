@@ -63,6 +63,8 @@ type MsgClient interface {
 	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
+	// MsgBridge wraps MsgCancel and also emits bridge events.
+	MsgBridge(ctx context.Context, in *MsgBridgeRequest, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
 }
 
 type msgClient struct {
@@ -190,6 +192,15 @@ func (c *msgClient) UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProj
 	return out, nil
 }
 
+func (c *msgClient) MsgBridge(ctx context.Context, in *MsgBridgeRequest, opts ...grpc.CallOption) (*MsgBridgeResponse, error) {
+	out := new(MsgBridgeResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Msg/MsgBridge", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -235,6 +246,8 @@ type MsgServer interface {
 	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
+	// MsgBridge wraps MsgCancel and also emits bridge events.
+	MsgBridge(context.Context, *MsgBridgeRequest) (*MsgBridgeResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -280,6 +293,9 @@ func (UnimplementedMsgServer) UpdateProjectAdmin(context.Context, *MsgUpdateProj
 }
 func (UnimplementedMsgServer) UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProjectMetadata not implemented")
+}
+func (UnimplementedMsgServer) MsgBridge(context.Context, *MsgBridgeRequest) (*MsgBridgeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgBridge not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -528,6 +544,24 @@ func _Msg_UpdateProjectMetadata_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_MsgBridge_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBridgeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).MsgBridge(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Msg/MsgBridge",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).MsgBridge(ctx, req.(*MsgBridgeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -586,6 +620,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateProjectMetadata",
 			Handler:    _Msg_UpdateProjectMetadata_Handler,
+		},
+		{
+			MethodName: "MsgBridge",
+			Handler:    _Msg_MsgBridge_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

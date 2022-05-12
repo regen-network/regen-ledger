@@ -71,6 +71,10 @@ service Msg {
   // UpdateProjectMetadata updates the project metadata
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
+
+  // MsgBridge wraps MsgCancel and also emits bridge events.
+  rpc MsgBridge(MsgBridgeRequest)
+      returns (MsgBridgeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
