@@ -20,9 +20,11 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -49,6 +51,7 @@ type IntegrationTestSuite struct {
 
 const (
 	validCreditTypeAbbrev = "C"
+	validMetadata         = "hi"
 )
 
 func RunCLITests(t *testing.T, cfg network.Config) {
@@ -188,7 +191,6 @@ func makeFlagFrom(from string) string {
 	return fmt.Sprintf("--%s=%s", flags.FlagFrom, from)
 }
 
-/*
 func (s *IntegrationTestSuite) TestTxCreateClass() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
@@ -314,15 +316,15 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
-		Metadata:         "META",
-		CreditTypeAbbrev: "C",
+		Metadata:         validMetadata,
+		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       val.Address.String(),
 		ClassId:      classId,
-		Metadata:     "META2",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
@@ -791,7 +793,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
@@ -865,7 +867,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -941,7 +943,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1237,7 +1239,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "hi",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1272,7 +1274,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1283,7 +1285,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1307,7 +1309,6 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 		})
 	}
 }
-*/
 
 func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	val := s.network.Validators[0]
@@ -1685,7 +1686,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
 		Issuers:          []string{addr},
-		Metadata:         "meta",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1693,7 +1694,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       addr,
 		ClassId:      classId,
-		Metadata:     "meta",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
@@ -1704,7 +1705,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Issuance: []*core.BatchIssuance{
 			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementJurisdiction: "US-OR"},
 		},
-		Metadata:  "meta",
+		Metadata:  validMetadata,
 		StartDate: &start,
 		EndDate:   &end,
 		Open:      false,
