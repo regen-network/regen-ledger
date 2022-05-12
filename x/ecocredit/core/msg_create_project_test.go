@@ -75,7 +75,7 @@ func TestMsgCreateProject(t *testing.T) {
 				ClassId:      "A01",
 				Metadata:     "metadata",
 				Jurisdiction: "AB-CDE FG1 345",
-				ReferenceId:  strings.Repeat("x", 33),
+				ReferenceId:  strings.Repeat("x", MaxReferenceIdLength+1),
 			},
 			true,
 		},
