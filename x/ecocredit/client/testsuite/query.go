@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -143,7 +143,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassInfoCmd()
+			cmd := coreclient.QueryClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -151,7 +151,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(tc.expectedClass, res.Class)
 			}
@@ -218,7 +218,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryBatchCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -251,7 +251,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchInfoCmd()
+			cmd := coreclient.QueryBatchCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -259,7 +259,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchInfoResponse
+				var res core.QueryBatchResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Batch.Denom, batchDenom)
 			}
@@ -746,7 +746,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -781,7 +781,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectInfoCmd()
+			cmd := coreclient.QueryProjectCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -789,7 +789,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 			} else {
 				require.NoError(err, out.String())
 
-				var res core.QueryProjectInfoResponse
+				var res core.QueryProjectResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(projectId, res.Project.Id)
 			}

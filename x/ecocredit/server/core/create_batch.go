@@ -72,6 +72,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	maxDecimalPlaces := creditType.Precision
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
+	moduleAddrString := k.moduleAddress.String()
 	for _, issuance := range req.Issuance {
 		decs, err := utils.GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
 		if err != nil {
@@ -92,7 +93,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Retirer:      recipient.String(),
+				Owner:        recipient.String(),
 				BatchDenom:   batchDenom,
 				Amount:       retired.String(),
 				Jurisdiction: issuance.RetirementJurisdiction,
@@ -109,7 +110,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			return nil, err
 		}
 
-		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventReceive{
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
+			Sender:         moduleAddrString, // ecocredit module
 			Recipient:      recipient.String(),
 			BatchDenom:     batchDenom,
 			RetiredAmount:  retired.String(),
@@ -132,7 +134,6 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
 		BatchDenom: batchDenom,
-		Issuer:     req.Issuer,
 	}); err != nil {
 		return nil, err
 	}

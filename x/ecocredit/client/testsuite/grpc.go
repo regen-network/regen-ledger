@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassInfoResponse
+			var res core.QueryClassResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
@@ -165,7 +165,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchInfoResponse
+			var res core.QueryBatchResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batch)

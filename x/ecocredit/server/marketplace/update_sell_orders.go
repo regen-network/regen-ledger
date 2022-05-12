@@ -127,7 +127,6 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 	}
 
 	return sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventUpdateSellOrder{
-		Owner:   sdk.AccAddress(order.Seller).String(),
 		OrderId: order.Id,
 	})
 }

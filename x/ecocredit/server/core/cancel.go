@@ -77,7 +77,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCancel{
-			Canceller:  holder.String(),
+			Owner:      holder.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
 		}); err != nil {

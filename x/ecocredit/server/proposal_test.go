@@ -4,17 +4,20 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	dbm "github.com/tendermint/tm-db"
+	"gotest.tools/v3/assert"
+
 	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
 	"github.com/cosmos/cosmos-sdk/orm/testing/ormtest"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/golang/mock/gomock"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-	"gotest.tools/v3/assert"
 
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
@@ -33,6 +36,8 @@ func setup(t *testing.T) baseSuite {
 	accountKeeper := mocks.NewMockAccountKeeper(ctrl)
 	bankKeeper := mocks.NewMockBankKeeper(ctrl)
 	distKeeper := mocks.NewMockDistributionKeeper(ctrl)
+	accountKeeper.EXPECT().GetModuleAddress(ecocredit.ModuleName).Return(sdk.AccAddress{}).Times(1)
+	accountKeeper.EXPECT().GetModuleAddress(basket.BasketSubModuleName).Return(sdk.AccAddress{}).Times(1)
 	s.server = newServer(storeKey, paramtypes.Subspace{}, accountKeeper, bankKeeper, distKeeper)
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
