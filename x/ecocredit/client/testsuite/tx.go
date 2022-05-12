@@ -7,6 +7,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -18,16 +25,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -35,6 +38,7 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -155,6 +159,18 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	s.addr = account
+}
+
+func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
+	_, err := banktestutil.MsgSendExec(
+		clientCtx,
+		from,
+		to,
+		coins, fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+	s.Require().NoError(err)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -1293,6 +1309,194 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestTxBuyDirect() {
+	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
+	clientCtx := val0.ClientCtx
+
+	buyerAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("buyDirectAcc", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	s.Require().NoError(err)
+	buyerAddr := buyerAcc.GetAddress()
+
+	validAskDenom := sdk.DefaultBondDenom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+
+	s.fundAccount(clientCtx, val0.Address, buyerAddr, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
+
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
+	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &askCoin, false, &expiration},
+		},
+	})
+	s.Require().NoError(err)
+	orderId := orderIds[0]
+	orderIdRetired := orderIds[1]
+
+	makeArgs := func(sellOrderId uint64, qty, bidPrice string, disableAutoRetire bool, from sdk.Address) []string {
+		args := []string{
+			strconv.FormatUint(sellOrderId, 10),
+			qty, bidPrice, fmt.Sprintf("%t", disableAutoRetire),
+		}
+		if !disableAutoRetire {
+			args = append(args, fmt.Sprintf(`--%s=US-OR`, marketplaceclient.FlagRetirementJurisdiction))
+		}
+		args = append(args, makeFlagFrom(from.String()))
+		return append(args, s.commonTxFlags()...)
+	}
+	type fields struct {
+		orderId           uint64
+		qty               string
+		askPrice          sdk.Coin
+		disableAutoRetire bool
+		buyerAddr         sdk.AccAddress
+	}
+	testCases := []struct {
+		name      string
+		fields    fields
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			"valid tx purchase tradable",
+			fields{
+				orderId:           orderId,
+				qty:               "10",
+				askPrice:          askCoin,
+				disableAutoRetire: true,
+				buyerAddr:         buyerAddr,
+			},
+			false,
+			"",
+		},
+		{
+			"valid tx purchase retired",
+			fields{
+				orderId:           orderIdRetired,
+				qty:               "10",
+				askPrice:          askCoin,
+				disableAutoRetire: false,
+				buyerAddr:         buyerAddr,
+			},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			fields := tc.fields
+			args := makeArgs(fields.orderId, fields.qty, fields.askPrice.String(), fields.disableAutoRetire, fields.buyerAddr)
+			if tc.expErr {
+				cmd := marketplaceclient.TxBuyDirect()
+				_, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				qtyDec, err := math.NewDecFromString(fields.qty)
+				s.Require().NoError(err)
+				costDec, err := math.NewDecFromString(askCoin.Amount.String())
+				s.Require().NoError(err)
+				totalCostDec, err := qtyDec.Mul(costDec)
+				s.Require().NoError(err)
+				totalCostInt := totalCostDec.SdkIntTrim()
+				totalCost := sdk.NewCoin(askCoin.Denom, totalCostInt)
+				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+
+				cmd := marketplaceclient.TxBuyDirect()
+				out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+				s.Require().NoError(err)
+
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
+
+				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+				s.assertMarketBalancesUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, math.NewDecFromInt64(10), totalCost, !fields.disableAutoRetire)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
+	// check sellers coins
+	expectedSellerGain := sb.coinBal.Add(totalCost)
+	s.Require().True(expectedSellerGain.Equal(sa.coinBal))
+
+	// check buyers coins
+	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
+	expectedBuyerCost := bb.coinBal.Sub(totalCost)
+	s.Require().True(ba.coinBal.IsLT(expectedBuyerCost))
+
+	// check sellers credits
+	expectedEscrowed, err := sb.escrowed.Sub(qtySold)
+	s.Require().NoError(err)
+	s.Require().True(expectedEscrowed.Equal(sa.escrowed))
+	s.Require().True(sb.tradable.Equal(sa.tradable))
+	s.Require().True(sb.retired.Equal(sa.retired))
+
+	// check buyers credits
+	if retired {
+		expectedRetired, err := bb.retired.Add(qtySold)
+		s.Require().NoError(err)
+		s.Require().True(expectedRetired.Equal(ba.retired))
+		s.Require().True(bb.tradable.Equal(bb.tradable))
+	} else {
+		expectedTradable, err := bb.tradable.Add(qtySold)
+		s.Require().NoError(err)
+		s.Require().True(expectedTradable.Equal(ba.tradable))
+		s.Require().True(bb.retired.Equal(bb.retired))
+	}
+	s.Require().True(bb.escrowed.Equal(bb.escrowed))
+}
+
+type accountInfo struct {
+	coinBal                     sdk.Coin
+	tradable, retired, escrowed math.Dec
+}
+
+func (s *IntegrationTestSuite) getAccountInfo(clientCtx client.Context, addr sdk.AccAddress, bankDenom, batchDenom string) accountInfo {
+	a := accountInfo{}
+	a.coinBal = s.getBankBalance(clientCtx, addr, bankDenom)
+	batchBal := s.getBalance(clientCtx, addr, batchDenom)
+	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.Tradable, batchBal.Retired, batchBal.Escrowed)
+	s.Require().NoError(err)
+	a.tradable, a.retired, a.escrowed = decs[0], decs[1], decs[2]
+	return a
+}
+
+func (s *IntegrationTestSuite) getBankBalance(clientCtx client.Context, addr sdk.AccAddress, denom string) sdk.Coin {
+	coins := s.getBankBalances(clientCtx, addr)
+	return sdk.Coin{
+		Denom:  denom,
+		Amount: coins.AmountOf(denom),
+	}
+}
+
+func (s *IntegrationTestSuite) getBankBalances(clientCtx client.Context, addr sdk.AccAddress) sdk.Coins {
+	out, err := banktestutil.QueryBalancesExec(clientCtx, addr)
+	s.Require().NoError(err)
+	var res banktypes.QueryAllBalancesResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	return res.Balances
+}
+
+func (s *IntegrationTestSuite) getBalance(clientCtx client.Context, addr sdk.AccAddress, batchDenom string) *core.BatchBalanceInfo {
+	cmd := coreclient.QueryBalanceCmd()
+	args := []string{batchDenom, addr.String(), flagOutputJSON}
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, args)
+	s.Require().NoError(err)
+	var res core.QueryBalanceResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	return res.Balance
 }
 
 func (s *IntegrationTestSuite) createClass(clientCtx client.Context, msg *core.MsgCreateClass) (string, error) {
