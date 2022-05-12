@@ -1320,7 +1320,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	s.Require().NoError(err)
 	buyerAddr := buyerAcc.GetAddress()
 
-	validAskDenom := core.DefaultParams().AllowedAskDenoms[0].Denom
+	validAskDenom := sdk.DefaultBondDenom
 	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
 
 	s.fundAccount(clientCtx, val0.Address, buyerAddr, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
