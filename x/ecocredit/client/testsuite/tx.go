@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
@@ -1321,6 +1322,11 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 			name:   "max args",
 			args:   []string{"foo", "bar", "baz"},
 			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:   "invalid: unauthorized",
+			args:   makeArgs(projectId, updateTo, updateTo),
+			errMsg: sdkerrors.ErrUnauthorized.Error(),
 		},
 		{
 			name:          "valid update",
