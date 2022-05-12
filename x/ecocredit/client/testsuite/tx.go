@@ -19,6 +19,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
+
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -28,9 +32,6 @@ import (
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
 )
 
 type IntegrationTestSuite struct {
@@ -1338,14 +1339,14 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(uint32(0), res.Code)
-				gotProject := s.queryProject(clientCtx, projectId)
+				gotProject := s.getProject(clientCtx, projectId)
 				s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) queryProject(ctx client.Context, projectId string) *core.ProjectInfo {
+func (s *IntegrationTestSuite) getProject(ctx client.Context, projectId string) *core.ProjectInfo {
 	cmd := coreclient.QueryProjectInfoCmd()
 	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
 	s.Require().NoError(err)
