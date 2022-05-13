@@ -41,6 +41,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		ClassKey:     classInfo.Key,
 		Jurisdiction: req.Jurisdiction,
 		Metadata:     req.Metadata,
+		ReferenceId:  req.ReferenceId,
 	}); err != nil {
 		return nil, err
 	}
