@@ -30,4 +30,6 @@ cd ..
 cp -r github.com/regen-network/regen-ledger/* ./
 rm -rf github.com
 
+go mod tidy
+
 ./scripts/protocgen2.sh

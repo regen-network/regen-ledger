@@ -737,7 +737,7 @@ type queryClient struct {
 	cc grpc1.ClientConn
 }
 
-func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
+func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
