@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -129,7 +130,7 @@ func ValidateProjectId(projectId string) error {
 func ValidateBatchDenom(denom string) error {
 	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrapf("invalid denom: %s", denom)
+		return ecocredit.ErrParseFailure.Wrap("invalid denom: expected format A00-000-00000000-00000000-000")
 	}
 	return nil
 }
@@ -153,6 +154,19 @@ func GetClassIdFromBatchDenom(denom string) string {
 	var s strings.Builder
 	for _, r := range denom {
 		if r != '-' {
+			s.WriteRune(r)
+			continue
+		}
+		break
+	}
+	return s.String()
+}
+
+// GetCreditTypeAbbrevFromClassId returns the credit type abbreviation in a credit class id
+func GetCreditTypeAbbrevFromClassId(classId string) string {
+	var s strings.Builder
+	for _, r := range classId {
+		if !unicode.IsNumber(r) {
 			s.WriteRune(r)
 			continue
 		}
