@@ -7,6 +7,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -20,12 +27,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -1325,7 +1326,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	unauthorizedAccount, _, err := val.ClientCtx.Keyring.NewMnemonic("unauthorized", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 	unauthAddr := unauthorizedAccount.GetAddress()
-	s.fundAccount(clientCtx, val.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 500)})
+	s.fundAccount(clientCtx, val.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
 
 	testCases := []struct {
 		name          string
@@ -1345,7 +1346,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		},
 		{
 			name:   "invalid: unauthorized",
-			args:   makeArgs(projectId, unauthAddr.String(), val.Address.String()),
+			args:   makeArgs(projectId, unauthAddr.String(), unauthAddr.String()),
 			errMsg: sdkerrors.ErrUnauthorized.Error(),
 		},
 		{
