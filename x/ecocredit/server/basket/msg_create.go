@@ -16,9 +16,8 @@ import (
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	var params core.Params
-	k.paramsKeeper.GetParamSet(sdkCtx, &params)
-	fee := params.BasketFee
+	var fee sdk.Coins
+	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &fee)
 	if !msg.Fee.IsAllGTE(fee) {
 		return nil, sdkerrors.ErrInsufficientFee.Wrapf("minimum fee %s, got %s", fee, msg.Fee)
 	}

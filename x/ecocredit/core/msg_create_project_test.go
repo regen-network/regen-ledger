@@ -19,7 +19,7 @@ func TestMsgCreateProject(t *testing.T) {
 		expErr bool
 	}{
 		{
-			"valid msg without project id",
+			"valid msg without reference id",
 			MsgCreateProject{
 				Issuer:       issuer,
 				ClassId:      "A00",
@@ -67,6 +67,28 @@ func TestMsgCreateProject(t *testing.T) {
 				Jurisdiction: "AB-CDE FG1 345",
 			},
 			true,
+		},
+		{
+			"invalid: reference id is too large",
+			MsgCreateProject{
+				Issuer:       issuer,
+				ClassId:      "A01",
+				Metadata:     "metadata",
+				Jurisdiction: "AB-CDE FG1 345",
+				ReferenceId:  strings.Repeat("x", MaxReferenceIdLength+1),
+			},
+			true,
+		},
+		{
+			"valid: with reference id",
+			MsgCreateProject{
+				Issuer:       issuer,
+				ClassId:      "A01",
+				Metadata:     "metadata",
+				Jurisdiction: "AB-CDE FG1 345",
+				ReferenceId:  strings.Repeat("x", 10),
+			},
+			false,
 		},
 	}
 

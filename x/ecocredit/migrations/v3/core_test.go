@@ -1,7 +1,9 @@
 package v3_test
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
@@ -96,9 +98,9 @@ func TestMigrations(t *testing.T) {
 
 	startDate := sdkCtx.BlockTime().UTC()
 	endDate := startDate.AddDate(2, 0, 0)
-	bd1, _ := core.FormatBatchDenom("C01-001", 1, &startDate, &endDate)
-	bd2, _ := core.FormatBatchDenom("C01-001", 2, &startDate, &endDate)
-	bd3, _ := core.FormatBatchDenom("C01-001", 3, &startDate, &endDate)
+	bd1 := formatBatchDenom("C01", 1, &startDate, &endDate)
+	bd2 := formatBatchDenom("C01", 2, &startDate, &endDate)
+	bd3 := formatBatchDenom("C01", 3, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
 		BatchDenom:      bd1,
@@ -201,16 +203,33 @@ func TestMigrations(t *testing.T) {
 	res1, err := ss.ProjectTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
-	require.Equal(t, res1.Id, "C0101")
+	require.Equal(t, res1.Id, "C01-001")
 	require.Equal(t, res1.Metadata, "")
 	require.Equal(t, res1.Jurisdiction, "AB-CDE FG1 345")
 	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 
+	// verify batch migration
+	expbd1, err := core.FormatBatchDenom("C01-001", 1, &startDate, &endDate)
+	require.NoError(t, err)
+	expbd2, err := core.FormatBatchDenom("C01-002", 1, &startDate, &endDate)
+	require.NoError(t, err)
+	expbd3, err := core.FormatBatchDenom("C01-002", 2, &startDate, &endDate)
+	require.NoError(t, err)
+	batchRes, err := ss.BatchTable().GetByDenom(ctx, expbd1)
+	require.NoError(t, err)
+	require.Equal(t, expbd1, batchRes.Denom)
+	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd2)
+	require.NoError(t, err)
+	require.Equal(t, expbd2, batchRes.Denom)
+	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd3)
+	require.NoError(t, err)
+	require.Equal(t, expbd3, batchRes.Denom)
+
 	// verify project sequence
 	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
-	require.NotNil(t, res1)
+	require.NotNil(t, res2)
 	require.Equal(t, res2.ClassKey, uint64(1))
 	require.Equal(t, res2.NextSequence, uint64(3))
 
@@ -223,11 +242,18 @@ func TestMigrations(t *testing.T) {
 
 	// verify batch sequence table migration
 	// project C0101 contains one credit batch ==> expected nextBatchId is 2
+	// project C0102 contains two credit batch ==> expected nextBatchId is 3
 	res4, err := ss.BatchSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.ProjectKey, uint64(1))
 	require.Equal(t, res4.NextSequence, uint64(2))
+
+	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
+	require.NoError(t, err)
+	require.NotNil(t, res4)
+	require.Equal(t, res4.ProjectKey, uint64(2))
+	require.Equal(t, res4.NextSequence, uint64(3))
 
 	// projectC0102 contains two credit batches ==> expected nextBatchId is 3
 	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
@@ -291,4 +317,22 @@ func TestMigrations(t *testing.T) {
 	bz = store.Get(tradableSKey1)
 	require.Nil(t, bz)
 
+}
+
+func formatBatchDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) string {
+	return fmt.Sprintf(
+		"%s-%s-%s-%03d",
+
+		// Class ID string
+		classId,
+
+		// Start Date as YYYYMMDD
+		startDate.Format("20060102"),
+
+		// End Date as YYYYMMDD
+		endDate.Format("20060102"),
+
+		// Batch sequence number padded to at least three digits
+		batchSeqNo,
+	)
 }
