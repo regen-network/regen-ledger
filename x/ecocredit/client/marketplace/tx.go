@@ -265,6 +265,7 @@ func TxBuyDirectBatch() *cobra.Command {
 			   "retirement_jurisdiction": "US-NY"
 			},
 		]`),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -284,9 +285,6 @@ func TxBuyDirectBatch() *cobra.Command {
 			msg := marketplace.MsgBuyDirect{
 				Buyer:  clientCtx.GetFromAddress().String(),
 				Orders: orders,
-			}
-			if err = msg.ValidateBasic(); err != nil {
-				return err
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -1424,6 +1425,125 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
+	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
+	clientCtx := val0.ClientCtx
+	cmd := marketplaceclient.TxBuyDirectBatch()
+
+	buyerAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("buyDirectAcc", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	s.Require().NoError(err)
+	buyerAddr := buyerAcc.GetAddress()
+
+	validAskDenom := sdk.DefaultBondDenom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+
+	s.fundAccount(clientCtx, val0.Address, buyerAddr, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
+
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
+	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &askCoin, false, &expiration},
+		},
+	})
+
+	buyQty := math.NewDecFromInt64(20)
+	buyOrders := []*marketplace.MsgBuyDirect_Order{
+		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
+		{SellOrderId: orderIds[2], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
+	}
+	ordersBz, err := json.Marshal(buyOrders)
+	s.Require().NoError(err)
+	jsonFile := testutil.WriteToNewTempFile(s.T(), string(ordersBz))
+
+	makeArgs := func(fileName, from string) []string {
+		args := []string{fileName, makeFlagFrom(from)}
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name   string
+		args   []string
+		errMsg string
+	}{
+		{
+			name:   "not enough args",
+			errMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:   "too many args",
+			args:   []string{"foo", "bar"},
+			errMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid order",
+			args: makeArgs(jsonFile.Name(), buyerAddr.String()),
+		},
+	}
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			if len(tc.errMsg) != 0 {
+				_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+
+				costDec, err := math.NewDecFromString(askCoin.Amount.String())
+				s.Require().NoError(err)
+				totalCostDec, err := buyQty.Mul(costDec)
+				s.Require().NoError(err)
+				totalCostInt := totalCostDec.SdkIntTrim()
+				totalCostCoin := sdk.NewCoin(askCoin.Denom, totalCostInt)
+
+				out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().NoError(err)
+
+				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
+
+				amtSoldEach := math.NewDecFromInt64(10)
+				s.assertMarketBalanceBatchUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, buyQty, totalCostCoin, amtSoldEach, amtSoldEach)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba accountInfo, totalSold math.Dec, cost sdk.Coin, retSold, tradSold math.Dec) {
+	// check sellers coins
+	expectedSellerGain := sb.coinBal.Add(cost)
+	s.Require().True(expectedSellerGain.Equal(sa.coinBal))
+
+	// check buyers coins
+	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
+	expectedBuyerCost := bb.coinBal.Sub(cost)
+	s.Require().True(ba.coinBal.IsLT(expectedBuyerCost))
+
+	// check sellers credits
+	expectedEscrowed, err := sb.escrowed.Sub(totalSold)
+	s.Require().NoError(err)
+	s.Require().True(expectedEscrowed.Equal(sa.escrowed))
+	s.Require().True(sb.tradable.Equal(sa.tradable))
+	s.Require().True(sb.retired.Equal(sa.retired))
+
+	expectedRetired, err := bb.retired.Add(retSold)
+	s.Require().NoError(err)
+	expectedTradable, err := bb.tradable.Add(tradSold)
+	s.Require().NoError(err)
+
+	s.Require().True(bb.escrowed.Equal(bb.escrowed))
+	s.Require().True(ba.tradable.Equal(expectedTradable))
+	s.Require().True(ba.retired.Equal(expectedRetired))
 }
 
 func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
