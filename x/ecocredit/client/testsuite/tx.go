@@ -1455,8 +1455,8 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 
 	buyQty := math.NewDecFromInt64(20)
 	buyOrders := []*marketplace.MsgBuyDirect_Order{
-		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
-		{SellOrderId: orderIds[2], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
+		{SellOrderId: orderIds[0], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
+		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
 	}
 	ordersBz, err := json.Marshal(buyOrders)
 	s.Require().NoError(err)
@@ -1473,13 +1473,14 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 		errMsg string
 	}{
 		{
-			name:   "not enough args",
-			errMsg: "accepts 1 arg(s), received 0",
-		},
-		{
 			name:   "too many args",
 			args:   []string{"foo", "bar"},
 			errMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name:   "invalid: file does not exist",
+			args:   []string{"monkey.jpeg"},
+			errMsg: "no such file or directory",
 		},
 		{
 			name: "valid order",
