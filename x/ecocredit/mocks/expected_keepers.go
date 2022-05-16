@@ -298,6 +298,18 @@ func (m *MockParamKeeper) EXPECT() *MockParamKeeperMockRecorder {
 	return m.recorder
 }
 
+// Get mocks base method.
+func (m *MockParamKeeper) Get(ctx types.Context, key []byte, ptr interface{}) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "Get", ctx, key, ptr)
+}
+
+// Get indicates an expected call of Get.
+func (mr *MockParamKeeperMockRecorder) Get(ctx, key, ptr interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockParamKeeper)(nil).Get), ctx, key, ptr)
+}
+
 // GetParamSet mocks base method.
 func (m *MockParamKeeper) GetParamSet(ctx types.Context, ps types2.ParamSet) {
 	m.ctrl.T.Helper()

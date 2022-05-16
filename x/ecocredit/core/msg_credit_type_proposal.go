@@ -17,6 +17,7 @@ const (
 
 func init() {
 	govtypes.RegisterProposalType(ProposalType)
+	govtypes.RegisterProposalTypeCodec(&CreditTypeProposal{}, "regen/CreditTypeProposal")
 }
 
 func (m *CreditTypeProposal) ProposalRoute() string { return ecocredit.RouterKey }

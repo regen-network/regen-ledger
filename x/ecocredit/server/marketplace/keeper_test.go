@@ -29,6 +29,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
+var (
+	gmAny = gomock.Any()
+)
+
 type baseSuite struct {
 	t            *testing.T
 	db           ormdb.ModuleDB
@@ -82,9 +86,6 @@ func setupBase(t *testing.T) *baseSuite {
 }
 
 func (s *baseSuite) createSellOrder(msg *marketplace.MsgSell) []uint64 {
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(len(msg.Orders))
 	res, err := s.k.Sell(s.ctx, msg)
 	assert.NilError(s.t, err)
 	return res.SellOrderIds
@@ -179,6 +180,12 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+		Id:               classId,
+		Admin:            s.addr,
+		Metadata:         "",
+		CreditTypeAbbrev: creditType.Abbreviation,
+	}))
 	assert.NilError(s.t, s.coreStore.BatchTable().Insert(s.ctx, &ecoApi.Batch{
 		ProjectKey: 1,
 		Denom:      batchDenom,
@@ -186,23 +193,17 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 		StartDate:  start,
 		EndDate:    end,
 	}))
-	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
-		Id:               classId,
-		Admin:            s.addr,
-		Metadata:         "",
-		CreditTypeAbbrev: creditType.Abbreviation,
-	}))
+
 	assert.NilError(s.t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
 		CreditType:        creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
-	// TODO: awaiting param refactor https://github.com/regen-network/regen-ledger/issues/624
-	//assert.NilError(s.t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &marketApi.AllowedDenom{
-	//	BankDenom:    bankDenom,
-	//	DisplayDenom: displayDenom,
-	//	Exponent:     1,
-	//}))
+	assert.NilError(s.t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    bankDenom,
+		DisplayDenom: displayDenom,
+		Exponent:     1,
+	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey: 1,
 		Address:  s.addr,

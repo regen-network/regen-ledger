@@ -19,7 +19,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	corecli "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -47,7 +46,6 @@ func TxCmd(name string) *cobra.Command {
 		TxCreateProject(),
 		TxUpdateProjectAdminCmd(),
 		TxUpdateProjectMetadataCmd(),
-		corecli.TxCreditTypeProposalCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
@@ -142,6 +140,7 @@ const (
 	FlagMetadata            string = "metadata"
 	FlagAddIssuers          string = "add-issuers"
 	FlagRemoveIssuers       string = "remove-issuers"
+	FlagReferenceId         string = "reference-id"
 )
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
@@ -546,6 +545,8 @@ func TxCreateProject() *cobra.Command {
 		class-id: id of the class
 		project-jurisdiction: the jurisdiction of the project (see documentation for proper project-jurisdiction formats).
 		metadata: any arbitrary metadata attached to the project.
+		Flags:
+		reference-id: proect reference id
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -580,10 +581,19 @@ func TxCreateProject() *cobra.Command {
 				Metadata:     args[2],
 			}
 
+			referenceId, err := cmd.Flags().GetString(FlagReferenceId)
+			if err != nil {
+				return err
+			}
+			referenceId = strings.TrimSpace(referenceId)
+			msg.ReferenceId = referenceId
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 
 		},
 	})
+
+	cmd.Flags().String(FlagReferenceId, "", "project reference id")
 
 	return cmd
 }

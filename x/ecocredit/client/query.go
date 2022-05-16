@@ -29,15 +29,15 @@ func QueryCmd(name string) *cobra.Command {
 	}
 	cmd.AddCommand(
 		QueryClassesCmd(),
-		QueryClassInfoCmd(),
+		QueryClassCmd(),
 		QueryClassIssuersCmd(),
 		QueryBatchesCmd(),
-		QueryBatchInfoCmd(),
+		QueryBatchCmd(),
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
 		QueryProjectsCmd(),
-		QueryProjectInfoCmd(),
+		QueryProjectCmd(),
 		QueryParamsCmd(),
 		basketcli.QueryBasketCmd(),
 		basketcli.QueryBasketsCmd(),
@@ -83,11 +83,11 @@ func QueryClassesCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-// QueryClassInfoCmd returns a query command that retrieves information for a
+// QueryClassCmd returns a query command that retrieves information for a
 // given credit class.
-func QueryClassInfoCmd() *cobra.Command {
+func QueryClassCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:   "class-info [class_id]",
+		Use:   "class [class_id]",
 		Short: "Retrieve credit class info",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -95,7 +95,7 @@ func QueryClassInfoCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.ClassInfo(cmd.Context(), &core.QueryClassInfoRequest{
+			res, err := c.Class(cmd.Context(), &core.QueryClassRequest{
 				ClassId: args[0],
 			})
 			return printQueryResponse(ctx, res, err)
@@ -174,11 +174,11 @@ func QueryProjectsCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-// QueryProjectInfoCmd returns a query command that retrieves project information.
-func QueryProjectInfoCmd() *cobra.Command {
+// QueryProjectCmd returns a query command that retrieves project information.
+func QueryProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "project-info [project_id]",
-		Short: "Retrive project info",
+		Use:   "project [project_id]",
+		Short: "Retrieve project info",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -186,7 +186,7 @@ func QueryProjectInfoCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.ProjectInfo(cmd.Context(), &core.QueryProjectInfoRequest{
+			res, err := c.Project(cmd.Context(), &core.QueryProjectRequest{
 				ProjectId: args[0],
 			})
 			return printQueryResponse(ctx, res, err)
@@ -225,11 +225,11 @@ func QueryBatchesCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
-// QueryBatchInfoCmd returns a query command that retrieves information for a
+// QueryBatchCmd returns a query command that retrieves information for a
 // given credit batch.
-func QueryBatchInfoCmd() *cobra.Command {
+func QueryBatchCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:   "batch-info [batch_denom]",
+		Use:   "batch [batch_denom]",
 		Short: "Retrieve the credit issuance batch info",
 		Long:  "Retrieve the credit issuance batch info based on the bach_denom (ID)",
 		Args:  cobra.ExactArgs(1),
@@ -239,7 +239,7 @@ func QueryBatchInfoCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.BatchInfo(cmd.Context(), &core.QueryBatchInfoRequest{
+			res, err := c.Batch(cmd.Context(), &core.QueryBatchRequest{
 				BatchDenom: args[0],
 			})
 			return printQueryResponse(ctx, res, err)
@@ -330,4 +330,42 @@ $%s q %s params
 			return printQueryResponse(ctx, res, err)
 		},
 	})
+}
+
+// QueryProjectsByReferenceIdCmd returns command that retrieves list of projects by reference id with pagination.
+func QueryProjectsByReferenceIdCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects-by-reference-id [reference-id]",
+		Short: "Retrieve list of projects by reference-id with pagination flags",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Retrieve list of projects by reference-id with pagination flags
+			
+Examples:
+$%s query %s projects-by-reference-id R1
+$%s q %s projects-by-reference-id R1 --limit 10
+			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectsByReferenceId(cmd.Context(), &core.QueryProjectsByReferenceIdRequest{
+				ReferenceId: args[0],
+				Pagination:  pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "projects-by-reference-id")
+
+	return qflags(cmd)
 }

@@ -10,7 +10,6 @@ import (
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -18,9 +17,6 @@ func TestSell_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(2)
 
 	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
@@ -64,9 +60,11 @@ func TestSell_CreatesMarket(t *testing.T) {
 	s.testSellSetup(batchDenom, "ufoo", "foo", "C01", start, end, creditType)
 	sellTime := time.Now()
 	newCoin := sdk.NewInt64Coin("ubaz", 10)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: newCoin.Denom}}
-	}).Times(1)
+	assert.NilError(t, s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
+		BankDenom:    newCoin.Denom,
+		DisplayDenom: newCoin.Denom,
+		Exponent:     18,
+	}))
 
 	// market shouldn't exist before sell call
 	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
@@ -87,7 +85,6 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.Equal(t, true, has)
 }
 
-// TODO: add a check once params are refactored and the ask denom param is active - https://github.com/regen-network/regen-ledger/issues/624
 func TestSell_Invalid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
@@ -129,9 +126,6 @@ func TestSell_InvalidDenom(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(any interface{}, p *core.Params) {
-		p.AllowedAskDenoms = []*core.AskDenom{{Denom: ask.Denom}}
-	}).Times(1)
 
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)

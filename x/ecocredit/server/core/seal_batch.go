@@ -35,7 +35,7 @@ func (k Keeper) SealBatch(ctx context.Context, req *core.MsgSealBatch) (*core.Ms
 		return nil, err
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventBatchSealed{BatchDenom: batch.Denom}); err != nil {
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventSealBatch{BatchDenom: batch.Denom}); err != nil {
 		return nil, err
 	}
 

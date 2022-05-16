@@ -1,4 +1,4 @@
-# Prerequisites
+# Initial Setup
 
 ## Hardware
 
@@ -8,29 +8,15 @@ We recommend the following hardware specifications:
 - 4vCPUs
 - 500GB Disk space
 
-## Image
+## Setup Instructions
 
-We recommend using Ubuntu 18.04 or 20.04.
+We recommend using Ubuntu 18.04 or 20.04. The following setup instructions are assuming you are using one of these images and the setup may be different if not.
 
-## Software
-
-### Git
-
-For more information, see [Git](https://git-scm.com).
-
-### Make
-
-For more information, see [GNU Make](https://www.gnu.org/software/make/).
-
-### Go
-
-For more information, see [Go](https://golang.org/).
-
-## Initial Setup
-
-:::tip NOTE
-These commands are included in the [quickstart script](../get-started/run-a-full-node.md#quickstart).
+:::tip Note
+The following commands are included in the [Quickstart Script](run-a-full-node.md#quickstart) and are therefore not required if you are using the script. The script also includes the steps outlined in [Run A Full Node](run-a-full-node.md).
 :::
+
+### Install Dependencies
 
 Update packages:
 
@@ -43,6 +29,8 @@ Install tools:
 ```bash
 sudo apt install git build-essential wget jq -y
 ```
+
+### Install Go
 
 Download Go:
 
@@ -83,5 +71,3 @@ Source profile file:
 ```bash
 . ~/.profile
 ```
-
-You're now ready to [run a full node](run-a-full-node.md).
