@@ -13,9 +13,9 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/regen-network/regen-ledger/orm"
-
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
 type batchMapT struct {
@@ -182,15 +182,17 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 		projectExists := false
 		var projectKey uint64
+		var projectId string
 		for pItr.Next() {
-			pInfo, err := pItr.Value()
+			project, err := pItr.Value()
 			if err != nil {
 				return err
 			}
 
-			if pInfo.ClassKey == classIdToClassKey[batchInfo.ClassId] && pInfo.Jurisdiction == batchInfo.ProjectLocation {
+			if project.ClassKey == classIdToClassKey[batchInfo.ClassId] && project.Jurisdiction == batchInfo.ProjectLocation {
 				projectExists = true
-				projectKey = pInfo.Key
+				projectKey = project.Key
+				projectId = project.Id
 				break
 			}
 
@@ -207,7 +209,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				classKeyToProjectSeq[classKey] = 2
 			}
 
-			id := FormatProjectID(batchInfo.ClassId, projectSeq)
+			id := core.FormatProjectId(batchInfo.ClassId, projectSeq)
 			key, err := ss.ProjectTable().InsertReturningID(ctx,
 				&api.Project{
 					Id:           id,
@@ -221,31 +223,47 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 				return err
 			}
 			projectKey = key
+			projectId = id
 		}
 
-		bInfo := api.Batch{
+		startDate, endDate, err := parseBatchDenom(batchInfo.BatchDenom)
+		if err != nil {
+			return err
+		}
+
+		var batchSeq uint64 = 1
+		if v, ok := projectKeyToBatchSeq[projectKey]; ok {
+			batchSeq = v
+		}
+
+		batchDenom, err := core.FormatBatchDenom(projectId, batchSeq, startDate, endDate)
+		if err != nil {
+			return err
+		}
+
+		batch := api.Batch{
 			ProjectKey:   projectKey,
-			Denom:        batchInfo.BatchDenom,
+			Denom:        batchDenom,
 			Metadata:     string(batchInfo.Metadata),
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
 			IssuanceDate: nil,
 		}
 
-		bID, err := ss.BatchTable().InsertReturningID(ctx, &bInfo)
+		bID, err := ss.BatchTable().InsertReturningID(ctx, &batch)
 		if err != nil {
 			return err
 		}
 
-		batchDenomToBatchMap[bInfo.Denom] = batchMapT{
+		batchDenomToBatchMap[batchInfo.BatchDenom] = batchMapT{
 			Id:              bID,
 			AmountCancelled: batchInfo.AmountCancelled,
 		}
 
-		if v, ok := projectKeyToBatchSeq[bInfo.ProjectKey]; ok {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = v + 1
+		if v, ok := projectKeyToBatchSeq[batch.ProjectKey]; ok {
+			projectKeyToBatchSeq[batch.ProjectKey] = v + 1
 		} else {
-			projectKeyToBatchSeq[bInfo.ProjectKey] = 2
+			projectKeyToBatchSeq[batch.ProjectKey] = 2
 		}
 
 		// delete credit batch from old store
