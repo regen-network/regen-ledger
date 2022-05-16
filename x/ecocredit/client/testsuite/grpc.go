@@ -468,3 +468,17 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
+	val := s.network.Validators[0]
+	url := fmt.Sprintf("%s%sallowed-denoms?pagination.count_total=true", val.APIAddress, marketplaceRoute)
+	resp, err := rest.GetRequest(url)
+	s.Require().NoError(err)
+
+	var res marketplace.QueryAllowedDenomsResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
+	s.Require().Equal(uint64(len(s.allowedDenoms)), res.Pagination.Total)
+	for _, d := range res.AllowedDenoms {
+		s.Require().Contains(s.allowedDenoms, d.BankDenom)
+	}
+}

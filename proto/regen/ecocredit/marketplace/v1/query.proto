@@ -44,7 +44,8 @@ service Query {
   // sell order
   rpc AllowedDenoms(QueryAllowedDenomsRequest)
       returns (QueryAllowedDenomsResponse) {
-    option (google.api.http).get = "/regen/ecocredit/marketplace/v1/ask-denoms";
+    option (google.api.http).get =
+        "/regen/ecocredit/marketplace/v1/allowed-denoms";
   }
 }
 

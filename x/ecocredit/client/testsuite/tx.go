@@ -2,17 +2,8 @@ package testsuite
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"testing"
-	"time"
-
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -25,20 +16,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
-	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type IntegrationTestSuite struct {
@@ -47,7 +35,8 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	addr sdk.AccAddress
+	addr          sdk.AccAddress
+	allowedDenoms []string
 }
 
 const (
@@ -95,6 +84,7 @@ func (s *IntegrationTestSuite) setupCustomGenesis() {
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
 	s.Require().NoError(err)
+	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
 		Abbreviation: "C",

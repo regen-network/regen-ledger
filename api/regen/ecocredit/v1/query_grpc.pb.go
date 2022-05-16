@@ -33,7 +33,8 @@ type QueryClient interface {
 	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
-	// ProjectsByReferenceId queries for all projects by reference-id with pagination.
+	// ProjectsByReferenceId queries for all projects by reference-id with
+	// pagination.
 	ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
@@ -226,7 +227,8 @@ type QueryServer interface {
 	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
-	// ProjectsByReferenceId queries for all projects by reference-id with pagination.
+	// ProjectsByReferenceId queries for all projects by reference-id with
+	// pagination.
 	ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)

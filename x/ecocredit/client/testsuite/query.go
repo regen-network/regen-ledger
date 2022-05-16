@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -862,4 +863,21 @@ func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedDenomsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	cmd := marketplaceclient.QueryAllowedDenomsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{fmt.Sprintf("--%s", flags.FlagCountTotal)})
+	s.Require().NoError(err)
+
+	var res marketplace.QueryAllowedDenomsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	for _, d := range res.AllowedDenoms {
+		s.Require().Contains(s.allowedDenoms, d.BankDenom)
+	}
+	s.Require().Equal(uint64(len(s.allowedDenoms)), res.Pagination.Total)
 }

@@ -43,8 +43,10 @@ service Query {
         "/regen/ecocredit/v1/classes/{class_id}/projects";
   }
 
-  // ProjectsByReferenceId queries for all projects by reference-id with pagination.
-  rpc ProjectsByReferenceId(QueryProjectsByReferenceIdRequest) returns (QueryProjectsByReferenceIdResponse) {
+  // ProjectsByReferenceId queries for all projects by reference-id with
+  // pagination.
+  rpc ProjectsByReferenceId(QueryProjectsByReferenceIdRequest)
+      returns (QueryProjectsByReferenceIdResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1/projects/by-reference-id/{reference_id}";
   }
@@ -200,7 +202,8 @@ message QueryProjectsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request type.
+// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request
+// type.
 message QueryProjectsByReferenceIdRequest {
 
   // reference_id is the project reference id.
@@ -210,7 +213,8 @@ message QueryProjectsByReferenceIdRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId response type.
+// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId
+// response type.
 message QueryProjectsByReferenceIdResponse {
 
   // projects are the fetched projects.
