@@ -1453,7 +1453,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	}{
 		{
 			name:   "not enough args",
-			errMsg: "accepts 2 arg(s), received 1",
+			errMsg: "accepts 2 arg(s), received 0",
 		},
 		{
 			name:   "too many args",
