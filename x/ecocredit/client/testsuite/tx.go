@@ -1346,7 +1346,7 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		},
 		{
 			name:   "invalid: unauthorized",
-			args:   makeArgs(projectId, unauthAddr.String(), unauthAddr.String()),
+			args:   makeArgs(projectId, val.Address.String(), unauthAddr.String()),
 			errMsg: sdkerrors.ErrUnauthorized.Error(),
 		},
 		{
