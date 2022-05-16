@@ -1312,76 +1312,6 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
-	val := s.network.Validators[0]
-	updateTo := s.network.Validators[1].Address.String()
-	clientCtx := val.ClientCtx
-	_, projectId, _ := s.createClassProjectBatch(clientCtx, val.Address.String())
-	cmd := coreclient.TxUpdateProjectAdminCmd()
-	makeArgs := func(projectId, newAdminAddr, from string) []string {
-		args := make([]string, 0, 6)
-		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
-		return append(args, s.commonTxFlags()...)
-	}
-	unauthorizedAccount, _, err := val.ClientCtx.Keyring.NewMnemonic("unauthorized", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-	unauthAddr := unauthorizedAccount.GetAddress()
-	s.fundAccount(clientCtx, val.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
-
-	testCases := []struct {
-		name          string
-		args          []string
-		errMsg        string
-		expectedAdmin string
-	}{
-		{
-			name:   "min args",
-			args:   []string{},
-			errMsg: "accepts 2 arg(s), received 0",
-		},
-		{
-			name:   "max args",
-			args:   []string{"foo", "bar", "baz"},
-			errMsg: "accepts 2 arg(s), received 3",
-		},
-		{
-			name:   "invalid: unauthorized",
-			args:   makeArgs(projectId, val.Address.String(), unauthAddr.String()),
-			errMsg: sdkerrors.ErrUnauthorized.Error(),
-		},
-		{
-			name:          "valid update",
-			args:          makeArgs(projectId, updateTo, val.Address.String()),
-			expectedAdmin: updateTo,
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			if len(tc.errMsg) != 0 {
-				s.Require().ErrorContains(err, tc.errMsg)
-			} else {
-				s.Require().NoError(err)
-				var res sdk.TxResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(uint32(0), res.Code)
-				gotProject := s.getProject(clientCtx, projectId)
-				s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) getProject(ctx client.Context, projectId string) *core.ProjectInfo {
-	cmd := coreclient.QueryProjectCmd()
-	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
-	s.Require().NoError(err)
-	var res core.QueryProjectResponse
-	s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	return res.Project
-}
-
 func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	val0 := s.network.Validators[0]
 	valAddrStr := val0.Address.String()
@@ -1495,6 +1425,84 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+	val := s.network.Validators[0]
+	updateTo := s.network.Validators[1].Address.String()
+	clientCtx := val.ClientCtx
+	_, projectId, _ := s.createClassProjectBatch(clientCtx, val.Address.String())
+	cmd := coreclient.TxUpdateProjectAdminCmd()
+	makeArgs := func(projectId, newAdminAddr, from string) []string {
+		args := make([]string, 0, 6)
+		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
+		return append(args, s.commonTxFlags()...)
+	}
+	unauthorizedAccount, _, err := val.ClientCtx.Keyring.NewMnemonic("unauthorized", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	s.Require().NoError(err)
+	unauthAddr := unauthorizedAccount.GetAddress()
+	s.fundAccount(clientCtx, val.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+
+	testCases := []struct {
+		name          string
+		args          []string
+		errMsg        string
+		errLog        string
+		expectedAdmin string
+	}{
+		{
+			name:   "min args",
+			args:   []string{},
+			errMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:   "max args",
+			args:   []string{"foo", "bar", "baz"},
+			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:   "invalid: unauthorized",
+			args:   makeArgs(projectId, val.Address.String(), unauthAddr.String()),
+			errLog: sdkerrors.ErrUnauthorized.Error(),
+		},
+		{
+			name:          "valid update",
+			args:          makeArgs(projectId, updateTo, val.Address.String()),
+			expectedAdmin: updateTo,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if len(tc.errMsg) != 0 {
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+				if len(tc.errLog) != 0 {
+					s.Require().NotEqual(uint32(0), res.Code)
+					s.Require().Contains(res.RawLog, tc.errMsg)
+				} else {
+					s.Require().Equal(uint32(0), res.Code)
+					gotProject := s.getProject(clientCtx, projectId)
+					s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
+				}
+			}
+
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) getProject(ctx client.Context, projectId string) *core.ProjectInfo {
+	cmd := coreclient.QueryProjectCmd()
+	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
+	s.Require().NoError(err)
+	var res core.QueryProjectResponse
+	s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	return res.Project
 }
 
 func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
