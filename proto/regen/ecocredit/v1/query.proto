@@ -43,6 +43,12 @@ service Query {
         "/regen/ecocredit/v1/classes/{class_id}/projects";
   }
 
+  // ProjectsByReferenceId queries for all projects by reference-id with pagination.
+  rpc ProjectsByReferenceId(QueryProjectsByReferenceIdRequest) returns (QueryProjectsByReferenceIdResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/projects/by-reference-id/{reference_id}";
+  }
+
   // Project queries for information on a project.
   rpc Project(QueryProjectRequest) returns (QueryProjectResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
@@ -186,6 +192,26 @@ message QueryProjectsRequest {
 
 // QueryProjectsResponse is the Query/Projects response type.
 message QueryProjectsResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request type.
+message QueryProjectsByReferenceIdRequest {
+
+  // reference_id is the project reference id.
+  string reference_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId response type.
+message QueryProjectsByReferenceIdResponse {
 
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
@@ -399,6 +425,9 @@ message ProjectInfo {
 
   // metadata is the arbitrary metadata attached to the project.
   string metadata = 5;
+
+  // reference_id is any arbitrary string that can be use to reference project.
+  string reference_id = 6;
 }
 
 // BatchInfo is the human-readable credit batch information.

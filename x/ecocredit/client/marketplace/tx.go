@@ -187,7 +187,7 @@ Parameters:
 // TxBuyDirect returns a transaction command for a single direct buy order.
 func TxBuyDirect() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire]",
+		Use:   "buy-direct [sell_order_id] [quantity] [bid_price] [disable_auto_retire] [flags]",
 		Short: "Buy ecocredits from a specific sell order",
 		Long: "Purchase ecocredits from a specific sell order. DisableAutoRetire can be set to false to retire the credits immediately upon purchase." +
 			"When set to true, credits will be received in a tradable state, IF AND ONLY IF the sell order also has auto retire disabled. " +

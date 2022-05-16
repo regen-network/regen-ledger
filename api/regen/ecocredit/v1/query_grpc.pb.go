@@ -33,6 +33,8 @@ type QueryClient interface {
 	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error)
+	// ProjectsByReferenceId queries for all projects by reference-id with pagination.
+	ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
 	// Batches queries for all batches in the given project with pagination.
@@ -104,6 +106,15 @@ func (c *queryClient) ClassIssuers(ctx context.Context, in *QueryClassIssuersReq
 func (c *queryClient) Projects(ctx context.Context, in *QueryProjectsRequest, opts ...grpc.CallOption) (*QueryProjectsResponse, error) {
 	out := new(QueryProjectsResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Projects", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error) {
+	out := new(QueryProjectsByReferenceIdResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ProjectsByReferenceId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -215,6 +226,8 @@ type QueryServer interface {
 	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
 	// Projects queries for all projects within a class with pagination.
 	Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error)
+	// ProjectsByReferenceId queries for all projects by reference-id with pagination.
+	ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)
 	// Batches queries for all batches in the given project with pagination.
@@ -258,6 +271,9 @@ func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuers
 }
 func (UnimplementedQueryServer) Projects(context.Context, *QueryProjectsRequest) (*QueryProjectsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Projects not implemented")
+}
+func (UnimplementedQueryServer) ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByReferenceId not implemented")
 }
 func (UnimplementedQueryServer) Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Project not implemented")
@@ -388,6 +404,24 @@ func _Query_Projects_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Projects(ctx, req.(*QueryProjectsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProjectsByReferenceId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProjectsByReferenceIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProjectsByReferenceId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ProjectsByReferenceId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProjectsByReferenceId(ctx, req.(*QueryProjectsByReferenceIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -598,6 +632,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Projects",
 			Handler:    _Query_Projects_Handler,
+		},
+		{
+			MethodName: "ProjectsByReferenceId",
+			Handler:    _Query_ProjectsByReferenceId_Handler,
 		},
 		{
 			MethodName: "Project",
