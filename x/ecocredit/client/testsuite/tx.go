@@ -1317,7 +1317,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	valAddrStr := val0.Address.String()
 	clientCtx := val0.ClientCtx
 
-	buyerAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("buyDirectAcc", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	buyerAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("buyDirectBatchAcc", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 	buyerAddr := buyerAcc.GetAddress()
 
