@@ -29,3 +29,45 @@ func TestParseBalanceKey(t *testing.T) {
 	denom1 = ParseSupplyKey(retiredSupplyKey)
 	require.Equal(t, denom, denom1)
 }
+
+func TestParseBatchDenom(t *testing.T) {
+	testCases := []struct {
+		name       string
+		denom      string
+		expErr     bool
+		errMessage string
+	}{
+		{
+			"invalid denom",
+			"invalid-denom",
+			true,
+			"invalid batch denom",
+		},
+		{
+			"invalid date",
+			"C01-1234-1234-001",
+			true,
+			"parsing time",
+		},
+		{
+			"valid test",
+			"C01-20220509-20230509-001",
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			sd, ed, err := parseBatchDenom(tc.denom)
+			if tc.expErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.errMessage)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, sd)
+				require.NotNil(t, ed)
+			}
+		})
+	}
+}
