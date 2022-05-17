@@ -17,6 +17,7 @@ import (
 // Create is an RPC to handle basket.MsgCreate
 func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgCreateResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	var fee sdk.Coins
 	k.paramsKeeper.Get(sdkCtx, core.KeyBasketCreationFee, &fee)
 	if !msg.Fee.IsAllGTE(fee) {
@@ -39,9 +40,11 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	if err != nil {
 		return nil, err
 	}
+
 	if err = k.validateCreditType(ctx, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
 		return nil, err
 	}
+
 	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
 	if err != nil {
 		return nil, err
@@ -66,13 +69,10 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	denomUnits := []*banktypes.DenomUnit{{
 		Denom:    displayDenom,
 		Exponent: msg.Exponent,
-		Aliases:  nil,
 	}}
 	if msg.Exponent != 0 {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
-			Denom:    denom,
-			Exponent: 0, // conversion from base denom to this denom
-			Aliases:  nil,
+			Denom: denom,
 		})
 	}
 
