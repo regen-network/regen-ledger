@@ -1428,20 +1428,19 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 }
 
 func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
-	val := s.network.Validators[0]
-	updateTo := s.network.Validators[1].Address.String()
-	clientCtx := val.ClientCtx
-	_, projectId, _ := s.createClassProjectBatch(clientCtx, val.Address.String())
+	admin := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address.String()
+	clientCtx := admin.ClientCtx
+	_, projectId := s.createClassProject(clientCtx, admin.Address.String())
 	cmd := coreclient.TxUpdateProjectAdminCmd()
 	makeArgs := func(projectId, newAdminAddr, from string) []string {
 		args := make([]string, 0, 6)
 		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
 		return append(args, s.commonTxFlags()...)
 	}
-	unauthorizedAccount, _, err := val.ClientCtx.Keyring.NewMnemonic("unauthorized", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-	unauthAddr := unauthorizedAccount.GetAddress()
-	s.fundAccount(clientCtx, val.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+
+	unauthAddr := s.addr
+	s.fundAccount(clientCtx, admin.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
 
 	testCases := []struct {
 		name          string
@@ -1462,13 +1461,13 @@ func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 		},
 		{
 			name:   "invalid: unauthorized",
-			args:   makeArgs(projectId, val.Address.String(), unauthAddr.String()),
+			args:   makeArgs(projectId, admin.Address.String(), unauthAddr.String()),
 			errLog: sdkerrors.ErrUnauthorized.Error(),
 		},
 		{
 			name:          "valid update",
-			args:          makeArgs(projectId, updateTo, val.Address.String()),
-			expectedAdmin: updateTo,
+			args:          makeArgs(projectId, newAdmin, admin.Address.String()),
+			expectedAdmin: newAdmin,
 		},
 	}
 
@@ -1700,8 +1699,8 @@ func formatTime(t *time.Time) string {
 	return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
 }
 
-// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
-func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (classId, projectId, batchDenom string) {
+// createClassProject creates a class and project, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr string) (classId, projectId string) {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
 		Issuers:          []string{addr},
@@ -1717,7 +1716,14 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
+	return classId, projectId
+}
+
+// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (classId, projectId, batchDenom string) {
+	classId, projectId = s.createClassProject(clientCtx, addr)
 	start, end := time.Now(), time.Now()
+	var err error
 	batchDenom, err = s.createBatch(clientCtx, &core.MsgCreateBatch{
 		Issuer:    addr,
 		ProjectId: projectId,
