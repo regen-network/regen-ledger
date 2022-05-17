@@ -7821,6 +7821,7 @@ type EventBridge struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// bridge_target is the target chain.
 	BridgeTarget string `protobuf:"bytes,1,opt,name=bridge_target,json=bridgeTarget,proto3" json:"bridge_target,omitempty"`
 	// bridge_recipient is the recipient address.
 	BridgeRecipient string `protobuf:"bytes,2,opt,name=bridge_recipient,json=bridgeRecipient,proto3" json:"bridge_recipient,omitempty"`

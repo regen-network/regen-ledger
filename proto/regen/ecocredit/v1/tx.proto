@@ -430,6 +430,7 @@ message MsgBridge {
   // MsgCancel is the MsgCancel message type.
   MsgCancel msg_cancel = 1;
 
+  // bridge_target is the target chain.
   string bridge_target = 2;
 
   // bridge_recipient is the recipient address.

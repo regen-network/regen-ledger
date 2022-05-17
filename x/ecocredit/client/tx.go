@@ -369,14 +369,16 @@ Parameters:
 // TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
 	return txFlags(&cobra.Command{
-		Use:   "cancel [credits]",
+		Use:   "cancel [credits] [reason]",
 		Short: "Cancels a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
   credits:  comma-separated list of credits in the form [<amount> <batch-denom>]
-            eg: '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-001'`,
-		Args: cobra.ExactArgs(1),
+            eg: '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-001'
+  reason:   reason is any arbitary encoded data.
+			`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			credits, err := parseCancelCreditsList(args[0])
 			if err != nil {
@@ -389,6 +391,7 @@ Parameters:
 			msg := core.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
+				Reason:  args[1],
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

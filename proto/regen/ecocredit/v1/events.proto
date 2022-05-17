@@ -165,6 +165,7 @@ message EventAddCreditType {
 
 // EventBridge is emitted emitted when credits are cancelled.
 message EventBridge {
+  // bridge_target is the target chain.
   string bridge_target = 1;
 
   // bridge_recipient is the recipient address.

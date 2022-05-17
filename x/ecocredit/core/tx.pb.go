@@ -1779,11 +1779,12 @@ var xxx_messageInfo_MsgUpdateProjectMetadataResponse proto.InternalMessageInfo
 // MsgBridge is the Msg/Bridge request type.
 type MsgBridge struct {
 	// MsgCancel is the MsgCancel message type.
-	MsgCancel    *MsgCancel `protobuf:"bytes,1,opt,name=msg_cancel,json=msgCancel,proto3" json:"msg_cancel,omitempty"`
-	BridgeTarget string     `protobuf:"bytes,2,opt,name=bridge_target,json=bridgeTarget,proto3" json:"bridge_target,omitempty"`
+	MsgCancel *MsgCancel `protobuf:"bytes,1,opt,name=msg_cancel,json=msgCancel,proto3" json:"msg_cancel,omitempty"`
+	// bridge_target is the target chain.
+	BridgeTarget string `protobuf:"bytes,2,opt,name=bridge_target,json=bridgeTarget,proto3" json:"bridge_target,omitempty"`
 	// bridge_recipient is the recipient address.
 	BridgeRecipient string `protobuf:"bytes,3,opt,name=bridge_recipient,json=bridgeRecipient,proto3" json:"bridge_recipient,omitempty"`
-	//  bridge_contract is the contract address.
+	// bridge_contract is the contract address.
 	BridgeContract string `protobuf:"bytes,4,opt,name=bridge_contract,json=bridgeContract,proto3" json:"bridge_contract,omitempty"`
 }
 
