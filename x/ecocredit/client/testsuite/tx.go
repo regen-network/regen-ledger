@@ -8,13 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
-	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -27,6 +20,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/gogo/protobuf/proto"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -1433,14 +1432,11 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 	clientCtx := val0.ClientCtx
 	cmd := marketplaceclient.TxBuyDirectBatch()
 
-	buyerAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("buyDirectAcc", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-	buyerAddr := buyerAcc.GetAddress()
-
 	validAskDenom := sdk.DefaultBondDenom
 	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
 
-	s.fundAccount(clientCtx, val0.Address, buyerAddr, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
+	buyerAcc := s.addr
+	s.fundAccount(clientCtx, val0.Address, buyerAcc, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
 
 	expiration, err := types.ParseDate("expiration", "3020-04-15")
 	s.Require().NoError(err)
@@ -1453,7 +1449,6 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 		},
 	})
 
-	buyQty := math.NewDecFromInt64(20)
 	buyOrders := []*marketplace.MsgBuyDirect_Order{
 		{SellOrderId: orderIds[0], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
 		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
@@ -1484,7 +1479,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 		},
 		{
 			name: "valid order",
-			args: makeArgs(jsonFile.Name(), buyerAddr.String()),
+			args: makeArgs(jsonFile.Name(), buyerAcc.String()),
 		},
 	}
 	for _, tc := range testCases {
@@ -1494,33 +1489,49 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 				s.Require().ErrorContains(err, tc.errMsg)
 			} else {
 				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
-				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
-
-				costDec, err := math.NewDecFromString(askCoin.Amount.String())
-				s.Require().NoError(err)
-				totalCostDec, err := buyQty.Mul(costDec)
-				s.Require().NoError(err)
-				totalCostInt := totalCostDec.SdkIntTrim()
-				totalCostCoin := sdk.NewCoin(askCoin.Denom, totalCostInt)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
 
 				out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 				s.Require().NoError(err)
 
 				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
-				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAddr, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
 
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(uint32(0), res.Code)
-
-				amtSoldEach := math.NewDecFromInt64(10)
-				s.assertMarketBalanceBatchUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, buyQty, totalCostCoin, amtSoldEach, amtSoldEach)
+				s.assertMarketBalanceBatchUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, buyOrders)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba accountInfo, totalSold math.Dec, cost sdk.Coin, retSold, tradSold math.Dec) {
+// assertMarketBalanceBatchUpdated asserts that all accounts involved in a marketplace transaction are updated properly.
+// it assumes that both seller/buyer accounts used the same denom for amount sold/bought.
+func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba accountInfo, orders []*marketplace.MsgBuyDirect_Order) {
+	tradSold, retSold := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
+	cost := sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
+	for _, order := range orders {
+		qty, err := math.NewDecFromString(order.Quantity)
+		s.Require().NoError(err)
+		if order.DisableAutoRetire {
+			tradSold, err = tradSold.Add(qty)
+			s.Require().NoError(err)
+		} else {
+			retSold, err = retSold.Add(qty)
+			s.Require().NoError(err)
+		}
+		costDec, err := math.NewDecFromString(order.BidPrice.Amount.String())
+		s.Require().NoError(err)
+		totalCostDec, err := qty.Mul(costDec)
+		s.Require().NoError(err)
+		c := sdk.NewCoin(order.BidPrice.Denom, totalCostDec.SdkIntTrim())
+		cost = cost.Add(c)
+	}
+
+	totalSold, err := tradSold.Add(retSold)
+	s.Require().NoError(err)
+
 	// check sellers coins
 	expectedSellerGain := sb.coinBal.Add(cost)
 	s.Require().True(expectedSellerGain.Equal(sa.coinBal))
