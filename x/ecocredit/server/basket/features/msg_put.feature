@@ -212,7 +212,7 @@ Feature: MsgPut
 
     # no failing scenario - state transitions only occur upon successful message execution
 
- Rule: The user token balance is updated when credits are put into the basket
+  Rule: The user token balance is updated when credits are put into the basket
 
     Scenario Outline: user token balance is updated
       Given a basket with exponent "<exponent>"
@@ -228,7 +228,7 @@ Feature: MsgPut
 
     # no failing scenario - state transitions only occur upon successful message execution
 
- Rule: The basket token supply is updated when credits are put into the basket
+  Rule: The basket token supply is updated when credits are put into the basket
 
     Scenario Outline: basket token supply is updated
       Given a basket with exponent "<exponent>"
@@ -244,7 +244,7 @@ Feature: MsgPut
 
     # no failing scenario - state transitions only occur upon successful message execution
 
- Rule: The message response includes basket token amount received when credits are put into the basket
+  Rule: The message response includes basket token amount received when credits are put into the basket
 
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>"

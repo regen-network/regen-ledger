@@ -3,6 +3,7 @@ package basket
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -27,6 +28,13 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
+	for _, coin := range fee {
+		curatorBalance := k.bankKeeper.GetBalance(sdkCtx, curator, coin.Denom)
+		if curatorBalance.IsNil() || curatorBalance.IsLT(coin) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for bank denom %s", coin.Denom)
+		}
+	}
+
 	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, curator)
 	if err != nil {
 		return nil, err
@@ -49,7 +57,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		Name:              msg.Name,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "basket with name %s already exists", msg.Name)
 	}
 	if err = k.indexAllowedClasses(ctx, id, msg.AllowedClasses, msg.CreditTypeAbbrev); err != nil {
 		return nil, err
