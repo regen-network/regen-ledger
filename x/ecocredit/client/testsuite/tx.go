@@ -1429,16 +1429,14 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 }
 
 func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
-	val0 := s.network.Validators[0]
-	valAddrStr := val0.Address.String()
-	clientCtx := val0.ClientCtx
+	admin := s.network.Validators[0]
+	valAddrStr := admin.Address.String()
+	clientCtx := admin.ClientCtx
 	cmd := coreclient.TxUpdateProjectMetadataCmd()
-	_, projectId, _ := s.createClassProjectBatch(clientCtx, valAddrStr)
+	_, projectId := s.createClassProject(clientCtx, valAddrStr)
 
-	unauthAcc, _, err := val0.ClientCtx.Keyring.NewMnemonic("unauthMetadata", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-	unauthAddr := unauthAcc.GetAddress()
-	s.fundAccount(clientCtx, val0.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+	unauthAddr := s.addr
+	s.fundAccount(clientCtx, admin.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
 
 	makeArgs := func(projectId, metadata, from string) []string {
 		args := []string{projectId, metadata, makeFlagFrom(from)}
@@ -1698,31 +1696,38 @@ func formatTime(t *time.Time) string {
 	return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
 }
 
-// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
-func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
+// createClassProject creates a class and project, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr string) (classId, projectId string) {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
 		Issuers:          []string{addr},
-		Metadata:         "meta",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
-	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       addr,
 		ClassId:      classId,
-		Metadata:     "meta",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
+	return classId, projectId
+}
+
+// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (classId, projectId, batchDenom string) {
+	classId, projectId = s.createClassProject(clientCtx, addr)
 	start, end := time.Now(), time.Now()
-	batchDenom, err := s.createBatch(clientCtx, &core.MsgCreateBatch{
+	var err error
+	batchDenom, err = s.createBatch(clientCtx, &core.MsgCreateBatch{
 		Issuer:    addr,
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
 			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementJurisdiction: "US-OR"},
 		},
-		Metadata:  "meta",
+		Metadata:  validMetadata,
 		StartDate: &start,
 		EndDate:   &end,
 		Open:      false,
@@ -1730,7 +1735,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Note:      "",
 	})
 	s.Require().NoError(err)
-	return classId, projectId, batchDenom
+	return
 }
 
 func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {
