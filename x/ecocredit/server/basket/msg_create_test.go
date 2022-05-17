@@ -250,6 +250,39 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithName(a string) {
 	})
 }
 
+func (s *createSuite) AliceAttemptsToCreateABasketWithExponent(a string) {
+	exponent, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	// set exponent for denom metadata
+	s.basketExponent = uint32(exponent)
+
+	var coins sdk.Coins
+
+	s.paramsKeeper.EXPECT().
+		Get(s.sdkCtx, core.KeyBasketCreationFee, &coins).
+		Do(func(ctx sdk.Context, key []byte, coins *sdk.Coins) {
+			*coins = s.minBasketFee
+		}).
+		Times(1)
+
+	s.distKeeper.EXPECT().
+		FundCommunityPool(s.sdkCtx, s.minBasketFee, s.alice).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		SetDenomMetaData(s.sdkCtx, s.getDenomMetadata()).
+		AnyTimes() // not expected on failed attempt
+
+	s.res, s.err = s.k.Create(s.ctx, &basket.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Exponent:         uint32(exponent),
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+}
+
 func (s *createSuite) AliceAttemptsToCreateABasketWithNameAndExponent(a string, b string) {
 	exponent, err := strconv.ParseUint(b, 10, 32)
 	require.NoError(s.t, err)

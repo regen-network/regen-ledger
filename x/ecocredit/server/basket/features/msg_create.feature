@@ -6,10 +6,11 @@ Feature: MsgCreate
   - when the basket fee denom matches the minimum basket fee denom
   - when the basket fee amount is greater than or equal to the minimum basket fee amount
   - when the user has a balance greater than or equal to the minimum basket fee amount
-  - when the basket includes a valid credit type
-  - when the basket allowed classes includes valid credit classes
+  - when the basket includes a credit type that exists
+  - when the basket criteria includes credit classes that exist
+  - when the basket criteria includes credit classes that match the credit type
   - when the exponent is greater than or equal to the credit type precision
-  - the user token balance is updated
+  - the user token balance is updated when a basket is created with a fee
   - the response includes the basket denom
 
   Rule: The basket name must be unique
@@ -102,34 +103,44 @@ Feature: MsgCreate
       When alice attempts to create a basket with fee "20regen"
       Then expect the error "insufficient balance for bank denom regen: insufficient funds"
 
-  Rule: The basket must include a valid credit type
+  Rule: The basket must include a credit type that exists
 
     Background:
       Given a credit type with abbreviation "C"
 
-    Scenario: basket criteria includes a valid credit class
+    Scenario: basket credit type exists
       When alice attempts to create a basket with credit type "C"
       Then expect no error
 
-    Scenario: basket criteria includes an invalid credit class
+    Scenario: basket credit type does not exist
       When alice attempts to create a basket with credit type "F"
       Then expect the error "could not get credit type with abbreviation F: not found: invalid request"
 
-  Rule: The basket criteria must include a valid credit class
+  Rule: The basket criteria must include a credit class that exists
 
     Background:
       Given a credit type with abbreviation "C"
 
-    Scenario: basket criteria includes a valid credit class
+    Scenario: basket criteria credit class exists
       Given a credit class with id "C01"
       When alice attempts to create a basket with allowed class "C01"
       Then expect no error
 
-    Scenario: basket criteria includes an invalid credit class
+    Scenario: basket criteria credit class does not exist
       When alice attempts to create a basket with allowed class "C01"
       Then expect the error "could not get credit class C01: not found: invalid request"
 
-    Scenario: basket criteria includes an invalid credit class
+  Rule: The basket criteria must include a credit class that matches the credit type
+
+    Background:
+      Given a credit type with abbreviation "C"
+
+    Scenario: basket criteria credit class matches credit type
+      Given a credit class with id "C01"
+      When alice attempts to create a basket with allowed class "C01"
+      Then expect no error
+
+    Scenario: basket criteria credit class does not match credit type
       Given a credit class with id "BIO01"
       When alice attempts to create a basket with allowed class "BIO01"
       Then expect the error "basket specified credit type C, but class BIO01 is of type BIO: invalid request"
@@ -140,7 +151,7 @@ Feature: MsgCreate
       Given a credit type with precision "6"
 
     Scenario Outline: basket exponent is greater than or equal to credit type precision
-      When alice attempts to create a basket with name "NCT" and exponent "<exponent>"
+      When alice attempts to create a basket with exponent "<exponent>"
       Then expect no error
 
       Examples:
@@ -149,10 +160,10 @@ Feature: MsgCreate
         | equal to     | 6        |
 
     Scenario: basket exponent is less than credit type precision
-      When alice attempts to create a basket with name "NCT" and exponent "3"
+      When alice attempts to create a basket with exponent "3"
       Then expect the error "exponent 3 must be >= credit type precision 6: invalid request"
 
-  Rule: The user token balance is updated when the basket is created
+  Rule: The user token balance is updated when the basket is created with a fee
 
     Background:
       Given a credit type
@@ -167,6 +178,10 @@ Feature: MsgCreate
         | description  | basket-fee | token-balance |
         | greater than | 40regen    | 20regen       |
         | equal to     | 20regen    | 20regen       |
+
+    Scenario: user token balance is not updated
+      When alice attempts to create a basket with no fee
+      Then expect the token balance "40regen"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
