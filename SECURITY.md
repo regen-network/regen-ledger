@@ -76,9 +76,8 @@ The following timeline is an example of triage and response. Each task identifie
 
 #### Release Time
 
-1. Cut Regen Ledger releases for eligible versions (REGEN LEDGER ENG)
-1. Cut Gaia release for eligible versions (GAIA ENG)
-1. Post “Security releases” on forum (REGEN LEDGER LEAD)
+1. Cut Regen Ledger release for eligible version (REGEN LEDGER ENG)
+1. Post “Security release” on forum (REGEN LEDGER LEAD)
 1. Post new Tweet linking to forum post (COMMS LEAD)
 1. Remind everyone on social channels (Telegram, Discord) that the release is out (COMMS LEAD)
 1. Send emails to validators and other users (COMMS LEAD)
