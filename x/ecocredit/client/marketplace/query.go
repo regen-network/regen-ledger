@@ -169,3 +169,44 @@ $ regen q sell-orders-by-batch-denom C01-20210101-20210201-001 --pagination.limi
 	flags.AddPaginationFlagsToCmd(cmd, "sell-orders-by-batch-denom")
 	return cmd
 }
+
+// QueryAllowedDenomsCmd returns a query command that retrieves allowed denoms with pagination.
+func QueryAllowedDenomsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "allowed-denoms",
+		Short: "List all allowed denoms with pagination",
+		Long: strings.TrimSpace(`
+		Retrieve allowed denoms with pagination
+	
+Example:
+$ regen q allowed-denoms
+$ regen q allowed-denoms --pagination.limit 10 --pagination.offset 2
+		`),
+		Example: "$ regen q allowed-denoms",
+		Args:    cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := sdkclient.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			client := marketplace.NewQueryClient(ctx)
+			pagination, err := sdkclient.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := client.AllowedDenoms(cmd.Context(), &marketplace.QueryAllowedDenomsRequest{
+				Pagination: pagination,
+			})
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "allowed-denoms")
+
+	return cmd
+}
