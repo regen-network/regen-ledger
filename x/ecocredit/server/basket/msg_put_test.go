@@ -45,7 +45,7 @@ func (s *putSuite) Before(t gocuke.TestingT) {
 	s.bob = s.addrs[1]
 	s.classId = "C01"
 	s.creditTypeAbbrev = "C"
-	s.batchDenom = "C01-20200101-20210101-001"
+	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.basketDenom = "NCT"
 	s.tradableCredits = "100"
 }
@@ -475,16 +475,13 @@ func (s *putSuite) TheBasketHasACreditBalanceWithAmount(a string) {
 }
 
 func (s *putSuite) TheBasketTokenHasATotalSupplyWithAmount(a string) {
-	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, s.basketDenom)
-	require.NoError(s.t, err)
-
 	amount, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
 	coin := sdk.NewInt64Coin(s.basketDenom, amount)
 
 	s.bankKeeper.EXPECT().
-		GetSupply(s.sdkCtx, basket.BasketDenom).
+		GetSupply(s.sdkCtx, s.basketDenom).
 		Return(coin).
 		Times(1)
 
@@ -514,7 +511,7 @@ func (s *putSuite) AliceHasABasketTokenBalanceWithAmount(a string) {
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.alice, basket.BasketDenom).
 		Return(coin).
-		AnyTimes()
+		Times(1)
 
 	balance := s.bankKeeper.GetBalance(s.sdkCtx, s.alice, basket.BasketDenom)
 	require.Equal(s.t, coin, balance)

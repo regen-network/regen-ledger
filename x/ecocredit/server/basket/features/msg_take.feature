@@ -1,71 +1,168 @@
-Feature: Take
+Feature: MsgTake
 
-  Scenario: user provides a valid basket denom
-    Given basket with denom eco.dC.Foo exists
-    When user tries to take credits from a basket
-    And user provides eco.dC.Foo as the basket denom
-    Then credits are taken from the basket
+  Credits can be taken from a basket:
+  - when the basket exists
+  - when the user token balance is greater than or equal to the token amount
+  - when auto-retire is disabled and the user sets retire on take to true
+  - when auto-retire is disabled and the user sets retire on take to false
+  - when auto-retire is enabled and the user sets retire on take to true
+  - the user token balance is updated
+  - the basket token supply is updated
+  - the user retired credit balance is updated when the user sets retire on take to false
+  - the user tradable credit balance is updated when the user sets retire on take to true
+  - the basket credit balance is updated
+  - the response includes the credits received
 
-  Scenario: user provides an invalid basket denom
-    Given basket with denom eco.dX.Foo does not exist
-    When user tries to take credits from a basket
-    And user provides eco.dX.Foo as the basket denom
-    Then credits are NOT taken from the basket
+  Rule: The basket must exist
 
-  Scenario: user has enough basket tokens
-    Given user has a positive basket token balance
-    When user tries to take credits from a basket
-    And user provides an amount less than or equal to user basket token balance
-    Then credits are taken from the basket
-    And basket tokens are deducted from user account
+    Scenario: basket exists
+      Given a basket with denom "NCT"
+      And alice owns tokens with denom "NCT"
+      When alice attempts to take credits with basket denom "NCT"
+      Then expect no error
 
-  Scenario: user does not have enough basket tokens
-    Given user has a positive basket token balance
-    When user tries to take credits from a basket
-    And user provides an amount more than user basket token balance
-    Then credits are NOT taken from the basket
-    And basket tokens are NOT deducted from user account
+    Scenario: basket does not exist
+      When alice attempts to take credits with basket denom "NCT"
+      Then expect the error "basket NCT not found: not found"
 
-  Scenario: user provides an invalid amount of basket tokens
-    When user tries to take credits from a basket
-    And user provides an amount of basket tokens that is less than or equal to zero
-    Then credits are NOT taken from the basket
+  Rule: The user token balance must be greater than or equal to the token amount
 
-  Scenario: user sets retire_on_take to true and basket retire_on_take is true
-    Given basket retire_on_take is true
-    When user tries to take credits from a basket
-    And user sets retire_on_take to true
-    And user provides a valid retirement jurisdiction
-    Then credits are taken from the basket
-    And credits are received in a retired state
+    Background:
+      Given a basket
 
-  Scenario: user sets retire_on_take to false and basket retire_on_take is true
-    Given basket retire_on_take is true
-    When user tries to take credits from a basket
-    Given user sets retire_on_take to false
-    Then credits are NOT taken from the basket
-    And credits are NOT received in a retired or tradable state
+    Scenario Outline: user token balance is greater than or equal to token amount
+      Given alice owns basket token amount "<token-balance>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
+      Then expect no error
 
-  Scenario: user does not provide retirement jurisdiction when retire_on_take is false
-    Given basket retire_on_take is false
-    When user tries to take credits from a basket
-    And user sets retire_on_take to false
-    And user does not specify a retirement jurisdiction
-    Then credits are taken from the basket
-    And credits are received in a tradable state
+      Examples:
+        | description     | token-balance  | token-amount |
+        | balance greater | 100            | 50           |
+        | balance equal   | 100            | 100          |
 
-  Scenario: user does not provide retirement jurisdiction when retire_on_take is true
-    Given basket retire_on_take is true
-    When user tries to take credits from a basket
-    And user sets retire_on_take to true
-    And user does not provide a retirement jurisdiction
-    Then credits are NOT taken from the basket
-    And credits are NOT received in a retired or tradable state
+    Scenario Outline: user token balance is less than token amount
+      Given alice owns basket token amount "<token-balance>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
+      Then expect the error "insufficient balance for basket denom NCT: insufficient funds"
 
-  Scenario: user provides an invalid retirement jurisdiction
-    Given basket retire_on_take is true
-    When user tries to take credits from a basket
-    And user sets retire_on_take to true
-    And user does not provide a valid retirement jurisdiction
-    Then credits are NOT taken from the basket
-    And credits are NOT received in a retired or tradable state
+      Examples:
+        | description  | token-balance  | token-amount |
+        | no balance   | 0              | 100          |
+        | balance less | 50             | 100          |
+
+  Rule: The user must set retire on take to true if auto-retire is enabled
+
+    Scenario Outline: basket auto-retire disabled
+      Given a basket with disable auto retire "true"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "<retire-on-take>"
+      Then expect no error
+
+      Examples:
+        | retire-on-take |
+        | true           |
+        | false          |
+
+    Scenario: basket auto-retire enabled and user sets retire on take to true
+      Given a basket with disable auto retire "false"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "true"
+      Then expect no error
+
+    Scenario: basket auto-retire enabled and user sets retire on take to false
+      Given a basket with disable auto retire "false"
+      And alice owns basket tokens
+      When alice attempts to take credits with retire on take "false"
+      Then expect the error "can't disable retirement when taking from this basket"
+
+ Rule: The user token balance is updated when credits are taken from the basket
+
+    Scenario: user token balance is updated
+      Given a basket
+      And alice owns basket token amount "100"
+      When alice attempts to take credits with basket token amount "50"
+      Then alice has a basket token balance with amount "50"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+ Rule: The basket token supply is updated when credits are taken from the basket
+
+    Scenario: basket token supply is updated
+      Given a basket
+      And alice owns basket token amount "150"
+      When alice attempts to take credits with basket token amount "100"
+      Then the basket token has a total supply with amount "50"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: The user credit balance is updated when credits are taken from the basket
+
+    Scenario Outline: user retired credit balance is updated
+      Given a basket with exponent "<exponent>" and disable auto retire "false"
+      And alice owns basket token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "true"
+      Then alice has a retired credit balance with amount "<retired-credits>"
+      And alice has a tradable credit balance with amount "0"
+
+      Examples:
+        | description                        | exponent | token-amount | retired-credits |
+        | exponent zero, credits whole       | 0        | 2            | 2               |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000        |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000        |
+
+    Scenario Outline: user tradable credit balance is updated
+      Given a basket with exponent "<exponent>" and disable auto retire "true"
+      And alice owns basket token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "false"
+      Then alice has a tradable credit balance with amount "<tradable-credits>"
+      And alice has a retired credit balance with amount "0"
+
+      Examples:
+        | description                        | exponent | token-amount | tradable-credits |
+        | exponent zero, credits whole       | 0        | 2            | 2                |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000         |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000         |
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: The basket credit balance is updated when credits are taken from the basket
+
+    Scenario Outline: basket credit balance is updated
+      Given a basket with exponent "<exponent>" and credit balance "100"
+      And alice owns basket token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
+      Then the basket has a credit balance with amount "<credit-amount>"
+
+      Examples:
+        | description                        | exponent | token-amount | credit-amount |
+        | exponent zero, credits whole       | 0        | 2            | 98            |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 98.000000     |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 97.500000     |
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+ Rule: The message response includes the credits received when credits are taken from the basket
+
+    Scenario Outline: message response includes basket token amount received
+      Given a basket with exponent "<exponent>" and credit balance "100"
+      And alice owns basket token amount "<token-amount>"
+      When alice attempts to take credits with basket token amount "<token-amount>"
+      Then expect the response
+      """
+      {
+        "credits": [
+          {
+            "batch_denom": "C01-001-20200101-20210101-001",
+            "amount": "<credit-amount>"
+          }
+        ]
+      }
+      """
+
+      Examples:
+        | description                        | exponent | token-amount | credit-amount |
+        | exponent zero, credits whole       | 0        | 2            | 2             |
+        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000      |
+        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000      |
+
+    # no failing scenario - response should always be empty when message execution fails
