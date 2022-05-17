@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -19,6 +20,9 @@ import (
 func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettypes.MsgTakeResponse, error) {
 	basket, err := k.stateStore.BasketTable().GetByBasketDenom(ctx, msg.BasketDenom)
 	if err != nil {
+		if ormerrors.IsNotFound(err) {
+			return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", msg.BasketDenom)
+		}
 		return nil, err
 	}
 
@@ -39,6 +43,12 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	basketCoins := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amountBasketTokens))
+
+	ownerBalance := k.bankKeeper.GetBalance(sdkCtx, acct, basket.BasketDenom)
+	if ownerBalance.IsNil() || ownerBalance.IsLT(basketCoins[0]) {
+		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance for basket denom %s", basket.BasketDenom)
+	}
+
 	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, acct, baskettypes.BasketSubModuleName, basketCoins)
 	if err != nil {
 		return nil, err

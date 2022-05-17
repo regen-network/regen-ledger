@@ -36,13 +36,13 @@ Feature: MsgPut
       Given a basket
 
     Scenario: batch denom exists
-      Given alice owns credits from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into the basket
+      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
       Then expect no error
 
     Scenario: batch denom does not exist
-      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into the basket
-      Then expect the error "could not get batch C01-20200101-20210101-001: not found: invalid request"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
+      Then expect the error "could not get batch C01-001-20200101-20210101-001: not found: invalid request"
 
   Rule: The credit batch must be from a credit class that is allowed in the basket
 
@@ -50,8 +50,8 @@ Feature: MsgPut
       Given a basket with allowed credit class "C01"
 
     Scenario: credit class is allowed
-      Given alice owns credits from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into the basket
+      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
       Then expect no error
 
     Scenario: credit class is not allowed
@@ -65,14 +65,14 @@ Feature: MsgPut
       Given a basket
 
     Scenario: user has a credit balance
-      Given alice owns credits from credit batch "C01-20200101-20210101-001"
-      When alice attempts to put credits from credit batch "C01-20200101-20210101-001" into the basket
+      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
       Then expect no error
 
     Scenario: user does not have a credit balance
-      Given alice owns credits from credit batch "C01-20200101-20210101-001"
-      When bob attempts to put credits from credit batch "C01-20200101-20210101-001" into the basket
-      Then expect error contains "could not get batch C01-20200101-20210101-001 balance"
+      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
+      When bob attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
+      Then expect error contains "could not get batch C01-001-20200101-20210101-001 balance"
 
   Rule: The user must have a credit balance more than or equal to the credits being put into the basket
 
