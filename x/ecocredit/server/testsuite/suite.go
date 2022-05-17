@@ -1021,13 +1021,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
 
+	sellerAcc := acc3
 	order1Qty, order2Qty := "10.54321", "15.54321"
 	order1QtyDec, err := math.NewDecFromString(order1Qty)
 	s.Require().NoError(err)
 	order2QtyDec, err := math.NewDecFromString(order2Qty)
 	s.Require().NoError(err)
 	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: addr3,
+		Owner: sellerAcc.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -1052,12 +1053,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// now we buy these orders
 	buyerAcc := acc5
+	// (10.54321 + 15.54321) * 1000000 = 26,086,420
 	expectedTotalCost := sdk.NewInt64Coin(coinPrice.Denom, 26_086_420)
 	// this is the exact amount it should cost to purchase both orders
 	s.fundAccount(buyerAcc, sdk.Coins{expectedTotalCost})
 
 	buyerAccBefore := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
-	sellerAccBefore := s.getAccountInfo(acc3, batchDenom, coinPrice.Denom)
+	sellerAccBefore := s.getAccountInfo(sellerAcc, batchDenom, coinPrice.Denom)
 	_, err = s.marketServer.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: buyerAcc.String(),
 		Orders: []*marketplace.MsgBuyDirect_Order{
@@ -1078,7 +1080,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	buyerAccAfter := s.getAccountInfo(buyerAcc, batchDenom, coinPrice.Denom)
-	sellerAccAfter := s.getAccountInfo(acc3, batchDenom, coinPrice.Denom)
+	sellerAccAfter := s.getAccountInfo(sellerAcc, batchDenom, coinPrice.Denom)
 
 	s.assertSellerBalancesUpdated(sellerAccBefore, sellerAccAfter, order2QtyDec, order1QtyDec, expectedTotalCost)
 	s.assertBuyerBalancesUpdated(buyerAccBefore, buyerAccAfter, order2QtyDec, order1QtyDec, expectedTotalCost)
