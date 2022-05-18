@@ -82,6 +82,7 @@ message Project {
     index : {id : 1, fields : "id", unique : true}
     index : {id : 2, fields : "class_key,id", unique : true}
     index : {id : 3, fields : "admin"}
+    index : {id : 4, fields : "reference_id"}
   };
 
   // key is the table row identifier of the project used internally for
@@ -105,6 +106,9 @@ message Project {
 
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 6;
+
+  // reference_id is any arbitrary string used to reference the project.
+  string reference_id = 7;
 }
 
 // Batch represents the high-level on-chain information for a credit batch.

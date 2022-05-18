@@ -29,15 +29,15 @@ func TestGetBasketBalances(t *testing.T) {
 	initBatch(t, s, 1, batchDenom1, timestamppb.Now())
 	initBatch(t, s, 2, batchDenom2, timestamppb.Now())
 
-	insertBatchBalance(t, s, s.addr, 1, userStartingBalance.String())
-	insertBatchBalance(t, s, s.addr, 2, userStartingBalance.String())
+	insertBatchBalance(t, s, s.addrs[0], 1, userStartingBalance.String())
+	insertBatchBalance(t, s, s.addrs[0], 2, userStartingBalance.String())
 	insertBatchBalance(t, s, sdk.AccAddress("abcde"), 2, userStartingBalance.String())
 
 	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(3)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(3)
 
 	_, err := s.k.Put(s.ctx, &basket.MsgPut{
-		Owner:       s.addr.String(),
+		Owner:       s.addrs[0].String(),
 		BasketDenom: "foo",
 		Credits: []*basket.BasketCredit{
 			{BatchDenom: batchDenom1, Amount: amtToDeposit.String()},
@@ -51,7 +51,7 @@ func TestGetBasketBalances(t *testing.T) {
 	require.Equal(t, bIdToBalance[1], amtToDeposit)
 
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
-		Owner:       s.addr.String(),
+		Owner:       s.addrs[0].String(),
 		BasketDenom: "bar",
 		Credits: []*basket.BasketCredit{
 			{BatchDenom: batchDenom1, Amount: amtToDeposit.String()},
@@ -60,7 +60,7 @@ func TestGetBasketBalances(t *testing.T) {
 	assert.NilError(t, err)
 
 	_, err = s.k.Put(s.ctx, &basket.MsgPut{
-		Owner:       s.addr.String(),
+		Owner:       s.addrs[0].String(),
 		BasketDenom: "bar",
 		Credits: []*basket.BasketCredit{
 			{BatchDenom: batchDenom2, Amount: amtToDeposit.String()},
@@ -86,4 +86,43 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 		StartDate:  startDate,
 		EndDate:    nil,
 	}))
+}
+
+func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
+	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
+		BatchKey: batchKey,
+		Address:  user,
+		Tradable: amount,
+		Retired:  "",
+		Escrowed: "",
+	}))
+}
+
+func insertClass(t *testing.T, s *baseSuite, name, creditTypeAbb string) {
+	assert.NilError(t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
+		Id:               name,
+		Admin:            s.addrs[0],
+		Metadata:         "",
+		CreditTypeAbbrev: creditTypeAbb,
+	}))
+}
+
+func insertBasket(t *testing.T, s *baseSuite, denom, name, ctAbbrev string, criteria *api.DateCriteria, classes []string) {
+	id, err := s.stateStore.BasketTable().InsertReturningID(s.ctx, &api.Basket{
+		BasketDenom:       denom,
+		Name:              name,
+		DisableAutoRetire: false,
+		CreditTypeAbbrev:  ctAbbrev,
+		DateCriteria:      criteria,
+		Exponent:          6,
+		Curator:           s.addrs[0],
+	})
+	assert.NilError(t, err)
+
+	for _, class := range classes {
+		assert.NilError(t, s.stateStore.BasketClassTable().Insert(s.ctx, &api.BasketClass{
+			BasketId: id,
+			ClassId:  class,
+		}))
+	}
 }

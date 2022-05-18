@@ -22,8 +22,16 @@ import (
 	ecoApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
+)
+
+var (
+	gmAny         = gomock.Any()
+	defaultParams = core.DefaultParams()
+	basketFees    = defaultParams.BasketFee
+	validFee      = basketFees[0]
 )
 
 type baseSuite struct {
@@ -32,7 +40,7 @@ type baseSuite struct {
 	ctx          context.Context
 	k            basket.Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
+	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
 	coreStore    ecocreditApi.StateStore
 	bankKeeper   *mocks2.MockBankKeeper
@@ -79,7 +87,11 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 		Unit:         "metric ton C02",
 		Precision:    6,
 	}))
-	_, _, s.addr = testdata.KeyTestPubAddr()
+
+	// add test addresses
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	s.addrs = append(s.addrs, addr1, addr2)
 
 	return s
 }

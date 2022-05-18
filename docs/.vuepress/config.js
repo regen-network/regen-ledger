@@ -120,6 +120,7 @@ module.exports = {
         {
           title: 'Ecocredit Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
@@ -130,12 +131,14 @@ module.exports = {
             '/modules/ecocredit/03_messages',
             '/modules/ecocredit/04_queries',
             '/modules/ecocredit/05_events',
-            '/modules/ecocredit/06_client',
+            '/modules/ecocredit/06_types',
+            '/modules/ecocredit/07_client',
           ],
         },
         {
           title: 'Data Module',
           collapsable: false,
+          sidebarDepth: 0,
           children: [
             {
               title: 'Overview',
