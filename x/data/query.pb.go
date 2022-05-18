@@ -417,8 +417,9 @@ func (m *QueryIRIByHashResponse) GetIri() string {
 
 // QueryIRIByRawHashRequest is the Query/IRIByRawHash request type.
 type QueryIRIByRawHashRequest struct {
-	// hash represents the hash of the data based on the specified
-	// digest_algorithm and must be encoded as a base64 string.
+	// hash represents the hash of the data based on the digest_algorithm and must
+	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`
@@ -528,8 +529,9 @@ func (m *QueryIRIByRawHashResponse) GetIri() string {
 
 // QueryIRIByGraphHashRequest is the Query/IRIByGraphHash request type.
 type QueryIRIByGraphHashRequest struct {
-	// hash represents the hash of the data based on the specified
-	// digest_algorithm and must be encoded as a base64 string.
+	// hash represents the hash of the data based on the digest_algorithm and must
+	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
 	DigestAlgorithm DigestAlgorithm `protobuf:"varint,2,opt,name=digest_algorithm,json=digestAlgorithm,proto3,enum=regen.data.v1.DigestAlgorithm" json:"digest_algorithm,omitempty"`

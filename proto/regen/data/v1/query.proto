@@ -135,8 +135,9 @@ message QueryIRIByHashResponse {
 
 // QueryIRIByRawHashRequest is the Query/IRIByRawHash request type.
 message QueryIRIByRawHashRequest {
-  // hash represents the hash of the data based on the specified
-  // digest_algorithm and must be encoded as a base64 string.
+  // hash represents the hash of the data based on the digest_algorithm and must
+  // be encoded as a base64 string. When hash is provided as a url parameter,
+  // all instances of "+" should also be replaced with "%2b".
   string hash = 1;
 
   // digest_algorithm represents the hash digest algorithm.
@@ -154,8 +155,9 @@ message QueryIRIByRawHashResponse {
 
 // QueryIRIByGraphHashRequest is the Query/IRIByGraphHash request type.
 message QueryIRIByGraphHashRequest {
-  // hash represents the hash of the data based on the specified
-  // digest_algorithm and must be encoded as a base64 string.
+  // hash represents the hash of the data based on the digest_algorithm and must
+  // be encoded as a base64 string. When hash is provided as a url parameter,
+  // all instances of "+" should also be replaced with "%2b".
   string hash = 1;
 
   // digest_algorithm represents the hash digest algorithm.

@@ -18,7 +18,7 @@ func (s serverImpl) IRIByHash(ctx context.Context, request *data.QueryIRIByHashR
 
 	iri, err := request.ContentHash.ToIRI()
 	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert to IRI: %s", err)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert content hash to IRI: %s", err)
 	}
 
 	return &data.QueryIRIByHashResponse{

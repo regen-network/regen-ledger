@@ -164,7 +164,7 @@ func (s *IntegrationTestSuite) TestQueryHashByIRI() {
 func (s *IntegrationTestSuite) TestIRIByRawHash() {
 	val := s.network.Validators[0]
 
-	iri, ch := s.createIRIAndRawHash([]byte(""))
+	iri, ch := s.createIRIAndRawHash([]byte("xyzabc123"))
 
 	encodedHash := encodeBase64Bytes(ch.Raw.Hash)
 
