@@ -1,0 +1,8 @@
+    {
+      "graph": {
+        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+        "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+        "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+        "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+      }
+    }

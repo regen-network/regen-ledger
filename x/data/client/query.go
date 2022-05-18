@@ -47,6 +47,7 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 		queryByIRICmd,
 		QueryByAttestorCmd(),
 		QueryHashByIRICmd(),
+		QueryIRIByHashCmd(),
 		QueryAttestorsCmd(),
 		QueryResolverInfoCmd(),
 		QueryResolversCmd(),
@@ -149,15 +150,15 @@ Parameters:
   content-hash-json: contains the content hash formatted as json`,
 		Example: `regen q data iri content.json
 
-  where content.json contains
-    {
-      "graph": {
-        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
-        "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
-        "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
-        "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
-      }
-	}`,
+where content.json contains:
+{
+  "graph": {
+    "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+    "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+    "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+    "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+  }
+}`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
