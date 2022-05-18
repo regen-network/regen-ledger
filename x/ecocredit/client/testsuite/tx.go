@@ -1534,7 +1534,7 @@ func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba ac
 
 	// check sellers coins
 	expectedSellerGain := sb.coinBal.Add(cost)
-	s.Require().True(expectedSellerGain.Equal(sa.coinBal))
+	s.Require().Equal(expectedSellerGain, sa.coinBal)
 
 	// check buyers coins
 	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
@@ -1544,18 +1544,18 @@ func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba ac
 	// check sellers credits
 	expectedEscrowed, err := sb.escrowed.Sub(totalSold)
 	s.Require().NoError(err)
-	s.Require().True(expectedEscrowed.Equal(sa.escrowed))
-	s.Require().True(sb.tradable.Equal(sa.tradable))
-	s.Require().True(sb.retired.Equal(sa.retired))
+	s.Require().Equal(expectedEscrowed.String(), sa.escrowed.String())
+	s.Require().Equal(sb.tradable.String(), sa.tradable.String())
+	s.Require().Equal(sb.retired.String(), sa.retired.String())
 
 	expectedRetired, err := bb.retired.Add(retSold)
 	s.Require().NoError(err)
 	expectedTradable, err := bb.tradable.Add(tradSold)
 	s.Require().NoError(err)
 
-	s.Require().True(bb.escrowed.Equal(bb.escrowed))
-	s.Require().True(ba.tradable.Equal(expectedTradable))
-	s.Require().True(ba.retired.Equal(expectedRetired))
+	s.Require().Equal(bb.escrowed.String(), bb.escrowed.String())
+	s.Require().Equal(ba.tradable.String(), expectedTradable.String())
+	s.Require().Equal(ba.retired.String(), expectedRetired.String())
 }
 
 func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
