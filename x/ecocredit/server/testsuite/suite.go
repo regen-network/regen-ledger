@@ -1102,13 +1102,13 @@ func (s *IntegrationTestSuite) assertSellerBalancesUpdated(accBefore, accAfter a
 	expectedEscrowed, err = expectedEscrowed.Sub(retired)
 	s.Require().NoError(err)
 
-	s.Require().True(expectedEscrowed.Equal(accAfter.escrowed), fmt.Sprintf("expected %v, got %v", expectedEscrowed, accAfter.escrowed))
-	s.Require().True(accBefore.tradable.Equal(accAfter.tradable))
-	s.Require().True(accBefore.retired.Equal(accAfter.retired))
+	s.Require().Equal(expectedEscrowed.String(), accAfter.escrowed.String())
+	s.Require().Equal(accBefore.tradable.String(), accAfter.tradable.String())
+	s.Require().Equal(accBefore.retired.String(), accAfter.retired.String())
 
 	expectedBankBal := accBefore.bankBalance
 	expectedBankBal = expectedBankBal.Add(totalCost)
-	s.Require().True(expectedBankBal.Equal(accAfter.bankBalance))
+	s.Require().Equal(expectedBankBal, accAfter.bankBalance)
 }
 
 func (s *IntegrationTestSuite) assertBuyerBalancesUpdated(accBefore, accAfter accountInfo, tradable, retired math.Dec, totalCost sdk.Coin) {
