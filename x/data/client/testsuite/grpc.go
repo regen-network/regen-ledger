@@ -175,6 +175,16 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 		errMsg string
 	}{
 		{
+			"empty hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?digest_algorithm=%s",
+				val.APIAddress,
+				ch.Raw.DigestAlgorithm, // enum 1
+			),
+			true,
+			"hash cannot be empty",
+		},
+		{
 			"invalid hash",
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
@@ -184,6 +194,16 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 			),
 			true,
 			"failed to decode base64 string",
+		},
+		{
+			"unspecified digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s",
+				val.APIAddress,
+				encodedHash, // base64 encoded string
+			),
+			true,
+			"digest algorithm cannot be unspecified",
 		},
 		{
 			"invalid digest algorithm",
@@ -216,6 +236,18 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 				encodedHash,            // base64 encoded string
 				ch.Raw.DigestAlgorithm, // enum 1
 				ch.Raw.MediaType,       // enum 0
+			),
+			false,
+			"",
+		},
+		{
+			"valid request enums as strings",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s&media_type=%s",
+				val.APIAddress,
+				encodedHash,                    // base64 encoded string
+				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
+				"RAW_MEDIA_TYPE_UNSPECIFIED",   // enum 1
 			),
 			false,
 			"",
@@ -257,6 +289,17 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 		errMsg string
 	}{
 		{
+			"empty hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"hash cannot be empty",
+		},
+		{
 			"invalid hash",
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
@@ -269,6 +312,17 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 			"failed to decode base64 string",
 		},
 		{
+			"unspecified digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&canonicalization_algorithm=%d",
+				val.APIAddress,
+				encodedHash,                        // base64 encoded string
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"digest algorithm cannot be unspecified",
+		},
+		{
 			"invalid digest algorithm",
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
@@ -279,6 +333,17 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 			),
 			true,
 			"foo is not a valid data.DigestAlgorithm",
+		},
+		{
+			"unspecified canonicalization algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				encodedHash,              // base64 encoded string
+				ch.Graph.DigestAlgorithm, // enum 1
+			),
+			true,
+			"canonicalization algorithm cannot be unspecified",
 		},
 		{
 			"invalid canonicalization algorithm",
@@ -300,6 +365,18 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 				encodedHash,                        // base64 encoded string
 				ch.Graph.DigestAlgorithm,           // enum 1
 				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			false,
+			"",
+		},
+		{
+			"valid request enums as strings",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
+				val.APIAddress,
+				encodedHash,                    // base64 encoded string
+				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
+				"GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015", // enum 1
 			),
 			false,
 			"",
