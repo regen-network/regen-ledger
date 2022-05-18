@@ -131,6 +131,17 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(iriByHash)
 	require.Equal(iri, iriByHash.Iri)
 
+	// can query iri by graph hash properties
+	iriByGraphHash, err := s.queryClient.IRIByGraphHash(s.ctx, &data.QueryIRIByGraphHashRequest{
+		Hash:                      s.hash1.Graph.Hash,
+		DigestAlgorithm:           s.hash1.Graph.DigestAlgorithm,
+		CanonicalizationAlgorithm: s.hash1.Graph.CanonicalizationAlgorithm,
+		MerkleTree:                s.hash1.Graph.MerkleTree,
+	})
+	require.NoError(err)
+	require.NotNil(iriByGraphHash)
+	require.Equal(iri, iriByGraphHash.Iri)
+
 	// can query hash by iri
 	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{
 		Iri: iri,
@@ -271,6 +282,16 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 	require.NotNil(iriByHash)
 	require.Equal(iri, iriByHash.Iri)
+
+	// can query iri by raw hash properties
+	iriByRawHash, err := s.queryClient.IRIByRawHash(s.ctx, &data.QueryIRIByRawHashRequest{
+		Hash:            s.hash2.Raw.Hash,
+		DigestAlgorithm: s.hash2.Raw.DigestAlgorithm,
+		MediaType:       s.hash2.Raw.MediaType,
+	})
+	require.NoError(err)
+	require.NotNil(iriByRawHash)
+	require.Equal(iri, iriByRawHash.Iri)
 
 	// can query hash by iri
 	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{

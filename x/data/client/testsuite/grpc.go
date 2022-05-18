@@ -159,6 +159,164 @@ func (s *IntegrationTestSuite) TestQueryHashByIRI() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestIRIByRawHash() {
+	val := s.network.Validators[0]
+
+	iri, ch := s.createIRIAndRawHash([]byte("xyzabc123"))
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"invalid hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				"foo",
+				ch.Raw.DigestAlgorithm, // enum 1
+			),
+			true,
+			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 3",
+		},
+		{
+			"invalid digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				string(ch.Raw.Hash),
+				"foo",
+			),
+			true,
+			"foo is not a valid data.DigestAlgorithm",
+		},
+		{
+			"invalid media type",
+			fmt.Sprintf("%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%s",
+				val.APIAddress,
+				string(ch.Raw.Hash),
+				ch.Raw.DigestAlgorithm, // enum 1
+				"foo",
+			),
+			true,
+			"foo is not a valid data.RawMediaType",
+		},
+		{
+			"valid request",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%d",
+				val.APIAddress,
+				string(ch.Raw.Hash),
+				ch.Raw.DigestAlgorithm, // enum 1
+				ch.Raw.MediaType,       // enum 0
+			),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res data.QueryIRIByRawHashResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(bz), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.Equal(iri, res.Iri)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestIRIByGraphHash() {
+	val := s.network.Validators[0]
+
+	iri, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"invalid hash",
+			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				"foo",
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 3",
+		},
+		{
+			"invalid digest algorithm",
+			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
+				val.APIAddress,
+				string(ch.Graph.Hash),
+				"foo",
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"foo is not a valid data.DigestAlgorithm",
+		},
+		{
+			"invalid canonicalization algorithm",
+			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
+				val.APIAddress,
+				string(ch.Graph.Hash),
+				ch.Graph.DigestAlgorithm, // enum 1
+				"foo",
+			),
+			true,
+			"foo is not a valid data.GraphCanonicalizationAlgorithm",
+		},
+		{
+			"valid request",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				string(ch.Graph.Hash),
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res data.QueryIRIByGraphHashResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(bz), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.Equal(iri, res.Iri)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestQueryAttestors() {
 	val := s.network.Validators[0]
 
