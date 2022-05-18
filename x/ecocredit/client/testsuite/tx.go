@@ -727,6 +727,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 				},
 				s.commonTxFlags()...,
 			),
@@ -738,6 +739,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
