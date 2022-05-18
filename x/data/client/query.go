@@ -143,7 +143,7 @@ func QueryIRIByHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "iri [content-hash-json]",
 		Short: "Query for IRI based on content hash",
-		Long: `Query for IRI based on content hash
+		Long: `Query for IRI based on content hash provided in json format.
 
 Parameters:
   content-hash-json: contains the content hash formatted as json`,

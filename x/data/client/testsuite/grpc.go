@@ -1,7 +1,9 @@
 package testsuite
 
 import (
+	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
@@ -162,7 +164,9 @@ func (s *IntegrationTestSuite) TestQueryHashByIRI() {
 func (s *IntegrationTestSuite) TestIRIByRawHash() {
 	val := s.network.Validators[0]
 
-	iri, ch := s.createIRIAndRawHash([]byte("xyzabc123"))
+	iri, ch := s.createIRIAndRawHash([]byte(""))
+
+	encodedHash := encodeBase64Bytes(ch.Raw.Hash)
 
 	testCases := []struct {
 		name   string
@@ -179,14 +183,14 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 				ch.Raw.DigestAlgorithm, // enum 1
 			),
 			true,
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 3",
+			"failed to decode base64 string",
 		},
 		{
 			"invalid digest algorithm",
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
 				val.APIAddress,
-				string(ch.Raw.Hash),
+				encodedHash, // base64 encoded string
 				"foo",
 			),
 			true,
@@ -194,9 +198,10 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 		},
 		{
 			"invalid media type",
-			fmt.Sprintf("%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%s",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%s",
 				val.APIAddress,
-				string(ch.Raw.Hash),
+				encodedHash,            // base64 encoded string
 				ch.Raw.DigestAlgorithm, // enum 1
 				"foo",
 			),
@@ -208,7 +213,7 @@ func (s *IntegrationTestSuite) TestIRIByRawHash() {
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%d",
 				val.APIAddress,
-				string(ch.Raw.Hash),
+				encodedHash,            // base64 encoded string
 				ch.Raw.DigestAlgorithm, // enum 1
 				ch.Raw.MediaType,       // enum 0
 			),
@@ -243,6 +248,8 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 
 	iri, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
 
+	encodedHash := encodeBase64Bytes(ch.Graph.Hash)
+
 	testCases := []struct {
 		name   string
 		url    string
@@ -251,20 +258,22 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 	}{
 		{
 			"invalid hash",
-			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
 				val.APIAddress,
 				"foo",
 				ch.Graph.DigestAlgorithm,           // enum 1
 				ch.Graph.CanonicalizationAlgorithm, // enum 1
 			),
 			true,
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 3",
+			"failed to decode base64 string",
 		},
 		{
 			"invalid digest algorithm",
-			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
 				val.APIAddress,
-				string(ch.Graph.Hash),
+				encodedHash, // base64 encoded string
 				"foo",
 				ch.Graph.CanonicalizationAlgorithm, // enum 1
 			),
@@ -273,9 +282,10 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 		},
 		{
 			"invalid canonicalization algorithm",
-			fmt.Sprintf("%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
 				val.APIAddress,
-				string(ch.Graph.Hash),
+				encodedHash,              // base64 encoded string
 				ch.Graph.DigestAlgorithm, // enum 1
 				"foo",
 			),
@@ -287,7 +297,7 @@ func (s *IntegrationTestSuite) TestIRIByGraphHash() {
 			fmt.Sprintf(
 				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
 				val.APIAddress,
-				string(ch.Graph.Hash),
+				encodedHash,                        // base64 encoded string
 				ch.Graph.DigestAlgorithm,           // enum 1
 				ch.Graph.CanonicalizationAlgorithm, // enum 1
 			),
@@ -486,4 +496,11 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 			}
 		})
 	}
+}
+
+func encodeBase64Bytes(decodedHash []byte) string {
+	// encode base64 bytes to base64 string
+	encodedHash := base64.StdEncoding.EncodeToString(decodedHash)
+	// replace all instances of "+" with "%2b"
+	return strings.Replace(encodedHash, "+", "%2b", -1)
 }

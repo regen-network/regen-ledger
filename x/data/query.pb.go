@@ -695,7 +695,7 @@ func (m *QueryHashByIRIRequest) GetIri() string {
 
 // QueryHashByIRIResponse is the Query/HashByIRI response type.
 type QueryHashByIRIResponse struct {
-	// content_hash is the ContentHash for IRI.
+	// content_hash is the ContentHash for the IRI.
 	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 }
 

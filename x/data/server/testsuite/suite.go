@@ -3,6 +3,7 @@ package testsuite
 import (
 	"context"
 	"crypto"
+	"encoding/base64"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -133,7 +134,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// can query iri by graph hash properties
 	iriByGraphHash, err := s.queryClient.IRIByGraphHash(s.ctx, &data.QueryIRIByGraphHashRequest{
-		Hash:                      s.hash1.Graph.Hash,
+		Hash:                      base64.StdEncoding.EncodeToString(s.hash1.Graph.Hash),
 		DigestAlgorithm:           s.hash1.Graph.DigestAlgorithm,
 		CanonicalizationAlgorithm: s.hash1.Graph.CanonicalizationAlgorithm,
 		MerkleTree:                s.hash1.Graph.MerkleTree,
@@ -285,7 +286,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 
 	// can query iri by raw hash properties
 	iriByRawHash, err := s.queryClient.IRIByRawHash(s.ctx, &data.QueryIRIByRawHashRequest{
-		Hash:            s.hash2.Raw.Hash,
+		Hash:            base64.StdEncoding.EncodeToString(s.hash2.Raw.Hash),
 		DigestAlgorithm: s.hash2.Raw.DigestAlgorithm,
 		MediaType:       s.hash2.Raw.MediaType,
 	})

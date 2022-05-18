@@ -33,16 +33,13 @@ service Query {
   // IRIByRawHash queries IRI based on ContentHash_Raw properties.
   rpc IRIByRawHash(QueryIRIByRawHashRequest)
       returns (QueryIRIByRawHashResponse) {
-    option (google.api.http).get =
-        "/regen/data/v1/iri-by-raw"; // properties must be passed as parameters
+    option (google.api.http).get = "/regen/data/v1/iri-by-raw";
   }
 
   // IRIByGraphHash queries IRI based on ContentHash_Graph properties.
   rpc IRIByGraphHash(QueryIRIByGraphHashRequest)
       returns (QueryIRIByGraphHashResponse) {
-    option (google.api.http).get =
-        "/regen/data/v1/iri-by-graph"; // properties must be passed as
-                                       // parameters
+    option (google.api.http).get = "/regen/data/v1/iri-by-graph";
   }
 
   // HashByIRI queries ContentHash based on IRI.
@@ -186,7 +183,7 @@ message QueryHashByIRIRequest {
 
 // QueryHashByIRIResponse is the Query/HashByIRI response type.
 message QueryHashByIRIResponse {
-  // content_hash is the ContentHash for IRI.
+  // content_hash is the ContentHash for the IRI.
   ContentHash content_hash = 1;
 }
 
