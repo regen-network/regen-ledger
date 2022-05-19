@@ -107,7 +107,7 @@ message EventCancel {
   // amount is the decimal number of credits that have been cancelled.
   string amount = 3;
 
-  // reason is any arbitary encoded data.
+  // reason is the reason the credits were cancelled.
   string reason = 4;
 }
 
