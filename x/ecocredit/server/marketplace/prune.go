@@ -24,16 +24,26 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 		return err
 	}
 	defer it.Close()
+
+	expiredOrderIds := make([]uint64, 0)
 	for it.Next() {
 		sellOrder, err := it.Value()
 		if err != nil {
 			return err
 		}
-		if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchId, sellOrder.Quantity); err != nil {
+		if sellOrder.Expiration != nil {
+			if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchId, sellOrder.Quantity); err != nil {
+				return err
+			}
+			expiredOrderIds = append(expiredOrderIds, sellOrder.Id)
+		}
+	}
+	for _, id := range expiredOrderIds {
+		if err := k.stateStore.SellOrderTable().Delete(ctx, &marketplaceapi.SellOrder{Id: id}); err != nil {
 			return err
 		}
 	}
-	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
+	return nil
 }
 
 // unescrowCredits moves `amount` of credits from the sellerAddr's escrowed balance, into their tradable balance.
