@@ -12,6 +12,7 @@ import (
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 type createBatchSuite struct {
@@ -45,9 +46,10 @@ func (s *createBatchSuite) AliceHasCreatedACreditClassWithCreditType(a string) {
 		Amount: sdk.NewInt(20),
 	}
 
-	s.paramsKeeper.EXPECT().GetParamSet(gmAny, gmAny).Do(func(ctx interface{}, p *core.Params) {
-		p.CreditClassFee = sdk.Coins{fee}
-	}).AnyTimes()
+	allowListEnabled := false
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	coinFee := sdk.Coins{fee}
+	utils.ExpectParamGet(&coinFee, s.paramsKeeper, core.KeyCreditClassFee, 1)
 
 	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).AnyTimes()
 

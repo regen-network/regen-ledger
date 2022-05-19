@@ -24,14 +24,15 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 		return nil, err
 	}
 
-	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
-	var params core.Params
-	k.paramsKeeper.GetParamSet(sdkCtx, &params)
-	if params.AllowlistEnabled && !k.isCreatorAllowListed(sdkCtx, params.AllowedClassCreators, adminAddress) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+	if err := k.assertCanCreateClass(sdkCtx, adminAddress); err != nil {
+		return nil, err
 	}
 
-	feeAmt := params.CreditClassFee.AmountOf(req.Fee.Denom)
+	// TODO: remove params https://github.com/regen-network/regen-ledger/issues/729
+	var fee sdk.Coins
+	k.paramsKeeper.Get(sdkCtx, core.KeyCreditClassFee, &fee)
+
+	feeAmt := fee.AmountOf(req.Fee.Denom)
 	if feeAmt.IsZero() {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in credit class fees", req.Fee.Denom)
 	}
@@ -105,13 +106,25 @@ func (k Keeper) CreateClass(goCtx context.Context, req *core.MsgCreateClass) (*c
 	return &core.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
+func (k Keeper) assertCanCreateClass(sdkCtx sdk.Context, adminAddress sdk.AccAddress) error {
+	var allowListEnabled bool
+	k.paramsKeeper.Get(sdkCtx, core.KeyAllowlistEnabled, &allowListEnabled)
+	if allowListEnabled {
+		var allowList []string
+		k.paramsKeeper.Get(sdkCtx, core.KeyAllowedClassCreators, &allowList)
+		if !k.isCreatorAllowListed(sdkCtx, allowList, adminAddress) {
+			return sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
+		}
+	}
+	return nil
+}
+
 func (k Keeper) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.AccAddress) bool {
 	for _, addr := range allowlist {
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
 		}
-
 		ctx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateClass address iteration")
 	}
 	return false

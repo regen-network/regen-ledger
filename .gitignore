@@ -183,8 +183,9 @@ tags
 
 build/
 
-# swagger-gen
-/tmp-swagger-gen
+# proto files used for swagger
+third_party/
+
 # OS
 .DS_Store
 

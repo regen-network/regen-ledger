@@ -143,7 +143,7 @@ func ValidateBatchDenom(denom string) error {
 func ValidateJurisdiction(jurisdiction string) error {
 	matches := regexJurisdiction.FindStringSubmatch(jurisdiction)
 	if matches == nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid jurisdiction: %s.\nJurisdiction should have format <country-code>[-<region-code>[ <postal-code>]]", jurisdiction)
+		return ecocredit.ErrParseFailure.Wrapf("invalid jurisdiction: %s, expected format <country-code>[-<region-code>[ <postal-code>]]", jurisdiction)
 	}
 
 	return nil
