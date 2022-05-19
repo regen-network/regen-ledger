@@ -72,7 +72,7 @@ service Msg {
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
 
-  // Bridge wraps MsgCancel and also emits bridge events.
+  // Bridge cancels credits and emits a bridge event.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 }
 
