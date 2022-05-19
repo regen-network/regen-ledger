@@ -30,9 +30,10 @@ type IntegrationTestSuite struct {
 	addr  sdk.AccAddress // TODO: addr2
 
 	// test values
-	classId    string
-	projectId  string
-	batchDenom string
+	allowedDenoms []string
+	classId       string
+	projectId     string
+	batchDenom    string
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -93,6 +94,9 @@ func (s *IntegrationTestSuite) setupGenesis() {
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
 	s.Require().NoError(err)
+
+	// set allowed denoms
+	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
 	// insert credit type
 	err = coreStore.CreditTypeTable().Insert(ctx, &api.CreditType{
