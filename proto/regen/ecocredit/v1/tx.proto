@@ -324,7 +324,7 @@ message MsgCancel {
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 2;
 
-  // reason is any arbitary encoded data, will be passed to an event.
+  // reason is any arbitrary string that specifies the reason for cancelling credits.
   string reason = 3;
 
   // CancelCredits specifies a batch and the number of credits being cancelled.
