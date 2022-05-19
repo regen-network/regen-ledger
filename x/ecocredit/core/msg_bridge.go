@@ -32,11 +32,11 @@ func (m *MsgBridge) ValidateBasic() error {
 	}
 
 	if len(m.BridgeRecipient) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge recipient address should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("bridge recipient address cannot be empty")
 	}
 
 	if len(m.BridgeTarget) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge target should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("bridge target cannot be empty")
 	}
 
 	return nil

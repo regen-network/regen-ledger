@@ -1117,7 +1117,7 @@ type MsgCancel struct {
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being cancelled.
 	Credits []*MsgCancel_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
-	// reason is any arbitary encoded data, will be passed to an event.
+	// reason is any arbitrary string that specifies the reason for cancelling credits.
 	Reason string `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
@@ -2077,7 +2077,7 @@ type MsgClient interface {
 	UpdateProjectAdmin(ctx context.Context, in *MsgUpdateProjectAdmin, opts ...grpc.CallOption) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(ctx context.Context, in *MsgUpdateProjectMetadata, opts ...grpc.CallOption) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge wraps MsgCancel and also emits bridge events.
+	// Bridge cancels credits and emits a bridge event.
 	Bridge(ctx context.Context, in *MsgBridge, opts ...grpc.CallOption) (*MsgBridgeResponse, error)
 }
 
@@ -2258,7 +2258,7 @@ type MsgServer interface {
 	UpdateProjectAdmin(context.Context, *MsgUpdateProjectAdmin) (*MsgUpdateProjectAdminResponse, error)
 	// UpdateProjectMetadata updates the project metadata
 	UpdateProjectMetadata(context.Context, *MsgUpdateProjectMetadata) (*MsgUpdateProjectMetadataResponse, error)
-	// Bridge wraps MsgCancel and also emits bridge events.
+	// Bridge cancels credits and emits a bridge event.
 	Bridge(context.Context, *MsgBridge) (*MsgBridgeResponse, error)
 }
 

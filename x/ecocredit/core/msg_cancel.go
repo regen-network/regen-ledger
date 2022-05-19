@@ -43,7 +43,7 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	if len(m.Reason) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("reason should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
 	}
 
 	return nil

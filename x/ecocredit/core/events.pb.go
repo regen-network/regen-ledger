@@ -401,7 +401,7 @@ type EventCancel struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// amount is the decimal number of credits that have been cancelled.
 	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
-	// reason is any arbitary encoded data.
+	// reason is the reason the credits were cancelled.
 	Reason string `protobuf:"bytes,4,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 
