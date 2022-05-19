@@ -28,7 +28,7 @@ func (m *MsgBridge) ValidateBasic() error {
 	}
 
 	if len(m.BridgeContract) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge contract should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("bridge contract cannot be empty")
 	}
 
 	if len(m.BridgeRecipient) == 0 {
