@@ -188,8 +188,8 @@ godocs:
 ###                                Swagger                                  ###
 ###############################################################################
 
-swagger: statik proto-update-deps
-	./scripts/protoc-swagger-gen.sh
+swagger: statik proto-swagger-gen
+	./scripts/generate-swagger-docs.sh
 
 .PHONY: swagger
 
@@ -289,8 +289,9 @@ format:
 
 containerProtoVer=v0.7
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=regen-ledger-proto-gen-$(containerProtoVer)
-containerProtoFmt=regen-ledger-proto-fmt-$(containerProtoVer)
+containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
+containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
 
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
 
@@ -343,7 +344,12 @@ proto-update-deps:
 	@mkdir -p $(COSMOS_PROTO_TYPES)/orm/v1alpha1/
 	@curl -sSL $(COSMOS_ORM_PROTO_URL)/orm/v1alpha1/orm.proto > $(COSMOS_PROTO_TYPES)/orm/v1alpha1/orm.proto
 
-.PHONY: proto-all proto-gen proto-format proto-lint proto-check-breaking proto-update-deps
+proto-swagger-gen: proto-update-deps
+	@echo "Generating Protobuf Swagger"
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
+		sh ./scripts/protoc-swagger-gen.sh; fi
+
+.PHONY: proto-all proto-gen proto-format proto-lint proto-check-breaking proto-update-deps proto-swagger-gen
 
 ###############################################################################
 ###                                Localnet                                 ###

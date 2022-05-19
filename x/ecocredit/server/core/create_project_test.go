@@ -77,3 +77,24 @@ func makeClass(t *testing.T, ctx context.Context, ss api.StateStore, addr types.
 		Issuer:   addr,
 	}))
 }
+
+func TestCreateProject_With_ReferenceId_ValidProjectState(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	makeClass(t, s.ctx, s.stateStore, s.addr)
+	res, err := s.k.CreateProject(s.ctx, &core.MsgCreateProject{
+		Issuer:       s.addr.String(),
+		ClassId:      "C01",
+		Metadata:     "",
+		Jurisdiction: "US-NY",
+		ReferenceId:  "Project1",
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, "C01-001", res.ProjectId)
+
+	project, err := s.stateStore.ProjectTable().GetById(s.ctx, "C01-001")
+	assert.NilError(t, err)
+	assert.DeepEqual(t, project.Admin, s.addr.Bytes())
+	assert.Equal(t, project.Jurisdiction, "US-NY")
+	assert.Equal(t, project.ReferenceId, "Project1")
+}
