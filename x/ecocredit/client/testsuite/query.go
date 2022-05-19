@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 			expectedErrMsg: "Error: accepts 0 arg(s), received 1",
 		},
 		{
-			name: "count",
+			name: "valid with pagination",
 			args: []string{
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
@@ -232,7 +232,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name: "count",
+			name: "valid with pagination",
 			args: []string{
 				s.addr1.String(),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name: "count",
+			name: "valid with pagination",
 			args: []string{
 				s.classId,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
@@ -346,7 +346,7 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name: "count",
+			name: "valid with pagination",
 			args: []string{
 				s.projectId,
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
