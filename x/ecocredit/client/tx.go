@@ -376,7 +376,7 @@ func TxCancelCmd() *cobra.Command {
 
 Parameters:
   credits:  comma-separated list of credits in the form [<amount> <batch-denom>]
-            eg: '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-001'`,
+            eg: '10 C01-001-20200101-20210101-001, 0.1 C01-001-20200101-20210101-001'`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			credits, err := parseCancelCreditsList(args[0])

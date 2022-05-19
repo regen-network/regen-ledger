@@ -32,11 +32,15 @@ func QueryCmd(name string) *cobra.Command {
 		QueryClassCmd(),
 		QueryClassIssuersCmd(),
 		QueryBatchesCmd(),
+		QueryBatchesByIssuerCmd(),
+		QueryBatchesByClassCmd(),
+		QueryBatchesByProjectCmd(),
 		QueryBatchCmd(),
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
 		QueryProjectsCmd(),
+		QueryProjectsByReferenceIdCmd(),
 		QueryProjectCmd(),
 		QueryParamsCmd(),
 		basketcli.QueryBasketCmd(),
@@ -201,9 +205,9 @@ func QueryProjectCmd() *cobra.Command {
 // given project.
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "batches [project_id]",
-		Short: "List all credit batches in the given project with pagination flags",
-		Args:  cobra.ExactArgs(1),
+		Use:   "batches",
+		Short: "List all credit batches with pagination flags",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -216,6 +220,91 @@ func QueryBatchesCmd() *cobra.Command {
 			}
 
 			res, err := c.Batches(cmd.Context(), &core.QueryBatchesRequest{
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "batches")
+	return qflags(cmd)
+}
+
+// QueryBatchesByIssuerCmd returns a query command that retrieves credit batches based on issuer.
+func QueryBatchesByIssuerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "batches-by-issuer [issuer]",
+		Short: "List all credit batches based on issuer with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.BatchesByIssuer(cmd.Context(), &core.QueryBatchesByIssuerRequest{
+				Issuer:     args[0],
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "batches")
+	return qflags(cmd)
+}
+
+// QueryBatchesByClassCmd returns a query command that retrieves credit batches for a
+// given credit class.
+func QueryBatchesByClassCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "batches-by-class [class_id]",
+		Short: "List all credit batches based on credit class with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.BatchesByClass(cmd.Context(), &core.QueryBatchesByClassRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "batches")
+	return qflags(cmd)
+}
+
+// QueryBatchesByProjectCmd returns a query command that retrieves credit batches for a
+// given project.
+func QueryBatchesByProjectCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "batches-by-project [project_id]",
+		Short: "List all credit batches based on project with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.BatchesByProject(cmd.Context(), &core.QueryBatchesByProjectRequest{
 				ProjectId:  args[0],
 				Pagination: pagination,
 			})
