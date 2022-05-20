@@ -19,9 +19,8 @@ import (
 type takeSuite struct {
 	*baseSuite
 	alice             sdk.AccAddress
-	bob               sdk.AccAddress
 	aliceTokenBalance sdk.Coin
-	bobTokenBalance   sdk.Coin
+	basketTokenSupply sdk.Coin
 	classId           string
 	creditTypeAbbrev  string
 	batchDenom        string
@@ -39,13 +38,17 @@ func TestTake(t *testing.T) {
 func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
-	s.bob = s.addrs[1]
 	s.classId = "C01"
 	s.creditTypeAbbrev = "C"
 	s.batchDenom = "C01-001-20200101-20210101-001"
-	s.basketDenom = "NCT"
+	s.basketDenom = "eco.C.NCT"
 	s.tokenAmount = "100"
 	s.jurisdiction = "US-WA"
+
+	// set the denom regex for basket coins
+	sdk.SetCoinDenomRegex(func() string {
+		return basket.RegexBasketDenom
+	})
 }
 
 func (s *takeSuite) ABasket() {
@@ -143,6 +146,15 @@ func (s *takeSuite) AliceOwnsTokensWithDenom(a string) {
 	s.aliceTokenBalance = sdk.NewCoin(a, amount)
 }
 
+func (s *takeSuite) BasketTokenSupplyAmount(a string) {
+	amount, err := strconv.ParseInt(a, 10, 32)
+	require.NoError(s.t, err)
+
+	coin := sdk.NewInt64Coin(s.basketDenom, amount)
+
+	s.basketTokenSupply = coin
+}
+
 func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketDenom(a string) {
 	var coins sdk.Coins
 
@@ -188,11 +200,23 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmount(a string) {
 
 	s.bankKeeper.EXPECT().
 		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+			// simulate token balance update unavailable with mocks
+			if !s.aliceTokenBalance.IsNil() {
+				s.aliceTokenBalance = s.aliceTokenBalance.Sub(coins[0])
+			}
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
 		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		Do(func(sdk.Context, string, sdk.Coins) {
+			// simulate token supply update unavailable with mocks
+			if !s.basketTokenSupply.IsNil() {
+				s.basketTokenSupply = s.basketTokenSupply.Sub(coins[0])
+			}
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
@@ -273,7 +297,7 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 	})
 }
 
-func (s *takeSuite) AliceHasATradableCreditBalanceWithAmount(a string) {
+func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
@@ -283,7 +307,7 @@ func (s *takeSuite) AliceHasATradableCreditBalanceWithAmount(a string) {
 	require.Equal(s.t, a, balance.Tradable)
 }
 
-func (s *takeSuite) AliceHasARetiredCreditBalanceWithAmount(a string) {
+func (s *takeSuite) ExpectAliceRetiredCreditBalanceAmount(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
@@ -293,23 +317,16 @@ func (s *takeSuite) AliceHasARetiredCreditBalanceWithAmount(a string) {
 	require.Equal(s.t, a, balance.Retired)
 }
 
-func (s *takeSuite) AliceHasABasketTokenBalanceWithAmount(a string) {
+func (s *takeSuite) ExpectAliceBasketTokenBalanceAmount(a string) {
 	amount, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
 	coin := sdk.NewInt64Coin(s.basketDenom, amount)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.alice, s.basketDenom).
-		Return(coin).
-		Times(1)
-
-	balance := s.bankKeeper.GetBalance(s.sdkCtx, s.alice, s.basketDenom)
-
-	require.Equal(s.t, coin, balance)
+	require.Equal(s.t, coin, s.aliceTokenBalance)
 }
 
-func (s *takeSuite) TheBasketHasACreditBalanceWithAmount(a string) {
+func (s *takeSuite) ExpectBasketCreditBalanceAmount(a string) {
 	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, s.basketDenom)
 	require.NoError(s.t, err)
 
@@ -319,22 +336,13 @@ func (s *takeSuite) TheBasketHasACreditBalanceWithAmount(a string) {
 	require.Equal(s.t, a, balance.Balance)
 }
 
-func (s *takeSuite) TheBasketTokenHasATotalSupplyWithAmount(a string) {
-	basket, err := s.stateStore.BasketTable().GetByBasketDenom(s.ctx, s.basketDenom)
-	require.NoError(s.t, err)
-
+func (s *takeSuite) ExpectBasketTokenSupplyAmount(a string) {
 	amount, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
 	coin := sdk.NewInt64Coin(s.basketDenom, amount)
 
-	s.bankKeeper.EXPECT().
-		GetSupply(s.sdkCtx, basket.BasketDenom).
-		Return(coin).
-		Times(1)
-
-	supply := s.bankKeeper.GetSupply(s.sdkCtx, s.basketDenom)
-	require.Equal(s.t, coin, supply)
+	require.Equal(s.t, coin, s.basketTokenSupply)
 }
 
 func (s *takeSuite) ExpectNoError() {
