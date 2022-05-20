@@ -163,14 +163,14 @@ message EventAddCreditType {
   string abbreviation = 1;
 }
 
-// EventBridge is emitted emitted when credits are cancelled.
+// EventBridge is emitted emitted when credits are bridged to another chain.
 message EventBridge {
-  // bridge_target is the target chain.
-  string bridge_target = 1;
+  // target is the target chain.
+  string target = 1;
 
-  // bridge_recipient is the recipient address.
-  string bridge_recipient = 2;
+  // recipient is the recipient address.
+  string recipient = 2;
 
-  //  bridge_contract is the contract address.
-  string bridge_contract = 3;
+  // contract is the contract address.
+  string contract = 3;
 }
