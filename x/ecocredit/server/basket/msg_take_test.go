@@ -297,6 +297,14 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 	})
 }
 
+func (s *takeSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
+}
+
+func (s *takeSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
 func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
@@ -343,14 +351,6 @@ func (s *takeSuite) ExpectBasketTokenSupplyAmount(a string) {
 	coin := sdk.NewInt64Coin(s.basketDenom, amount)
 
 	require.Equal(s.t, coin, s.basketTokenSupply)
-}
-
-func (s *takeSuite) ExpectNoError() {
-	require.NoError(s.t, s.err)
-}
-
-func (s *takeSuite) ExpectTheError(a string) {
-	require.EqualError(s.t, s.err, a)
 }
 
 func (s *takeSuite) ExpectTheResponse(a gocuke.DocString) {

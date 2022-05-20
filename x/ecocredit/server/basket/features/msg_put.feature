@@ -1,4 +1,4 @@
-Feature: MsgPut
+Feature: Msg/Put
 
   Credits can be put into a basket:
   - when the basket exists
@@ -23,11 +23,11 @@ Feature: MsgPut
 
     Scenario: basket exists
       Given a basket with denom "eco.C.NCT"
-      When alice attempts to put credits into basket "eco.C.NCT"
+      When alice attempts to put credits into basket with denom "eco.C.NCT"
       Then expect no error
 
     Scenario: basket does not exist
-      When alice attempts to put credits into basket "eco.C.NCT"
+      When alice attempts to put credits into basket with denom "eco.C.NCT"
       Then expect the error "basket eco.C.NCT not found: not found"
 
   Rule: The credit batch must exist
@@ -70,8 +70,8 @@ Feature: MsgPut
       Then expect no error
 
     Scenario: user does not have a credit balance
-      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
-      When bob attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
+      Given a credit batch with denom "C01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
       Then expect error contains "could not get batch C01-001-20200101-20210101-001 balance"
 
   Rule: The user must have a credit balance more than or equal to the credits being put into the basket
@@ -99,7 +99,7 @@ Feature: MsgPut
     Scenario Outline: credit amount does not exceed maximum decimal places
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect no error
 
       Examples:
@@ -111,7 +111,7 @@ Feature: MsgPut
     Scenario Outline: credit amount exceeds maximum decimal places
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect error contains "exceeds maximum decimal places"
 
       Examples:
@@ -218,7 +218,7 @@ Feature: MsgPut
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
       And alice owns basket token amount "0"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       And expect alice basket token balance amount "<token-amount>"
 
       Examples:
@@ -235,7 +235,7 @@ Feature: MsgPut
       Given a basket with exponent "<exponent>"
       And basket token supply amount "0"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect basket token supply amount "<token-amount>"
 
       Examples:
@@ -251,7 +251,7 @@ Feature: MsgPut
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect the response
       """
       {

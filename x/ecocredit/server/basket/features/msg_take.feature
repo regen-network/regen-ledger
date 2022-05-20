@@ -1,4 +1,4 @@
-Feature: MsgTake
+Feature: Msg/Take
 
   Credits can be taken from a basket:
   - when the basket exists
