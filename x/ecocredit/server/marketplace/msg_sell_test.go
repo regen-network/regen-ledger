@@ -18,14 +18,14 @@ func TestSell_Valid(t *testing.T) {
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
-	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balanceBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 	supplyBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
 	sellTime := time.Now()
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellTime},
@@ -46,7 +46,7 @@ func TestSell_Valid(t *testing.T) {
 	}
 	assert.Equal(t, 2, count)
 
-	balanceAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balanceAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 	supplyAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -72,7 +72,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.Equal(t, false, has)
 
 	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &newCoin, DisableAutoRetire: false, Expiration: &sellTime},
 		},
@@ -93,7 +93,7 @@ func TestSell_Invalid(t *testing.T) {
 
 	// invalid batch
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: "foo-bar-baz-001", Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
@@ -102,7 +102,7 @@ func TestSell_Invalid(t *testing.T) {
 
 	// invalid balance
 	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10000000000", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellTime},
 		},
@@ -114,7 +114,7 @@ func TestSell_Invalid(t *testing.T) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 	invalidExpirationTime, err := time.Parse("2006-01-02", "1500-01-01")
 	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &invalidExpirationTime},
 		},
@@ -130,7 +130,7 @@ func TestSell_InvalidDenom(t *testing.T) {
 	sellTime := time.Now()
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &invalidAsk, DisableAutoRetire: false, Expiration: &sellTime},
 		},

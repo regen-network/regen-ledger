@@ -25,7 +25,7 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	sellExp := time.Now()
 	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
@@ -61,7 +61,7 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -99,7 +99,7 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -140,7 +140,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -210,7 +210,7 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -261,7 +261,7 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	purchaseAmt1 := "12.3531"
 	purchaseAmt2 := "15.39201"
 	sellOrderIds := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -293,10 +293,10 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 
 	// first order is 12.23531 * 10ufoo = 123ufoo
 	cost := sdk.Coins{sdk.NewInt64Coin(ask.Denom, 123)}
-	s.bankKeeper.EXPECT().SendCoins(gmAny, buyerAddr, s.addr, cost).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoins(gmAny, buyerAddr, s.addrs[0], cost).Return(nil).Times(1)
 	// second order is 15.39201 * 10ufoo = 153ufoo
 	cost2 := sdk.Coins{sdk.NewInt64Coin(ask.Denom, 153)}
-	s.bankKeeper.EXPECT().SendCoins(gmAny, buyerAddr, s.addr, cost2).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().SendCoins(gmAny, buyerAddr, s.addrs[0], cost2).Return(nil).Times(1)
 	_, err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer:  buyerAddr.String(),
 		Orders: orders,

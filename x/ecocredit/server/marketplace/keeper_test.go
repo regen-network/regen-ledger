@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 
@@ -34,21 +35,21 @@ var (
 )
 
 type baseSuite struct {
-	t            *testing.T
+	t            gocuke.TestingT
 	db           ormdb.ModuleDB
 	coreStore    ecoApi.StateStore
 	marketStore  api.StateStore
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress
+	addrs        []sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -81,7 +82,12 @@ func setupBase(t *testing.T) *baseSuite {
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
-	_, _, s.addr = testdata.KeyTestPubAddr()
+
+	// add test addresses
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	s.addrs = append(s.addrs, addr1, addr2)
+
 	return s
 }
 
@@ -139,13 +145,13 @@ func (s *baseSuite) assertBalanceAndSupplyUpdated(orders []*marketplace.MsgBuyDi
 
 }
 
-func extractBalanceDecs(t *testing.T, b *ecoApi.BatchBalance) (tradable, retired, escrowed math.Dec) {
+func extractBalanceDecs(t gocuke.TestingT, b *ecoApi.BatchBalance) (tradable, retired, escrowed math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, b.Tradable, b.Retired, b.Escrowed)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
 }
 
-func extractSupplyDecs(t *testing.T, s *ecoApi.BatchSupply) (tradable, retired, cancelled math.Dec) {
+func extractSupplyDecs(t gocuke.TestingT, s *ecoApi.BatchSupply) (tradable, retired, cancelled math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, s.TradableAmount, s.RetiredAmount, s.CancelledAmount)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
@@ -182,7 +188,7 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               classId,
-		Admin:            s.addr,
+		Admin:            s.addrs[0],
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
@@ -206,7 +212,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey: 1,
-		Address:  s.addr,
+		Address:  s.addrs[0],
 		Tradable: "100",
 		Retired:  "100",
 		Escrowed: "0",

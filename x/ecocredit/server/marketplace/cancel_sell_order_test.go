@@ -20,23 +20,23 @@ func TestSell_CancelOrder(t *testing.T) {
 	expir := time.Now()
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
-	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 	supBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
 	})
 	assert.NilError(t, err)
 
-	_, err = s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{SellOrderId: res.SellOrderIds[0], Seller: s.addr.String()})
+	_, err = s.k.CancelSellOrder(s.ctx, &marketplace.MsgCancelSellOrder{SellOrderId: res.SellOrderIds[0], Seller: s.addrs[0].String()})
 	assert.NilError(t, err)
 
-	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
+	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
 	assert.NilError(t, err)
 	supAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -54,7 +54,7 @@ func TestSell_CancelOrderInvalid(t *testing.T) {
 	_, _, otherAddr := testdata.KeyTestPubAddr()
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Owner: s.addrs[0].String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expir},
 		},
