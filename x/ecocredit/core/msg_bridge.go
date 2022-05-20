@@ -1,10 +1,18 @@
 package core
 
 import (
+	"regexp"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+)
+
+// TODO: remove after we open governance changes for bridge target
+
+const (
+	BRIDGE_TARGET string = "polygon"
 )
 
 var _ legacytx.LegacyMsg = &MsgBridge{}
@@ -27,16 +35,16 @@ func (m *MsgBridge) ValidateBasic() error {
 		return err
 	}
 
-	if len(m.BridgeContract) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge contract cannot be empty")
+	if m.Target != BRIDGE_TARGET {
+		return sdkerrors.ErrInvalidRequest.Wrapf("expected %s got %s", BRIDGE_TARGET, m.Target)
 	}
 
-	if len(m.BridgeRecipient) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge recipient address cannot be empty")
+	if !isValidEthereumAddress(m.Recipient) {
+		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Recipient)
 	}
 
-	if len(m.BridgeTarget) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("bridge target cannot be empty")
+	if !isValidEthereumAddress(m.Contract) {
+		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Contract)
 	}
 
 	return nil
@@ -46,4 +54,9 @@ func (m *MsgBridge) ValidateBasic() error {
 func (m *MsgBridge) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.MsgCancel.Holder)
 	return []sdk.AccAddress{addr}
+}
+
+func isValidEthereumAddress(address string) bool {
+	re := regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+	return re.MatchString(address)
 }

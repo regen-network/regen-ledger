@@ -11,7 +11,7 @@ func TestMsgBridge(t *testing.T) {
 	t.Parallel()
 
 	addr1 := testutil.GenAddress()
-	addr2 := testutil.GenAddress()
+	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
 	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
 
 	tests := map[string]struct {
@@ -30,9 +30,9 @@ func TestMsgBridge(t *testing.T) {
 					},
 					Reason: "reason",
 				},
-				BridgeTarget:    addr1,
-				BridgeContract:  contract,
-				BridgeRecipient: addr2,
+				Target:    "polygon",
+				Contract:  contract,
+				Recipient: recipient,
 			},
 			expErr: false,
 		},
@@ -47,9 +47,9 @@ func TestMsgBridge(t *testing.T) {
 					},
 					Reason: "reason",
 				},
-				BridgeTarget:    addr1,
-				BridgeRecipient: contract,
-				BridgeContract:  addr2,
+				Target:    "polygon",
+				Recipient: recipient,
+				Contract:  contract,
 			},
 			expErr: true,
 		},
@@ -128,8 +128,8 @@ func TestMsgBridge(t *testing.T) {
 					},
 					Reason: "reason",
 				},
-				BridgeContract:  contract,
-				BridgeRecipient: addr2,
+				Contract:  contract,
+				Recipient: recipient,
 			},
 			expErr: true,
 		},
@@ -145,8 +145,8 @@ func TestMsgBridge(t *testing.T) {
 					},
 					Reason: "reason",
 				},
-				BridgeTarget:    addr1,
-				BridgeRecipient: addr2,
+				Target:    "polygon",
+				Recipient: recipient,
 			},
 			expErr: true,
 		},
@@ -162,8 +162,44 @@ func TestMsgBridge(t *testing.T) {
 					},
 					Reason: "reason",
 				},
-				BridgeTarget:   addr1,
-				BridgeContract: contract,
+				Target:   "polygon",
+				Contract: contract,
+			},
+			expErr: true,
+		},
+		"invalid bridge recipient address": {
+			src: MsgBridge{
+				MsgCancel: &MsgCancel{
+					Holder: addr1,
+					Credits: []*MsgCancel_CancelCredits{
+						{
+							BatchDenom: batchDenom,
+							Amount:     "10",
+						},
+					},
+					Reason: "reason",
+				},
+				Target:    "polygon",
+				Recipient: addr1,
+				Contract:  contract,
+			},
+			expErr: true,
+		},
+		"invalid bridge target": {
+			src: MsgBridge{
+				MsgCancel: &MsgCancel{
+					Holder: addr1,
+					Credits: []*MsgCancel_CancelCredits{
+						{
+							BatchDenom: batchDenom,
+							Amount:     "10",
+						},
+					},
+					Reason: "reason",
+				},
+				Target:    "polygon1",
+				Recipient: recipient,
+				Contract:  contract,
 			},
 			expErr: true,
 		},

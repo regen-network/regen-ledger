@@ -6612,18 +6612,18 @@ func (x *fastReflection_EventAddCreditType) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventBridge                  protoreflect.MessageDescriptor
-	fd_EventBridge_bridge_target    protoreflect.FieldDescriptor
-	fd_EventBridge_bridge_recipient protoreflect.FieldDescriptor
-	fd_EventBridge_bridge_contract  protoreflect.FieldDescriptor
+	md_EventBridge           protoreflect.MessageDescriptor
+	fd_EventBridge_target    protoreflect.FieldDescriptor
+	fd_EventBridge_recipient protoreflect.FieldDescriptor
+	fd_EventBridge_contract  protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_events_proto_init()
 	md_EventBridge = File_regen_ecocredit_v1_events_proto.Messages().ByName("EventBridge")
-	fd_EventBridge_bridge_target = md_EventBridge.Fields().ByName("bridge_target")
-	fd_EventBridge_bridge_recipient = md_EventBridge.Fields().ByName("bridge_recipient")
-	fd_EventBridge_bridge_contract = md_EventBridge.Fields().ByName("bridge_contract")
+	fd_EventBridge_target = md_EventBridge.Fields().ByName("target")
+	fd_EventBridge_recipient = md_EventBridge.Fields().ByName("recipient")
+	fd_EventBridge_contract = md_EventBridge.Fields().ByName("contract")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventBridge)(nil)
@@ -6691,21 +6691,21 @@ func (x *fastReflection_EventBridge) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventBridge) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.BridgeTarget != "" {
-		value := protoreflect.ValueOfString(x.BridgeTarget)
-		if !f(fd_EventBridge_bridge_target, value) {
+	if x.Target != "" {
+		value := protoreflect.ValueOfString(x.Target)
+		if !f(fd_EventBridge_target, value) {
 			return
 		}
 	}
-	if x.BridgeRecipient != "" {
-		value := protoreflect.ValueOfString(x.BridgeRecipient)
-		if !f(fd_EventBridge_bridge_recipient, value) {
+	if x.Recipient != "" {
+		value := protoreflect.ValueOfString(x.Recipient)
+		if !f(fd_EventBridge_recipient, value) {
 			return
 		}
 	}
-	if x.BridgeContract != "" {
-		value := protoreflect.ValueOfString(x.BridgeContract)
-		if !f(fd_EventBridge_bridge_contract, value) {
+	if x.Contract != "" {
+		value := protoreflect.ValueOfString(x.Contract)
+		if !f(fd_EventBridge_contract, value) {
 			return
 		}
 	}
@@ -6724,12 +6724,12 @@ func (x *fastReflection_EventBridge) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventBridge) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
-		return x.BridgeTarget != ""
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
-		return x.BridgeRecipient != ""
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
-		return x.BridgeContract != ""
+	case "regen.ecocredit.v1.EventBridge.target":
+		return x.Target != ""
+	case "regen.ecocredit.v1.EventBridge.recipient":
+		return x.Recipient != ""
+	case "regen.ecocredit.v1.EventBridge.contract":
+		return x.Contract != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventBridge"))
@@ -6746,12 +6746,12 @@ func (x *fastReflection_EventBridge) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventBridge) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
-		x.BridgeTarget = ""
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
-		x.BridgeRecipient = ""
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
-		x.BridgeContract = ""
+	case "regen.ecocredit.v1.EventBridge.target":
+		x.Target = ""
+	case "regen.ecocredit.v1.EventBridge.recipient":
+		x.Recipient = ""
+	case "regen.ecocredit.v1.EventBridge.contract":
+		x.Contract = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventBridge"))
@@ -6768,14 +6768,14 @@ func (x *fastReflection_EventBridge) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventBridge) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
-		value := x.BridgeTarget
+	case "regen.ecocredit.v1.EventBridge.target":
+		value := x.Target
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
-		value := x.BridgeRecipient
+	case "regen.ecocredit.v1.EventBridge.recipient":
+		value := x.Recipient
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
-		value := x.BridgeContract
+	case "regen.ecocredit.v1.EventBridge.contract":
+		value := x.Contract
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
@@ -6797,12 +6797,12 @@ func (x *fastReflection_EventBridge) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventBridge) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
-		x.BridgeTarget = value.Interface().(string)
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
-		x.BridgeRecipient = value.Interface().(string)
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
-		x.BridgeContract = value.Interface().(string)
+	case "regen.ecocredit.v1.EventBridge.target":
+		x.Target = value.Interface().(string)
+	case "regen.ecocredit.v1.EventBridge.recipient":
+		x.Recipient = value.Interface().(string)
+	case "regen.ecocredit.v1.EventBridge.contract":
+		x.Contract = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventBridge"))
@@ -6823,12 +6823,12 @@ func (x *fastReflection_EventBridge) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventBridge) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
-		panic(fmt.Errorf("field bridge_target of message regen.ecocredit.v1.EventBridge is not mutable"))
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
-		panic(fmt.Errorf("field bridge_recipient of message regen.ecocredit.v1.EventBridge is not mutable"))
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
-		panic(fmt.Errorf("field bridge_contract of message regen.ecocredit.v1.EventBridge is not mutable"))
+	case "regen.ecocredit.v1.EventBridge.target":
+		panic(fmt.Errorf("field target of message regen.ecocredit.v1.EventBridge is not mutable"))
+	case "regen.ecocredit.v1.EventBridge.recipient":
+		panic(fmt.Errorf("field recipient of message regen.ecocredit.v1.EventBridge is not mutable"))
+	case "regen.ecocredit.v1.EventBridge.contract":
+		panic(fmt.Errorf("field contract of message regen.ecocredit.v1.EventBridge is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.EventBridge"))
@@ -6842,11 +6842,11 @@ func (x *fastReflection_EventBridge) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventBridge) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.EventBridge.bridge_target":
+	case "regen.ecocredit.v1.EventBridge.target":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.EventBridge.bridge_recipient":
+	case "regen.ecocredit.v1.EventBridge.recipient":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.EventBridge.bridge_contract":
+	case "regen.ecocredit.v1.EventBridge.contract":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
@@ -6917,15 +6917,15 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.BridgeTarget)
+		l = len(x.Target)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.BridgeRecipient)
+		l = len(x.Recipient)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.BridgeContract)
+		l = len(x.Contract)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -6958,24 +6958,24 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.BridgeContract) > 0 {
-			i -= len(x.BridgeContract)
-			copy(dAtA[i:], x.BridgeContract)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BridgeContract)))
+		if len(x.Contract) > 0 {
+			i -= len(x.Contract)
+			copy(dAtA[i:], x.Contract)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Contract)))
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.BridgeRecipient) > 0 {
-			i -= len(x.BridgeRecipient)
-			copy(dAtA[i:], x.BridgeRecipient)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BridgeRecipient)))
+		if len(x.Recipient) > 0 {
+			i -= len(x.Recipient)
+			copy(dAtA[i:], x.Recipient)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Recipient)))
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.BridgeTarget) > 0 {
-			i -= len(x.BridgeTarget)
-			copy(dAtA[i:], x.BridgeTarget)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.BridgeTarget)))
+		if len(x.Target) > 0 {
+			i -= len(x.Target)
+			copy(dAtA[i:], x.Target)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Target)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -7030,7 +7030,7 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BridgeTarget", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -7058,11 +7058,11 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.BridgeTarget = string(dAtA[iNdEx:postIndex])
+				x.Target = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BridgeRecipient", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -7090,11 +7090,11 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.BridgeRecipient = string(dAtA[iNdEx:postIndex])
+				x.Recipient = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BridgeContract", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Contract", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -7122,7 +7122,7 @@ func (x *fastReflection_EventBridge) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.BridgeContract = string(dAtA[iNdEx:postIndex])
+				x.Contract = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -7815,18 +7815,18 @@ func (x *EventAddCreditType) GetAbbreviation() string {
 	return ""
 }
 
-// EventBridge is emitted emitted when credits are cancelled.
+// EventBridge is emitted emitted when credits are bridged to another chain.
 type EventBridge struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// bridge_target is the target chain.
-	BridgeTarget string `protobuf:"bytes,1,opt,name=bridge_target,json=bridgeTarget,proto3" json:"bridge_target,omitempty"`
-	// bridge_recipient is the recipient address.
-	BridgeRecipient string `protobuf:"bytes,2,opt,name=bridge_recipient,json=bridgeRecipient,proto3" json:"bridge_recipient,omitempty"`
-	//  bridge_contract is the contract address.
-	BridgeContract string `protobuf:"bytes,3,opt,name=bridge_contract,json=bridgeContract,proto3" json:"bridge_contract,omitempty"`
+	// target is the target chain.
+	Target string `protobuf:"bytes,1,opt,name=target,proto3" json:"target,omitempty"`
+	// recipient is the recipient address.
+	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	// contract is the contract address.
+	Contract string `protobuf:"bytes,3,opt,name=contract,proto3" json:"contract,omitempty"`
 }
 
 func (x *EventBridge) Reset() {
@@ -7849,23 +7849,23 @@ func (*EventBridge) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_events_proto_rawDescGZIP(), []int{14}
 }
 
-func (x *EventBridge) GetBridgeTarget() string {
+func (x *EventBridge) GetTarget() string {
 	if x != nil {
-		return x.BridgeTarget
+		return x.Target
 	}
 	return ""
 }
 
-func (x *EventBridge) GetBridgeRecipient() string {
+func (x *EventBridge) GetRecipient() string {
 	if x != nil {
-		return x.BridgeRecipient
+		return x.Recipient
 	}
 	return ""
 }
 
-func (x *EventBridge) GetBridgeContract() string {
+func (x *EventBridge) GetContract() string {
 	if x != nil {
-		return x.BridgeContract
+		return x.Contract
 	}
 	return ""
 }
@@ -7945,30 +7945,28 @@ var file_regen_ecocredit_v1_events_proto_rawDesc = []byte{
 	0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x38, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64,
 	0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x62,
 	0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x86,
-	0x01, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x12, 0x23,
-	0x0a, 0x0d, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x54, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x12, 0x29, 0x0a, 0x10, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5f, 0x72, 0x65,
-	0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x62,
-	0x72, 0x69, 0x64, 0x67, 0x65, 0x52, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x12, 0x27,
-	0x0a, 0x0f, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x5f, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63,
-	0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x62, 0x72, 0x69, 0x64, 0x67, 0x65, 0x43,
-	0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x42, 0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
-	0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67,
-	0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45,
-	0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65,
-	0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65,
-	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52,
-	0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a,
-	0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5f,
+	0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x72, 0x69, 0x64, 0x67, 0x65, 0x12, 0x16, 0x0a,
+	0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65,
+	0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69,
+	0x65, 0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x61, 0x63, 0x74, 0x42,
+	0xd9, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75,
+	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77,
+	0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02,
+	0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
+	0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
+	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (

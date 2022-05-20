@@ -16,9 +16,9 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 
 	sdkCtx := types.UnwrapSDKContext(ctx)
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventBridge{
-		BridgeTarget:    req.BridgeTarget,
-		BridgeRecipient: req.BridgeRecipient,
-		BridgeContract:  req.BridgeContract,
+		Target:    req.Target,
+		Recipient: req.Recipient,
+		Contract:  req.Contract,
 	}); err != nil {
 		return nil, err
 	}

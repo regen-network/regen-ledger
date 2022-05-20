@@ -5,7 +5,6 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -13,7 +12,7 @@ func TestBridge_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
-	recipient := testutil.GenAddress()
+	recipient := "0x323b5d4c32345ced77393b3530b1eed0f346429d"
 	contract := "0x06012c8cf97bead5deae237070f9587f8e7a266d"
 
 	// Supply -> tradable: 10.5 , retired: 10.5
@@ -30,9 +29,9 @@ func TestBridge_Valid(t *testing.T) {
 			},
 			Reason: "reason",
 		},
-		BridgeTarget:    "target",
-		BridgeRecipient: recipient,
-		BridgeContract:  contract,
+		Target:    "polygon",
+		Recipient: recipient,
+		Contract:  contract,
 	})
 	assert.NilError(t, err)
 

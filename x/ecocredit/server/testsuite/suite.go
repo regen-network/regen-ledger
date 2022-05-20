@@ -609,6 +609,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toCancel,
 					},
 				},
+				Reason: "insufficient funds",
 			})
 
 			if tc.expectErr {
