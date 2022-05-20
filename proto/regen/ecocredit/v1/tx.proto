@@ -433,14 +433,14 @@ message MsgBridge {
   // MsgCancel is the MsgCancel message type.
   MsgCancel msg_cancel = 1;
 
-  // bridge_target is the target chain.
-  string bridge_target = 2;
+  // target is the target chain.
+  string target = 2;
 
-  // bridge_recipient is the recipient address.
-  string bridge_recipient = 3;
+  // recipient is the recipient address.
+  string recipient = 3;
 
-  // bridge_contract is the contract address.
-  string bridge_contract = 4;
+  // contract is the contract address.
+  string contract = 4;
 }
 
 // MsgBridgeResponse is the Msg/MsgBridge response type.
