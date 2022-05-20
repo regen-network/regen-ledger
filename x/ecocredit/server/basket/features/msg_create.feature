@@ -179,10 +179,6 @@ Feature: MsgCreate
         | greater than | 40regen    | 20regen       |
         | equal to     | 20regen    | 20regen       |
 
-    Scenario: user token balance is not updated
-      When alice attempts to create a basket with no fee
-      Then expect the token balance "40regen"
-
     # no failing scenario - state transitions only occur upon successful message execution
 
   Rule: The message response includes basket denom when credits are put into the basket
