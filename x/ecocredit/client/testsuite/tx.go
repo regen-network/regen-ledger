@@ -49,7 +49,8 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	addr sdk.AccAddress
+	addr          sdk.AccAddress
+	allowedDenoms []string
 }
 
 const (
@@ -97,6 +98,7 @@ func (s *IntegrationTestSuite) setupCustomGenesis() {
 		DisplayDenom: sdk.DefaultBondDenom,
 	})
 	s.Require().NoError(err)
+	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
 
 	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
 		Abbreviation: "C",
