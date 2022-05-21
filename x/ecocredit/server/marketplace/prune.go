@@ -17,33 +17,26 @@ import (
 func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
+	min, blockTime := timestamppb.New(time.Unix(0, 1)), timestamppb.New(sdkCtx.BlockTime())
 	fromKey, toKey := marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
+
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {
 		return err
 	}
-	defer it.Close()
-
-	expiredOrderIds := make([]uint64, 0)
 	for it.Next() {
 		sellOrder, err := it.Value()
 		if err != nil {
 			return err
 		}
-		if sellOrder.Expiration != nil {
-			if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchId, sellOrder.Quantity); err != nil {
-				return err
-			}
-			expiredOrderIds = append(expiredOrderIds, sellOrder.Id)
-		}
-	}
-	for _, id := range expiredOrderIds {
-		if err := k.stateStore.SellOrderTable().Delete(ctx, &marketplaceapi.SellOrder{Id: id}); err != nil {
+		if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchId, sellOrder.Quantity); err != nil {
 			return err
 		}
+
 	}
-	return nil
+	it.Close()
+
+	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
 }
 
 // unescrowCredits moves `amount` of credits from the sellerAddr's escrowed balance, into their tradable balance.
