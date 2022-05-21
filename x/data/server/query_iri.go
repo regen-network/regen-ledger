@@ -93,9 +93,9 @@ func (s serverImpl) IRIByGraphHash(ctx context.Context, request *data.QueryIRIBy
 	}, nil
 }
 
-func decodeBase64String(encodedHash string) ([]byte, error) {
+func decodeBase64String(str string) ([]byte, error) {
 	// replace all instances of "%2b" with "+"
-	encodedHash = strings.Replace(encodedHash, "%2b", "+", -1)
+	str = strings.Replace(str, "%2b", "+", -1)
 	// decode base64 string to base64 bytes
-	return base64.StdEncoding.DecodeString(encodedHash)
+	return base64.StdEncoding.DecodeString(str)
 }

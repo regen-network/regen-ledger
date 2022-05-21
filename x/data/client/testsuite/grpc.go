@@ -575,9 +575,9 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 	}
 }
 
-func encodeBase64Bytes(decodedHash []byte) string {
+func encodeBase64Bytes(bz []byte) string {
 	// encode base64 bytes to base64 string
-	encodedHash := base64.StdEncoding.EncodeToString(decodedHash)
+	str := base64.StdEncoding.EncodeToString(bz)
 	// replace all instances of "+" with "%2b"
-	return strings.Replace(encodedHash, "+", "%2b", -1)
+	return strings.Replace(str, "+", "%2b", -1)
 }
