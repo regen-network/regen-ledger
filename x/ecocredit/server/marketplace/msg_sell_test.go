@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
@@ -28,6 +28,7 @@ type sellSuite struct {
 	askAmount        sdk.Int
 	askPrice         *sdk.Coin
 	quantity         string
+	creditBalance    string
 	expiration       *time.Time
 	res              *marketplace.MsgSellResponse
 	err              error
@@ -49,6 +50,7 @@ func (s *sellSuite) Before(t gocuke.TestingT) {
 		Amount: s.askAmount,
 	}
 	s.quantity = "100"
+	s.creditBalance = "200" // double quantity for multiple sell orders
 
 	expiration, err := types.ParseDate("expiration", "2030-01-01")
 	require.NoError(s.t, err)
@@ -71,7 +73,7 @@ func (s *sellSuite) AnAllowedDenom() {
 	require.NoError(s.t, err)
 }
 
-func (s *sellSuite) AnAllowedDenomWithDenom(a string) {
+func (s *sellSuite) AnAllowedDenomWithBankDenom(a string) {
 	err := s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
 		BankDenom: a,
 	})
@@ -131,7 +133,7 @@ func (s *sellSuite) AliceOwnsCredits() {
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
 		BatchKey: batchKey,
 		Address:  s.alice,
-		Tradable: s.quantity,
+		Tradable: s.creditBalance,
 	})
 	require.NoError(s.t, err)
 }
@@ -236,6 +238,24 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithCreditQuantity(a string) 
 	})
 }
 
+func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithCreditQuantity(a string) {
+	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.alice.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{
+				BatchDenom: s.batchDenom,
+				Quantity:   a,
+				AskPrice:   s.askPrice,
+			},
+			{
+				BatchDenom: s.batchDenom,
+				Quantity:   a,
+				AskPrice:   s.askPrice,
+			},
+		},
+	})
+}
+
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithAskPrice(a string) {
 	askPrice, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
@@ -300,16 +320,34 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrder() {
 	})
 }
 
+func (s *sellSuite) AliceAttemptsToCreateTwoSellOrders() {
+	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner: s.alice.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{
+				BatchDenom:        s.batchDenom,
+				Quantity:          s.quantity,
+				AskPrice:          s.askPrice,
+				DisableAutoRetire: true, // verify non-default is set
+				Expiration:        s.expiration,
+			},
+			{
+				BatchDenom:        s.batchDenom,
+				Quantity:          s.quantity,
+				AskPrice:          s.askPrice,
+				DisableAutoRetire: true, // verify non-default is set
+				Expiration:        s.expiration,
+			},
+		},
+	})
+}
+
 func (s *sellSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
 
 func (s *sellSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
-}
-
-func (s *sellSuite) ExpectErrorContains(a string) {
-	require.ErrorContains(s.t, s.err, a)
 }
 
 func (s *sellSuite) ExpectAliceTradableCreditBalance(a string) {
@@ -342,10 +380,10 @@ func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.Equal(s.t, market.Id, id)
 	require.Equal(s.t, market.CreditType, s.creditTypeAbbrev) // TODO: credit_type_abbrev
 	require.Equal(s.t, market.BankDenom, b)
-	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // TODO
+	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // TODO: always zero?
 }
 
-func (s *sellSuite) ExpectMarketWithIdDoesNotExist(a string) {
+func (s *sellSuite) ExpectNoMarketWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
@@ -376,7 +414,7 @@ func (s *sellSuite) ExpectSellOrderWithId(a string) {
 	require.Equal(s.t, order.Quantity, s.quantity)
 	require.Equal(s.t, order.DisableAutoRetire, true) // verify non-default is set
 	require.Equal(s.t, order.MarketId, market.Id)
-	require.Equal(s.t, order.Maker, true)
+	require.Equal(s.t, order.Maker, true) // always true
 }
 
 func (s *sellSuite) ExpectTheResponse(a gocuke.DocString) {
