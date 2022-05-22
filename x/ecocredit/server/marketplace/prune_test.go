@@ -26,7 +26,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addrs[0].String(),
+		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
@@ -39,22 +39,18 @@ func TestSell_Prune(t *testing.T) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	// get the balance before pruning
-	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
-	assert.NilError(t, err)
-	supBefore, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	balBefore, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 
 	// prune the orders
 	err = s.k.PruneSellOrders(s.ctx)
 	assert.NilError(t, err)
 
-	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addrs[0], 1)
-	assert.NilError(t, err)
-	supAfter, err := s.coreStore.BatchSupplyTable().Get(s.ctx, 1)
+	balAfter, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
 
 	// we can reuse this function and pass the negated amount to get our desired behavior.
-	assertCreditsEscrowed(t, balBefore, balAfter, supBefore, supAfter, math.NewDecFromInt64(-10))
+	assertCreditsEscrowed(t, balBefore, balAfter, math.NewDecFromInt64(-10))
 
 	assert.Equal(t, 2, len(res.SellOrderIds))
 	shouldBeExpired := res.SellOrderIds[0]

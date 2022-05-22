@@ -20,7 +20,7 @@ func TestMsgMintBatchCredits(t *testing.T) {
 		m    MsgMintBatchCredits
 	}{
 		{"invalid issuer", "issuer", MsgMintBatchCredits{Issuer: "invalid"}},
-		{"invalid denom", "invalid denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
+		{"invalid batch denom", "invalid batch denom", MsgMintBatchCredits{Issuer: issuer, BatchDenom: "XXX"}},
 		{"invalid note", "note must",
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, Note: randstr.String(514)}},
 		{"missing origin tx", "origin_tx is required",

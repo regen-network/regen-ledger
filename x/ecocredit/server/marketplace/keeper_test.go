@@ -42,7 +42,7 @@ type baseSuite struct {
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
-	addrs        []sdk.AccAddress
+	addr         sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
@@ -82,11 +82,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
-
-	// add test addresses
-	_, _, addr1 := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
-	s.addrs = append(s.addrs, addr1, addr2)
+	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
 }
@@ -166,9 +162,9 @@ func buyDirectSingle(s *baseSuite, buyerAddr sdk.AccAddress, order *marketplace.
 }
 
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
+func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
-		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount)
+		balanceBefore.Escrowed, balanceAfter.Escrowed)
 	assert.NilError(t, err)
 
 	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed := decs[0], decs[1], decs[2], decs[3]
@@ -188,7 +184,7 @@ func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.Bat
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
 	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               classId,
-		Admin:            s.addrs[0],
+		Admin:            s.addr,
 		Metadata:         "",
 		CreditTypeAbbrev: creditType.Abbreviation,
 	}))
@@ -212,7 +208,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
 		BatchKey: 1,
-		Address:  s.addrs[0],
+		Address:  s.addr,
 		Tradable: "100",
 		Retired:  "100",
 		Escrowed: "0",

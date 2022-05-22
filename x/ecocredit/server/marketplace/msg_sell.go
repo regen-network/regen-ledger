@@ -41,7 +41,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		// verify expiration is in the future
-		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
+		if order.Expiration != nil && (order.Expiration.Before(sdkCtx.BlockTime()) || order.Expiration.Equal(sdkCtx.BlockTime())) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 		sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
@@ -100,7 +100,7 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
-			PrecisionModifier: 0,
+			PrecisionModifier: 0, // TODO: always zero?
 		})
 	default:
 		return 0, err
@@ -118,7 +118,7 @@ func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batc
 	}
 	newTradable, err := math.SafeSubBalance(tradable, sellQty)
 	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("tradable balance: %v, sell order request: %v - %s", tradable, sellQty, err.Error())
+		return ecocredit.ErrInsufficientCredits.Wrapf("credit quantity: %v, tradable balance: %v", sellQty, tradable)
 	}
 
 	escrowed, err := math.NewDecFromString(bal.Escrowed)

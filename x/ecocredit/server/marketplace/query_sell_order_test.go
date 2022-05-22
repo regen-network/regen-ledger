@@ -20,7 +20,7 @@ func TestQuery_SellOrder(t *testing.T) {
 
 	// make a sell order
 	order := api.SellOrder{
-		Seller:            s.addrs[0],
+		Seller:            s.addr,
 		BatchId:           1,
 		Quantity:          "15.32",
 		MarketId:          1,
@@ -37,7 +37,7 @@ func TestQuery_SellOrder(t *testing.T) {
 
 	res, err := s.k.SellOrder(s.ctx, &marketplace.QuerySellOrderRequest{SellOrderId: id})
 	assert.NilError(t, err)
-	assert.Equal(t, s.addrs[0].String(), res.SellOrder.Seller)
+	assert.Equal(t, s.addr.String(), res.SellOrder.Seller)
 	assert.Equal(t, batchDenom, res.SellOrder.BatchDenom)
 	assert.Equal(t, order.Quantity, res.SellOrder.Quantity)
 	assert.Equal(t, ask.Denom, res.SellOrder.AskDenom)
