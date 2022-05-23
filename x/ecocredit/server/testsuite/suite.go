@@ -609,7 +609,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toCancel,
 					},
 				},
-				Reason: "insufficient funds",
+				Reason: "bridging assets to another chain",
 			})
 
 			if tc.expectErr {
