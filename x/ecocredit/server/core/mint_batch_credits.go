@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -33,6 +34,9 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		Note:       req.Note,
 		BatchDenom: req.BatchDenom,
 	}); err != nil {
+		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+		}
 		return nil, err
 	}
 
