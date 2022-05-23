@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
@@ -189,6 +190,72 @@ func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
 				iri, err := res.ContentHash.ToIRI()
 				s.Require().NoError(err)
 				s.Require().Equal(tc.expIRI, iri)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
+
+	bz, err := val.ClientCtx.Codec.MarshalJSON(ch)
+	s.Require().NoError(err)
+
+	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expHash   *data.ContentHash
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid file path",
+			args:      []string{"foo.json"},
+			expErr:    true,
+			expErrMsg: "no such file or directory",
+		},
+		{
+			name:    "valid",
+			args:    []string{filePath},
+			expErr:  false,
+			expHash: ch,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryIRIByHashCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryIRIByHashResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+				hash, err := data.ParseIRI(res.Iri)
+				s.Require().NoError(err)
+				s.Require().Equal(tc.expHash, hash)
 			}
 		})
 	}
