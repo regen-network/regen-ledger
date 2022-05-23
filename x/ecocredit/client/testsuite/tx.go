@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -1428,6 +1429,138 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
+	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
+	clientCtx := val0.ClientCtx
+	cmd := marketplaceclient.TxBuyDirectBatch()
+
+	validAskDenom := sdk.DefaultBondDenom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+
+	buyerAcc := s.addr
+	s.fundAccount(clientCtx, val0.Address, buyerAcc, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
+
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
+	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &askCoin, false, &expiration},
+		},
+	})
+
+	buyOrders := []*marketplace.MsgBuyDirect_Order{
+		{SellOrderId: orderIds[0], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
+		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
+	}
+	ordersBz, err := json.Marshal(buyOrders)
+	s.Require().NoError(err)
+	jsonFile := testutil.WriteToNewTempFile(s.T(), string(ordersBz))
+
+	makeArgs := func(fileName, from string) []string {
+		args := []string{fileName, makeFlagFrom(from)}
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name   string
+		args   []string
+		errMsg string
+	}{
+		{
+			name:   "too many args",
+			args:   []string{"foo", "bar"},
+			errMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name:   "invalid: file does not exist",
+			args:   []string{"monkey.jpeg"},
+			errMsg: "no such file or directory",
+		},
+		{
+			name: "valid order",
+			args: makeArgs(jsonFile.Name(), buyerAcc.String()),
+		},
+	}
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			if len(tc.errMsg) != 0 {
+				_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
+
+				out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().NoError(err)
+
+				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
+
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
+				s.assertMarketBalanceBatchUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, buyOrders)
+			}
+		})
+	}
+}
+
+// assertMarketBalanceBatchUpdated asserts that all accounts involved in a marketplace transaction are updated properly.
+// it assumes that both seller/buyer accounts used the same denom for amount sold/bought.
+func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba accountInfo, orders []*marketplace.MsgBuyDirect_Order) {
+	tradSold, retSold := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
+	cost := sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
+	for _, order := range orders {
+		qty, err := math.NewDecFromString(order.Quantity)
+		s.Require().NoError(err)
+		if order.DisableAutoRetire {
+			tradSold, err = tradSold.Add(qty)
+			s.Require().NoError(err)
+		} else {
+			retSold, err = retSold.Add(qty)
+			s.Require().NoError(err)
+		}
+		costDec, err := math.NewDecFromString(order.BidPrice.Amount.String())
+		s.Require().NoError(err)
+		totalCostDec, err := qty.Mul(costDec)
+		s.Require().NoError(err)
+		c := sdk.NewCoin(order.BidPrice.Denom, totalCostDec.SdkIntTrim())
+		cost = cost.Add(c)
+	}
+
+	totalSold, err := tradSold.Add(retSold)
+	s.Require().NoError(err)
+
+	// check sellers coins
+	expectedSellerGain := sb.coinBal.Add(cost)
+	s.Require().Equal(expectedSellerGain, sa.coinBal)
+
+	// check buyers coins
+	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
+	expectedBuyerCost := bb.coinBal.Sub(cost)
+	s.Require().True(ba.coinBal.IsLT(expectedBuyerCost))
+
+	// check sellers credits
+	expectedEscrowed, err := sb.escrowed.Sub(totalSold)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedEscrowed.String(), sa.escrowed.String())
+	s.Require().Equal(sb.tradable.String(), sa.tradable.String())
+	s.Require().Equal(sb.retired.String(), sa.retired.String())
+
+	expectedRetired, err := bb.retired.Add(retSold)
+	s.Require().NoError(err)
+	expectedTradable, err := bb.tradable.Add(tradSold)
+	s.Require().NoError(err)
+
+	s.Require().Equal(bb.escrowed.String(), bb.escrowed.String())
+	s.Require().Equal(ba.tradable.String(), expectedTradable.String())
+	s.Require().Equal(ba.retired.String(), expectedRetired.String())
 }
 
 func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
