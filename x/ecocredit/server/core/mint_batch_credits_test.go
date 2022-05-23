@@ -63,6 +63,10 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
+		OriginTx: &core.OriginTx{
+			Typ: "Ethereum",
+			Id:  "210985091248",
+		},
 	})
 	assert.ErrorContains(t, err, "unauthorized")
 }
@@ -76,6 +80,10 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
+		OriginTx: &core.OriginTx{
+			Typ: "Ethereum",
+			Id:  "210985091248",
+		},
 	})
 	assert.ErrorContains(t, err, "credits cannot be minted in a closed batch")
 }
@@ -91,6 +99,37 @@ func TestMintBatchCredits_NotFound(t *testing.T) {
 		BatchDenom: "C05-00000000-00000000-001",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+}
+
+func TestMintBatchCredits_SameTxId(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	ctx := s.ctx
+	batch := setupMintBatchTest(s, true)
+
+	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
+	issuance := core.BatchIssuance{
+		Recipient:              s.addr.String(),
+		TradableAmount:         mintTradable.String(),
+		RetiredAmount:          mintRetired.String(),
+		RetirementJurisdiction: "US-OR",
+	}
+	msg := core.MsgMintBatchCredits{
+		Issuer:     s.addr.String(),
+		BatchDenom: batch.Denom,
+		Issuance:   []*core.BatchIssuance{&issuance},
+		OriginTx: &core.OriginTx{
+			Typ: "Ethereum",
+			Id:  "210985091248",
+		},
+		Note: "bridged credits",
+	}
+
+	_, err := s.k.MintBatchCredits(ctx, &msg)
+	assert.NilError(t, err)
+
+	_, err = s.k.MintBatchCredits(ctx, &msg)
+	assert.ErrorContains(t, err, "credits already issued with tx id")
 }
 
 func setupMintBatchTest(s *baseSuite, open bool) *api.Batch {
