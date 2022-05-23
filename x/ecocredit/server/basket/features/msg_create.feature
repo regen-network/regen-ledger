@@ -1,4 +1,4 @@
-Feature: MsgCreate
+Feature: Msg/Create
 
   A basket can be created:
   - when the basket name is unique

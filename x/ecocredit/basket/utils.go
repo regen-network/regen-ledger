@@ -1,7 +1,15 @@
 package basket
 
 import (
+	"fmt"
+	"regexp"
+
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+)
+
+var (
+	RegexBasketDenom = `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+	regexBasketDenom = regexp.MustCompile(fmt.Sprintf(`^%s$`, RegexBasketDenom))
 )
 
 const basketDenomPrefix = "eco"

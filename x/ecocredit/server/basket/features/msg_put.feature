@@ -1,4 +1,4 @@
-Feature: MsgPut
+Feature: Msg/Put
 
   Credits can be put into a basket:
   - when the basket exists
@@ -7,9 +7,9 @@ Feature: MsgPut
   - when the user has a credit balance
   - when the user has the credit amount
   - when the credit amount does not exceed maximum decimal places
-  - when the credit batch start date is more than or equal to minimum start date
+  - when the credit batch start date is after or equal to minimum start date
   - when the credit batch start date is within or at the limit of start date window
-  - when the credit batch start date is more than or equal to years in the past
+  - when the credit batch start date is after or equal to years in the past
   - the user credit balance is updated
   - the basket credit balance is updated
   - the user token balance is updated
@@ -22,13 +22,13 @@ Feature: MsgPut
       Given alice owns credits
 
     Scenario: basket exists
-      Given a basket with denom "NCT"
-      When alice attempts to put credits into basket "NCT"
+      Given a basket with denom "eco.C.NCT"
+      When alice attempts to put credits into basket with denom "eco.C.NCT"
       Then expect no error
 
     Scenario: basket does not exist
-      When alice attempts to put credits into basket "NCT"
-      Then expect the error "basket NCT not found: not found"
+      When alice attempts to put credits into basket with denom "eco.C.NCT"
+      Then expect the error "basket eco.C.NCT not found: not found"
 
   Rule: The credit batch must exist
 
@@ -70,8 +70,8 @@ Feature: MsgPut
       Then expect no error
 
     Scenario: user does not have a credit balance
-      Given alice owns credits from credit batch "C01-001-20200101-20210101-001"
-      When bob attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
+      Given a credit batch with denom "C01-001-20200101-20210101-001"
+      When alice attempts to put credits from credit batch "C01-001-20200101-20210101-001" into the basket
       Then expect error contains "could not get batch C01-001-20200101-20210101-001 balance"
 
   Rule: The user must have a credit balance more than or equal to the credits being put into the basket
@@ -99,7 +99,7 @@ Feature: MsgPut
     Scenario Outline: credit amount does not exceed maximum decimal places
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect no error
 
       Examples:
@@ -111,7 +111,7 @@ Feature: MsgPut
     Scenario Outline: credit amount exceeds maximum decimal places
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect error contains "exceeds maximum decimal places"
 
       Examples:
@@ -120,22 +120,22 @@ Feature: MsgPut
         | one decimal  | 1        | 2.25          |
         | two decimals | 2        | 2.333         |
 
-  Rule: Credits from a batch with a start date more than basket minimum start date cannot be put into the basket
+  Rule: Credits from a batch with a start date before basket minimum start date cannot be put into the basket
 
     Background:
       Given a basket with minimum start date "2021-01-01"
 
-    Scenario Outline: batch start date less than or equal to minimum start date
+    Scenario Outline: batch start date after or equal to minimum start date
       Given alice owns credits with start date "<batch-start-date>"
       When alice attempts to put credits into the basket
       Then expect no error
 
       Examples:
         | description | batch-start-date |
-        | less than   | 2022-01-01       |
+        | after       | 2022-01-01       |
         | equal to    | 2021-01-01       |
 
-    Scenario: batch start date more than minimum start date
+    Scenario: batch start date before minimum start date
       Given alice owns credits with start date "2020-01-01"
       When alice attempts to put credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
@@ -161,9 +161,9 @@ Feature: MsgPut
       When alice attempts to put credits into the basket
       Then expect error contains "cannot put a credit from a batch with start date"
 
-  Rule: Credits from a batch with a start date more than basket years in the past cannot be put into the basket
+  Rule: Credits from a batch with a start date before basket years in the past cannot be put into the basket
 
-    Scenario Outline: batch start date less than or equal to years in the past
+    Scenario Outline: batch start date after or equal to years in the past
       Given the block time "2022-04-01"
       And a basket with years in the past "10"
       And alice owns credits with start date "<batch-start-date>"
@@ -172,14 +172,14 @@ Feature: MsgPut
 
       Examples:
         | description             | batch-start-date |
-        | year equal, day before  | 2012-01-01       |
-        | year equal, day equal   | 2012-04-01       |
-        | year equal, day after   | 2012-07-01       |
         | year after, day before  | 2013-01-01       |
         | year after, day equal   | 2013-04-01       |
         | year after, day after   | 2013-07-01       |
+        | year equal, day before  | 2012-01-01       |
+        | year equal, day equal   | 2012-04-01       |
+        | year equal, day after   | 2012-07-01       |
 
-    Scenario Outline: batch start date more than years in the past
+    Scenario Outline: batch start date before years in the past
       Given the block time "2022-04-01"
       And a basket with years in the past "10"
       And alice owns credits with start date "<batch-start-date>"
@@ -198,7 +198,7 @@ Feature: MsgPut
       Given a basket
       And alice owns credit amount "100"
       When alice attempts to put credit amount "100" into the basket
-      Then alice has a credit balance with amount "0"
+      Then expect alice credit balance amount "0"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -208,7 +208,7 @@ Feature: MsgPut
       Given a basket
       And alice owns credit amount "100"
       When alice attempts to put credit amount "100" into the basket
-      Then the basket has a credit balance with amount "100"
+      Then expect basket credit balance amount "100"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -217,8 +217,9 @@ Feature: MsgPut
     Scenario Outline: user token balance is updated
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
-      And alice has a basket token balance with amount "<token-amount>"
+      And alice owns basket token amount "0"
+      When alice attempts to put credit amount "<credit-amount>" into the basket
+      And expect alice basket token balance amount "<token-amount>"
 
       Examples:
         | description                       | exponent | credit-amount | token-amount |
@@ -232,9 +233,10 @@ Feature: MsgPut
 
     Scenario Outline: basket token supply is updated
       Given a basket with exponent "<exponent>"
+      And basket token supply amount "0"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
-      Then the basket token has a total supply with amount "<token-amount>"
+      When alice attempts to put credit amount "<credit-amount>" into the basket
+      Then expect basket token supply amount "<token-amount>"
 
       Examples:
         | description                       | exponent | credit-amount | token-amount |
@@ -249,7 +251,7 @@ Feature: MsgPut
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>"
       And alice owns credit amount "<credit-amount>"
-      When alice attempts to put credit amount "<credit-amount>" into the basket with exponent
+      When alice attempts to put credit amount "<credit-amount>" into the basket
       Then expect the response
       """
       {
