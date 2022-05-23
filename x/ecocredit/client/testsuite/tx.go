@@ -1494,15 +1494,6 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 	}
 }
 
-func (s *IntegrationTestSuite) getProject(ctx client.Context, projectId string) *core.ProjectInfo {
-	cmd := coreclient.QueryProjectCmd()
-	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
-	s.Require().NoError(err)
-	var res core.QueryProjectResponse
-	s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	return res.Project
-}
-
 func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
 	admin := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address.String()
