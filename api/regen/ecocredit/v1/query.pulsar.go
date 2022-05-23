@@ -19055,7 +19055,8 @@ func (x *QueryProjectsResponse) GetPagination() *v1beta1.PageResponse {
 	return nil
 }
 
-// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request type.
+// QueryProjectsByReferenceIdRequest is the Query/ProjectsByReferenceId request
+// type.
 type QueryProjectsByReferenceIdRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -19101,7 +19102,8 @@ func (x *QueryProjectsByReferenceIdRequest) GetPagination() *v1beta1.PageRequest
 	return nil
 }
 
-// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId response type.
+// QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId
+// response type.
 type QueryProjectsByReferenceIdResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
