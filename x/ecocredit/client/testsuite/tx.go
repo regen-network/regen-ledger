@@ -321,15 +321,15 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
-		Metadata:         "META",
-		CreditTypeAbbrev: "C",
+		Metadata:         validMetadata,
+		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       val.Address.String(),
 		ClassId:      classId,
-		Metadata:     "META2",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
@@ -798,7 +798,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
@@ -872,7 +872,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -948,7 +948,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1244,7 +1244,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "hi",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1279,7 +1279,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1290,7 +1290,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1490,6 +1490,74 @@ func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
 					s.Require().Equal(expectedMetadata, project.Metadata)
 				}
 			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+	admin := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address.String()
+	clientCtx := admin.ClientCtx
+	_, projectId := s.createClassProject(clientCtx, admin.Address.String())
+	cmd := coreclient.TxUpdateProjectAdminCmd()
+	makeArgs := func(projectId, newAdminAddr, from string) []string {
+		args := make([]string, 0, 6)
+		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
+		return append(args, s.commonTxFlags()...)
+	}
+
+	unauthAddr := s.addr
+	s.fundAccount(clientCtx, admin.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+
+	testCases := []struct {
+		name          string
+		args          []string
+		errMsg        string
+		errLog        string
+		expectedAdmin string
+	}{
+		{
+			name:   "min args",
+			args:   []string{},
+			errMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:   "max args",
+			args:   []string{"foo", "bar", "baz"},
+			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:   "invalid: unauthorized",
+			args:   makeArgs(projectId, admin.Address.String(), unauthAddr.String()),
+			errLog: sdkerrors.ErrUnauthorized.Error(),
+		},
+		{
+			name:          "valid update",
+			args:          makeArgs(projectId, newAdmin, admin.Address.String()),
+			expectedAdmin: newAdmin,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if len(tc.errMsg) != 0 {
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+				if len(tc.errLog) != 0 {
+					s.Require().NotEqual(uint32(0), res.Code)
+					s.Require().Contains(res.RawLog, tc.errMsg)
+				} else {
+					s.Require().Equal(uint32(0), res.Code)
+					gotProject := s.getProject(clientCtx, projectId)
+					s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
+				}
+			}
+
 		})
 	}
 }
