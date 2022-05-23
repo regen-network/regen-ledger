@@ -129,7 +129,7 @@ func TestMintBatchCredits_SameTxId(t *testing.T) {
 	assert.NilError(t, err)
 
 	_, err = s.k.MintBatchCredits(ctx, &msg)
-	assert.ErrorContains(t, err, "credits already issued")
+	assert.ErrorContains(t, err, "credits already issued with tx id")
 }
 
 func setupMintBatchTest(s *baseSuite, open bool) *api.Batch {
