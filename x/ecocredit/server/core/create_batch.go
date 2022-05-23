@@ -102,10 +102,10 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			}
 		}
 		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-			BatchKey: key,
-			Address:  recipient,
-			Tradable: tradable.String(),
-			Retired:  retired.String(),
+			BatchKey:       key,
+			Address:        recipient,
+			TradableAmount: tradable.String(),
+			RetiredAmount:  retired.String(),
 		}); err != nil {
 			return nil, err
 		}

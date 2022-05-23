@@ -18,7 +18,7 @@ func (k Keeper) SellOrder(ctx context.Context, req *marketplace.QuerySellOrderRe
 
 	seller := sdk.AccAddress(order.Seller)
 
-	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
+	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (k Keeper) SellOrder(ctx context.Context, req *marketplace.QuerySellOrderRe
 		BatchDenom:        batch.Denom,
 		Quantity:          order.Quantity,
 		AskDenom:          market.BankDenom,
-		AskPrice:          order.AskPrice,
+		AskAmount:         order.AskAmount,
 		DisableAutoRetire: order.DisableAutoRetire,
 		Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
 	}

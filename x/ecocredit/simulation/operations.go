@@ -512,12 +512,12 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balres.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balres.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		retiredBalance, err := math.NewNonNegativeDecFromString(balres.Balance.Retired)
+		retiredBalance, err := math.NewNonNegativeDecFromString(balres.Balance.RetiredAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
@@ -627,7 +627,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
@@ -712,7 +712,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
 		}
@@ -726,7 +726,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Credits: []*core.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.Denom,
-					Amount:     balanceRes.Balance.Tradable,
+					Amount:     balanceRes.Balance.TradableAmount,
 				},
 			},
 		}

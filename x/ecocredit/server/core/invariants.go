@@ -47,13 +47,13 @@ func BatchSupplyInvariant(ctx context.Context, k Keeper, basketBalances map[uint
 		}
 
 		// tradable balance
-		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.Tradable)
+		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.TradableAmount)
 
 		//escrowed balance
-		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.Escrowed)
+		balanceFunc("tradable", batchIdToBalanceTradable, bBalance.BatchKey, bBalance.EscrowedAmount)
 
 		// retired balance
-		balanceFunc("retired", batchIdToBalanceRetired, bBalance.BatchKey, bBalance.Retired)
+		balanceFunc("retired", batchIdToBalanceRetired, bBalance.BatchKey, bBalance.RetiredAmount)
 	}
 
 	for batchId, amt := range basketBalances {

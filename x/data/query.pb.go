@@ -418,7 +418,7 @@ func (m *QueryIRIByHashResponse) GetIri() string {
 // QueryIRIByRawHashRequest is the Query/IRIByRawHash request type.
 type QueryIRIByRawHashRequest struct {
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
@@ -530,7 +530,7 @@ func (m *QueryIRIByRawHashResponse) GetIri() string {
 // QueryIRIByGraphHashRequest is the Query/IRIByGraphHash request type.
 type QueryIRIByGraphHashRequest struct {
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
@@ -1420,7 +1420,7 @@ type QueryClient interface {
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries resolvers based on ContentHash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolverInfo queries information about a resolved based on url.
+	// ResolverInfo queries information about a resolved based on URL.
 	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
@@ -1564,7 +1564,7 @@ type QueryServer interface {
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries resolvers based on ContentHash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolverInfo queries information about a resolved based on url.
+	// ResolverInfo queries information about a resolved based on URL.
 	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 }
 

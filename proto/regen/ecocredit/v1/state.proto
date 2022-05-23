@@ -224,14 +224,17 @@ message BatchBalance {
   // address is the address of the credit holder.
   bytes address = 2;
 
-  // tradable is the tradable amount of credits.
-  string tradable = 3;
+  // tradable_amount is the total number of tradable credits owned by address.
+  string tradable_amount = 3;
 
-  // retired is the retired amount of credits.
-  string retired = 4;
+  // retired_amount is the total number of retired credits owned by address.
+  string retired_amount = 4;
 
-  // escrowed is the amount of credits locked up in escrow for the marketplace.
-  string escrowed = 5;
+  // escrowed_amount is the total number of escrowed credits owned by address
+  // and held in escrow by the marketplace. Credits are held in escrow when a
+  // sell order is created and taken out of escrow when the sell order is either
+  // cancelled, updated with a reduced quantity, or processed.
+  string escrowed_amount = 5;
 }
 
 // BatchSupply stores the supply of credits for a credit batch.
@@ -246,19 +249,22 @@ message BatchSupply {
   uint64 batch_key = 1;
 
   // tradable_amount is the total number of tradable credits in the credit
-  // batch. Some of the issued credits may be cancelled and will be removed from
-  // tradable_amount and tracked in amount_cancelled. tradable_amount +
-  // retired_amount + amount_cancelled will always sum to the original credit
-  // issuance amount.
+  // batch. Tradable credits may be retired in which case they will be removed
+  // from tradable_amount and tracked in retired_amount. Tradable credits may
+  // also be cancelled in which case they will be removed from tradable_amount
+  // and tracked in cancelled_amount. The sum of the tradable, retired, and
+  // cancelled amounts will always equal the original credit issuance amount.
   string tradable_amount = 2;
 
-  // retired_amount is the total amount of credits that have been retired from
-  // the credit batch.
+  // retired_amount is the total amount of credits that have been retired in the
+  // credit batch. The sum of the tradable, retired, and cancelled amounts will
+  // always equal the original credit issuance amount.
   string retired_amount = 3;
 
   // cancelled_amount is the number of credits in the batch that have been
-  // cancelled, effectively undoing the issuance. The sum of total_amount and
-  // amount_cancelled will always equal the original credit issuance amount.
+  // cancelled, effectively undoing the issuance. The sum of the tradable,
+  // retired, and cancelled amounts will always equal the original credit
+  // issuance amount.
   string cancelled_amount = 4;
 }
 

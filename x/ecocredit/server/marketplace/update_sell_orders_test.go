@@ -158,7 +158,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	assert.NilError(t, err)
 	orderAfter, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, orderAfter.AskPrice, askUpdate.Amount.String())
+	assert.Equal(t, orderAfter.AskAmount, askUpdate.Amount.String())
 	assert.Equal(t, orderBefore.MarketId, orderAfter.MarketId)
 
 	orderBefore, err = s.marketStore.SellOrderTable().Get(s.ctx, 1)
@@ -181,7 +181,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	order, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
 
-	assert.Equal(t, order.AskPrice, askUpdate.Amount.String())
+	assert.Equal(t, order.AskAmount, askUpdate.Amount.String())
 	assert.Equal(t, order.MarketId, orderBefore.MarketId+1)
 }
 

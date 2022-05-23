@@ -53,25 +53,25 @@ func TestUtils_GetBalance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: 1,
-		Address:  s.addr,
-		Tradable: "100",
-		Retired:  "100",
-		Escrowed: "100",
+		BatchKey:       1,
+		Address:        s.addr,
+		TradableAmount: "100",
+		RetiredAmount:  "100",
+		EscrowedAmount: "100",
 	}))
 
 	bal, err := GetBalance(s.ctx, s.stateStore.BatchBalanceTable(), s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, "100", bal.Tradable)
-	assert.Equal(t, "100", bal.Retired)
-	assert.Equal(t, "100", bal.Escrowed)
+	assert.Equal(t, "100", bal.TradableAmount)
+	assert.Equal(t, "100", bal.RetiredAmount)
+	assert.Equal(t, "100", bal.EscrowedAmount)
 
 	noBalAddr := sdk.AccAddress("foobar")
 	bal, err = GetBalance(s.ctx, s.stateStore.BatchBalanceTable(), noBalAddr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, bal.Tradable, "0")
-	assert.Equal(t, bal.Retired, "0")
-	assert.Equal(t, bal.Escrowed, "0")
+	assert.Equal(t, bal.TradableAmount, "0")
+	assert.Equal(t, bal.RetiredAmount, "0")
+	assert.Equal(t, bal.EscrowedAmount, "0")
 }
 
 func TestUtils_GetNonNegativeFixedDecs(t *testing.T) {

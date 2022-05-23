@@ -41,7 +41,7 @@ func TestSell_Valid(t *testing.T) {
 		val, err := it.Value()
 		assert.NilError(t, err)
 		assert.Equal(t, "10", val.Quantity)
-		assert.Equal(t, ask.Amount.String(), val.AskPrice)
+		assert.Equal(t, ask.Amount.String(), val.AskAmount)
 		count++
 	}
 	assert.Equal(t, 2, count)
@@ -67,7 +67,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	}))
 
 	// market shouldn't exist before sell call
-	has, err := s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
+	has, err := s.k.stateStore.MarketTable().HasByCreditTypeAbbrevBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, false, has)
 
@@ -80,7 +80,7 @@ func TestSell_CreatesMarket(t *testing.T) {
 	assert.NilError(t, err)
 
 	// market should exist now
-	has, err = s.k.stateStore.MarketTable().HasByCreditTypeBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
+	has, err = s.k.stateStore.MarketTable().HasByCreditTypeAbbrevBankDenom(s.ctx, creditType.Abbreviation, newCoin.Denom)
 	assert.NilError(t, err)
 	assert.Equal(t, true, has)
 }

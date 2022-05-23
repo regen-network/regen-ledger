@@ -38,8 +38,8 @@ func TestCancel_Valid(t *testing.T) {
 
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, bal.Tradable, "0.0")
-	assert.Equal(t, bal.Retired, "10.5")
+	assert.Equal(t, bal.TradableAmount, "0.0")
+	assert.Equal(t, bal.RetiredAmount, "10.5")
 }
 
 func TestCancel_InsufficientFunds(t *testing.T) {

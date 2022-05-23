@@ -25,10 +25,10 @@ func TestQuery_Balance(t *testing.T) {
 	assert.NilError(t, err)
 
 	balance := &api.BatchBalance{
-		BatchKey: bKey,
-		Address:  s.addr,
-		Tradable: "10.54321",
-		Retired:  "50.3214",
+		BatchKey:       bKey,
+		Address:        s.addr,
+		TradableAmount: "10.54321",
+		RetiredAmount:  "50.3214",
 	}
 
 	// insert balance for s.addr
@@ -42,8 +42,8 @@ func TestQuery_Balance(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, s.addr.String(), res.Balance.Address)
 	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
-	assert.Equal(t, balance.Tradable, res.Balance.Tradable)
-	assert.Equal(t, balance.Retired, res.Balance.Retired)
+	assert.Equal(t, balance.TradableAmount, res.Balance.TradableAmount)
+	assert.Equal(t, balance.RetiredAmount, res.Balance.RetiredAmount)
 
 	_, _, noBalance := testdata.KeyTestPubAddr()
 
@@ -55,8 +55,8 @@ func TestQuery_Balance(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, noBalance.String(), res.Balance.Address)
 	assert.Equal(t, batchDenom, res.Balance.BatchDenom)
-	assert.Equal(t, "0", res.Balance.Tradable)
-	assert.Equal(t, "0", res.Balance.Retired)
+	assert.Equal(t, "0", res.Balance.TradableAmount)
+	assert.Equal(t, "0", res.Balance.RetiredAmount)
 
 	// query balance with unknown batch denom
 	_, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
