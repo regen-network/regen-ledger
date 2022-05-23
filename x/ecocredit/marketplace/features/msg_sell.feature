@@ -191,7 +191,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price cannot be empty: invalid request"
+    Then expect the error "order[0]: ask price: cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price denom is empty
     Given the message
@@ -208,7 +208,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price denom cannot be empty: invalid request"
+    Then expect the error "order[0]: ask price: denom cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price amount is empty
     Given the message
@@ -227,7 +227,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price amount cannot be empty: invalid request"
+    Then expect the error "order[0]: ask price: amount cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price amount is not a positive integer
     Given the message
@@ -247,4 +247,4 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price amount must be a positive integer: invalid request"
+    Then expect the error "order[0]: ask price: amount must be a positive integer: invalid request"

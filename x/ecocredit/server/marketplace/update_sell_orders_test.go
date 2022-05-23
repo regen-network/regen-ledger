@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -14,6 +13,7 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 

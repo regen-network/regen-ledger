@@ -60,22 +60,22 @@ func (m *MsgSell) ValidateBasic() error {
 
 		// sdk.Coin.Validate panics if coin is nil
 		if order.AskPrice == nil {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price cannot be empty", orderIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: cannot be empty", orderIndex)
 		}
 
 		// sdk.Coin.Validate provides inadequate error if coin denom is empty
 		if len(order.AskPrice.Denom) == 0 {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price denom cannot be empty", orderIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: denom cannot be empty", orderIndex)
 		}
 
 		// sdk.Coin.Validate panics if coin amount is nil
 		if order.AskPrice.Amount.IsNil() {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price amount cannot be empty", orderIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: amount cannot be empty", orderIndex)
 		}
 
 		// sdk.Coin.Validate provides inadequate error if coin amount is not a positive integer
 		if !order.AskPrice.Amount.IsPositive() {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price amount must be a positive integer", orderIndex)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: amount must be a positive integer", orderIndex)
 		}
 	}
 

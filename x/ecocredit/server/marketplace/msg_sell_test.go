@@ -21,17 +21,15 @@ import (
 
 type sellSuite struct {
 	*baseSuite
-	alice            sdk.AccAddress
-	creditTypeAbbrev string
-	batchDenom       string
-	askDenom         string
-	askAmount        sdk.Int
-	askPrice         *sdk.Coin
-	quantity         string
-	creditBalance    string
-	expiration       *time.Time
-	res              *marketplace.MsgSellResponse
-	err              error
+	alice             sdk.AccAddress
+	aliceBatchBalance string
+	creditTypeAbbrev  string
+	batchDenom        string
+	askPrice          *sdk.Coin
+	quantity          string
+	expiration        *time.Time
+	res               *marketplace.MsgSellResponse
+	err               error
 }
 
 func TestSell(t *testing.T) {
@@ -41,16 +39,14 @@ func TestSell(t *testing.T) {
 func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
+	s.aliceBatchBalance = "200"
 	s.creditTypeAbbrev = "C"
 	s.batchDenom = "C01-001-20200101-20210101-001"
-	s.askDenom = "regen"
-	s.askAmount = sdk.NewInt(100)
 	s.askPrice = &sdk.Coin{
-		Denom:  s.askDenom,
-		Amount: s.askAmount,
+		Denom:  "regen",
+		Amount: sdk.NewInt(100),
 	}
 	s.quantity = "100"
-	s.creditBalance = "200" // double quantity for multiple sell orders
 
 	expiration, err := types.ParseDate("expiration", "2030-01-01")
 	require.NoError(s.t, err)
@@ -68,7 +64,7 @@ func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
 
 func (s *sellSuite) AnAllowedDenom() {
 	err := s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
-		BankDenom: s.askDenom,
+		BankDenom: s.askPrice.Denom,
 	})
 	require.NoError(s.t, err)
 }
@@ -133,7 +129,7 @@ func (s *sellSuite) AliceOwnsCredits() {
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
 		BatchKey: batchKey,
 		Address:  s.alice,
-		Tradable: s.creditBalance,
+		Tradable: s.aliceBatchBalance,
 	})
 	require.NoError(s.t, err)
 }
@@ -218,7 +214,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenomAndAskDenom(a s
 				Quantity:   s.quantity,
 				AskPrice: &sdk.Coin{
 					Denom:  b,
-					Amount: s.askAmount,
+					Amount: s.askPrice.Amount,
 				},
 			},
 		},
@@ -281,7 +277,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithAskDenom(a string) {
 				Quantity:   s.quantity,
 				AskPrice: &sdk.Coin{
 					Denom:  a,
-					Amount: s.askAmount,
+					Amount: s.askPrice.Amount,
 				},
 			},
 		},
@@ -380,7 +376,7 @@ func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.Equal(s.t, market.Id, id)
 	require.Equal(s.t, market.CreditType, s.creditTypeAbbrev) // TODO: credit_type_abbrev
 	require.Equal(s.t, market.BankDenom, b)
-	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // TODO: always zero?
+	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // always zero
 }
 
 func (s *sellSuite) ExpectNoMarketWithId(a string) {
@@ -401,14 +397,14 @@ func (s *sellSuite) ExpectSellOrderWithId(a string) {
 	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
 	require.NoError(s.t, err)
 
-	market, err := s.marketStore.MarketTable().GetByCreditTypeBankDenom(s.ctx, s.creditTypeAbbrev, s.askDenom)
+	market, err := s.marketStore.MarketTable().GetByCreditTypeBankDenom(s.ctx, s.creditTypeAbbrev, s.askPrice.Denom)
 	require.NoError(s.t, err)
 
 	expiration := order.Expiration.AsTime()
 
 	require.Equal(s.t, order.Id, id)
 	require.Equal(s.t, order.Seller, s.alice.Bytes())
-	require.Equal(s.t, order.AskPrice, s.askPrice.Amount.String()) // TODO: ask_price (Coin) or ask_amount
+	require.Equal(s.t, order.AskPrice, s.askPrice.Amount.String()) // TODO: ask_amount
 	require.Equal(s.t, &expiration, s.expiration)
 	require.Equal(s.t, order.BatchId, batch.Key) // TODO: batch_key
 	require.Equal(s.t, order.Quantity, s.quantity)
