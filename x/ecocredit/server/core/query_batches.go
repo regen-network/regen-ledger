@@ -23,6 +23,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	batches := make([]*core.BatchInfo, 0)
 	for it.Next() {

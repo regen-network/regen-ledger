@@ -27,7 +27,7 @@ type IntegrationTestSuite struct {
 
 	// test accounts
 	addr1 sdk.AccAddress
-	addr  sdk.AccAddress // TODO: addr2
+	addr  sdk.AccAddress // TODO: addr2 (#922 / #1042)
 
 	// test values
 	allowedDenoms []string
@@ -146,5 +146,5 @@ func (s *IntegrationTestSuite) setupTestAccounts() {
 
 	// set test accounts
 	s.addr1 = s.val.Address
-	s.addr = account // TODO: addr2
+	s.addr = account // TODO: addr2 (#922 / #1042)
 }
