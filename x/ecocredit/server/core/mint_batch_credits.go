@@ -24,15 +24,6 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	originTx, err := k.stateStore.BatchOrigTxTable().Get(ctx, req.OriginTx.Id)
-	if err != nil && !ormerrors.IsNotFound(err) {
-		return nil, err
-	}
-
-	if originTx != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
-	}
-
 	if err := k.assertCanMintBatch(issuer, batch); err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
@@ -43,6 +34,9 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		Note:       req.Note,
 		BatchDenom: req.BatchDenom,
 	}); err != nil {
+		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+		}
 		return nil, err
 	}
 

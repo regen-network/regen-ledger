@@ -41,17 +41,6 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		return nil, err
 	}
 
-	if req.OriginTx != nil {
-		originTx, err := k.stateStore.BatchOrigTxTable().Get(ctx, req.OriginTx.Id)
-		if err != nil && !ormerrors.IsNotFound(err) {
-			return nil, err
-		}
-
-		if originTx != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
-		}
-	}
-
 	batchSeqNo, err := k.getBatchSeqNo(ctx, projectInfo.Key)
 	if err != nil {
 		return nil, err
@@ -151,6 +140,9 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			Note:       req.Note,
 			BatchDenom: batchDenom,
 		}); err != nil {
+			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+			}
 			return nil, err
 		}
 	}
