@@ -27,9 +27,9 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
 
-	if err = k.stateStore.BatchOrigTxTable().Insert(ctx, &api.BatchOrigTx{
+	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
 		TxId:       req.OriginTx.Id,
-		Typ:        req.OriginTx.Typ,
+		TxSource:   req.OriginTx.Source,
 		Note:       req.Note,
 		BatchDenom: req.BatchDenom,
 	}); err != nil {
@@ -117,9 +117,17 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		if err := k.stateStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 			return nil, err
 		}
+
+		if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
+			BatchDenom:     batch.Denom,
+			TradableAmount: tradable.String(),
+			RetiredAmount:  retired.String(),
+		}); err != nil {
+			return nil, err
+		}
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMintBatchCredits{
 		BatchDenom: batch.Denom,
 		OriginTx:   req.OriginTx,
 	}); err != nil {

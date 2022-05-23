@@ -118,6 +118,10 @@ func (m *EventCreateProject) GetProjectId() string {
 type EventCreateBatch struct {
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// origin_tx is the transaction from another chain or registry that triggered
+	// the creation of the credit batch. This field will only be set when the
+	// credit batch was created as a result of a bridge operation.
+	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
 }
 
 func (m *EventCreateBatch) Reset()         { *m = EventCreateBatch{} }
@@ -160,14 +164,23 @@ func (m *EventCreateBatch) GetBatchDenom() string {
 	return ""
 }
 
-// EventMint is an event emitted when credits are minted to a credit batch.
+func (m *EventCreateBatch) GetOriginTx() *OriginTx {
+	if m != nil {
+		return m.OriginTx
+	}
+	return nil
+}
+
+// EventMint is an event emitted when credits are minted either when creating a
+// credit batch or when bridging assets from another chain or registry.
 type EventMint struct {
 	// batch_denom is the unique identifier of the credit batch within which the
 	// credits were minted.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// origin_tx is the transaction from another chain or registry that triggered
-	// the minting of credits within the credit batch.
-	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+	// tradable_amount is the amount of tradable credits minted.
+	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
+	// retired_amount is the amount of retired credits minted.
+	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 }
 
 func (m *EventMint) Reset()         { *m = EventMint{} }
@@ -210,7 +223,72 @@ func (m *EventMint) GetBatchDenom() string {
 	return ""
 }
 
-func (m *EventMint) GetOriginTx() *OriginTx {
+func (m *EventMint) GetTradableAmount() string {
+	if m != nil {
+		return m.TradableAmount
+	}
+	return ""
+}
+
+func (m *EventMint) GetRetiredAmount() string {
+	if m != nil {
+		return m.RetiredAmount
+	}
+	return ""
+}
+
+// EventMintBatchCredits is an event emitted when credits are minted to an
+// existing open credit batch.
+type EventMintBatchCredits struct {
+	// batch_denom is the unique identifier of the credit batch within which the
+	// credits were minted.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// origin_tx is the transaction from another chain or registry that triggered
+	// the minting of credits within the credit batch.
+	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
+}
+
+func (m *EventMintBatchCredits) Reset()         { *m = EventMintBatchCredits{} }
+func (m *EventMintBatchCredits) String() string { return proto.CompactTextString(m) }
+func (*EventMintBatchCredits) ProtoMessage()    {}
+func (*EventMintBatchCredits) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e32415575ff8b4b2, []int{4}
+}
+func (m *EventMintBatchCredits) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventMintBatchCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventMintBatchCredits.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventMintBatchCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventMintBatchCredits.Merge(m, src)
+}
+func (m *EventMintBatchCredits) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventMintBatchCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventMintBatchCredits.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventMintBatchCredits proto.InternalMessageInfo
+
+func (m *EventMintBatchCredits) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *EventMintBatchCredits) GetOriginTx() *OriginTx {
 	if m != nil {
 		return m.OriginTx
 	}
@@ -242,7 +320,7 @@ func (m *EventTransfer) Reset()         { *m = EventTransfer{} }
 func (m *EventTransfer) String() string { return proto.CompactTextString(m) }
 func (*EventTransfer) ProtoMessage()    {}
 func (*EventTransfer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{4}
+	return fileDescriptor_e32415575ff8b4b2, []int{5}
 }
 func (m *EventTransfer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -333,7 +411,7 @@ func (m *EventRetire) Reset()         { *m = EventRetire{} }
 func (m *EventRetire) String() string { return proto.CompactTextString(m) }
 func (*EventRetire) ProtoMessage()    {}
 func (*EventRetire) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{5}
+	return fileDescriptor_e32415575ff8b4b2, []int{6}
 }
 func (m *EventRetire) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -407,7 +485,7 @@ func (m *EventCancel) Reset()         { *m = EventCancel{} }
 func (m *EventCancel) String() string { return proto.CompactTextString(m) }
 func (*EventCancel) ProtoMessage()    {}
 func (*EventCancel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{6}
+	return fileDescriptor_e32415575ff8b4b2, []int{7}
 }
 func (m *EventCancel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -468,7 +546,7 @@ func (m *EventUpdateClassAdmin) Reset()         { *m = EventUpdateClassAdmin{} }
 func (m *EventUpdateClassAdmin) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateClassAdmin) ProtoMessage()    {}
 func (*EventUpdateClassAdmin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{7}
+	return fileDescriptor_e32415575ff8b4b2, []int{8}
 }
 func (m *EventUpdateClassAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -515,7 +593,7 @@ func (m *EventUpdateClassIssuers) Reset()         { *m = EventUpdateClassIssuers
 func (m *EventUpdateClassIssuers) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateClassIssuers) ProtoMessage()    {}
 func (*EventUpdateClassIssuers) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{8}
+	return fileDescriptor_e32415575ff8b4b2, []int{9}
 }
 func (m *EventUpdateClassIssuers) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -562,7 +640,7 @@ func (m *EventUpdateClassMetadata) Reset()         { *m = EventUpdateClassMetada
 func (m *EventUpdateClassMetadata) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateClassMetadata) ProtoMessage()    {}
 func (*EventUpdateClassMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{9}
+	return fileDescriptor_e32415575ff8b4b2, []int{10}
 }
 func (m *EventUpdateClassMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -608,7 +686,7 @@ func (m *EventUpdateProjectAdmin) Reset()         { *m = EventUpdateProjectAdmin
 func (m *EventUpdateProjectAdmin) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateProjectAdmin) ProtoMessage()    {}
 func (*EventUpdateProjectAdmin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{10}
+	return fileDescriptor_e32415575ff8b4b2, []int{11}
 }
 func (m *EventUpdateProjectAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -654,7 +732,7 @@ func (m *EventUpdateProjectMetadata) Reset()         { *m = EventUpdateProjectMe
 func (m *EventUpdateProjectMetadata) String() string { return proto.CompactTextString(m) }
 func (*EventUpdateProjectMetadata) ProtoMessage()    {}
 func (*EventUpdateProjectMetadata) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{11}
+	return fileDescriptor_e32415575ff8b4b2, []int{12}
 }
 func (m *EventUpdateProjectMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -700,7 +778,7 @@ func (m *EventSealBatch) Reset()         { *m = EventSealBatch{} }
 func (m *EventSealBatch) String() string { return proto.CompactTextString(m) }
 func (*EventSealBatch) ProtoMessage()    {}
 func (*EventSealBatch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{12}
+	return fileDescriptor_e32415575ff8b4b2, []int{13}
 }
 func (m *EventSealBatch) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -746,7 +824,7 @@ func (m *EventAddCreditType) Reset()         { *m = EventAddCreditType{} }
 func (m *EventAddCreditType) String() string { return proto.CompactTextString(m) }
 func (*EventAddCreditType) ProtoMessage()    {}
 func (*EventAddCreditType) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e32415575ff8b4b2, []int{13}
+	return fileDescriptor_e32415575ff8b4b2, []int{14}
 }
 func (m *EventAddCreditType) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -787,6 +865,7 @@ func init() {
 	proto.RegisterType((*EventCreateProject)(nil), "regen.ecocredit.v1.EventCreateProject")
 	proto.RegisterType((*EventCreateBatch)(nil), "regen.ecocredit.v1.EventCreateBatch")
 	proto.RegisterType((*EventMint)(nil), "regen.ecocredit.v1.EventMint")
+	proto.RegisterType((*EventMintBatchCredits)(nil), "regen.ecocredit.v1.EventMintBatchCredits")
 	proto.RegisterType((*EventTransfer)(nil), "regen.ecocredit.v1.EventTransfer")
 	proto.RegisterType((*EventRetire)(nil), "regen.ecocredit.v1.EventRetire")
 	proto.RegisterType((*EventCancel)(nil), "regen.ecocredit.v1.EventCancel")
@@ -802,41 +881,42 @@ func init() {
 func init() { proto.RegisterFile("regen/ecocredit/v1/events.proto", fileDescriptor_e32415575ff8b4b2) }
 
 var fileDescriptor_e32415575ff8b4b2 = []byte{
-	// 537 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x94, 0xcf, 0x6e, 0x13, 0x3d,
-	0x14, 0xc5, 0x33, 0xfd, 0xbe, 0x86, 0xce, 0x0d, 0x0d, 0xc8, 0x82, 0x12, 0xaa, 0x32, 0xad, 0x46,
-	0x42, 0x74, 0xd3, 0x89, 0xd2, 0x02, 0x2a, 0x62, 0x95, 0x06, 0x16, 0x5d, 0x54, 0x54, 0x21, 0x6c,
-	0x10, 0x52, 0xe4, 0xb1, 0x2f, 0xa9, 0x4b, 0x62, 0x8f, 0x3c, 0x4e, 0x9a, 0xee, 0x78, 0x04, 0x9e,
-	0x86, 0x67, 0x60, 0xd9, 0x25, 0x4b, 0x94, 0xbc, 0x08, 0x8a, 0xc7, 0x49, 0xf3, 0x07, 0x25, 0x2c,
-	0xd8, 0xdd, 0x7b, 0x74, 0x7e, 0x73, 0x8f, 0xc6, 0xbe, 0x86, 0x5d, 0x8d, 0x2d, 0x94, 0x65, 0x64,
-	0x8a, 0x69, 0xe4, 0xc2, 0x94, 0x7b, 0x95, 0x32, 0xf6, 0x50, 0x9a, 0x34, 0x4a, 0xb4, 0x32, 0x8a,
-	0x10, 0x6b, 0x88, 0x26, 0x86, 0xa8, 0x57, 0xd9, 0x0e, 0xfe, 0x00, 0x99, 0xeb, 0x04, 0x1d, 0x13,
-	0x1e, 0xc0, 0xfd, 0xb7, 0xa3, 0x6f, 0xd4, 0x34, 0x52, 0x83, 0xb5, 0x36, 0x4d, 0x53, 0xf2, 0x18,
-	0x36, 0xd8, 0xa8, 0x68, 0x0a, 0x5e, 0xf2, 0xf6, 0xbc, 0x7d, 0xbf, 0x7e, 0xc7, 0xf6, 0xa7, 0x3c,
-	0x3c, 0x02, 0x32, 0x65, 0x3f, 0xd7, 0xea, 0x12, 0x99, 0x21, 0x4f, 0x00, 0x92, 0xac, 0xbc, 0x45,
-	0x7c, 0xa7, 0x58, 0x68, 0x7a, 0xc6, 0x09, 0x35, 0xec, 0x82, 0xec, 0x42, 0x21, 0x1e, 0x15, 0x4d,
-	0x8e, 0x52, 0x75, 0x1c, 0x03, 0x56, 0x7a, 0x33, 0x52, 0xc2, 0x16, 0xf8, 0x16, 0x3a, 0x13, 0xd2,
-	0xac, 0x74, 0x93, 0x57, 0xe0, 0x2b, 0x2d, 0x5a, 0x42, 0x36, 0x4d, 0xbf, 0xb4, 0xb6, 0xe7, 0xed,
-	0x17, 0x0e, 0x77, 0xa2, 0xc5, 0xdf, 0x11, 0xbd, 0xb3, 0xa6, 0x46, 0xbf, 0xbe, 0xa1, 0x5c, 0x15,
-	0x7e, 0xf7, 0x60, 0xd3, 0x4e, 0x6a, 0x68, 0x2a, 0xd3, 0xcf, 0xa8, 0xc9, 0x16, 0xe4, 0x53, 0x94,
-	0x1c, 0xb5, 0x1b, 0xe4, 0x3a, 0xb2, 0x03, 0xbe, 0x46, 0x26, 0x12, 0x81, 0xd2, 0xd8, 0x21, 0x7e,
-	0xfd, 0x56, 0x98, 0xcf, 0xf8, 0xdf, 0x42, 0xc6, 0x67, 0x70, 0xcf, 0x68, 0xca, 0x69, 0xdc, 0xc6,
-	0x26, 0xed, 0xa8, 0xae, 0x34, 0xa5, 0xff, 0xad, 0xa9, 0x38, 0x96, 0xab, 0x56, 0x25, 0x4f, 0xa1,
-	0xa8, 0xd1, 0x08, 0x8d, 0x7c, 0xec, 0x5b, 0xb7, 0xbe, 0x4d, 0xa7, 0x66, 0xb6, 0xf0, 0xab, 0x07,
-	0x05, 0x1b, 0xbc, 0x6e, 0x65, 0xf2, 0x00, 0xd6, 0xd5, 0x95, 0x9c, 0xa4, 0xce, 0x9a, 0xf9, 0x58,
-	0x6b, 0x0b, 0xb1, 0xb6, 0x20, 0xef, 0xa6, 0x64, 0x91, 0x5d, 0x47, 0x42, 0xb8, 0x7b, 0xd9, 0xd5,
-	0x22, 0xe5, 0x82, 0x19, 0xa1, 0xa4, 0xcb, 0x3a, 0xa3, 0x85, 0x9f, 0x5c, 0x82, 0x1a, 0x95, 0x0c,
-	0xdb, 0xff, 0x38, 0x41, 0x78, 0x08, 0x0f, 0xed, 0xd7, 0x3f, 0x24, 0x7c, 0x7c, 0x37, 0xab, 0xbc,
-	0x23, 0xe4, 0xb2, 0x0b, 0xfa, 0x1c, 0x1e, 0xcd, 0x33, 0xa7, 0x69, 0xda, 0x45, 0xbd, 0xf4, 0x5a,
-	0xbf, 0x80, 0xd2, 0x3c, 0x75, 0x86, 0x86, 0x72, 0x6a, 0xe8, 0x32, 0xec, 0x78, 0x66, 0x98, 0xdb,
-	0x86, 0x2c, 0xe2, 0x8a, 0x95, 0x78, 0x0d, 0xdb, 0x8b, 0xe4, 0x64, 0xe4, 0x0a, 0xb8, 0x02, 0x45,
-	0x0b, 0xbf, 0x47, 0xda, 0xfe, 0xcb, 0x6d, 0x3a, 0x76, 0x7b, 0x5b, 0xe5, 0xbc, 0x66, 0x97, 0xa1,
-	0x71, 0x9d, 0xe0, 0xe8, 0x88, 0x69, 0x1c, 0x6b, 0xec, 0x09, 0x6a, 0x8f, 0x38, 0xe3, 0x66, 0xb4,
-	0x93, 0xf3, 0x1f, 0x83, 0xc0, 0xbb, 0x19, 0x04, 0xde, 0xaf, 0x41, 0xe0, 0x7d, 0x1b, 0x06, 0xb9,
-	0x9b, 0x61, 0x90, 0xfb, 0x39, 0x0c, 0x72, 0x1f, 0x5f, 0xb6, 0x84, 0xb9, 0xe8, 0xc6, 0x11, 0x53,
-	0x9d, 0xb2, 0x5d, 0xb5, 0x03, 0x89, 0xe6, 0x4a, 0xe9, 0x2f, 0xae, 0x6b, 0x23, 0x6f, 0xa1, 0x2e,
-	0xf7, 0xa7, 0x1e, 0x1f, 0xa6, 0x34, 0xc6, 0x79, 0xfb, 0xf2, 0x1c, 0xfd, 0x0e, 0x00, 0x00, 0xff,
-	0xff, 0x11, 0x0b, 0x31, 0x7a, 0xd0, 0x04, 0x00, 0x00,
+	// 554 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0x41, 0x6f, 0x12, 0x41,
+	0x14, 0x66, 0x5b, 0x8b, 0xdd, 0x87, 0x45, 0x33, 0xd1, 0x8a, 0x4d, 0xdd, 0x36, 0x9b, 0x18, 0x7b,
+	0xe9, 0x12, 0x5a, 0x35, 0x35, 0x9e, 0x28, 0x7a, 0xe0, 0xd0, 0xd8, 0x20, 0x5e, 0x8c, 0x09, 0x99,
+	0xdd, 0x79, 0xd2, 0xa9, 0x30, 0xb3, 0x99, 0x1d, 0x28, 0x4d, 0x3c, 0xf8, 0x13, 0xfc, 0x35, 0xfe,
+	0x06, 0x8f, 0x3d, 0x7a, 0x34, 0xf0, 0x47, 0x0c, 0xb3, 0x03, 0x2d, 0xd0, 0x00, 0x07, 0xbd, 0xcd,
+	0xfb, 0xf2, 0xbe, 0xfd, 0xbe, 0x37, 0xb3, 0xdf, 0x83, 0x1d, 0x85, 0x4d, 0x14, 0x45, 0x8c, 0x64,
+	0xa4, 0x90, 0x71, 0x5d, 0xec, 0x96, 0x8a, 0xd8, 0x45, 0xa1, 0x93, 0x20, 0x56, 0x52, 0x4b, 0x42,
+	0x4c, 0x43, 0x30, 0x6e, 0x08, 0xba, 0xa5, 0x2d, 0xef, 0x16, 0x92, 0xbe, 0x8c, 0xd1, 0x72, 0xfc,
+	0x7d, 0x78, 0xf0, 0x6e, 0xf8, 0x8d, 0x8a, 0x42, 0xaa, 0xb1, 0xd2, 0xa2, 0x49, 0x42, 0x9e, 0xc0,
+	0x7a, 0x34, 0x3c, 0x34, 0x38, 0x2b, 0x38, 0xbb, 0xce, 0x9e, 0x5b, 0xbb, 0x6b, 0xea, 0x2a, 0xf3,
+	0x0f, 0x81, 0xdc, 0x68, 0x3f, 0x55, 0xf2, 0x1c, 0x23, 0x4d, 0x9e, 0x02, 0xc4, 0xe9, 0xf1, 0x9a,
+	0xe2, 0x5a, 0xa4, 0xca, 0x7c, 0x31, 0xa1, 0x71, 0x4c, 0x75, 0x74, 0x46, 0x76, 0x20, 0x17, 0x0e,
+	0x0f, 0x0d, 0x86, 0x42, 0xb6, 0x2d, 0x07, 0x0c, 0xf4, 0x76, 0x88, 0x90, 0xd7, 0xe0, 0x4a, 0xc5,
+	0x9b, 0x5c, 0x34, 0x74, 0xaf, 0xb0, 0xb2, 0xeb, 0xec, 0xe5, 0x0e, 0xb6, 0x83, 0xd9, 0x01, 0x83,
+	0xf7, 0xa6, 0xa9, 0xde, 0xab, 0xad, 0x4b, 0x7b, 0xf2, 0xbf, 0x81, 0x6b, 0xf4, 0x4e, 0xb8, 0xd0,
+	0x8b, 0x85, 0x9e, 0xc3, 0x7d, 0xad, 0x28, 0xa3, 0x61, 0x0b, 0x1b, 0xb4, 0x2d, 0x3b, 0x42, 0x1b,
+	0x39, 0xb7, 0x96, 0x1f, 0xc1, 0x65, 0x83, 0x92, 0x67, 0x90, 0x57, 0xa8, 0xb9, 0x42, 0x36, 0xea,
+	0x5b, 0x35, 0x7d, 0x1b, 0x16, 0x4d, 0xdb, 0xfc, 0x04, 0x1e, 0x8d, 0xd5, 0xcd, 0xac, 0x15, 0xe3,
+	0x35, 0xf9, 0xaf, 0x23, 0xff, 0x74, 0x60, 0xc3, 0xa8, 0xd6, 0x15, 0x15, 0xc9, 0x17, 0x54, 0x64,
+	0x13, 0xb2, 0x09, 0x0a, 0x86, 0xca, 0x0a, 0xd9, 0x8a, 0x6c, 0x83, 0xab, 0x30, 0xe2, 0x31, 0xc7,
+	0xf1, 0xa0, 0xd7, 0xc0, 0xb4, 0xc7, 0xd5, 0x65, 0x6e, 0xeb, 0xce, 0x92, 0xb7, 0xb5, 0x76, 0xdb,
+	0x6d, 0x7d, 0x77, 0x20, 0x67, 0x8c, 0xd7, 0x0c, 0x4c, 0x1e, 0xc2, 0x9a, 0xbc, 0x10, 0x63, 0xd7,
+	0x69, 0x31, 0x6d, 0x6b, 0x65, 0xc6, 0xd6, 0x26, 0x64, 0x27, 0xde, 0xc4, 0x56, 0xc4, 0x87, 0x7b,
+	0xe7, 0x1d, 0xc5, 0x13, 0xc6, 0x23, 0xcd, 0xa5, 0xb0, 0x5e, 0x27, 0x30, 0xff, 0xb3, 0x75, 0x50,
+	0xa1, 0x22, 0xc2, 0xd6, 0x3f, 0x76, 0xe0, 0x1f, 0xd8, 0xdf, 0xe1, 0x63, 0xcc, 0x46, 0x01, 0x2b,
+	0xb3, 0x36, 0x17, 0xf3, 0x52, 0xf6, 0x02, 0x1e, 0x4f, 0x73, 0xaa, 0x49, 0xd2, 0x41, 0x35, 0x37,
+	0x9b, 0x2f, 0xa1, 0x30, 0xcd, 0x3a, 0x41, 0x4d, 0x19, 0xd5, 0x74, 0x1e, 0xed, 0x68, 0x42, 0xcc,
+	0x46, 0x3a, 0xb5, 0xb8, 0x20, 0xd7, 0x6f, 0x60, 0x6b, 0x96, 0x39, 0x96, 0x5c, 0x40, 0x2e, 0x41,
+	0xde, 0x90, 0x3f, 0x20, 0x6d, 0x2d, 0xb7, 0x12, 0xfc, 0x23, 0xbb, 0x7c, 0xca, 0x8c, 0xa5, 0x99,
+	0xaa, 0x5f, 0xc6, 0x38, 0x7c, 0x62, 0x1a, 0x86, 0x0a, 0xbb, 0x9c, 0x9a, 0x27, 0x4e, 0x79, 0x13,
+	0xd8, 0xf1, 0xe9, 0xaf, 0xbe, 0xe7, 0x5c, 0xf5, 0x3d, 0xe7, 0x4f, 0xdf, 0x73, 0x7e, 0x0c, 0xbc,
+	0xcc, 0xd5, 0xc0, 0xcb, 0xfc, 0x1e, 0x78, 0x99, 0x4f, 0xaf, 0x9a, 0x5c, 0x9f, 0x75, 0xc2, 0x20,
+	0x92, 0xed, 0xa2, 0x89, 0xda, 0xbe, 0x40, 0x7d, 0x21, 0xd5, 0x57, 0x5b, 0xb5, 0x90, 0x35, 0x51,
+	0x15, 0x7b, 0x37, 0x36, 0x68, 0x24, 0x15, 0x86, 0x59, 0xb3, 0x3e, 0x0f, 0xff, 0x06, 0x00, 0x00,
+	0xff, 0xff, 0xa3, 0x32, 0x2f, 0xf9, 0x95, 0x05, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -919,6 +999,18 @@ func (m *EventCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.OriginTx != nil {
+		{
+			size, err := m.OriginTx.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintEvents(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.BatchDenom) > 0 {
 		i -= len(m.BatchDenom)
 		copy(dAtA[i:], m.BatchDenom)
@@ -945,6 +1037,50 @@ func (m *EventMint) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *EventMint) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.RetiredAmount)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.TradableAmount)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventMintBatchCredits) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventMintBatchCredits) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventMintBatchCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1381,10 +1517,35 @@ func (m *EventCreateBatch) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
+	if m.OriginTx != nil {
+		l = m.OriginTx.Size()
+		n += 1 + l + sovEvents(uint64(l))
+	}
 	return n
 }
 
 func (m *EventMint) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.TradableAmount)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.RetiredAmount)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventMintBatchCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1798,6 +1959,42 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			}
 			m.BatchDenom = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OriginTx", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.OriginTx == nil {
+				m.OriginTx = &OriginTx{}
+			}
+			if err := m.OriginTx.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -1846,6 +2043,152 @@ func (m *EventMint) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: EventMint: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventMintBatchCredits) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventMintBatchCredits: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventMintBatchCredits: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

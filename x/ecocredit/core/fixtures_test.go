@@ -7,5 +7,5 @@ var (
 	batchIssuance1 = BatchIssuance{Recipient: testutil.GenAddress(), TradableAmount: "12"}
 	batchIssuance2 = BatchIssuance{Recipient: testutil.GenAddress(), TradableAmount: "12", RetiredAmount: "20", RetirementJurisdiction: "CH"}
 	batchIssuances = []*BatchIssuance{&batchIssuance1, &batchIssuance2}
-	batchOrigTx    = OriginTx{Typ: "Polygon", Id: "0x1234"}
+	batchOriginTx  = OriginTx{Id: "0x1234", Source: "polygon"}
 )

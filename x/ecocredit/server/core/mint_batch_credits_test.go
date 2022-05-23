@@ -37,8 +37,8 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Typ: "Ethereum",
-			Id:  "210985091248",
+			Id:     "210985091248",
+			Source: "Ethereum",
 		},
 		Note: "bridged credits",
 	}

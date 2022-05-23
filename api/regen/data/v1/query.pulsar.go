@@ -11925,7 +11925,7 @@ type QueryIRIByRawHashRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
@@ -12019,7 +12019,7 @@ type QueryIRIByGraphHashRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
