@@ -10,6 +10,7 @@ import (
 )
 
 // TODO: remove after we open governance changes for bridge target
+// https://github.com/regen-network/regen-ledger/issues/1119
 
 const (
 	BRIDGE_TARGET string = "polygon"
