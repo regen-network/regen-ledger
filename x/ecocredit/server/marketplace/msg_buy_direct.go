@@ -15,27 +15,34 @@ import (
 // BuyDirect allows for the purchase of credits directly from sell orders.
 func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*marketplace.MsgBuyDirectResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
 	if err != nil {
 		return nil, err
 	}
+
 	for _, order := range req.Orders {
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, fmt.Errorf("sell order %d: %w", order.SellOrderId, err)
+			return nil, fmt.Errorf("sell order with id %d: %w", order.SellOrderId, err)
 		}
+
 		if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
-				"from a sell order that does not have auto retire disabled")
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"cannot disable auto-retire for a sell order with auto-retire disabled",
+			)
 		}
+
 		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchId)
 		if err != nil {
 			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 		}
+
 		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
+
 		creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
 			return nil, err
@@ -46,26 +53,33 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if err != nil {
 			return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 		}
+
 		if order.BidPrice.Denom != market.BankDenom {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
 				"%s, expected %s", order.BidPrice.Denom, market.BankDenom)
 		}
+
 		// check that bid price >= sell price
 		sellOrderAskPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
 		if !ok {
 			return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
 		}
+
 		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskPrice}
 		if sellOrderAskPrice.GT(order.BidPrice.Amount) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, order.BidPrice)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, order.BidPrice,
+			)
 		}
 
 		// check address has the total cost (price per * order quantity)
 		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
+
 		cost, err := getTotalCost(sellOrderAskPrice, creditOrderQty)
 		if err != nil {
 			return nil, err
 		}
+
 		coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
 		if bal.IsLT(coinCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+

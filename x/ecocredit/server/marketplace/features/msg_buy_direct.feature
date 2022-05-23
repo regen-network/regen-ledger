@@ -1,0 +1,209 @@
+Feature: Msg/BuyDirect
+
+  Credits can be bought directly:
+  - when the sell order exists
+  - when the bid denom matches the sell denom
+  - when the buyer has a bank balance greater than or equal to the total cost
+  - when the buyer provides a bid price greater than or equal to the ask price
+  - the buyer cannot disable auto-retire if auto-retire is enabled for the sell order
+  - the sell order is removed when the sell order is filled
+  - the sell order quantity is updated when the sell order is not filled
+  - the seller bank balance is updated
+  - the buyer bank balance is updated
+  - the seller batch balance is updated
+  - the buyer batch balance is updated
+
+  Rule: The sell order must exist
+
+    Scenario: the sell order exists
+      Given alice created a sell order with id "1"
+      When bob attempts to buy credits with sell order id "1"
+      Then expect no error
+
+    Scenario: the sell order does not exist
+      When bob attempts to buy credits with sell order id "1"
+      Then expect the error "sell order with id 1: not found"
+
+  Rule: The bid denom must match the sell denom
+
+    Background:
+      Given alice created a sell order with ask denom "regen"
+      And bob has a bank balance with denom "regen"
+
+    Scenario: bid denom matches sell denom
+      When bob attempts to buy credits with bid denom "regen"
+      Then expect no error
+
+    Scenario: bid denom does not match sell denom
+      When bob attempts to buy credits with bid denom "atom"
+      Then expect the error "bid price denom does not match ask price denom: atom, expected regen: invalid request"
+
+  Rule: The buyer must have a bank balance greater than or equal to the total cost
+
+    Background:
+      Given alice created a sell order with quantity "10" and ask amount "10"
+
+    Scenario Outline: buyer bank balance is greater than or equal to total cost
+      Given bob has a bank balance with amount "<balance-amount>"
+      When bob attempts to buy credits with quantity "10" and bid amount "10"
+      Then expect no error
+
+      Examples:
+        | description  | balance-amount |
+        | greater than | 200            |
+        | equal to     | 100            |
+
+    Scenario: buyer bank balance is less than total cost
+      Given bob has a bank balance with amount "50"
+      When bob attempts to buy credits with quantity "10" and bid amount "10"
+      Then expect the error "requested to purchase 10 credits @ 10regen per credit (total 100regen) with a balance of 50regen: insufficient funds"
+
+  Rule: The buyer must provide a bid price greater than or equal to the ask price
+
+    Background:
+      Given alice created a sell order with ask amount "10"
+      And bob has a bank balance with amount "100"
+
+    Scenario Outline: bid price greater than or equal to ask price
+      When bob attempts to buy credits with quantity "10" and bid amount "<bid-amount>"
+      Then expect no error
+
+      Examples:
+        | description  | bid-amount |
+        | greater than | 20         |
+        | equal to     | 10         |
+
+    Scenario: bid price less than ask price
+      When bob attempts to buy credits with quantity "10" and bid amount "5"
+      Then expect the error "price per credit too low: sell order ask per credit: 10regen, request: 5regen: invalid request"
+
+  Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
+
+    Scenario Outline: auto retire not required
+      Given alice created a sell order with disable auto retire "true"
+      When bob attempts to buy credits with disable auto retire "<disable-auto-retire>"
+      Then expect no error
+
+      Examples:
+        | disable-auto-retire |
+        | true                |
+        | false               |
+
+    Scenario: auto retire required and buyer enables
+      Given alice created a sell order with disable auto retire "false"
+      When bob attempts to buy credits with disable auto retire "false"
+      Then expect no error
+
+    Scenario: auto retire required and buyer disables
+      Given alice created a sell order with disable auto retire "false"
+      When bob attempts to buy credits with disable auto retire "true"
+      Then expect the error "cannot disable auto-retire for a sell order with auto-retire disabled: invalid request"
+
+  Rule: The sell order is removed when the sell order is filled
+
+    Background:
+      Given alice created a sell order with quantity "10"
+
+    Scenario: the sell order is removed
+      When bob attempts to buy credits with quantity "10"
+      Then expect no sell order with id "1"
+
+    Scenario: the sell order is not removed
+      When bob attempts to buy credits with quantity "5"
+      Then expect sell order with id "1"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: The sell order quantity is updated when the sell order is not filled
+
+    Scenario:
+      Given alice created a sell order with quantity "20"
+      When bob attempts to buy credits with quantity "10"
+      Then expect sell order with quantity "10"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the buyer bank balance is updated
+
+    Scenario: buyer bank balance updated
+      Given alice created a sell order with quantity "10" and ask price "10regen"
+      And bob has bank balance "100regen"
+      When bob attempts to buy credits with quantity "10" and bid price "10regen"
+      Then expect bob bank balance "0regen"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the seller bank balance is updated
+
+    Background:
+      Given alice created a sell order with quantity "100" and ask price "1regen"
+      And alice has bank balance "0regen"
+
+    Scenario: seller bank balance updated
+      When bob attempts to buy credits with quantity "100" and bid price "1regen"
+      Then expect alice bank balance "100regen"
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the buyer batch balance is updated
+
+    Background:
+      Given alice created a sell order with quantity "10" and disable auto retire "true"
+      And bob has the batch balance
+      """
+      {
+        "retired": "0",
+        "tradable": "0",
+        "escrowed": "0"
+      }
+      """
+
+    Scenario: buyer retired batch balance updated with retired credits
+      When bob attempts to buy credits with quantity "10" and disable auto retire "false"
+      Then expect bob batch balance
+      """
+      {
+        "retired": "10",
+        "tradable": "0",
+        "escrowed": "0"
+      }
+      """
+
+    Scenario: buyer tradable batch balance updated with tradable credits
+      When bob attempts to buy credits with quantity "10" and disable auto retire "true"
+      Then expect bob batch balance
+      """
+      {
+        "retired": "0",
+        "tradable": "10",
+        "escrowed": "0"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
+
+  Rule: the seller batch balance is updated
+
+    Background:
+      Given alice created a sell order with quantity "10"
+      And alice has the batch balance
+      """
+      {
+        "retired": "0",
+        "tradable": "0",
+        "escrowed": "10"
+      }
+      """
+
+    Scenario: seller batch balance updated
+      When bob attempts to buy credits with quantity "10"
+      Then expect alice batch balance
+      """
+      {
+        "retired": "0",
+        "tradable": "0",
+        "escrowed": "0"
+      }
+      """
+
+    # no failing scenario - state transitions only occur upon successful message execution
