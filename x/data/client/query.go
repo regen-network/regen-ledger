@@ -2,11 +2,13 @@ package client
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strings"
+
+	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -45,6 +47,7 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 		queryByIRICmd,
 		QueryByAttestorCmd(),
 		QueryHashByIRICmd(),
+		QueryIRIByHashCmd(),
 		QueryAttestorsCmd(),
 		QueryResolverInfoCmd(),
 		QueryResolversCmd(),
@@ -125,6 +128,51 @@ func QueryHashByIRICmd() *cobra.Command {
 
 			res, err := c.HashByIRI(cmd.Context(), &data.QueryHashByIRIRequest{
 				Iri: args[0],
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryIRIByHashCmd creates a CLI command for Query/IRIByHash.
+func QueryIRIByHashCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "iri [content-hash-json]",
+		Short: "Query for IRI based on content hash",
+		Long: `Query for IRI based on content hash provided in json format.
+
+Parameters:
+  content-hash-json: contains the content hash formatted as json`,
+		Example: `regen q data iri content.json
+
+where content.json contains:
+{
+  "graph": {
+    "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+    "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+    "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+    "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+  }
+}`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			contentHash, err := parseContentHash(ctx, args[0])
+			if err != nil {
+				return err
+			}
+
+			res, err := c.IRIByHash(cmd.Context(), &data.QueryIRIByHashRequest{
+				ContentHash: contentHash,
 			})
 
 			return print(ctx, res, err)
@@ -222,4 +270,23 @@ func QueryResolversCmd() *cobra.Command {
 	flags.AddPaginationFlagsToCmd(cmd, "resolvers")
 
 	return cmd
+}
+
+func parseContentHash(clientCtx client.Context, filePath string) (*data.ContentHash, error) {
+	contentHash := data.ContentHash{}
+
+	if filePath == "" {
+		return nil, fmt.Errorf("file path is empty")
+	}
+
+	bz, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := clientCtx.Codec.UnmarshalJSON(bz, &contentHash); err != nil {
+		return nil, err
+	}
+
+	return &contentHash, nil
 }
