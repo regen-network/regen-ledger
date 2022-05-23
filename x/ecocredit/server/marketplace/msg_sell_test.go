@@ -374,7 +374,7 @@ func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, market.Id, id)
-	require.Equal(s.t, market.CreditType, s.creditTypeAbbrev) // TODO: credit_type_abbrev
+	require.Equal(s.t, market.CreditType, s.creditTypeAbbrev) // TODO: credit_type_abbrev #1123
 	require.Equal(s.t, market.BankDenom, b)
 	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // always zero
 }
@@ -404,9 +404,9 @@ func (s *sellSuite) ExpectSellOrderWithId(a string) {
 
 	require.Equal(s.t, order.Id, id)
 	require.Equal(s.t, order.Seller, s.alice.Bytes())
-	require.Equal(s.t, order.AskPrice, s.askPrice.Amount.String()) // TODO: ask_amount
+	require.Equal(s.t, order.AskPrice, s.askPrice.Amount.String()) // TODO: ask_amount #1123
 	require.Equal(s.t, &expiration, s.expiration)
-	require.Equal(s.t, order.BatchId, batch.Key) // TODO: batch_key
+	require.Equal(s.t, order.BatchId, batch.Key) // TODO: batch_key #1123
 	require.Equal(s.t, order.Quantity, s.quantity)
 	require.Equal(s.t, order.DisableAutoRetire, true) // verify non-default is set
 	require.Equal(s.t, order.MarketId, market.Id)

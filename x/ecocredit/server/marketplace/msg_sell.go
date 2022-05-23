@@ -117,7 +117,7 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
 			CreditType:        creditTypeAbbrev,
 			BankDenom:         bankDenom,
-			PrecisionModifier: 0, // TODO: always zero?
+			PrecisionModifier: 0,
 		})
 	default:
 		return 0, err
