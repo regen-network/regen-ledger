@@ -200,7 +200,7 @@ func TestCreateBatch_WithOriginTx_Invalid(t *testing.T) {
 
 	// create credit batch with same tx origin id
 	_, err = s.k.CreateBatch(s.ctx, batch)
-	assert.ErrorContains(t, err, "credits already issued")
+	assert.ErrorContains(t, err, "credits already issued with tx id")
 }
 
 // creates a class "C01", with a single class issuer, and a project "C01-001"
