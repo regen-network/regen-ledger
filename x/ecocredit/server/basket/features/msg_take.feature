@@ -100,6 +100,7 @@ Feature: Msg/Take
 
     Scenario Outline: user retired credit balance is updated
       Given a basket with exponent "<exponent>" and disable auto retire "false"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "true"
       Then expect alice retired credit balance amount "<retired-credits>"
@@ -113,6 +114,7 @@ Feature: Msg/Take
 
     Scenario Outline: user tradable credit balance is updated
       Given a basket with exponent "<exponent>" and disable auto retire "true"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "false"
       Then expect alice tradable credit balance amount "<tradable-credits>"
@@ -130,6 +132,7 @@ Feature: Msg/Take
 
     Scenario Outline: basket credit balance is updated
       Given a basket with exponent "<exponent>" and credit balance "100"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect basket credit balance amount "<credit-amount>"
@@ -146,6 +149,7 @@ Feature: Msg/Take
 
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>" and credit balance "100"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect the response

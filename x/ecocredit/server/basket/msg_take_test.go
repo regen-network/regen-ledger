@@ -38,6 +38,14 @@ func TestTake(t *testing.T) {
 func (s *takeSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addrs[0]
+	s.aliceTokenBalance = sdk.Coin{
+		Denom:  "eco.C.NCT",
+		Amount: sdk.NewInt(100),
+	}
+	s.basketTokenSupply = sdk.Coin{
+		Denom:  "eco.C.NCT",
+		Amount: sdk.NewInt(100),
+	}
 	s.classId = "C01"
 	s.creditTypeAbbrev = "C"
 	s.batchDenom = "C01-001-20200101-20210101-001"
@@ -156,12 +164,8 @@ func (s *takeSuite) BasketTokenSupplyAmount(a string) {
 }
 
 func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketDenom(a string) {
-	var coins sdk.Coins
-
-	// send balance when amount not specified
-	if !s.aliceTokenBalance.Equal(sdk.Coin{}) {
-		coins = sdk.NewCoins(s.aliceTokenBalance)
-	}
+	sendCoin := s.aliceTokenBalance
+	sendCoins := sdk.NewCoins(sendCoin)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.alice, a).
@@ -169,12 +173,20 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketDenom(a string) {
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+			// simulate token balance update unavailable with mocks
+			s.aliceTokenBalance = s.aliceTokenBalance.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, string, sdk.Coins) {
+			// simulate token supply update unavailable with mocks
+			s.basketTokenSupply = s.basketTokenSupply.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
@@ -191,7 +203,8 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmount(a string) {
 	amount, ok := sdk.NewIntFromString(a)
 	require.True(s.t, ok)
 
-	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
+	sendCoin := sdk.NewCoin(s.basketDenom, amount)
+	sendCoins := sdk.NewCoins(sendCoin)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.alice, s.basketDenom).
@@ -199,23 +212,19 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmount(a string) {
 		Times(1)
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
 		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
 			// simulate token balance update unavailable with mocks
-			if !s.aliceTokenBalance.IsNil() {
-				s.aliceTokenBalance = s.aliceTokenBalance.Sub(coins[0])
-			}
+			s.aliceTokenBalance = s.aliceTokenBalance.Sub(sendCoin)
 		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, sendCoins).
 		Do(func(sdk.Context, string, sdk.Coins) {
 			// simulate token supply update unavailable with mocks
-			if !s.basketTokenSupply.IsNil() {
-				s.basketTokenSupply = s.basketTokenSupply.Sub(coins[0])
-			}
+			s.basketTokenSupply = s.basketTokenSupply.Sub(sendCoin)
 		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
@@ -236,7 +245,8 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTa
 	retireOnTake, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
-	coins := sdk.NewCoins(sdk.NewCoin(s.basketDenom, amount))
+	sendCoin := sdk.NewCoin(s.basketDenom, amount)
+	sendCoins := sdk.NewCoins(sendCoin)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.alice, s.basketDenom).
@@ -244,12 +254,20 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithBasketTokenAmountAndRetireOnTa
 		Times(1)
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+			// simulate token balance update unavailable with mocks
+			s.aliceTokenBalance = s.aliceTokenBalance.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, string, sdk.Coins) {
+			// simulate token supply update unavailable with mocks
+			s.basketTokenSupply = s.basketTokenSupply.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
@@ -266,12 +284,8 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 	retireOnTake, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	var coins sdk.Coins
-
-	// send balance when amount not specified
-	if !s.aliceTokenBalance.Equal(sdk.Coin{}) {
-		coins = sdk.NewCoins(s.aliceTokenBalance)
-	}
+	sendCoin := s.aliceTokenBalance
+	sendCoins := sdk.NewCoins(sendCoin)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.alice, s.basketDenom).
@@ -279,12 +293,20 @@ func (s *takeSuite) AliceAttemptsToTakeCreditsWithRetireOnTake(a string) {
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, coins).
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
+			// simulate token balance update unavailable with mocks
+			s.aliceTokenBalance = s.aliceTokenBalance.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
 	s.bankKeeper.EXPECT().
-		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, coins).
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, sendCoins).
+		Do(func(sdk.Context, string, sdk.Coins) {
+			// simulate token supply update unavailable with mocks
+			s.basketTokenSupply = s.basketTokenSupply.Sub(sendCoin)
+		}).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 
@@ -329,9 +351,9 @@ func (s *takeSuite) ExpectAliceBasketTokenBalanceAmount(a string) {
 	amount, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
-	coin := sdk.NewInt64Coin(s.basketDenom, amount)
+	tokenBalance := sdk.NewInt64Coin(s.basketDenom, amount)
 
-	require.Equal(s.t, coin, s.aliceTokenBalance)
+	require.Equal(s.t, tokenBalance, s.aliceTokenBalance)
 }
 
 func (s *takeSuite) ExpectBasketCreditBalanceAmount(a string) {
@@ -348,9 +370,9 @@ func (s *takeSuite) ExpectBasketTokenSupplyAmount(a string) {
 	amount, err := strconv.ParseInt(a, 10, 32)
 	require.NoError(s.t, err)
 
-	coin := sdk.NewInt64Coin(s.basketDenom, amount)
+	tokenSupply := sdk.NewInt64Coin(s.basketDenom, amount)
 
-	require.Equal(s.t, coin, s.basketTokenSupply)
+	require.Equal(s.t, tokenSupply, s.basketTokenSupply)
 }
 
 func (s *takeSuite) ExpectTheResponse(a gocuke.DocString) {
