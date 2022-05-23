@@ -22,10 +22,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocreditcore "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -59,7 +62,27 @@ func setCustomOrderEndBlocker() []string {
 	return []string{}
 }
 
-func (app *RegenApp) registerUpgradeHandlers() {}
+func (app *RegenApp) registerUpgradeHandlers() {
+
+	// mainnet upgrade handler
+	const upgradeName = "v4.0.0"
+	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+		if err != nil {
+			return nil, err
+		}
+
+		// run x/ecocredit state migrations
+		if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
+			return nil, err
+		}
+		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
+
+		// TODO: update community member accounts
+
+		return toVersion, nil
+	})
+}
 
 func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
 	return ante.NewAnteHandler(

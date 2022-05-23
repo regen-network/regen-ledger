@@ -315,6 +315,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
+	// TODO: manual operations
+	// - update curator address for baskets
+	// - update issuance date for credit batches
+	// - add reference id to existing projects
+
 	return nil
 }
 
