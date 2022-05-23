@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"crypto"
 	"fmt"
 
 	"github.com/stretchr/testify/suite"
@@ -145,8 +144,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resolverInfo))
 	s.resolverID = resolverInfo.Id
 
-	content := []byte("abcdefg")
-	_, chs := s.createDataContent(content)
+	_, ch := s.createIRIAndGraphHash([]byte("abcdefg"))
+
+	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
 	s.iri, err = chs.ContentHashes[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
@@ -391,11 +391,12 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 	}
 
-	content := []byte("xyzabc123")
-	_, chs := s.createDataContent(content)
+	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
 
+	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
 	bz, err := val.ClientCtx.Codec.MarshalJSON(chs)
 	require.NoError(err)
+
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
 	testCases := []struct {
@@ -452,26 +453,4 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 			}
 		})
 	}
-}
-
-func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.ContentHashes) {
-	require := s.Require()
-
-	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(content)
-	require.NoError(err)
-	digest := hash.Sum(nil)
-
-	ch := data.ContentHash{
-		Graph: &data.ContentHash_Graph{
-			Hash:                      digest,
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		},
-	}
-
-	iri, err := ch.GetGraph().ToIRI()
-	require.NoError(err)
-
-	return iri, &data.ContentHashes{ContentHashes: []*data.ContentHash{&ch}}
 }

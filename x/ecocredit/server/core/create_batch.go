@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -130,6 +131,20 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		CancelledAmount: math.NewDecFromInt64(0).String(),
 	}); err != nil {
 		return nil, err
+	}
+
+	if req.OriginTx != nil {
+		if err = k.stateStore.BatchOrigTxTable().Insert(ctx, &api.BatchOrigTx{
+			TxId:       req.OriginTx.Id,
+			Typ:        req.OriginTx.Typ,
+			Note:       req.Note,
+			BatchDenom: batchDenom,
+		}); err != nil {
+			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+			}
+			return nil, err
+		}
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{

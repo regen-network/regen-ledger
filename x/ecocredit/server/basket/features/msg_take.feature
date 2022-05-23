@@ -1,4 +1,4 @@
-Feature: MsgTake
+Feature: Msg/Take
 
   Credits can be taken from a basket:
   - when the basket exists
@@ -16,14 +16,14 @@ Feature: MsgTake
   Rule: The basket must exist
 
     Scenario: basket exists
-      Given a basket with denom "NCT"
-      And alice owns tokens with denom "NCT"
-      When alice attempts to take credits with basket denom "NCT"
+      Given a basket with denom "eco.C.NCT"
+      And alice owns tokens with denom "eco.C.NCT"
+      When alice attempts to take credits with basket denom "eco.C.NCT"
       Then expect no error
 
     Scenario: basket does not exist
-      When alice attempts to take credits with basket denom "NCT"
-      Then expect the error "basket NCT not found: not found"
+      When alice attempts to take credits with basket denom "eco.C.NCT"
+      Then expect the error "basket eco.C.NCT not found: not found"
 
   Rule: The user token balance must be greater than or equal to the token amount
 
@@ -43,7 +43,7 @@ Feature: MsgTake
     Scenario Outline: user token balance is less than token amount
       Given alice owns basket token amount "<token-balance>"
       When alice attempts to take credits with basket token amount "<token-amount>"
-      Then expect the error "insufficient balance for basket denom NCT: insufficient funds"
+      Then expect the error "insufficient balance for basket denom eco.C.NCT: insufficient funds"
 
       Examples:
         | description  | token-balance  | token-amount |
@@ -81,7 +81,7 @@ Feature: MsgTake
       Given a basket
       And alice owns basket token amount "100"
       When alice attempts to take credits with basket token amount "50"
-      Then alice has a basket token balance with amount "50"
+      Then expect alice basket token balance amount "50"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -89,9 +89,10 @@ Feature: MsgTake
 
     Scenario: basket token supply is updated
       Given a basket
-      And alice owns basket token amount "150"
-      When alice attempts to take credits with basket token amount "100"
-      Then the basket token has a total supply with amount "50"
+      And basket token supply amount "100"
+      And alice owns basket token amount "100"
+      When alice attempts to take credits with basket token amount "50"
+      Then expect basket token supply amount "50"
 
     # no failing scenario - state transitions only occur upon successful message execution
 
@@ -99,10 +100,11 @@ Feature: MsgTake
 
     Scenario Outline: user retired credit balance is updated
       Given a basket with exponent "<exponent>" and disable auto retire "false"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "true"
-      Then alice has a retired credit balance with amount "<retired-credits>"
-      And alice has a tradable credit balance with amount "0"
+      Then expect alice retired credit balance amount "<retired-credits>"
+      And expect alice tradable credit balance amount "0"
 
       Examples:
         | description                        | exponent | token-amount | retired-credits |
@@ -112,10 +114,11 @@ Feature: MsgTake
 
     Scenario Outline: user tradable credit balance is updated
       Given a basket with exponent "<exponent>" and disable auto retire "true"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "false"
-      Then alice has a tradable credit balance with amount "<tradable-credits>"
-      And alice has a retired credit balance with amount "0"
+      Then expect alice tradable credit balance amount "<tradable-credits>"
+      And expect alice retired credit balance amount "0"
 
       Examples:
         | description                        | exponent | token-amount | tradable-credits |
@@ -129,9 +132,10 @@ Feature: MsgTake
 
     Scenario Outline: basket credit balance is updated
       Given a basket with exponent "<exponent>" and credit balance "100"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
-      Then the basket has a credit balance with amount "<credit-amount>"
+      Then expect basket credit balance amount "<credit-amount>"
 
       Examples:
         | description                        | exponent | token-amount | credit-amount |
@@ -145,6 +149,7 @@ Feature: MsgTake
 
     Scenario Outline: message response includes basket token amount received
       Given a basket with exponent "<exponent>" and credit balance "100"
+      And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect the response
