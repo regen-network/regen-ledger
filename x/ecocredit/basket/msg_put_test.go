@@ -6,6 +6,8 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type msgPutSuite struct {
@@ -20,6 +22,11 @@ func TestMsgPut(t *testing.T) {
 
 func (s *msgPutSuite) Before(t gocuke.TestingT) {
 	s.t = t
+
+	// set the denom regex for basket coins
+	sdk.SetCoinDenomRegex(func() string {
+		return RegexBasketDenom
+	})
 }
 
 func (s *msgPutSuite) TheMessage(a gocuke.DocString) {

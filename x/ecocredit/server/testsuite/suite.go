@@ -87,8 +87,9 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	// set the denom regex for basket coins
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return basket.RegexBasketDenom
 	})
 
 	s.fixture = s.fixtureFactory.Setup()
