@@ -376,7 +376,7 @@ func TxCancelCmd() *cobra.Command {
 
 Parameters:
   credits:  comma-separated list of credits in the form [<amount> <batch-denom>]
-            eg: '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-001'
+            eg: '10 C01-001-20200101-20210101-001, 0.1 C01-001-20200101-20210101-001'
   reason:   reason is any arbitrary string that specifies the reason for cancelling credits.
 			`,
 		Args: cobra.ExactArgs(2),
