@@ -19,15 +19,12 @@ func TestBridge_Valid(t *testing.T) {
 	// s.addr balance -> tradable 10.5 , retired 10.5
 
 	_, err := s.k.Bridge(s.ctx, &core.MsgBridge{
-		MsgCancel: &core.MsgCancel{
-			Holder: s.addr.String(),
-			Credits: []*core.MsgCancel_CancelCredits{
-				{
-					BatchDenom: batchDenom,
-					Amount:     "10.5",
-				},
+		Holder: s.addr.String(),
+		Credits: []*core.MsgBridge_CancelCredits{
+			{
+				BatchDenom: batchDenom,
+				Amount:     "10.5",
 			},
-			Reason: "reason",
 		},
 		Target:    "polygon",
 		Recipient: recipient,

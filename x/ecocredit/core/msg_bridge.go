@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -31,8 +32,22 @@ func (m MsgBridge) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBridge) ValidateBasic() error {
 
-	if err := m.MsgCancel.ValidateBasic(); err != nil {
-		return err
+	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
+		return sdkerrors.Wrap(err, "holder")
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+	}
+
+	for _, credit := range m.Credits {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
+			return err
+		}
+
+		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
+			return err
+		}
 	}
 
 	if m.Target != BRIDGE_TARGET {
@@ -40,6 +55,7 @@ func (m *MsgBridge) ValidateBasic() error {
 	}
 
 	if !isValidEthereumAddress(m.Recipient) {
+		panic("OOOPS")
 		return sdkerrors.ErrInvalidAddress.Wrapf("%s is not a valid ethereum address", m.Recipient)
 	}
 
@@ -52,7 +68,7 @@ func (m *MsgBridge) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgCancel.
 func (m *MsgBridge) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.MsgCancel.Holder)
+	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
 }
 

@@ -430,17 +430,32 @@ message MsgUpdateProjectMetadataResponse {}
 
 // MsgBridge is the Msg/Bridge request type.
 message MsgBridge {
-  // MsgCancel is the MsgCancel message type.
-  MsgCancel msg_cancel = 1;
-
   // target is the target chain.
-  string target = 2;
+  string target = 1;
 
   // recipient is the recipient address.
-  string recipient = 3;
+  string recipient = 2;
 
   // contract is the contract address.
-  string contract = 4;
+  string contract = 3;
+
+  // holder is the credit holder address.
+  string holder = 4;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 5;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique identifier of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
 }
 
 // MsgBridgeResponse is the Msg/MsgBridge response type.

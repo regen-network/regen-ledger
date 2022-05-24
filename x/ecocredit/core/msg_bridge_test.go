@@ -20,15 +20,12 @@ func TestMsgBridge(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:    "polygon",
 				Contract:  contract,
@@ -38,14 +35,11 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without holder": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:    "polygon",
 				Recipient: recipient,
@@ -55,35 +49,28 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg with wrong holder address": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: "wrongHolder",
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: "wrongHolder",
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 			},
 			expErr: true,
 		},
 		"invalid msg without credits": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-				},
+				Holder: addr1,
 			},
 			expErr: true,
 		},
 		"invalid msg without Credits.BatchDenom": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							Amount: "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						Amount: "10",
 					},
 				},
 			},
@@ -91,12 +78,10 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without Credits.Amount": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
 					},
 				},
 			},
@@ -104,13 +89,11 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg with wrong Credits.Amount": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "abc",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "abc",
 					},
 				},
 			},
@@ -118,15 +101,12 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without bridge target": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Contract:  contract,
 				Recipient: recipient,
@@ -135,15 +115,12 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without bridge contract": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:    "polygon",
 				Recipient: recipient,
@@ -152,15 +129,12 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid msg without bridge recipient address": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:   "polygon",
 				Contract: contract,
@@ -169,15 +143,12 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid bridge recipient address": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:    "polygon",
 				Recipient: addr1,
@@ -187,15 +158,12 @@ func TestMsgBridge(t *testing.T) {
 		},
 		"invalid bridge target": {
 			src: MsgBridge{
-				MsgCancel: &MsgCancel{
-					Holder: addr1,
-					Credits: []*MsgCancel_CancelCredits{
-						{
-							BatchDenom: batchDenom,
-							Amount:     "10",
-						},
+				Holder: addr1,
+				Credits: []*MsgBridge_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "10",
 					},
-					Reason: "reason",
 				},
 				Target:    "polygon1",
 				Recipient: recipient,
