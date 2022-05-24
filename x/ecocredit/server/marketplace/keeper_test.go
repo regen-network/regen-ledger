@@ -178,6 +178,13 @@ func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoAp
 
 // testSellSetup sets up a batch, class, market, and issues a balance of 100 retired and tradable to the base suite's addr.
 func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId string, start, end *timestamppb.Timestamp, creditType core.CreditType) {
+	assert.NilError(s.t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	}))
+
 	assert.NilError(s.t, s.coreStore.ClassTable().Insert(s.ctx, &ecoApi.Class{
 		Id:               classId,
 		Admin:            s.addr,

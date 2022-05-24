@@ -170,7 +170,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 		Quantity:          "10",
 		BidPrice:          &ask,
 		DisableAutoRetire: true})
-	assert.ErrorContains(t, err, "cannot disable auto retire")
+	assert.ErrorContains(t, err, "cannot disable auto-retire")
 
 	// cannot buy more credits than available
 	err = buyDirectSingle(s, buyerAddr, &marketplace.MsgBuyDirect_Order{
