@@ -120,7 +120,7 @@ func (s *buyDirectSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
 	balance.BatchKey = batch.Key
 	balance.Address = s.alice
 
-	// Update because the balance may exist from sellOrderSetup
+	// Update because the balance already exists from sellOrderSetup
 	err = s.coreStore.BatchBalanceTable().Update(s.ctx, balance)
 	require.NoError(s.t, err)
 }
@@ -140,22 +140,37 @@ func (s *buyDirectSuite) BobHasTheBatchBalance(a gocuke.DocString) {
 	require.NoError(s.t, err)
 }
 
+func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
+	balance := &coreapi.BatchSupply{}
+	err := jsonpb.UnmarshalString(a.Content, balance)
+	require.NoError(s.t, err)
+
+	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance.BatchKey = batch.Key
+
+	// Update because the supply already exists from sellOrderSetup
+	err = s.coreStore.BatchSupplyTable().Update(s.ctx, balance)
+	require.NoError(s.t, err)
+}
+
 func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
 	s.sellOrderId = id
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantity(a string) {
 	s.quantity = a
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
 	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount)
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
@@ -163,7 +178,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
 	require.True(s.t, ok)
 
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
@@ -171,7 +186,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 	require.NoError(s.t, err)
 
 	s.disableAutoRetire = disableAutoRetire
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string, b string) {
@@ -180,7 +195,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string
 
 	s.quantity = a
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string, b string) {
@@ -189,7 +204,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string,
 
 	s.quantity = a
 	s.askPrice = askPrice
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(a string, b string) {
@@ -198,7 +213,16 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 
 	s.quantity = a
 	s.disableAutoRetire = disableAutoRetire
-	s.sellOrderSetup()
+	s.sellOrderSetup(1)
+}
+
+func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a string, b string) {
+	askAmount, ok := sdk.NewIntFromString(b)
+	require.True(s.t, ok)
+
+	s.quantity = a
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
+	s.sellOrderSetup(2)
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
@@ -347,8 +371,8 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 	s.bankKeeper.EXPECT().
 		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
 		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoins[0])
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoins[0])
+			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
+			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
 		}).
 		AnyTimes() // not expected on failed attempt
 
@@ -429,6 +453,55 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 				Quantity:          a,
 				BidPrice:          &s.bidPrice,
 				DisableAutoRetire: disableAutoRetire,
+			},
+		},
+	})
+}
+
+func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
+	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
+	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
+	sendCoins := sdk.NewCoins(sendCoin)
+
+	bidAmount, ok := sdk.NewIntFromString(b)
+	require.True(s.t, ok)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
+		Return(s.bobBankBalance).
+		Times(1)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
+		Return(s.bobBankBalance.Sub(sendCoin)).
+		Times(1)
+
+	s.bankKeeper.EXPECT().
+		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
+			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
+			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
+		}).
+		AnyTimes() // not expected on failed attempt
+
+	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
+		Buyer: s.bob.String(),
+		Orders: []*marketplace.MsgBuyDirect_Order{
+			{
+				SellOrderId: 1,
+				Quantity:    a,
+				BidPrice: &sdk.Coin{
+					Denom:  s.bidPrice.Denom,
+					Amount: bidAmount,
+				},
+			},
+			{
+				SellOrderId: 2,
+				Quantity:    a,
+				BidPrice: &sdk.Coin{
+					Denom:  s.bidPrice.Denom,
+					Amount: bidAmount,
+				},
 			},
 		},
 	})
@@ -515,7 +588,22 @@ func (s *buyDirectSuite) ExpectBobBatchBalance(a gocuke.DocString) {
 	require.Equal(s.t, expected.Escrowed, balance.Escrowed)
 }
 
-func (s *buyDirectSuite) sellOrderSetup() {
+func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
+	expected := &coreapi.BatchSupply{}
+	err := jsonpb.UnmarshalString(a.Content, expected)
+	require.NoError(s.t, err)
+
+	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
+	require.NoError(s.t, err)
+
+	balance, err := s.coreStore.BatchSupplyTable().Get(s.ctx, batch.Key)
+	require.NoError(s.t, err)
+
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+}
+
+func (s *buyDirectSuite) sellOrderSetup(count int) {
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
 		Id:               s.classId,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -527,16 +615,28 @@ func (s *buyDirectSuite) sellOrderSetup() {
 	})
 	require.NoError(s.t, err)
 
+	quantity := s.quantity
+
+	if count == 2 {
+		c, err := math.NewDecFromString("2")
+		require.NoError(s.t, err)
+		q, err := math.NewDecFromString(s.quantity)
+		require.NoError(s.t, err)
+		t, err := c.Mul(q)
+		require.NoError(s.t, err)
+		quantity = t.String()
+	}
+
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
 		BatchKey: batchKey,
 		Address:  s.alice,
-		Escrowed: s.quantity,
+		Escrowed: quantity,
 	})
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
 		BatchKey:       batchKey,
-		TradableAmount: s.quantity, // TODO: tradable #1123
+		TradableAmount: quantity, // TODO: tradable #1123
 	})
 	require.NoError(s.t, err)
 
@@ -549,14 +649,25 @@ func (s *buyDirectSuite) sellOrderSetup() {
 	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
 		Seller:            s.alice,
 		BatchId:           batchKey, // TODO: batch_key #1123
-		Quantity:          s.quantity,
+		Quantity:          quantity,
 		MarketId:          marketKey,                  // TODO: market_key #1124
 		AskPrice:          s.askPrice.Amount.String(), // TODO: ask_amount #1123
 		DisableAutoRetire: s.disableAutoRetire,
 	})
 	require.NoError(s.t, err)
-
 	require.Equal(s.t, sellOrderId, s.sellOrderId)
+
+	if count == 2 {
+		err = s.marketStore.SellOrderTable().Insert(s.ctx, &api.SellOrder{
+			Seller:            s.alice,
+			BatchId:           batchKey,
+			Quantity:          quantity,
+			MarketId:          marketKey,
+			AskPrice:          s.askPrice.Amount.String(),
+			DisableAutoRetire: s.disableAutoRetire,
+		})
+		require.NoError(s.t, err)
+	}
 }
 
 func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdk.Int {

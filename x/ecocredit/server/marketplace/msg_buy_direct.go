@@ -21,31 +21,36 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		return nil, err
 	}
 
-	for _, order := range req.Orders {
+	for i, order := range req.Orders {
+		orderIndex := fmt.Sprintf("order[%d]", i)
+
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, fmt.Errorf("sell order with id %d: %w", order.SellOrderId, err)
+			return nil, fmt.Errorf("%s: sell order with id %d: %w", orderIndex, order.SellOrderId, err)
 		}
 
+		// check if disable auto-retire is required
 		if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-				"cannot disable auto-retire for a sell order with auto-retire disabled",
+				"%s: cannot disable auto-retire for a sell order with auto-retire enabled", orderIndex,
 			)
 		}
 
+		// check decimal places does not exceed credit type precision
 		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchId)
 		if err != nil {
 			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
 		}
-
 		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
-
 		creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: quantity: %s, credit type precision: %d",
+				orderIndex, order.Quantity, ct.Precision,
+			)
 		}
 
 		// check that bid price and ask price denoms match
@@ -53,10 +58,11 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if err != nil {
 			return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 		}
-
 		if order.BidPrice.Denom != market.BankDenom {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
-				"%s, expected %s", order.BidPrice.Denom, market.BankDenom)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: bid price denom: %s, ask price denom: %s",
+				orderIndex, order.BidPrice.Denom, market.BankDenom,
+			)
 		}
 
 		// check that bid price >= sell price
@@ -64,36 +70,35 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if !ok {
 			return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
 		}
-
 		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskPrice}
 		if sellOrderAskPrice.GT(order.BidPrice.Amount) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-				"price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, order.BidPrice,
+				"%s: ask price: %v, bid price: %v, insufficient bid price",
+				orderIndex, sellOrderPriceCoin, order.BidPrice,
 			)
 		}
 
 		// check address has the total cost (price per * order quantity)
 		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-
 		cost, err := getTotalCost(sellOrderAskPrice, creditOrderQty)
 		if err != nil {
 			return nil, err
 		}
-
 		coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
 		if bal.IsLT(coinCost) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
-				"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal)
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
+				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
+				orderIndex, order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal,
+			)
 		}
 
 		// fill the order, updating balances and the sell order in state
-		if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
-			autoRetire:     !order.DisableAutoRetire,
-			canPartialFill: false,
-			batchDenom:     batch.Denom,
-			jurisdiction:   order.RetirementJurisdiction,
+		if err = k.fillOrder(ctx, orderIndex, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
+			autoRetire:   !order.DisableAutoRetire,
+			batchDenom:   batch.Denom,
+			jurisdiction: order.RetirementJurisdiction,
 		}); err != nil {
-			return nil, fmt.Errorf("error filling order: %w", err)
+			return nil, err
 		}
 	}
 
