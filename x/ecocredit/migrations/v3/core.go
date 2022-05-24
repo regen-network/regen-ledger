@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -315,10 +316,95 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
-	// TODO: manual operations
 	// - update curator address for baskets
+	// we don't have baskets on mainnet
+
 	// - update issuance date for credit batches
+	if err := updateBatchIssueanceDate(ctx, ss); err != nil {
+		return err
+	}
+
 	// - add reference id to existing projects
+	if err := addReferenceIds(ctx, ss); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func addReferenceIds(ctx context.Context, ss api.StateStore) error {
+	// project location -> reference-id
+	// CD-MN -> ""
+	// KE    -> ""
+
+	locationToReferenceIdMap := make(map[string]string)
+	locationToReferenceIdMap["CD-MN"] = ""
+	locationToReferenceIdMap["KE"] = ""
+
+	itr, err := ss.ProjectTable().List(ctx, api.ProjectKeyIndexKey{})
+	if err != nil {
+		return err
+	}
+	defer itr.Close()
+
+	for itr.Next() {
+		project, err := itr.Value()
+		if err != nil {
+			return err
+		}
+
+		project.ReferenceId = locationToReferenceIdMap[project.Jurisdiction]
+		if err := ss.ProjectTable().Update(ctx, project); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore) error {
+	// batch issuance dates
+	//  C01-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
+	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
+	//  C01-20190101-20191231-003  -  "2022-05-06T01:33:25Z"
+	//  C01-20190101-20191231-004  -  "2022-05-06T01:33:31Z"
+
+	batchIdToIssuanceDateMap := make(map[string]time.Time)
+	issueanceDate, err := time.Parse(time.RFC3339, "2022-05-06T01:33:13Z")
+	if err != nil {
+		return err
+	}
+	batchIdToIssuanceDateMap["C01-20190101-20191231-001"] = issueanceDate
+
+	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:19Z")
+	if err != nil {
+		return err
+	}
+	batchIdToIssuanceDateMap["C01-20190101-20191231-002"] = issueanceDate
+
+	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:25Z")
+	if err != nil {
+		return err
+	}
+	batchIdToIssuanceDateMap["C01-20190101-20191231-003"] = issueanceDate
+
+	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:31Z")
+	if err != nil {
+		return err
+	}
+	batchIdToIssuanceDateMap["C01-20190101-20191231-004"] = issueanceDate
+
+	for denom, issuanceDate := range batchIdToIssuanceDateMap {
+		batch, err := ss.BatchTable().GetByDenom(ctx, denom)
+		if err != nil {
+			return err
+		}
+
+		batch.IssuanceDate = timestamppb.New(issuanceDate)
+		if err := ss.BatchTable().Update(ctx, batch); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

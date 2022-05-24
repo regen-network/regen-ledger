@@ -7,6 +7,7 @@ package app
 
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -20,6 +21,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -78,10 +81,39 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		}
 		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
 
-		// TODO: update community member accounts
+		if err := recoverFunds(ctx, app.AccountKeeper, app.BankKeeper); err != nil {
+			return nil, err
+		}
 
 		return toVersion, nil
 	})
+}
+
+func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
+	// address with funds inaccessible
+	const lostAddr = "regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f"
+	// address that the community member has access to
+	const newAddr = "regen14tpuqrwf95evu3ejm9z7dn20ttcyzqy3jjpfv4"
+
+	var lostAccount, newAccount authtypes.AccountI
+
+	ak.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
+		if account.GetAddress().String() == lostAddr {
+			lostAccount = account
+			if newAccount != nil {
+				return true
+			}
+		} else if account.GetAddress().String() == newAddr {
+			newAccount = account
+			if lostAccount != nil {
+				return true
+			}
+		}
+
+		return false
+	})
+
+	return nil
 }
 
 func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
