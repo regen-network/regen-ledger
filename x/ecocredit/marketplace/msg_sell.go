@@ -68,6 +68,10 @@ func (m *MsgSell) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: denom cannot be empty", orderIndex)
 		}
 
+		if err := sdk.ValidateDenom(order.AskPrice.Denom); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: %s", orderIndex, err)
+		}
+
 		// sdk.Coin.Validate panics if coin amount is nil
 		if order.AskPrice.Amount.IsNil() {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: amount cannot be empty", orderIndex)
