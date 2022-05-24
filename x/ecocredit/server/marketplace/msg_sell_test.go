@@ -62,6 +62,24 @@ func (s *sellSuite) ABlockTimeWithTimestamp(a string) {
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 }
 
+func (s *sellSuite) ACreditType() {
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *sellSuite) ACreditTypeWithPrecision(a string) {
+	precision, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: s.creditTypeAbbrev,
+		Precision:    uint32(precision),
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *sellSuite) AnAllowedDenom() {
 	err := s.marketStore.AllowedDenomTable().Insert(s.ctx, &api.AllowedDenom{
 		BankDenom: s.askPrice.Denom,

@@ -4,6 +4,7 @@ Feature: MsgSell
     - when the credit batch exists
     - when the seller owns credits from the credit batch
     - when the seller owns greater than or equal to the quantity of credits
+    - when the number of decimal places in quantity is less than or equal to the credit type precision
     - when the ask denom is an allowed denom
     - when the expiration is after the block time
     - the market is created when the credit type and bank denom pair is unique
@@ -14,7 +15,8 @@ Feature: MsgSell
   Rule: The credit batch must exist
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
 
     Scenario: credit batch exists
       Given alice owns credits with batch denom "C01-001-20200101-20210101-001"
@@ -28,7 +30,8 @@ Feature: MsgSell
   Rule: The seller must own credits from the credit batch
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
 
     Scenario: seller owns credits
       Given alice owns credits with batch denom "C01-001-20200101-20210101-001"
@@ -43,7 +46,8 @@ Feature: MsgSell
   Rule: The seller must own greater than or equal to the quantity of credits
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
 
     Scenario Outline: seller owns greater than or equal to credit quantity (single sell order)
       Given alice owns credit quantity "100"
@@ -75,10 +79,31 @@ Feature: MsgSell
       When alice attempts to create two sell orders each with credit quantity "100"
       Then expect the error "order[1]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
 
+  Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
+
+    Background:
+      Given a credit type with precision "6"
+      And an allowed denom
+      And alice owns credits
+
+    Scenario Outline: quantity decimal places less than or equal to precision
+      When alice attempts to create a sell order with credit quantity "<quantity>"
+      Then expect no error
+
+      Examples:
+        | description | quantity   |
+        | less than   | 100.12345  |
+        | equal to    | 100.123456 |
+
+    Scenario: quantity decimal places more than precision
+      When alice attempts to create a sell order with credit quantity "100.1234567"
+      Then expect the error "100.1234567 exceeds maximum decimal places: 6"
+
   Rule: The ask denom must be an allowed denom
 
     Background:
-      Given alice owns credits
+      Given a credit type
+      And alice owns credits
 
     Scenario: ask denom is allowed
       Given an allowed denom with bank denom "regen"
@@ -93,6 +118,7 @@ Feature: MsgSell
 
     Background:
       Given a block time with timestamp "2020-01-01"
+      And a credit type
       And an allowed denom
       And alice owns credits
 
@@ -112,7 +138,8 @@ Feature: MsgSell
   Rule: The market is created when the credit type and bank denom pair is unique
 
     Background:
-      Given an allowed denom with bank denom "regen"
+      Given a credit type
+      And an allowed denom with bank denom "regen"
       And alice owns credits with batch denom "C01-001-20200101-20210101-001"
 
     Scenario: credit type and bank denom pair is unique
@@ -127,7 +154,8 @@ Feature: MsgSell
   Rule: The tradable credits are converted to escrowed credits
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
       And alice owns credit quantity "100"
 
     Scenario: the credits are escrowed
@@ -140,7 +168,8 @@ Feature: MsgSell
   Rule: The sell orders are stored in state
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
       And alice owns credits
 
     Scenario: the sell orders are stored in state
@@ -153,7 +182,8 @@ Feature: MsgSell
   Rule: The response includes the sell order ids
 
     Background:
-      Given an allowed denom
+      Given a credit type
+      And an allowed denom
       And alice owns credits
 
     Scenario: the response includes sell order ids
