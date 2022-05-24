@@ -5,6 +5,7 @@ Feature: Msg/BuyDirect
   - when the bid denom matches the sell denom
   - when the buyer has a bank balance greater than or equal to the total cost
   - when the buyer provides a bid price greater than or equal to the ask price
+  - when the number of decimal places in quantity is less than or equal to the credit type precision
   - the buyer cannot disable auto-retire if auto-retire is enabled for the sell order
   - the sell order is removed when the sell order is filled
   - the sell order quantity is updated when the sell order is not filled
@@ -14,6 +15,9 @@ Feature: Msg/BuyDirect
   - the buyer batch balance is updated
 
   Rule: The sell order must exist
+
+    Background:
+      Given a credit type
 
     Scenario: the sell order exists
       Given alice created a sell order with id "1"
@@ -27,7 +31,8 @@ Feature: Msg/BuyDirect
   Rule: The bid denom must match the sell denom
 
     Background:
-      Given alice created a sell order with ask denom "regen"
+      Given a credit type
+      And alice created a sell order with ask denom "regen"
       And bob has a bank balance with denom "regen"
 
     Scenario: bid denom matches sell denom
@@ -41,7 +46,8 @@ Feature: Msg/BuyDirect
   Rule: The buyer must have a bank balance greater than or equal to the total cost
 
     Background:
-      Given alice created a sell order with quantity "10" and ask amount "10"
+      Given a credit type
+      And alice created a sell order with quantity "10" and ask amount "10"
 
     Scenario Outline: buyer bank balance is greater than or equal to total cost
       Given bob has a bank balance with amount "<balance-amount>"
@@ -58,10 +64,30 @@ Feature: Msg/BuyDirect
       When bob attempts to buy credits with quantity "10" and bid amount "10"
       Then expect the error "requested to purchase 10 credits @ 10regen per credit (total 100regen) with a balance of 50regen: insufficient funds"
 
+  Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
+
+    Background:
+      Given a credit type with precision "6"
+      And alice created a sell order with quantity "10"
+
+    Scenario Outline: quantity decimal places less than or equal to precision
+      When bob attempts to buy credits with quantity "<quantity>"
+      Then expect no error
+
+      Examples:
+        | description | quantity   |
+        | less than   | 9.12345  |
+        | equal to    | 9.123456 |
+
+    Scenario: quantity decimal places more than precision
+      When bob attempts to buy credits with quantity "9.1234567"
+      Then expect the error "9.1234567 exceeds maximum decimal places: 6"
+
   Rule: The buyer must provide a bid price greater than or equal to the ask price
 
     Background:
-      Given alice created a sell order with ask amount "10"
+      Given a credit type
+      And alice created a sell order with ask amount "10"
       And bob has a bank balance with amount "100"
 
     Scenario Outline: bid price greater than or equal to ask price
@@ -78,6 +104,9 @@ Feature: Msg/BuyDirect
       Then expect the error "price per credit too low: sell order ask per credit: 10regen, request: 5regen: invalid request"
 
   Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
+
+    Background:
+      Given a credit type
 
     Scenario Outline: auto retire not required
       Given alice created a sell order with disable auto retire "true"
@@ -102,7 +131,8 @@ Feature: Msg/BuyDirect
   Rule: The sell order is removed when the sell order is filled
 
     Background:
-      Given alice created a sell order with quantity "10"
+      Given a credit type
+      And alice created a sell order with quantity "10"
 
     Scenario: the sell order is removed
       When bob attempts to buy credits with quantity "10"
@@ -116,6 +146,9 @@ Feature: Msg/BuyDirect
 
   Rule: The sell order quantity is updated when the sell order is not filled
 
+    Background:
+      Given a credit type
+
     Scenario:
       Given alice created a sell order with quantity "20"
       When bob attempts to buy credits with quantity "10"
@@ -124,6 +157,9 @@ Feature: Msg/BuyDirect
     # no failing scenario - state transitions only occur upon successful message execution
 
   Rule: the buyer bank balance is updated
+
+    Background:
+      Given a credit type
 
     Scenario: buyer bank balance updated
       Given alice created a sell order with quantity "10" and ask price "10regen"
@@ -136,7 +172,8 @@ Feature: Msg/BuyDirect
   Rule: the seller bank balance is updated
 
     Background:
-      Given alice created a sell order with quantity "100" and ask price "1regen"
+      Given a credit type
+      And alice created a sell order with quantity "100" and ask price "1regen"
       And alice has bank balance "0regen"
 
     Scenario: seller bank balance updated
@@ -148,7 +185,8 @@ Feature: Msg/BuyDirect
   Rule: the buyer batch balance is updated
 
     Background:
-      Given alice created a sell order with quantity "10" and disable auto retire "true"
+      Given a credit type
+      And alice created a sell order with quantity "10" and disable auto retire "true"
       And bob has the batch balance
       """
       {
@@ -185,7 +223,8 @@ Feature: Msg/BuyDirect
   Rule: the seller batch balance is updated
 
     Background:
-      Given alice created a sell order with quantity "10"
+      Given a credit type
+      And alice created a sell order with quantity "10"
       And alice has the batch balance
       """
       {

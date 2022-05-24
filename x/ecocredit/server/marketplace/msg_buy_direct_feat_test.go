@@ -6,6 +6,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -63,6 +64,24 @@ func (s *buyDirectSuite) Before(t gocuke.TestingT) {
 		Denom:  "regen",
 		Amount: sdk.NewInt(10),
 	}
+}
+
+func (s *buyDirectSuite) ACreditType() {
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+}
+
+func (s *buyDirectSuite) ACreditTypeWithPrecision(a string) {
+	precision, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
+
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: s.creditTypeAbbrev,
+		Precision:    uint32(precision),
+	})
+	require.NoError(s.t, err)
 }
 
 func (s *buyDirectSuite) AliceHasBankBalance(a string) {
@@ -183,15 +202,12 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
-	id, err := strconv.ParseUint(a, 10, 32)
-	require.NoError(s.t, err)
-
-	quantity, ok := sdk.NewIntFromString(s.quantity)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
+
+	id, err := strconv.ParseUint(a, 10, 32)
+	require.NoError(s.t, err)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
@@ -219,10 +235,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
-	quantity, ok := sdk.NewIntFromString(s.quantity)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
 
@@ -255,15 +268,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) {
-	disableAutoRetire, err := strconv.ParseBool(a)
-	require.NoError(s.t, err)
-
-	quantity, ok := sdk.NewIntFromString(s.quantity)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
+
+	disableAutoRetire, err := strconv.ParseBool(a)
+	require.NoError(s.t, err)
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
@@ -292,10 +302,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
-	quantity, ok := sdk.NewIntFromString(a)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
 
@@ -325,14 +332,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
-	quantity, ok := sdk.NewIntFromString(a)
-	require.True(s.t, ok)
+	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
+	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
+	sendCoins := sdk.NewCoins(sendCoin)
 
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
-	sendCoins := sdk.NewCoins(sdk.NewCoin(s.askPrice.Denom, askTotal))
 
 	s.bankKeeper.EXPECT().
 		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
@@ -363,10 +368,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string, b string) {
-	quantity, ok := sdk.NewIntFromString(a)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
 
@@ -399,10 +401,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire(a string, b string) {
-	quantity, ok := sdk.NewIntFromString(a)
-	require.True(s.t, ok)
-
-	askTotal := s.askPrice.Amount.Mul(quantity)
+	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
 	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
 	sendCoins := sdk.NewCoins(sendCoin)
 
@@ -537,25 +536,38 @@ func (s *buyDirectSuite) sellOrderSetup() {
 
 	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
 		BatchKey:       batchKey,
-		TradableAmount: s.quantity, // TODO: tradable
+		TradableAmount: s.quantity, // TODO: tradable #1123
 	})
 	require.NoError(s.t, err)
 
 	marketKey, err := s.marketStore.MarketTable().InsertReturningID(s.ctx, &api.Market{
-		CreditType: s.creditTypeAbbrev, // TODO: credit_type_abbrev
+		CreditType: s.creditTypeAbbrev, // TODO: credit_type_abbrev #1123
 		BankDenom:  s.askPrice.Denom,
 	})
 	require.NoError(s.t, err)
 
 	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
 		Seller:            s.alice,
-		BatchId:           batchKey, // TODO: batch_key
+		BatchId:           batchKey, // TODO: batch_key #1123
 		Quantity:          s.quantity,
-		MarketId:          marketKey,                  // TODO: market_key
-		AskPrice:          s.askPrice.Amount.String(), // TODO: ask_amount
+		MarketId:          marketKey,                  // TODO: market_key #1124
+		AskPrice:          s.askPrice.Amount.String(), // TODO: ask_amount #1123
 		DisableAutoRetire: s.disableAutoRetire,
 	})
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, sellOrderId, s.sellOrderId)
+}
+
+func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdk.Int {
+	q, err := math.NewDecFromString(quantity)
+	require.NoError(s.t, err)
+
+	a, err := math.NewDecFromString(amount)
+	require.NoError(s.t, err)
+
+	t, err := a.Mul(q)
+	require.NoError(s.t, err)
+
+	return t.SdkIntTrim()
 }

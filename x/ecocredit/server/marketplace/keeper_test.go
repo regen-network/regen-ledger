@@ -69,13 +69,6 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.sdkCtx = sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
-	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
-		Abbreviation: "C",
-		Name:         "carbon",
-		Unit:         "metric ton C02",
-		Precision:    6,
-	}))
-
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
