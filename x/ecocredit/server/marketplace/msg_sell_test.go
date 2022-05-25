@@ -21,15 +21,16 @@ import (
 
 type sellSuite struct {
 	*baseSuite
-	alice             sdk.AccAddress
-	aliceBatchBalance string
-	creditTypeAbbrev  string
-	batchDenom        string
-	askPrice          *sdk.Coin
-	quantity          string
-	expiration        *time.Time
-	res               *marketplace.MsgSellResponse
-	err               error
+	alice               sdk.AccAddress
+	aliceTradableAmount string
+	creditTypeAbbrev    string
+	classId             string
+	batchDenom          string
+	askPrice            *sdk.Coin
+	quantity            string
+	expiration          *time.Time
+	res                 *marketplace.MsgSellResponse
+	err                 error
 }
 
 func TestSell(t *testing.T) {
@@ -39,8 +40,9 @@ func TestSell(t *testing.T) {
 func (s *sellSuite) Before(t gocuke.TestingT) {
 	s.baseSuite = setupBase(t)
 	s.alice = s.addr
-	s.aliceBatchBalance = "200"
+	s.aliceTradableAmount = "200"
 	s.creditTypeAbbrev = "C"
+	s.classId = "C01"
 	s.batchDenom = "C01-001-20200101-20210101-001"
 	s.askPrice = &sdk.Coin{
 		Denom:  "regen",
@@ -123,91 +125,22 @@ func (s *sellSuite) AMarketWithCreditTypeAndBankDenom(a string, b string) {
 	})
 }
 
-func (s *sellSuite) AliceOwnsCredits() {
-	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
-
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
-		CreditTypeAbbrev: creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
-		ClassKey: classKey,
-	})
-	require.NoError(s.t, err)
-
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
-		ProjectKey: projectKey,
-		Denom:      s.batchDenom,
-	})
-	require.NoError(s.t, err)
-
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.aliceBatchBalance,
-	})
-	require.NoError(s.t, err)
+func (s *sellSuite) AliceHasATradableBatchBalance() {
+	s.aliceTradableBatchBalance()
 }
 
-func (s *sellSuite) AliceOwnsCreditsWithBatchDenom(a string) {
-	classId := core.GetClassIdFromBatchDenom(a)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+func (s *sellSuite) AliceHasATradableBatchBalanceWithDenom(a string) {
+	s.batchDenom = a
+	s.classId = core.GetClassIdFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassId(s.classId)
 
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
-		CreditTypeAbbrev: creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
-		ClassKey: classKey,
-	})
-	require.NoError(s.t, err)
-
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
-		ProjectKey: projectKey,
-		Denom:      a,
-	})
-	require.NoError(s.t, err)
-
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.quantity,
-	})
-	require.NoError(s.t, err)
+	s.aliceTradableBatchBalance()
 }
 
-func (s *sellSuite) AliceOwnsCreditQuantity(a string) {
-	classId := core.GetClassIdFromBatchDenom(s.batchDenom)
-	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(classId)
+func (s *sellSuite) AliceHasATradableBatchBalanceWithAmount(a string) {
+	s.aliceTradableAmount = a
 
-	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
-		Id:               classId,
-		CreditTypeAbbrev: creditTypeAbbrev,
-	})
-	require.NoError(s.t, err)
-
-	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
-		ClassKey: classKey,
-	})
-	require.NoError(s.t, err)
-
-	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
-		ProjectKey: projectKey,
-		Denom:      s.batchDenom,
-	})
-	require.NoError(s.t, err)
-
-	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: a,
-	})
-	require.NoError(s.t, err)
+	s.aliceTradableBatchBalance()
 }
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenom(a string) {
@@ -437,4 +370,30 @@ func (s *sellSuite) ExpectTheResponse(a gocuke.DocString) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, res, s.res)
+}
+
+func (s *sellSuite) aliceTradableBatchBalance() {
+	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{
+		Id:               s.classId,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+	})
+	require.NoError(s.t, err)
+
+	projectKey, err := s.coreStore.ProjectTable().InsertReturningID(s.ctx, &coreapi.Project{
+		ClassKey: classKey,
+	})
+	require.NoError(s.t, err)
+
+	batchKey, err := s.coreStore.BatchTable().InsertReturningID(s.ctx, &coreapi.Batch{
+		ProjectKey: projectKey,
+		Denom:      s.batchDenom,
+	})
+	require.NoError(s.t, err)
+
+	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
+		BatchKey: batchKey,
+		Address:  s.alice,
+		Tradable: s.aliceTradableAmount,
+	})
+	require.NoError(s.t, err)
 }

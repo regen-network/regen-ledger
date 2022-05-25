@@ -19,7 +19,7 @@ Feature: MsgSell
       And an allowed denom
 
     Scenario: credit batch exists
-      Given alice owns credits with batch denom "C01-001-20200101-20210101-001"
+      Given alice has a tradable batch balance with denom "C01-001-20200101-20210101-001"
       When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001"
       Then expect no error
 
@@ -34,7 +34,7 @@ Feature: MsgSell
       And an allowed denom
 
     Scenario: seller owns credits
-      Given alice owns credits with batch denom "C01-001-20200101-20210101-001"
+      Given alice has a tradable batch balance with denom "C01-001-20200101-20210101-001"
       When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001"
       Then expect no error
 
@@ -50,7 +50,7 @@ Feature: MsgSell
       And an allowed denom
 
     Scenario Outline: seller owns greater than or equal to credit quantity (single sell order)
-      Given alice owns credit quantity "100"
+      Given alice has a tradable batch balance with amount "100"
       When alice attempts to create a sell order with credit quantity "<quantity>"
       Then expect no error
 
@@ -60,7 +60,7 @@ Feature: MsgSell
         | equal to     | 100      |
 
     Scenario Outline: seller owns greater than or equal to credit quantity (multiple sell orders)
-      Given alice owns credit quantity "200"
+      Given alice has a tradable batch balance with amount "200"
       When alice attempts to create two sell orders each with credit quantity "<quantity>"
       Then expect no error
 
@@ -70,12 +70,12 @@ Feature: MsgSell
         | equal to     | 100      |
 
     Scenario: seller owns less than credit quantity (single sell order)
-      Given alice owns credit quantity "50"
+      Given alice has a tradable batch balance with amount "50"
       When alice attempts to create a sell order with credit quantity "100"
       Then expect the error "order[0]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
 
     Scenario: seller owns less than credit quantity (multiple sell orders)
-      Given alice owns credit quantity "150"
+      Given alice has a tradable batch balance with amount "150"
       When alice attempts to create two sell orders each with credit quantity "100"
       Then expect the error "order[1]: credit quantity: 100, tradable balance: 50: insufficient credit balance"
 
@@ -84,7 +84,7 @@ Feature: MsgSell
     Background:
       Given a credit type with precision "6"
       And an allowed denom
-      And alice owns credits
+      And alice has a tradable batch balance with amount "100"
 
     Scenario Outline: quantity decimal places less than or equal to precision
       When alice attempts to create a sell order with credit quantity "<quantity>"
@@ -92,18 +92,18 @@ Feature: MsgSell
 
       Examples:
         | description | quantity   |
-        | less than   | 100.12345  |
-        | equal to    | 100.123456 |
+        | less than   | 99.12345  |
+        | equal to    | 99.123456 |
 
     Scenario: quantity decimal places more than precision
-      When alice attempts to create a sell order with credit quantity "100.1234567"
-      Then expect the error "100.1234567 exceeds maximum decimal places: 6"
+      When alice attempts to create a sell order with credit quantity "99.1234567"
+      Then expect the error "99.1234567 exceeds maximum decimal places: 6"
 
   Rule: The ask denom must be an allowed denom
 
     Background:
       Given a credit type
-      And alice owns credits
+      And alice has a tradable batch balance
 
     Scenario: ask denom is allowed
       Given an allowed denom with bank denom "regen"
@@ -120,7 +120,7 @@ Feature: MsgSell
       Given a block time with timestamp "2020-01-01"
       And a credit type
       And an allowed denom
-      And alice owns credits
+      And alice has a tradable batch balance
 
     Scenario: expiration is after block time
       When alice attempts to create a sell order with expiration "2021-01-01"
@@ -140,7 +140,7 @@ Feature: MsgSell
     Background:
       Given a credit type
       And an allowed denom with bank denom "regen"
-      And alice owns credits with batch denom "C01-001-20200101-20210101-001"
+      And alice has a tradable batch balance with denom "C01-001-20200101-20210101-001"
 
     Scenario: credit type and bank denom pair is unique
       When alice attempts to create a sell order with batch denom "C01-001-20200101-20210101-001" and ask denom "regen"
@@ -156,7 +156,7 @@ Feature: MsgSell
     Background:
       Given a credit type
       And an allowed denom
-      And alice owns credit quantity "100"
+      And alice has a tradable batch balance with amount "100"
 
     Scenario: the credits are escrowed
       When alice attempts to create a sell order with credit quantity "100"
@@ -170,7 +170,7 @@ Feature: MsgSell
     Background:
       Given a credit type
       And an allowed denom
-      And alice owns credits
+      And alice has a tradable batch balance
 
     Scenario: the sell orders are stored in state
       When alice attempts to create two sell orders
@@ -184,7 +184,7 @@ Feature: MsgSell
     Background:
       Given a credit type
       And an allowed denom
-      And alice owns credits
+      And alice has a tradable batch balance
 
     Scenario: the response includes sell order ids
       When alice attempts to create two sell orders
