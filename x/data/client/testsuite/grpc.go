@@ -465,32 +465,22 @@ func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 	val := s.network.Validators[0]
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name   string
+		url    string
+		expErr bool
+		errMsg string
 	}{
 		{
 			"invalid id",
 			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, 404),
 			true,
 			"not found",
-			0,
 		},
 		{
 			"valid request",
 			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, s.resolverID),
 			false,
 			"",
-			2,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d&pagination.limit=1", val.APIAddress, s.resolverID),
-			false,
-			"",
-			1,
 		},
 	}
 
