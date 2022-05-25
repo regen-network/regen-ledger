@@ -154,9 +154,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	// migrate credit batches to ORM v1 and create projects for existing credit classes
-	batchDenomToBatchMap := make(map[string]batchMapT) // map of a batch denom to batch id and amount cancelled
-	projectKeyToBatchSeq := make(map[uint64]uint64)    // map of a project key to batch sequence
-	classKeyToProjectSeq := make(map[uint64]uint64)    // map of a class key to project sequence
+	batchDenomToBatchMap := make(map[string]batchMapT)    // map of a batch denom to batch id and amount cancelled
+	projectKeyToBatchSeq := make(map[uint64]uint64)       // map of a project key to batch sequence
+	classKeyToProjectSeq := make(map[uint64]uint64)       // map of a class key to project sequence
+	oldBatchDenomToNewDenomMap := make(map[string]string) // map of a old batch denom to new batch denom
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -242,6 +243,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
+		oldBatchDenomToNewDenomMap[batchInfo.BatchDenom] = batchDenom
 		batch := api.Batch{
 			ProjectKey:   projectKey,
 			Denom:        batchDenom,
@@ -320,7 +322,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	// we don't have baskets on mainnet
 
 	// - update issuance date for credit batches
-	if err := updateBatchIssueanceDate(ctx, ss); err != nil {
+	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap); err != nil {
 		return err
 	}
 
@@ -362,7 +364,7 @@ func addReferenceIds(ctx context.Context, ss api.StateStore) error {
 	return nil
 }
 
-func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore) error {
+func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
 	// batch issuance dates
 	//  C01-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
 	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
@@ -395,7 +397,7 @@ func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore) error {
 	batchIdToIssuanceDateMap["C01-20190101-20191231-004"] = issueanceDate
 
 	for denom, issuanceDate := range batchIdToIssuanceDateMap {
-		batch, err := ss.BatchTable().GetByDenom(ctx, denom)
+		batch, err := ss.BatchTable().GetByDenom(ctx, oldBatchDenomToNewDenomMap[denom])
 		if err != nil {
 			return err
 		}
