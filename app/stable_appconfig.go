@@ -121,7 +121,7 @@ func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Ke
 	}
 
 	vestingPeriods := va.VestingPeriods
-
+	// unlock vesting tokens
 	newVestingPeriods := make([]vestingtypes.Period, len(va.VestingPeriods))
 	for i, vp := range va.VestingPeriods {
 		vp.Length = 0
