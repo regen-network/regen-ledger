@@ -5,7 +5,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "US-WA",
       "retire_on_take": true
@@ -19,7 +19,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100"
     }
     """
@@ -70,7 +70,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT"
+      "basket_denom": "eco.uC.NCT"
     }
     """
     When the message is validated
@@ -81,7 +81,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100.5"
     }
     """
@@ -93,7 +93,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "-100"
     }
     """
@@ -105,7 +105,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retire_on_take": true
     }
@@ -118,7 +118,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "foo",
       "retire_on_take": true
@@ -132,7 +132,7 @@ Feature: MsgTake
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "amount": "100",
       "retirement_jurisdiction": "foo",
       "retire_on_take": false

@@ -30,6 +30,18 @@ service Query {
     // HTTP REST API not supported with ContentHash
   }
 
+  // IRIByRawHash queries IRI based on ContentHash_Raw properties.
+  rpc IRIByRawHash(QueryIRIByRawHashRequest)
+      returns (QueryIRIByRawHashResponse) {
+    option (google.api.http).get = "/regen/data/v1/iri-by-raw";
+  }
+
+  // IRIByGraphHash queries IRI based on ContentHash_Graph properties.
+  rpc IRIByGraphHash(QueryIRIByGraphHashRequest)
+      returns (QueryIRIByGraphHashResponse) {
+    option (google.api.http).get = "/regen/data/v1/iri-by-graph";
+  }
+
   // HashByIRI queries ContentHash based on IRI.
   rpc HashByIRI(QueryHashByIRIRequest) returns (QueryHashByIRIResponse) {
     option (google.api.http).get = "/regen/data/v1/hash/{iri}";
@@ -59,11 +71,11 @@ service Query {
     // HTTP REST API not supported with ContentHash
   }
 
-  // ResolverInfo queries information about a resolved based on url.
+  // ResolverInfo queries information about a resolved based on URL.
   rpc ResolverInfo(QueryResolverInfoRequest)
       returns (QueryResolverInfoResponse) {
     option (google.api.http).get =
-        "/regen/data/v1/resolver"; // url must be passed as a parameter
+        "/regen/data/v1/resolver"; // URL must be passed as a parameter
   }
 }
 
@@ -117,19 +129,63 @@ message QueryIRIByHashRequest {
 
 // QueryIRIByHashResponse is the Query/IRIByHash response type.
 message QueryIRIByHashResponse {
-  // iri is the IRI for the anchored data.
+  // iri is the IRI for the content hash.
+  string iri = 1;
+}
+
+// QueryIRIByRawHashRequest is the Query/IRIByRawHash request type.
+message QueryIRIByRawHashRequest {
+  // hash represents the hash of the data based on the digest_algorithm and must
+  // be encoded as a base64 string. When hash is provided as a URL parameter,
+  // all instances of "+" should also be replaced with "%2b".
+  string hash = 1;
+
+  // digest_algorithm represents the hash digest algorithm.
+  DigestAlgorithm digest_algorithm = 2;
+
+  // media_type represents the media type for raw data.
+  RawMediaType media_type = 3;
+}
+
+// QueryIRIByRawHashResponse is the Query/IRIByRawHash response type.
+message QueryIRIByRawHashResponse {
+  // iri is the IRI for the content hash.
+  string iri = 1;
+}
+
+// QueryIRIByGraphHashRequest is the Query/IRIByGraphHash request type.
+message QueryIRIByGraphHashRequest {
+  // hash represents the hash of the data based on the digest_algorithm and must
+  // be encoded as a base64 string. When hash is provided as a URL parameter,
+  // all instances of "+" should also be replaced with "%2b".
+  string hash = 1;
+
+  // digest_algorithm represents the hash digest algorithm.
+  DigestAlgorithm digest_algorithm = 2;
+
+  // graph_canonicalization_algorithm represents the RDF graph
+  // canonicalization algorithm.
+  GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
+
+  // merkle_tree is the merkle tree type used for the graph hash, if any.
+  GraphMerkleTree merkle_tree = 4;
+}
+
+// QueryIRIByGraphHashResponse is the Query/IRIByGraphHash response type.
+message QueryIRIByGraphHashResponse {
+  // iri is the IRI for the content hash.
   string iri = 1;
 }
 
 // QueryHashByIRIRequest is the Query/HashByIRI request type.
 message QueryHashByIRIRequest {
-  // iri is the IRI for the anchored data.
+  // iri is the IRI for the content hash.
   string iri = 1;
 }
 
 // QueryHashByIRIResponse is the Query/HashByIRI response type.
 message QueryHashByIRIResponse {
-  // content_hash is the ContentHash for the anchored data.
+  // content_hash is the ContentHash for the IRI.
   ContentHash content_hash = 1;
 }
 

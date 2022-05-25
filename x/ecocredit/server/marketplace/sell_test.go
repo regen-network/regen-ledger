@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
@@ -112,7 +113,7 @@ func TestSell_Invalid(t *testing.T) {
 	// order expiration not in the future
 	s.sdkCtx = s.sdkCtx.WithBlockTime(time.Now())
 	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
-	invalidExpirationTime, err := time.Parse("2006-01-02", "1500-01-01")
+	invalidExpirationTime, err := types.ParseDate("expiration", "1500-01-01")
 	_, err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
