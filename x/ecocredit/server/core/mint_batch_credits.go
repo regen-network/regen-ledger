@@ -29,8 +29,8 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 	}
 
 	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-		TxId:       req.OriginTx.Id,
-		TxSource:   req.OriginTx.Source,
+		Id:         req.OriginTx.Id,
+		Source:     req.OriginTx.Source,
 		Note:       req.Note,
 		BatchDenom: req.BatchDenom,
 	}); err != nil {

@@ -146,8 +146,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	if req.OriginTx != nil {
 		if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
-			TxId:       req.OriginTx.Id,
-			TxSource:   req.OriginTx.Source,
+			Id:         req.OriginTx.Id,
+			Source:     req.OriginTx.Source,
 			Note:       req.Note,
 			BatchDenom: batchDenom,
 		}); err != nil {

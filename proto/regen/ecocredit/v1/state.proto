@@ -267,16 +267,16 @@ message BatchSupply {
 message BatchOriginTx {
   option (cosmos.orm.v1alpha1.table) = {
     id : 11,
-    primary_key : {fields : "tx_id"}
+    primary_key : {fields : "id,source"}
   };
 
-  // tx_id is the transaction ID of an originating transaction or operation
+  // id is the transaction ID of an originating transaction or operation
   // based on a type (i.e. transaction ID, serial number).
-  string tx_id = 1;
+  string id = 1;
 
-  // tx_source is the source chain or registry of the transaction originating
+  // source is the source chain or registry of the transaction originating
   // the mint process (e.g. polygon, ethereum, verra).
-  string tx_source = 2;
+  string source = 2;
 
   // note is a reference note for accounting that is passed to an event.
   string note = 3;

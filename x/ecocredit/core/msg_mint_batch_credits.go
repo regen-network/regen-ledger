@@ -83,7 +83,7 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 	return nil
 }
 
-var reOriginTxId = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{1,64}$`)
+var reOriginTx = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{1,64}$`)
 
 func validateOriginTx(o *OriginTx, required bool) error {
 	if o == nil {
@@ -92,12 +92,10 @@ func validateOriginTx(o *OriginTx, required bool) error {
 		}
 		return nil
 	}
-	// TODO: should we limit this to transaction format for polygon as well?
-	if !reOriginTxId.MatchString(o.Id) {
+	if !reOriginTx.MatchString(o.Id) {
 		return errBadReq.Wrap("origin_tx.id must be 2-64 long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
-	// TODO: source should be "polygon" using BRIDGE_TARGET defined in #1101
-	if !reOriginTxId.MatchString(o.Source) {
+	if !reOriginTx.MatchString(o.Source) {
 		return errBadReq.Wrap("origin_tx.source must be 2-64 long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 	return nil

@@ -1476,9 +1476,9 @@ type BatchOriginTxTable interface {
 	Update(ctx context.Context, batchOriginTx *BatchOriginTx) error
 	Save(ctx context.Context, batchOriginTx *BatchOriginTx) error
 	Delete(ctx context.Context, batchOriginTx *BatchOriginTx) error
-	Has(ctx context.Context, tx_id string) (found bool, err error)
+	Has(ctx context.Context, id string, source string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, tx_id string) (*BatchOriginTx, error)
+	Get(ctx context.Context, id string, source string) (*BatchOriginTx, error)
 	List(ctx context.Context, prefixKey BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error)
 	ListRange(ctx context.Context, from, to BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error)
 	DeleteBy(ctx context.Context, prefixKey BatchOriginTxIndexKey) error
@@ -1504,18 +1504,23 @@ type BatchOriginTxIndexKey interface {
 }
 
 // primary key starting index..
-type BatchOriginTxPrimaryKey = BatchOriginTxTxIdIndexKey
+type BatchOriginTxPrimaryKey = BatchOriginTxIdSourceIndexKey
 
-type BatchOriginTxTxIdIndexKey struct {
+type BatchOriginTxIdSourceIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchOriginTxTxIdIndexKey) id() uint32             { return 0 }
-func (x BatchOriginTxTxIdIndexKey) values() []interface{}  { return x.vs }
-func (x BatchOriginTxTxIdIndexKey) batchOriginTxIndexKey() {}
+func (x BatchOriginTxIdSourceIndexKey) id() uint32             { return 0 }
+func (x BatchOriginTxIdSourceIndexKey) values() []interface{}  { return x.vs }
+func (x BatchOriginTxIdSourceIndexKey) batchOriginTxIndexKey() {}
 
-func (this BatchOriginTxTxIdIndexKey) WithTxId(tx_id string) BatchOriginTxTxIdIndexKey {
-	this.vs = []interface{}{tx_id}
+func (this BatchOriginTxIdSourceIndexKey) WithId(id string) BatchOriginTxIdSourceIndexKey {
+	this.vs = []interface{}{id}
+	return this
+}
+
+func (this BatchOriginTxIdSourceIndexKey) WithIdSource(id string, source string) BatchOriginTxIdSourceIndexKey {
+	this.vs = []interface{}{id, source}
 	return this
 }
 
@@ -1539,13 +1544,13 @@ func (this batchOriginTxTable) Delete(ctx context.Context, batchOriginTx *BatchO
 	return this.table.Delete(ctx, batchOriginTx)
 }
 
-func (this batchOriginTxTable) Has(ctx context.Context, tx_id string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, tx_id)
+func (this batchOriginTxTable) Has(ctx context.Context, id string, source string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id, source)
 }
 
-func (this batchOriginTxTable) Get(ctx context.Context, tx_id string) (*BatchOriginTx, error) {
+func (this batchOriginTxTable) Get(ctx context.Context, id string, source string) (*BatchOriginTx, error) {
 	var batchOriginTx BatchOriginTx
-	found, err := this.table.PrimaryKey().Get(ctx, &batchOriginTx, tx_id)
+	found, err := this.table.PrimaryKey().Get(ctx, &batchOriginTx, id, source)
 	if err != nil {
 		return nil, err
 	}

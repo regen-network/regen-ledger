@@ -6085,8 +6085,8 @@ func (x *fastReflection_BatchSupply) ProtoMethods() *protoiface.Methods {
 
 var (
 	md_BatchOriginTx             protoreflect.MessageDescriptor
-	fd_BatchOriginTx_tx_id       protoreflect.FieldDescriptor
-	fd_BatchOriginTx_tx_source   protoreflect.FieldDescriptor
+	fd_BatchOriginTx_id          protoreflect.FieldDescriptor
+	fd_BatchOriginTx_source      protoreflect.FieldDescriptor
 	fd_BatchOriginTx_note        protoreflect.FieldDescriptor
 	fd_BatchOriginTx_batch_denom protoreflect.FieldDescriptor
 )
@@ -6094,8 +6094,8 @@ var (
 func init() {
 	file_regen_ecocredit_v1_state_proto_init()
 	md_BatchOriginTx = File_regen_ecocredit_v1_state_proto.Messages().ByName("BatchOriginTx")
-	fd_BatchOriginTx_tx_id = md_BatchOriginTx.Fields().ByName("tx_id")
-	fd_BatchOriginTx_tx_source = md_BatchOriginTx.Fields().ByName("tx_source")
+	fd_BatchOriginTx_id = md_BatchOriginTx.Fields().ByName("id")
+	fd_BatchOriginTx_source = md_BatchOriginTx.Fields().ByName("source")
 	fd_BatchOriginTx_note = md_BatchOriginTx.Fields().ByName("note")
 	fd_BatchOriginTx_batch_denom = md_BatchOriginTx.Fields().ByName("batch_denom")
 }
@@ -6165,15 +6165,15 @@ func (x *fastReflection_BatchOriginTx) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_BatchOriginTx) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.TxId != "" {
-		value := protoreflect.ValueOfString(x.TxId)
-		if !f(fd_BatchOriginTx_tx_id, value) {
+	if x.Id != "" {
+		value := protoreflect.ValueOfString(x.Id)
+		if !f(fd_BatchOriginTx_id, value) {
 			return
 		}
 	}
-	if x.TxSource != "" {
-		value := protoreflect.ValueOfString(x.TxSource)
-		if !f(fd_BatchOriginTx_tx_source, value) {
+	if x.Source != "" {
+		value := protoreflect.ValueOfString(x.Source)
+		if !f(fd_BatchOriginTx_source, value) {
 			return
 		}
 	}
@@ -6204,10 +6204,10 @@ func (x *fastReflection_BatchOriginTx) Range(f func(protoreflect.FieldDescriptor
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_BatchOriginTx) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
-		return x.TxId != ""
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
-		return x.TxSource != ""
+	case "regen.ecocredit.v1.BatchOriginTx.id":
+		return x.Id != ""
+	case "regen.ecocredit.v1.BatchOriginTx.source":
+		return x.Source != ""
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		return x.Note != ""
 	case "regen.ecocredit.v1.BatchOriginTx.batch_denom":
@@ -6228,10 +6228,10 @@ func (x *fastReflection_BatchOriginTx) Has(fd protoreflect.FieldDescriptor) bool
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_BatchOriginTx) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
-		x.TxId = ""
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
-		x.TxSource = ""
+	case "regen.ecocredit.v1.BatchOriginTx.id":
+		x.Id = ""
+	case "regen.ecocredit.v1.BatchOriginTx.source":
+		x.Source = ""
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		x.Note = ""
 	case "regen.ecocredit.v1.BatchOriginTx.batch_denom":
@@ -6252,11 +6252,11 @@ func (x *fastReflection_BatchOriginTx) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_BatchOriginTx) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
-		value := x.TxId
+	case "regen.ecocredit.v1.BatchOriginTx.id":
+		value := x.Id
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
-		value := x.TxSource
+	case "regen.ecocredit.v1.BatchOriginTx.source":
+		value := x.Source
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		value := x.Note
@@ -6284,10 +6284,10 @@ func (x *fastReflection_BatchOriginTx) Get(descriptor protoreflect.FieldDescript
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_BatchOriginTx) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
-		x.TxId = value.Interface().(string)
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
-		x.TxSource = value.Interface().(string)
+	case "regen.ecocredit.v1.BatchOriginTx.id":
+		x.Id = value.Interface().(string)
+	case "regen.ecocredit.v1.BatchOriginTx.source":
+		x.Source = value.Interface().(string)
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		x.Note = value.Interface().(string)
 	case "regen.ecocredit.v1.BatchOriginTx.batch_denom":
@@ -6312,10 +6312,10 @@ func (x *fastReflection_BatchOriginTx) Set(fd protoreflect.FieldDescriptor, valu
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_BatchOriginTx) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
-		panic(fmt.Errorf("field tx_id of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
-		panic(fmt.Errorf("field tx_source of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
+	case "regen.ecocredit.v1.BatchOriginTx.id":
+		panic(fmt.Errorf("field id of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
+	case "regen.ecocredit.v1.BatchOriginTx.source":
+		panic(fmt.Errorf("field source of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		panic(fmt.Errorf("field note of message regen.ecocredit.v1.BatchOriginTx is not mutable"))
 	case "regen.ecocredit.v1.BatchOriginTx.batch_denom":
@@ -6333,9 +6333,9 @@ func (x *fastReflection_BatchOriginTx) Mutable(fd protoreflect.FieldDescriptor) 
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_BatchOriginTx) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.BatchOriginTx.tx_id":
+	case "regen.ecocredit.v1.BatchOriginTx.id":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.BatchOriginTx.tx_source":
+	case "regen.ecocredit.v1.BatchOriginTx.source":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.BatchOriginTx.note":
 		return protoreflect.ValueOfString("")
@@ -6410,11 +6410,11 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.TxId)
+		l = len(x.Id)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.TxSource)
+		l = len(x.Source)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -6469,17 +6469,17 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.TxSource) > 0 {
-			i -= len(x.TxSource)
-			copy(dAtA[i:], x.TxSource)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TxSource)))
+		if len(x.Source) > 0 {
+			i -= len(x.Source)
+			copy(dAtA[i:], x.Source)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Source)))
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.TxId) > 0 {
-			i -= len(x.TxId)
-			copy(dAtA[i:], x.TxId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TxId)))
+		if len(x.Id) > 0 {
+			i -= len(x.Id)
+			copy(dAtA[i:], x.Id)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Id)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -6534,7 +6534,7 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TxId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -6562,11 +6562,11 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TxId = string(dAtA[iNdEx:postIndex])
+				x.Id = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TxSource", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -6594,7 +6594,7 @@ func (x *fastReflection_BatchOriginTx) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TxSource = string(dAtA[iNdEx:postIndex])
+				x.Source = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -7409,12 +7409,12 @@ type BatchOriginTx struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// tx_id is the transaction ID of an originating transaction or operation
+	// id is the transaction ID of an originating transaction or operation
 	// based on a type (i.e. transaction ID, serial number).
-	TxId string `protobuf:"bytes,1,opt,name=tx_id,json=txId,proto3" json:"tx_id,omitempty"`
-	// tx_source is the source chain or registry of the transaction originating
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// source is the source chain or registry of the transaction originating
 	// the mint process (e.g. polygon, ethereum, verra).
-	TxSource string `protobuf:"bytes,2,opt,name=tx_source,json=txSource,proto3" json:"tx_source,omitempty"`
+	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
 	// note is a reference note for accounting that is passed to an event.
 	Note string `protobuf:"bytes,3,opt,name=note,proto3" json:"note,omitempty"`
 	// batch_denom is the denom of the credit batch.
@@ -7441,16 +7441,16 @@ func (*BatchOriginTx) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *BatchOriginTx) GetTxId() string {
+func (x *BatchOriginTx) GetId() string {
 	if x != nil {
-		return x.TxId
+		return x.Id
 	}
 	return ""
 }
 
-func (x *BatchOriginTx) GetTxSource() string {
+func (x *BatchOriginTx) GetSource() string {
 	if x != nil {
-		return x.TxSource
+		return x.Source
 	}
 	return ""
 }
@@ -7597,30 +7597,30 @@ var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
 	0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65, 0x64, 0x5f, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
 	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0f, 0x63, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x6c, 0x65,
 	0x64, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a, 0x15, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x0f, 0x0a,
-	0x0b, 0x0a, 0x09, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x0a, 0x22, 0x89,
+	0x0b, 0x0a, 0x09, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x6b, 0x65, 0x79, 0x18, 0x0a, 0x22, 0x83,
 	0x01, 0x0a, 0x0d, 0x42, 0x61, 0x74, 0x63, 0x68, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x54, 0x78,
-	0x12, 0x13, 0x0a, 0x05, 0x74, 0x78, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x04, 0x74, 0x78, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x74, 0x78, 0x5f, 0x73, 0x6f, 0x75, 0x72,
-	0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x74, 0x78, 0x53, 0x6f, 0x75, 0x72,
-	0x63, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f,
-	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74,
-	0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x3a, 0x11, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x0b, 0x0a,
-	0x07, 0x0a, 0x05, 0x74, 0x78, 0x5f, 0x69, 0x64, 0x18, 0x0b, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63,
-	0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65,
-	0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76,
-	0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03,
-	0x52, 0x45, 0x58, 0xaa, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63,
-	0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e,
-	0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e,
-	0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c,
-	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x14, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64,
+	0x12, 0x16, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x6f, 0x74, 0x65,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x6f, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b,
+	0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x3a, 0x15, 0xf2,
+	0x9e, 0xd3, 0x8e, 0x03, 0x0f, 0x0a, 0x0b, 0x0a, 0x09, 0x69, 0x64, 0x2c, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x18, 0x0b, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x42,
+	0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x48, 0x67,
+	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d,
+	0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65,
+	0x64, 0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x12,
+	0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
+	0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
+	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
