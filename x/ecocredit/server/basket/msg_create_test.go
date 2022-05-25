@@ -73,6 +73,17 @@ func (s *createSuite) ACreditTypeWithPrecision(b string) {
 	require.NoError(s.t, err)
 }
 
+func (s *createSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) {
+	precision, err := strconv.ParseUint(b, 10, 32)
+	require.NoError(s.t, err)
+
+	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: a,
+		Precision:    uint32(precision),
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *createSuite) ACreditClassWithId(a string) {
 	creditTypeAbbrev := core.GetCreditTypeAbbrevFromClassId(a)
 
@@ -192,6 +203,34 @@ func (s *createSuite) AliceAttemptsToCreateABasketWithCreditType(a string) {
 		Name:             s.basketName,
 		Exponent:         s.basketExponent,
 		CreditTypeAbbrev: a,
+	})
+}
+
+func (s *createSuite) AliceAttemptsToCreateABasketWithCreditTypeAndAllowedClass(a string, b string) {
+	var coins sdk.Coins
+
+	s.paramsKeeper.EXPECT().
+		Get(s.sdkCtx, core.KeyBasketCreationFee, &coins).
+		Do(func(ctx sdk.Context, key []byte, coins *sdk.Coins) {
+			*coins = s.minBasketFee
+		}).
+		Times(1)
+
+	s.distKeeper.EXPECT().
+		FundCommunityPool(s.sdkCtx, s.minBasketFee, s.alice).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		SetDenomMetaData(s.sdkCtx, s.getDenomMetadata()).
+		AnyTimes() // not expected on failed attempt
+
+	s.res, s.err = s.k.Create(s.ctx, &basket.MsgCreate{
+		Curator:          s.alice.String(),
+		Name:             s.basketName,
+		Exponent:         s.basketExponent,
+		CreditTypeAbbrev: a,
+		AllowedClasses:   []string{b},
 	})
 }
 
@@ -324,7 +363,7 @@ func (s *createSuite) ExpectTheError(a string) {
 	require.EqualError(s.t, s.err, a)
 }
 
-func (s *createSuite) ExpectTheTokenBalance(a string) {
+func (s *createSuite) ExpectAliceTokenBalance(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 

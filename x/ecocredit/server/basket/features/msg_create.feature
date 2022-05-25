@@ -10,7 +10,7 @@ Feature: Msg/Create
   - when the basket criteria includes credit classes that exist
   - when the basket criteria includes credit classes that match the credit type
   - when the exponent is greater than or equal to the credit type precision
-  - the user token balance is updated when a basket is created with a fee
+  - the user token balance is updated and only the minimum fee is taken
   - the response includes the basket denom
 
   Rule: The basket name must be unique
@@ -137,12 +137,12 @@ Feature: Msg/Create
 
     Scenario: basket criteria credit class matches credit type
       Given a credit class with id "C01"
-      When alice attempts to create a basket with allowed class "C01"
+      When alice attempts to create a basket with credit type "C" and allowed class "C01"
       Then expect no error
 
     Scenario: basket criteria credit class does not match credit type
       Given a credit class with id "BIO01"
-      When alice attempts to create a basket with allowed class "BIO01"
+      When alice attempts to create a basket with credit type "C" and allowed class "BIO01"
       Then expect the error "basket specified credit type C, but class BIO01 is of type BIO: invalid request"
 
   Rule: The basket exponent must be greater than or equal to the credit type precision
@@ -163,7 +163,7 @@ Feature: Msg/Create
       When alice attempts to create a basket with exponent "3"
       Then expect the error "exponent 3 must be >= credit type precision 6: invalid request"
 
-  Rule: The user token balance is updated when the basket is created with a fee
+  Rule: The user token balance is updated and only the minimum fee is taken
 
     Background:
       Given a credit type
@@ -172,7 +172,7 @@ Feature: Msg/Create
 
     Scenario Outline: user token balance is updated
       When alice attempts to create a basket with fee "<basket-fee>"
-      Then expect the token balance "<token-balance>"
+      Then expect alice token balance "<token-balance>"
 
       Examples:
         | description  | basket-fee | token-balance |
@@ -184,7 +184,7 @@ Feature: Msg/Create
   Rule: The message response includes basket denom when credits are put into the basket
 
     Background:
-      Given a credit type
+      Given a credit type with abbreviation "C" and precision "6"
 
     Scenario: message response includes the basket denom
       When alice attempts to create a basket with name "NCT" and exponent "6"
