@@ -719,19 +719,20 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"foo", "bar"},
+			args:           []string{"foo", "bar", "bar1"},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
 			name: "missing from flag",
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 				},
 				s.commonTxFlags()...,
 			),
@@ -743,6 +744,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -754,6 +756,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 					makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},

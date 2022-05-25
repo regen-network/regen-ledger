@@ -71,6 +71,9 @@ service Msg {
   // UpdateProjectMetadata updates the project metadata
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
+
+  // Bridge cancels credits and emits a bridge event.
+  rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -321,6 +324,9 @@ message MsgCancel {
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 2;
 
+  // reason is any arbitrary string that specifies the reason for cancelling credits.
+  string reason = 3;
+
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
@@ -421,3 +427,36 @@ message MsgUpdateProjectMetadata {
 // MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
 // response type.
 message MsgUpdateProjectMetadataResponse {}
+
+// MsgBridge is the Msg/Bridge request type.
+message MsgBridge {
+  // target is the target chain.
+  string target = 1;
+
+  // recipient is the recipient address.
+  string recipient = 2;
+
+  // contract is the contract address.
+  string contract = 3;
+
+  // holder is the credit holder address.
+  string holder = 4;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 5;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique identifier of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+}
+
+// MsgBridgeResponse is the Msg/MsgBridge response type.
+message MsgBridgeResponse {}
