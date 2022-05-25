@@ -336,7 +336,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 
 func addReferenceIds(ctx context.Context, ss api.StateStore) error {
 	// project location -> reference-id
-	// CD-MN -> ""
+	// CD-MN -> "" // TODO: add reference-id
 	// KE    -> ""
 
 	locationToReferenceIdMap := make(map[string]string)
