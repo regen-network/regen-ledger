@@ -614,6 +614,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toCancel,
 					},
 				},
+				Reason: "bridging assets to another chain",
 			})
 
 			if tc.expectErr {
