@@ -7270,8 +7270,7 @@ type EventCreateBatch struct {
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 	// origin_tx is the transaction from another chain or registry that triggered
-	// the creation of the credit batch. This field will only be set when the
-	// credit batch was created as a result of a bridge operation.
+	// the creation of the credit batch.
 	OriginTx *OriginTx `protobuf:"bytes,2,opt,name=origin_tx,json=originTx,proto3" json:"origin_tx,omitempty"`
 }
 

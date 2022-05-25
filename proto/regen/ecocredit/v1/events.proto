@@ -27,8 +27,7 @@ message EventCreateBatch {
   string batch_denom = 1;
 
   // origin_tx is the transaction from another chain or registry that triggered
-  // the creation of the credit batch. This field will only be set when the
-  // credit batch was created as a result of a bridge operation.
+  // the creation of the credit batch.
   OriginTx origin_tx = 2;
 }
 
