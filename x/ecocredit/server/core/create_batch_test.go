@@ -131,7 +131,7 @@ func TestCreateBatch_WithOriginTx_Valid(t *testing.T) {
 	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = types.WrapSDKContext(s.sdkCtx)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	start, end := time.Now(), time.Now()
 	_, err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
@@ -169,7 +169,7 @@ func TestCreateBatch_WithOriginTx_Invalid(t *testing.T) {
 	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = types.WrapSDKContext(s.sdkCtx)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	start, end := time.Now(), time.Now()
 	batch := &core.MsgCreateBatch{
