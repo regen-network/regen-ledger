@@ -360,9 +360,9 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	})
 	require.NoError(err)
 	classId := cRes.ClassId
-	start, err := time.Parse("2006-04-02", startStr)
+	start, err := types.ParseDate("start date", startStr)
 	require.NoError(err)
-	end, err := time.Parse("2006-04-02", endStr)
+	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:       admin.String(),
