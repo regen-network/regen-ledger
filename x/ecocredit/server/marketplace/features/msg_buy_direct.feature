@@ -204,7 +204,7 @@ Feature: Msg/BuyDirect
 
     Scenario: buyer bank balance updated
       Given alice created a sell order with quantity "10" and ask price "10regen"
-      And bob has bank balance "100regen"
+      And bob has the bank balance "100regen"
       When bob attempts to buy credits with quantity "10" and bid price "10regen"
       Then expect bob bank balance "0regen"
 

@@ -91,7 +91,7 @@ func (s *buyDirectSuite) AliceHasBankBalance(a string) {
 	s.aliceBankBalance = coin
 }
 
-func (s *buyDirectSuite) BobHasBankBalance(a string) {
+func (s *buyDirectSuite) BobHasTheBankBalance(a string) {
 	coin, err := sdk.ParseCoinNormalized(a)
 	require.NoError(s.t, err)
 
@@ -159,17 +159,20 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id
+	s.sellOrderId = id // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantity(a string) {
-	s.quantity = a
+	s.quantity = a // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
-	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount)
+	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount) // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -177,7 +180,8 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
 	askAmount, ok := sdk.NewIntFromString(a)
 	require.True(s.t, ok)
 
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -185,7 +189,8 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.disableAutoRetire = disableAutoRetire
+	s.disableAutoRetire = disableAutoRetire // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -193,8 +198,9 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string
 	askAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.quantity = a
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
+	s.quantity = a                                        // required for sell order setup
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -202,8 +208,9 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string,
 	askPrice, err := sdk.ParseCoinNormalized(b)
 	require.NoError(s.t, err)
 
-	s.quantity = a
-	s.askPrice = askPrice
+	s.quantity = a        // required for sell order setup
+	s.askPrice = askPrice // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -211,8 +218,9 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
-	s.quantity = a
-	s.disableAutoRetire = disableAutoRetire
+	s.quantity = a                          // required for sell order setup
+	s.disableAutoRetire = disableAutoRetire // required for sell order setup
+
 	s.sellOrderSetup(1)
 }
 
@@ -220,31 +228,17 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	askAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.quantity = a
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
+	s.quantity = a                                        // required for sell order setup
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+
 	s.sellOrderSetup(2)
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
-	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -259,22 +253,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
-	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, a).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -292,25 +271,10 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithBidDenom(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) {
-	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -326,22 +290,9 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
-	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
+	s.quantity = a // required for buy order expect calls
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -356,25 +307,10 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a string, b string) {
-	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -392,25 +328,10 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidAmount(a strin
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string, b string) {
-	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
 	bidPrice, err := sdk.ParseCoinNormalized(b)
 	require.NoError(s.t, err)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -425,25 +346,10 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndBidPrice(a string
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire(a string, b string) {
-	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
-
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		AnyTimes() // not expected on failed attempt
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.singleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -459,30 +365,12 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
-	askTotal := s.calculateAskTotal(a, s.askPrice.Amount.String())
-	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
-	sendCoins := sdk.NewCoins(sendCoin)
+	s.quantity = a // required for buy order expect calls
 
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance).
-		Times(1)
-
-	s.bankKeeper.EXPECT().
-		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
-		Return(s.bobBankBalance.Sub(sendCoin)).
-		Times(1)
-
-	s.bankKeeper.EXPECT().
-		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
-		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
-			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
-			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
-		}).
-		AnyTimes() // not expected on failed attempt
+	s.multipleBuyOrderExpectCalls()
 
 	s.res, s.err = s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
 		Buyer: s.bob.String(),
@@ -668,6 +556,49 @@ func (s *buyDirectSuite) sellOrderSetup(count int) {
 		})
 		require.NoError(s.t, err)
 	}
+}
+
+func (s *buyDirectSuite) singleBuyOrderExpectCalls() {
+	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
+	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
+	sendCoins := sdk.NewCoins(sendCoin)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
+		Return(s.bobBankBalance).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
+			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
+			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
+		}).
+		AnyTimes() // not expected on failed attempt
+}
+
+func (s *buyDirectSuite) multipleBuyOrderExpectCalls() {
+	askTotal := s.calculateAskTotal(s.quantity, s.askPrice.Amount.String())
+	sendCoin := sdk.NewCoin(s.askPrice.Denom, askTotal)
+	sendCoins := sdk.NewCoins(sendCoin)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
+		Return(s.bobBankBalance).
+		Times(1)
+
+	s.bankKeeper.EXPECT().
+		GetBalance(s.sdkCtx, s.bob, s.bidPrice.Denom).
+		Return(s.bobBankBalance.Sub(sendCoin)).
+		Times(1)
+
+	s.bankKeeper.EXPECT().
+		SendCoins(s.sdkCtx, s.bob, s.alice, sendCoins).
+		Do(func(sdk.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) {
+			s.bobBankBalance = s.bobBankBalance.Sub(sendCoin)
+			s.aliceBankBalance = s.aliceBankBalance.Add(sendCoin)
+		}).
+		AnyTimes() // not expected on failed attempt
 }
 
 func (s *buyDirectSuite) calculateAskTotal(quantity string, amount string) sdk.Int {
