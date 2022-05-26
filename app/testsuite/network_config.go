@@ -17,7 +17,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/v3/app"
+	"github.com/regen-network/regen-ledger/v4/app"
 )
 
 func NewRegenAppConstructor(val network.Validator) servertypes.Application {
