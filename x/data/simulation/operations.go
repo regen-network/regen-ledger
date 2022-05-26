@@ -8,7 +8,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -262,8 +261,8 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		ctx := sdk.WrapSDKContext(sdkCtx)
-		resolverUrl := genResolverUrl(r)
-		res, err := qryClient.ResolverInfo(ctx, &data.QueryResolverInfoRequest{Url: resolverUrl})
+		resolverId := r.Uint64()
+		res, err := qryClient.ResolverInfo(ctx, &data.QueryResolverInfoRequest{Id: resolverId})
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
 		}
@@ -290,7 +289,7 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 		}
 		msg := &data.MsgRegisterResolver{
 			Manager:       manager.String(),
-			ResolverId:    res.Id,
+			ResolverId:    resolverId,
 			ContentHashes: []*data.ContentHash{contentHash},
 		}
 
@@ -349,23 +348,4 @@ func getRaw(digest []byte) *data.ContentHash_Raw {
 		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 		MediaType:       data.RawMediaType_RAW_MEDIA_TYPE_UNSPECIFIED,
 	}
-}
-
-func attestorsWithAccInfos(r *rand.Rand, sdkCtx sdk.Context,
-	ak data.AccountKeeper, accounts []simtypes.Account) ([]cryptotypes.PrivKey, []uint64, []uint64, []string) {
-	n := simtypes.RandIntBetween(r, 1, 5)
-	attestors := make([]cryptotypes.PrivKey, n)
-	attestorAddrs := make([]string, n)
-	sequence := make([]uint64, n)
-	accnumber := make([]uint64, n)
-	for i := 0; i < n; i++ {
-		account := ak.GetAccount(sdkCtx, accounts[i].Address)
-		acc := accounts[i]
-		attestorAddrs[i] = acc.Address.String()
-		attestors[i] = acc.PrivKey
-		sequence[i] = account.GetSequence()
-		accnumber[i] = account.GetAccountNumber()
-	}
-
-	return attestors, accnumber, sequence, attestorAddrs
 }

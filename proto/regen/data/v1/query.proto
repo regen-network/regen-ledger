@@ -265,14 +265,14 @@ message QueryResolversByHashResponse {
 
 // QueryResolverInfoRequest is the Query/ResolverInfo request type.
 message QueryResolverInfoRequest {
-  // url is the resolver URL that has been registered.
-  string url = 1;
+  // id is the id of the resolver.
+  uint64 id = 1;
 }
 
 // QueryResolverInfoResponse is the Query/ResolverInfo response type.
 message QueryResolverInfoResponse {
-  // id is the id of the resolver which can be used in Msg/RegisterResolver.
-  uint64 id = 1;
+  // url is the resolver URL that has been registered.
+  string url = 1;
 
   // manager is the bech32 account address of the resolver manager.
   string manager = 2;
