@@ -111,6 +111,7 @@ Feature: MsgSell
       Then expect no error
 
     Scenario: ask denom is not allowed
+      Given an allowed denom with bank denom "atom"
       When alice attempts to create a sell order with ask price "100regen"
       Then expect the error "order[0]: regen is not allowed to be used in sell orders: invalid request"
 
