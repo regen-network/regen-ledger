@@ -392,6 +392,7 @@ Parameters:
 			msg := core.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
+				Reason:  args[1],
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
