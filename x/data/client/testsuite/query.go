@@ -355,14 +355,20 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 			expErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:      "invalid url",
+			name:      "invalid id",
 			args:      []string{"abcd"},
+			expErr:    true,
+			expErrMsg: "invalid syntax",
+		},
+		{
+			name:      "id not found",
+			args:      []string{"404"},
 			expErr:    true,
 			expErrMsg: "not found",
 		},
 		{
 			name:   "valid",
-			args:   []string{"https://foo.bar"},
+			args:   []string{"1"},
 			expErr: false,
 		},
 	}
