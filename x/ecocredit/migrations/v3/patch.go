@@ -36,8 +36,11 @@ func patchRedwood(ctx context.Context, ss api.StateStore,
 	// US-FL 9876      -> ""
 
 	locationToReferenceIdMap := make(map[string]string)
-	locationToReferenceIdMap["CD-MN"] = ""
-	locationToReferenceIdMap["KE"] = ""
+	locationToReferenceIdMap["FR"] = ""
+	locationToReferenceIdMap["US"] = ""
+	locationToReferenceIdMap["AU-NSW 2453"] = ""
+	locationToReferenceIdMap["K"] = ""
+	locationToReferenceIdMap["US-FL 9876"] = ""
 
 	// add reference id to existing projects
 	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
