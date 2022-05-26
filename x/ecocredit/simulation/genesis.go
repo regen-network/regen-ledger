@@ -379,7 +379,7 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	pKey2, err := createProject(ctx, ss, &api.Project{
 		ClassKey:     cKey2,
-		Id:           "C01-002",
+		Id:           "C02-001",
 		Admin:        accs[1].Address,
 		Jurisdiction: "AQ",
 		Metadata:     metadata,
