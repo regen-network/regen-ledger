@@ -16,7 +16,7 @@ func TestQuery_Balance(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 
-	batchDenom := "C01-20200101-20210101-001"
+	batchDenom := "C01-001-20200101-20210101-001"
 
 	// insert batch
 	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{

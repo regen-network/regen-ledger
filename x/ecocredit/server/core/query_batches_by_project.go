@@ -12,14 +12,19 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
-// Batches queries for all batches in the given credit class.
-func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) (*core.QueryBatchesResponse, error) {
+// BatchesByProject queries for all batches in the given credit class.
+func (k Keeper) BatchesByProject(ctx context.Context, request *core.QueryBatchesByProjectRequest) (*core.QueryBatchesByProjectResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	it, err := k.stateStore.BatchTable().List(ctx, api.BatchPrimaryKey{}, ormlist.Paginate(pg))
+	project, err := k.stateStore.ProjectTable().GetById(ctx, request.ProjectId)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := k.stateStore.BatchTable().List(ctx, api.BatchProjectKeyIndexKey{}.WithProjectKey(project.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -33,11 +38,6 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		}
 
 		issuer := sdk.AccAddress(batch.Issuer)
-
-		project, err := k.stateStore.ProjectTable().Get(ctx, batch.ProjectKey)
-		if err != nil {
-			return nil, err
-		}
 
 		info := core.BatchInfo{
 			Issuer:       issuer.String(),
@@ -58,7 +58,7 @@ func (k Keeper) Batches(ctx context.Context, request *core.QueryBatchesRequest) 
 		return nil, err
 	}
 
-	return &core.QueryBatchesResponse{
+	return &core.QueryBatchesByProjectResponse{
 		Batches:    batches,
 		Pagination: pr,
 	}, nil
