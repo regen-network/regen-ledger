@@ -168,14 +168,66 @@ Feature: MsgSell
   Rule: The sell orders are stored in state
 
     Background:
-      Given a credit type
-      And an allowed denom
-      And alice has a tradable batch balance
+      Given a credit type with abbreviation "C"
+      And an allowed denom with bank denom "regen"
 
-    Scenario: the sell orders are stored in state
-      When alice attempts to create two sell orders
-      Then expect sell order with id "1"
-      And expect sell order with id "2"
+    Scenario: the sell order is stored in state (single sell order)
+      Given alice has a tradable batch balance with denom "C01-001-20200101-20210101-001" and amount "10"
+      When alice attempts to create a sell order with the properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "10",
+        "ask_price": {
+          "denom": "regen",
+          "amount": "10"
+        },
+        "disable_auto_retire": true,
+        "expiration": "2030-01-01T00:00:00Z"
+      }
+      """
+      Then expect sell order with seller alice and the properties
+      """
+      {
+        "id": 1,
+        "ask_price": "10",
+        "expiration": "2030-01-01T00:00:00Z",
+        "batch_id": 1,
+        "quantity": "10",
+        "disable_auto_retire": true,
+        "market_id": 1,
+        "maker": true
+      }
+      """
+
+    Scenario: the sell order is stored in state (multiple sell orders)
+      Given alice has a tradable batch balance with denom "C01-001-20200101-20210101-001" and amount "20"
+      When alice attempts to create two sell orders each with the properties
+      """
+      {
+        "batch_denom": "C01-001-20200101-20210101-001",
+        "quantity": "10",
+        "ask_price": {
+          "denom": "regen",
+          "amount": "10"
+        },
+        "disable_auto_retire": true,
+        "expiration": "2030-01-01T00:00:00Z"
+      }
+      """
+      Then expect sell order with seller alice and the properties
+      """
+      {
+        "id": 2,
+        "ask_price": "10",
+        "expiration": "2030-01-01T00:00:00Z",
+        "batch_id": 1,
+        "quantity": "10",
+        "disable_auto_retire": true,
+        "market_id": 1,
+        "maker": true
+      }
+      """
 
     # no failing scenario - state transitions only occur upon successful message execution
 

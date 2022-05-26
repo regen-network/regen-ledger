@@ -71,6 +71,13 @@ func (s *sellSuite) ACreditType() {
 	require.NoError(s.t, err)
 }
 
+func (s *sellSuite) ACreditTypeWithAbbreviation(a string) {
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
+		Abbreviation: a,
+	})
+	require.NoError(s.t, err)
+}
+
 func (s *sellSuite) ACreditTypeWithPrecision(a string) {
 	precision, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
@@ -143,6 +150,15 @@ func (s *sellSuite) AliceHasATradableBatchBalanceWithAmount(a string) {
 	s.aliceTradableBatchBalance()
 }
 
+func (s *sellSuite) AliceHasATradableBatchBalanceWithDenomAndAmount(a string, b string) {
+	s.batchDenom = a
+	s.classId = core.GetClassIdFromBatchDenom(s.batchDenom)
+	s.creditTypeAbbrev = core.GetCreditTypeAbbrevFromClassId(s.classId)
+	s.aliceTradableAmount = b
+
+	s.aliceTradableBatchBalance()
+}
+
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenom(a string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
 		Owner: s.alice.String(),
@@ -182,6 +198,17 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithCreditQuantity(a string) 
 				AskPrice:   s.askPrice,
 			},
 		},
+	})
+}
+
+func (s *sellSuite) AliceAttemptsToCreateASellOrderWithTheProperties(a gocuke.DocString) {
+	order := &marketplace.MsgSell_Order{}
+	err := jsonpb.UnmarshalString(a.Content, order)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner:  s.alice.String(),
+		Orders: []*marketplace.MsgSell_Order{order},
 	})
 }
 
@@ -289,6 +316,17 @@ func (s *sellSuite) AliceAttemptsToCreateTwoSellOrders() {
 	})
 }
 
+func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithTheProperties(a gocuke.DocString) {
+	order := &marketplace.MsgSell_Order{}
+	err := jsonpb.UnmarshalString(a.Content, order)
+	require.NoError(s.t, err)
+
+	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
+		Owner:  s.alice.String(),
+		Orders: []*marketplace.MsgSell_Order{order, order},
+	})
+}
+
 func (s *sellSuite) ExpectNoError() {
 	require.NoError(s.t, s.err)
 }
@@ -338,30 +376,24 @@ func (s *sellSuite) ExpectNoMarketWithId(a string) {
 	require.ErrorContains(s.t, err, ormerrors.NotFound.Error())
 }
 
-func (s *sellSuite) ExpectSellOrderWithId(a string) {
-	id, err := strconv.ParseUint(a, 10, 32)
+func (s *sellSuite) ExpectSellOrderWithSellerAliceAndTheProperties(a gocuke.DocString) {
+	expected := &marketplace.SellOrder{}
+	err := jsonpb.UnmarshalString(a.Content, expected)
 	require.NoError(s.t, err)
 
-	order, err := s.marketStore.SellOrderTable().Get(s.ctx, id)
+	order, err := s.marketStore.SellOrderTable().Get(s.ctx, expected.Id)
 	require.NoError(s.t, err)
 
-	batch, err := s.coreStore.BatchTable().GetByDenom(s.ctx, s.batchDenom)
-	require.NoError(s.t, err)
-
-	market, err := s.marketStore.MarketTable().GetByCreditTypeBankDenom(s.ctx, s.creditTypeAbbrev, s.askPrice.Denom)
-	require.NoError(s.t, err)
-
-	expiration := order.Expiration.AsTime()
-
-	require.Equal(s.t, order.Id, id)
-	require.Equal(s.t, order.Seller, s.alice.Bytes())
-	require.Equal(s.t, order.AskPrice, s.askPrice.Amount.String()) // TODO: ask_amount #1123
-	require.Equal(s.t, &expiration, s.expiration)
-	require.Equal(s.t, order.BatchId, batch.Key) // TODO: batch_key #1123
-	require.Equal(s.t, order.Quantity, s.quantity)
-	require.Equal(s.t, order.DisableAutoRetire, true) // verify non-default is set
-	require.Equal(s.t, order.MarketId, market.Id)
-	require.Equal(s.t, order.Maker, true) // always true
+	require.Equal(s.t, expected.Id, order.Id)
+	require.Equal(s.t, s.alice.Bytes(), order.Seller)
+	require.Equal(s.t, expected.AskPrice, order.AskPrice) // TODO: ask_amount #1123
+	require.Equal(s.t, expected.Expiration.Seconds, order.Expiration.Seconds)
+	require.Equal(s.t, expected.Expiration.Nanos, order.Expiration.Nanos)
+	require.Equal(s.t, expected.BatchId, order.BatchId) // TODO: batch_key #1123
+	require.Equal(s.t, expected.Quantity, order.Quantity)
+	require.Equal(s.t, expected.DisableAutoRetire, order.DisableAutoRetire)
+	require.Equal(s.t, expected.MarketId, order.MarketId)
+	require.Equal(s.t, expected.Maker, order.Maker)
 }
 
 func (s *sellSuite) ExpectTheResponse(a gocuke.DocString) {
