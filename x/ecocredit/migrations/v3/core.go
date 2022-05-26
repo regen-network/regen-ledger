@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -14,6 +13,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -26,7 +26,7 @@ type batchMapT struct {
 
 // MigrateState performs in-place store migrations from v3.0 to v4.0.
 func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
-	cdc codec.Codec, ss api.StateStore, subspace paramtypes.Subspace) error {
+	cdc codec.Codec, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ClassInfo{}, cdc)
 	if err != nil {
 		return err
@@ -318,94 +318,8 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 		return err
 	}
 
-	// - update curator address for baskets
-	// we don't have baskets on mainnet
-
-	// - update issuance date for credit batches
-	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap); err != nil {
+	if err := patchMigrate(ctx, sdkCtx, ss, basketStore, oldBatchDenomToNewDenomMap); err != nil {
 		return err
-	}
-
-	// - add reference id to existing projects
-	if err := addReferenceIds(ctx, ss); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func addReferenceIds(ctx context.Context, ss api.StateStore) error {
-	// project location -> reference-id
-	// CD-MN -> "" // TODO: add reference-id
-	// KE    -> ""
-
-	locationToReferenceIdMap := make(map[string]string)
-	locationToReferenceIdMap["CD-MN"] = ""
-	locationToReferenceIdMap["KE"] = ""
-
-	itr, err := ss.ProjectTable().List(ctx, api.ProjectKeyIndexKey{})
-	if err != nil {
-		return err
-	}
-	defer itr.Close()
-
-	for itr.Next() {
-		project, err := itr.Value()
-		if err != nil {
-			return err
-		}
-
-		project.ReferenceId = locationToReferenceIdMap[project.Jurisdiction]
-		if err := ss.ProjectTable().Update(ctx, project); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func updateBatchIssueanceDate(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
-	// batch issuance dates
-	//  C01-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
-	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
-	//  C01-20190101-20191231-003  -  "2022-05-06T01:33:25Z"
-	//  C01-20190101-20191231-004  -  "2022-05-06T01:33:31Z"
-
-	batchIdToIssuanceDateMap := make(map[string]time.Time)
-	issueanceDate, err := time.Parse(time.RFC3339, "2022-05-06T01:33:13Z")
-	if err != nil {
-		return err
-	}
-	batchIdToIssuanceDateMap["C01-20190101-20191231-001"] = issueanceDate
-
-	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:19Z")
-	if err != nil {
-		return err
-	}
-	batchIdToIssuanceDateMap["C01-20190101-20191231-002"] = issueanceDate
-
-	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:25Z")
-	if err != nil {
-		return err
-	}
-	batchIdToIssuanceDateMap["C01-20190101-20191231-003"] = issueanceDate
-
-	issueanceDate, err = time.Parse(time.RFC3339, "2022-05-06T01:33:31Z")
-	if err != nil {
-		return err
-	}
-	batchIdToIssuanceDateMap["C01-20190101-20191231-004"] = issueanceDate
-
-	for denom, issuanceDate := range batchIdToIssuanceDateMap {
-		batch, err := ss.BatchTable().GetByDenom(ctx, oldBatchDenomToNewDenomMap[denom])
-		if err != nil {
-			return err
-		}
-
-		batch.IssuanceDate = timestamppb.New(issuanceDate)
-		if err := ss.BatchTable().Update(ctx, batch); err != nil {
-			return err
-		}
 	}
 
 	return nil
