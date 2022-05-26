@@ -1613,16 +1613,16 @@ func (x *fastReflection_ContentHash_Graph) ProtoMethods() *protoiface.Methods {
 
 var (
 	md_ContentEntry              protoreflect.MessageDescriptor
-	fd_ContentEntry_content_hash protoreflect.FieldDescriptor
 	fd_ContentEntry_iri          protoreflect.FieldDescriptor
+	fd_ContentEntry_content_hash protoreflect.FieldDescriptor
 	fd_ContentEntry_timestamp    protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_types_proto_init()
 	md_ContentEntry = File_regen_data_v1_types_proto.Messages().ByName("ContentEntry")
-	fd_ContentEntry_content_hash = md_ContentEntry.Fields().ByName("content_hash")
 	fd_ContentEntry_iri = md_ContentEntry.Fields().ByName("iri")
+	fd_ContentEntry_content_hash = md_ContentEntry.Fields().ByName("content_hash")
 	fd_ContentEntry_timestamp = md_ContentEntry.Fields().ByName("timestamp")
 }
 
@@ -1691,15 +1691,15 @@ func (x *fastReflection_ContentEntry) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_ContentEntry) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.ContentHash != nil {
-		value := protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
-		if !f(fd_ContentEntry_content_hash, value) {
-			return
-		}
-	}
 	if x.Iri != "" {
 		value := protoreflect.ValueOfString(x.Iri)
 		if !f(fd_ContentEntry_iri, value) {
+			return
+		}
+	}
+	if x.ContentHash != nil {
+		value := protoreflect.ValueOfMessage(x.ContentHash.ProtoReflect())
+		if !f(fd_ContentEntry_content_hash, value) {
 			return
 		}
 	}
@@ -1724,10 +1724,10 @@ func (x *fastReflection_ContentEntry) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_ContentEntry) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.ContentEntry.content_hash":
-		return x.ContentHash != nil
 	case "regen.data.v1.ContentEntry.iri":
 		return x.Iri != ""
+	case "regen.data.v1.ContentEntry.content_hash":
+		return x.ContentHash != nil
 	case "regen.data.v1.ContentEntry.timestamp":
 		return x.Timestamp != nil
 	default:
@@ -1746,10 +1746,10 @@ func (x *fastReflection_ContentEntry) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ContentEntry) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.ContentEntry.content_hash":
-		x.ContentHash = nil
 	case "regen.data.v1.ContentEntry.iri":
 		x.Iri = ""
+	case "regen.data.v1.ContentEntry.content_hash":
+		x.ContentHash = nil
 	case "regen.data.v1.ContentEntry.timestamp":
 		x.Timestamp = nil
 	default:
@@ -1768,12 +1768,12 @@ func (x *fastReflection_ContentEntry) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_ContentEntry) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.ContentEntry.content_hash":
-		value := x.ContentHash
-		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.data.v1.ContentEntry.iri":
 		value := x.Iri
 		return protoreflect.ValueOfString(value)
+	case "regen.data.v1.ContentEntry.content_hash":
+		value := x.ContentHash
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "regen.data.v1.ContentEntry.timestamp":
 		value := x.Timestamp
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
@@ -1797,10 +1797,10 @@ func (x *fastReflection_ContentEntry) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_ContentEntry) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.ContentEntry.content_hash":
-		x.ContentHash = value.Message().Interface().(*ContentHash)
 	case "regen.data.v1.ContentEntry.iri":
 		x.Iri = value.Interface().(string)
+	case "regen.data.v1.ContentEntry.content_hash":
+		x.ContentHash = value.Message().Interface().(*ContentHash)
 	case "regen.data.v1.ContentEntry.timestamp":
 		x.Timestamp = value.Message().Interface().(*timestamppb.Timestamp)
 	default:
@@ -1848,11 +1848,11 @@ func (x *fastReflection_ContentEntry) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_ContentEntry) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "regen.data.v1.ContentEntry.iri":
+		return protoreflect.ValueOfString("")
 	case "regen.data.v1.ContentEntry.content_hash":
 		m := new(ContentHash)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "regen.data.v1.ContentEntry.iri":
-		return protoreflect.ValueOfString("")
 	case "regen.data.v1.ContentEntry.timestamp":
 		m := new(timestamppb.Timestamp)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
@@ -1925,12 +1925,12 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.ContentHash != nil {
-			l = options.Size(x.ContentHash)
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		l = len(x.Iri)
 		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.ContentHash != nil {
+			l = options.Size(x.ContentHash)
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.Timestamp != nil {
@@ -1980,13 +1980,6 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1a
 		}
-		if len(x.Iri) > 0 {
-			i -= len(x.Iri)
-			copy(dAtA[i:], x.Iri)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
-			i--
-			dAtA[i] = 0x12
-		}
 		if x.ContentHash != nil {
 			encoded, err := options.Marshal(x.ContentHash)
 			if err != nil {
@@ -1998,6 +1991,13 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 			i -= len(encoded)
 			copy(dAtA[i:], encoded)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Iri) > 0 {
+			i -= len(x.Iri)
+			copy(dAtA[i:], x.Iri)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Iri)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -2052,6 +2052,38 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Iri = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ContentHash", wireType)
 				}
 				var msglen int
@@ -2085,38 +2117,6 @@ func (x *fastReflection_ContentEntry) ProtoMethods() *protoiface.Methods {
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.ContentHash); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
-				iNdEx = postIndex
-			case 2:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Iri", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Iri = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
 				if wireType != 2 {
@@ -3569,16 +3569,16 @@ func (x *ContentHash) GetGraph() *ContentHash_Graph {
 	return nil
 }
 
-// ContentEntry describes data referenced and possibly stored on chain
+// ContentEntry is a data anchor entry.
 type ContentEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// content_hash is the content hash of the anchored data.
-	ContentHash *ContentHash `protobuf:"bytes,1,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// iri is the IRI of the anchored data.
-	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
+	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
+	// content_hash is the content hash of the anchored data.
+	ContentHash *ContentHash `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
 	// timestamp is the timestamp of the anchored data.
 	Timestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
@@ -3603,18 +3603,18 @@ func (*ContentEntry) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_types_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ContentEntry) GetContentHash() *ContentHash {
-	if x != nil {
-		return x.ContentHash
-	}
-	return nil
-}
-
 func (x *ContentEntry) GetIri() string {
 	if x != nil {
 		return x.Iri
 	}
 	return ""
+}
+
+func (x *ContentEntry) GetContentHash() *ContentHash {
+	if x != nil {
+		return x.ContentHash
+	}
+	return nil
 }
 
 func (x *ContentEntry) GetTimestamp() *timestamppb.Timestamp {
@@ -3624,8 +3624,7 @@ func (x *ContentEntry) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// AttestorEntry is an attestor entry including the attestor, the IRI, and the
-// timestamp.
+// AttestorEntry is an attestor entry.
 type AttestorEntry struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3884,12 +3883,12 @@ var file_regen_data_v1_types_proto_rawDesc = []byte{
 	0x61, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x72, 0x61, 0x70, 0x68, 0x4d, 0x65, 0x72, 0x6b, 0x6c, 0x65,
 	0x54, 0x72, 0x65, 0x65, 0x52, 0x0a, 0x6d, 0x65, 0x72, 0x6b, 0x6c, 0x65, 0x54, 0x72, 0x65, 0x65,
 	0x22, 0x99, 0x01, 0x0a, 0x0c, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x45, 0x6e, 0x74, 0x72,
-	0x79, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68, 0x61, 0x73,
-	0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48,
-	0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68,
-	0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69,
-	0x72, 0x69, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
+	0x79, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x72, 0x69, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x69, 0x72, 0x69, 0x12, 0x3d, 0x0a, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x5f, 0x68,
+	0x61, 0x73, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x72, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x65, 0x6e,
+	0x74, 0x48, 0x61, 0x73, 0x68, 0x52, 0x0b, 0x63, 0x6f, 0x6e, 0x74, 0x65, 0x6e, 0x74, 0x48, 0x61,
+	0x73, 0x68, 0x12, 0x38, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18,
 	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
 	0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x22, 0x77, 0x0a, 0x0d,

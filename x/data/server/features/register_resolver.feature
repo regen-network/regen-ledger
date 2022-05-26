@@ -29,12 +29,12 @@ Feature: Register Resolver
 
     Scenario: the data has not been anchored
       When alice attempts to register the data to the resolver at block time "2020-01-01"
-      Then the anchor entry exists with timestamp "2020-01-01"
+      Then the content entry exists with timestamp "2020-01-01"
 
     Scenario: the data has already been anchored
       Given alice has anchored the data at block time "2020-01-01"
       When alice attempts to register the data to the resolver at block time "2020-01-02"
-      Then the anchor entry exists with timestamp "2020-01-01"
+      Then the content entry exists with timestamp "2020-01-01"
 
   Rule: the data is registered if not already registered
 

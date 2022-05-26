@@ -16,12 +16,12 @@ Feature: Attest
 
     Scenario: the data has not been anchored
       When alice attempts to attest to the data at block time "2020-01-01"
-      Then the anchor entry exists with timestamp "2020-01-01"
+      Then the content entry exists with timestamp "2020-01-01"
 
     Scenario: the data has already been anchored
       Given alice has anchored the data at block time "2020-01-01"
       When alice attempts to attest to the data at block time "2020-01-02"
-      Then the anchor entry exists with timestamp "2020-01-01"
+      Then the content entry exists with timestamp "2020-01-01"
 
   Rule: the data is attested to if not already attested to by the same address
 

@@ -111,7 +111,7 @@ func (s *registerResolverSuite) BobAttemptsToRegisterTheDataToTheResolver() {
 	})
 }
 
-func (s *registerResolverSuite) TheAnchorEntryExistsWithTimestamp(a string) {
+func (s *registerResolverSuite) TheContentEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
