@@ -1,15 +1,12 @@
 Feature: Define Resolver
 
-  Background:
-    Given the resolver url "https://foo.bar"
+  Rule: the resolver is defined with no unique constraints on the URL
 
-  Rule: the resolver is defined if the resolver url is unique
+    Scenario: the url is unique
+      When alice attempts to define a resolver with url "https://foo.bar"
+      Then expect the resolver with id "1" and url "https://foo.bar" and manager alice
 
-    Scenario: the resolver has not been defined
-      When alice attempts to define the resolver
-      Then the resolver exists and alice is the manager
-
-    Scenario: the resolver has already been defined
-      Given alice has defined the resolver
-      When alice attempts to define the resolver
-      Then expect the error "resolver URL already exists"
+    Scenario: the url is not unique
+      Given alice has defined a resolver with url "https://foo.bar"
+      When alice attempts to define a resolver with url "https://foo.bar"
+      Then expect the resolver with id "2" and url "https://foo.bar" and manager alice

@@ -10704,14 +10704,14 @@ func (x *fastReflection_QueryResolversByHashResponse) ProtoMethods() *protoiface
 }
 
 var (
-	md_QueryResolverInfoRequest     protoreflect.MessageDescriptor
-	fd_QueryResolverInfoRequest_url protoreflect.FieldDescriptor
+	md_QueryResolverInfoRequest    protoreflect.MessageDescriptor
+	fd_QueryResolverInfoRequest_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
 	md_QueryResolverInfoRequest = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverInfoRequest")
-	fd_QueryResolverInfoRequest_url = md_QueryResolverInfoRequest.Fields().ByName("url")
+	fd_QueryResolverInfoRequest_id = md_QueryResolverInfoRequest.Fields().ByName("id")
 }
 
 var _ protoreflect.Message = (*fastReflection_QueryResolverInfoRequest)(nil)
@@ -10779,9 +10779,9 @@ func (x *fastReflection_QueryResolverInfoRequest) Interface() protoreflect.Proto
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryResolverInfoRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Url != "" {
-		value := protoreflect.ValueOfString(x.Url)
-		if !f(fd_QueryResolverInfoRequest_url, value) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_QueryResolverInfoRequest_id, value) {
 			return
 		}
 	}
@@ -10800,8 +10800,8 @@ func (x *fastReflection_QueryResolverInfoRequest) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryResolverInfoRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		return x.Url != ""
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		return x.Id != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10818,8 +10818,8 @@ func (x *fastReflection_QueryResolverInfoRequest) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		x.Url = ""
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		x.Id = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10836,9 +10836,9 @@ func (x *fastReflection_QueryResolverInfoRequest) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryResolverInfoRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		value := x.Url
-		return protoreflect.ValueOfString(value)
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10859,8 +10859,8 @@ func (x *fastReflection_QueryResolverInfoRequest) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		x.Url = value.Interface().(string)
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		x.Id = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10881,8 +10881,8 @@ func (x *fastReflection_QueryResolverInfoRequest) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		panic(fmt.Errorf("field url of message regen.data.v1.QueryResolverInfoRequest is not mutable"))
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		panic(fmt.Errorf("field id of message regen.data.v1.QueryResolverInfoRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10896,8 +10896,8 @@ func (x *fastReflection_QueryResolverInfoRequest) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryResolverInfoRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoRequest.url":
-		return protoreflect.ValueOfString("")
+	case "regen.data.v1.QueryResolverInfoRequest.id":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.QueryResolverInfoRequest"))
@@ -10967,9 +10967,8 @@ func (x *fastReflection_QueryResolverInfoRequest) ProtoMethods() *protoiface.Met
 		var n int
 		var l int
 		_ = l
-		l = len(x.Url)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -11000,12 +10999,10 @@ func (x *fastReflection_QueryResolverInfoRequest) ProtoMethods() *protoiface.Met
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if len(x.Url) > 0 {
-			i -= len(x.Url)
-			copy(dAtA[i:], x.Url)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Url)))
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
 			i--
-			dAtA[i] = 0xa
+			dAtA[i] = 0x8
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -11057,10 +11054,10 @@ func (x *fastReflection_QueryResolverInfoRequest) ProtoMethods() *protoiface.Met
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Url", wireType)
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 				}
-				var stringLen uint64
+				x.Id = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -11070,24 +11067,11 @@ func (x *fastReflection_QueryResolverInfoRequest) ProtoMethods() *protoiface.Met
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.Id |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Url = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -11125,14 +11109,14 @@ func (x *fastReflection_QueryResolverInfoRequest) ProtoMethods() *protoiface.Met
 
 var (
 	md_QueryResolverInfoResponse         protoreflect.MessageDescriptor
-	fd_QueryResolverInfoResponse_id      protoreflect.FieldDescriptor
+	fd_QueryResolverInfoResponse_url     protoreflect.FieldDescriptor
 	fd_QueryResolverInfoResponse_manager protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_query_proto_init()
 	md_QueryResolverInfoResponse = File_regen_data_v1_query_proto.Messages().ByName("QueryResolverInfoResponse")
-	fd_QueryResolverInfoResponse_id = md_QueryResolverInfoResponse.Fields().ByName("id")
+	fd_QueryResolverInfoResponse_url = md_QueryResolverInfoResponse.Fields().ByName("url")
 	fd_QueryResolverInfoResponse_manager = md_QueryResolverInfoResponse.Fields().ByName("manager")
 }
 
@@ -11201,9 +11185,9 @@ func (x *fastReflection_QueryResolverInfoResponse) Interface() protoreflect.Prot
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryResolverInfoResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Id != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_QueryResolverInfoResponse_id, value) {
+	if x.Url != "" {
+		value := protoreflect.ValueOfString(x.Url)
+		if !f(fd_QueryResolverInfoResponse_url, value) {
 			return
 		}
 	}
@@ -11228,8 +11212,8 @@ func (x *fastReflection_QueryResolverInfoResponse) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryResolverInfoResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		return x.Id != uint64(0)
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		return x.Url != ""
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		return x.Manager != ""
 	default:
@@ -11248,8 +11232,8 @@ func (x *fastReflection_QueryResolverInfoResponse) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		x.Id = uint64(0)
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		x.Url = ""
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		x.Manager = ""
 	default:
@@ -11268,9 +11252,9 @@ func (x *fastReflection_QueryResolverInfoResponse) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryResolverInfoResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		value := x.Id
-		return protoreflect.ValueOfUint64(value)
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		value := x.Url
+		return protoreflect.ValueOfString(value)
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		value := x.Manager
 		return protoreflect.ValueOfString(value)
@@ -11294,8 +11278,8 @@ func (x *fastReflection_QueryResolverInfoResponse) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		x.Id = value.Uint()
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		x.Url = value.Interface().(string)
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		x.Manager = value.Interface().(string)
 	default:
@@ -11318,8 +11302,8 @@ func (x *fastReflection_QueryResolverInfoResponse) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryResolverInfoResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		panic(fmt.Errorf("field id of message regen.data.v1.QueryResolverInfoResponse is not mutable"))
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		panic(fmt.Errorf("field url of message regen.data.v1.QueryResolverInfoResponse is not mutable"))
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		panic(fmt.Errorf("field manager of message regen.data.v1.QueryResolverInfoResponse is not mutable"))
 	default:
@@ -11335,8 +11319,8 @@ func (x *fastReflection_QueryResolverInfoResponse) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryResolverInfoResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.QueryResolverInfoResponse.id":
-		return protoreflect.ValueOfUint64(uint64(0))
+	case "regen.data.v1.QueryResolverInfoResponse.url":
+		return protoreflect.ValueOfString("")
 	case "regen.data.v1.QueryResolverInfoResponse.manager":
 		return protoreflect.ValueOfString("")
 	default:
@@ -11408,8 +11392,9 @@ func (x *fastReflection_QueryResolverInfoResponse) ProtoMethods() *protoiface.Me
 		var n int
 		var l int
 		_ = l
-		if x.Id != 0 {
-			n += 1 + runtime.Sov(uint64(x.Id))
+		l = len(x.Url)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		l = len(x.Manager)
 		if l > 0 {
@@ -11451,10 +11436,12 @@ func (x *fastReflection_QueryResolverInfoResponse) ProtoMethods() *protoiface.Me
 			i--
 			dAtA[i] = 0x12
 		}
-		if x.Id != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+		if len(x.Url) > 0 {
+			i -= len(x.Url)
+			copy(dAtA[i:], x.Url)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Url)))
 			i--
-			dAtA[i] = 0x8
+			dAtA[i] = 0xa
 		}
 		if input.Buf != nil {
 			input.Buf = append(input.Buf, dAtA...)
@@ -11506,10 +11493,10 @@ func (x *fastReflection_QueryResolverInfoResponse) ProtoMethods() *protoiface.Me
 			}
 			switch fieldNum {
 			case 1:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Url", wireType)
 				}
-				x.Id = 0
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -11519,11 +11506,24 @@ func (x *fastReflection_QueryResolverInfoResponse) ProtoMethods() *protoiface.Me
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Id |= uint64(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Url = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Manager", wireType)
@@ -11925,7 +11925,7 @@ type QueryIRIByRawHashRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
@@ -12019,7 +12019,7 @@ type QueryIRIByGraphHashRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// hash represents the hash of the data based on the digest_algorithm and must
-	// be encoded as a base64 string. When hash is provided as a url parameter,
+	// be encoded as a base64 string. When hash is provided as a URL parameter,
 	// all instances of "+" should also be replaced with "%2b".
 	Hash string `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// digest_algorithm represents the hash digest algorithm.
@@ -12566,8 +12566,8 @@ type QueryResolverInfoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// url is the resolver URL that has been registered.
-	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	// id is the unique id of the resolver.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (x *QueryResolverInfoRequest) Reset() {
@@ -12590,11 +12590,11 @@ func (*QueryResolverInfoRequest) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{22}
 }
 
-func (x *QueryResolverInfoRequest) GetUrl() string {
+func (x *QueryResolverInfoRequest) GetId() uint64 {
 	if x != nil {
-		return x.Url
+		return x.Id
 	}
-	return ""
+	return 0
 }
 
 // QueryResolverInfoResponse is the Query/ResolverInfo response type.
@@ -12603,8 +12603,8 @@ type QueryResolverInfoResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the id of the resolver which can be used in Msg/RegisterResolver.
-	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// url is the resolver URL that has been registered.
+	Url string `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 	// manager is the bech32 account address of the resolver manager.
 	Manager string `protobuf:"bytes,2,opt,name=manager,proto3" json:"manager,omitempty"`
 }
@@ -12629,11 +12629,11 @@ func (*QueryResolverInfoResponse) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_query_proto_rawDescGZIP(), []int{23}
 }
 
-func (x *QueryResolverInfoResponse) GetId() uint64 {
+func (x *QueryResolverInfoResponse) GetUrl() string {
 	if x != nil {
-		return x.Id
+		return x.Url
 	}
-	return 0
+	return ""
 }
 
 func (x *QueryResolverInfoResponse) GetManager() string {
@@ -12813,12 +12813,12 @@ var file_regen_data_v1_query_proto_rawDesc = []byte{
 	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
 	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
-	0x2c, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
-	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03, 0x75,
-	0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x45, 0x0a,
-	0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e,
-	0x66, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61,
+	0x2a, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x22, 0x47, 0x0a, 0x19, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61,
 	0x6e, 0x61, 0x67, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x61, 0x6e,
 	0x61, 0x67, 0x65, 0x72, 0x32, 0xce, 0x0b, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x71,
 	0x0a, 0x05, 0x42, 0x79, 0x49, 0x52, 0x49, 0x12, 0x20, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,

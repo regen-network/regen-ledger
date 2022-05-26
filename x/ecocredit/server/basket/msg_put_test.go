@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
@@ -297,7 +296,7 @@ func (s *putSuite) AliceOwnsCreditsFromCreditBatch(a string) {
 }
 
 func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
-	startDate, err := time.Parse("2006-01-02", a)
+	startDate, err := types.ParseDate("start-date", a)
 	require.NoError(s.t, err)
 
 	classKey, err := s.coreStore.ClassTable().InsertReturningID(s.ctx, &coreapi.Class{

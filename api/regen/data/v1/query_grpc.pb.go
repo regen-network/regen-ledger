@@ -44,7 +44,7 @@ type QueryClient interface {
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries resolvers based on ContentHash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolverInfo queries information about a resolved based on url.
+	// ResolverInfo queries information about a resolved based on URL.
 	ResolverInfo(ctx context.Context, in *QueryResolverInfoRequest, opts ...grpc.CallOption) (*QueryResolverInfoResponse, error)
 }
 
@@ -190,7 +190,7 @@ type QueryServer interface {
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
 	// ResolversByHash queries resolvers based on ContentHash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolverInfo queries information about a resolved based on url.
+	// ResolverInfo queries information about a resolved based on URL.
 	ResolverInfo(context.Context, *QueryResolverInfoRequest) (*QueryResolverInfoResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
