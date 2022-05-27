@@ -10,7 +10,7 @@ import (
 
 // ResolverInfo queries information about a resolved based on url.
 func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolverInfoRequest) (*data.QueryResolverInfoResponse, error) {
-	res, err := s.stateStore.ResolverInfoTable().GetByUrl(ctx, request.Url)
+	res, err := s.stateStore.ResolverInfoTable().Get(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -18,7 +18,7 @@ func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolve
 	acct := sdk.AccAddress(res.Manager)
 
 	return &data.QueryResolverInfoResponse{
-		Id:      res.Id,
+		Url:     res.Url,
 		Manager: acct.String(),
 	}, nil
 }

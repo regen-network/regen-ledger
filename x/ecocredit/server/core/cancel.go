@@ -80,6 +80,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 			Owner:      holder.String(),
 			BatchDenom: credit.BatchDenom,
 			Amount:     credit.Amount,
+			Reason:     req.Reason,
 		}); err != nil {
 			return nil, err
 		}

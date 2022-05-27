@@ -347,7 +347,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 
 	// can query resolver info
 	res5, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
-		Url: testUrl,
+		Id: res1.ResolverId,
 	})
 	require.NoError(err)
 	require.NotNil(res5)

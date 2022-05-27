@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -218,7 +219,7 @@ func QueryAttestorsCmd() *cobra.Command {
 // QueryResolverInfoCmd creates a CLI command for Query/ResolverInfo.
 func QueryResolverInfoCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolver-info [url]",
+		Use:   "resolver-info [id]",
 		Short: "Query for resolver information",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -227,8 +228,13 @@ func QueryResolverInfoCmd() *cobra.Command {
 				return err
 			}
 
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return fmt.Errorf("invalid resolver id: %s", err)
+			}
+
 			res, err := c.ResolverInfo(cmd.Context(), &data.QueryResolverInfoRequest{
-				Url: args[0],
+				Id: id,
 			})
 
 			return print(ctx, res, err)
