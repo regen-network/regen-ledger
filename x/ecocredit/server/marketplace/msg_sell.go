@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -19,6 +20,7 @@ import (
 // Sell creates new sell orders for credits
 func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
@@ -27,28 +29,38 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
+		orderIndex := fmt.Sprintf("order[%d]", i)
+
 		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("batch denom %s: %s", order.BatchDenom, err.Error())
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: batch denom %s: %s", orderIndex, order.BatchDenom, err.Error(),
+			)
 		}
-		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
+
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
-		marketId, err := k.getOrCreateMarketId(ctx, ct.Abbreviation, order.AskPrice.Denom)
+
+		marketId, err := k.getOrCreateMarketId(ctx, creditType.Abbreviation, order.AskPrice.Denom)
 		if err != nil {
 			return nil, err
 		}
 
 		// verify expiration is in the future
-		if order.Expiration != nil && order.Expiration.Before(sdkCtx.BlockTime()) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+		if order.Expiration != nil && !order.Expiration.After(sdkCtx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: expiration must be in the future: %s", orderIndex, order.Expiration,
+			)
 		}
-		sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
+
+		sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, creditType.Precision)
 		if err != nil {
 			return nil, err
 		}
-		if err = k.escrowCredits(ctx, ownerAcc, batch.Key, sellQty); err != nil {
+
+		if err = k.escrowCredits(ctx, orderIndex, ownerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -57,7 +69,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 		if !allowed {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", order.AskPrice.Denom)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: %s is not allowed to be used in sell orders", orderIndex, order.AskPrice.Denom,
+			)
 		}
 
 		var expiration *timestamppb.Timestamp
@@ -80,13 +94,16 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		sellOrderIds[i] = id
+
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventSell{
 			OrderId: id,
 		}); err != nil {
 			return nil, err
 		}
+
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
+
 	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
@@ -107,28 +124,36 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-func (k Keeper) escrowCredits(ctx context.Context, ownerAcc sdk.AccAddress, batchId uint64, sellQty math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, ownerAcc, batchId)
+func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchId uint64, quantity math.Dec) error {
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchId)
 	if err != nil {
-		return err
+		return ecocredit.ErrInsufficientCredits.Wrapf(
+			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,
+		)
 	}
+
 	tradable, err := math.NewDecFromString(bal.Tradable)
 	if err != nil {
 		return err
 	}
-	newTradable, err := math.SafeSubBalance(tradable, sellQty)
+
+	newTradable, err := math.SafeSubBalance(tradable, quantity)
 	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("tradable balance: %v, sell order request: %v - %s", tradable, sellQty, err.Error())
+		return ecocredit.ErrInsufficientCredits.Wrapf(
+			"%s: credit quantity: %v, tradable balance: %v", orderIndex, quantity, tradable,
+		)
 	}
 
 	escrowed, err := math.NewDecFromString(bal.Escrowed)
 	if err != nil {
 		return err
 	}
-	newEscrowed, err := math.SafeAddBalance(escrowed, sellQty)
+
+	newEscrowed, err := math.SafeAddBalance(escrowed, quantity)
 	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("escrowed balance: %v, sell order request: %v - %s", escrowed, sellQty, err.Error())
+		return err
 	}
+
 	bal.Tradable = newTradable.String()
 	bal.Escrowed = newEscrowed.String()
 

@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -25,7 +26,11 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		return nil, err
 	}
 
-	for _, update := range req.Updates {
+	for i, update := range req.Updates {
+                // orderIndex is passed to helper functions for more granular error messages
+                // when an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("order[%d]", i)
+
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get sell order with id %d: %s", update.SellOrderId, err.Error())
@@ -34,7 +39,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		if !seller.Equals(sellOrderAddr) {
 			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Owner, sellOrderAddr.String())
 		}
-		if err = k.applySellOrderUpdates(ctx, sellOrder, update); err != nil {
+		if err = k.applySellOrderUpdates(ctx, orderIndex, sellOrder, update); err != nil {
 			return nil, err
 		}
 	}
@@ -42,7 +47,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 }
 
 // applySellOrderUpdates applies the updates to the order.
-func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
+func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	var creditType *ecoApi.CreditType
 	order.DisableAutoRetire = update.DisableAutoRetire
@@ -106,7 +111,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, order *api.SellOrder,
 			if err != nil {
 				return err
 			}
-			if err = k.escrowCredits(ctx, order.Seller, order.BatchId, amtToEscrow); err != nil {
+			if err = k.escrowCredits(ctx, orderIndex, order.Seller, order.BatchId, amtToEscrow); err != nil {
 				return err
 			}
 			order.Quantity = update.NewQuantity
