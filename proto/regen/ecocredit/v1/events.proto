@@ -25,10 +25,30 @@ message EventCreateBatch {
 
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 1;
+
+  // origin_tx is the transaction from another chain or registry that triggered
+  // the creation of the credit batch.
+  OriginTx origin_tx = 2;
 }
 
-// EventMint is an event emitted when credits are minted to a credit batch.
+// EventMint is an event emitted when credits are minted either when creating a
+// credit batch or when bridging assets from another chain or registry.
 message EventMint {
+
+  // batch_denom is the unique identifier of the credit batch within which the
+  // credits were minted.
+  string batch_denom = 1;
+
+  // tradable_amount is the amount of tradable credits minted.
+  string tradable_amount = 2;
+
+  // retired_amount is the amount of retired credits minted.
+  string retired_amount = 3;
+}
+
+// EventMintBatchCredits is an event emitted when credits are minted to an
+// existing open credit batch.
+message EventMintBatchCredits {
 
   // batch_denom is the unique identifier of the credit batch within which the
   // credits were minted.

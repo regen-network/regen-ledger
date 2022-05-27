@@ -1110,7 +1110,7 @@ func (m *QueryResolverResponse) GetResolver() *ResolverInfo {
 
 // QueryResolversByIRIResponse is the Query/ResolversByIRI response type.
 type QueryResolversByIRIResponse struct {
-	// resolvers are the resolvers that have registered the anchored data.
+	// resolvers are the resolvers that have registered the data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1220,7 +1220,7 @@ func (m *QueryResolversByHashRequest) GetPagination() *query.PageRequest {
 
 // QueryResolversByHashResponse is the Query/ResolversByHash response type.
 type QueryResolversByHashResponse struct {
-	// resolvers are the resolvers that have registered the anchored data.
+	// resolvers are the resolvers that have registered the data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -1586,7 +1586,7 @@ type QueryClient interface {
 	AttestorsByIRI(ctx context.Context, in *QueryAttestorsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestorsByIRIResponse, error)
 	// AttestorsByHash queries attestors based on ContentHash.
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolved based on ID.
+	// Resolver queries information about a resolver based on ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
 	// ResolversByIRI queries resolvers based on IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
@@ -1741,7 +1741,7 @@ type QueryServer interface {
 	AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error)
 	// AttestorsByHash queries attestors based on ContentHash.
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolved based on ID.
+	// Resolver queries information about a resolver based on ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
 	// ResolversByIRI queries resolvers based on IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)

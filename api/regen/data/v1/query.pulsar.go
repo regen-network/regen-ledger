@@ -14083,7 +14083,7 @@ type QueryResolversByIRIResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolvers are the resolvers that have registered the anchored data.
+	// resolvers are the resolvers that have registered the data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -14175,7 +14175,7 @@ type QueryResolversByHashResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// resolvers are the resolvers that have registered the anchored data.
+	// resolvers are the resolvers that have registered the data.
 	Resolvers []*ResolverInfo `protobuf:"bytes,1,rep,name=resolvers,proto3" json:"resolvers,omitempty"`
 	// pagination is the PageResponse to use for pagination.
 	Pagination *v1beta1.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`

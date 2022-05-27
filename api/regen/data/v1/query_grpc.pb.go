@@ -40,7 +40,7 @@ type QueryClient interface {
 	AttestorsByIRI(ctx context.Context, in *QueryAttestorsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestorsByIRIResponse, error)
 	// AttestorsByHash queries attestors based on ContentHash.
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolved based on ID.
+	// Resolver queries information about a resolver based on ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
 	// ResolversByIRI queries resolvers based on IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
@@ -197,7 +197,7 @@ type QueryServer interface {
 	AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error)
 	// AttestorsByHash queries attestors based on ContentHash.
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolved based on ID.
+	// Resolver queries information about a resolver based on ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
 	// ResolversByIRI queries resolvers based on IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
