@@ -130,7 +130,7 @@ func ValidateProjectId(projectId string) error {
 func ValidateBatchDenom(denom string) error {
 	matches := regexBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ecocredit.ErrParseFailure.Wrap("invalid denom: expected format A00-000-00000000-00000000-000")
+		return ecocredit.ErrParseFailure.Wrap("invalid batch denom: expected format A00-000-00000000-00000000-000")
 	}
 	return nil
 }

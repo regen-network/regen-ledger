@@ -13,6 +13,7 @@ import (
 
 	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
@@ -31,7 +32,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balBefore, supBefore := s.getBalanceAndSupply(1, s.addr)
+	balBefore, _ := s.getBalanceAndSupply(1, s.addr)
 
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
 		Owner: s.addr.String(),
@@ -42,7 +43,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	})
 	assert.NilError(t, err)
 
-	balAfter, supAfter := s.getBalanceAndSupply(1, s.addr)
+	balAfter, _ := s.getBalanceAndSupply(1, s.addr)
 
 	// sellOrder 1: 5.22 originally, increased by 10 = change of 4.78
 	// sellOrder 2: 30 originally, decreased by 28.7232 = change of -1.2768
@@ -51,7 +52,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	actualEscrowChange, err := math.NewDecFromString("3.5032")
 	assert.NilError(t, err)
 
-	assertCreditsEscrowed(t, balBefore, balAfter, supBefore, supAfter, actualEscrowChange)
+	assertCreditsEscrowed(t, balBefore, balAfter, actualEscrowChange)
 
 	order1, err := s.marketStore.SellOrderTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -95,7 +96,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 			{SellOrderId: 1, NewQuantity: "1000000000"},
 		},
 	})
-	assert.ErrorContains(t, err, sdkerrors.ErrInsufficientFunds.Error())
+	assert.ErrorContains(t, err, ecocredit.ErrInsufficientCredits.Error())
 
 	// cannot increase sell order with higher precision than credit type
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{

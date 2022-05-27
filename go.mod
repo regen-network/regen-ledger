@@ -1,4 +1,4 @@
-module github.com/regen-network/regen-ledger/v3
+module github.com/regen-network/regen-ledger/v4
 
 go 1.18
 
