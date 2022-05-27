@@ -36,11 +36,11 @@ type BuyOrderSellOrderMatch struct {
 	SellOrderId uint64 `protobuf:"varint,3,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 	// bid_price_complement is the the complement (^ operator) of the bid price
 	// encoded as a uint32 (which should have sufficient precision) - effectively
-	// ~price * 10^exponent (usually 10^6). The complement is used so that bids can
-	// be sorted high to low.
+	// ~price * 10^exponent (usually 10^6). The complement is used so that bids
+	// can be sorted high to low.
 	BidPriceComplement uint32 `protobuf:"fixed32,4,opt,name=bid_price_complement,json=bidPriceComplement,proto3" json:"bid_price_complement,omitempty"`
-	// ask_price is the ask price encoded to a uint32. Ask prices are sorted low to
-	// high.
+	// ask_price is the ask price encoded to a uint32. Ask prices are sorted low
+	// to high.
 	AskPrice uint32 `protobuf:"fixed32,5,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -80,6 +81,9 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		}
 		tradable, retired := decs[0], decs[1]
 
+		tradableString := tradable.String()
+		retiredString := retired.String()
+
 		recipient, _ := sdk.AccAddressFromBech32(issuance.Recipient)
 		if !tradable.IsZero() {
 			tradableSupply, err = tradableSupply.Add(tradable)
@@ -93,29 +97,37 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 				return nil, err
 			}
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-				Owner:        recipient.String(),
+				Owner:        issuance.Recipient,
 				BatchDenom:   batchDenom,
-				Amount:       retired.String(),
+				Amount:       retiredString,
 				Jurisdiction: issuance.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
 			}
 		}
 		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-			BatchKey:       key,
-			Address:        recipient,
-			TradableAmount: tradable.String(),
-			RetiredAmount:  retired.String(),
+			BatchKey: key,
+			Address:  recipient,
+			TradableAmount: tradableString,
+			RetiredAmount:  retiredString,
+		}); err != nil {
+			return nil, err
+		}
+
+		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventMint{
+			BatchDenom:     batchDenom,
+			RetiredAmount:  retiredString,
+			TradableAmount: tradableString,
 		}); err != nil {
 			return nil, err
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         moduleAddrString, // ecocredit module
-			Recipient:      recipient.String(),
+			Recipient:      issuance.Recipient,
 			BatchDenom:     batchDenom,
-			RetiredAmount:  retired.String(),
-			TradableAmount: tradable.String(),
+			RetiredAmount:  retiredString,
+			TradableAmount: tradableString,
 		}); err != nil {
 			return nil, err
 		}
@@ -127,13 +139,28 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		BatchKey:        key,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
-		CancelledAmount: math.NewDecFromInt64(0).String(),
+		CancelledAmount: "0", // must be explicitly set to prevent zero-value ""
 	}); err != nil {
 		return nil, err
 	}
 
+	if req.OriginTx != nil {
+		if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
+			Id:         req.OriginTx.Id,
+			Source:     req.OriginTx.Source,
+			Note:       req.Note,
+			BatchDenom: batchDenom,
+		}); err != nil {
+			if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+			}
+			return nil, err
+		}
+	}
+
 	if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventCreateBatch{
 		BatchDenom: batchDenom,
+		OriginTx:   req.OriginTx,
 	}); err != nil {
 		return nil, err
 	}

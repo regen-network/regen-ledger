@@ -939,7 +939,7 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient c
 }
 
 func getRandomBatchFromProject(ctx regentypes.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
-	res, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{
+	res, err := qryClient.BatchesByProject(ctx, &core.QueryBatchesByProjectRequest{
 		ProjectId: projectID,
 	})
 	if err != nil {

@@ -464,35 +464,23 @@ func (s *IntegrationTestSuite) TestQueryAttestors() {
 func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 	val := s.network.Validators[0]
 
-	url := "https://foo.bar"
-
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name   string
+		url    string
+		expErr bool
+		errMsg string
 	}{
 		{
-			"invalid url",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, "foo"),
+			"invalid id",
+			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, 404),
 			true,
 			"not found",
-			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, url),
+			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, s.resolverID),
 			false,
 			"",
-			2,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s&pagination.limit=1", val.APIAddress, url),
-			false,
-			"",
-			1,
 		},
 	}
 
@@ -511,7 +499,7 @@ func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 				require.Contains(string(resp), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(resolver.Id)
+				require.NotNil(resolver.Url)
 				require.NotNil(resolver.Manager)
 			}
 		})

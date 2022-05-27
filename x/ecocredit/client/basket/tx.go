@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 )
 
@@ -125,9 +126,9 @@ Flags:
 			var dateCriteria *basket.DateCriteria
 
 			if minStartDateString != "" {
-				minStartDateTime, err := time.Parse("2006-01-02", minStartDateString)
+				minStartDateTime, err := regentypes.ParseDate("min-start-date", minStartDateString)
 				if err != nil {
-					return fmt.Errorf("failed to parse min_start_date: %w", err)
+					return err
 				}
 				minStartDate, err := types.TimestampProto(minStartDateTime)
 				if err != nil {
