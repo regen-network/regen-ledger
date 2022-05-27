@@ -89,7 +89,7 @@ func TestMigrations(t *testing.T) {
 	require.NoError(t, err)
 
 	err = classInfoTable.Create(sdkCtx, &v3.ClassInfo{
-		ClassId:    "C02",
+		ClassId:    "C01",
 		Admin:      admin1.String(),
 		Metadata:   []byte("metadata"),
 		CreditType: &v3.CreditType{Name: "carbon", Abbreviation: "C", Precision: 6, Unit: "metric ton CO2 equivalent"},
@@ -98,75 +98,13 @@ func TestMigrations(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = classInfoTable.Create(sdkCtx, &v3.ClassInfo{
-		ClassId:    "C01",
-		Admin:      "cosmos123a7e9gvgm53zvswc6daq7c85xtzt826warpxl",
-		Metadata:   []byte("regen:13toVgo5CCmQkPJDwLegtf4U1esW5rrtWpwqE6nSdp1ha9W88Rfuf5M.rdf"),
-		CreditType: &v3.CreditType{Name: "carbon", Abbreviation: "C", Precision: 6, Unit: "metric ton CO2 equivalent"},
-		Issuers:    []string{"cosmos1v2ncquer9r2ytlkxh2djmmsq3e8we6rj88m0lh"},
-		NumBatches: 4,
-	})
-	require.NoError(t, err)
-
 	startDate := sdkCtx.BlockTime().UTC()
 	endDate := startDate.AddDate(2, 0, 0)
+	bd1 := formatBatchDenom("C01", 1, &startDate, &endDate)
+	bd2 := formatBatchDenom("C01", 2, &startDate, &endDate)
+	bd3 := formatBatchDenom("C01", 3, &startDate, &endDate)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
 		ClassId:         "C01",
-		BatchDenom:      "C01-20190101-20191231-003",
-		Issuer:          "cosmos1v2ncquer9r2ytlkxh2djmmsq3e8we6rj88m0lh",
-		TotalAmount:     "20",
-		Metadata:        []byte("cmVnZW46MTN0b1ZnRjg0a1F3U1gxMURkaERhc1l0TUZVMVliNnFRd1F2dHYxcnZIOHBmNUU4VVR5YWpDWC5yZGY="),
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "CD-MN",
-	})
-	require.NoError(t, err)
-
-	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C01",
-		BatchDenom:      "C01-20190101-20191231-004",
-		Issuer:          "cosmos1v2ncquer9r2ytlkxh2djmmsq3e8we6rj88m0lh",
-		TotalAmount:     "3525",
-		Metadata:        []byte("cmVnZW46MTN0b1ZnRjg0a1F3U1gxMURkaERhc1l0TUZVMVliNnFRd1F2dHYxcnZIOHBmNUU4VVR5YWpDWC5yZGY="),
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "CD-MN",
-	})
-	require.NoError(t, err)
-
-	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C01",
-		BatchDenom:      "C01-20190101-20191231-001",
-		Issuer:          "cosmos1v2ncquer9r2ytlkxh2djmmsq3e8we6rj88m0lh",
-		TotalAmount:     "61",
-		Metadata:        []byte("cmVnZW46MTN0b1ZnRjg0a1F3U1gxMURkaERhc1l0TUZVMVliNnFRd1F2dHYxcnZIOHBmNUU4VVR5YWpDWC5yZGY="),
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "KE",
-	})
-	require.NoError(t, err)
-
-	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C01",
-		BatchDenom:      "C01-20190101-20191231-002",
-		Issuer:          "cosmos1v2ncquer9r2ytlkxh2djmmsq3e8we6rj88m0lh",
-		TotalAmount:     "36",
-		Metadata:        []byte("cmVnZW46MTN0b1ZnUjh4TDZOdXlyb3RqYWlrN2JxbWt1V1JuTXZpdDhrYTFmU0JMbmVielA3elVWYk1KMy5yZGY="),
-		AmountCancelled: "0",
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "KE",
-	})
-	require.NoError(t, err)
-
-	bd1 := formatBatchDenom("C02", 1, &startDate, &endDate)
-	bd2 := formatBatchDenom("C02", 2, &startDate, &endDate)
-	bd3 := formatBatchDenom("C02", 3, &startDate, &endDate)
-	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C02",
 		BatchDenom:      bd1,
 		Issuer:          issuer1.String(),
 		TotalAmount:     "1000",
@@ -179,7 +117,7 @@ func TestMigrations(t *testing.T) {
 	require.NoError(t, err)
 
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C02",
+		ClassId:         "C01",
 		BatchDenom:      bd2,
 		Issuer:          issuer2.String(),
 		TotalAmount:     "1000",
@@ -191,7 +129,7 @@ func TestMigrations(t *testing.T) {
 	})
 	require.NoError(t, err)
 	err = batchInfoTable.Create(sdkCtx, &v3.BatchInfo{
-		ClassId:         "C02",
+		ClassId:         "C01",
 		BatchDenom:      bd3,
 		Issuer:          issuer2.String(),
 		TotalAmount:     "1000",
@@ -244,16 +182,16 @@ func TestMigrations(t *testing.T) {
 	ctx := sdk.WrapSDKContext(sdkCtx)
 
 	// verify credit class data
-	res, err := ss.ClassTable().GetById(ctx, "C02")
+	res, err := ss.ClassTable().GetById(ctx, "C01")
 	require.NoError(t, err)
 	require.NotNil(t, res)
 	require.Equal(t, res.Admin, admin1.Bytes())
 	require.Equal(t, res.CreditTypeAbbrev, "C")
 	require.Equal(t, res.Metadata, "metadata")
-	require.Equal(t, res.Id, "C02")
+	require.Equal(t, res.Id, "C01")
 
 	// verify class issuers migration
-	itr, err := ss.ClassIssuerTable().List(ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(2))
+	itr, err := ss.ClassIssuerTable().List(ctx, api.ClassIssuerClassKeyIssuerIndexKey{}.WithClassKey(1))
 	require.NoError(t, err)
 	require.NotNil(t, itr)
 
@@ -261,27 +199,27 @@ func TestMigrations(t *testing.T) {
 	for itr.Next() {
 		val, err := itr.Value()
 		require.NoError(t, err)
-		require.Equal(t, val.ClassKey, uint64(2))
+		require.Equal(t, val.ClassKey, uint64(1))
 		require.Contains(t, issuers, val.Issuer)
 	}
 	itr.Close()
 
 	// verify project migration
-	res1, err := ss.ProjectTable().Get(ctx, 3)
+	res1, err := ss.ProjectTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res1)
-	require.Equal(t, res1.Id, "C02-001")
+	require.Equal(t, res1.Id, "C01-001")
 	require.Equal(t, res1.Metadata, "")
 	require.Equal(t, res1.Jurisdiction, "AB-CDE FG1 345")
-	require.Equal(t, res1.ClassKey, uint64(2))
+	require.Equal(t, res1.ClassKey, uint64(1))
 	require.NotNil(t, res1.Admin)
 
 	// verify batch migration
-	expbd1, err := core.FormatBatchDenom("C02-001", 1, &startDate, &endDate)
+	expbd1, err := core.FormatBatchDenom("C01-001", 1, &startDate, &endDate)
 	require.NoError(t, err)
-	expbd2, err := core.FormatBatchDenom("C02-002", 1, &startDate, &endDate)
+	expbd2, err := core.FormatBatchDenom("C01-002", 1, &startDate, &endDate)
 	require.NoError(t, err)
-	expbd3, err := core.FormatBatchDenom("C02-002", 2, &startDate, &endDate)
+	expbd3, err := core.FormatBatchDenom("C01-002", 2, &startDate, &endDate)
 	require.NoError(t, err)
 	batchRes, err := ss.BatchTable().GetByDenom(ctx, expbd1)
 	require.NoError(t, err)
@@ -294,10 +232,10 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, expbd3, batchRes.Denom)
 
 	// verify project sequence
-	res2, err := ss.ProjectSequenceTable().Get(ctx, 2)
+	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.NotNil(t, res2)
-	require.Equal(t, res2.ClassKey, uint64(2))
+	require.Equal(t, res2.ClassKey, uint64(1))
 	require.Equal(t, res2.NextSequence, uint64(3))
 
 	// verify class sequence table migration
@@ -314,7 +252,7 @@ func TestMigrations(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, res4)
 	require.Equal(t, res4.ProjectKey, uint64(1))
-	require.Equal(t, res4.NextSequence, uint64(3))
+	require.Equal(t, res4.NextSequence, uint64(2))
 
 	res4, err = ss.BatchSequenceTable().Get(ctx, 2)
 	require.NoError(t, err)
@@ -332,12 +270,12 @@ func TestMigrations(t *testing.T) {
 	// verify tradable and retired balance migration
 	// recipient1 balance -> tradable: 550 , retired: 350
 	// recipient2 balance -> tradable: 610 , retired: 390
-	bb, err := ss.BatchBalanceTable().Get(ctx, recipient1.Bytes(), 5)
+	bb, err := ss.BatchBalanceTable().Get(ctx, recipient1.Bytes(), 1)
 	require.NoError(t, err)
 	require.Equal(t, bb.Tradable, "550")
 	require.Equal(t, bb.Retired, "350")
 
-	bb, err = ss.BatchBalanceTable().Get(ctx, recipient2.Bytes(), 6)
+	bb, err = ss.BatchBalanceTable().Get(ctx, recipient2.Bytes(), 2)
 	require.NoError(t, err)
 	require.Equal(t, bb.Tradable, "610")
 	require.Equal(t, bb.Retired, "390")
@@ -346,13 +284,13 @@ func TestMigrations(t *testing.T) {
 	// Supply.b1 -> tradable: 550 , retired: 350, cancelled: 100
 	// Supply.b2 -> tradable: 610 , retired: 390, cancelled: 0
 
-	bs, err := ss.BatchSupplyTable().Get(ctx, 5)
+	bs, err := ss.BatchSupplyTable().Get(ctx, 1)
 	require.NoError(t, err)
 	require.Equal(t, bs.TradableAmount, "550")
 	require.Equal(t, bs.RetiredAmount, "350")
 	require.Equal(t, bs.CancelledAmount, "100")
 
-	bs, err = ss.BatchSupplyTable().Get(ctx, 6)
+	bs, err = ss.BatchSupplyTable().Get(ctx, 2)
 	require.NoError(t, err)
 	require.Equal(t, bs.TradableAmount, "610")
 	require.Equal(t, bs.RetiredAmount, "390")
@@ -374,7 +312,7 @@ func TestMigrations(t *testing.T) {
 	require.Equal(t, bio.Unit, ctypes[1].Unit)
 
 	// verify old state is deleted
-	require.False(t, classInfoTable.Has(sdkCtx, regenorm.RowID("C02")))
+	require.False(t, classInfoTable.Has(sdkCtx, regenorm.RowID("C01")))
 
 	require.False(t, batchInfoTable.Has(sdkCtx, regenorm.RowID(bd1)))
 
