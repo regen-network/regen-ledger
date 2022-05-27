@@ -5,24 +5,18 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/rand"
-	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,13 +24,9 @@ import (
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -44,28 +34,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
-type IntegrationTestSuite struct {
-	suite.Suite
-
-	cfg     network.Config
-	network *network.Network
-
-	addr          sdk.AccAddress
-	allowedDenoms []string
-}
-
 const (
 	validCreditTypeAbbrev = "C"
 	validMetadata         = "hi"
 )
-
-func RunCLITests(t *testing.T, cfg network.Config) {
-	suite.Run(t, NewIntegrationTestSuite(cfg))
-}
-
-func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
-	return &IntegrationTestSuite{cfg: cfg}
-}
 
 // Write a MsgCreateBatch to a new temporary file and return the filename
 func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch) string {
@@ -73,97 +45,6 @@ func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch)
 	s.Require().NoError(err)
 
 	return testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
-}
-
-func (s *IntegrationTestSuite) setupCustomGenesis() {
-	// setup temporary mem db
-	db := dbm.NewMemDB()
-	defer func() {
-		if err := db.Close(); err != nil {
-			panic(err)
-		}
-	}()
-	backend := ormtable.NewBackend(ormtable.BackendOptions{
-		CommitmentStore: db,
-		IndexStore:      db,
-	})
-	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	s.Require().NoError(err)
-	ormCtx := ormtable.WrapContextDefault(backend)
-	ss, err := api.NewStateStore(modDB)
-	s.Require().NoError(err)
-	ms, err := marketApi.NewStateStore(modDB)
-
-	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
-		BankDenom:    sdk.DefaultBondDenom,
-		DisplayDenom: sdk.DefaultBondDenom,
-	})
-	s.Require().NoError(err)
-	s.allowedDenoms = append(s.allowedDenoms, sdk.DefaultBondDenom)
-
-	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
-		Abbreviation: "C",
-		Name:         "carbon",
-		Unit:         "metric ton C02",
-		Precision:    6,
-	})
-	s.Require().NoError(err)
-
-	// export genesis into target
-	target := ormjson.NewRawMessageTarget()
-	err = modDB.ExportJSON(ormCtx, target)
-	s.Require().NoError(err)
-
-	// merge the params into the json target
-	params := core.DefaultParams()
-	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	s.Require().NoError(err)
-
-	// get raw json from target
-	ecoJsn, err := target.JSON()
-	s.Require().NoError(err)
-
-	// set the module genesis
-	s.cfg.GenesisState[ecocredit.ModuleName] = ecoJsn
-}
-
-func (s *IntegrationTestSuite) SetupSuite() {
-	s.T().Log("setting up integration test suite")
-
-	s.setupCustomGenesis()
-
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
-
-	val := s.network.Validators[0]
-
-	// create an account for val
-	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator0", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-
-	_, a1pub, a1 := testdata.KeyTestPubAddr()
-	_, err = val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
-	s.Require().NoError(err)
-
-	// fund the test account
-	account := sdk.AccAddress(info.GetPubKey().Address())
-	for _, acc := range []sdk.AccAddress{account, a1} {
-		_, err = banktestutil.MsgSendExec(
-			val.ClientCtx,
-			val.Address,
-			acc,
-			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(20000000000000000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-			fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-			fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		)
-		s.Require().NoError(err)
-	}
-
-	s.addr = account
 }
 
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
@@ -176,11 +57,6 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
 	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) TearDownSuite() {
-	s.T().Log("tearing down integration test suite")
-	s.network.Cleanup()
 }
 
 func (s *IntegrationTestSuite) commonTxFlags() []string {

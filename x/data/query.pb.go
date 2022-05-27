@@ -1185,7 +1185,7 @@ func (m *QueryResolversByHashResponse) GetPagination() *query.PageResponse {
 
 // QueryResolverInfoRequest is the Query/ResolverInfo request type.
 type QueryResolverInfoRequest struct {
-	// id is the unique id of the resolver.
+	// id is the id of the resolver.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 

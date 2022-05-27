@@ -56,10 +56,10 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
   }
 
-  // Batches queries for all batches in the given project with pagination.
+  // Batches queries for all batches with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{project_id}/batches";
+        "/regen/ecocredit/v1/batches";
   }
 
   // BatchesByIssuer queries all batches issued from a given issuer address.
@@ -73,7 +73,13 @@ service Query {
   rpc BatchesByClass(QueryBatchesByClassRequest)
       returns (QueryBatchesByClassResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/classes/{class_id}/batches";
+        "/regen/ecocredit/v1/batches/class/{class_id}";
+  }
+
+  // BatchesByProject queries for all batches from a given project with pagination.
+  rpc BatchesByProject(QueryBatchesByProjectRequest) returns (QueryBatchesByProjectResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/batches/project/{project_id}";
   }
 
   // Batch queries for information on a credit batch.
@@ -241,11 +247,8 @@ message QueryProjectResponse {
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
 
-  // project_id is the unique identifier of the project to query.
-  string project_id = 1;
-
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryBatchesResponse is the Query/Batches response type.
@@ -286,6 +289,26 @@ message QueryBatchesByClassRequest {
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByProjectRequest is the Query/BatchesByProject request type.
+message QueryBatchesByProjectRequest {
+
+  // project_id is the unique identifier of the project to query.
+  string project_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesByProjectResponse is the Query/BatchesByProject response type.
+message QueryBatchesByProjectResponse {
+
+  // batches are the fetched credit batches.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryBatchesByClassResponse is the Query/BatchesByClass response type.
