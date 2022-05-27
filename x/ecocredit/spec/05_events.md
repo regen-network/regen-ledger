@@ -12,6 +12,7 @@ The ecocredit module emits events upon the successful execution of messages. The
 - [EventCreateClass](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCreateClass)
 - [EventCreateProject](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventCreateProject)
 - [EventMint](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventMint)
+- [EventMintBatchCredits](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventMintBatchCredits)
 - [EventRetire](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventRetire)
 - [EventSealBatch](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventSealBatch)
 - [EventTransfer](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.v1#regen.ecocredit.v1.EventTransfer)
