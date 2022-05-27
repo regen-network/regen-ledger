@@ -1471,118 +1471,123 @@ func NewBatchSupplyTable(db ormtable.Schema) (BatchSupplyTable, error) {
 	return batchSupplyTable{table}, nil
 }
 
-type BatchOrigTxTable interface {
-	Insert(ctx context.Context, batchOrigTx *BatchOrigTx) error
-	Update(ctx context.Context, batchOrigTx *BatchOrigTx) error
-	Save(ctx context.Context, batchOrigTx *BatchOrigTx) error
-	Delete(ctx context.Context, batchOrigTx *BatchOrigTx) error
-	Has(ctx context.Context, tx_id string) (found bool, err error)
+type BatchOriginTxTable interface {
+	Insert(ctx context.Context, batchOriginTx *BatchOriginTx) error
+	Update(ctx context.Context, batchOriginTx *BatchOriginTx) error
+	Save(ctx context.Context, batchOriginTx *BatchOriginTx) error
+	Delete(ctx context.Context, batchOriginTx *BatchOriginTx) error
+	Has(ctx context.Context, id string, source string) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, tx_id string) (*BatchOrigTx, error)
-	List(ctx context.Context, prefixKey BatchOrigTxIndexKey, opts ...ormlist.Option) (BatchOrigTxIterator, error)
-	ListRange(ctx context.Context, from, to BatchOrigTxIndexKey, opts ...ormlist.Option) (BatchOrigTxIterator, error)
-	DeleteBy(ctx context.Context, prefixKey BatchOrigTxIndexKey) error
-	DeleteRange(ctx context.Context, from, to BatchOrigTxIndexKey) error
+	Get(ctx context.Context, id string, source string) (*BatchOriginTx, error)
+	List(ctx context.Context, prefixKey BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error)
+	ListRange(ctx context.Context, from, to BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error)
+	DeleteBy(ctx context.Context, prefixKey BatchOriginTxIndexKey) error
+	DeleteRange(ctx context.Context, from, to BatchOriginTxIndexKey) error
 
 	doNotImplement()
 }
 
-type BatchOrigTxIterator struct {
+type BatchOriginTxIterator struct {
 	ormtable.Iterator
 }
 
-func (i BatchOrigTxIterator) Value() (*BatchOrigTx, error) {
-	var batchOrigTx BatchOrigTx
-	err := i.UnmarshalMessage(&batchOrigTx)
-	return &batchOrigTx, err
+func (i BatchOriginTxIterator) Value() (*BatchOriginTx, error) {
+	var batchOriginTx BatchOriginTx
+	err := i.UnmarshalMessage(&batchOriginTx)
+	return &batchOriginTx, err
 }
 
-type BatchOrigTxIndexKey interface {
+type BatchOriginTxIndexKey interface {
 	id() uint32
 	values() []interface{}
-	batchOrigTxIndexKey()
+	batchOriginTxIndexKey()
 }
 
 // primary key starting index..
-type BatchOrigTxPrimaryKey = BatchOrigTxTxIdIndexKey
+type BatchOriginTxPrimaryKey = BatchOriginTxIdSourceIndexKey
 
-type BatchOrigTxTxIdIndexKey struct {
+type BatchOriginTxIdSourceIndexKey struct {
 	vs []interface{}
 }
 
-func (x BatchOrigTxTxIdIndexKey) id() uint32            { return 0 }
-func (x BatchOrigTxTxIdIndexKey) values() []interface{} { return x.vs }
-func (x BatchOrigTxTxIdIndexKey) batchOrigTxIndexKey()  {}
+func (x BatchOriginTxIdSourceIndexKey) id() uint32             { return 0 }
+func (x BatchOriginTxIdSourceIndexKey) values() []interface{}  { return x.vs }
+func (x BatchOriginTxIdSourceIndexKey) batchOriginTxIndexKey() {}
 
-func (this BatchOrigTxTxIdIndexKey) WithTxId(tx_id string) BatchOrigTxTxIdIndexKey {
-	this.vs = []interface{}{tx_id}
+func (this BatchOriginTxIdSourceIndexKey) WithId(id string) BatchOriginTxIdSourceIndexKey {
+	this.vs = []interface{}{id}
 	return this
 }
 
-type batchOrigTxTable struct {
+func (this BatchOriginTxIdSourceIndexKey) WithIdSource(id string, source string) BatchOriginTxIdSourceIndexKey {
+	this.vs = []interface{}{id, source}
+	return this
+}
+
+type batchOriginTxTable struct {
 	table ormtable.Table
 }
 
-func (this batchOrigTxTable) Insert(ctx context.Context, batchOrigTx *BatchOrigTx) error {
-	return this.table.Insert(ctx, batchOrigTx)
+func (this batchOriginTxTable) Insert(ctx context.Context, batchOriginTx *BatchOriginTx) error {
+	return this.table.Insert(ctx, batchOriginTx)
 }
 
-func (this batchOrigTxTable) Update(ctx context.Context, batchOrigTx *BatchOrigTx) error {
-	return this.table.Update(ctx, batchOrigTx)
+func (this batchOriginTxTable) Update(ctx context.Context, batchOriginTx *BatchOriginTx) error {
+	return this.table.Update(ctx, batchOriginTx)
 }
 
-func (this batchOrigTxTable) Save(ctx context.Context, batchOrigTx *BatchOrigTx) error {
-	return this.table.Save(ctx, batchOrigTx)
+func (this batchOriginTxTable) Save(ctx context.Context, batchOriginTx *BatchOriginTx) error {
+	return this.table.Save(ctx, batchOriginTx)
 }
 
-func (this batchOrigTxTable) Delete(ctx context.Context, batchOrigTx *BatchOrigTx) error {
-	return this.table.Delete(ctx, batchOrigTx)
+func (this batchOriginTxTable) Delete(ctx context.Context, batchOriginTx *BatchOriginTx) error {
+	return this.table.Delete(ctx, batchOriginTx)
 }
 
-func (this batchOrigTxTable) Has(ctx context.Context, tx_id string) (found bool, err error) {
-	return this.table.PrimaryKey().Has(ctx, tx_id)
+func (this batchOriginTxTable) Has(ctx context.Context, id string, source string) (found bool, err error) {
+	return this.table.PrimaryKey().Has(ctx, id, source)
 }
 
-func (this batchOrigTxTable) Get(ctx context.Context, tx_id string) (*BatchOrigTx, error) {
-	var batchOrigTx BatchOrigTx
-	found, err := this.table.PrimaryKey().Get(ctx, &batchOrigTx, tx_id)
+func (this batchOriginTxTable) Get(ctx context.Context, id string, source string) (*BatchOriginTx, error) {
+	var batchOriginTx BatchOriginTx
+	found, err := this.table.PrimaryKey().Get(ctx, &batchOriginTx, id, source)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &batchOrigTx, nil
+	return &batchOriginTx, nil
 }
 
-func (this batchOrigTxTable) List(ctx context.Context, prefixKey BatchOrigTxIndexKey, opts ...ormlist.Option) (BatchOrigTxIterator, error) {
+func (this batchOriginTxTable) List(ctx context.Context, prefixKey BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return BatchOrigTxIterator{it}, err
+	return BatchOriginTxIterator{it}, err
 }
 
-func (this batchOrigTxTable) ListRange(ctx context.Context, from, to BatchOrigTxIndexKey, opts ...ormlist.Option) (BatchOrigTxIterator, error) {
+func (this batchOriginTxTable) ListRange(ctx context.Context, from, to BatchOriginTxIndexKey, opts ...ormlist.Option) (BatchOriginTxIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return BatchOrigTxIterator{it}, err
+	return BatchOriginTxIterator{it}, err
 }
 
-func (this batchOrigTxTable) DeleteBy(ctx context.Context, prefixKey BatchOrigTxIndexKey) error {
+func (this batchOriginTxTable) DeleteBy(ctx context.Context, prefixKey BatchOriginTxIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this batchOrigTxTable) DeleteRange(ctx context.Context, from, to BatchOrigTxIndexKey) error {
+func (this batchOriginTxTable) DeleteRange(ctx context.Context, from, to BatchOriginTxIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this batchOrigTxTable) doNotImplement() {}
+func (this batchOriginTxTable) doNotImplement() {}
 
-var _ BatchOrigTxTable = batchOrigTxTable{}
+var _ BatchOriginTxTable = batchOriginTxTable{}
 
-func NewBatchOrigTxTable(db ormtable.Schema) (BatchOrigTxTable, error) {
-	table := db.GetTable(&BatchOrigTx{})
+func NewBatchOriginTxTable(db ormtable.Schema) (BatchOriginTxTable, error) {
+	table := db.GetTable(&BatchOriginTx{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&BatchOrigTx{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&BatchOriginTx{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return batchOrigTxTable{table}, nil
+	return batchOriginTxTable{table}, nil
 }
 
 type StateStore interface {
@@ -1596,7 +1601,7 @@ type StateStore interface {
 	BatchSequenceTable() BatchSequenceTable
 	BatchBalanceTable() BatchBalanceTable
 	BatchSupplyTable() BatchSupplyTable
-	BatchOrigTxTable() BatchOrigTxTable
+	BatchOriginTxTable() BatchOriginTxTable
 
 	doNotImplement()
 }
@@ -1612,7 +1617,7 @@ type stateStore struct {
 	batchSequence   BatchSequenceTable
 	batchBalance    BatchBalanceTable
 	batchSupply     BatchSupplyTable
-	batchOrigTx     BatchOrigTxTable
+	batchOriginTx   BatchOriginTxTable
 }
 
 func (x stateStore) CreditTypeTable() CreditTypeTable {
@@ -1655,8 +1660,8 @@ func (x stateStore) BatchSupplyTable() BatchSupplyTable {
 	return x.batchSupply
 }
 
-func (x stateStore) BatchOrigTxTable() BatchOrigTxTable {
-	return x.batchOrigTx
+func (x stateStore) BatchOriginTxTable() BatchOriginTxTable {
+	return x.batchOriginTx
 }
 
 func (stateStore) doNotImplement() {}
@@ -1714,7 +1719,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	batchOrigTxTable, err := NewBatchOrigTxTable(db)
+	batchOriginTxTable, err := NewBatchOriginTxTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -1730,6 +1735,6 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		batchSequenceTable,
 		batchBalanceTable,
 		batchSupplyTable,
-		batchOrigTxTable,
+		batchOriginTxTable,
 	}, nil
 }

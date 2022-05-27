@@ -153,8 +153,8 @@ func TestCreateBatch_WithOriginTx_Valid(t *testing.T) {
 		StartDate: &start,
 		EndDate:   &end,
 		OriginTx: &core.OriginTx{
-			Typ: "Ethereum",
-			Id:  "210985091248",
+			Id:     "210985091248",
+			Source: "Ethereum",
 		},
 	})
 	assert.NilError(t, err)
@@ -191,8 +191,8 @@ func TestCreateBatch_WithOriginTx_Invalid(t *testing.T) {
 		StartDate: &start,
 		EndDate:   &end,
 		OriginTx: &core.OriginTx{
-			Typ: "Ethereum",
-			Id:  "210985091248",
+			Id:     "210985091248",
+			Source: "Ethereum",
 		},
 	}
 

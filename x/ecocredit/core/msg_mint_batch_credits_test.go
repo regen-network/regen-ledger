@@ -27,10 +27,10 @@ func TestMsgMintBatchCredits(t *testing.T) {
 			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom}},
 
 		{"good-no-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx,
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
 				Issuance: batchIssuances}},
 		{"good-note", "",
-			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOrigTx,
+			MsgMintBatchCredits{Issuer: issuer, BatchDenom: batchDenom, OriginTx: &batchOriginTx,
 				Note: randstr.String(300), Issuance: batchIssuances}},
 	}
 	for _, tc := range tcs {
@@ -51,17 +51,16 @@ func TestValidateOriginTx(t *testing.T) {
 		err  string
 		o    OriginTx
 	}{
-		{"empty type", "origin_tx.typ must be",
+		{"empty id", "origin_tx.id must be",
 			OriginTx{}},
-		{"wrong type", "origin_tx.typ must be",
-			OriginTx{Typ: "*xxx"}},
-		{"empty tx", "origin_tx.id must be",
-			OriginTx{Typ: "Polygon"}},
-		{"wrong tx", "origin_tx.id must be",
-			OriginTx{Typ: "Polygon", Id: "---"}},
-
-		{"good1", "", OriginTx{Typ: "Polygon", Id: "0x123"}},
-		{"good2", "", OriginTx{Typ: "Ethereum", Id: "0x123"}},
+		{"wrong id", "origin_tx.id must be",
+			OriginTx{Id: "---"}},
+		{"empty source", "origin_tx.source must be",
+			OriginTx{Id: "0x123"}},
+		{"wrong source", "origin_tx.source must be",
+			OriginTx{Id: "0x123", Source: "*xxx"}},
+		{"good1", "", OriginTx{Source: "polygon", Id: "0x123"}},
+		{"good2", "", OriginTx{Source: "ethereum", Id: "0x123"}},
 	}
 
 	for _, tc := range tcs {

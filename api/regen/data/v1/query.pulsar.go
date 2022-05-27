@@ -12566,7 +12566,7 @@ type QueryResolverInfoRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the unique id of the resolver.
+	// id is the id of the resolver.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
