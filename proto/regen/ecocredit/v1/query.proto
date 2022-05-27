@@ -500,12 +500,15 @@ message BatchBalanceInfo {
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
 
-  // tradable is the tradable amount of credits.
-  string tradable = 3;
+  // tradable_amount is the total number of tradable credits owned by address.
+  string tradable_amount = 3;
 
-  // retired is the retired amount of credits.
-  string retired = 4;
+  // retired_amount is the total number of retired credits owned by address.
+  string retired_amount = 4;
 
-  // escrowed is the amount of credits locked up in escrow for the marketplace.
-  string escrowed = 5;
+  // escrowed_amount is the total number of escrowed credits owned by address
+  // and held in escrow by the marketplace. Credits are held in escrow when a
+  // sell order is created and taken out of escrow when the sell order is either
+  // cancelled, updated with a reduced quantity, or processed.
+  string escrowed_amount = 5;
 }

@@ -138,7 +138,7 @@ func (s *baseSuite) assertBalanceAndSupplyUpdated(orders []*marketplace.MsgBuyDi
 }
 
 func extractBalanceDecs(t gocuke.TestingT, b *ecoApi.BatchBalance) (tradable, retired, escrowed math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, b.Tradable, b.Retired, b.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(6, b.TradableAmount, b.RetiredAmount, b.EscrowedAmount)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
 }
@@ -158,9 +158,9 @@ func buyDirectSingle(s *baseSuite, buyerAddr sdk.AccAddress, order *marketplace.
 }
 
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoApi.BatchBalance, supplyBefore, supplyAfter *ecoApi.BatchSupply, orderAmt math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.Tradable, balanceAfter.Tradable,
-		balanceBefore.Escrowed, balanceAfter.Escrowed, supplyBefore.TradableAmount, supplyAfter.TradableAmount)
+func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
+	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.TradableAmount, balanceAfter.TradableAmount,
+		balanceBefore.EscrowedAmount, balanceAfter.EscrowedAmount)
 	assert.NilError(t, err)
 
 	balBeforeTradable, balAfterTradable, balBeforeEscrowed, balAfterEscrowed := decs[0], decs[1], decs[2], decs[3]
@@ -200,7 +200,7 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 	}))
 
 	assert.NilError(s.t, s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
-		CreditType:        creditType.Abbreviation,
+		CreditTypeAbbrev:  creditType.Abbreviation,
 		BankDenom:         bankDenom,
 		PrecisionModifier: 0,
 	}))
@@ -210,11 +210,11 @@ func (s *baseSuite) testSellSetup(batchDenom, bankDenom, displayDenom, classId s
 		Exponent:     1,
 	}))
 	assert.NilError(s.t, s.k.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
-		BatchKey: 1,
-		Address:  s.addr,
-		Tradable: "100",
-		Retired:  "100",
-		Escrowed: "0",
+		BatchKey:       1,
+		Address:        s.addr,
+		TradableAmount: "100",
+		RetiredAmount:  "100",
+		EscrowedAmount: "0",
 	}))
 	assert.NilError(s.t, s.k.coreStore.BatchSupplyTable().Insert(s.ctx, &ecoApi.BatchSupply{
 		BatchKey:        1,

@@ -37,9 +37,9 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 
 		// check decimal places does not exceed credit type precision
-		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchId)
+		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchKey)
 		if err != nil {
-			return nil, sdkerrors.ErrIO.Wrapf("error getting batch id %d: %s", sellOrder.BatchId, err.Error())
+			return nil, err
 		}
 		ct, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
@@ -66,12 +66,12 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 
 		// check that bid price >= sell price
-		sellOrderAskPrice, ok := sdk.NewIntFromString(sellOrder.AskPrice)
+		sellOrderAskAmount, ok := sdk.NewIntFromString(sellOrder.AskAmount)
 		if !ok {
-			return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskPrice, sdk.Int{})
+			return nil, fmt.Errorf("could not convert %s to %T", sellOrder.AskAmount, sdk.Int{})
 		}
-		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskPrice}
-		if sellOrderAskPrice.GT(order.BidPrice.Amount) {
+		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskAmount}
+		if sellOrderAskAmount.GT(order.BidPrice.Amount) {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
 				"%s: ask price: %v, bid price: %v, insufficient bid price",
 				orderIndex, sellOrderPriceCoin, order.BidPrice,
@@ -80,7 +80,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 
 		// check address has the total cost (price per * order quantity)
 		bal := k.bankKeeper.GetBalance(sdkCtx, buyerAcc, order.BidPrice.Denom)
-		cost, err := getTotalCost(sellOrderAskPrice, creditOrderQty)
+		cost, err := getTotalCost(sellOrderAskAmount, creditOrderQty)
 		if err != nil {
 			return nil, err
 		}
@@ -88,7 +88,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		if bal.IsLT(coinCost) {
 			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
 				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
-				orderIndex, order.Quantity, sellOrder.AskPrice, market.BankDenom, coinCost, bal,
+				orderIndex, order.Quantity, sellOrder.AskAmount, market.BankDenom, coinCost, bal,
 			)
 		}
 

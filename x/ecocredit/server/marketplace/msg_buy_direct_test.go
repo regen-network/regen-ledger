@@ -159,19 +159,19 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 	id, err := strconv.ParseUint(a, 10, 32)
 	require.NoError(s.t, err)
 
-	s.sellOrderId = id // required for sell order setup
+	s.sellOrderId = id
 
 	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantity(a string) {
-	s.quantity = a // required for sell order setup
+	s.quantity = a
 
 	s.sellOrderSetup(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
-	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount) // required for sell order setup
+	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount)
 
 	s.sellOrderSetup(1)
 }
@@ -180,7 +180,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
 	askAmount, ok := sdk.NewIntFromString(a)
 	require.True(s.t, ok)
 
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
 	s.sellOrderSetup(1)
 }
@@ -189,7 +189,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 	disableAutoRetire, err := strconv.ParseBool(a)
 	require.NoError(s.t, err)
 
-	s.disableAutoRetire = disableAutoRetire // required for sell order setup
+	s.disableAutoRetire = disableAutoRetire
 
 	s.sellOrderSetup(1)
 }
@@ -198,8 +198,8 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string
 	askAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.quantity = a                                        // required for sell order setup
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+	s.quantity = a
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
 	s.sellOrderSetup(1)
 }
@@ -208,8 +208,8 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string,
 	askPrice, err := sdk.ParseCoinNormalized(b)
 	require.NoError(s.t, err)
 
-	s.quantity = a        // required for sell order setup
-	s.askPrice = askPrice // required for sell order setup
+	s.quantity = a
+	s.askPrice = askPrice
 
 	s.sellOrderSetup(1)
 }
@@ -218,8 +218,8 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 	disableAutoRetire, err := strconv.ParseBool(b)
 	require.NoError(s.t, err)
 
-	s.quantity = a                          // required for sell order setup
-	s.disableAutoRetire = disableAutoRetire // required for sell order setup
+	s.quantity = a
+	s.disableAutoRetire = disableAutoRetire
 
 	s.sellOrderSetup(1)
 }
@@ -228,8 +228,8 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	askAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
 
-	s.quantity = a                                        // required for sell order setup
-	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount) // required for sell order setup
+	s.quantity = a
+	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
 	s.sellOrderSetup(2)
 }
@@ -455,9 +455,9 @@ func (s *buyDirectSuite) ExpectAliceBatchBalance(a gocuke.DocString) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, expected.Retired, balance.Retired)
-	require.Equal(s.t, expected.Tradable, balance.Tradable)
-	require.Equal(s.t, expected.Escrowed, balance.Escrowed)
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
 }
 
 func (s *buyDirectSuite) ExpectBobBatchBalance(a gocuke.DocString) {
@@ -471,9 +471,9 @@ func (s *buyDirectSuite) ExpectBobBatchBalance(a gocuke.DocString) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.bob, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, expected.Retired, balance.Retired)
-	require.Equal(s.t, expected.Tradable, balance.Tradable)
-	require.Equal(s.t, expected.Escrowed, balance.Escrowed)
+	require.Equal(s.t, expected.RetiredAmount, balance.RetiredAmount)
+	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
+	require.Equal(s.t, expected.EscrowedAmount, balance.EscrowedAmount)
 }
 
 func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
@@ -516,30 +516,30 @@ func (s *buyDirectSuite) sellOrderSetup(count int) {
 	}
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Escrowed: quantity,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		EscrowedAmount: quantity,
 	})
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
 		BatchKey:       batchKey,
-		TradableAmount: quantity, // TODO: tradable #1123
+		TradableAmount: quantity,
 	})
 	require.NoError(s.t, err)
 
 	marketKey, err := s.marketStore.MarketTable().InsertReturningID(s.ctx, &api.Market{
-		CreditType: s.creditTypeAbbrev, // TODO: credit_type_abbrev #1123
-		BankDenom:  s.askPrice.Denom,
+		CreditTypeAbbrev: s.creditTypeAbbrev,
+		BankDenom:        s.askPrice.Denom,
 	})
 	require.NoError(s.t, err)
 
 	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
 		Seller:            s.alice,
-		BatchId:           batchKey, // TODO: batch_key #1123
+		BatchKey:          batchKey,
 		Quantity:          quantity,
-		MarketId:          marketKey,                  // TODO: market_key #1124
-		AskPrice:          s.askPrice.Amount.String(), // TODO: ask_amount #1123
+		MarketId:          marketKey,
+		AskAmount:         s.askPrice.Amount.String(),
 		DisableAutoRetire: s.disableAutoRetire,
 	})
 	require.NoError(s.t, err)
@@ -548,10 +548,10 @@ func (s *buyDirectSuite) sellOrderSetup(count int) {
 	if count == 2 {
 		err = s.marketStore.SellOrderTable().Insert(s.ctx, &api.SellOrder{
 			Seller:            s.alice,
-			BatchId:           batchKey,
+			BatchKey:          batchKey,
 			Quantity:          quantity,
 			MarketId:          marketKey,
-			AskPrice:          s.askPrice.Amount.String(),
+			AskAmount:         s.askPrice.Amount.String(),
 			DisableAutoRetire: s.disableAutoRetire,
 		})
 		require.NoError(s.t, err)

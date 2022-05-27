@@ -294,7 +294,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 						}
 
-						tradableAmount := balanceRes.Balance.Tradable
+						tradableAmount := balanceRes.Balance.TradableAmount
 						if tradableAmount != "0" {
 							d, err := math.NewPositiveDecFromString(tradableAmount)
 							if err != nil {

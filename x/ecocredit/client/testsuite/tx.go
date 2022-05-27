@@ -944,7 +944,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expOrder: &marketplace.SellOrder{
 				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          "100",
+				AskAmount:         "100",
 				DisableAutoRetire: false,
 				Expiration:        &gogotypes.Timestamp{},
 			},
@@ -962,7 +962,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expOrder: &marketplace.SellOrder{
 				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          "100",
+				AskAmount:         "100",
 				DisableAutoRetire: false,
 				Expiration:        types.ProtobufToGogoTimestamp(timestamppb.New(expiration)),
 			},
@@ -1086,7 +1086,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				Id:                orderId,
 				Seller:            val0.Address,
 				Quantity:          "9.99",
-				AskPrice:          "3",
+				AskAmount:         "3",
 				DisableAutoRetire: false,
 				Expiration:        gogoNewExpiration,
 			},
@@ -1624,7 +1624,7 @@ func (s *IntegrationTestSuite) getAccountInfo(clientCtx client.Context, addr sdk
 	a := accountInfo{}
 	a.coinBal = s.getBankBalance(clientCtx, addr, bankDenom)
 	batchBal := s.getBalance(clientCtx, addr, batchDenom)
-	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.Tradable, batchBal.Retired, batchBal.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.TradableAmount, batchBal.RetiredAmount, batchBal.EscrowedAmount)
 	s.Require().NoError(err)
 	a.tradable, a.retired, a.escrowed = decs[0], decs[1], decs[2]
 	return a

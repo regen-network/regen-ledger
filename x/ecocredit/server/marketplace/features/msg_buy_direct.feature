@@ -231,9 +231,9 @@ Feature: Msg/BuyDirect
       And bob has the batch balance
       """
       {
-        "retired": "0",
-        "tradable": "0",
-        "escrowed": "0"
+        "retired_amount": "0",
+        "tradable_amount": "0",
+        "escrowed_amount": "0"
       }
       """
 
@@ -242,9 +242,9 @@ Feature: Msg/BuyDirect
       Then expect bob batch balance
       """
       {
-        "retired": "10",
-        "tradable": "0",
-        "escrowed": "0"
+        "retired_amount": "10",
+        "tradable_amount": "0",
+        "escrowed_amount": "0"
       }
       """
 
@@ -253,9 +253,9 @@ Feature: Msg/BuyDirect
       Then expect bob batch balance
       """
       {
-        "retired": "0",
-        "tradable": "10",
-        "escrowed": "0"
+        "retired_amount": "0",
+        "tradable_amount": "10",
+        "escrowed_amount": "0"
       }
       """
 
@@ -269,9 +269,9 @@ Feature: Msg/BuyDirect
       And alice has the batch balance
       """
       {
-        "retired": "0",
-        "tradable": "0",
-        "escrowed": "10"
+        "retired_amount": "0",
+        "tradable_amount": "0",
+        "escrowed_amount": "10"
       }
       """
 
@@ -280,9 +280,9 @@ Feature: Msg/BuyDirect
       Then expect alice batch balance
       """
       {
-        "retired": "0",
-        "tradable": "0",
-        "escrowed": "0"
+        "retired_amount": "0",
+        "tradable_amount": "0",
+        "escrowed_amount": "0"
       }
       """
 

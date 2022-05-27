@@ -95,7 +95,7 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "invalid denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if a credit amount is empty
     Given the message

@@ -230,9 +230,9 @@ func (s *putSuite) AliceOwnsCredits() {
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.tradableCredits,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		TradableAmount: s.tradableCredits,
 	})
 	require.NoError(s.t, err)
 }
@@ -259,9 +259,9 @@ func (s *putSuite) AliceOwnsCreditAmount(a string) {
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: a,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		TradableAmount: a,
 	})
 	require.NoError(s.t, err)
 }
@@ -288,9 +288,9 @@ func (s *putSuite) AliceOwnsCreditsFromCreditBatch(a string) {
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.tradableCredits,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		TradableAmount: s.tradableCredits,
 	})
 	require.NoError(s.t, err)
 }
@@ -318,9 +318,9 @@ func (s *putSuite) AliceOwnsCreditsWithStartDate(a string) {
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.tradableCredits,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		TradableAmount: s.tradableCredits,
 	})
 	require.NoError(s.t, err)
 }
@@ -528,7 +528,7 @@ func (s *putSuite) ExpectAliceCreditBalanceAmount(a string) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, a, balance.Tradable)
+	require.Equal(s.t, a, balance.TradableAmount)
 }
 
 func (s *putSuite) ExpectAliceBasketTokenBalanceAmount(a string) {
