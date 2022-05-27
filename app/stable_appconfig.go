@@ -73,6 +73,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	// mainnet upgrade handler
 	const upgradeName = "v4.0.0"
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// run state migrations for sdk modules
 		toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		if err != nil {
 			return nil, err
