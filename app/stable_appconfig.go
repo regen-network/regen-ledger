@@ -101,12 +101,13 @@ func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Ke
 
 	var lostAccount, newAccount authtypes.AccountI
 	ak.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
-		if account.GetAddress().String() == lostAddr {
+		addr := account.GetAddress().String()
+		if addr == lostAddr {
 			lostAccount = account
 			if newAccount != nil {
 				return true
 			}
-		} else if account.GetAddress().String() == newAddr {
+		} else if addr == newAddr {
 			newAccount = account
 			if lostAccount != nil {
 				return true
@@ -118,7 +119,7 @@ func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Ke
 
 	va, ok := lostAccount.(*vestingtypes.PeriodicVestingAccount)
 	if !ok {
-		return fmt.Errorf("%s is not a vesting account", lostAccount.GetAddress().String())
+		return fmt.Errorf("%s is not a vesting account", lostAddr)
 	}
 
 	vestingPeriods := va.VestingPeriods

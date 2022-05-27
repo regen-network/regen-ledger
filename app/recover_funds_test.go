@@ -31,6 +31,25 @@ func TestLostFunds(t *testing.T) {
 	newAddr, err := sdk.AccAddressFromBech32("regen14tpuqrwf95evu3ejm9z7dn20ttcyzqy3jjpfv4")
 	require.NoError(t, err)
 
+	vestingPeriods := vestingtypes.Periods{
+		{
+			Length: 0,
+			Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 1000000)),
+		},
+		{
+			Length: 28630800,
+			Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041682)),
+		},
+		{
+			Length: 2629746,
+			Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
+		},
+		{
+			Length: 2629746,
+			Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
+		},
+	}
+
 	encCfg := MakeEncodingConfig()
 	db := dbm.NewMemDB()
 
@@ -51,110 +70,9 @@ func TestLostFunds(t *testing.T) {
 	ctx := regenApp.BaseApp.NewContext(false, tmproto.Header{})
 
 	regenApp.AccountKeeper.SetAccount(ctx, authtypes.NewBaseAccount(newAddr, nil, 9068, 4))
-	oldAccountBalance := sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(9746000000)))
+	oldAccountBalance := sdk.NewCoins(sdk.NewCoin("uregen", sdk.NewInt(1219125014)))
 	regenApp.AccountKeeper.SetAccount(ctx, vestingtypes.NewPeriodicVestingAccount(authtypes.NewBaseAccount(lostAddr, nil, 146, 0),
-		oldAccountBalance, 1618498800, vestingtypes.Periods{
-			{
-				Length: 0,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 1000000)),
-			},
-			{
-				Length: 28630800,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041682)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-			{
-				Length: 2629746,
-				Amount: sdk.NewCoins(sdk.NewInt64Coin("uregen", 406041666)),
-			},
-		}))
+		oldAccountBalance, 1618498800, vestingPeriods))
 
 	regenApp.BankKeeper.MintCoins(ctx, minttypes.ModuleName, oldAccountBalance)
 	regenApp.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, lostAddr, oldAccountBalance)
@@ -171,4 +89,9 @@ func TestLostFunds(t *testing.T) {
 
 	newbalance := regenApp.BankKeeper.GetAllBalances(ctx, newAddr)
 	require.Equal(t, newbalance, newAccountBalance.Add(oldAccountBalance...))
+
+	acc := regenApp.AccountKeeper.GetAccount(ctx, newAddr)
+	pva, ok := acc.(*vestingtypes.PeriodicVestingAccount)
+	require.True(t, ok)
+	require.Equal(t, pva.GetVestingPeriods().String(), vestingPeriods.String())
 }
