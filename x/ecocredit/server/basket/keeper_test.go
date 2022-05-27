@@ -23,7 +23,7 @@ import (
 	ecocreditApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
+	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/basket"
 )
 
@@ -43,9 +43,9 @@ type baseSuite struct {
 	addrs        []sdk.AccAddress
 	stateStore   api.StateStore
 	coreStore    ecocreditApi.StateStore
-	bankKeeper   *mocks2.MockBankKeeper
-	distKeeper   *mocks2.MockDistributionKeeper
-	paramsKeeper *mocks2.MockParamKeeper
+	bankKeeper   *mocks.MockBankKeeper
+	distKeeper   *mocks.MockDistributionKeeper
+	paramsKeeper *mocks.MockParamKeeper
 	storeKey     *sdk.KVStoreKey
 	sdkCtx       sdk.Context
 }
@@ -73,20 +73,14 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	// setup test keeper
 	s.ctrl = gomock.NewController(t)
 	assert.NilError(t, err)
-	s.bankKeeper = mocks2.NewMockBankKeeper(s.ctrl)
-	s.distKeeper = mocks2.NewMockDistributionKeeper(s.ctrl)
-	s.paramsKeeper = mocks2.NewMockParamKeeper(s.ctrl)
+	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
+	s.distKeeper = mocks.NewMockDistributionKeeper(s.ctrl)
+	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
 
 	_, _, moduleAddress := testdata.KeyTestPubAddr()
 	s.k = basket.NewKeeper(s.stateStore, s.coreStore, s.bankKeeper, s.distKeeper, s.paramsKeeper, moduleAddress)
 	s.coreStore, err = ecoApi.NewStateStore(s.db)
 	assert.NilError(t, err)
-	assert.NilError(t, s.coreStore.CreditTypeTable().Insert(s.ctx, &ecocreditApi.CreditType{
-		Abbreviation: "C",
-		Name:         "carbon",
-		Unit:         "metric ton C02",
-		Precision:    6,
-	}))
 
 	// add test addresses
 	_, _, addr1 := testdata.KeyTestPubAddr()

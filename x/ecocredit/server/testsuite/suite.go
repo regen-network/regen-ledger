@@ -87,8 +87,9 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	// set the denom regex for basket coins
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return basket.RegexBasketDenom
 	})
 
 	s.fixture = s.fixtureFactory.Setup()
@@ -359,9 +360,9 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	})
 	require.NoError(err)
 	classId := cRes.ClassId
-	start, err := time.Parse("2006-04-02", startStr)
+	start, err := types.ParseDate("start date", startStr)
 	require.NoError(err)
-	end, err := time.Parse("2006-04-02", endStr)
+	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:       admin.String(),
@@ -613,6 +614,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toCancel,
 					},
 				},
+				Reason: "bridging assets to another chain",
 			})
 
 			if tc.expectErr {

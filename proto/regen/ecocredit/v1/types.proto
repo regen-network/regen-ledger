@@ -32,14 +32,17 @@ message Params {
   bool allowlist_enabled = 4;
 }
 
-// OriginTx is a reference to an external transaction or an operation
-// related to an action on Regen Ledger.
+// OriginTx is the transaction from another chain or registry that triggered
+// the minting of credits.
 message OriginTx {
-  // type of the transaction originating the mint process. Eg: Polygon,
-  // Ethereum, Verra...
-  string typ = 1;
-  // the id of a transaction based on a type (tx id, serial number)
-  string id = 2;
+
+  // id is the transaction ID of an originating transaction or operation based
+  // on a type (i.e. transaction ID, serial number).
+  string id = 1;
+
+  // source is the source chain or registry of the transaction originating the
+  // mint process (e.g. polygon, ethereum, verra).
+  string source = 2;
 }
 
 // CreditTypeProposal is a gov Content type for adding a credit type.

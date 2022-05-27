@@ -25,6 +25,7 @@ func TestMsgCancel(t *testing.T) {
 						Amount:     "10",
 					},
 				},
+				Reason: "reason",
 			},
 			expErr: false,
 		},
@@ -86,6 +87,18 @@ func TestMsgCancel(t *testing.T) {
 					{
 						BatchDenom: batchDenom,
 						Amount:     "abc",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg reason is required": {
+			src: MsgCancel{
+				Holder: addr1,
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: batchDenom,
+						Amount:     "1",
 					},
 				},
 			},

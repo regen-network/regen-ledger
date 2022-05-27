@@ -8,9 +8,10 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -20,10 +21,10 @@ func TestCreateBatch_Valid(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	blockTime, err := types.ParseDate("block time", "2049-01-30")
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = types.WrapSDKContext(s.sdkCtx)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	start, end := time.Now(), time.Now()
 	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
@@ -106,7 +107,7 @@ func TestCreateBatch_UnauthorizedIssuer(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		ProjectId: "C01-001",
-		Issuer:    types.AccAddress("FooBarBaz").String(),
+		Issuer:    sdk.AccAddress("FooBarBaz").String(),
 	})
 	assert.ErrorContains(t, err, "is not an issuer for the class")
 }
@@ -121,8 +122,90 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 	assert.ErrorContains(t, err, "not found")
 }
 
+func TestCreateBatch_WithOriginTx_Valid(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	start, end := time.Now(), time.Now()
+	_, err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.addr.String(),
+		ProjectId: "C01-001",
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.addr.String(),
+				TradableAmount: "10",
+				RetiredAmount:  "5.3",
+			},
+			{
+				Recipient:      addr2.String(),
+				TradableAmount: "2.4",
+				RetiredAmount:  "3.4",
+			},
+		},
+		Metadata:  "",
+		StartDate: &start,
+		EndDate:   &end,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
+	})
+	assert.NilError(t, err)
+}
+
+func TestCreateBatch_WithOriginTx_Invalid(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	start, end := time.Now(), time.Now()
+	batch := &core.MsgCreateBatch{
+		Issuer:    s.addr.String(),
+		ProjectId: "C01-001",
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.addr.String(),
+				TradableAmount: "10",
+				RetiredAmount:  "5.3",
+			},
+			{
+				Recipient:      addr2.String(),
+				TradableAmount: "2.4",
+				RetiredAmount:  "3.4",
+			},
+		},
+		Metadata:  "",
+		StartDate: &start,
+		EndDate:   &end,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
+	}
+
+	_, err = s.k.CreateBatch(s.ctx, batch)
+	assert.NilError(t, err)
+
+	// create credit batch with same tx origin id
+	_, err = s.k.CreateBatch(s.ctx, batch)
+	assert.ErrorContains(t, err, "credits already issued with tx id")
+}
+
 // creates a class "C01", with a single class issuer, and a project "C01-001"
-func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (classId, projectId string) {
+func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr sdk.AccAddress) (classId, projectId string) {
 	classId, projectId = "C01", "C01-001"
 	classKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 		Id:               classId,

@@ -414,9 +414,6 @@ type ResolverInfoTable interface {
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
 	Get(ctx context.Context, id uint64) (*ResolverInfo, error)
-	HasByUrl(ctx context.Context, url string) (found bool, err error)
-	// GetByUrl returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	GetByUrl(ctx context.Context, url string) (*ResolverInfo, error)
 	List(ctx context.Context, prefixKey ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
 	ListRange(ctx context.Context, from, to ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
 	DeleteBy(ctx context.Context, prefixKey ResolverInfoIndexKey) error
@@ -514,26 +511,6 @@ func (this resolverInfoTable) Has(ctx context.Context, id uint64) (found bool, e
 func (this resolverInfoTable) Get(ctx context.Context, id uint64) (*ResolverInfo, error) {
 	var resolverInfo ResolverInfo
 	found, err := this.table.PrimaryKey().Get(ctx, &resolverInfo, id)
-	if err != nil {
-		return nil, err
-	}
-	if !found {
-		return nil, ormerrors.NotFound
-	}
-	return &resolverInfo, nil
-}
-
-func (this resolverInfoTable) HasByUrl(ctx context.Context, url string) (found bool, err error) {
-	return this.table.GetIndexByID(1).(ormtable.UniqueIndex).Has(ctx,
-		url,
-	)
-}
-
-func (this resolverInfoTable) GetByUrl(ctx context.Context, url string) (*ResolverInfo, error) {
-	var resolverInfo ResolverInfo
-	found, err := this.table.GetIndexByID(1).(ormtable.UniqueIndex).Get(ctx, &resolverInfo,
-		url,
-	)
 	if err != nil {
 		return nil, err
 	}

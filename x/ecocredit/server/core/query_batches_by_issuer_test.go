@@ -37,7 +37,7 @@ func TestQueryBatchesByIssuer(t *testing.T) {
 	batch1 := &api.Batch{
 		Issuer:       s.addr,
 		ProjectKey:   pKey,
-		Denom:        "C01-20200101-20210101-001",
+		Denom:        "C01-001-20200101-20210101-001",
 		Metadata:     "data",
 		StartDate:    timestamppb.New(startTime),
 		EndDate:      timestamppb.New(endTime),
