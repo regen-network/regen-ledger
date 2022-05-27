@@ -29,7 +29,7 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchId, sellOrder.Quantity); err != nil {
+		if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchKey, sellOrder.Quantity); err != nil {
 			return err
 		}
 	}
@@ -37,7 +37,7 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 }
 
 // unescrowCredits moves `amount` of credits from the sellerAddr's escrowed balance, into their tradable balance.
-func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, batchId uint64, amount string) error {
+func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, batchKey uint64, amount string) error {
 
 	creditAmt, err := math.NewDecFromString(amount)
 	if err != nil {
@@ -65,11 +65,11 @@ func (k Keeper) unescrowCredits(ctx context.Context, sellerAddr sdk.AccAddress, 
 		return escrowedDec.String(), tradableDec.String(), nil
 	}
 
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellerAddr, batchId)
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellerAddr, batchKey)
 	if err != nil {
 		return err
 	}
-	bal.Escrowed, bal.Tradable, err = moveCredits(bal.Escrowed, bal.Tradable)
+	bal.EscrowedAmount, bal.TradableAmount, err = moveCredits(bal.EscrowedAmount, bal.TradableAmount)
 	if err != nil {
 		return err
 	}

@@ -81,10 +81,10 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
 			Seller:            ownerAcc,
-			BatchId:           batch.Key,
+			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketId,
-			AskPrice:          order.AskPrice.Amount.String(),
+			AskAmount:         order.AskPrice.Amount.String(),
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        expiration,
 			Maker:             true, // maker is always true for sell orders
@@ -109,13 +109,13 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
 func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankDenom string) (uint64, error) {
-	market, err := k.stateStore.MarketTable().GetByCreditTypeBankDenom(ctx, creditTypeAbbrev, bankDenom)
+	market, err := k.stateStore.MarketTable().GetByCreditTypeAbbrevBankDenom(ctx, creditTypeAbbrev, bankDenom)
 	switch err {
 	case nil:
 		return market.Id, nil
 	case ormerrors.NotFound:
 		return k.stateStore.MarketTable().InsertReturningID(ctx, &marketApi.Market{
-			CreditType:        creditTypeAbbrev,
+			CreditTypeAbbrev:  creditTypeAbbrev,
 			BankDenom:         bankDenom,
 			PrecisionModifier: 0,
 		})
@@ -132,7 +132,7 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 		)
 	}
 
-	tradable, err := math.NewDecFromString(bal.Tradable)
+	tradable, err := math.NewDecFromString(bal.TradableAmount)
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 		)
 	}
 
-	escrowed, err := math.NewDecFromString(bal.Escrowed)
+	escrowed, err := math.NewDecFromString(bal.EscrowedAmount)
 	if err != nil {
 		return err
 	}
@@ -154,8 +154,8 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 		return err
 	}
 
-	bal.Tradable = newTradable.String()
-	bal.Escrowed = newEscrowed.String()
+	bal.TradableAmount = newTradable.String()
+	bal.EscrowedAmount = newEscrowed.String()
 
 	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
 }

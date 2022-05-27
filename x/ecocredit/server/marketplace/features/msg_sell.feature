@@ -191,9 +191,9 @@ Feature: MsgSell
       """
       {
         "id": 1,
-        "ask_price": "10",
+        "ask_amount": "10",
         "expiration": "2030-01-01T00:00:00Z",
-        "batch_id": 1,
+        "batch_key": 1,
         "quantity": "10",
         "disable_auto_retire": true,
         "market_id": 1,
@@ -220,9 +220,9 @@ Feature: MsgSell
       """
       {
         "id": 2,
-        "ask_price": "10",
+        "ask_amount": "10",
         "expiration": "2030-01-01T00:00:00Z",
-        "batch_id": 1,
+        "batch_key": 1,
         "quantity": "10",
         "disable_auto_retire": true,
         "market_id": 1,

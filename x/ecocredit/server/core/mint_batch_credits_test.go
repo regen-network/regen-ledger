@@ -166,7 +166,7 @@ func assertCreditsMinted(t *testing.T, balBefore, balAfter *api.BatchBalance, su
 }
 
 func extractBalanceDecs(t *testing.T, b *api.BatchBalance, precision uint32) (tradable, retired, escrowed math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(precision, b.Tradable, b.Retired, b.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(precision, b.TradableAmount, b.RetiredAmount, b.EscrowedAmount)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
 }

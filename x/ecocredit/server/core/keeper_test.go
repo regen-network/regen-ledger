@@ -118,10 +118,10 @@ func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId
 		CancelledAmount: "",
 	}))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: bKey,
-		Address:  s.addr,
-		Tradable: "10.5",
-		Retired:  "10.5",
+		BatchKey:       bKey,
+		Address:        s.addr,
+		TradableAmount: "10.5",
+		RetiredAmount:  "10.5",
 	}))
 	return
 }

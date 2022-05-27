@@ -66,11 +66,11 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	}
 
 	// remove the credits from the seller's escrowed balance
-	sellerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchId)
+	sellerBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sellOrder.Seller, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
-	escrowBal, err := math.NewDecFromString(sellerBal.Escrowed)
+	escrowBal, err := math.NewDecFromString(sellerBal.EscrowedAmount)
 	if err != nil {
 		return err
 	}
@@ -78,24 +78,24 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 	if err != nil {
 		return err
 	}
-	sellerBal.Escrowed = escrowBal.String()
+	sellerBal.EscrowedAmount = escrowBal.String()
 	if err = k.coreStore.BatchBalanceTable().Update(ctx, sellerBal); err != nil {
 		return err
 	}
 
 	// update the buyers balance and the batch supply
-	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchId)
+	supply, err := k.coreStore.BatchSupplyTable().Get(ctx, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
-	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchId)
+	buyerBal, err := utils.GetBalance(ctx, k.coreStore.BatchBalanceTable(), buyerAcc, sellOrder.BatchKey)
 	if err != nil {
 		return err
 	}
 	// if auto retire is disabled, we move the credits into the buyer's tradable balance.
 	// supply is not updated because supply does not distinguish between tradable and escrowed credits.
 	if !opts.autoRetire {
-		tradableBalance, err := math.NewDecFromString(buyerBal.Tradable)
+		tradableBalance, err := math.NewDecFromString(buyerBal.TradableAmount)
 		if err != nil {
 			return err
 		}
@@ -103,7 +103,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		if err != nil {
 			return err
 		}
-		buyerBal.Tradable = tradableBalance.String()
+		buyerBal.TradableAmount = tradableBalance.String()
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventTransfer{
 			Sender:         sdk.AccAddress(sellOrder.Seller).String(),
 			Recipient:      buyerAcc.String(),
@@ -114,7 +114,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 			return err
 		}
 	} else {
-		retiredBalance, err := math.NewDecFromString(buyerBal.Retired)
+		retiredBalance, err := math.NewDecFromString(buyerBal.RetiredAmount)
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 		if err != nil {
 			return err
 		}
-		buyerBal.Retired = retiredBalance.String()
+		buyerBal.RetiredAmount = retiredBalance.String()
 
 		supplyTradable, err := math.NewDecFromString(supply.TradableAmount)
 		if err != nil {

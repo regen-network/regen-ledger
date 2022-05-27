@@ -127,8 +127,8 @@ func (s *sellSuite) ACreditBatchWithBatchDenom(a string) {
 
 func (s *sellSuite) AMarketWithCreditTypeAndBankDenom(a string, b string) {
 	s.marketStore.MarketTable().Insert(s.ctx, &api.Market{
-		CreditType: a,
-		BankDenom:  b,
+		CreditTypeAbbrev: a,
+		BankDenom:        b,
 	})
 }
 
@@ -342,7 +342,7 @@ func (s *sellSuite) ExpectAliceTradableCreditBalance(a string) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, balance.Tradable, a)
+	require.Equal(s.t, balance.TradableAmount, a)
 }
 
 func (s *sellSuite) ExpectAliceEscrowedCreditBalance(a string) {
@@ -352,7 +352,7 @@ func (s *sellSuite) ExpectAliceEscrowedCreditBalance(a string) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, balance.Escrowed, a)
+	require.Equal(s.t, balance.EscrowedAmount, a)
 }
 
 func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
@@ -363,7 +363,7 @@ func (s *sellSuite) ExpectMarketWithIdAndDenom(a string, b string) {
 	require.NoError(s.t, err)
 
 	require.Equal(s.t, market.Id, id)
-	require.Equal(s.t, market.CreditType, s.creditTypeAbbrev) // TODO: credit_type_abbrev #1123
+	require.Equal(s.t, market.CreditTypeAbbrev, s.creditTypeAbbrev)
 	require.Equal(s.t, market.BankDenom, b)
 	require.Equal(s.t, market.PrecisionModifier, uint32(0)) // always zero
 }
@@ -386,10 +386,10 @@ func (s *sellSuite) ExpectSellOrderWithSellerAliceAndTheProperties(a gocuke.DocS
 
 	require.Equal(s.t, expected.Id, order.Id)
 	require.Equal(s.t, s.alice.Bytes(), order.Seller)
-	require.Equal(s.t, expected.AskPrice, order.AskPrice) // TODO: ask_amount #1123
+	require.Equal(s.t, expected.AskAmount, order.AskAmount)
 	require.Equal(s.t, expected.Expiration.Seconds, order.Expiration.Seconds)
 	require.Equal(s.t, expected.Expiration.Nanos, order.Expiration.Nanos)
-	require.Equal(s.t, expected.BatchId, order.BatchId) // TODO: batch_key #1123
+	require.Equal(s.t, expected.BatchKey, order.BatchKey)
 	require.Equal(s.t, expected.Quantity, order.Quantity)
 	require.Equal(s.t, expected.DisableAutoRetire, order.DisableAutoRetire)
 	require.Equal(s.t, expected.MarketId, order.MarketId)
@@ -423,9 +423,9 @@ func (s *sellSuite) aliceTradableBatchBalance() {
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  s.alice,
-		Tradable: s.aliceTradableAmount,
+		BatchKey:       batchKey,
+		Address:        s.alice,
+		TradableAmount: s.aliceTradableAmount,
 	})
 	require.NoError(s.t, err)
 }

@@ -67,7 +67,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 		}
 
 		if market.BankDenom != update.NewAskPrice.Denom {
-			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
+			creditType, err = k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
 			if err != nil {
 				return err
 			}
@@ -77,7 +77,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			}
 			order.MarketId = marketId
 		}
-		order.AskPrice = update.NewAskPrice.Amount.String()
+		order.AskAmount = update.NewAskPrice.Amount.String()
 	}
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
@@ -89,7 +89,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 	if update.NewQuantity != "" {
 		if creditType == nil {
 			var err error
-			creditType, err = k.getCreditTypeFromBatchId(ctx, order.BatchId)
+			creditType, err = k.getCreditTypeFromBatchKey(ctx, order.BatchKey)
 			if err != nil {
 				return err
 			}
@@ -111,7 +111,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			if err != nil {
 				return err
 			}
-			if err = k.escrowCredits(ctx, orderIndex, order.Seller, order.BatchId, amtToEscrow); err != nil {
+			if err = k.escrowCredits(ctx, orderIndex, order.Seller, order.BatchKey, amtToEscrow); err != nil {
 				return err
 			}
 			order.Quantity = update.NewQuantity
@@ -120,7 +120,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			if err != nil {
 				return err
 			}
-			if err = k.unescrowCredits(ctx, order.Seller, order.BatchId, amtToUnescrow.String()); err != nil {
+			if err = k.unescrowCredits(ctx, order.Seller, order.BatchKey, amtToUnescrow.String()); err != nil {
 				return err
 			}
 			order.Quantity = update.NewQuantity
@@ -136,9 +136,9 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 	})
 }
 
-// getCreditTypeFromBatchId gets the credit type given a batch id.
-func (k Keeper) getCreditTypeFromBatchId(ctx context.Context, id uint64) (*ecoApi.CreditType, error) {
-	batch, err := k.coreStore.BatchTable().Get(ctx, id)
+// getCreditTypeFromBatchKey gets the credit type given a batch key.
+func (k Keeper) getCreditTypeFromBatchKey(ctx context.Context, key uint64) (*ecoApi.CreditType, error) {
+	batch, err := k.coreStore.BatchTable().Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}

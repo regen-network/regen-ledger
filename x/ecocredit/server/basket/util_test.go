@@ -90,11 +90,11 @@ func initBatch(t *testing.T, s *baseSuite, pid uint64, denom string, startDate *
 
 func insertBatchBalance(t *testing.T, s *baseSuite, user sdk.AccAddress, batchKey uint64, amount string) {
 	assert.NilError(t, s.coreStore.BatchBalanceTable().Insert(s.ctx, &ecoApi.BatchBalance{
-		BatchKey: batchKey,
-		Address:  user,
-		Tradable: amount,
-		Retired:  "",
-		Escrowed: "",
+		BatchKey:       batchKey,
+		Address:        user,
+		TradableAmount: amount,
+		RetiredAmount:  "",
+		EscrowedAmount: "",
 	}))
 }
 

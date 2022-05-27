@@ -65,13 +65,13 @@ func TestCreateBatch_Valid(t *testing.T) {
 	// check balances were allocated
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, "10", bal.Tradable)
-	assert.Equal(t, "5.3", bal.Retired)
+	assert.Equal(t, "10", bal.TradableAmount)
+	assert.Equal(t, "5.3", bal.RetiredAmount)
 
 	bal2, err := s.stateStore.BatchBalanceTable().Get(s.ctx, addr2, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, "2.4", bal2.Tradable)
-	assert.Equal(t, "3.4", bal2.Retired)
+	assert.Equal(t, "2.4", bal2.TradableAmount)
+	assert.Equal(t, "3.4", bal2.RetiredAmount)
 
 	// check sequence number
 	seq, err := s.stateStore.BatchSequenceTable().Get(s.ctx, 1)

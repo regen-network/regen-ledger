@@ -60,7 +60,7 @@ func (s *GenesisTestSuite) TestInitExportGenesis() {
 	require.NoError(err)
 
 	balances := []api.BatchBalance{
-		{Address: sdk.AccAddress("addr1"), BatchKey: 1, Tradable: "90.003", Retired: "9.997", Escrowed: ""},
+		{Address: sdk.AccAddress("addr1"), BatchKey: 1, TradableAmount: "90.003", RetiredAmount: "9.997", EscrowedAmount: ""},
 	}
 	batchBalancesJSON, err := json.Marshal(balances)
 	require.NoError(err)
