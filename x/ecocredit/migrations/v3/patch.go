@@ -2,7 +2,6 @@ package v3
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,9 +20,44 @@ func patchMigrate(ctx context.Context, sdkCtx sdk.Context, ss api.StateStore,
 		return patchMainnet(ctx, ss, oldBatchDenomToNewDenomMap)
 	} else if sdkCtx.ChainID() == "regen-redwood-1" {
 		return patchRedwood(ctx, ss, basketStore, oldBatchDenomToNewDenomMap)
-	} else {
-		return fmt.Errorf("invalid chain-id %s", sdkCtx.ChainID())
 	}
+
+	return nil
+}
+
+func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
+	// project location -> reference-id
+	// CD-MN -> "" // TODO: add reference-id
+	// KE    -> ""
+
+	locationToReferenceIdMap := make(map[string]string)
+	locationToReferenceIdMap["CD-MN"] = ""
+	locationToReferenceIdMap["KE"] = ""
+
+	// add reference id to existing projects
+	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
+		return err
+	}
+
+	// batch issuance dates
+	//  C01-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
+	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
+	//  C01-20190101-20191231-003  -  "2022-05-06T01:33:25Z"
+	//  C01-20190101-20191231-004  -  "2022-05-06T01:33:31Z"
+
+	batchIdToIssuanceDateMap := make(map[string]string)
+	batchIdToIssuanceDateMap["C01-20190101-20191231-001"] = "2022-05-06T01:33:13Z"
+	batchIdToIssuanceDateMap["C01-20190101-20191231-002"] = "2022-05-06T01:33:19Z"
+	batchIdToIssuanceDateMap["C01-20190101-20191231-003"] = "2022-05-06T01:33:25Z"
+	batchIdToIssuanceDateMap["C01-20190101-20191231-004"] = "2022-05-06T01:33:31Z"
+	// update issuance date for credit batches
+	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap, batchIdToIssuanceDateMap); err != nil {
+		return err
+	}
+
+	// we don't have baskets on mainnet
+
+	return nil
 }
 
 func patchRedwood(ctx context.Context, ss api.StateStore,
@@ -105,41 +139,6 @@ func updateBasketCurator(ctx context.Context, ss api.StateStore, basketStore bas
 			return err
 		}
 	}
-
-	return nil
-}
-
-func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
-	// project location -> reference-id
-	// CD-MN -> "" // TODO: add reference-id
-	// KE    -> ""
-
-	locationToReferenceIdMap := make(map[string]string)
-	locationToReferenceIdMap["CD-MN"] = ""
-	locationToReferenceIdMap["KE"] = ""
-
-	// add reference id to existing projects
-	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
-		return err
-	}
-
-	// batch issuance dates
-	//  C01-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
-	//  C01-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
-	//  C01-20190101-20191231-003  -  "2022-05-06T01:33:25Z"
-	//  C01-20190101-20191231-004  -  "2022-05-06T01:33:31Z"
-
-	batchIdToIssuanceDateMap := make(map[string]string)
-	batchIdToIssuanceDateMap["C01-20190101-20191231-001"] = "2022-05-06T01:33:13Z"
-	batchIdToIssuanceDateMap["C01-20190101-20191231-002"] = "2022-05-06T01:33:19Z"
-	batchIdToIssuanceDateMap["C01-20190101-20191231-003"] = "2022-05-06T01:33:25Z"
-	batchIdToIssuanceDateMap["C01-20190101-20191231-004"] = "2022-05-06T01:33:31Z"
-	// update issuance date for credit batches
-	if err := updateBatchIssueanceDate(ctx, ss, oldBatchDenomToNewDenomMap, batchIdToIssuanceDateMap); err != nil {
-		return err
-	}
-
-	// we don't have baskets on mainnet
 
 	return nil
 }

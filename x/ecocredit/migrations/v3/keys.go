@@ -94,7 +94,7 @@ func IterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply str
 	return nil
 }
 
-func parseBatchDenom(denom string) (*time.Time, *time.Time, error) {
+func ParseBatchDenom(denom string) (*time.Time, *time.Time, error) {
 	// batch denom format: <class id>-<start date>-<end date>-<batch seq no>
 	result := strings.Split(denom, "-")
 	if len(result) != 4 {

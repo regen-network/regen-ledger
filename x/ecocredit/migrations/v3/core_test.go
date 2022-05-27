@@ -47,7 +47,6 @@ func TestMigrations(t *testing.T) {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
-	sdkCtx = sdkCtx.WithChainID("regen-1")
 
 	store := sdkCtx.KVStore(ecocreditKey)
 

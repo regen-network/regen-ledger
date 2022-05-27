@@ -59,7 +59,7 @@ func TestParseBatchDenom(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			sd, ed, err := parseBatchDenom(tc.denom)
+			sd, ed, err := ParseBatchDenom(tc.denom)
 			if tc.expErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.errMessage)

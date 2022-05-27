@@ -228,7 +228,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			projectId = id
 		}
 
-		startDate, endDate, err := parseBatchDenom(batchInfo.BatchDenom)
+		startDate, endDate, err := ParseBatchDenom(batchInfo.BatchDenom)
 		if err != nil {
 			return err
 		}
