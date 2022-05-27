@@ -44,12 +44,12 @@ const (
 
 // ecocredit operations weights
 const (
-	WeightCreateClass           = 100
+	WeightCreateClass           = 10
 	WeightCreateProject         = 20
 	WeightCreateBatch           = 50
 	WeightSend                  = 100
 	WeightRetire                = 80
-	WeightCancel                = 66
+	WeightCancel                = 30
 	WeightUpdateClass           = 30
 	WeightUpdateProjectAdmin    = 30
 	WeightUpdateProjectMetadata = 30
@@ -777,6 +777,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					Amount:     balanceRes.Balance.Tradable,
 				},
 			},
+			Reason: simtypes.RandStringOfLength(r, 5),
 		}
 
 		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, admin, TypeMsgCancel)
@@ -993,7 +994,7 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 				Typ: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 				Id:  simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 			},
-			Note: "",
+			Note: simtypes.RandStringOfLength(r, 5),
 		}
 
 		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, issuerAddr, TypeMsgUpdateClassIssuers)
