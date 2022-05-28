@@ -65,7 +65,11 @@ message MsgCreate {
   //   18 - a (atto)
   //   21 - z (zepto)
   //   24 - y (yocto)
-  uint32 exponent = 4;
+  //
+  // Deprecated: This field is no longer used and will be removed in the next
+  // version. The credit type precision will always be used to convert credits
+  // to basket tokens and to determine the prefix of the bank denom.
+  uint32 exponent = 4 [ deprecated = true ];
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is

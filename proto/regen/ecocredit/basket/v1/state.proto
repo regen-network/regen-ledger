@@ -42,7 +42,10 @@ message Basket {
   DateCriteria date_criteria = 6;
 
   // exponent is the exponent for converting credits to/from basket tokens.
-  uint32 exponent = 7;
+  // Deprecated: This field is no longer used and will be removed in the next
+  // version. The credit type precision will always be used to convert credits
+  // to basket tokens and to determine the prefix of the bank denom.
+  uint32 exponent = 7 [ deprecated = true ];
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.

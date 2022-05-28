@@ -145,24 +145,6 @@ Feature: Msg/Create
       When alice attempts to create a basket with credit type "C" and allowed class "BIO01"
       Then expect the error "basket specified credit type C, but class BIO01 is of type BIO: invalid request"
 
-  Rule: The basket exponent must be greater than or equal to the credit type precision
-
-    Background:
-      Given a credit type with precision "6"
-
-    Scenario Outline: basket exponent is greater than or equal to credit type precision
-      When alice attempts to create a basket with exponent "<exponent>"
-      Then expect no error
-
-      Examples:
-        | description  | exponent |
-        | greater than | 9        |
-        | equal to     | 6        |
-
-    Scenario: basket exponent is less than credit type precision
-      When alice attempts to create a basket with exponent "3"
-      Then expect the error "exponent 3 must be >= credit type precision 6: invalid request"
-
   Rule: The user token balance is updated and only the minimum fee is taken
 
     Background:
@@ -187,7 +169,7 @@ Feature: Msg/Create
       Given a credit type with abbreviation "C" and precision "6"
 
     Scenario: message response includes the basket denom
-      When alice attempts to create a basket with name "NCT" and exponent "6"
+      When alice attempts to create a basket with name "NCT"
       Then expect the response
       """
       {
