@@ -95,23 +95,6 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		return toVersion, nil
 	})
 
-	// redwood upgrade handler
-	const redwoodUpgradeName = "v4.0.0-redwood"
-	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		// run state migrations for sdk modules
-		toVersion, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
-		if err != nil {
-			return nil, err
-		}
-
-		// run x/ecocredit state migrations
-		if err := app.smm.RunMigrations(ctx, app.AppCodec()); err != nil {
-			return nil, err
-		}
-		toVersion[ecocredit.ModuleName] = ecocreditmodule.Module{}.ConsensusVersion()
-
-		return toVersion, nil
-	})
 }
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
