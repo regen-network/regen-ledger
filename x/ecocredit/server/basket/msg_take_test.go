@@ -80,11 +80,10 @@ func (s *takeSuite) ACreditTypeWithAbbreviation(a string) {
 }
 
 func (s *takeSuite) ACreditTypeWithAbbreviationAndPrecision(a string, b string) {
-	s.creditTypeAbbrev = a
-
 	precision, err := strconv.ParseUint(b, 10, 32)
 	require.NoError(s.t, err)
 
+	s.creditTypeAbbrev = a
 	s.creditTypePrecision = uint32(precision)
 
 	err = s.coreStore.CreditTypeTable().Insert(s.ctx, &coreapi.CreditType{
