@@ -9,13 +9,12 @@ import (
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/client/testsuite"
 )
 
-func TestEcocreditIntegration(t *testing.T) {
-	cfg := DefaultConfig()
-
-	ecocredit.RunCLITests(t, cfg)
-}
-
 func TestDataIntegration(t *testing.T) {
 	cfg := DefaultConfig()
 	suite.Run(t, data.NewIntegrationTestSuite(cfg))
+}
+
+func TestEcocreditIntegration(t *testing.T) {
+	cfg := DefaultConfig()
+	suite.Run(t, ecocredit.NewIntegrationTestSuite(cfg))
 }

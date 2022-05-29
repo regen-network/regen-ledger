@@ -9,28 +9,30 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
 func TestCreateClass_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin(ccFee.Denom, 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
+	gmAny := gomock.Any()
+	ccFee := core.DefaultParams().CreditClassFee[0]
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(1)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(1)
+	allowListEnabled := true
+	creditClassFees := core.DefaultParams().CreditClassFee
+	allowList := []string{s.addr.String()}
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&allowList, s.paramsKeeper, core.KeyAllowedClassCreators, 1)
+	utils.ExpectParamGet(&creditClassFees, s.paramsKeeper, core.KeyCreditClassFee, 1)
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(1)
+	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(1)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              ccFee,
+		Fee:              &ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 	assert.Equal(t, res.ClassId, "C01")
@@ -53,13 +55,12 @@ func TestCreateClass_Valid(t *testing.T) {
 func TestCreateClass_Unauthorized(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
 
 	// allowlist = true and sender is not in allowlist
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
-		p.AllowlistEnabled = true
-		p.AllowedClassCreators = append(p.AllowedClassCreators, "foo")
-	}).Times(1)
+	allowListEnabled := true
+	allowList := []string{sdk.AccAddress("foobar").String()}
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&allowList, s.paramsKeeper, core.KeyAllowedClassCreators, 1)
 	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
@@ -72,32 +73,34 @@ func TestCreateClass_Unauthorized(t *testing.T) {
 func TestCreateClass_Sequence(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	ccFee := &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(20)}
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
+	ccFee := core.DefaultParams().CreditClassFee[0]
+	gmAny := gomock.Any()
 
-	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(any, any, any, any).Return(nil).Times(2)
-	s.bankKeeper.EXPECT().BurnCoins(any, any, any).Return(nil).Times(2)
+	allowListEnabled := false
+	classFees := core.DefaultParams().CreditClassFee
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&classFees, s.paramsKeeper, core.KeyCreditClassFee, 1)
+
+	s.bankKeeper.EXPECT().SendCoinsFromAccountToModule(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(2)
+	s.bankKeeper.EXPECT().BurnCoins(gmAny, gmAny, gmAny).Return(nil).Times(2)
 
 	res, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              ccFee,
+		Fee:              &ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&classFees, s.paramsKeeper, core.KeyCreditClassFee, 1)
 	res2, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              ccFee,
+		Fee:              &ccFee,
 	})
 	assert.NilError(t, err, "error creating class: %+w", err)
 
@@ -108,12 +111,11 @@ func TestCreateClass_Sequence(t *testing.T) {
 func TestCreateClass_Fees(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(ctx interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = sdk.NewCoins(sdk.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
+
+	allowListEnabled := false
+	classFees := core.DefaultParams().CreditClassFee
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&classFees, s.paramsKeeper, core.KeyCreditClassFee, 1)
 
 	// wrong denom
 	_, err := s.k.CreateClass(s.ctx, &core.MsgCreateClass{
@@ -126,12 +128,14 @@ func TestCreateClass_Fees(t *testing.T) {
 	assert.ErrorContains(t, err, "bar is not allowed to be used in credit class fees")
 
 	// fee too low
+	utils.ExpectParamGet(&allowListEnabled, s.paramsKeeper, core.KeyAllowlistEnabled, 1)
+	utils.ExpectParamGet(&classFees, s.paramsKeeper, core.KeyCreditClassFee, 1)
 	_, err = s.k.CreateClass(s.ctx, &core.MsgCreateClass{
 		Admin:            s.addr.String(),
 		Issuers:          []string{s.addr.String()},
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
-		Fee:              &sdk.Coin{Denom: "foo", Amount: sdk.NewInt(10)},
+		Fee:              &sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(1)},
 	})
-	assert.ErrorContains(t, err, "expected 20foo for fee, got 10foo")
+	assert.ErrorContains(t, err, "expected 20000000stake for fee, got 1stake")
 }

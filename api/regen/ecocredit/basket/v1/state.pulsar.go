@@ -146,8 +146,8 @@ func (x *fastReflection_Basket) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.Curator != "" {
-		value := protoreflect.ValueOfString(x.Curator)
+	if len(x.Curator) != 0 {
+		value := protoreflect.ValueOfBytes(x.Curator)
 		if !f(fd_Basket_curator, value) {
 			return
 		}
@@ -182,7 +182,7 @@ func (x *fastReflection_Basket) Has(fd protoreflect.FieldDescriptor) bool {
 	case "regen.ecocredit.basket.v1.Basket.exponent":
 		return x.Exponent != uint32(0)
 	case "regen.ecocredit.basket.v1.Basket.curator":
-		return x.Curator != ""
+		return len(x.Curator) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.Basket"))
@@ -214,7 +214,7 @@ func (x *fastReflection_Basket) Clear(fd protoreflect.FieldDescriptor) {
 	case "regen.ecocredit.basket.v1.Basket.exponent":
 		x.Exponent = uint32(0)
 	case "regen.ecocredit.basket.v1.Basket.curator":
-		x.Curator = ""
+		x.Curator = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.Basket"))
@@ -254,7 +254,7 @@ func (x *fastReflection_Basket) Get(descriptor protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfUint32(value)
 	case "regen.ecocredit.basket.v1.Basket.curator":
 		value := x.Curator
-		return protoreflect.ValueOfString(value)
+		return protoreflect.ValueOfBytes(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.Basket"))
@@ -290,7 +290,7 @@ func (x *fastReflection_Basket) Set(fd protoreflect.FieldDescriptor, value proto
 	case "regen.ecocredit.basket.v1.Basket.exponent":
 		x.Exponent = uint32(value.Uint())
 	case "regen.ecocredit.basket.v1.Basket.curator":
-		x.Curator = value.Interface().(string)
+		x.Curator = value.Bytes()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.Basket"))
@@ -359,7 +359,7 @@ func (x *fastReflection_Basket) NewField(fd protoreflect.FieldDescriptor) protor
 	case "regen.ecocredit.basket.v1.Basket.exponent":
 		return protoreflect.ValueOfUint32(uint32(0))
 	case "regen.ecocredit.basket.v1.Basket.curator":
-		return protoreflect.ValueOfString("")
+		return protoreflect.ValueOfBytes(nil)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.basket.v1.Basket"))
@@ -792,7 +792,7 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Curator", wireType)
 				}
-				var stringLen uint64
+				var byteLen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -802,23 +802,25 @@ func (x *fastReflection_Basket) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					byteLen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if byteLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + byteLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Curator = string(dAtA[iNdEx:postIndex])
+				x.Curator = append(x.Curator[:0], dAtA[iNdEx:postIndex]...)
+				if x.Curator == nil {
+					x.Curator = []byte{}
+				}
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -1978,7 +1980,7 @@ type Basket struct {
 	// basket settings.
 	//
 	// Since Revision 1
-	Curator string `protobuf:"bytes,8,opt,name=curator,proto3" json:"curator,omitempty"`
+	Curator []byte `protobuf:"bytes,8,opt,name=curator,proto3" json:"curator,omitempty"`
 }
 
 func (x *Basket) Reset() {
@@ -2050,11 +2052,11 @@ func (x *Basket) GetExponent() uint32 {
 	return 0
 }
 
-func (x *Basket) GetCurator() string {
+func (x *Basket) GetCurator() []byte {
 	if x != nil {
 		return x.Curator
 	}
-	return ""
+	return nil
 }
 
 // BasketClass describes a credit class that can be deposited in a basket.
@@ -2201,7 +2203,7 @@ var file_regen_ecocredit_basket_v1_state_proto_rawDesc = []byte{
 	0x72, 0x69, 0x74, 0x65, 0x72, 0x69, 0x61, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
 	0x65, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x6e,
 	0x65, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x08,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x3a, 0x30, 0xf2,
+	0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x63, 0x75, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x3a, 0x30, 0xf2,
 	0x9e, 0xd3, 0x8e, 0x03, 0x2a, 0x0a, 0x06, 0x0a, 0x02, 0x69, 0x64, 0x10, 0x01, 0x12, 0x12, 0x0a,
 	0x0c, 0x62, 0x61, 0x73, 0x6b, 0x65, 0x74, 0x5f, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x10, 0x01, 0x18,
 	0x01, 0x12, 0x0a, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x10, 0x02, 0x18, 0x01, 0x18, 0x01, 0x22,

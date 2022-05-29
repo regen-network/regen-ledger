@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
 
@@ -21,22 +21,15 @@ func TestCreateBatch_Valid(t *testing.T) {
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	blockTime, err := types.ParseDate("block time", "2049-01-30")
 	assert.NilError(t, err)
 	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
-	s.ctx = types.WrapSDKContext(s.sdkCtx)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
 
 	start, end := time.Now(), time.Now()
 	res, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
-		ProjectId: "PRO",
+		ProjectId: "C01-001",
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
@@ -72,13 +65,13 @@ func TestCreateBatch_Valid(t *testing.T) {
 	// check balances were allocated
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, "10", bal.Tradable)
-	assert.Equal(t, "5.3", bal.Retired)
+	assert.Equal(t, "10", bal.TradableAmount)
+	assert.Equal(t, "5.3", bal.RetiredAmount)
 
 	bal2, err := s.stateStore.BatchBalanceTable().Get(s.ctx, addr2, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, "2.4", bal2.Tradable)
-	assert.Equal(t, "3.4", bal2.Retired)
+	assert.Equal(t, "2.4", bal2.TradableAmount)
+	assert.Equal(t, "3.4", bal2.RetiredAmount)
 
 	// check sequence number
 	seq, err := s.stateStore.BatchSequenceTable().Get(s.ctx, 1)
@@ -91,17 +84,10 @@ func TestCreateBatch_BadPrecision(t *testing.T) {
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.AllowlistEnabled = false
-		p.CreditClassFee = types.NewCoins(types.NewInt64Coin("foo", 20))
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	start, end := time.Now(), time.Now()
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
 		Issuer:    s.addr.String(),
-		ProjectId: "PRO",
+		ProjectId: "C01-001",
 		Issuance: []*core.BatchIssuance{
 			{
 				Recipient:      s.addr.String(),
@@ -120,8 +106,8 @@ func TestCreateBatch_UnauthorizedIssuer(t *testing.T) {
 	s := setupBase(t)
 	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
 	_, err := s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
-		ProjectId: "PRO",
-		Issuer:    types.AccAddress("FooBarBaz").String(),
+		ProjectId: "C01-001",
+		Issuer:    sdk.AccAddress("FooBarBaz").String(),
 	})
 	assert.ErrorContains(t, err, "is not an issuer for the class")
 }
@@ -136,9 +122,91 @@ func TestCreateBatch_ProjectNotFound(t *testing.T) {
 	assert.ErrorContains(t, err, "not found")
 }
 
-// creates a class "C01", with a single class issuer, and a project "PRO"
-func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr types.AccAddress) (classId, projectId string) {
-	classId, projectId = "C01", "PRO"
+func TestCreateBatch_WithOriginTx_Valid(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	start, end := time.Now(), time.Now()
+	_, err = s.k.CreateBatch(s.ctx, &core.MsgCreateBatch{
+		Issuer:    s.addr.String(),
+		ProjectId: "C01-001",
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.addr.String(),
+				TradableAmount: "10",
+				RetiredAmount:  "5.3",
+			},
+			{
+				Recipient:      addr2.String(),
+				TradableAmount: "2.4",
+				RetiredAmount:  "3.4",
+			},
+		},
+		Metadata:  "",
+		StartDate: &start,
+		EndDate:   &end,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
+	})
+	assert.NilError(t, err)
+}
+
+func TestCreateBatch_WithOriginTx_Invalid(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	batchTestSetup(t, s.ctx, s.stateStore, s.addr)
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	blockTime, err := time.Parse("2006-01-02", "2049-01-30")
+	assert.NilError(t, err)
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	start, end := time.Now(), time.Now()
+	batch := &core.MsgCreateBatch{
+		Issuer:    s.addr.String(),
+		ProjectId: "C01-001",
+		Issuance: []*core.BatchIssuance{
+			{
+				Recipient:      s.addr.String(),
+				TradableAmount: "10",
+				RetiredAmount:  "5.3",
+			},
+			{
+				Recipient:      addr2.String(),
+				TradableAmount: "2.4",
+				RetiredAmount:  "3.4",
+			},
+		},
+		Metadata:  "",
+		StartDate: &start,
+		EndDate:   &end,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
+	}
+
+	_, err = s.k.CreateBatch(s.ctx, batch)
+	assert.NilError(t, err)
+
+	// create credit batch with same tx origin id
+	_, err = s.k.CreateBatch(s.ctx, batch)
+	assert.ErrorContains(t, err, "credits already issued with tx id")
+}
+
+// creates a class "C01", with a single class issuer, and a project "C01-001"
+func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr sdk.AccAddress) (classId, projectId string) {
+	classId, projectId = "C01", "C01-001"
 	classKey, err := ss.ClassTable().InsertReturningID(ctx, &api.Class{
 		Id:               classId,
 		Admin:            addr,
@@ -152,10 +220,10 @@ func batchTestSetup(t *testing.T, ctx context.Context, ss api.StateStore, addr t
 	})
 	assert.NilError(t, err)
 	_, err = ss.ProjectTable().InsertReturningID(ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            classKey,
-		ProjectJurisdiction: "",
-		Metadata:            "",
+		Id:           projectId,
+		ClassKey:     classKey,
+		Jurisdiction: "",
+		Metadata:     "",
 	})
 	assert.NilError(t, err)
 	return

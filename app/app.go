@@ -97,10 +97,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server/core"
+	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"
 )
 
 const (
@@ -167,9 +167,9 @@ func init() {
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 
-	// set the denom regex for basket coins.
+	// set the denom regex for basket coins
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return basket.RegexBasketDenom
 	})
 }
 
@@ -384,7 +384,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		app.BankKeeper,
 		app.DistrKeeper,
 	)
-
 	dataModule := data.NewModule(app.AccountKeeper, app.BankKeeper)
 	newModules := []moduletypes.Module{ecocreditModule, dataModule}
 	err := app.smm.RegisterModules(newModules)
@@ -397,7 +396,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
 
-	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewCreditTypeProposalHandler(ecocreditModule.Keeper))
+	govRouter.AddRoute(ecocredit.RouterKey, ecoServer.NewProposalHandler(ecocreditModule.Keeper))
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
 		&stakingKeeper, govRouter,

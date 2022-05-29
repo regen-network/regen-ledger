@@ -38,7 +38,7 @@ func (m *MsgSend) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 

@@ -93,7 +93,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryClassInfoResponse
+			var res core.QueryClassResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Class)
@@ -104,9 +104,6 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 }
 
 func (s *IntegrationTestSuite) TestQueryBatches() {
-	val := s.network.Validators[0]
-	_, pid, _ := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-
 	testCases := []struct {
 		name      string
 		url       string
@@ -114,12 +111,12 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%sprojects/%s/batches", val.APIAddress, coreRoute, pid),
+			fmt.Sprintf("%s%sbatches", s.val.APIAddress, coreRoute),
 			false,
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s%sprojects/%s/batches?pagination.limit=2", val.APIAddress, coreRoute, pid),
+			fmt.Sprintf("%s%sbatches?pagination.limit=2", s.val.APIAddress, coreRoute),
 			true,
 		},
 	}
@@ -132,7 +129,118 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			require.NoError(err)
 
 			var res core.QueryBatchesResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s%sbatches/issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			false,
+		},
+		{
+			"valid request with pagination",
+			fmt.Sprintf("%s%sbatches/issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
+			true,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesByIssuerResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s%sbatches/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			false,
+		},
+		{
+			"valid request with pagination",
+			fmt.Sprintf("%s%sbatches/class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
+			true,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesByClassResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			require.NoError(err)
+			require.NotNil(res.Batches)
+			require.Greater(len(res.Batches), 0)
+			if tc.paginated {
+				require.NotNil(res.Pagination)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
+	testCases := []struct {
+		name      string
+		url       string
+		paginated bool
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			false,
+		},
+		{
+			"valid request with pagination",
+			fmt.Sprintf("%s%sbatches/project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
+			true,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res core.QueryBatchesResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batches)
 			require.Greater(len(res.Batches), 0)
@@ -144,16 +252,13 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 }
 
 func (s *IntegrationTestSuite) TestQueryBatch() {
-	val := s.network.Validators[0]
-	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-
 	testCases := []struct {
 		name string
 		url  string
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%sbatches/%s", val.APIAddress, coreRoute, batchDenom),
+			fmt.Sprintf("%s%sbatches/%s", s.val.APIAddress, coreRoute, s.batchDenom),
 		},
 	}
 
@@ -164,11 +269,11 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var res core.QueryBatchInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
+			var res core.QueryBatchResponse
+			err = s.val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.Batch)
-			require.Equal(res.Batch.Denom, batchDenom)
+			require.Equal(res.Batch.Denom, s.batchDenom)
 		})
 	}
 }
@@ -176,7 +281,6 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 	val := s.network.Validators[0]
-	creditTypes := core.DefaultParams().CreditTypes
 
 	url := fmt.Sprintf("%s%scredit-types", val.APIAddress, coreRoute)
 	resp, err := rest.GetRequest(url)
@@ -185,8 +289,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	var res core.QueryCreditTypesResponse
 	err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 	require.NoError(err)
-	require.Equal(creditTypes, res.CreditTypes)
-
+	require.Greater(len(res.CreditTypes), 0)
 }
 
 func (s *IntegrationTestSuite) TestQueryBalance() {
@@ -219,8 +322,8 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
-			require.NotEmpty(res.Balance.Tradable)
-			require.NotEmpty(res.Balance.Retired)
+			require.NotEmpty(res.Balance.TradableAmount)
+			require.NotEmpty(res.Balance.RetiredAmount)
 		})
 	}
 }
@@ -257,7 +360,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestGRPCQueryParams() {
+func (s *IntegrationTestSuite) TestQueryParams() {
 	val := s.network.Validators[0]
 	require := s.Require()
 
@@ -272,7 +375,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -313,7 +416,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -367,7 +470,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -420,7 +523,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
-	validAsk := types.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
@@ -468,5 +571,19 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 			}
 
 		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedDenoms() {
+	val := s.network.Validators[0]
+	url := fmt.Sprintf("%s%sallowed-denoms?pagination.count_total=true", val.APIAddress, marketplaceRoute)
+	resp, err := rest.GetRequest(url)
+	s.Require().NoError(err)
+
+	var res marketplace.QueryAllowedDenomsResponse
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &res))
+	s.Require().Equal(uint64(len(s.allowedDenoms)), res.Pagination.Total)
+	for _, d := range res.AllowedDenoms {
+		s.Require().Contains(s.allowedDenoms, d.BankDenom)
 	}
 }

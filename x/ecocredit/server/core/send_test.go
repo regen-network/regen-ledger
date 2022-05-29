@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
@@ -16,10 +15,6 @@ func TestSend_Valid(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2) // this will be called for each batchDenom we send
 
 	// s.Addr starting balance -> 10.5 tradable, 10.5 retired
 
@@ -27,8 +22,8 @@ func TestSend_Valid(t *testing.T) {
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "2.51"},
-			{BatchDenom: "C01-20200101-20210101-01", RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
+			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "2.51"},
+			{BatchDenom: "C01-001-20200101-20210101-01", RetiredAmount: "1.30", RetirementJurisdiction: "US-OR"},
 		},
 	})
 	assert.NilError(t, err)
@@ -44,10 +39,10 @@ func TestSend_Valid(t *testing.T) {
 	// sender tradable -> 7.99 retires 1.30 = 6.69
 	// recipient now has 1.30 retired
 
-	assert.Equal(t, "6.69", senderBal.Tradable)
-	assert.Equal(t, "2.51", recipientBal.Tradable)
-	assert.Equal(t, "1.30", recipientBal.Retired)
-	assert.Equal(t, "10.5", senderBal.Retired) // retired credits should be untouched
+	assert.Equal(t, "6.69", senderBal.TradableAmount)
+	assert.Equal(t, "2.51", recipientBal.TradableAmount)
+	assert.Equal(t, "1.30", recipientBal.RetiredAmount)
+	assert.Equal(t, "10.5", senderBal.RetiredAmount) // retired credits should be untouched
 
 	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -64,17 +59,13 @@ func TestSend_Errors(t *testing.T) {
 	s := setupBase(t)
 	_, _, recipient := testdata.KeyTestPubAddr()
 	s.setupClassProjectBatch(t)
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
 
 	// test sending more than user balance
 	_, err := s.k.Send(s.ctx, &core.MsgSend{
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "1000000"},
+			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "1000000"},
 		},
 	})
 	assert.ErrorContains(t, err, "insufficient funds")
@@ -84,7 +75,7 @@ func TestSend_Errors(t *testing.T) {
 		Sender:    s.addr.String(),
 		Recipient: recipient.String(),
 		Credits: []*core.MsgSend_SendCredits{
-			{BatchDenom: "C01-20200101-20210101-01", TradableAmount: "10.325092385"},
+			{BatchDenom: "C01-001-20200101-20210101-01", TradableAmount: "10.325092385"},
 		},
 	})
 	assert.ErrorContains(t, err, "exceeds maximum decimal places")

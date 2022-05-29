@@ -33,7 +33,7 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
@@ -41,6 +41,11 @@ func (m *MsgCancel) ValidateBasic() error {
 			return err
 		}
 	}
+
+	if len(m.Reason) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("reason is required")
+	}
+
 	return nil
 }
 

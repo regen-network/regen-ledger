@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
@@ -26,7 +27,7 @@ import (
 )
 
 type baseSuite struct {
-	t            *testing.T
+	t            gocuke.TestingT
 	db           ormdb.ModuleDB
 	stateStore   api.StateStore
 	ctx          context.Context
@@ -39,7 +40,7 @@ type baseSuite struct {
 	sdkCtx       sdk.Context
 }
 
-func setupBase(t *testing.T) *baseSuite {
+func setupBase(t gocuke.TestingT) *baseSuite {
 	// prepare database
 	s := &baseSuite{t: t}
 	var err error
@@ -62,7 +63,14 @@ func setupBase(t *testing.T) *baseSuite {
 	assert.NilError(t, err)
 	s.bankKeeper = mocks.NewMockBankKeeper(s.ctrl)
 	s.paramsKeeper = mocks.NewMockParamKeeper(s.ctrl)
-	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper)
+	assert.NilError(t, s.stateStore.CreditTypeTable().Insert(s.ctx, &api.CreditType{
+		Abbreviation: "C",
+		Name:         "carbon",
+		Unit:         "metric ton C02",
+		Precision:    6,
+	}))
+	_, _, moduleAddress := testdata.KeyTestPubAddr()
+	s.k = NewKeeper(s.stateStore, s.bankKeeper, s.paramsKeeper, moduleAddress)
 	_, _, s.addr = testdata.KeyTestPubAddr()
 
 	return s
@@ -70,38 +78,50 @@ func setupBase(t *testing.T) *baseSuite {
 
 // setupClassProjectBatch setups a class "C01", a project "PRO", a batch "C01-20200101-20210101-01", and a
 // supply/balance of "10.5" for both retired and tradable.
-func (s baseSuite) setupClassProjectBatch(t *testing.T) (classId, projectId, batchDenom string) {
-	classId, projectId, batchDenom = "C01", "P01", "C01-20200101-20210101-01"
-	assert.NilError(t, s.stateStore.ClassTable().Insert(s.ctx, &api.Class{
+func (s baseSuite) setupClassProjectBatch(t gocuke.TestingT) (classId, projectId, batchDenom string) {
+	classId, projectId, batchDenom = "C01", "C01-001", "C01-001-20200101-20210101-01"
+	cKey, err := s.stateStore.ClassTable().InsertReturningID(s.ctx, &api.Class{
 		Id:               classId,
 		Admin:            s.addr,
 		Metadata:         "",
 		CreditTypeAbbrev: "C",
+	})
+	assert.NilError(t, err)
+
+	assert.NilError(t, s.stateStore.ClassIssuerTable().Insert(s.ctx, &api.ClassIssuer{
+		ClassKey: cKey,
+		Issuer:   s.addr,
 	}))
-	assert.NilError(t, s.stateStore.ProjectTable().Insert(s.ctx, &api.Project{
-		Id:                  projectId,
-		ClassKey:            1,
-		ProjectJurisdiction: "US-OR",
-		Metadata:            "",
-	}))
-	assert.NilError(t, s.stateStore.BatchTable().Insert(s.ctx, &api.Batch{
-		ProjectKey: 1,
+
+	pKey, err := s.stateStore.ProjectTable().InsertReturningID(s.ctx, &api.Project{
+		Id:           projectId,
+		ClassKey:     cKey,
+		Jurisdiction: "US-OR",
+		Metadata:     "",
+	})
+	assert.NilError(t, err)
+
+	bKey, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{
+		ProjectKey: pKey,
+		Issuer:     s.addr,
 		Denom:      batchDenom,
 		Metadata:   "",
 		StartDate:  &timestamppb.Timestamp{Seconds: 2},
 		EndDate:    &timestamppb.Timestamp{Seconds: 2},
-	}))
+	})
+	assert.NilError(t, err)
+
 	assert.NilError(t, s.stateStore.BatchSupplyTable().Insert(s.ctx, &api.BatchSupply{
-		BatchKey:        1,
+		BatchKey:        bKey,
 		TradableAmount:  "10.5",
 		RetiredAmount:   "10.5",
 		CancelledAmount: "",
 	}))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, &api.BatchBalance{
-		BatchKey: 1,
-		Address:  s.addr,
-		Tradable: "10.5",
-		Retired:  "10.5",
+		BatchKey:       bKey,
+		Address:        s.addr,
+		TradableAmount: "10.5",
+		RetiredAmount:  "10.5",
 	}))
 	return
 }

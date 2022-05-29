@@ -25,7 +25,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, k.paramsKeeper, batch.Denom)
+		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.stateStore, batch.Denom)
 		if err != nil {
 			return nil, err
 		}
@@ -34,7 +34,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.Tradable)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, userBalance.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		userRetiredBalance, err := math.NewNonNegativeFixedDecFromString(userBalance.Retired, creditType.Precision)
+		userRetiredBalance, err := math.NewNonNegativeFixedDecFromString(userBalance.RetiredAmount, creditType.Precision)
 		if err != nil {
 			return nil, err
 		}
@@ -71,10 +71,10 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		}
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-			BatchKey: batch.Key,
-			Address:  holder,
-			Tradable: userTradableBalance.String(),
-			Retired:  userRetiredBalance.String(),
+			BatchKey:       batch.Key,
+			Address:        holder,
+			TradableAmount: userTradableBalance.String(),
+			RetiredAmount:  userRetiredBalance.String(),
 		}); err != nil {
 			return nil, err
 		}
@@ -87,7 +87,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		})
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Retirer:      req.Holder,
+			Owner:        req.Holder,
 			BatchDenom:   credit.BatchDenom,
 			Amount:       credit.Amount,
 			Jurisdiction: req.Jurisdiction,

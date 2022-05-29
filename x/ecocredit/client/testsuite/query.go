@@ -5,12 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/rand"
-	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -27,7 +24,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String()},
 		Metadata:         "metadata",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classId2, err := s.createClass(clientCtx, &core.MsgCreateClass{
@@ -35,7 +32,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 		Issuers:          []string{val.Address.String(), val2.Address.String()},
 		Metadata:         "metadata2",
 		CreditTypeAbbrev: validCreditTypeAbbrev,
-		Fee:              &ecocredit.DefaultParams().CreditClassFee[0],
+		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
 	classIds := [2]string{classId, classId2}
@@ -98,7 +95,7 @@ func (s *IntegrationTestSuite) TestQueryClassesCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryClassCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -113,11 +110,11 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expectErr         bool
-		expectedErrMsg    string
-		expectedClassInfo *core.Class
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		expectedClass  *core.ClassInfo
 	}{
 		{
 			name:           "missing args",
@@ -135,9 +132,9 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			name:      "valid credit class",
 			args:      []string{classId},
 			expectErr: false,
-			expectedClassInfo: &core.Class{
+			expectedClass: &core.ClassInfo{
 				Id:               classId,
-				Admin:            val.Address,
+				Admin:            val.Address.String(),
 				Metadata:         class.Metadata,
 				CreditTypeAbbrev: class.CreditTypeAbbrev,
 			},
@@ -146,7 +143,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryClassInfoCmd()
+			cmd := coreclient.QueryClassCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -154,20 +151,67 @@ func (s *IntegrationTestSuite) TestQueryClassInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryClassInfoResponse
+				var res core.QueryClassResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				tc.expectedClassInfo.Key = res.Class.Key // force the db id's to be equal as we cannot know this beforehand.
-				s.Require().Equal(tc.expectedClassInfo, res.Class)
+				s.Require().Equal(tc.expectedClass, res.Class)
 			}
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	_, projectName, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
+	ctx := s.val.ClientCtx
+	ctx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "too many args",
+			args:           []string{"foo"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 0 arg(s), received 1",
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryBatchesCmd()
+			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res core.QueryBatchesResponse
+				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().True(len(res.Batches) > 0)
+				s.Require().NotNil(res.Pagination)
+				s.Require().True(res.Pagination.Total > 0)
+				denoms := make([]string, len(res.Batches))
+				for i, batch := range res.Batches {
+					denoms[i] = batch.Denom
+				}
+				s.Require().Contains(denoms, s.batchDenom)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByIssuerCmd() {
+	ctx := s.val.ClientCtx
+	ctx.OutputFormat = "JSON"
 
 	testCases := []struct {
 		name           string
@@ -183,14 +227,14 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
+			args:           []string{"foo", "bar"},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name: "count",
+			name: "valid with pagination",
 			args: []string{
-				projectName,
+				s.addr1.String(),
 				fmt.Sprintf("--%s", flags.FlagCountTotal),
 			},
 			expectErr: false,
@@ -199,16 +243,16 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchesCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			cmd := coreclient.QueryBatchesByIssuerCmd()
+			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchesResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				var res core.QueryBatchesByIssuerResponse
+				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().True(len(res.Batches) > 0)
 				s.Require().NotNil(res.Pagination)
 				s.Require().True(res.Pagination.Total > 0)
@@ -216,17 +260,129 @@ func (s *IntegrationTestSuite) TestQueryBatchesCmd() {
 				for i, batch := range res.Batches {
 					denoms[i] = batch.Denom
 				}
-				s.Require().Contains(denoms, batchDenom)
+				s.Require().Contains(denoms, s.batchDenom)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
-	val := s.network.Validators[0]
-	clientCtx := val.ClientCtx
-	clientCtx.OutputFormat = "JSON"
-	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
+func (s *IntegrationTestSuite) TestQueryBatchesByClassCmd() {
+	ctx := s.val.ClientCtx
+	ctx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"foo", "bar"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.classId,
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryBatchesByClassCmd()
+			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res core.QueryBatchesByClassResponse
+				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().True(len(res.Batches) > 0)
+				s.Require().NotNil(res.Pagination)
+				s.Require().True(res.Pagination.Total > 0)
+				denoms := make([]string, len(res.Batches))
+				for i, batch := range res.Batches {
+					denoms[i] = batch.Denom
+				}
+				s.Require().Contains(denoms, s.batchDenom)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchesByProjectCmd() {
+	ctx := s.val.ClientCtx
+	ctx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"foo", "bar"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid with pagination",
+			args: []string{
+				s.projectId,
+				fmt.Sprintf("--%s", flags.FlagCountTotal),
+			},
+			expectErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryBatchesByProjectCmd()
+			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res core.QueryBatchesByProjectResponse
+				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().True(len(res.Batches) > 0)
+				s.Require().NotNil(res.Pagination)
+				s.Require().True(res.Pagination.Total > 0)
+				denoms := make([]string, len(res.Batches))
+				for i, batch := range res.Batches {
+					denoms[i] = batch.Denom
+				}
+				s.Require().Contains(denoms, s.batchDenom)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBatchCmd() {
+	ctx := s.val.ClientCtx
+	ctx.OutputFormat = "JSON"
 
 	testCases := []struct {
 		name           string
@@ -248,24 +404,24 @@ func (s *IntegrationTestSuite) TestQueryBatchInfoCmd() {
 		},
 		{
 			name:      "valid credit batch",
-			args:      []string{batchDenom},
+			args:      []string{s.batchDenom},
 			expectErr: false,
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryBatchInfoCmd()
-			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			cmd := coreclient.QueryBatchCmd()
+			out, err := cli.ExecTestCLICmd(ctx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
 				s.Require().Contains(out.String(), tc.expectedErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res core.QueryBatchInfoResponse
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(res.Batch.Denom, batchDenom)
+				var res core.QueryBatchResponse
+				s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(res.Batch.Denom, s.batchDenom)
 			}
 		})
 	}
@@ -318,9 +474,9 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 
 				var res core.QueryBalanceResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().True(sdk.AccAddress(res.Balance.Address).Equals(val.Address))
-				s.Require().NotEmpty(res.Balance.Tradable)
-				s.Require().NotEmpty(res.Balance.Retired)
+				s.Require().Equal(res.Balance.Address, val.Address.String())
+				s.Require().NotEmpty(res.Balance.TradableAmount)
+				s.Require().NotEmpty(res.Balance.RetiredAmount)
 			}
 		})
 	}
@@ -380,7 +536,6 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-	creditTypes := core.DefaultParams().CreditTypes
 	testCases := []struct {
 		name           string
 		args           []string
@@ -407,7 +562,7 @@ func (s *IntegrationTestSuite) TestQueryCreditTypesCmd() {
 
 				var res core.QueryCreditTypesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				assert.DeepEqual(s.T(), res.CreditTypes, creditTypes)
+				s.Require().Greater(len(res.CreditTypes), 0)
 			}
 		})
 	}
@@ -435,7 +590,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -484,7 +639,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 
 				var res marketplace.QuerySellOrderResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().True(sdk.AccAddress(res.SellOrder.Seller).Equals(val.Address))
+				s.Require().Equal(res.SellOrder.Seller, val.Address.String())
 				s.Require().Equal(res.SellOrder.Quantity, "10")
 			}
 		})
@@ -496,7 +651,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
@@ -513,7 +668,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 		args      []string
 		expErr    bool
 		expErrMsg string
-		expOrders []*ecocredit.SellOrder
+		expOrders []*marketplace.SellOrder
 	}{
 		{
 			name:      "too many args",
@@ -553,7 +708,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
@@ -563,6 +718,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
+	s.Require().NoError(err)
+
 	testCases := []struct {
 		name      string
 		args      []string
@@ -613,7 +770,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, val.Address.String())
-	validAsk := sdk.NewInt64Coin(core.DefaultParams().AllowedAskDenoms[0].Denom, 10)
+	validAsk := sdk.NewInt64Coin(sdk.DefaultBondDenom, 10)
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 
@@ -624,6 +781,8 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
 		},
 	})
+	s.Require().NoError(err)
+
 	testCases := []struct {
 		name      string
 		args      []string
@@ -683,19 +842,17 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	})
 	s.Require().NoError(err)
 	pID, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "foo",
-		ProjectJurisdiction: "US-OR",
-		ProjectId:           rand.Str(3),
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "foo",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:              val.Address.String(),
-		ClassId:             classId,
-		Metadata:            "foo",
-		ProjectJurisdiction: "US-OR",
-		ProjectId:           rand.Str(3),
+		Issuer:       val.Address.String(),
+		ClassId:      classId,
+		Metadata:     "foo",
+		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	projectIds := [2]string{pID, pID2}
@@ -749,7 +906,7 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 
 }
 
-func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryProjectCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -784,7 +941,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := coreclient.QueryProjectInfoCmd()
+			cmd := coreclient.QueryProjectCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				require.Error(err)
@@ -792,11 +949,95 @@ func (s *IntegrationTestSuite) TestQueryProjectInfoCmd() {
 			} else {
 				require.NoError(err, out.String())
 
-				var res core.QueryProjectInfoResponse
+				var res core.QueryProjectResponse
 				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(projectId, res.Project.Id)
 			}
 		})
 	}
 
+}
+
+func (s *IntegrationTestSuite) TestQueryClassIssuersCmd() {
+	val := s.network.Validators[0]
+	val2 := s.network.Validators[1]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
+		Admin:            val.Address.String(),
+		Issuers:          []string{val.Address.String(), val2.Address.String()},
+		Metadata:         "metadata",
+		CreditTypeAbbrev: validCreditTypeAbbrev,
+		Fee:              &core.DefaultParams().CreditClassFee[0],
+	})
+	require.NoError(err)
+
+	testCases := []struct {
+		name           string
+		args           []string
+		expectErr      bool
+		expectedErrMsg string
+		numItems       int
+	}{
+		{
+			name:           "no pagination flags",
+			args:           []string{classId},
+			expectErr:      false,
+			expectedErrMsg: "",
+			numItems:       -1,
+		},
+		{
+			name:           "pagination limit 1",
+			args:           []string{classId, "--limit=1"},
+			expectErr:      false,
+			expectedErrMsg: "",
+			numItems:       1,
+		},
+		{
+			name:           "class not found",
+			args:           []string{"Z100"},
+			expectErr:      true,
+			expectedErrMsg: "not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := coreclient.QueryClassIssuersCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expectedErrMsg)
+			} else {
+				require.NoError(err, out.String())
+
+				var res core.QueryClassIssuersResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				if tc.numItems > 0 {
+					require.Len(res.Issuers, tc.numItems)
+				} else {
+					require.GreaterOrEqual(len(res.Issuers), 1)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedDenomsCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	cmd := marketplaceclient.QueryAllowedDenomsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{fmt.Sprintf("--%s", flags.FlagCountTotal)})
+	s.Require().NoError(err)
+
+	var res marketplace.QueryAllowedDenomsResponse
+	s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	for _, d := range res.AllowedDenoms {
+		s.Require().Contains(s.allowedDenoms, d.BankDenom)
+	}
+	s.Require().Equal(uint64(len(s.allowedDenoms)), res.Pagination.Total)
 }

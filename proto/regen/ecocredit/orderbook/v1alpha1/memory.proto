@@ -28,38 +28,34 @@ message BuyOrderSellOrderMatch {
     // bids and lowest asks get filled first. If the ask price is the same, then
     // earlier sell orders get filled first (again we get this from the sell
     // order ID which is assigned incrementally).
-    index : {id : 1;
-fields:
-  "market_id,bid_price_complement,buy_order_id,ask_price,sell_order_id";
-  // name: "order_book_match"
-}
+    index : {
+      id : 1,
+      fields : "market_id,bid_price_complement,buy_order_id,ask_price,sell_"
+               "order_id"
+    }
 
-// this index is used to delete matches once sell orders are filled
-index : {
-id:
-  2, fields : "sell_order_id"
-}
-}
-;
+    // this index is used to delete matches once sell orders are filled
+    index : {id : 2, fields : "sell_order_id"}
+  };
 
-// market_id defines the market within which this match exists.
-uint64 market_id = 1;
+  // market_id defines the market within which this match exists.
+  uint64 market_id = 1;
 
-// buy_order_id is the buy order ID.
-uint64 buy_order_id = 2;
+  // buy_order_id is the buy order ID.
+  uint64 buy_order_id = 2;
 
-// sell_order_id is the sell order ID.
-uint64 sell_order_id = 3;
+  // sell_order_id is the sell order ID.
+  uint64 sell_order_id = 3;
 
-// bid_price_complement is the the complement (^ operator) of the bid price
-// encoded as a uint32 (which should have sufficient precision) - effectively
-// ~price * 10^exponent (usually 10^6). The complement is used so that bids can
-// be sorted high to low.
-fixed32 bid_price_complement = 4;
+  // bid_price_complement is the the complement (^ operator) of the bid price
+  // encoded as a uint32 (which should have sufficient precision) - effectively
+  // ~price * 10^exponent (usually 10^6). The complement is used so that bids
+  // can be sorted high to low.
+  fixed32 bid_price_complement = 4;
 
-// ask_price is the ask price encoded to a uint32. Ask prices are sorted low to
-// high.
-fixed32 ask_price = 5;
+  // ask_price is the ask price encoded to a uint32. Ask prices are sorted low
+  // to high.
+  fixed32 ask_price = 5;
 }
 
 // BuyOrderClassSelector indexes a buy order with class selector.

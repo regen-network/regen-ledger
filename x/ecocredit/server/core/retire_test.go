@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -21,18 +20,13 @@ func TestRetire_Valid(t *testing.T) {
 	// tradable: 10.5
 	// retired: 10.5
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	// starting balance -> 10.5 tradable, 10.5 retired
 	// retire 10.0 -> 0.5 leftover in tradable, retired becomes 20.5
 
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
 		Holder: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
-			{BatchDenom: "C01-20200101-20210101-01", Amount: "10.0"},
+			{BatchDenom: "C01-001-20200101-20210101-01", Amount: "10.0"},
 		},
 		Jurisdiction: "US-NY",
 	})
@@ -42,8 +36,8 @@ func TestRetire_Valid(t *testing.T) {
 
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, bal.Tradable, "0.5")
-	assert.Equal(t, bal.Retired, "20.5")
+	assert.Equal(t, bal.TradableAmount, "0.5")
+	assert.Equal(t, bal.RetiredAmount, "20.5")
 
 	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)
@@ -65,11 +59,6 @@ func TestRetire_Invalid(t *testing.T) {
 		Jurisdiction: "US-NY",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(_ interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(2)
 
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{

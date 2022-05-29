@@ -18,9 +18,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
-	corecli "github.com/regen-network/regen-ledger/x/ecocredit/client/core"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -48,7 +46,6 @@ func TxCmd(name string) *cobra.Command {
 		TxCreateProject(),
 		TxUpdateProjectAdminCmd(),
 		TxUpdateProjectMetadataCmd(),
-		corecli.TxCreditTypeProposalCmd(),
 		basketcli.TxCreateBasket(),
 		basketcli.TxPutInBasket(),
 		basketcli.TxTakeFromBasket(),
@@ -86,8 +83,8 @@ Parameters:
   credit type abbreviation:    the name of the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	               arbitrary data attached to the credit class info
   fee:                         fee to pay for the creation of the credit class (e.g. 10uatom, 10uregen)`,
-			ecocredit.KeyAllowedClassCreators,
-			ecocredit.KeyCreditClassFee,
+			core.KeyAllowedClassCreators,
+			core.KeyCreditClassFee,
 		),
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -143,6 +140,7 @@ const (
 	FlagMetadata            string = "metadata"
 	FlagAddIssuers          string = "add-issuers"
 	FlagRemoveIssuers       string = "remove-issuers"
+	FlagReferenceId         string = "reference-id"
 )
 
 // TxGenBatchJSONCmd returns a transaction command that generates JSON to
@@ -255,7 +253,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "project_id": "C0101",
+                                "project_id": "C01-001",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
@@ -312,7 +310,7 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "C01-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
+             eg: '[{batch_denom: "C01-001-20210101-20210201-001", tradable_amount: "5", retired_amount: "0", retirement_jurisdiction: "YY-ZZ 12345"}]'
              Note: "retirement_jurisdiction" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -372,14 +370,16 @@ Parameters:
 // TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
 	return txFlags(&cobra.Command{
-		Use:   "cancel [credits]",
+		Use:   "cancel [credits] [reason]",
 		Short: "Cancels a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
   credits:  comma-separated list of credits in the form [<amount> <batch-denom>]
-            eg: '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-001'`,
-		Args: cobra.ExactArgs(1),
+            eg: '10 C01-001-20200101-20210101-001, 0.1 C01-001-20200101-20210101-001'
+  reason:   reason is any arbitrary string that specifies the reason for cancelling credits.
+`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			credits, err := parseCancelCreditsList(args[0])
 			if err != nil {
@@ -392,6 +392,7 @@ Parameters:
 			msg := core.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
+				Reason:  args[1],
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -539,7 +540,7 @@ Example:
 // TxCreateProject returns a transaction command that creates a new project.
 func TxCreateProject() *cobra.Command {
 	cmd := txFlags(&cobra.Command{
-		Use:   "create-project [class-id] [project-jurisdiction] [metadata] --project-id [project-id]",
+		Use:   "create-project [class-id] [project-jurisdiction] [metadata]",
 		Short: "Create a new project within a credit class",
 		Long: `Create a new project within a credit class.
 		
@@ -547,7 +548,8 @@ func TxCreateProject() *cobra.Command {
 		class-id: id of the class
 		project-jurisdiction: the jurisdiction of the project (see documentation for proper project-jurisdiction formats).
 		metadata: any arbitrary metadata attached to the project.
-		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
+		Flags:
+		reference-id: proect reference id
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -562,7 +564,7 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			projectJurisdiction := args[1]
-			if err := ecocredit.ValidateJurisdiction(projectJurisdiction); err != nil {
+			if err := core.ValidateJurisdiction(projectJurisdiction); err != nil {
 				return err
 			}
 
@@ -575,25 +577,26 @@ func TxCreateProject() *cobra.Command {
 				return err
 			}
 
-			projectId, err := cmd.Flags().GetString(FlagProjectId)
+			msg := core.MsgCreateProject{
+				Issuer:       clientCtx.GetFromAddress().String(),
+				ClassId:      classID,
+				Jurisdiction: projectJurisdiction,
+				Metadata:     args[2],
+			}
+
+			referenceId, err := cmd.Flags().GetString(FlagReferenceId)
 			if err != nil {
 				return err
 			}
-
-			msg := core.MsgCreateProject{
-				Issuer:              clientCtx.GetFromAddress().String(),
-				ClassId:             classID,
-				ProjectJurisdiction: projectJurisdiction,
-				Metadata:            args[2],
-				ProjectId:           projectId,
-			}
+			referenceId = strings.TrimSpace(referenceId)
+			msg.ReferenceId = referenceId
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 
 		},
 	})
 
-	cmd.Flags().String(FlagProjectId, "", "id of the project")
+	cmd.Flags().String(FlagReferenceId, "", "project reference id")
 
 	return cmd
 }

@@ -35,7 +35,7 @@ import (
 	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/v3/app/testsuite"
+	"github.com/regen-network/regen-ledger/v4/app/testsuite"
 )
 
 var (

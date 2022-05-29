@@ -3,7 +3,6 @@ package core
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
@@ -15,11 +14,6 @@ func TestCancel_Valid(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	_, _, batchDenom := s.setupClassProjectBatch(t)
-
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
 
 	// Supply -> tradable: 10.5 , retired: 10.5
 	// s.addr balance -> tradable 10.5 , retired 10.5
@@ -44,8 +38,8 @@ func TestCancel_Valid(t *testing.T) {
 
 	bal, err := s.stateStore.BatchBalanceTable().Get(s.ctx, s.addr, 1)
 	assert.NilError(t, err)
-	assert.Equal(t, bal.Tradable, "0.0")
-	assert.Equal(t, bal.Retired, "10.5")
+	assert.Equal(t, bal.TradableAmount, "0.0")
+	assert.Equal(t, bal.RetiredAmount, "10.5")
 }
 
 func TestCancel_InsufficientFunds(t *testing.T) {
@@ -53,16 +47,11 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Holder: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
-				BatchDenom: "C01-20200101-20210101-01",
+				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "100000",
 			},
 		},
@@ -76,16 +65,11 @@ func TestCancel_BadPrecision(t *testing.T) {
 	s := setupBase(t)
 	s.setupClassProjectBatch(t)
 
-	any := gomock.Any()
-	s.paramsKeeper.EXPECT().GetParamSet(any, any).Do(func(any interface{}, p *core.Params) {
-		p.CreditTypes = []*core.CreditType{{Name: "carbon", Abbreviation: "C", Unit: "tonne", Precision: 6}}
-	}).Times(1)
-
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
 		Holder: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
-				BatchDenom: "C01-20200101-20210101-01",
+				BatchDenom: "C01-001-20200101-20210101-01",
 				Amount:     "10.5290385029385820935",
 			},
 		},

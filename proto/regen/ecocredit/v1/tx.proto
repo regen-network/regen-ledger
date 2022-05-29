@@ -71,6 +71,9 @@ service Msg {
   // UpdateProjectMetadata updates the project metadata
   rpc UpdateProjectMetadata(MsgUpdateProjectMetadata)
       returns (MsgUpdateProjectMetadataResponse);
+
+  // Bridge cancels credits and emits a bridge event.
+  rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -114,20 +117,16 @@ message MsgCreateProject {
   // metadata is any arbitrary metadata attached to the project.
   string metadata = 3;
 
-  // project_jurisdiction is the jurisdiction of the project backing the credits
+  // jurisdiction is the jurisdiction of the project backing the credits
   // in this batch. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
   // and postal-code are optional and can be added for increased precision.
-  string project_jurisdiction = 4;
+  string jurisdiction = 4;
 
-  // project_id is an optional user-specified project ID which can be used
-  // instead of an auto-generated ID. If project_id is provided, it must be
-  // unique within the credit class and match the regex [A-Za-z0-9]{2,16}
-  // or else the operation will fail. If project_id is omitted an ID will
-  // automatically be generated.
-  string project_id = 5;
+  // reference_id is any arbitrary string used to reference the project.
+  string reference_id = 5;
 }
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
@@ -325,6 +324,10 @@ message MsgCancel {
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 2;
 
+  // reason is any arbitrary string that specifies the reason for cancelling
+  // credits.
+  string reason = 3;
+
   // CancelCredits specifies a batch and the number of credits being cancelled.
   message CancelCredits {
 
@@ -425,3 +428,36 @@ message MsgUpdateProjectMetadata {
 // MsgUpdateProjectMetadataResponse is the Msg/UpdateProjectMetadataResponse
 // response type.
 message MsgUpdateProjectMetadataResponse {}
+
+// MsgBridge is the Msg/Bridge request type.
+message MsgBridge {
+  // target is the target chain.
+  string target = 1;
+
+  // recipient is the recipient address.
+  string recipient = 2;
+
+  // contract is the contract address.
+  string contract = 3;
+
+  // holder is the credit holder address.
+  string holder = 4;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 5;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique identifier of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+}
+
+// MsgBridgeResponse is the Msg/MsgBridge response type.
+message MsgBridgeResponse {}

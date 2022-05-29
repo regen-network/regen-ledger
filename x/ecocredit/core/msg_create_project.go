@@ -8,6 +8,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+const MaxReferenceIdLength = 32
+
 var _ legacytx.LegacyMsg = &MsgCreateProject{}
 
 // Route implements the LegacyMsg interface.
@@ -28,7 +30,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
+	if err := ValidateClassId(m.ClassId); err != nil {
 		return err
 	}
 
@@ -36,14 +38,12 @@ func (m *MsgCreateProject) ValidateBasic() error {
 		return ecocredit.ErrMaxLimit.Wrap("create project metadata")
 	}
 
-	if err := ValidateJurisdiction(m.ProjectJurisdiction); err != nil {
+	if err := ValidateJurisdiction(m.Jurisdiction); err != nil {
 		return err
 	}
 
-	if m.ProjectId != "" {
-		if err := ValidateProjectID(m.ProjectId); err != nil {
-			return err
-		}
+	if m.ReferenceId != "" && len(m.ReferenceId) > MaxReferenceIdLength {
+		return ecocredit.ErrMaxLimit.Wrap("reference id")
 	}
 
 	return nil
