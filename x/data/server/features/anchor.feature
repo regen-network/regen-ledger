@@ -15,14 +15,14 @@ Feature: Anchor
 
     Scenario: the data has not been anchored
       When alice attempts to anchor the data at block time "2020-01-01"
-      Then the content entry exists with timestamp "2020-01-01"
+      Then the anchor entry exists with timestamp "2020-01-01"
 
     Scenario: the data has already been anchored by the same address
       Given alice has anchored the data at block time "2020-01-01"
       When alice attempts to anchor the data at block time "2020-01-02"
-      Then the content entry exists with timestamp "2020-01-01"
+      Then the anchor entry exists with timestamp "2020-01-01"
 
     Scenario: the data has already been anchored by a different address
       Given alice has anchored the data at block time "2020-01-01"
       When bob attempts to anchor the data at block time "2020-01-02"
-      Then the content entry exists with timestamp "2020-01-01"
+      Then the anchor entry exists with timestamp "2020-01-01"

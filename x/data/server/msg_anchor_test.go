@@ -75,7 +75,7 @@ func (s *anchorSuite) BobAttemptsToAnchorTheDataAtBlockTime(a string) {
 	})
 }
 
-func (s *anchorSuite) TheContentEntryExistsWithTimestamp(a string) {
+func (s *anchorSuite) TheAnchorEntryExistsWithTimestamp(a string) {
 	anchorTime, err := types.ParseDate("anchor timestamp", a)
 	require.NoError(s.t, err)
 
