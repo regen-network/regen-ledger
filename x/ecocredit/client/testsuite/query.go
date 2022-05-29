@@ -475,8 +475,8 @@ func (s *IntegrationTestSuite) TestQueryBalanceCmd() {
 				var res core.QueryBalanceResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(res.Balance.Address, val.Address.String())
-				s.Require().NotEmpty(res.Balance.Tradable)
-				s.Require().NotEmpty(res.Balance.Retired)
+				s.Require().NotEmpty(res.Balance.TradableAmount)
+				s.Require().NotEmpty(res.Balance.RetiredAmount)
 			}
 		})
 	}

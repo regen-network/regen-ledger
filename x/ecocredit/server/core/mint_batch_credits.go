@@ -66,7 +66,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		if err != nil {
 			return nil, err
 		}
-		decs, err = utils.GetNonNegativeFixedDecs(precision, balance.Tradable, balance.Retired, supply.TradableAmount, supply.RetiredAmount)
+		decs, err = utils.GetNonNegativeFixedDecs(precision, balance.TradableAmount, balance.RetiredAmount, supply.TradableAmount, supply.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -91,7 +91,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
-			balance.Retired = balanceRetired.String()
+			balance.RetiredAmount = balanceRetired.String()
 			supply.RetiredAmount = supplyRetired.String()
 		}
 		if !tradable.IsZero() {
@@ -112,7 +112,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
-			balance.Tradable = balanceTradable.String()
+			balance.TradableAmount = balanceTradable.String()
 			supply.TradableAmount = supplyTradable.String()
 		}
 		if err := k.stateStore.BatchBalanceTable().Save(ctx, balance); err != nil {

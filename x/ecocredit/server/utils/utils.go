@@ -46,11 +46,11 @@ func GetBalance(ctx context.Context, table api.BatchBalanceTable, addr types.Acc
 			return nil, err
 		}
 		bal = &api.BatchBalance{
-			BatchKey: key,
-			Address:  addr,
-			Tradable: "0",
-			Retired:  "0",
-			Escrowed: "0",
+			BatchKey:       key,
+			Address:        addr,
+			TradableAmount: "0",
+			RetiredAmount:  "0",
+			EscrowedAmount: "0",
 		}
 	}
 	return bal, nil

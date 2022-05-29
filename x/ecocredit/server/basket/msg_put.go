@@ -165,7 +165,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf("could not get batch %s balance for %s", batch.Denom, sender.String())
 	}
-	tradable, err := regenmath.NewPositiveDecFromString(userBal.Tradable)
+	tradable, err := regenmath.NewPositiveDecFromString(userBal.TradableAmount)
 	if err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf("cannot put %v credits into the basket with a balance of %v: %s", amt, tradable, err.Error())
 	}
-	userBal.Tradable = newTradable.String()
+	userBal.TradableAmount = newTradable.String()
 	if err = k.coreStore.BatchBalanceTable().Update(ctx, userBal); err != nil {
 		return err
 	}

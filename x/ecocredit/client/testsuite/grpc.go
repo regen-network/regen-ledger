@@ -322,8 +322,8 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res)
-			require.NotEmpty(res.Balance.Tradable)
-			require.NotEmpty(res.Balance.Retired)
+			require.NotEmpty(res.Balance.TradableAmount)
+			require.NotEmpty(res.Balance.RetiredAmount)
 		})
 	}
 }

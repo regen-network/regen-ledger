@@ -84,10 +84,10 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"valid test case",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "210",
-					Retired:  "110",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "210",
+					RetiredAmount:  "110",
 				},
 			},
 			[]*core.BatchSupply{
@@ -104,16 +104,16 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"valid test case multiple denom",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "310.579",
-					Retired:  "0",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "310.579",
+					RetiredAmount:  "0",
 				},
 				{
-					Address:  acc2,
-					BatchKey: 2,
-					Tradable: "210.456",
-					Retired:  "100.1234",
+					Address:        acc2,
+					BatchKey:       2,
+					TradableAmount: "210.456",
+					RetiredAmount:  "100.1234",
 				},
 			},
 			[]*core.BatchSupply{
@@ -135,14 +135,14 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"fail with error tradable balance not found",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "100.123",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "100.123",
 				},
 				{
-					Address:  acc2,
-					BatchKey: 1,
-					Tradable: "210.456",
+					Address:        acc2,
+					BatchKey:       1,
+					TradableAmount: "210.456",
 				},
 			},
 			[]*core.BatchSupply{
@@ -164,14 +164,14 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"fail with error supply does not match",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "310.579",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "310.579",
 				},
 				{
-					BatchKey: 2,
-					Address:  acc2,
-					Tradable: "1234",
+					BatchKey:       2,
+					Address:        acc2,
+					TradableAmount: "1234",
 				},
 			},
 			[]*core.BatchSupply{
@@ -193,18 +193,18 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"valid case escrowed balance",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "100",
-					Escrowed: "10",
-					Retired:  "1",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "100",
+					EscrowedAmount: "10",
+					RetiredAmount:  "1",
 				},
 				{
-					BatchKey: 2,
-					Address:  acc2,
-					Tradable: "1234",
-					Retired:  "123",
-					Escrowed: "766",
+					BatchKey:       2,
+					Address:        acc2,
+					TradableAmount: "1234",
+					RetiredAmount:  "123",
+					EscrowedAmount: "766",
 				},
 			},
 			[]*core.BatchSupply{
@@ -226,25 +226,25 @@ func TestBatchSupplyInvariant(t *testing.T) {
 			"valid case multiple account",
 			[]*core.BatchBalance{
 				{
-					Address:  acc1,
-					BatchKey: 1,
-					Tradable: "100",
-					Escrowed: "10",
-					Retired:  "1",
+					Address:        acc1,
+					BatchKey:       1,
+					TradableAmount: "100",
+					EscrowedAmount: "10",
+					RetiredAmount:  "1",
 				},
 				{
-					BatchKey: 1,
-					Address:  acc2,
-					Tradable: "1234",
-					Retired:  "123",
-					Escrowed: "766",
+					BatchKey:       1,
+					Address:        acc2,
+					TradableAmount: "1234",
+					RetiredAmount:  "123",
+					EscrowedAmount: "766",
 				},
 				{
-					BatchKey: 2,
-					Address:  acc2,
-					Tradable: "1234",
-					Retired:  "123",
-					Escrowed: "766",
+					BatchKey:       2,
+					Address:        acc2,
+					TradableAmount: "1234",
+					RetiredAmount:  "123",
+					EscrowedAmount: "766",
 				},
 			},
 			[]*core.BatchSupply{
@@ -283,15 +283,15 @@ func TestBatchSupplyInvariant(t *testing.T) {
 
 func initBalances(t *testing.T, ctx context.Context, ss api.StateStore, balances []*core.BatchBalance) {
 	for _, b := range balances {
-		_, err := math.NewNonNegativeDecFromString(b.Tradable)
+		_, err := math.NewNonNegativeDecFromString(b.TradableAmount)
 		require.NoError(t, err)
 
 		require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-			Address:  b.Address,
-			BatchKey: b.BatchKey,
-			Tradable: b.Tradable,
-			Retired:  b.Retired,
-			Escrowed: b.Escrowed,
+			Address:        b.Address,
+			BatchKey:       b.BatchKey,
+			TradableAmount: b.TradableAmount,
+			RetiredAmount:  b.RetiredAmount,
+			EscrowedAmount: b.EscrowedAmount,
 		}))
 	}
 }
