@@ -146,7 +146,7 @@ enum GraphMerkleTree {
   GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
 }
 
-// ContentEntry is a data anchor entry.
+// ContentEntry is an anchor entry.
 message ContentEntry {
   // iri is the IRI of the anchored data.
   string iri = 1;
@@ -154,7 +154,7 @@ message ContentEntry {
   // content_hash is the content hash of the anchored data.
   ContentHash content_hash = 2;
 
-  // timestamp is the timestamp of the anchored data.
+  // timestamp is the timestamp at which the data was anchored.
   google.protobuf.Timestamp timestamp = 3;
 }
 

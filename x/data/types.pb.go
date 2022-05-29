@@ -398,13 +398,13 @@ func (m *ContentHash_Graph) GetMerkleTree() GraphMerkleTree {
 	return GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
 }
 
-// ContentEntry is a data anchor entry.
+// ContentEntry is an anchor entry.
 type ContentEntry struct {
 	// iri is the IRI of the anchored data.
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// content_hash is the content hash of the anchored data.
 	ContentHash *ContentHash `protobuf:"bytes,2,opt,name=content_hash,json=contentHash,proto3" json:"content_hash,omitempty"`
-	// timestamp is the timestamp of the anchored data.
+	// timestamp is the timestamp at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
