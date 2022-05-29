@@ -1,4 +1,4 @@
-Feature: MsgSell
+Feature: Msg/Sell
 
   A sell order can be created:
     - when the credit batch exists
