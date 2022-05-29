@@ -21,6 +21,12 @@ func TestGetBasketBalances(t *testing.T) {
 	batchDenom1, classId1 := "C01-001-0000000-0000000-001", "C01"
 	batchDenom2, classId2 := "C02-001-0000000-0000000-002", "C02"
 	userStartingBalance, amtToDeposit := math.NewDecFromInt64(10), math.NewDecFromInt64(3)
+
+	err := s.coreStore.CreditTypeTable().Insert(s.ctx, &ecoApi.CreditType{
+		Abbreviation: "C",
+	})
+	assert.NilError(t, err)
+
 	insertClass(t, s, "C01", "C")
 	insertClass(t, s, "C02", "C")
 
@@ -36,7 +42,7 @@ func TestGetBasketBalances(t *testing.T) {
 	s.bankKeeper.EXPECT().MintCoins(gmAny, gmAny, gmAny).Return(nil).Times(3)
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToAccount(gmAny, gmAny, gmAny, gmAny).Return(nil).Times(3)
 
-	_, err := s.k.Put(s.ctx, &basket.MsgPut{
+	_, err = s.k.Put(s.ctx, &basket.MsgPut{
 		Owner:       s.addrs[0].String(),
 		BasketDenom: "foo",
 		Credits: []*basket.BasketCredit{

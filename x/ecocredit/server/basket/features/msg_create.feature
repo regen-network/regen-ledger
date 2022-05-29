@@ -11,6 +11,7 @@ Feature: Msg/Create
   - when the basket criteria includes credit classes that match the credit type
   - when the exponent is greater than or equal to the credit type precision
   - the user token balance is updated and only the minimum fee is taken
+  - the basket denom is formatted with a prefix based on credit type precision
   - the response includes the basket denom
 
   Rule: The basket name must be unique
@@ -163,12 +164,38 @@ Feature: Msg/Create
 
     # no failing scenario - state transitions only occur upon successful message execution
 
-  Rule: The message response includes basket denom when credits are put into the basket
+  Rule: The basket denom is formatted with a prefix based on credit type precision
 
-    Background:
-      Given a credit type with abbreviation "C" and precision "6"
+    Scenario Outline: basket denom is formatted using credit type precision
+      Given a credit type with abbreviation "C" and precision "<precision>"
+      When alice attempts to create a basket with name "NCT" and credit type "C"
+      Then expect the response
+      """
+      {
+        "basket_denom": "<basket-denom>"
+      }
+      """
+
+      Examples:
+        | description | precision | basket-denom |
+        | no prefix   | 0         | eco.C.NCT    |
+        | d (deci)    | 1         | eco.dC.NCT   |
+        | c (centi)   | 2         | eco.cC.NCT   |
+        | m (milli)   | 3         | eco.mC.NCT   |
+        | u (micro)   | 6         | eco.uC.NCT   |
+        | n (nano)    | 9         | eco.nC.NCT   |
+        | p (pico)    | 12        | eco.pC.NCT   |
+        | f (femto)   | 15        | eco.fC.NCT   |
+        | a (atto)    | 18        | eco.aC.NCT   |
+        | z (zepto)   | 21        | eco.zC.NCT   |
+        | y (yocto)   | 24        | eco.yC.NCT   |
+
+    # no failing scenario - credit type precision should always be a valid SI prefix
+
+  Rule: The message response includes basket denom
 
     Scenario: message response includes the basket denom
+      Given a credit type with abbreviation "C" and precision "6"
       When alice attempts to create a basket with name "NCT"
       Then expect the response
       """

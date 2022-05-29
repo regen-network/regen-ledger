@@ -66,9 +66,10 @@ message MsgCreate {
   //   21 - z (zepto)
   //   24 - y (yocto)
   //
-  // Deprecated: This field is no longer used and will be removed in the next
-  // version. The credit type precision will always be used to convert credits
-  // to basket tokens and to determine the prefix of the bank denom.
+  // Deprecated (Since Revision 1): This field is no longer used and will be
+  // removed in the next version. The value of credit type precision is always
+  // used as the exponent when determining the prefix for basket denom, defining
+  // bank denom metadata, and converting credits to/from basket tokens.
   uint32 exponent = 4 [ deprecated = true ];
 
   // disable_auto_retire allows auto-retirement to be disabled.
