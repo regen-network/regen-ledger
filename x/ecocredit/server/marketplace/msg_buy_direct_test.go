@@ -4,13 +4,12 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	coreapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -120,8 +119,8 @@ func (s *buyDirectSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
 	balance.BatchKey = batch.Key
 	balance.Address = s.alice
 
-	// Update because the balance already exists from sellOrderSetup
-	err = s.coreStore.BatchBalanceTable().Update(s.ctx, balance)
+	// Save because the balance already exists from sellOrderSetup
+	err = s.coreStore.BatchBalanceTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
 
@@ -150,8 +149,8 @@ func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
 
 	balance.BatchKey = batch.Key
 
-	// Update because the supply already exists from sellOrderSetup
-	err = s.coreStore.BatchSupplyTable().Update(s.ctx, balance)
+	// Save because the supply already exists from sellOrderSetup
+	err = s.coreStore.BatchSupplyTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
 
@@ -290,7 +289,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithDisableAutoRetire(a string) 
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantity(a string) {
-	s.quantity = a // required for buy order expect calls
+	s.quantity = a
 
 	s.singleBuyOrderExpectCalls()
 
@@ -365,7 +364,7 @@ func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithQuantityAndDisableAutoRetire
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsInTwoOrdersEachWithQuantityAndBidAmount(a string, b string) {
-	s.quantity = a // required for buy order expect calls
+	s.quantity = a
 
 	bidAmount, ok := sdk.NewIntFromString(b)
 	require.True(s.t, ok)
@@ -492,6 +491,17 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 }
 
 func (s *buyDirectSuite) sellOrderSetup(count int) {
+	totalQuantity := s.quantity
+
+	if count > 1 {
+		c := math.NewDecFromInt64(int64(count))
+		q, err := math.NewDecFromString(s.quantity)
+		require.NoError(s.t, err)
+		t, err := c.Mul(q)
+		require.NoError(s.t, err)
+		totalQuantity = t.String()
+	}
+
 	err := s.coreStore.ClassTable().Insert(s.ctx, &coreapi.Class{
 		Id:               s.classId,
 		CreditTypeAbbrev: s.creditTypeAbbrev,
@@ -503,28 +513,16 @@ func (s *buyDirectSuite) sellOrderSetup(count int) {
 	})
 	require.NoError(s.t, err)
 
-	quantity := s.quantity
-
-	if count == 2 {
-		c, err := math.NewDecFromString("2")
-		require.NoError(s.t, err)
-		q, err := math.NewDecFromString(s.quantity)
-		require.NoError(s.t, err)
-		t, err := c.Mul(q)
-		require.NoError(s.t, err)
-		quantity = t.String()
-	}
-
 	err = s.coreStore.BatchBalanceTable().Insert(s.ctx, &coreapi.BatchBalance{
 		BatchKey:       batchKey,
 		Address:        s.alice,
-		EscrowedAmount: quantity,
+		EscrowedAmount: totalQuantity,
 	})
 	require.NoError(s.t, err)
 
 	err = s.coreStore.BatchSupplyTable().Insert(s.ctx, &coreapi.BatchSupply{
 		BatchKey:       batchKey,
-		TradableAmount: quantity,
+		TradableAmount: totalQuantity,
 	})
 	require.NoError(s.t, err)
 
@@ -534,26 +532,22 @@ func (s *buyDirectSuite) sellOrderSetup(count int) {
 	})
 	require.NoError(s.t, err)
 
-	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, &api.SellOrder{
+	order := &api.SellOrder{
 		Seller:            s.alice,
 		BatchKey:          batchKey,
-		Quantity:          quantity,
+		Quantity:          s.quantity,
 		MarketId:          marketKey,
 		AskAmount:         s.askPrice.Amount.String(),
 		DisableAutoRetire: s.disableAutoRetire,
-	})
+	}
+
+	sellOrderId, err := s.marketStore.SellOrderTable().InsertReturningID(s.ctx, order)
 	require.NoError(s.t, err)
 	require.Equal(s.t, sellOrderId, s.sellOrderId)
 
-	if count == 2 {
-		err = s.marketStore.SellOrderTable().Insert(s.ctx, &api.SellOrder{
-			Seller:            s.alice,
-			BatchKey:          batchKey,
-			Quantity:          quantity,
-			MarketId:          marketKey,
-			AskAmount:         s.askPrice.Amount.String(),
-			DisableAutoRetire: s.disableAutoRetire,
-		})
+	for i := 1; i < count; i++ {
+		order.Id = 0 // reset sell order id
+		err = s.marketStore.SellOrderTable().Insert(s.ctx, order)
 		require.NoError(s.t, err)
 	}
 }

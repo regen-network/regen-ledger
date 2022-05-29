@@ -28,7 +28,7 @@ Feature: Msg/BuyDirect
 
     Scenario: the sell order does not exist
       When bob attempts to buy credits with sell order id "1"
-      Then expect the error "order[0]: sell order with id 1: not found"
+      Then expect the error "orders[0]: sell order with id 1: not found"
 
   Rule: The bid denom must match the sell denom
 
@@ -43,7 +43,7 @@ Feature: Msg/BuyDirect
 
     Scenario: bid denom does not match sell denom
       When bob attempts to buy credits with bid denom "atom"
-      Then expect the error "order[0]: bid price denom: atom, ask price denom: regen: invalid request"
+      Then expect the error "orders[0]: bid price denom: atom, ask price denom: regen: invalid request"
 
   Rule: The buyer must have a bank balance greater than or equal to the total cost
 
@@ -76,13 +76,13 @@ Feature: Msg/BuyDirect
       Given alice created a sell order with quantity "10" and ask amount "10"
       And bob has a bank balance with amount "50"
       When bob attempts to buy credits with quantity "10" and bid amount "10"
-      Then expect the error "order[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
+      Then expect the error "orders[0]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
     Scenario: buyer bank balance is less than total cost (multiple buy orders)
       Given alice created two sell orders each with quantity "10" and ask amount "10"
       And bob has a bank balance with amount "150"
       When bob attempts to buy credits in two orders each with quantity "10" and bid amount "10"
-      Then expect the error "order[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
+      Then expect the error "orders[1]: quantity: 10, ask price: 10regen, total price: 100regen, bank balance: 50regen: insufficient funds"
 
   Rule: The buyer must provide a bid price greater than or equal to the ask price
 
@@ -102,7 +102,7 @@ Feature: Msg/BuyDirect
 
     Scenario: bid price less than ask price
       When bob attempts to buy credits with quantity "10" and bid amount "5"
-      Then expect the error "order[0]: ask price: 10regen, bid price: 5regen, insufficient bid price: invalid request"
+      Then expect the error "orders[0]: ask price: 10regen, bid price: 5regen, insufficient bid price: invalid request"
 
   Rule: The buyer must provide a quantity less than or equal to the sell order quantity
 
@@ -122,7 +122,7 @@ Feature: Msg/BuyDirect
 
     Scenario: quantity more than sell order quantity
       When bob attempts to buy credits with quantity "15"
-      Then expect the error "order[0]: requested quantity: 15, sell order quantity 10: invalid request"
+      Then expect the error "orders[0]: requested quantity: 15, sell order quantity 10: invalid request"
 
   Rule: The number of decimal places in quantity must be less than or equal to the credit type precision
 
@@ -142,7 +142,7 @@ Feature: Msg/BuyDirect
     Scenario: quantity decimal places more than precision
       Given alice created a sell order with quantity "9.1234567"
       When bob attempts to buy credits with quantity "9.1234567"
-      Then expect the error "order[0]: quantity: 9.1234567, credit type precision: 6: invalid request"
+      Then expect the error "orders[0]: quantity: 9.1234567, credit type precision: 6: invalid request"
 
   Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
 
@@ -167,7 +167,7 @@ Feature: Msg/BuyDirect
     Scenario: auto retire required and buyer disables
       Given alice created a sell order with disable auto retire "false"
       When bob attempts to buy credits with disable auto retire "true"
-      Then expect the error "order[0]: cannot disable auto-retire for a sell order with auto-retire enabled: invalid request"
+      Then expect the error "orders[0]: cannot disable auto-retire for a sell order with auto-retire enabled: invalid request"
 
   Rule: The sell order is removed when the sell order is filled
 

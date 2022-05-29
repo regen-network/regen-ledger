@@ -22,7 +22,9 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 	}
 
 	for i, order := range req.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {

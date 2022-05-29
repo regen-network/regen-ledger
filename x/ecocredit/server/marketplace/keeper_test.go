@@ -41,7 +41,7 @@ type baseSuite struct {
 	ctx          context.Context
 	k            Keeper
 	ctrl         *gomock.Controller
-	addr         sdk.AccAddress // TODO: addr1
+	addr         sdk.AccAddress // TODO: addr1 (#922 / #1042)
 	addr2        sdk.AccAddress
 	bankKeeper   *mocks.MockBankKeeper
 	paramsKeeper *mocks.MockParamKeeper
@@ -77,7 +77,7 @@ func setupBase(t gocuke.TestingT) *baseSuite {
 	s.k = NewKeeper(s.marketStore, s.coreStore, s.bankKeeper, s.paramsKeeper)
 
 	// set test accounts
-	_, _, s.addr = testdata.KeyTestPubAddr() // TODO: addr1
+	_, _, s.addr = testdata.KeyTestPubAddr() // TODO: addr1 (#922 / #1042)
 	_, _, s.addr2 = testdata.KeyTestPubAddr()
 
 	return s
@@ -147,14 +147,6 @@ func extractSupplyDecs(t gocuke.TestingT, s *ecoApi.BatchSupply) (tradable, reti
 	decs, err := utils.GetNonNegativeFixedDecs(6, s.TradableAmount, s.RetiredAmount, s.CancelledAmount)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
-}
-
-func buyDirectSingle(s *baseSuite, buyerAddr sdk.AccAddress, order *marketplace.MsgBuyDirect_Order) error {
-	_, err := s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
-		Buyer:  buyerAddr.String(),
-		Orders: []*marketplace.MsgBuyDirect_Order{order},
-	})
-	return err
 }
 
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.

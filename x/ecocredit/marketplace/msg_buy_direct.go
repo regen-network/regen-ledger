@@ -28,7 +28,9 @@ func (m MsgBuyDirect) ValidateBasic() error {
 	}
 
 	for i, order := range m.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		if order.SellOrderId == 0 {
 			return sdkerrors.ErrInvalidRequest.Wrapf("%s: sell order id cannot be empty", orderIndex)
