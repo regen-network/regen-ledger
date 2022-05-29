@@ -31,7 +31,7 @@ Feature: Msg/Take
   Rule: The user token balance must be greater than or equal to the token amount
 
     Background:
-      Given a credit type
+      Given a credit type with abbreviation "C" and precision "6"
       And a basket
 
     Scenario Outline: user token balance is greater than or equal to token amount

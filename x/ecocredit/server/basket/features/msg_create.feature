@@ -9,7 +9,6 @@ Feature: Msg/Create
   - when the basket includes a credit type that exists
   - when the basket criteria includes credit classes that exist
   - when the basket criteria includes credit classes that match the credit type
-  - when the exponent is greater than or equal to the credit type precision
   - the user token balance is updated and only the minimum fee is taken
   - the basket denom is formatted with a prefix based on credit type precision
   - the response includes the basket denom

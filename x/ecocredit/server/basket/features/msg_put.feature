@@ -19,7 +19,7 @@ Feature: Msg/Put
   Rule: The basket must exist
 
     Background:
-      Given a credit type with abbreviation "C"
+      Given a credit type with abbreviation "C" and precision "6"
       And alice owns credits
 
     Scenario: basket exists
