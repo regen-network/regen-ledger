@@ -158,10 +158,10 @@ message SellOrderInfo {
   // ask_denom is the denom used in the ask price of the sell order.
   string ask_denom = 5;
 
-  // ask_price is the integer price (encoded as a string) the seller is asking
-  // for each unit of the batch_denom. Each credit unit of the batch will be
-  // sold for at least the ask_price or more.
-  string ask_price = 6;
+  // ask_amount is the amount that the seller is asking for each credit unit of
+  // the batch. Each credit unit of the batch will be sold for at least the
+  // ask_amount.
+  string ask_amount = 6;
 
   // disable_auto_retire disables auto-retirement of credits which allows a
   // buyer to disable auto-retirement in their buy order enabling them to

@@ -100,7 +100,7 @@ import (
 	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"
 )
 
 const (

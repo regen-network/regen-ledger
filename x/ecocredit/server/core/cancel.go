@@ -40,7 +40,7 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		if err != nil {
 			return nil, err
 		}
-		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.Tradable, batchSupply.CancelledAmount)
+		decs, err := utils.GetNonNegativeFixedDecs(creditType.Precision, credit.Amount, batchSupply.TradableAmount, userBalance.TradableAmount, batchSupply.CancelledAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -59,10 +59,10 @@ func (k Keeper) Cancel(ctx context.Context, req *core.MsgCancel) (*core.MsgCance
 		}
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-			BatchKey: batch.Key,
-			Address:  holder,
-			Tradable: userBalTradable.String(),
-			Retired:  userBalance.Retired,
+			BatchKey:       batch.Key,
+			Address:        holder,
+			TradableAmount: userBalTradable.String(),
+			RetiredAmount:  userBalance.RetiredAmount,
 		}); err != nil {
 			return nil, err
 		}

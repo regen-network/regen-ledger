@@ -83,7 +83,8 @@ func validateBatchIssuances(iss []*BatchIssuance) error {
 	return nil
 }
 
-var reOriginTxNote = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{1,64}$`)
+var reOriginTxId = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,127}$`)
+var reOriginTxSource = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9 _\-]{0,31}$`)
 
 func validateOriginTx(o *OriginTx, required bool) error {
 	if o == nil {
@@ -92,11 +93,11 @@ func validateOriginTx(o *OriginTx, required bool) error {
 		}
 		return nil
 	}
-	if !reOriginTxNote.MatchString(o.Typ) {
-		return errBadReq.Wrap("origin_tx.typ must be 2-64 long, valid characters: alpha-numberic, space, '-' or '_'")
+	if !reOriginTxId.MatchString(o.Id) {
+		return errBadReq.Wrap("origin_tx.id must be at most 128 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
-	if !reOriginTxNote.MatchString(o.Id) {
-		return errBadReq.Wrap("origin_tx.id must be 2-64 long, valid characters: alpha-numberic, space, '-' or '_'")
+	if !reOriginTxSource.MatchString(o.Source) {
+		return errBadReq.Wrap("origin_tx.source must be at most 32 characters long, valid characters: alpha-numberic, space, '-' or '_'")
 	}
 	return nil
 }

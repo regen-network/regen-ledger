@@ -334,7 +334,7 @@ func (s *takeSuite) ExpectAliceTradableCreditBalanceAmount(a string) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, a, balance.Tradable)
+	require.Equal(s.t, a, balance.TradableAmount)
 }
 
 func (s *takeSuite) ExpectAliceRetiredCreditBalanceAmount(a string) {
@@ -344,7 +344,7 @@ func (s *takeSuite) ExpectAliceRetiredCreditBalanceAmount(a string) {
 	balance, err := s.coreStore.BatchBalanceTable().Get(s.ctx, s.alice, batch.Key)
 	require.NoError(s.t, err)
 
-	require.Equal(s.t, a, balance.Retired)
+	require.Equal(s.t, a, balance.RetiredAmount)
 }
 
 func (s *takeSuite) ExpectAliceBasketTokenBalanceAmount(a string) {

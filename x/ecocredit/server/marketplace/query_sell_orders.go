@@ -35,7 +35,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 
 		seller := sdk.AccAddress(order.Seller)
 
-		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
+		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +51,7 @@ func (k Keeper) SellOrders(ctx context.Context, req *marketplace.QuerySellOrders
 			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskDenom:          market.BankDenom,
-			AskPrice:          order.AskPrice,
+			AskAmount:         order.AskAmount,
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
 		}
@@ -79,7 +79,7 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom %s: %s", req.BatchDenom, err.Error())
 	}
 
-	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchIdIndexKey{}.WithBatchId(batch.Key), ormlist.Paginate(pg))
+	it, err := k.stateStore.SellOrderTable().List(ctx, api.SellOrderBatchKeyIndexKey{}.WithBatchKey(batch.Key), ormlist.Paginate(pg))
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +105,7 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskDenom:          market.BankDenom,
-			AskPrice:          order.AskPrice,
+			AskAmount:         order.AskAmount,
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
 		}
@@ -147,7 +147,7 @@ func (k Keeper) SellOrdersByAddress(ctx context.Context, req *marketplace.QueryS
 			return nil, err
 		}
 
-		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
+		batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +163,7 @@ func (k Keeper) SellOrdersByAddress(ctx context.Context, req *marketplace.QueryS
 			BatchDenom:        batch.Denom,
 			Quantity:          order.Quantity,
 			AskDenom:          market.BankDenom,
-			AskPrice:          order.AskPrice,
+			AskAmount:         order.AskAmount,
 			DisableAutoRetire: order.DisableAutoRetire,
 			Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
 		}

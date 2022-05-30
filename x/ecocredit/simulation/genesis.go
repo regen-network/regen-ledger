@@ -441,28 +441,28 @@ func genGenesisState(ctx context.Context, r *rand.Rand, simState *module.Simulat
 
 	// batch balances
 	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-		BatchKey: bKey1,
-		Address:  accs[0].Address,
-		Tradable: "100",
-		Retired:  "10",
+		BatchKey:       bKey1,
+		Address:        accs[0].Address,
+		TradableAmount: "100",
+		RetiredAmount:  "10",
 	}); err != nil {
 		return err
 	}
 
 	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-		BatchKey: bKey2,
-		Address:  accs[2].Address,
-		Tradable: "100",
-		Retired:  "10",
+		BatchKey:       bKey2,
+		Address:        accs[2].Address,
+		TradableAmount: "100",
+		RetiredAmount:  "10",
 	}); err != nil {
 		return err
 	}
 
 	if err := ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-		BatchKey: bKey2,
-		Address:  accs[1].Address,
-		Tradable: "100",
-		Retired:  "0",
+		BatchKey:       bKey2,
+		Address:        accs[1].Address,
+		TradableAmount: "100",
+		RetiredAmount:  "0",
 	}); err != nil {
 		return err
 	}

@@ -17946,7 +17946,8 @@ type MsgCancel struct {
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being cancelled.
 	Credits []*MsgCancel_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
-	// reason is any arbitrary string that specifies the reason for cancelling credits.
+	// reason is any arbitrary string that specifies the reason for cancelling
+	// credits.
 	Reason string `protobuf:"bytes,3,opt,name=reason,proto3" json:"reason,omitempty"`
 }
 

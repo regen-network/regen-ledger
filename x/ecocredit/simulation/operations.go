@@ -560,12 +560,12 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balres.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balres.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		retiredBalance, err := math.NewNonNegativeDecFromString(balres.Balance.Retired)
+		retiredBalance, err := math.NewNonNegativeDecFromString(balres.Balance.RetiredAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
@@ -675,7 +675,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
@@ -760,7 +760,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
 		}
@@ -774,7 +774,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Credits: []*core.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.Denom,
-					Amount:     balanceRes.Balance.Tradable,
+					Amount:     balanceRes.Balance.TradableAmount,
 				},
 			},
 			Reason: simtypes.RandStringOfLength(r, 5),
@@ -991,8 +991,8 @@ func SimulateMsgMintBatchCredits(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			BatchDenom: batch.Denom,
 			Issuance:   generateBatchIssuance(r, accs),
 			OriginTx: &core.OriginTx{
-				Typ: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
-				Id:  simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Source: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
+				Id:     simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 2, 64)),
 			},
 			Note: simtypes.RandStringOfLength(r, 5),
 		}
@@ -1124,7 +1124,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, err.Error()), nil, err
 		}
 
-		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.Tradable)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.Balance.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, err.Error()), nil, err
 		}
@@ -1209,7 +1209,7 @@ func getRandomProjectFromClass(ctx context.Context, r *rand.Rand, qryClient core
 }
 
 func getRandomBatchFromProject(ctx context.Context, r *rand.Rand, qryClient core.QueryClient, msgType, projectID string) (*core.BatchInfo, simtypes.OperationMsg, error) {
-	res, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{
+	res, err := qryClient.BatchesByProject(ctx, &core.QueryBatchesByProjectRequest{
 		ProjectId: projectID,
 	})
 	if err != nil {

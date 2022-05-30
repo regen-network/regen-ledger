@@ -21,10 +21,10 @@ func TestQuery_SellOrder(t *testing.T) {
 	// make a sell order
 	order := api.SellOrder{
 		Seller:            s.addr,
-		BatchId:           1,
+		BatchKey:          1,
 		Quantity:          "15.32",
 		MarketId:          1,
-		AskPrice:          "100",
+		AskAmount:         "100",
 		DisableAutoRetire: false,
 		Expiration:        nil,
 		Maker:             false,
@@ -41,7 +41,7 @@ func TestQuery_SellOrder(t *testing.T) {
 	assert.Equal(t, batchDenom, res.SellOrder.BatchDenom)
 	assert.Equal(t, order.Quantity, res.SellOrder.Quantity)
 	assert.Equal(t, ask.Denom, res.SellOrder.AskDenom)
-	assert.Equal(t, order.AskPrice, res.SellOrder.AskPrice)
+	assert.Equal(t, order.AskAmount, res.SellOrder.AskAmount)
 	assert.Equal(t, order.DisableAutoRetire, res.SellOrder.DisableAutoRetire)
 	assert.DeepEqual(t, types.ProtobufToGogoTimestamp(order.Expiration), res.SellOrder.Expiration)
 
