@@ -28,11 +28,11 @@ func (k Keeper) Balance(ctx context.Context, req *core.QueryBalanceRequest) (*co
 	}
 
 	info := core.BatchBalanceInfo{
-		Address:    addr.String(),
-		BatchDenom: batch.Denom,
-		Tradable:   balance.Tradable,
-		Retired:    balance.Retired,
-		Escrowed:   balance.Escrowed,
+		Address:        addr.String(),
+		BatchDenom:     batch.Denom,
+		TradableAmount: balance.TradableAmount,
+		RetiredAmount:  balance.RetiredAmount,
+		EscrowedAmount: balance.EscrowedAmount,
 	}
 
 	return &core.QueryBalanceResponse{Balance: &info}, nil

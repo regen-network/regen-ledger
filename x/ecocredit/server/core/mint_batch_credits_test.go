@@ -37,8 +37,8 @@ func TestMintBatchCredits_Valid(t *testing.T) {
 		BatchDenom: batch.Denom,
 		Issuance:   []*core.BatchIssuance{&issuance},
 		OriginTx: &core.OriginTx{
-			Typ: "Ethereum",
-			Id:  "210985091248",
+			Id:     "210985091248",
+			Source: "Ethereum",
 		},
 		Note: "bridged credits",
 	}
@@ -63,6 +63,10 @@ func TestMintBatchCredits_Unauthorized(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
 	})
 	assert.ErrorContains(t, err, "unauthorized")
 }
@@ -76,6 +80,10 @@ func TestMintBatchCredits_ClosedBatch(t *testing.T) {
 	_, err := s.k.MintBatchCredits(s.ctx, &core.MsgMintBatchCredits{
 		Issuer:     addr.String(),
 		BatchDenom: batch.Denom,
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
 	})
 	assert.ErrorContains(t, err, "credits cannot be minted in a closed batch")
 }
@@ -91,6 +99,37 @@ func TestMintBatchCredits_NotFound(t *testing.T) {
 		BatchDenom: "C05-00000000-00000000-001",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+}
+
+func TestMintBatchCredits_SameTxId(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	ctx := s.ctx
+	batch := setupMintBatchTest(s, true)
+
+	mintTradable, mintRetired := math.NewDecFromInt64(10), math.NewDecFromInt64(10)
+	issuance := core.BatchIssuance{
+		Recipient:              s.addr.String(),
+		TradableAmount:         mintTradable.String(),
+		RetiredAmount:          mintRetired.String(),
+		RetirementJurisdiction: "US-OR",
+	}
+	msg := core.MsgMintBatchCredits{
+		Issuer:     s.addr.String(),
+		BatchDenom: batch.Denom,
+		Issuance:   []*core.BatchIssuance{&issuance},
+		OriginTx: &core.OriginTx{
+			Id:     "210985091248",
+			Source: "Ethereum",
+		},
+		Note: "bridged credits",
+	}
+
+	_, err := s.k.MintBatchCredits(ctx, &msg)
+	assert.NilError(t, err)
+
+	_, err = s.k.MintBatchCredits(ctx, &msg)
+	assert.ErrorContains(t, err, "credits already issued with tx id")
 }
 
 func setupMintBatchTest(s *baseSuite, open bool) *api.Batch {
@@ -127,7 +166,7 @@ func assertCreditsMinted(t *testing.T, balBefore, balAfter *api.BatchBalance, su
 }
 
 func extractBalanceDecs(t *testing.T, b *api.BatchBalance, precision uint32) (tradable, retired, escrowed math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(precision, b.Tradable, b.Retired, b.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(precision, b.TradableAmount, b.RetiredAmount, b.EscrowedAmount)
 	assert.NilError(t, err)
 	return decs[0], decs[1], decs[2]
 }

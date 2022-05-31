@@ -100,7 +100,7 @@ import (
 	ecoServer "github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	// unnamed import of statik for swagger UI support
-	_ "github.com/regen-network/regen-ledger/v3/client/docs/statik"
+	_ "github.com/regen-network/regen-ledger/v4/client/docs/statik"
 )
 
 const (
@@ -167,9 +167,9 @@ func init() {
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 
-	// set the denom regex for basket coins.
+	// set the denom regex for basket coins
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return basket.RegexBasketDenom
 	})
 }
 

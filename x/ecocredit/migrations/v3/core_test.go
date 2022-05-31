@@ -267,13 +267,13 @@ func TestMigrations(t *testing.T) {
 	// recipient2 balance -> tradable: 610 , retired: 390
 	bb, err := ss.BatchBalanceTable().Get(ctx, recipient1.Bytes(), 1)
 	require.NoError(t, err)
-	require.Equal(t, bb.Tradable, "550")
-	require.Equal(t, bb.Retired, "350")
+	require.Equal(t, bb.TradableAmount, "550")
+	require.Equal(t, bb.RetiredAmount, "350")
 
 	bb, err = ss.BatchBalanceTable().Get(ctx, recipient2.Bytes(), 2)
 	require.NoError(t, err)
-	require.Equal(t, bb.Tradable, "610")
-	require.Equal(t, bb.Retired, "390")
+	require.Equal(t, bb.TradableAmount, "610")
+	require.Equal(t, bb.RetiredAmount, "390")
 
 	// verify tradable and retired supply migrations
 	// Supply.b1 -> tradable: 550 , retired: 350, cancelled: 100
