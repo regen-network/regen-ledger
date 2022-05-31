@@ -32,11 +32,11 @@ sim-regen-fast:
 
 sim-regen-import-export: runsim
 	@echo "Running Regen import/export simulation. This may take several minutes..."
-	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport 
+	runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport
 
 sim-regen-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
-	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 50 5 TestAppSimulationAfterImport
+	runsim -Jobs=4 -ExitOnFail 50 5 TestAppSimulationAfterImport
 
 SIM_NUM_BLOCKS ?= 500
 SIM_BLOCK_SIZE ?= 200
@@ -55,11 +55,11 @@ sim-regen-profile:
 sim-regen-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
 	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
-	$(GOPATH)/bin/runsim -Genesis=${HOME}/.regen/config/genesis.json -SimAppPkg=$(APP_DIR) -ExitOnFail 400 5 TestFullAppSimulation
+	runsim -Genesis=${HOME}/.regen/config/genesis.json -SimAppPkg=$(APP_DIR) -ExitOnFail 400 5 TestFullAppSimulation
 
 sim-regen-multi-seed: runsim
 	@echo "Running multi-seed application simulation. This may take awhile!"
-	$(GOPATH)/bin/runsim -Jobs=4 -SimAppPkg=$(APP_DIR) -ExitOnFail 500 50 TestFullAppSimulation
+	runsim -Jobs=4 -SimAppPkg=$(APP_DIR) -ExitOnFail 500 50 TestFullAppSimulation
 
 sim-benchmark-invariants:
 	@echo "Running simulation invariant benchmarks..."
