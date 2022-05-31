@@ -12,6 +12,9 @@ ifeq ($(EXPERIMENTAL),true)
 	simulation_tags += experimental
 endif
 
+runsim:
+	go install github.com/cosmos/tools/cmd/runsim@latest
+
 sim-regen-nondeterminism:
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \

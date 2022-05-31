@@ -224,6 +224,17 @@ format:
 .PHONY: lint lint-fix format
 
 ###############################################################################
+###                                  Tools                                  ###
+###############################################################################
+
+tools: go-version
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/client9/misspell/cmd/misspell@latest
+	go install golang.org/x/tools/cmd/goimports@latest
+
+.PHONY: tools
+
+###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
 
@@ -240,18 +251,6 @@ include tests.mk
 ###############################################################################
 
 include sims.mk
-
-###############################################################################
-###                           Tools / Dependencies                          ###
-###############################################################################
-
-tools: go-version
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest # lint
-	go install github.com/client9/misspell/cmd/misspell@latest # format
-	go install golang.org/x/tools/cmd/goimports@latest # format
-	go install github.com/cosmos/tools/cmd/runsim@latest # simulations
-
-.PHONY: tools
 
 ###############################################################################
 ###                              Documentation                              ###
