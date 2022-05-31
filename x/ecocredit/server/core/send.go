@@ -69,16 +69,16 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	if err != nil {
 		if err == ormerrors.NotFound {
 			toBalance = &api.BatchBalance{
-				BatchKey: batch.Key,
-				Address:  to,
-				Tradable: "0",
-				Retired:  "0",
+				BatchKey:       batch.Key,
+				Address:        to,
+				TradableAmount: "0",
+				RetiredAmount:  "0",
 			}
 		} else {
 			return err
 		}
 	}
-	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.Tradable, toBalance.Retired, fromBalance.Tradable, fromBalance.Retired, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
+	decs, err := utils.GetNonNegativeFixedDecs(precision, toBalance.TradableAmount, toBalance.RetiredAmount, fromBalance.TradableAmount, fromBalance.RetiredAmount, credit.TradableAmount, credit.RetiredAmount, batchSupply.TradableAmount, batchSupply.RetiredAmount)
 	if err != nil {
 		return err
 	}
@@ -120,20 +120,20 @@ func (k Keeper) sendEcocredits(ctx context.Context, credit *core.MsgSend_SendCre
 	}
 	// update the "to" balance
 	if err := k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
-		BatchKey: batch.Key,
-		Address:  to,
-		Tradable: toTradableBalance.String(),
-		Retired:  toRetiredBalance.String(),
+		BatchKey:       batch.Key,
+		Address:        to,
+		TradableAmount: toTradableBalance.String(),
+		RetiredAmount:  toRetiredBalance.String(),
 	}); err != nil {
 		return err
 	}
 
 	// update the "from" balance
 	if err := k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
-		BatchKey: batch.Key,
-		Address:  from,
-		Tradable: fromTradableBalance.String(),
-		Retired:  fromRetiredBalance.String(),
+		BatchKey:       batch.Key,
+		Address:        from,
+		TradableAmount: fromTradableBalance.String(),
+		RetiredAmount:  fromRetiredBalance.String(),
 	}); err != nil {
 		return err
 	}

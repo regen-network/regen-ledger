@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -27,12 +28,15 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to mint credits: %s", err.Error())
 	}
 
-	if err = k.stateStore.BatchOrigTxTable().Insert(ctx, &api.BatchOrigTx{
-		TxId:       req.OriginTx.Id,
-		Typ:        req.OriginTx.Typ,
+	if err = k.stateStore.BatchOriginTxTable().Insert(ctx, &api.BatchOriginTx{
+		Id:         req.OriginTx.Id,
+		Source:     req.OriginTx.Source,
 		Note:       req.Note,
 		BatchDenom: req.BatchDenom,
 	}); err != nil {
+		if ormerrors.PrimaryKeyConstraintViolation.Is(err) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("credits already issued with tx id: %s", req.OriginTx.Id)
+		}
 		return nil, err
 	}
 
@@ -62,7 +66,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		if err != nil {
 			return nil, err
 		}
-		decs, err = utils.GetNonNegativeFixedDecs(precision, balance.Tradable, balance.Retired, supply.TradableAmount, supply.RetiredAmount)
+		decs, err = utils.GetNonNegativeFixedDecs(precision, balance.TradableAmount, balance.RetiredAmount, supply.TradableAmount, supply.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -87,7 +91,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
-			balance.Retired = balanceRetired.String()
+			balance.RetiredAmount = balanceRetired.String()
 			supply.RetiredAmount = supplyRetired.String()
 		}
 		if !tradable.IsZero() {
@@ -108,7 +112,7 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 			}); err != nil {
 				return nil, err
 			}
-			balance.Tradable = balanceTradable.String()
+			balance.TradableAmount = balanceTradable.String()
 			supply.TradableAmount = supplyTradable.String()
 		}
 		if err := k.stateStore.BatchBalanceTable().Save(ctx, balance); err != nil {
@@ -117,9 +121,17 @@ func (k Keeper) MintBatchCredits(ctx context.Context, req *core.MsgMintBatchCred
 		if err := k.stateStore.BatchSupplyTable().Update(ctx, supply); err != nil {
 			return nil, err
 		}
+
+		if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
+			BatchDenom:     batch.Denom,
+			TradableAmount: tradable.String(),
+			RetiredAmount:  retired.String(),
+		}); err != nil {
+			return nil, err
+		}
 	}
 
-	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMint{
+	if err := sdk.UnwrapSDKContext(ctx).EventManager().EmitTypedEvent(&core.EventMintBatchCredits{
 		BatchDenom: batch.Denom,
 		OriginTx:   req.OriginTx,
 	}); err != nil {

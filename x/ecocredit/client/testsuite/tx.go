@@ -1,39 +1,32 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
+	"github.com/tendermint/tendermint/libs/rand"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormdb"
-	"github.com/cosmos/cosmos-sdk/orm/model/ormtable"
-	"github.com/cosmos/cosmos-sdk/orm/types/ormjson"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	marketApi "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
-	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
-	"github.com/regen-network/regen-ledger/types/testutil/network"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	coreclient "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	marketplaceclient "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -41,27 +34,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
-type IntegrationTestSuite struct {
-	suite.Suite
-
-	cfg     network.Config
-	network *network.Network
-
-	addr sdk.AccAddress
-}
-
 const (
 	validCreditTypeAbbrev = "C"
 	validMetadata         = "hi"
 )
-
-func RunCLITests(t *testing.T, cfg network.Config) {
-	suite.Run(t, NewIntegrationTestSuite(cfg))
-}
-
-func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
-	return &IntegrationTestSuite{cfg: cfg}
-}
 
 // Write a MsgCreateBatch to a new temporary file and return the filename
 func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch) string {
@@ -69,96 +45,6 @@ func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *core.MsgCreateBatch)
 	s.Require().NoError(err)
 
 	return testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
-}
-
-func (s *IntegrationTestSuite) setupCustomGenesis() {
-	// setup temporary mem db
-	db := dbm.NewMemDB()
-	defer func() {
-		if err := db.Close(); err != nil {
-			panic(err)
-		}
-	}()
-	backend := ormtable.NewBackend(ormtable.BackendOptions{
-		CommitmentStore: db,
-		IndexStore:      db,
-	})
-	modDB, err := ormdb.NewModuleDB(&ecocredit.ModuleSchema, ormdb.ModuleDBOptions{})
-	s.Require().NoError(err)
-	ormCtx := ormtable.WrapContextDefault(backend)
-	ss, err := api.NewStateStore(modDB)
-	s.Require().NoError(err)
-	ms, err := marketApi.NewStateStore(modDB)
-
-	err = ms.AllowedDenomTable().Insert(ormCtx, &marketApi.AllowedDenom{
-		BankDenom:    sdk.DefaultBondDenom,
-		DisplayDenom: sdk.DefaultBondDenom,
-	})
-	s.Require().NoError(err)
-
-	err = ss.CreditTypeTable().Insert(ormCtx, &api.CreditType{
-		Abbreviation: "C",
-		Name:         "carbon",
-		Unit:         "metric ton C02",
-		Precision:    6,
-	})
-	s.Require().NoError(err)
-
-	// export genesis into target
-	target := ormjson.NewRawMessageTarget()
-	err = modDB.ExportJSON(ormCtx, target)
-	s.Require().NoError(err)
-
-	// merge the params into the json target
-	params := core.DefaultParams()
-	err = core.MergeParamsIntoTarget(s.cfg.Codec, &params, target)
-	s.Require().NoError(err)
-
-	// get raw json from target
-	ecoJsn, err := target.JSON()
-	s.Require().NoError(err)
-
-	// set the module genesis
-	s.cfg.GenesisState[ecocredit.ModuleName] = ecoJsn
-}
-
-func (s *IntegrationTestSuite) SetupSuite() {
-	s.T().Log("setting up integration test suite")
-
-	s.setupCustomGenesis()
-
-	var err error
-	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
-	s.Require().NoError(err)
-
-	_, err = s.network.WaitForHeight(1)
-	s.Require().NoError(err)
-
-	val := s.network.Validators[0]
-
-	// create an account for val
-	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator0", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
-	s.Require().NoError(err)
-
-	_, a1pub, a1 := testdata.KeyTestPubAddr()
-	_, err = val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
-	s.Require().NoError(err)
-
-	// fund the test account
-	account := sdk.AccAddress(info.GetPubKey().Address())
-	for _, acc := range []sdk.AccAddress{account, a1} {
-		_, err = banktestutil.MsgSendExec(
-			val.ClientCtx,
-			val.Address,
-			acc,
-			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(20000000000000000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-			fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-			fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-		)
-		s.Require().NoError(err)
-	}
-
-	s.addr = account
 }
 
 func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sdk.AccAddress, coins sdk.Coins) {
@@ -171,11 +57,6 @@ func (s *IntegrationTestSuite) fundAccount(clientCtx client.Context, from, to sd
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
 	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) TearDownSuite() {
-	s.T().Log("tearing down integration test suite")
-	s.network.Cleanup()
 }
 
 func (s *IntegrationTestSuite) commonTxFlags() []string {
@@ -317,15 +198,15 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val.Address.String(),
 		Issuers:          []string{val.Address.String()},
-		Metadata:         "META",
-		CreditTypeAbbrev: "C",
+		Metadata:         validMetadata,
+		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
 	s.Require().NoError(err)
 	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       val.Address.String(),
 		ClassId:      classId,
-		Metadata:     "META2",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
@@ -714,19 +595,20 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
+			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"foo", "bar"},
+			args:           []string{"foo", "bar", "bar1"},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
 			name: "missing from flag",
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 				},
 				s.commonTxFlags()...,
 			),
@@ -738,6 +620,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 					makeFlagFrom(val0.Address.String()),
 				},
 				s.commonTxFlags()...,
@@ -749,6 +632,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			args: append(
 				[]string{
 					validCredits,
+					"reason",
 					makeFlagFrom(val0.Address.String()),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
@@ -794,7 +678,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassAdmin() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &fee,
 	})
@@ -868,7 +752,7 @@ func (s *IntegrationTestSuite) TestTxUpdateClassMetadata() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -944,7 +828,7 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "META",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1060,7 +944,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expOrder: &marketplace.SellOrder{
 				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          "100",
+				AskAmount:         "100",
 				DisableAutoRetire: false,
 				Expiration:        &gogotypes.Timestamp{},
 			},
@@ -1078,7 +962,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expOrder: &marketplace.SellOrder{
 				Seller:            val0.Address,
 				Quantity:          "5",
-				AskPrice:          "100",
+				AskAmount:         "100",
 				DisableAutoRetire: false,
 				Expiration:        types.ProtobufToGogoTimestamp(timestamppb.New(expiration)),
 			},
@@ -1202,7 +1086,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				Id:                orderId,
 				Seller:            val0.Address,
 				Quantity:          "9.99",
-				AskPrice:          "3",
+				AskAmount:         "3",
 				DisableAutoRetire: false,
 				Expiration:        gogoNewExpiration,
 			},
@@ -1240,7 +1124,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            val0.Address.String(),
 		Issuers:          []string{val0.Address.String()},
-		Metadata:         "hi",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
@@ -1275,7 +1159,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1286,7 +1170,7 @@ func (s *IntegrationTestSuite) TestCreateProject() {
 			makeArgs(&core.MsgCreateProject{
 				Issuer:       val0.Address.String(),
 				ClassId:      classId,
-				Metadata:     "hi",
+				Metadata:     validMetadata,
 				Jurisdiction: "US-OR",
 			}),
 			false,
@@ -1426,6 +1310,279 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
+	val0 := s.network.Validators[0]
+	valAddrStr := val0.Address.String()
+	clientCtx := val0.ClientCtx
+	cmd := marketplaceclient.TxBuyDirectBatch()
+
+	validAskDenom := sdk.DefaultBondDenom
+	askCoin := sdk.NewInt64Coin(validAskDenom, 10)
+
+	buyerAcc := s.addr
+	s.fundAccount(clientCtx, val0.Address, buyerAcc, sdk.Coins{sdk.NewInt64Coin(validAskDenom, 500)})
+
+	expiration, err := types.ParseDate("expiration", "3020-04-15")
+	s.Require().NoError(err)
+	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
+	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
+		Owner: valAddrStr,
+		Orders: []*marketplace.MsgSell_Order{
+			{batchDenom, "10", &askCoin, true, &expiration},
+			{batchDenom, "10", &askCoin, false, &expiration},
+		},
+	})
+
+	buyOrders := []*marketplace.MsgBuyDirect_Order{
+		{SellOrderId: orderIds[0], Quantity: "10", BidPrice: &askCoin, DisableAutoRetire: true},
+		{SellOrderId: orderIds[1], Quantity: "10", BidPrice: &askCoin, RetirementJurisdiction: "US-OR"},
+	}
+	ordersBz, err := json.Marshal(buyOrders)
+	s.Require().NoError(err)
+	jsonFile := testutil.WriteToNewTempFile(s.T(), string(ordersBz))
+
+	makeArgs := func(fileName, from string) []string {
+		args := []string{fileName, makeFlagFrom(from)}
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name   string
+		args   []string
+		errMsg string
+	}{
+		{
+			name:   "too many args",
+			args:   []string{"foo", "bar"},
+			errMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name:   "invalid: file does not exist",
+			args:   []string{"monkey.jpeg"},
+			errMsg: "no such file or directory",
+		},
+		{
+			name: "valid order",
+			args: makeArgs(jsonFile.Name(), buyerAcc.String()),
+		},
+	}
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			if len(tc.errMsg) != 0 {
+				_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				sellerAccBefore := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccBefore := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
+
+				out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+				s.Require().NoError(err)
+
+				sellerAccAfter := s.getAccountInfo(clientCtx, val0.Address, askCoin.Denom, batchDenom)
+				buyerAccAfter := s.getAccountInfo(clientCtx, buyerAcc, askCoin.Denom, batchDenom)
+
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(uint32(0), res.Code)
+				s.assertMarketBalanceBatchUpdated(sellerAccBefore, sellerAccAfter, buyerAccBefore, buyerAccAfter, buyOrders)
+			}
+		})
+	}
+}
+
+// assertMarketBalanceBatchUpdated asserts that all accounts involved in a marketplace transaction are updated properly.
+// it assumes that both seller/buyer accounts used the same denom for amount sold/bought.
+func (s *IntegrationTestSuite) assertMarketBalanceBatchUpdated(sb, sa, bb, ba accountInfo, orders []*marketplace.MsgBuyDirect_Order) {
+	tradSold, retSold := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
+	cost := sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)
+	for _, order := range orders {
+		qty, err := math.NewDecFromString(order.Quantity)
+		s.Require().NoError(err)
+		if order.DisableAutoRetire {
+			tradSold, err = tradSold.Add(qty)
+			s.Require().NoError(err)
+		} else {
+			retSold, err = retSold.Add(qty)
+			s.Require().NoError(err)
+		}
+		costDec, err := math.NewDecFromString(order.BidPrice.Amount.String())
+		s.Require().NoError(err)
+		totalCostDec, err := qty.Mul(costDec)
+		s.Require().NoError(err)
+		c := sdk.NewCoin(order.BidPrice.Denom, totalCostDec.SdkIntTrim())
+		cost = cost.Add(c)
+	}
+
+	totalSold, err := tradSold.Add(retSold)
+	s.Require().NoError(err)
+
+	// check sellers coins
+	expectedSellerGain := sb.coinBal.Add(cost)
+	s.Require().Equal(expectedSellerGain, sa.coinBal)
+
+	// check buyers coins
+	// we use LT in the buyer case, as some coins go towards fees, so their balance will be LOWER than before - total cost.
+	expectedBuyerCost := bb.coinBal.Sub(cost)
+	s.Require().True(ba.coinBal.IsLT(expectedBuyerCost))
+
+	// check sellers credits
+	expectedEscrowed, err := sb.escrowed.Sub(totalSold)
+	s.Require().NoError(err)
+	s.Require().Equal(expectedEscrowed.String(), sa.escrowed.String())
+	s.Require().Equal(sb.tradable.String(), sa.tradable.String())
+	s.Require().Equal(sb.retired.String(), sa.retired.String())
+
+	expectedRetired, err := bb.retired.Add(retSold)
+	s.Require().NoError(err)
+	expectedTradable, err := bb.tradable.Add(tradSold)
+	s.Require().NoError(err)
+
+	s.Require().Equal(bb.escrowed.String(), bb.escrowed.String())
+	s.Require().Equal(ba.tradable.String(), expectedTradable.String())
+	s.Require().Equal(ba.retired.String(), expectedRetired.String())
+}
+
+func (s *IntegrationTestSuite) TestUpdateProjectMetadata() {
+	admin := s.network.Validators[0]
+	valAddrStr := admin.Address.String()
+	clientCtx := admin.ClientCtx
+	cmd := coreclient.TxUpdateProjectMetadataCmd()
+	_, projectId := s.createClassProject(clientCtx, valAddrStr)
+
+	unauthAddr := s.addr
+	s.fundAccount(clientCtx, admin.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+
+	makeArgs := func(projectId, metadata, from string) []string {
+		args := []string{projectId, metadata, makeFlagFrom(from)}
+		return append(args, s.commonTxFlags()...)
+	}
+
+	testCases := []struct {
+		name   string
+		args   []string
+		errMsg string
+		errLog string
+	}{
+		{
+			name:   "not enough args",
+			errMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:   "too many args",
+			args:   []string{"foo", "bar", "baz"},
+			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:   "invalid: unauthorized",
+			args:   makeArgs(projectId, rand.Str(5), unauthAddr.String()),
+			errLog: sdkerrors.ErrUnauthorized.Error(),
+		},
+		{
+			name: "valid",
+			args: makeArgs(projectId, rand.Str(5), valAddrStr),
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if len(tc.errMsg) != 0 {
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				if len(tc.errLog) != 0 {
+					s.Require().NotEqual(uint32(0), res.Code)
+					s.Require().Contains(res.RawLog, tc.errLog)
+				} else {
+					s.Require().Equal(uint32(0), res.Code)
+					pId, expectedMetadata := tc.args[0], tc.args[1]
+					project := s.getProject(clientCtx, pId)
+					s.Require().Equal(expectedMetadata, project.Metadata)
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateProjectAdmin() {
+	admin := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address.String()
+	clientCtx := admin.ClientCtx
+	_, projectId := s.createClassProject(clientCtx, admin.Address.String())
+	cmd := coreclient.TxUpdateProjectAdminCmd()
+	makeArgs := func(projectId, newAdminAddr, from string) []string {
+		args := make([]string, 0, 6)
+		args = append(args, projectId, newAdminAddr, makeFlagFrom(from))
+		return append(args, s.commonTxFlags()...)
+	}
+
+	unauthAddr := s.addr
+	s.fundAccount(clientCtx, admin.Address, unauthAddr, sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 50)})
+
+	testCases := []struct {
+		name          string
+		args          []string
+		errMsg        string
+		errLog        string
+		expectedAdmin string
+	}{
+		{
+			name:   "min args",
+			args:   []string{},
+			errMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:   "max args",
+			args:   []string{"foo", "bar", "baz"},
+			errMsg: "accepts 2 arg(s), received 3",
+		},
+		{
+			name:   "invalid: unauthorized",
+			args:   makeArgs(projectId, admin.Address.String(), unauthAddr.String()),
+			errLog: sdkerrors.ErrUnauthorized.Error(),
+		},
+		{
+			name:          "valid update",
+			args:          makeArgs(projectId, newAdmin, admin.Address.String()),
+			expectedAdmin: newAdmin,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if len(tc.errMsg) != 0 {
+				s.Require().ErrorContains(err, tc.errMsg)
+			} else {
+				s.Require().NoError(err)
+				var res sdk.TxResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+				if len(tc.errLog) != 0 {
+					s.Require().NotEqual(uint32(0), res.Code)
+					s.Require().Contains(res.RawLog, tc.errMsg)
+				} else {
+					s.Require().Equal(uint32(0), res.Code)
+					gotProject := s.getProject(clientCtx, projectId)
+					s.Require().Equal(tc.expectedAdmin, gotProject.Admin)
+				}
+			}
+
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) getProject(ctx client.Context, projectId string) *core.ProjectInfo {
+	cmd := coreclient.QueryProjectCmd()
+	out, err := cli.ExecTestCLICmd(ctx, cmd, []string{projectId, flagOutputJSON})
+	s.Require().NoError(err)
+	var res core.QueryProjectResponse
+	s.Require().NoError(ctx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	return res.Project
+}
+
 func (s *IntegrationTestSuite) assertMarketBalancesUpdated(sb, sa, bb, ba accountInfo, qtySold math.Dec, totalCost sdk.Coin, retired bool) {
 	// check sellers coins
 	expectedSellerGain := sb.coinBal.Add(totalCost)
@@ -1467,7 +1624,7 @@ func (s *IntegrationTestSuite) getAccountInfo(clientCtx client.Context, addr sdk
 	a := accountInfo{}
 	a.coinBal = s.getBankBalance(clientCtx, addr, bankDenom)
 	batchBal := s.getBalance(clientCtx, addr, batchDenom)
-	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.Tradable, batchBal.Retired, batchBal.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(6, batchBal.TradableAmount, batchBal.RetiredAmount, batchBal.EscrowedAmount)
 	s.Require().NoError(err)
 	a.tradable, a.retired, a.escrowed = decs[0], decs[1], decs[2]
 	return a
@@ -1621,31 +1778,38 @@ func formatTime(t *time.Time) string {
 	return fmt.Sprintf("%d-%s-%d", t.Year(), monthStr, t.Day())
 }
 
-// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
-func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (string, string, string) {
+// createClassProject creates a class and project, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProject(clientCtx client.Context, addr string) (classId, projectId string) {
 	classId, err := s.createClass(clientCtx, &core.MsgCreateClass{
 		Admin:            addr,
 		Issuers:          []string{addr},
-		Metadata:         "meta",
+		Metadata:         validMetadata,
 		CreditTypeAbbrev: validCreditTypeAbbrev,
 		Fee:              &core.DefaultParams().CreditClassFee[0],
 	})
 	s.Require().NoError(err)
-	projectId, err := s.createProject(clientCtx, &core.MsgCreateProject{
+	projectId, err = s.createProject(clientCtx, &core.MsgCreateProject{
 		Issuer:       addr,
 		ClassId:      classId,
-		Metadata:     "meta",
+		Metadata:     validMetadata,
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
+	return classId, projectId
+}
+
+// createClassProjectBatch creates a class, project, and batch, returning their IDs in that order.
+func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context, addr string) (classId, projectId, batchDenom string) {
+	classId, projectId = s.createClassProject(clientCtx, addr)
 	start, end := time.Now(), time.Now()
-	batchDenom, err := s.createBatch(clientCtx, &core.MsgCreateBatch{
+	var err error
+	batchDenom, err = s.createBatch(clientCtx, &core.MsgCreateBatch{
 		Issuer:    addr,
 		ProjectId: projectId,
 		Issuance: []*core.BatchIssuance{
 			{Recipient: addr, TradableAmount: "999999999999999999", RetiredAmount: "100000000000", RetirementJurisdiction: "US-OR"},
 		},
-		Metadata:  "meta",
+		Metadata:  validMetadata,
 		StartDate: &start,
 		EndDate:   &end,
 		Open:      false,
@@ -1653,7 +1817,7 @@ func (s *IntegrationTestSuite) createClassProjectBatch(clientCtx client.Context,
 		Note:      "",
 	})
 	s.Require().NoError(err)
-	return classId, projectId, batchDenom
+	return
 }
 
 func makeCreateClassArgs(issuers []string, ctAbbrev, metadata, fee string, flags ...string) []string {

@@ -1,7 +1,9 @@
 package testsuite
 
 import (
+	"encoding/base64"
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
@@ -159,6 +161,249 @@ func (s *IntegrationTestSuite) TestQueryHashByIRI() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestIRIByRawHash() {
+	val := s.network.Validators[0]
+
+	iri, ch := s.createIRIAndRawHash([]byte("xyzabc123"))
+
+	encodedHash := encodeBase64Bytes(ch.Raw.Hash)
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"empty hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?digest_algorithm=%s",
+				val.APIAddress,
+				ch.Raw.DigestAlgorithm, // enum 1
+			),
+			true,
+			"hash cannot be empty",
+		},
+		{
+			"invalid hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				"foo",
+				ch.Raw.DigestAlgorithm, // enum 1
+			),
+			true,
+			"failed to decode base64 string",
+		},
+		{
+			"unspecified digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s",
+				val.APIAddress,
+				encodedHash, // base64 encoded string
+			),
+			true,
+			"digest algorithm cannot be unspecified",
+		},
+		{
+			"invalid digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				encodedHash, // base64 encoded string
+				"foo",
+			),
+			true,
+			"foo is not a valid data.DigestAlgorithm",
+		},
+		{
+			"invalid media type",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%s",
+				val.APIAddress,
+				encodedHash,            // base64 encoded string
+				ch.Raw.DigestAlgorithm, // enum 1
+				"foo",
+			),
+			true,
+			"foo is not a valid data.RawMediaType",
+		},
+		{
+			"valid request",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%d&media_type=%d",
+				val.APIAddress,
+				encodedHash,            // base64 encoded string
+				ch.Raw.DigestAlgorithm, // enum 1
+				ch.Raw.MediaType,       // enum 0
+			),
+			false,
+			"",
+		},
+		{
+			"valid request enums as strings",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-raw?hash=%s&digest_algorithm=%s&media_type=%s",
+				val.APIAddress,
+				encodedHash,                    // base64 encoded string
+				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
+				"RAW_MEDIA_TYPE_UNSPECIFIED",   // enum 1
+			),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res data.QueryIRIByRawHashResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(bz), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.Equal(iri, res.Iri)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestIRIByGraphHash() {
+	val := s.network.Validators[0]
+
+	iri, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
+
+	encodedHash := encodeBase64Bytes(ch.Graph.Hash)
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"empty hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"hash cannot be empty",
+		},
+		{
+			"invalid hash",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				"foo",
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"failed to decode base64 string",
+		},
+		{
+			"unspecified digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&canonicalization_algorithm=%d",
+				val.APIAddress,
+				encodedHash,                        // base64 encoded string
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"digest algorithm cannot be unspecified",
+		},
+		{
+			"invalid digest algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%d",
+				val.APIAddress,
+				encodedHash, // base64 encoded string
+				"foo",
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			true,
+			"foo is not a valid data.DigestAlgorithm",
+		},
+		{
+			"unspecified canonicalization algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s",
+				val.APIAddress,
+				encodedHash,              // base64 encoded string
+				ch.Graph.DigestAlgorithm, // enum 1
+			),
+			true,
+			"canonicalization algorithm cannot be unspecified",
+		},
+		{
+			"invalid canonicalization algorithm",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
+				val.APIAddress,
+				encodedHash,              // base64 encoded string
+				ch.Graph.DigestAlgorithm, // enum 1
+				"foo",
+			),
+			true,
+			"foo is not a valid data.GraphCanonicalizationAlgorithm",
+		},
+		{
+			"valid request",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%d&canonicalization_algorithm=%d",
+				val.APIAddress,
+				encodedHash,                        // base64 encoded string
+				ch.Graph.DigestAlgorithm,           // enum 1
+				ch.Graph.CanonicalizationAlgorithm, // enum 1
+			),
+			false,
+			"",
+		},
+		{
+			"valid request enums as strings",
+			fmt.Sprintf(
+				"%s/regen/data/v1/iri-by-graph?hash=%s&digest_algorithm=%s&canonicalization_algorithm=%s",
+				val.APIAddress,
+				encodedHash,                    // base64 encoded string
+				"DIGEST_ALGORITHM_BLAKE2B_256", // enum 1
+				"GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015", // enum 1
+			),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res data.QueryIRIByGraphHashResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(bz), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.Equal(iri, res.Iri)
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestQueryAttestors() {
 	val := s.network.Validators[0]
 
@@ -219,35 +464,23 @@ func (s *IntegrationTestSuite) TestQueryAttestors() {
 func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 	val := s.network.Validators[0]
 
-	url := "https://foo.bar"
-
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
-		expItems int
+		name   string
+		url    string
+		expErr bool
+		errMsg string
 	}{
 		{
-			"invalid url",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, "foo"),
+			"invalid id",
+			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, 404),
 			true,
 			"not found",
-			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s", val.APIAddress, url),
+			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, s.resolverID),
 			false,
 			"",
-			2,
-		},
-		{
-			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolver?url=%s&pagination.limit=1", val.APIAddress, url),
-			false,
-			"",
-			1,
 		},
 	}
 
@@ -266,7 +499,7 @@ func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 				require.Contains(string(resp), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(resolver.Id)
+				require.NotNil(resolver.Url)
 				require.NotNil(resolver.Manager)
 			}
 		})
@@ -328,4 +561,11 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 			}
 		})
 	}
+}
+
+func encodeBase64Bytes(bz []byte) string {
+	// encode base64 bytes to base64 string
+	str := base64.StdEncoding.EncodeToString(bz)
+	// replace all instances of "+" with "%2b"
+	return strings.Replace(str, "+", "%2b", -1)
 }
