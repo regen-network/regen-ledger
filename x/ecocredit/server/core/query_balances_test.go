@@ -23,8 +23,8 @@ func TestQuery_Balances(t *testing.T) {
 	bKey2, err := s.stateStore.BatchTable().InsertReturningID(s.ctx, &api.Batch{Denom: "C02-20200101-20220101-001"})
 	assert.NilError(t, err)
 
-	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, Tradable: "15", Retired: "15", Escrowed: "15"}
-	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: bKey2, Tradable: "19", Retired: "20", Escrowed: "33"}
+	balance1 := &api.BatchBalance{Address: s.addr, BatchKey: bKey1, TradableAmount: "15", RetiredAmount: "15", EscrowedAmount: "15"}
+	balance2 := &api.BatchBalance{Address: s.addr, BatchKey: bKey2, TradableAmount: "19", RetiredAmount: "20", EscrowedAmount: "33"}
 
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance1))
 	assert.NilError(t, s.stateStore.BatchBalanceTable().Insert(s.ctx, balance2))
@@ -56,11 +56,11 @@ func assertBalanceEqual(t *testing.T, ctx context.Context, k Keeper, received *c
 	assert.NilError(t, err)
 
 	info := core.BatchBalanceInfo{
-		Address:    addr.String(),
-		BatchDenom: batch.Denom,
-		Tradable:   balance.Tradable,
-		Retired:    balance.Retired,
-		Escrowed:   balance.Escrowed,
+		Address:        addr.String(),
+		BatchDenom:     batch.Denom,
+		TradableAmount: balance.TradableAmount,
+		RetiredAmount:  balance.RetiredAmount,
+		EscrowedAmount: balance.EscrowedAmount,
 	}
 
 	assert.DeepEqual(t, info, *received)

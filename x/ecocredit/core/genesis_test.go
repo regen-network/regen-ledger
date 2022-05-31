@@ -34,10 +34,10 @@ func TestValidateGenesis(t *testing.T) {
 
 	require.NoError(t, ss.BatchBalanceTable().Insert(ormCtx,
 		&api.BatchBalance{
-			BatchKey: 1,
-			Address:  sdk.AccAddress("addr1"),
-			Tradable: "90.003",
-			Retired:  "9.997",
+			BatchKey:       1,
+			Address:        sdk.AccAddress("addr1"),
+			TradableAmount: "90.003",
+			RetiredAmount:  "9.997",
 		}))
 
 	batches := []*api.Batch{
@@ -286,10 +286,10 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKey,
-					Address:  addr1,
-					Tradable: "100",
-					Retired:  "100",
+					BatchKey:       bKey,
+					Address:        addr1,
+					TradableAmount: "100",
+					RetiredAmount:  "100",
 				}))
 				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 					BatchKey:        bKey,
@@ -334,17 +334,17 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKey,
-					Address:  addr1,
-					Tradable: "100.123",
-					Retired:  "100.123",
-					Escrowed: "10.000",
+					BatchKey:       bKey,
+					Address:        addr1,
+					TradableAmount: "100.123",
+					RetiredAmount:  "100.123",
+					EscrowedAmount: "10.000",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKey,
-					Address:  addr2,
-					Tradable: "100.123",
-					Retired:  "100.123",
+					BatchKey:       bKey,
+					Address:        addr2,
+					TradableAmount: "100.123",
+					RetiredAmount:  "100.123",
 				}))
 				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 					BatchKey:       bKey,
@@ -426,29 +426,29 @@ func TestGenesisValidate(t *testing.T) {
 				})
 				require.NoError(t, err)
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKey,
-					Address:  addr1,
-					Tradable: "100.123",
-					Retired:  "100.123",
+					BatchKey:       bKey,
+					Address:        addr1,
+					TradableAmount: "100.123",
+					RetiredAmount:  "100.123",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKey2,
-					Address:  addr2,
-					Tradable: "100.123",
-					Retired:  "100.123",
+					BatchKey:       bKey2,
+					Address:        addr2,
+					TradableAmount: "100.123",
+					RetiredAmount:  "100.123",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKeyBIO,
-					Address:  addr1,
-					Tradable: "105.2",
-					Escrowed: "102.2",
-					Retired:  "207.1",
+					BatchKey:       bKeyBIO,
+					Address:        addr1,
+					TradableAmount: "105.2",
+					EscrowedAmount: "102.2",
+					RetiredAmount:  "207.1",
 				}))
 				require.NoError(t, ss.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-					BatchKey: bKeyBIO,
-					Address:  addr2,
-					Tradable: "101.1",
-					Retired:  "404.1",
+					BatchKey:       bKeyBIO,
+					Address:        addr2,
+					TradableAmount: "101.1",
+					RetiredAmount:  "404.1",
 				}))
 				require.NoError(t, ss.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 					BatchKey:        bKey,

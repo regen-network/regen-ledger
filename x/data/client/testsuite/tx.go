@@ -1,12 +1,11 @@
 package testsuite
 
 import (
-	"crypto"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/stretchr/testify/suite"
-
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -120,7 +119,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(err)
 	}
 
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				"https://foo.bar",
@@ -131,22 +130,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
-		append(
-			[]string{
-				"https://foo.bar",
-				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-			},
-		),
-	)
+	var res sdk.TxResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+
+	id := strings.Trim(res.Logs[0].Events[1].Attributes[0].Value, "\"")
+	s.resolverID, err = strconv.ParseUint(id, 10, 64)
 	s.Require().NoError(err)
 
-	var resolverInfo data.QueryResolverInfoResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &resolverInfo))
-	s.resolverID = resolverInfo.Id
+	_, ch := s.createIRIAndGraphHash([]byte("abcdefg"))
 
-	content := []byte("abcdefg")
-	_, chs := s.createDataContent(content)
+	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
 	s.iri, err = chs.ContentHashes[0].GetGraph().ToIRI()
 	s.Require().NoError(err)
 
@@ -164,7 +157,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	))
 	s.Require().NoError(err)
 
-	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
+	out2, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
 				"https://bar.baz",
@@ -175,22 +168,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	s.Require().NoError(err)
 
-	out2, err := cli.ExecTestCLICmd(val1.ClientCtx, client.QueryResolverInfoCmd(),
-		append(
-			[]string{
-				"https://bar.baz",
-				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-			},
-		),
-	)
-	s.Require().NoError(err)
+	var res2 sdk.TxResponse
+	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &res2))
 
-	var resolverInfo2 data.QueryResolverInfoResponse
-	s.Require().NoError(val1.ClientCtx.Codec.UnmarshalJSON(out2.Bytes(), &resolverInfo2))
+	id2 := strings.Trim(res2.Logs[0].Events[1].Attributes[0].Value, "\"")
+	resolverId2, err := strconv.ParseUint(id2, 10, 64)
+	s.Require().NoError(err)
 
 	_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgRegisterResolverCmd(), append(
 		[]string{
-			fmt.Sprintf("%d", resolverInfo2.Id),
+			fmt.Sprintf("%d", resolverId2),
 			filePath,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 		},
@@ -391,11 +378,12 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 	}
 
-	content := []byte("xyzabc123")
-	_, chs := s.createDataContent(content)
+	_, ch := s.createIRIAndGraphHash([]byte("xyzabc123"))
 
+	chs := &data.ContentHashes{ContentHashes: []*data.ContentHash{ch}}
 	bz, err := val.ClientCtx.Codec.MarshalJSON(chs)
 	require.NoError(err)
+
 	filePath := testutil.WriteToNewTempFile(s.T(), string(bz)).Name()
 
 	testCases := []struct {
@@ -452,26 +440,4 @@ func (s *IntegrationTestSuite) TestRegisterResolverCmd() {
 			}
 		})
 	}
-}
-
-func (s *IntegrationTestSuite) createDataContent(content []byte) (string, *data.ContentHashes) {
-	require := s.Require()
-
-	hash := crypto.BLAKE2b_256.New()
-	_, err := hash.Write(content)
-	require.NoError(err)
-	digest := hash.Sum(nil)
-
-	ch := data.ContentHash{
-		Graph: &data.ContentHash_Graph{
-			Hash:                      digest,
-			DigestAlgorithm:           data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
-			CanonicalizationAlgorithm: data.GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-		},
-	}
-
-	iri, err := ch.GetGraph().ToIRI()
-	require.NoError(err)
-
-	return iri, &data.ContentHashes{ContentHashes: []*data.ContentHash{&ch}}
 }

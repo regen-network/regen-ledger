@@ -1,6 +1,8 @@
 package marketplace
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -25,29 +27,59 @@ func (m MsgSell) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSell) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidAddress
+	if len(m.Owner) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("owner cannot be empty")
 	}
 
-	for _, order := range m.Orders {
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("owner is not a valid address: %s", err)
+	}
+
+	if len(m.Orders) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("orders cannot be empty")
+	}
+
+	for i, order := range m.Orders {
+		orderIndex := fmt.Sprintf("order[%d]", i)
+
+		if len(order.BatchDenom) == 0 {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: batch denom cannot be empty", orderIndex)
+		}
+
 		if err := core.ValidateBatchDenom(order.BatchDenom); err != nil {
-			return err
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: %s", orderIndex, err)
+		}
+
+		if len(order.Quantity) == 0 {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: quantity cannot be empty", orderIndex)
 		}
 
 		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
-			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: quantity must be a positive decimal", orderIndex)
 		}
 
+		// sdk.Coin.Validate panics if coin is nil
 		if order.AskPrice == nil {
-			return sdkerrors.ErrInvalidRequest.Wrap("ask price cannot be empty")
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: cannot be empty", orderIndex)
 		}
 
-		if err := order.AskPrice.Validate(); err != nil {
-			return err
+		// sdk.Coin.Validate provides inadequate error if coin denom is empty
+		if len(order.AskPrice.Denom) == 0 {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: denom cannot be empty", orderIndex)
 		}
 
+		if err := sdk.ValidateDenom(order.AskPrice.Denom); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: %s", orderIndex, err)
+		}
+
+		// sdk.Coin.Validate panics if coin amount is nil
+		if order.AskPrice.Amount.IsNil() {
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: amount cannot be empty", orderIndex)
+		}
+
+		// sdk.Coin.Validate provides inadequate error if coin amount is not a positive integer
 		if !order.AskPrice.Amount.IsPositive() {
-			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+			return sdkerrors.ErrInvalidRequest.Wrapf("%s: ask price: amount must be a positive integer", orderIndex)
 		}
 	}
 

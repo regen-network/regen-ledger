@@ -31,7 +31,7 @@ func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr
 	if err != nil {
 		return err
 	}
-	tradable, err := math.NewDecFromString(bal.Tradable)
+	tradable, err := math.NewDecFromString(bal.TradableAmount)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func AddAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, addr
 	if err != nil {
 		return err
 	}
-	bal.Tradable = newTradable.String()
+	bal.TradableAmount = newTradable.String()
 	return table.Save(ctx, bal)
 }
 
@@ -49,17 +49,17 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &ecoApi.BatchBalance{
-				BatchKey: batchKey,
-				Address:  addr,
-				Tradable: "0",
-				Retired:  "0",
-				Escrowed: "0",
+				BatchKey:       batchKey,
+				Address:        addr,
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		} else {
 			return err
 		}
 	}
-	retired, err := math.NewDecFromString(bal.Retired)
+	retired, err := math.NewDecFromString(bal.RetiredAmount)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func RetireAndSaveBalance(ctx context.Context, table ecoApi.BatchBalanceTable, a
 	if err != nil {
 		return err
 	}
-	bal.Retired = newRetired.String()
+	bal.RetiredAmount = newRetired.String()
 	return table.Save(ctx, bal)
 }
 
