@@ -69,9 +69,9 @@ func TestPrune_NilExpiration(t *testing.T) {
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
 
-	blockTime, err := time.Parse("2006-01-02", "2020-01-01")
+	blockTime, err := types.ParseDate("block time", "2020-01-01")
 	assert.NilError(t, err)
-	expired, err := time.Parse("2006-01-02", "2010-01-01")
+	expired, err := types.ParseDate("expiration", "2010-01-01")
 	assert.NilError(t, err)
 
 	msg := &marketplace.MsgSell{
