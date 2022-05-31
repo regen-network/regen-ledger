@@ -56,28 +56,23 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
-# default db backend
 ifeq ($(DB_BACKEND), goleveldb)
   build_tags += goleveldb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), cleveldb)
   build_tags += gcc
   build_tags += cleveldb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), boltdb)
   build_tags += boltdb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), rocksdb)
   build_tags += rocksdb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), badgerdb)
   build_tags += badgerdb
 endif
@@ -98,27 +93,22 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=regen \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)
 
-# default db backend
 ifeq ($(DB_BACKEND), goleveldb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=goleveldb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), cleveldb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), boltdb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), rocksdb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
 endif
 
-# experimental db backend
 ifeq ($(DB_BACKEND), badgerdb)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
 endif
@@ -146,10 +136,10 @@ endif
 
 all: build
 
-install: go-version verify
+install: go.sum go-version
 	go install -mod=readonly $(BUILD_FLAGS) $(REGEN_DIR)
 
-build: go-version verify
+build: go.sum go-version
 	mkdir -p $(BUILD_DIR)
 	go build -mod=readonly -o $(BUILD_DIR) $(BUILD_FLAGS) $(REGEN_DIR)
 
@@ -165,8 +155,8 @@ clean:
 ###                               Go Version                                ###
 ###############################################################################
 
-GO_MAJOR_VERSION = $(shell $(GO) version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1)
-GO_MINOR_VERSION = $(shell $(GO) version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
+GO_MAJOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1)
+GO_MINOR_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f2)
 MIN_GO_MAJOR_VERSION = 1
 MIN_GO_MINOR_VERSION = 18
 GO_VERSION_ERROR = Golang version $(GO_MAJOR_VERSION).$(GO_MINOR_VERSION) is not supported, \
@@ -188,6 +178,8 @@ go-version:
 ###############################################################################
 ###                               Go Modules                                ###
 ###############################################################################
+
+go.sum: go.mod verify tidy
 
 verify:
 	@find . -name 'go.mod' -type f -execdir go mod verify \;
@@ -216,12 +208,26 @@ lint:
 lint-fix:
 	golangci-lint run --fix --out-format=tab --issues-exit-code=0
 
+format_filter = -name '*.go' -type f \
+	-not -path '*.git*' \
+	-not -name '*.pb.go' \
+	-not -name '*.gw.go' \
+	-not -name '*.pulsar.go' \
+	-not -name '*.cosmos_orm.go' \
+	-not -name 'statik.go'
+
 format:
-	@find . -name '*.go' -type f -not -path "*.git*" -not -name "statik.go" -not -name '*.pb.go' -not -name '*.gw.go' -not -name '*.pulsar.go' -not -name '*.cosmos_orm.go' | xargs gofmt -w -s
-	@find . -name '*.go' -type f -not -path "*.git*" -not -name "statik.go" -not -name '*.pb.go' -not -name '*.gw.go' -not -name '*.pulsar.go' -not -name '*.cosmos_orm.go' | xargs misspell -w
-	@find . -name '*.go' -type f -not -path "*.git*" -not -name "statik.go" -not -name '*.pb.go' -not -name '*.gw.go' -not -name '*.pulsar.go' -not -name '*.cosmos_orm.go' | xargs goimports -w
+	@find . $(format_filter) | xargs gofmt -w -s
+	@find . $(format_filter) | xargs misspell -w
+	@find . $(format_filter) | xargs goimports -w
 
 .PHONY: lint lint-fix format
+
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+include proto.mk
 
 ###############################################################################
 ###                                  Tests                                  ###
@@ -236,28 +242,16 @@ include tests.mk
 include sims.mk
 
 ###############################################################################
-###                                Protobuf                                 ###
-###############################################################################
-
-include proto.mk
-
-###############################################################################
 ###                           Tools / Dependencies                          ###
 ###############################################################################
 
-# TODO: check if yarn is installed for documentation
-# TODO: check if wget is installed for swagger generation
-# TODO: install swagger-combine for swagger generation
+tools: go-version
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest # lint
+	go install github.com/client9/misspell/cmd/misspell@latest # format
+	go install golang.org/x/tools/cmd/goimports@latest # format
+	go install github.com/cosmos/tools/cmd/runsim@latest # simulations
 
-deps:
-	go install github.com/client9/misspell/cmd/misspell@latest
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	go install github.com/rakyll/statik@latest
-	go install golang.org/x/tools/cmd/goimports@latest
-
-.PHONY: deps
-
-include contrib/devtools/Makefile
+.PHONY: tools
 
 ###############################################################################
 ###                              Documentation                              ###
@@ -281,8 +275,8 @@ godocs:
 ###                                Swagger                                  ###
 ###############################################################################
 
-swagger: statik proto-swagger-gen
-	./scripts/generate-swagger-docs.sh
+swagger: proto-swagger-gen
+	@./scripts/generate-swagger-docs.sh
 
 .PHONY: swagger
 

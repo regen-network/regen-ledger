@@ -10,7 +10,7 @@ containerProtoGen=regen-ledger-proto-gen-$(containerProtoVer)
 containerProtoFmt=regen-ledger-proto-fmt-$(containerProtoVer)
 containerProtoGenSwagger=regen-ledger-proto-gen-swagger-$(containerProtoVer)
 
-proto-all: proto-gen proto-lint proto-check-breaking proto-format
+proto-all: proto-lint proto-format proto-gen proto-check-breaking
 
 proto-gen:
 	@echo "Generating Protobuf files"
