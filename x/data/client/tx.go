@@ -180,7 +180,7 @@ Flags:
 
 			where content.json contains
 			{
-				"data": [
+				"content_hashes": [
 					{
 						"graph": {
 							"hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
