@@ -88,7 +88,9 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 		recipient, _ := sdk.AccAddressFromBech32(issuance.Recipient)
 
-		// get the current batch balance of recipient account
+		// get the current batch balance of the recipient account
+		// Note: Get because batch balance may or may not already exist
+		// depending on the length of issuance and if recipient is the same
 		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batchKey)
 		if ormerrors.IsNotFound(err) {
 			balance = &api.BatchBalance{
@@ -114,7 +116,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 		// update batch balance tradable amount and retired amount
 		// Note: Save because batch balance may or may not already exist
-		// depending on number of issuances and if recipient is the same
+		// depending on the length of issuance and if recipient is the same
 		if err = k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 			BatchKey:       batchKey,
 			Address:        recipient,
