@@ -19,12 +19,12 @@ Feature: Msg/CancelSellOrder
 
   Rule: The user must be the owner of the sell order
 
-    Scenario: seller owns credits
+    Scenario: user is the owner
       Given alice created a sell order with id "1"
       When alice attempts to cancel the sell order with id "1"
       Then expect no error
 
-    Scenario: seller does not own credits
+    Scenario: user is not the owner
       Given alice created a sell order with id "1"
       When bob attempts to cancel the sell order with id "1"
       Then expect the error "seller must be the owner of the sell order: unauthorized"
