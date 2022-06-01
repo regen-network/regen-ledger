@@ -72,20 +72,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 	maxDecimalPlaces := creditType.Precision
 
-	// get batch supply tradable amount and retired amount
-	supply, err := k.stateStore.BatchSupplyTable().Get(ctx, batchKey)
-	if err != nil {
-		if ormerrors.IsNotFound(err) {
-			supply = &api.BatchSupply{
-				TradableAmount: "0",
-				RetiredAmount:  "0",
-			}
-		} else {
-			return nil, err
-		}
-	}
-	tradableSupply, err := math.NewDecFromString(supply.TradableAmount)
-	retiredSupply, err := math.NewDecFromString(supply.RetiredAmount)
+	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
 	// set module address string once for better performance
 	moduleAddrString := k.moduleAddress.String()
@@ -107,6 +94,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			balance = &api.BatchBalance{
 				TradableAmount: "0",
 				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		} else {
 			return nil, err
@@ -120,18 +108,19 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			return nil, err
 		}
 
-		// add tradable amount and retired amount to the batch balance
+		// add tradable amount and retired amount to existing batch balance
 		newTradableBalance, err := tradableBalance.Add(tradableAmount)
 		newRetiredBalance, err := retiredBalance.Add(retiredAmount)
 
 		// update batch balance tradable amount and retired amount
 		// Note: Save because batch balance may or may not already exist
+		// depending on number of issuances and if recipient is the same
 		if err = k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
 			BatchKey:       batchKey,
 			Address:        recipient,
 			TradableAmount: newTradableBalance.String(),
 			RetiredAmount:  newRetiredBalance.String(),
-			// TODO: not setting escrowed is ok?
+			EscrowedAmount: balance.EscrowedAmount,
 		}); err != nil {
 			return nil, err
 		}
@@ -182,8 +171,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgCreateBatch issuance iteration")
 	}
 
-	// Save because batch supply may already exist
-	if err = k.stateStore.BatchSupplyTable().Save(ctx, &api.BatchSupply{
+	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
 		BatchKey:        batchKey,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
