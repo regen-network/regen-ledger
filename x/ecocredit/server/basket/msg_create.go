@@ -41,11 +41,14 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		return nil, err
 	}
 
-	if err = k.validateCreditType(ctx, msg.CreditTypeAbbrev, msg.Exponent); err != nil {
-		return nil, err
+	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, msg.CreditTypeAbbrev)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+			"could not get credit type with abbreviation %s: %s", msg.CreditTypeAbbrev, err.Error(),
+		)
 	}
 
-	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, msg.Exponent)
+	denom, displayDenom, err := basket.FormatBasketDenom(msg.Name, msg.CreditTypeAbbrev, creditType.Precision)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +59,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		DisableAutoRetire: msg.DisableAutoRetire,
 		CreditTypeAbbrev:  msg.CreditTypeAbbrev,
 		DateCriteria:      msg.DateCriteria.ToApi(),
-		Exponent:          msg.Exponent,
+		Exponent:          creditType.Precision, // exponent is no longer used but set until removed
 		Name:              msg.Name,
 	})
 	if err != nil {
@@ -68,9 +71,9 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 
 	denomUnits := []*banktypes.DenomUnit{{
 		Denom:    displayDenom,
-		Exponent: msg.Exponent,
+		Exponent: creditType.Precision,
 	}}
-	if msg.Exponent != 0 {
+	if creditType.Precision != 0 {
 		denomUnits = append(denomUnits, &banktypes.DenomUnit{
 			Denom: denom,
 		})
@@ -91,23 +94,6 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 	})
 
 	return &basket.MsgCreateResponse{BasketDenom: denom}, err
-}
-
-// validateCreditType returns error if a given credit type abbreviation doesn't exist or
-// it's precision is bigger then the requested exponent.
-func (k Keeper) validateCreditType(ctx context.Context, abbreviation string, exponent uint32) error {
-	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, abbreviation)
-	if err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("could not get credit type with abbreviation %s: %s", abbreviation, err.Error())
-	}
-	if creditType.Precision > exponent {
-		return sdkerrors.ErrInvalidRequest.Wrapf(
-			"exponent %d must be >= credit type precision %d",
-			exponent,
-			creditType.Precision,
-		)
-	}
-	return nil
 }
 
 // indexAllowedClasses checks that all `allowedClasses` both exist, and are of the specified credit type, then inserts
