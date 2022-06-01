@@ -129,8 +129,8 @@ Attest to the veracity of more than one entry using a comma-separated (no spaces
 func MsgDefineResolverCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "define-resolver [resolver_url]",
-		Short: `Registers data content hashes.`,
-		Long: `RegisterResolver registers data content hashes.
+		Short: `Defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver.`,
+		Long: `DefineResolver defines a resolver URL and assigns it a new integer ID that can be used in calls to RegisterResolver.
 Parameters:
   resolver_url: resolver_url is a resolver URL which should refer to an HTTP service which will respond to 
 			  a GET request with the IRI of a ContentHash and return the content if it exists or a 404.
