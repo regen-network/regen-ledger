@@ -116,3 +116,5 @@ Feature: CreateBatch
         "escrowed_amount": "0"
       }
       """
+
+    # no failing scenario - state transitions only occur upon successful message execution

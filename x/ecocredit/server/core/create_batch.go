@@ -83,8 +83,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		if err != nil {
 			return nil, err
 		}
-		tradableAmount := decs[0]
-		retiredAmount := decs[1]
+		tradableAmount, retiredAmount := decs[0], decs[1]
 
 		recipient, _ := sdk.AccAddressFromBech32(issuance.Recipient)
 
