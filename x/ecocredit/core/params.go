@@ -16,7 +16,7 @@ var (
 	KeyBasketCreationFee        = []byte("BasketCreationFee")
 )
 
-// TODO: remove after we open governance changes for precision
+// TODO: remove after we allow standard SI units for precision
 
 const (
 	PRECISION uint32 = 6
