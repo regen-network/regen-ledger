@@ -81,6 +81,12 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}); err != nil {
 			return nil, fmt.Errorf("error filling order: %w", err)
 		}
+
+		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventBuyDirect{
+			SellOrderId: sellOrder.Id,
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	return &marketplace.MsgBuyDirectResponse{}, nil
