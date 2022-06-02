@@ -25,7 +25,7 @@ service Query {
   }
 
   // SellOrdersByBatchDenom queries a paginated list of all sell orders based on
-  // the credit batch denom of the credits being sold.
+  // the batch denom of the credits being sold.
   rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest)
       returns (QuerySellOrdersByBatchDenomResponse) {
     option (google.api.http).get =
