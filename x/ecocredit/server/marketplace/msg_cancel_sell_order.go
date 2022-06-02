@@ -2,6 +2,7 @@ package marketplace
 
 import (
 	"context"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -17,12 +18,19 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *marketplace.MsgCancelS
 	if err != nil {
 		return nil, err
 	}
+
 	sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, req.SellOrderId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("sell order with id %d: %w", req.SellOrderId, err)
 	}
+
 	if !sellerAcc.Equals(sdk.AccAddress(sellOrder.Seller)) {
-		return nil, sdkerrors.ErrUnauthorized.Wrapf("sell order was created by %s", sdk.AccAddress(sellOrder.Seller).String())
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("seller must be the owner of the sell order")
+	}
+
+	err = k.unescrowCredits(ctx, sellerAcc, sellOrder.BatchKey, sellOrder.Quantity)
+	if err != nil {
+		return nil, err
 	}
 
 	if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventCancelSellOrder{
@@ -31,5 +39,5 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *marketplace.MsgCancelS
 		return nil, err
 	}
 
-	return &marketplace.MsgCancelSellOrderResponse{}, k.unescrowCredits(ctx, sellerAcc, sellOrder.BatchKey, sellOrder.Quantity)
+	return &marketplace.MsgCancelSellOrderResponse{}, k.stateStore.SellOrderTable().Delete(ctx, sellOrder)
 }
