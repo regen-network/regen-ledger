@@ -59,10 +59,15 @@ service Query {
     // HTTP REST API not supported with ContentHash
   }
 
+  // Resolver queries information about a resolver based on ID.
+  rpc Resolver(QueryResolverRequest) returns (QueryResolverResponse) {
+    option (google.api.http).get = "/regen/data/v1/resolver/{id}";
+  }
+
   // ResolversByIRI queries resolvers based on IRI.
   rpc ResolversByIRI(QueryResolversByIRIRequest)
       returns (QueryResolversByIRIResponse) {
-    option (google.api.http).get = "/regen/data/v1/resolvers/{iri}";
+    option (google.api.http).get = "/regen/data/v1/resolvers/iri/{iri}";
   }
 
   // ResolversByHash queries resolvers based on ContentHash.
@@ -71,11 +76,11 @@ service Query {
     // HTTP REST API not supported with ContentHash
   }
 
-  // ResolverInfo queries information about a resolved based on URL.
-  rpc ResolverInfo(QueryResolverInfoRequest)
-      returns (QueryResolverInfoResponse) {
+  // ResolversByUrl queries resolvers based on URL.
+  rpc ResolversByUrl(QueryResolversByUrlRequest)
+      returns (QueryResolversByUrlResponse) {
     option (google.api.http).get =
-        "/regen/data/v1/resolver"; // URL must be passed as a parameter
+        "/regen/data/v1/resolvers/url"; // URL must be passed as a parameter
   }
 }
 
@@ -118,7 +123,7 @@ message QueryByAttestorResponse {
   repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
-  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryIRIByHashRequest is the Query/IRIByHash request type.
@@ -234,11 +239,22 @@ message QueryResolversByIRIRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryResolverRequest is the Query/Resolver request type.
+message QueryResolverRequest {
+  // id is the ID of the resolver.
+  uint64 id = 1;
+}
+
+// QueryResolverResponse is the Query/Resolver response type.
+message QueryResolverResponse {
+  // resolver is the fetched resolver.
+  ResolverInfo resolver = 1;
+}
+
 // QueryResolversByIRIResponse is the Query/ResolversByIRI response type.
 message QueryResolversByIRIResponse {
-  // resolver_urls are the resolver URLs that have been registered for the
-  // anchored data.
-  repeated string resolver_urls = 1;
+  // resolvers are the resolvers that have registered the data.
+  repeated ResolverInfo resolvers = 1;
 
   // pagination is the PageResponse to use for pagination.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -255,25 +271,39 @@ message QueryResolversByHashRequest {
 
 // QueryResolversByHashResponse is the Query/ResolversByHash response type.
 message QueryResolversByHashResponse {
-  // resolver_urls are the resolver URLs that have been registered for the
-  // anchored data.
-  repeated string resolver_urls = 1;
+  // resolvers are the resolvers that have registered the data.
+  repeated ResolverInfo resolvers = 1;
 
   // pagination is the PageResponse to use for pagination.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryResolverInfoRequest is the Query/ResolverInfo request type.
-message QueryResolverInfoRequest {
-  // id is the id of the resolver.
-  uint64 id = 1;
-}
-
-// QueryResolverInfoResponse is the Query/ResolverInfo response type.
-message QueryResolverInfoResponse {
+// QueryResolversByUrlRequest is the Query/Resolver request type.
+message QueryResolversByUrlRequest {
   // url is the resolver URL that has been registered.
   string url = 1;
 
-  // manager is the bech32 account address of the resolver manager.
-  string manager = 2;
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryResolversByUrlResponse is the Query/Resolver response type.
+message QueryResolversByUrlResponse {
+  // resolvers are the fetched resolvers.
+  repeated ResolverInfo resolvers = 1;
+
+  // pagination is the PageResponse to use for pagination.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// ResolverInfo is the human-readable resolver information.
+message ResolverInfo {
+  // id is the ID of the resolver.
+  uint64 id = 1;
+
+  // url is the URL of the resolver.
+  string url = 2;
+
+  // manager is the address of the resolver manager.
+  string manager = 3;
 }

@@ -7,15 +7,31 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 // EventSell is an event emitted when a sell order is created.
 message EventSell {
 
-  // order_id is the unique identifier of the sell order.
-  uint64 order_id = 1;
+  // sell_order_id is the unique identifier of the sell order that was created.
+  uint64 sell_order_id = 1;
+}
+
+// EventBuyDirect is an event emitted when a direct buy order is processed.
+message EventBuyDirect {
+
+  // sell_order_id is the unique identifier of the sell order that credits were
+  // purchased from.
+  uint64 sell_order_id = 1;
 }
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
 message EventUpdateSellOrder {
 
-  //  order_id is the unique identifier of the sell order.
-  uint64 order_id = 1;
+  //  sell_order_id is the unique identifier of the sell order that was updated.
+  uint64 sell_order_id = 1;
+}
+
+// EventCancelSellOrder is an event emitted when a sell order is cancelled.
+message EventCancelSellOrder {
+
+  // sell_order_id is the unique identifier of the sell order that was
+  // cancelled.
+  uint64 sell_order_id = 1;
 }
 
 // EventAllowDenom is an event emitted when a new denom is added for use in the
