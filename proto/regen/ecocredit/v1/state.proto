@@ -221,7 +221,7 @@ message BatchBalance {
   // for efficient lookups. This links a batch balance to a credit batch.
   uint64 batch_key = 1;
 
-  // owner is the owner of the credits.
+  // owner is the account address that owns the credits.
   bytes owner = 2;
 
   // tradable_amount is the total number of tradable credits owned by address.

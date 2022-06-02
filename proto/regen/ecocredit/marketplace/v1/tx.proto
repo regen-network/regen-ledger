@@ -108,8 +108,7 @@ message MsgUpdateSellOrdersResponse {}
 // MsgCancelSellOrder is the Msg/CancelSellOrder request type.
 message MsgCancelSellOrder {
 
-  // seller is the account address that is the seller of the sell order and now
-  // wishing to cancel the sell order.
+  // seller is the account address that was selling credits but has cancelled the sell order.
   string seller = 1;
 
   // sell_order_id is the id of the seller order to cancel.

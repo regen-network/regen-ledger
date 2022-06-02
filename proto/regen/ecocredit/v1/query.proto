@@ -339,7 +339,7 @@ message QueryBatchResponse {
 // QueryBalanceRequest is the Query/Balance request type.
 message QueryBalanceRequest {
 
-  // owner is the account address that has the balance being queried.
+  // owner is the account address that owns the credits.
   string owner = 1;
 
   // batch_denom is the unique identifier of the credit batch to query.
@@ -356,7 +356,7 @@ message QueryBalanceResponse {
 // QueryBalancesRequest is the Query/Balances request type.
 message QueryBalancesRequest {
 
-  // owner is the account address that has the balances being queried.
+  // owner is the account address that owns the credits.
   string owner = 1;
 
   // pagination defines an optional pagination for the request.
