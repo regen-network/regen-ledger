@@ -22,7 +22,21 @@ message Basket {
   // storage space.
   uint64 id = 1;
 
-  // basket_denom is the basket bank denom.
+  // basket_denom is the basket bank denom formed from name and credit type with
+  // the format `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the
+  // prefix of the bank denom exponent, a standard SI unit derived from credit
+  // type precision, and mapped as follows:
+  //   0 - no prefix
+  //   1 - d (deci)
+  //   2 - c (centi)
+  //   3 - m (milli)
+  //   6 - u (micro)
+  //   9 - n (nano)
+  //   12 - p (pico)
+  //   15 - f (femto)
+  //   18 - a (atto)
+  //   21 - z (zepto)
+  //   24 - y (yocto)
   string basket_denom = 2;
 
   // name is the unique name of the basket specified in MsgCreate. Basket
@@ -41,8 +55,11 @@ message Basket {
   // date_criteria is the date criteria for batches admitted to the basket.
   DateCriteria date_criteria = 6;
 
-  // exponent is the exponent for converting credits to/from basket tokens.
-  uint32 exponent = 7;
+  // Deprecated (Since Revision 1): This field is no longer used and will be
+  // removed in the next version. The value of credit type precision is always
+  // used as the exponent when converting credits to/from basket tokens. This
+  // field will be set to the value of credit type precision until removed.
+  uint32 exponent = 7 [ deprecated = true ];
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.

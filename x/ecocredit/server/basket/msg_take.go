@@ -26,6 +26,11 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, err
 	}
 
+	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
+	if err != nil {
+		return nil, err
+	}
+
 	retire := msg.RetireOnTake
 	if !basket.DisableAutoRetire && !retire {
 		return nil, ErrCantDisableRetire
@@ -64,7 +69,7 @@ func (k Keeper) Take(ctx context.Context, msg *baskettypes.MsgTake) (*baskettype
 		return nil, err
 	}
 
-	multiplier := math.NewDecFinite(1, int32(basket.Exponent))
+	multiplier := math.NewDecFinite(1, int32(creditType.Precision))
 	amountCreditsNeeded, err := amountBasketCreditsDec.QuoExact(multiplier)
 	if err != nil {
 		return nil, err
