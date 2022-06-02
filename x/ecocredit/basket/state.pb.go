@@ -31,7 +31,21 @@ type Basket struct {
 	// id is the uint64 ID of the basket. It is used internally for reducing
 	// storage space.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// basket_denom is the basket bank denom.
+	// basket_denom is the basket bank denom formed from name and credit type with
+	// the format `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the
+	// prefix of the bank denom exponent, a standard SI unit derived from credit
+	// type precision, and mapped as follows:
+	//   0 - no prefix
+	//   1 - d (deci)
+	//   2 - c (centi)
+	//   3 - m (milli)
+	//   6 - u (micro)
+	//   9 - n (nano)
+	//   12 - p (pico)
+	//   15 - f (femto)
+	//   18 - a (atto)
+	//   21 - z (zepto)
+	//   24 - y (yocto)
 	BasketDenom string `protobuf:"bytes,2,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
 	// name is the unique name of the basket specified in MsgCreate. Basket
 	// names must be unique across all credit types and choices of exponent
@@ -45,10 +59,10 @@ type Basket struct {
 	CreditTypeAbbrev string `protobuf:"bytes,5,opt,name=credit_type_abbrev,json=creditTypeAbbrev,proto3" json:"credit_type_abbrev,omitempty"`
 	// date_criteria is the date criteria for batches admitted to the basket.
 	DateCriteria *DateCriteria `protobuf:"bytes,6,opt,name=date_criteria,json=dateCriteria,proto3" json:"date_criteria,omitempty"`
-	// exponent is the exponent for converting credits to/from basket tokens.
-	// Deprecated: This field is no longer used and will be removed in the next
-	// version. The credit type precision will always be used to convert credits
-	// to basket tokens and to determine the prefix part of the bank denom.
+	// Deprecated (Since Revision 1): This field is no longer used and will be
+	// removed in the next version. The value of credit type precision is always
+	// used as the exponent when converting credits to/from basket tokens. This
+	// field will be set to the value of credit type precision until removed.
 	Exponent uint32 `protobuf:"varint,7,opt,name=exponent,proto3" json:"exponent,omitempty"` // Deprecated: Do not use.
 	// curator is the address of the basket curator who is able to change certain
 	// basket settings.

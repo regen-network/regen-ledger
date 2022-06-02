@@ -329,27 +329,39 @@ func (s *IntegrationTestSuite) TestResolver() {
 	require.NoError(err)
 	require.NotNil(res2)
 
-	// can query resolvers by iri
-	res3, err := s.queryClient.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
-		Iri: iri,
-	})
-	require.NoError(err)
-	require.NotNil(res3)
-	require.Equal([]string{testUrl}, res3.ResolverUrls)
-
-	// can query resolvers by hash
-	res4, err := s.queryClient.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
-		ContentHash: s.hash1,
-	})
-	require.NoError(err)
-	require.NotNil(res4)
-	require.Equal([]string{testUrl}, res4.ResolverUrls)
-
-	// can query resolver info
-	res5, err := s.queryClient.ResolverInfo(s.ctx, &data.QueryResolverInfoRequest{
+	// can query resolver
+	res3, err := s.queryClient.Resolver(s.ctx, &data.QueryResolverRequest{
 		Id: res1.ResolverId,
 	})
 	require.NoError(err)
+	require.NotNil(res3)
+	require.Equal(s.addr1.String(), res3.Resolver.Manager)
+	require.Equal(testUrl, res3.Resolver.Url)
+
+	// can query resolvers by iri
+	res4, err := s.queryClient.ResolversByIRI(s.ctx, &data.QueryResolversByIRIRequest{
+		Iri: iri,
+	})
+	require.NoError(err)
+	require.NotNil(res4)
+	require.Equal(s.addr1.String(), res4.Resolvers[0].Manager)
+	require.Equal(testUrl, res4.Resolvers[0].Url)
+
+	// can query resolvers by hash
+	res5, err := s.queryClient.ResolversByHash(s.ctx, &data.QueryResolversByHashRequest{
+		ContentHash: s.hash1,
+	})
+	require.NoError(err)
 	require.NotNil(res5)
-	require.Equal(s.addr1.String(), res5.Manager)
+	require.Equal(s.addr1.String(), res5.Resolvers[0].Manager)
+	require.Equal(testUrl, res5.Resolvers[0].Url)
+
+	// can query resolvers by url
+	res6, err := s.queryClient.ResolversByUrl(s.ctx, &data.QueryResolversByUrlRequest{
+		Url: testUrl,
+	})
+	require.NoError(err)
+	require.NotNil(res6)
+	require.Equal(s.addr1.String(), res6.Resolvers[0].Manager)
+	require.Equal(testUrl, res6.Resolvers[0].Url)
 }
