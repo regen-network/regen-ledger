@@ -461,7 +461,7 @@ func (s *IntegrationTestSuite) TestQueryAttestors() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolverInfo() {
+func (s *IntegrationTestSuite) TestQueryResolver() {
 	val := s.network.Validators[0]
 
 	testCases := []struct {
@@ -471,14 +471,14 @@ func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 		errMsg string
 	}{
 		{
-			"invalid id",
-			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, 404),
+			"not found",
+			fmt.Sprintf("%s/regen/data/v1/resolver/%d", val.APIAddress, 404),
 			true,
 			"not found",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolver?id=%d", val.APIAddress, s.resolverID),
+			fmt.Sprintf("%s/regen/data/v1/resolver/%d", val.APIAddress, s.resolverID),
 			false,
 			"",
 		},
@@ -488,28 +488,26 @@ func (s *IntegrationTestSuite) TestQueryResolverInfo() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var resolver data.QueryResolverInfoResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &resolver)
+			var res data.QueryResolverResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+				require.Contains(string(bz), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(resolver.Url)
-				require.NotNil(resolver.Manager)
+				require.NotNil(res.Resolver.Url)
+				require.NotNil(res.Resolver.Manager)
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolvers() {
+func (s *IntegrationTestSuite) TestQueryResolversByIri() {
 	val := s.network.Validators[0]
-
-	iri := s.iri
 
 	testCases := []struct {
 		name     string
@@ -519,22 +517,22 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 		expItems int
 	}{
 		{
-			"invalid iri",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s", val.APIAddress, "foo"),
+			"not found",
+			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s", val.APIAddress, "foo"),
 			true,
 			"not found",
 			0,
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s", val.APIAddress, s.iri),
 			false,
 			"",
 			2,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/data/v1/resolvers/%s?pagination.limit=1", val.APIAddress, iri),
+			fmt.Sprintf("%s/regen/data/v1/resolvers/iri/%s?pagination.limit=1", val.APIAddress, s.iri),
 			false,
 			"",
 			1,
@@ -545,19 +543,74 @@ func (s *IntegrationTestSuite) TestQueryResolvers() {
 	for _, tc := range testCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			resp, err := rest.GetRequest(tc.url)
+			bz, err := rest.GetRequest(tc.url)
 			require.NoError(err)
 
-			var resolvers data.QueryResolversByIRIResponse
-			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &resolvers)
+			var res data.QueryResolversByIRIResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
 
 			if tc.expErr {
 				require.Error(err)
-				require.Contains(string(resp), tc.errMsg)
+				require.Contains(string(bz), tc.errMsg)
 			} else {
 				require.NoError(err)
-				require.NotNil(resolvers.ResolverUrls)
-				require.Len(resolvers.ResolverUrls, tc.expItems)
+				require.NotNil(res.Resolvers)
+				require.Len(res.Resolvers, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversByUrl() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"empty url",
+			fmt.Sprintf("%s/regen/data/v1/resolvers/url", val.APIAddress),
+			true,
+			"url cannot be empty",
+			0,
+		},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/data/v1/resolvers/url?url=%s", val.APIAddress, s.url),
+			false,
+			"",
+			2,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/data/v1/resolvers/url?url=%s&pagination.limit=1", val.APIAddress, s.url),
+			false,
+			"",
+			1,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			bz, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var res data.QueryResolversByUrlResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(bz, &res)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(bz), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(res.Resolvers)
+				require.Len(res.Resolvers, tc.expItems)
 			}
 		})
 	}

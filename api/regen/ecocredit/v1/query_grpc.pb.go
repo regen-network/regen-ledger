@@ -44,7 +44,8 @@ type QueryClient interface {
 	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
-	// BatchesByProject queries for all batches from a given project with pagination.
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
 	BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error)
@@ -249,7 +250,8 @@ type QueryServer interface {
 	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
-	// BatchesByProject queries for all batches from a given project with pagination.
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
 	BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error)

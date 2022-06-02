@@ -16,7 +16,7 @@ func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResol
 		return nil, err
 	}
 
-	id, err := s.stateStore.ResolverInfoTable().InsertReturningID(ctx, &api.ResolverInfo{
+	id, err := s.stateStore.ResolverTable().InsertReturningID(ctx, &api.Resolver{
 		Url:     msg.ResolverUrl,
 		Manager: manager,
 	})

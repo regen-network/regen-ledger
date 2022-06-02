@@ -27,8 +27,8 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 	}
 
 	for i, update := range req.Updates {
-                // orderIndex is passed to helper functions for more granular error messages
-                // when an individual order in a list of orders fails to process
+		// orderIndex is passed to helper functions for more granular error messages
+		// when an individual order in a list of orders fails to process
 		orderIndex := fmt.Sprintf("order[%d]", i)
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
@@ -132,7 +132,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 	}
 
 	return sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventUpdateSellOrder{
-		OrderId: order.Id,
+		SellOrderId: order.Id,
 	})
 }
 
