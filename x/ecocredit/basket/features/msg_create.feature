@@ -31,36 +31,6 @@ Feature: MsgCreate
     When the message is validated
     Then expect no error
 
-  Scenario Outline: a valid message with exponent
-    Given the message
-    """
-    {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "name": "NCT",
-      "exponent": <exponent>,
-      "credit_type_abbrev": "C",
-      "allowed_classes": [
-        "C01"
-      ]
-    }
-    """
-    When the message is validated
-    Then expect no error
-
-    Examples:
-      | description | exponent |
-      | no prefix   | 0        |
-      | d (deci)    | 1        |
-      | c (centi)   | 2        |
-      | m (milli)   | 3        |
-      | u (micro)   | 6        |
-      | n (nano)    | 9        |
-      | p (pico)    | 12       |
-      | f (femto)   | 15       |
-      | a (atto)    | 18       |
-      | z (zepto)   | 21       |
-      | y (yocto)   | 24       |
-
   Scenario Outline: a valid message with disable auto-retire
     Given the message
     """
@@ -208,18 +178,6 @@ Feature: MsgCreate
     """
     When the message is validated
     Then expect the error "description length cannot be greater than 256 characters: invalid request"
-
-  Scenario: an error is returned if exponent does not have a corresponding SI prefix
-    Given the message
-    """
-    {
-      "curator": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "name": "NCT",
-      "exponent": 4
-    }
-    """
-    When the message is validated
-    Then expect the error "exponent must be one of [0 1 2 3 6 9 12 15 18 21 24]: invalid request"
 
   Scenario: an error is returned if credit type abbreviation is empty
     Given the message

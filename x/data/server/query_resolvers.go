@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/orm/model/ormlist"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
@@ -44,12 +45,18 @@ func (s serverImpl) ResolversByIRI(ctx context.Context, request *data.QueryResol
 			return nil, err
 		}
 
-		resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, item.ResolverId)
+		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
 			return nil, err
 		}
 
-		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
+		manager := sdk.AccAddress(resolver.Manager).String()
+
+		res.Resolvers = append(res.Resolvers, &data.ResolverInfo{
+			Id:      resolver.Id,
+			Url:     resolver.Url,
+			Manager: manager,
+		})
 	}
 
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
@@ -101,12 +108,66 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 			return nil, err
 		}
 
-		resolverInfo, err := s.stateStore.ResolverInfoTable().Get(ctx, item.ResolverId)
+		resolver, err := s.stateStore.ResolverTable().Get(ctx, item.ResolverId)
 		if err != nil {
 			return nil, err
 		}
 
-		res.ResolverUrls = append(res.ResolverUrls, resolverInfo.Url)
+		manager := sdk.AccAddress(resolver.Manager).String()
+
+		res.Resolvers = append(res.Resolvers, &data.ResolverInfo{
+			Id:      resolver.Id,
+			Url:     resolver.Url,
+			Manager: manager,
+		})
+	}
+
+	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// ResolversByUrl queries resolvers based on URL.
+func (s serverImpl) ResolversByUrl(ctx context.Context, request *data.QueryResolversByUrlRequest) (*data.QueryResolversByUrlResponse, error) {
+	if len(request.Url) == 0 {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("url cannot be empty")
+	}
+
+	if request.Pagination == nil {
+		request.Pagination = &query.PageRequest{}
+	}
+
+	pg, err := ormutil.GogoPageReqToPulsarPageReq(request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	it, err := s.stateStore.ResolverTable().List(
+		ctx,
+		api.ResolverUrlIndexKey{}.WithUrl(request.Url),
+		ormlist.Paginate(pg),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &data.QueryResolversByUrlResponse{}
+	for it.Next() {
+		item, err := it.Value()
+		if err != nil {
+			return nil, err
+		}
+
+		manager := sdk.AccAddress(item.Manager).String()
+
+		res.Resolvers = append(res.Resolvers, &data.ResolverInfo{
+			Id:      item.Id,
+			Url:     item.Url,
+			Manager: manager,
+		})
 	}
 
 	res.Pagination, err = ormutil.PulsarPageResToGogoPageRes(it.PageResponse())
