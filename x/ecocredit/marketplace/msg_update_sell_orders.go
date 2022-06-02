@@ -31,7 +31,7 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("owner is not a valid address: %s", err)
+		return sdkerrors.ErrInvalidAddress.Wrapf("owner is not a valid address: %s", err)
 	}
 
 	if len(m.Updates) == 0 {

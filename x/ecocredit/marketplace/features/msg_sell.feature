@@ -106,7 +106,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "owner is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid request"
+    Then expect the error "owner is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
   Scenario: an error is returned if orders is empty
     Given the message
