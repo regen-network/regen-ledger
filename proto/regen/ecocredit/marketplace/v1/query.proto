@@ -24,21 +24,24 @@ service Query {
         "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByBatchDenom queries a paginated list of all sell orders based on the credit batch denom of the credits being sold.
+  // SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+  // the credit batch denom of the credits being sold.
   rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest)
       returns (QuerySellOrdersByBatchDenomResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
   }
 
-  // SellOrdersBySeller queries a paginated list of all sell orders based on the account address of the seller.
+  // SellOrdersBySeller queries a paginated list of all sell orders based on the
+  // account address of the seller.
   rpc SellOrdersBySeller(QuerySellOrdersBySellerRequest)
       returns (QuerySellOrdersBySellerResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}";
   }
 
-  // AllowedDenoms queries a paginated list of all bank denoms allowed to be used in the marketplace.
+  // AllowedDenoms queries a paginated list of all bank denoms allowed to be
+  // used in the marketplace.
   rpc AllowedDenoms(QueryAllowedDenomsRequest)
       returns (QueryAllowedDenomsResponse) {
     option (google.api.http).get =
@@ -77,7 +80,8 @@ message QuerySellOrdersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByBatchDenomRequest is the Query/SellOrdersByBatchDenom request type.
+// QuerySellOrdersByBatchDenomRequest is the Query/SellOrdersByBatchDenom
+// request type.
 message QuerySellOrdersByBatchDenomRequest {
 
   // batch_denom is an ecocredit denom
@@ -87,7 +91,8 @@ message QuerySellOrdersByBatchDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByBatchDenomResponse is the Query/SellOrdersByBatchDenom response type.
+// QuerySellOrdersByBatchDenomResponse is the Query/SellOrdersByBatchDenom
+// response type.
 message QuerySellOrdersByBatchDenomResponse {
 
   // sell_orders is a list of sell orders.
