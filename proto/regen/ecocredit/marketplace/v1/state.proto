@@ -12,7 +12,7 @@ message SellOrder {
   option (cosmos.orm.v1alpha1.table) = {
     id : 1,
     primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1 fields : "batch_id"}
+    index : {id : 1 fields : "batch_key"}
     index : {id : 2 fields : "seller"}
     index : {id : 3 fields : "expiration"}
   };
@@ -23,20 +23,22 @@ message SellOrder {
   // seller is the bytes address of the owner of the credits being sold.
   bytes seller = 2;
 
-  // batch_id is ID of the credit batch being sold.
-  uint64 batch_id = 3;
+  // batch_key is the table row identifier of the credit batch used internally
+  // for efficient lookups. This links a sell order to a credit batch.
+  uint64 batch_key = 3;
 
   // quantity is the decimal quantity of credits being sold.
   string quantity = 4;
 
   // market_id is the market in which this sell order exists and specifies
-  // the bank_denom that ask_price corresponds to.
+  // the bank_denom that ask_amount corresponds to forming the ask_price.
   uint64 market_id = 5;
 
-  // ask_price is the integer price (encoded as a string) the seller is asking
-  // for each unit of the batch_denom. Each credit unit of the batch will be
-  // sold for at least the ask_price or more.
-  string ask_price = 6;
+  // ask_amount is the integer amount (encoded as a string) that the seller is
+  // asking for each credit unit of the batch. Each credit unit of the batch
+  // will be sold for at least the ask_amount. The ask_amount corresponds to the
+  // Market.denom to form the ask price.
+  string ask_amount = 6;
 
   // disable_auto_retire disables auto-retirement of credits which allows a
   // buyer to disable auto-retirement in their buy order enabling them to
@@ -86,14 +88,14 @@ message Market {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4
     primary_key : {fields : "id", auto_increment : true}
-    index : {id : 1 fields : "credit_type,bank_denom", unique : true}
+    index : {id : 1 fields : "credit_type_abbrev,bank_denom", unique : true}
   };
 
   // id is the unique ID of the market.
   uint64 id = 1;
 
-  // credit_type is the abbreviation of the credit type.
-  string credit_type = 2;
+  // credit_type_abbrev is the abbreviation of the credit type.
+  string credit_type_abbrev = 2;
 
   // bank_denom is an allowed bank denom.
   string bank_denom = 3;

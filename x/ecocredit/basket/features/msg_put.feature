@@ -5,7 +5,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -61,7 +61,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT"
+      "basket_denom": "eco.uC.NCT"
     }
     """
     When the message is validated
@@ -72,7 +72,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {}
       ]
@@ -86,7 +86,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {
           "batch_denom": "foo"
@@ -95,14 +95,14 @@ Feature: MsgPut
     }
     """
     When the message is validated
-    Then expect the error "invalid denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if a credit amount is empty
     Given the message
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001"
@@ -118,7 +118,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -135,7 +135,7 @@ Feature: MsgPut
     """
     {
       "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "basket_denom": "NCT",
+      "basket_denom": "eco.uC.NCT",
       "credits": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",

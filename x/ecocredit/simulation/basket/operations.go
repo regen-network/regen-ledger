@@ -276,7 +276,9 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 			for _, projectInfo := range resProjects.GetProjects() {
 
-				batchesRes, err := qryClient.Batches(ctx, &core.QueryBatchesRequest{ProjectId: projectInfo.Id})
+				batchesRes, err := qryClient.BatchesByProject(ctx, &core.QueryBatchesByProjectRequest{
+					ProjectId: projectInfo.Id,
+				})
 				if err != nil {
 					return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 				}
@@ -292,7 +294,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err
 						}
 
-						tradableAmount := balanceRes.Balance.Tradable
+						tradableAmount := balanceRes.Balance.TradableAmount
 						if tradableAmount != "0" {
 							d, err := math.NewPositiveDecFromString(tradableAmount)
 							if err != nil {

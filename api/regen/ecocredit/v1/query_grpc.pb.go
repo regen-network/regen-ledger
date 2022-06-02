@@ -38,12 +38,14 @@ type QueryClient interface {
 	ProjectsByReferenceId(ctx context.Context, in *QueryProjectsByReferenceIdRequest, opts ...grpc.CallOption) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(ctx context.Context, in *QueryProjectRequest, opts ...grpc.CallOption) (*QueryProjectResponse, error)
-	// Batches queries for all batches in the given project with pagination.
+	// Batches queries for all batches with pagination.
 	Batches(ctx context.Context, in *QueryBatchesRequest, opts ...grpc.CallOption) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
 	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
+	// BatchesByProject queries for all batches from a given project with pagination.
+	BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
@@ -158,6 +160,15 @@ func (c *queryClient) BatchesByClass(ctx context.Context, in *QueryBatchesByClas
 	return out, nil
 }
 
+func (c *queryClient) BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error) {
+	out := new(QueryBatchesByProjectResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/BatchesByProject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error) {
 	out := new(QueryBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Batch", in, out, opts...)
@@ -232,12 +243,14 @@ type QueryServer interface {
 	ProjectsByReferenceId(context.Context, *QueryProjectsByReferenceIdRequest) (*QueryProjectsByReferenceIdResponse, error)
 	// Project queries for information on a project.
 	Project(context.Context, *QueryProjectRequest) (*QueryProjectResponse, error)
-	// Batches queries for all batches in the given project with pagination.
+	// Batches queries for all batches with pagination.
 	Batches(context.Context, *QueryBatchesRequest) (*QueryBatchesResponse, error)
 	// BatchesByIssuer queries all batches issued from a given issuer address.
 	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
+	// BatchesByProject queries for all batches from a given project with pagination.
+	BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
@@ -288,6 +301,9 @@ func (UnimplementedQueryServer) BatchesByIssuer(context.Context, *QueryBatchesBy
 }
 func (UnimplementedQueryServer) BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchesByClass not implemented")
+}
+func (UnimplementedQueryServer) BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchesByProject not implemented")
 }
 func (UnimplementedQueryServer) Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batch not implemented")
@@ -500,6 +516,24 @@ func _Query_BatchesByClass_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_BatchesByProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBatchesByProjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BatchesByProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/BatchesByProject",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BatchesByProject(ctx, req.(*QueryBatchesByProjectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Batch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryBatchRequest)
 	if err := dec(in); err != nil {
@@ -654,6 +688,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BatchesByClass",
 			Handler:    _Query_BatchesByClass_Handler,
+		},
+		{
+			MethodName: "BatchesByProject",
+			Handler:    _Query_BatchesByProject_Handler,
 		},
 		{
 			MethodName: "Batch",

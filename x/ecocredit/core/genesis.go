@@ -262,22 +262,22 @@ func calculateSupply(ctx context.Context, batchIdToPrecision map[uint64]uint32, 
 			return sdkerrors.ErrInvalidType.Wrapf("credit type not exist for %d batch", balance.BatchKey)
 		}
 
-		if balance.Tradable != "" {
-			tradable, err = math.NewNonNegativeFixedDecFromString(balance.Tradable, precision)
+		if balance.TradableAmount != "" {
+			tradable, err = math.NewNonNegativeFixedDecFromString(balance.TradableAmount, precision)
 			if err != nil {
 				return err
 			}
 		}
 
-		if balance.Retired != "" {
-			retired, err = math.NewNonNegativeFixedDecFromString(balance.Retired, precision)
+		if balance.RetiredAmount != "" {
+			retired, err = math.NewNonNegativeFixedDecFromString(balance.RetiredAmount, precision)
 			if err != nil {
 				return err
 			}
 		}
 
-		if balance.Escrowed != "" {
-			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.Escrowed, precision)
+		if balance.EscrowedAmount != "" {
+			escrowed, err = math.NewNonNegativeFixedDecFromString(balance.EscrowedAmount, precision)
 			if err != nil {
 				return err
 			}

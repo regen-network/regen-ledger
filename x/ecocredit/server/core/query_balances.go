@@ -37,11 +37,11 @@ func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*
 		batch, err := k.stateStore.BatchTable().Get(ctx, balance.BatchKey)
 
 		info := core.BatchBalanceInfo{
-			Address:    addr.String(),
-			BatchDenom: batch.Denom,
-			Tradable:   balance.Tradable,
-			Retired:    balance.Retired,
-			Escrowed:   balance.Escrowed,
+			Address:        addr.String(),
+			BatchDenom:     batch.Denom,
+			TradableAmount: balance.TradableAmount,
+			RetiredAmount:  balance.RetiredAmount,
+			EscrowedAmount: balance.EscrowedAmount,
 		}
 
 		balances = append(balances, &info)

@@ -127,12 +127,12 @@ func SimulateMsgBuyDirect(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		buyOrders := make([]*marketplace.MsgBuyDirect_Order, max)
 		for i := 0; i < max; i++ {
-			sellOrderAskPrice, err := strconv.Atoi(sellOrders[i].AskPrice)
+			sellOrderAskAmount, err := strconv.Atoi(sellOrders[i].AskAmount)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBuyDirect, "could not convert to int"), nil, nil
 			}
 
-			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, sellOrderAskPrice, sellOrderAskPrice+100))))
+			bidPrice := sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, sellOrderAskAmount, sellOrderAskAmount+100))))
 			buyOrders[i] = &marketplace.MsgBuyDirect_Order{
 				SellOrderId:            sellOrders[i].Id,
 				Quantity:               sellOrders[i].Quantity,
@@ -209,7 +209,7 @@ func SimulateMsgSell(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			}
 
 			exp := ctx.BlockTime().AddDate(1, 0, 0)
-			d, err := math.NewNonNegativeDecFromString(bal.Balance.Tradable)
+			d, err := math.NewNonNegativeDecFromString(bal.Balance.TradableAmount)
 			if err != nil {
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSell, err.Error()), nil, err
 			}

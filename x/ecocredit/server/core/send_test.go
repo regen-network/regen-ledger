@@ -39,10 +39,10 @@ func TestSend_Valid(t *testing.T) {
 	// sender tradable -> 7.99 retires 1.30 = 6.69
 	// recipient now has 1.30 retired
 
-	assert.Equal(t, "6.69", senderBal.Tradable)
-	assert.Equal(t, "2.51", recipientBal.Tradable)
-	assert.Equal(t, "1.30", recipientBal.Retired)
-	assert.Equal(t, "10.5", senderBal.Retired) // retired credits should be untouched
+	assert.Equal(t, "6.69", senderBal.TradableAmount)
+	assert.Equal(t, "2.51", recipientBal.TradableAmount)
+	assert.Equal(t, "1.30", recipientBal.RetiredAmount)
+	assert.Equal(t, "10.5", senderBal.RetiredAmount) // retired credits should be untouched
 
 	sup, err := s.stateStore.BatchSupplyTable().Get(s.ctx, 1)
 	assert.NilError(t, err)

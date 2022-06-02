@@ -2,123 +2,40 @@ package marketplace
 
 import (
 	"testing"
-	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgSellSuite struct {
+	t   gocuke.TestingT
+	msg *MsgSell
+	err error
+}
+
 func TestMsgSell(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgSellSuite{}).Path("./features/msg_sell.feature").Run()
+}
 
-	_, _, a1 := testdata.KeyTestPubAddr()
+func (s *msgSellSuite) Before(t gocuke.TestingT) {
+	s.t = t
+}
 
-	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+func (s *msgSellSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgSell{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-	tests := map[string]struct {
-		src    MsgSell
-		expErr bool
-	}{
-		"valid": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-000-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-						Expiration:        &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid: bad owner address": {
-			src: MsgSell{
-				Owner: "foobar",
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-000-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad batch denom": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "foobar",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad quantity": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-000-00000000-00000000-000",
-						Quantity:   "-1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad ask price": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-000-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
+func (s *msgSellSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgSellSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgSellSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

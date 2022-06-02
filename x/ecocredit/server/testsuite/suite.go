@@ -87,8 +87,9 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	// set the denom regex for basket coins
 	sdk.SetCoinDenomRegex(func() string {
-		return `[a-zA-Z][a-zA-Z0-9/:._-]{2,127}`
+		return basket.RegexBasketDenom
 	})
 
 	s.fixture = s.fixtureFactory.Setup()
@@ -249,7 +250,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// make sure the core server is properly tracking the user balance
 	newUserTotal, err := userTotalCreditBalance.Sub(creditAmtDeposited)
 	require.NoError(err)
-	require.Equal(newUserTotal.String(), userCreditBalance.Balance.Tradable)
+	require.Equal(newUserTotal.String(), userCreditBalance.Balance.TradableAmount)
 
 	// send the basket coins to another account - user2
 	require.NoError(s.bankKeeper.SendCoins(s.sdkCtx, user, user2, sdk.NewCoins(sdk.NewInt64Coin(basketDenom, i64BT))))
@@ -342,7 +343,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 		BatchDenom: batchDenom,
 	})
 	require.NoError(err)
-	require.Equal(creditsToDeposit.String(), cbRes.Balance.Retired)
+	require.Equal(creditsToDeposit.String(), cbRes.Balance.RetiredAmount)
 }
 
 func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.AccAddress, creditTypeAbbrev, tradableAmount, startStr, endStr string) (string, string) {
@@ -359,9 +360,9 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(admin, recipient sdk.Acc
 	})
 	require.NoError(err)
 	classId := cRes.ClassId
-	start, err := time.Parse("2006-04-02", startStr)
+	start, err := types.ParseDate("start date", startStr)
 	require.NoError(err)
-	end, err := time.Parse("2006-04-02", endStr)
+	end, err := types.ParseDate("end date", endStr)
 	require.NoError(err)
 	pRes, err := s.msgClient.CreateProject(s.ctx, &core.MsgCreateProject{
 		Issuer:       admin.String(),
@@ -489,8 +490,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t0, queryBalanceRes.Balance.Tradable)
-	s.Require().Equal(r0, queryBalanceRes.Balance.Retired)
+	s.Require().Equal(t0, queryBalanceRes.Balance.TradableAmount)
+	s.Require().Equal(r0, queryBalanceRes.Balance.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr2,
@@ -498,8 +499,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t1, queryBalanceRes.Balance.Tradable)
-	s.Require().Equal(r1, queryBalanceRes.Balance.Retired)
+	s.Require().Equal(t1, queryBalanceRes.Balance.TradableAmount)
+	s.Require().Equal(r1, queryBalanceRes.Balance.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
 		Account:    addr4,
@@ -507,8 +508,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t2, queryBalanceRes.Balance.Tradable)
-	s.Require().Equal(r2, queryBalanceRes.Balance.Retired)
+	s.Require().Equal(t2, queryBalanceRes.Balance.TradableAmount)
+	s.Require().Equal(r2, queryBalanceRes.Balance.RetiredAmount)
 
 	// if we didn't issue tradable or retired balances, they'll be default to zero.
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
@@ -517,8 +518,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal("0", queryBalanceRes.Balance.Tradable)
-	s.Require().Equal("0", queryBalanceRes.Balance.Retired)
+	s.Require().Equal("0", queryBalanceRes.Balance.TradableAmount)
+	s.Require().Equal("0", queryBalanceRes.Balance.RetiredAmount)
 
 	// query supply
 	querySupplyRes, err := s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -613,6 +614,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toCancel,
 					},
 				},
+				Reason: "bridging assets to another chain",
 			})
 
 			if tc.expectErr {
@@ -628,8 +630,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.assertDecStrEqual(tc.expTradable, queryBalanceRes.Balance.Tradable)
-				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.Retired)
+				s.assertDecStrEqual(tc.expTradable, queryBalanceRes.Balance.TradableAmount)
+				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -767,8 +769,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.assertDecStrEqual(tc.expTradable, queryBalanceRes.Balance.Tradable)
-				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.Retired)
+				s.assertDecStrEqual(tc.expTradable, queryBalanceRes.Balance.TradableAmount)
+				s.assertDecStrEqual(tc.expRetired, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -920,8 +922,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.assertDecStrEqual(tc.expTradableSender, queryBalanceRes.Balance.Tradable)
-				s.assertDecStrEqual(tc.expRetiredSender, queryBalanceRes.Balance.Retired)
+				s.assertDecStrEqual(tc.expTradableSender, queryBalanceRes.Balance.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredSender, queryBalanceRes.Balance.RetiredAmount)
 
 				// query recipient balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
@@ -930,8 +932,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.assertDecStrEqual(tc.expTradableRecipient, queryBalanceRes.Balance.Tradable)
-				s.assertDecStrEqual(tc.expRetiredRecipient, queryBalanceRes.Balance.Retired)
+				s.assertDecStrEqual(tc.expTradableRecipient, queryBalanceRes.Balance.TradableAmount)
+				s.assertDecStrEqual(tc.expRetiredRecipient, queryBalanceRes.Balance.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &core.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -1185,7 +1187,7 @@ func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom st
 }
 
 func (s *IntegrationTestSuite) getDecimalsFromBalance(bal *core.BatchBalanceInfo) (tradable, retired, escrowed math.Dec) {
-	decs, err := utils.GetNonNegativeFixedDecs(6, bal.Tradable, bal.Retired, bal.Escrowed)
+	decs, err := utils.GetNonNegativeFixedDecs(6, bal.TradableAmount, bal.RetiredAmount, bal.EscrowedAmount)
 	s.Require().NoError(err)
 	return decs[0], decs[1], decs[2]
 }

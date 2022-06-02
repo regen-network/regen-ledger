@@ -142,13 +142,13 @@ func TestSellOrdersByAddress(t *testing.T) {
 	assert.ErrorContains(t, err, "decoding bech32 failed")
 }
 
-func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchId uint64) *api.SellOrder {
+func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchKey uint64) *api.SellOrder {
 	sellOrder := &api.SellOrder{
 		Seller:            addr,
-		BatchId:           batchId,
+		BatchKey:          batchKey,
 		Quantity:          "10",
 		MarketId:          1,
-		AskPrice:          "10",
+		AskAmount:         "10",
 		DisableAutoRetire: false,
 		Expiration:        timestamppb.Now(),
 		Maker:             false,
@@ -161,7 +161,7 @@ func insertSellOrder(t *testing.T, s *baseSuite, addr sdk.AccAddress, batchId ui
 func assertOrderEqual(t *testing.T, ctx context.Context, k Keeper, received *marketplace.SellOrderInfo, order *api.SellOrder) {
 	seller := sdk.AccAddress(order.Seller)
 
-	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchId)
+	batch, err := k.coreStore.BatchTable().Get(ctx, order.BatchKey)
 	assert.NilError(t, err)
 
 	market, err := k.stateStore.MarketTable().Get(ctx, order.MarketId)
@@ -173,7 +173,7 @@ func assertOrderEqual(t *testing.T, ctx context.Context, k Keeper, received *mar
 		BatchDenom:        batch.Denom,
 		Quantity:          order.Quantity,
 		AskDenom:          market.BankDenom,
-		AskPrice:          order.AskPrice,
+		AskAmount:         order.AskAmount,
 		DisableAutoRetire: order.DisableAutoRetire,
 		Expiration:        types.ProtobufToGogoTimestamp(order.Expiration),
 	}
