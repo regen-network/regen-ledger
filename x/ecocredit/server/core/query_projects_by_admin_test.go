@@ -6,6 +6,7 @@ import (
 	"gotest.tools/v3/assert"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
@@ -24,7 +25,7 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 	assert.NilError(t, err)
 
 	// create two projects
-	project := &api.Project{
+	project1 := &api.Project{
 		Id:           "C01-001",
 		ClassKey:     classKey,
 		Admin:        s.addr,
@@ -32,10 +33,10 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 		Metadata:     "data",
 	}
 
-	err = s.stateStore.ProjectTable().Insert(s.ctx, project)
+	err = s.stateStore.ProjectTable().Insert(s.ctx, project1)
 	assert.NilError(t, err)
 
-	project = &api.Project{
+	project := &api.Project{
 		Id:           "C01-002",
 		ClassKey:     classKey,
 		Admin:        s.addr,
@@ -71,6 +72,10 @@ func TestQuery_Projects_By_Admin(t *testing.T) {
 		}})
 	assert.NilError(t, err)
 	assert.Equal(t, len(res.Projects), 1)
+	assert.Equal(t, project1.Id, res.Projects[0].Id)
+	assert.Equal(t, "C01", res.Projects[0].ClassId)
+	assert.Equal(t, sdk.AccAddress(project1.Admin).String(), res.Projects[0].Admin)
+	assert.Equal(t, project1.Jurisdiction, res.Projects[0].Jurisdiction)
 	assert.Equal(t, res.Pagination.Total, uint64(2))
 
 	// query project by admin2 expect 1 project
