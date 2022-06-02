@@ -119,7 +119,7 @@ func (s *buyDirectSuite) AliceHasTheBatchBalance(a gocuke.DocString) {
 	balance.BatchKey = batch.Key
 	balance.Address = s.alice
 
-	// Save because the balance already exists from sellOrderSetup
+	// Save because the balance already exists from createSellOrders
 	err = s.coreStore.BatchBalanceTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
@@ -149,7 +149,7 @@ func (s *buyDirectSuite) TheBatchSupply(a gocuke.DocString) {
 
 	balance.BatchKey = batch.Key
 
-	// Save because the supply already exists from sellOrderSetup
+	// Save because the supply already exists from createSellOrders
 	err = s.coreStore.BatchSupplyTable().Save(s.ctx, balance)
 	require.NoError(s.t, err)
 }
@@ -160,19 +160,19 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithId(a string) {
 
 	s.sellOrderId = id
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantity(a string) {
 	s.quantity = a
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskDenom(a string) {
 	s.askPrice = sdk.NewCoin(a, s.askPrice.Amount)
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
@@ -181,7 +181,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithAskAmount(a string) {
 
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
@@ -190,7 +190,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithDisableAutoRetire(a string) {
 
 	s.disableAutoRetire = disableAutoRetire
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string, b string) {
@@ -200,7 +200,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskAmount(a string
 	s.quantity = a
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string, b string) {
@@ -210,7 +210,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndAskPrice(a string,
 	s.quantity = a
 	s.askPrice = askPrice
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(a string, b string) {
@@ -220,7 +220,7 @@ func (s *buyDirectSuite) AliceCreatedASellOrderWithQuantityAndDisableAutoRetire(
 	s.quantity = a
 	s.disableAutoRetire = disableAutoRetire
 
-	s.sellOrderSetup(1)
+	s.createSellOrders(1)
 }
 
 func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a string, b string) {
@@ -230,7 +230,7 @@ func (s *buyDirectSuite) AliceCreatedTwoSellOrdersEachWithQuantityAndAskAmount(a
 	s.quantity = a
 	s.askPrice = sdk.NewCoin(s.askPrice.Denom, askAmount)
 
-	s.sellOrderSetup(2)
+	s.createSellOrders(2)
 }
 
 func (s *buyDirectSuite) BobAttemptsToBuyCreditsWithSellOrderId(a string) {
@@ -490,7 +490,8 @@ func (s *buyDirectSuite) ExpectBatchSupply(a gocuke.DocString) {
 	require.Equal(s.t, expected.TradableAmount, balance.TradableAmount)
 }
 
-func (s *buyDirectSuite) sellOrderSetup(count int) {
+// count is the number of sell orders created
+func (s *buyDirectSuite) createSellOrders(count int) {
 	totalQuantity := s.quantity
 
 	if count > 1 {

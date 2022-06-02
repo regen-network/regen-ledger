@@ -50,7 +50,7 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
-				"%s: quantity: %s, credit type precision: %d",
+				"%s: decimal places exceeds precision: quantity: %s, credit type precision: %d",
 				orderIndex, order.Quantity, ct.Precision,
 			)
 		}

@@ -142,7 +142,7 @@ Feature: Msg/BuyDirect
     Scenario: quantity decimal places more than precision
       Given alice created a sell order with quantity "9.1234567"
       When bob attempts to buy credits with quantity "9.1234567"
-      Then expect the error "orders[0]: quantity: 9.1234567, credit type precision: 6: invalid request"
+      Then expect the error "orders[0]: decimal places exceeds precision: quantity: 9.1234567, credit type precision: 6: invalid request"
 
   Rule: The buyer cannot disable auto-retire if the sell order has auto-retire enabled
 
