@@ -241,6 +241,11 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
+		batchIssuer, err := sdk.AccAddressFromBech32(batchInfo.Issuer)
+		if err != nil {
+			return err
+		}
+
 		batch := api.Batch{
 			ProjectKey:   projectKey,
 			Denom:        batchDenom,
@@ -248,6 +253,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			StartDate:    timestamppb.New(*batchInfo.StartDate),
 			EndDate:      timestamppb.New(*batchInfo.EndDate),
 			IssuanceDate: nil,
+			Issuer:       batchIssuer,
 		}
 
 		bID, err := ss.BatchTable().InsertReturningID(ctx, &batch)
