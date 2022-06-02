@@ -92,14 +92,13 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 		// depending on the length of issuance and if recipient is the same
 		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batchKey)
 		if err != nil {
-			if ormerrors.IsNotFound(err) {
-				balance = &api.BatchBalance{
-					TradableAmount: "0",
-					RetiredAmount:  "0",
-					EscrowedAmount: "0",
-				}
-			} else {
+			if !ormerrors.IsNotFound(err) {
 				return nil, err
+			}
+			balance = &api.BatchBalance{
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+				EscrowedAmount: "0",
 			}
 		}
 		tradableBalance, err := math.NewDecFromString(balance.TradableAmount)
