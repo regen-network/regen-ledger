@@ -104,7 +104,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
 
-	return &marketplace.MsgSellResponse{}, nil
+	return &marketplace.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
 // getOrCreateMarketId attempts to get a market, creating one otherwise, and return the Id.
