@@ -339,8 +339,8 @@ message QueryBatchResponse {
 // QueryBalanceRequest is the Query/Balance request type.
 message QueryBalanceRequest {
 
-  // owner is the account address that owns the credits.
-  string owner = 1;
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
 
   // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 2;
@@ -356,8 +356,8 @@ message QueryBalanceResponse {
 // QueryBalancesRequest is the Query/Balances request type.
 message QueryBalancesRequest {
 
-  // owner is the account address that owns the credits.
-  string owner = 1;
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -495,8 +495,8 @@ message BatchInfo {
 // BatchBalanceInfo is the human-readable batch balance information.
 message BatchBalanceInfo {
 
-  // owner is the account address that owns the credits.
-  string owner = 1;
+  // address is the address of the account that owns the credits.
+  string address = 1;
 
   // batch_denom is the unique identifier of the credit batch.
   string batch_denom = 2;
