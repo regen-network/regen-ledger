@@ -7,7 +7,7 @@ import "regen/data/v1/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// Msg is the regen.data.v1alpha1 Msg service
+// Msg is the regen.data.v1 Msg service
 service Msg {
   // Anchor "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.

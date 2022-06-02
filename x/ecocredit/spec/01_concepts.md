@@ -4,7 +4,7 @@
 
 ### Credit Class
 
-A credit class is the primary abstraction for an ecosystem service credit. Each credit class is associated with a credit type that represents the primary unit of measurement that the credit accounts for (e.g. metric tons of CO2e sequestered). Information about the accepted methodologies for each credit class are typically stored off chain and referenced in the credit class's `metadata` field using a hash-based content identifier, such as an [IRI](https://github.com/regen-network/regen-ledger/blob/fc3df53f2ef3fcb43219f280417854813077792b/x/data/iri.go#L11-L24).
+A credit class is the primary abstraction for an ecosystem service credit. Each credit class is associated with a credit type that represents the primary unit of measurement that the credit accounts for (e.g. metric tons of CO2e sequestered). Information about the accepted methodologies for each credit class are typically stored off chain and referenced in the credit class's `metadata` field using a hash-based content identifier, such as an [IRI](../data/01_concepts.html#iri).
 
 Each credit class also has an admin (an address with permission to update the credit class) and a list of approved issuers (addresses with permission to issue credit batches under the credit class).
 
