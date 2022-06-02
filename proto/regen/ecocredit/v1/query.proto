@@ -61,7 +61,7 @@ service Query {
   rpc ProjectsByAdmin(QueryProjectsByAdminRequest)
       returns (QueryProjectsByAdminResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/projects/{admin}";
+        "/regen/ecocredit/v1/projects/by-admin/{admin}";
   }
 
   // Batches queries for all batches with pagination.

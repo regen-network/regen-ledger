@@ -502,14 +502,10 @@ func QueryProjectsByAdminCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects-by-admin [admin]",
 		Short: "Retrieve list of projects by admin with pagination flags",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Retrieve list of projects by admin with pagination flags
-			
-Examples:
-$%s query %s projects-by-admin regenx1v44...
-$%s q %s projects-by-admin regenx1v44.. --limit 10
-			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
-		),
+		Example: `
+$regen query ecocredit projects-by-admin regenx1v44...
+$regen q ecocredit projects-by-admin regenx1v44.. --limit 10
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
