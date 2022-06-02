@@ -62,3 +62,41 @@ func TestSell_Prune(t *testing.T) {
 	_, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldBeValid)
 	assert.NilError(t, err)
 }
+
+// TestPrune_NilExpiration tests that sell orders with nil expirations are not deleted when PruneOrders is called.
+func TestPrune_NilExpiration(t *testing.T) {
+	t.Parallel()
+	s := setupBase(t)
+	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], "C01", start, end, creditType)
+
+	blockTime, err := types.ParseDate("block time", "2020-01-01")
+	assert.NilError(t, err)
+	expired, err := types.ParseDate("expiration", "2010-01-01")
+	assert.NilError(t, err)
+
+	msg := &marketplace.MsgSell{
+		Owner: s.addr.String(),
+		Orders: []*marketplace.MsgSell_Order{
+			{BatchDenom: batchDenom, Quantity: "5", AskPrice: &ask, Expiration: nil},
+			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
+		},
+	}
+	res, err := s.k.Sell(s.ctx, msg)
+	assert.NilError(t, err)
+
+	shouldExistOrder := res.SellOrderIds[0]
+	shouldNotExistOrder := res.SellOrderIds[1]
+
+	s.sdkCtx = s.sdkCtx.WithBlockTime(blockTime)
+	s.ctx = sdk.WrapSDKContext(s.sdkCtx)
+
+	err = s.k.PruneSellOrders(s.ctx)
+	assert.NilError(t, err)
+
+	order, err := s.marketStore.SellOrderTable().Get(s.ctx, shouldExistOrder)
+	assert.NilError(t, err)
+	assert.Equal(t, "5", order.Quantity)
+
+	order, err = s.marketStore.SellOrderTable().Get(s.ctx, shouldNotExistOrder)
+	assert.ErrorIs(t, err, ormerrors.NotFound)
+}

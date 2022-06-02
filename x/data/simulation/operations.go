@@ -262,12 +262,12 @@ func SimulateMsgRegisterResolver(ak data.AccountKeeper, bk data.BankKeeper,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		ctx := sdk.WrapSDKContext(sdkCtx)
 		resolverId := r.Uint64()
-		res, err := qryClient.ResolverInfo(ctx, &data.QueryResolverInfoRequest{Id: resolverId})
+		res, err := qryClient.Resolver(ctx, &data.QueryResolverRequest{Id: resolverId})
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, nil // not found
 		}
 
-		manager, err := sdk.AccAddressFromBech32(res.Manager)
+		manager, err := sdk.AccAddressFromBech32(res.Resolver.Manager)
 		if err != nil {
 			return simtypes.NoOpMsg(ModuleName, TypeMsgRegisterResolver, err.Error()), nil, err
 		}

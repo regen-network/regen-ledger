@@ -17,13 +17,16 @@ import (
 func (k Keeper) PruneSellOrders(ctx context.Context) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	min, blockTime := timestamppb.New(time.Unix(0, 0)), timestamppb.New(sdkCtx.BlockTime())
+	// we set the min to 1 ns because nil expirations are encoded as the 0 value timestamp,
+	// and we DO NOT want those to be deleted/unescrowed.
+	// https://github.com/cosmos/cosmos-sdk/issues/11980
+	min, blockTime := timestamppb.New(time.Unix(0, 1)), timestamppb.New(sdkCtx.BlockTime())
 	fromKey, toKey := marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(min), marketplaceapi.SellOrderExpirationIndexKey{}.WithExpiration(blockTime)
+
 	it, err := k.stateStore.SellOrderTable().ListRange(ctx, fromKey, toKey)
 	if err != nil {
 		return err
 	}
-	defer it.Close()
 	for it.Next() {
 		sellOrder, err := it.Value()
 		if err != nil {
@@ -32,7 +35,10 @@ func (k Keeper) PruneSellOrders(ctx context.Context) error {
 		if err = k.unescrowCredits(ctx, sellOrder.Seller, sellOrder.BatchKey, sellOrder.Quantity); err != nil {
 			return err
 		}
+
 	}
+	it.Close()
+
 	return k.stateStore.SellOrderTable().DeleteRange(ctx, fromKey, toKey)
 }
 

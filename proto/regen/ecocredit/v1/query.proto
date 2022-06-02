@@ -58,8 +58,7 @@ service Query {
 
   // Batches queries for all batches with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1/batches";
+    option (google.api.http).get = "/regen/ecocredit/v1/batches";
   }
 
   // BatchesByIssuer queries all batches issued from a given issuer address.
@@ -76,8 +75,10 @@ service Query {
         "/regen/ecocredit/v1/batches/class/{class_id}";
   }
 
-  // BatchesByProject queries for all batches from a given project with pagination.
-  rpc BatchesByProject(QueryBatchesByProjectRequest) returns (QueryBatchesByProjectResponse) {
+  // BatchesByProject queries for all batches from a given project with
+  // pagination.
+  rpc BatchesByProject(QueryBatchesByProjectRequest)
+      returns (QueryBatchesByProjectResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1/batches/project/{project_id}";
   }

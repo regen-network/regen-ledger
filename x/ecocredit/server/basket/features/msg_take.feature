@@ -15,20 +15,24 @@ Feature: Msg/Take
 
   Rule: The basket must exist
 
+    Background:
+      Given a credit type with abbreviation "C" and precision "0"
+
     Scenario: basket exists
-      Given a basket with denom "eco.C.NCT"
-      And alice owns tokens with denom "eco.C.NCT"
-      When alice attempts to take credits with basket denom "eco.C.NCT"
+      Given a basket with denom "eco.uC.NCT"
+      And alice owns tokens with denom "eco.uC.NCT"
+      When alice attempts to take credits with basket denom "eco.uC.NCT"
       Then expect no error
 
     Scenario: basket does not exist
-      When alice attempts to take credits with basket denom "eco.C.NCT"
-      Then expect the error "basket eco.C.NCT not found: not found"
+      When alice attempts to take credits with basket denom "eco.uC.NCT"
+      Then expect the error "basket eco.uC.NCT not found: not found"
 
   Rule: The user token balance must be greater than or equal to the token amount
 
     Background:
-      Given a basket
+      Given a credit type with abbreviation "C" and precision "6"
+      And a basket
 
     Scenario Outline: user token balance is greater than or equal to token amount
       Given alice owns basket token amount "<token-balance>"
@@ -43,7 +47,7 @@ Feature: Msg/Take
     Scenario Outline: user token balance is less than token amount
       Given alice owns basket token amount "<token-balance>"
       When alice attempts to take credits with basket token amount "<token-amount>"
-      Then expect the error "insufficient balance for basket denom eco.C.NCT: insufficient funds"
+      Then expect the error "insufficient balance for basket denom eco.uC.NCT: insufficient funds"
 
       Examples:
         | description  | token-balance  | token-amount |
@@ -51,6 +55,9 @@ Feature: Msg/Take
         | balance less | 50             | 100          |
 
   Rule: The user must set retire on take to true if auto-retire is enabled
+
+    Background:
+      Given a credit type
 
     Scenario Outline: basket auto-retire disabled
       Given a basket with disable auto retire "true"
@@ -78,7 +85,8 @@ Feature: Msg/Take
  Rule: The user token balance is updated when credits are taken from the basket
 
     Scenario: user token balance is updated
-      Given a basket
+      Given a credit type
+      And a basket
       And alice owns basket token amount "100"
       When alice attempts to take credits with basket token amount "50"
       Then expect alice basket token balance amount "50"
@@ -88,7 +96,8 @@ Feature: Msg/Take
  Rule: The basket token supply is updated when credits are taken from the basket
 
     Scenario: basket token supply is updated
-      Given a basket
+      Given a credit type
+      And a basket
       And basket token supply amount "100"
       And alice owns basket token amount "100"
       When alice attempts to take credits with basket token amount "50"
@@ -99,7 +108,8 @@ Feature: Msg/Take
   Rule: The user credit balance is updated when credits are taken from the basket
 
     Scenario Outline: user retired credit balance is updated
-      Given a basket with exponent "<exponent>" and disable auto retire "false"
+      Given a credit type with abbreviation "C" and precision "<precision>"
+      And a basket with credit type "C" and disable auto retire "false"
       And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "true"
@@ -107,13 +117,14 @@ Feature: Msg/Take
       And expect alice tradable credit balance amount "0"
 
       Examples:
-        | description                        | exponent | token-amount | retired-credits |
-        | exponent zero, credits whole       | 0        | 2            | 2               |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000        |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000        |
+        | description                         | precision | token-amount | retired-credits |
+        | precision zero, credits whole       | 0         | 2            | 2               |
+        | precision non-zero, credits whole   | 6         | 2000000      | 2.000000        |
+        | precision non-zero, credits decimal | 6         | 2500000      | 2.500000        |
 
     Scenario Outline: user tradable credit balance is updated
-      Given a basket with exponent "<exponent>" and disable auto retire "true"
+      Given a credit type with abbreviation "C" and precision "<precision>"
+      And a basket with credit type "C" and disable auto retire "true"
       And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>" and retire on take "false"
@@ -121,34 +132,36 @@ Feature: Msg/Take
       And expect alice retired credit balance amount "0"
 
       Examples:
-        | description                        | exponent | token-amount | tradable-credits |
-        | exponent zero, credits whole       | 0        | 2            | 2                |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000         |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000         |
+        | description                         | precision | token-amount | tradable-credits |
+        | precision zero, credits whole       | 0         | 2            | 2                |
+        | precision non-zero, credits whole   | 6         | 2000000      | 2.000000         |
+        | precision non-zero, credits decimal | 6         | 2500000      | 2.500000         |
 
     # no failing scenario - state transitions only occur upon successful message execution
 
   Rule: The basket credit balance is updated when credits are taken from the basket
 
     Scenario Outline: basket credit balance is updated
-      Given a basket with exponent "<exponent>" and credit balance "100"
+      Given a credit type with abbreviation "C" and precision "<precision>"
+      And a basket with credit type "C" and credit balance "100"
       And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
       Then expect basket credit balance amount "<credit-amount>"
 
       Examples:
-        | description                        | exponent | token-amount | credit-amount |
-        | exponent zero, credits whole       | 0        | 2            | 98            |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 98.000000     |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 97.500000     |
+        | description                         | precision | token-amount | credit-amount |
+        | precision zero, credits whole       | 0         | 2            | 98            |
+        | precision non-zero, credits whole   | 6         | 2000000      | 98.000000     |
+        | precision non-zero, credits decimal | 6         | 2500000      | 97.500000     |
 
     # no failing scenario - state transitions only occur upon successful message execution
 
  Rule: The message response includes the credits received when credits are taken from the basket
 
     Scenario Outline: message response includes basket token amount received
-      Given a basket with exponent "<exponent>" and credit balance "100"
+      Given a credit type with abbreviation "C" and precision "<precision>"
+      And a basket with credit type "C" and credit balance "100"
       And basket token supply amount "<token-amount>"
       And alice owns basket token amount "<token-amount>"
       When alice attempts to take credits with basket token amount "<token-amount>"
@@ -165,9 +178,9 @@ Feature: Msg/Take
       """
 
       Examples:
-        | description                        | exponent | token-amount | credit-amount |
-        | exponent zero, credits whole       | 0        | 2            | 2             |
-        | exponent non-zero, credits whole   | 6        | 2000000      | 2.000000      |
-        | exponent non-zero, credits decimal | 6        | 2500000      | 2.500000      |
+        | description                         | precision | token-amount | credit-amount |
+        | precision zero, credits whole       | 0         | 2            | 2             |
+        | precision non-zero, credits whole   | 6         | 2000000      | 2.000000      |
+        | precision non-zero, credits decimal | 6         | 2500000      | 2.500000      |
 
     # no failing scenario - response should always be empty when message execution fails
