@@ -213,16 +213,16 @@ message BatchSequence {
 message BatchBalance {
   option (cosmos.orm.v1alpha1.table) = {
     id : 9,
-    primary_key : {fields : "address,batch_key"}
-    index : {id : 1, fields : "batch_key,address"}
+    primary_key : {fields : "owner,batch_key"}
+    index : {id : 1, fields : "batch_key,owner"}
   };
 
   // batch_key is the table row identifier of the credit batch used internally
   // for efficient lookups. This links a batch balance to a credit batch.
   uint64 batch_key = 1;
 
-  // address is the address of the credit holder.
-  bytes address = 2;
+  // owner is the owner of the credits.
+  bytes owner = 2;
 
   // tradable_amount is the total number of tradable credits owned by address.
   string tradable_amount = 3;
