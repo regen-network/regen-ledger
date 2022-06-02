@@ -33,6 +33,12 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 		return nil, err
 	}
 
+	// get the credit type
+	creditType, err := k.coreStore.CreditTypeTable().Get(ctx, basket.CreditTypeAbbrev)
+	if err != nil {
+		return nil, err
+	}
+
 	// keep track of the total amount of tokens to give to the depositor
 	amountReceived := sdk.NewInt(0)
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
@@ -50,19 +56,19 @@ func (k Keeper) Put(ctx context.Context, req *baskettypes.MsgPut) (*baskettypes.
 			return nil, err
 		}
 		// get the amount of credits in dec
-		amt, err := regenmath.NewPositiveFixedDecFromString(credit.Amount, basket.Exponent)
+		amt, err := regenmath.NewPositiveFixedDecFromString(credit.Amount, creditType.Precision)
 		if err != nil {
 			return nil, err
 		}
 		// update the user and basket balances
-		if err = k.transferToBasket(ctx, ownerAddr, amt, basket, batch); err != nil {
+		if err = k.transferToBasket(ctx, ownerAddr, amt, basket.Id, batch, creditType.Precision); err != nil {
 			if sdkerrors.ErrInsufficientFunds.Is(err) {
 				return nil, ecocredit.ErrInsufficientCredits
 			}
 			return nil, err
 		}
 		// get the amount of basket tokens to give to the depositor
-		tokens, err := creditAmountToBasketCoins(amt, basket.Exponent, basket.BasketDenom)
+		tokens, err := creditAmountToBasketCoins(amt, creditType.Precision, basket.BasketDenom)
 		if err != nil {
 			return nil, err
 		}
@@ -159,7 +165,7 @@ func (k Keeper) canBasketAcceptCredit(ctx context.Context, basket *api.Basket, b
 }
 
 // transferToBasket moves credits from the user's tradable balance, into the basket's balance
-func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basket *api.Basket, batch *ecoApi.Batch) error {
+func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt regenmath.Dec, basketId uint64, batch *ecoApi.Batch, exponent uint32) error {
 	// update user balance, subtracting from their tradable balance
 	userBal, err := k.coreStore.BatchBalanceTable().Get(ctx, sender, batch.Key)
 	if err != nil {
@@ -180,11 +186,11 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 
 	// update basket balance with amount sent, adding to the basket's balance.
 	var bal *api.BasketBalance
-	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basket.Id, batch.Denom)
+	bal, err = k.stateStore.BasketBalanceTable().Get(ctx, basketId, batch.Denom)
 	if err != nil {
 		if ormerrors.IsNotFound(err) {
 			bal = &api.BasketBalance{
-				BasketId:       basket.Id,
+				BasketId:       basketId,
 				BatchDenom:     batch.Denom,
 				Balance:        amt.String(),
 				BatchStartDate: batch.StartDate,
@@ -193,7 +199,7 @@ func (k Keeper) transferToBasket(ctx context.Context, sender sdk.AccAddress, amt
 			return err
 		}
 	} else {
-		newBalance, err := regenmath.NewPositiveFixedDecFromString(bal.Balance, basket.Exponent)
+		newBalance, err := regenmath.NewPositiveFixedDecFromString(bal.Balance, exponent)
 		if err != nil {
 			return err
 		}
