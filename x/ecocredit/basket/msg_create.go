@@ -55,10 +55,6 @@ func (m MsgCreate) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("description length cannot be greater than %d characters", descrMaxLen)
 	}
 
-	if _, err := core.ExponentToPrefix(m.Exponent); err != nil {
-		return err
-	}
-
 	if len(m.CreditTypeAbbrev) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation cannot be empty")
 	}
