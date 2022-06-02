@@ -300,7 +300,10 @@ func SimulateMsgUpdateSellOrder(ak ecocredit.AccountKeeper, bk ecocredit.BankKee
 				return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateSellOrder, err.Error()), nil, nil
 			}
 
-			newQuantity := simtypes.RandIntBetween(r, 1, q)
+			newQuantity := 1
+			if q > 1 {
+				newQuantity = simtypes.RandIntBetween(r, 1, q)
+			}
 			updatedOrders[i] = &marketplace.MsgUpdateSellOrders_Update{
 				SellOrderId: orders[i].Id,
 				NewQuantity: func() string {

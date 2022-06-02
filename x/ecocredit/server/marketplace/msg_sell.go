@@ -21,9 +21,6 @@ import (
 func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++")
-	fmt.Println(req)
-	fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++")
 	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
 	if err != nil {
 		return nil, err
@@ -40,10 +37,6 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 				"%s: batch denom %s: %s", orderIndex, order.BatchDenom, err.Error(),
 			)
 		}
-
-		fmt.Println("----------------------------------------------------")
-		fmt.Println(batch)
-		fmt.Println("----------------------------------------------------")
 
 		creditType, err := utils.GetCreditTypeFromBatchDenom(ctx, k.coreStore, batch.Denom)
 		if err != nil {
@@ -62,16 +55,14 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			)
 		}
 
-		// sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, creditType.Precision)
-		// if err != nil {
-		// 	panic("OOOPS")
-		// 	return nil, err
-		// }
+		sellQty, err := math.NewPositiveFixedDecFromString(order.Quantity, creditType.Precision)
+		if err != nil {
+			return nil, err
+		}
 
-		// if err = k.escrowCredits(ctx, orderIndex, ownerAcc, batch.Key, sellQty); err != nil {
-		// 	panic("OOOPS")
-		// 	return nil, err
-		// }
+		if err = k.escrowCredits(ctx, orderIndex, ownerAcc, batch.Key, sellQty); err != nil {
+			return nil, err
+		}
 
 		allowed, err := isDenomAllowed(ctx, order.AskPrice.Denom, k.stateStore.AllowedDenomTable())
 		if err != nil {
@@ -99,7 +90,6 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			Maker:             true, // maker is always true for sell orders
 		})
 		if err != nil {
-			fmt.Println("HEEEEEEEEEEREEEEEEEEEEE")
 			return nil, err
 		}
 
@@ -113,8 +103,6 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 
 		sdkCtx.GasMeter().ConsumeGas(ecocredit.GasCostPerIteration, "ecocredit/core/MsgSell order iteration")
 	}
-
-	fmt.Println("DONEEEEEEEEEEEEEEEEEEEEEEEEEEEE", sdkCtx.BlockHeight())
 
 	return &marketplace.MsgSellResponse{}, nil
 }
@@ -144,10 +132,6 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 		)
 	}
 
-	fmt.Println("_____________________    BAL   ______________________________________")
-	fmt.Println(bal)
-	fmt.Println("___________________________________________________________")
-
 	tradable, err := math.NewDecFromString(bal.TradableAmount)
 	if err != nil {
 		return err
@@ -172,10 +156,6 @@ func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sd
 
 	bal.TradableAmount = newTradable.String()
 	bal.EscrowedAmount = newEscrowed.String()
-
-	fmt.Println("+++++++++ New Balance ++++++++++++++++++++++")
-	fmt.Println(bal)
-	fmt.Println("+++++++++++++++++++++++++++++++++++++++++")
 
 	return k.coreStore.BatchBalanceTable().Update(ctx, bal)
 }
