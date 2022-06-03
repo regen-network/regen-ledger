@@ -13,6 +13,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -25,7 +26,7 @@ type batchMapT struct {
 
 // MigrateState performs in-place store migrations from v3.0 to v4.0.
 func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
-	cdc codec.Codec, ss api.StateStore, subspace paramtypes.Subspace) error {
+	cdc codec.Codec, ss api.StateStore, basketStore basketapi.StateStore, subspace paramtypes.Subspace) error {
 	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ClassInfo{}, cdc)
 	if err != nil {
 		return err
@@ -153,9 +154,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	// migrate credit batches to ORM v1 and create projects for existing credit classes
-	batchDenomToBatchMap := make(map[string]batchMapT) // map of a batch denom to batch id and amount cancelled
-	projectKeyToBatchSeq := make(map[uint64]uint64)    // map of a project key to batch sequence
-	classKeyToProjectSeq := make(map[uint64]uint64)    // map of a class key to project sequence
+	batchDenomToBatchMap := make(map[string]batchMapT)    // map of a batch denom to batch id and amount cancelled
+	projectKeyToBatchSeq := make(map[uint64]uint64)       // map of a project key to batch sequence
+	classKeyToProjectSeq := make(map[uint64]uint64)       // map of a class key to project sequence
+	oldBatchDenomToNewDenomMap := make(map[string]string) // map of a old batch denom to new batch denom
 	batchItr, err := batchInfoTable.PrefixScan(sdkCtx, nil, nil)
 	if err != nil {
 		return err
@@ -226,7 +228,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			projectId = id
 		}
 
-		startDate, endDate, err := parseBatchDenom(batchInfo.BatchDenom)
+		startDate, endDate, err := ParseBatchDenom(batchInfo.BatchDenom)
 		if err != nil {
 			return err
 		}
@@ -241,6 +243,7 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 			return err
 		}
 
+		oldBatchDenomToNewDenomMap[batchInfo.BatchDenom] = batchDenom
 		batchIssuer, err := sdk.AccAddressFromBech32(batchInfo.Issuer)
 		if err != nil {
 			return err
@@ -318,6 +321,10 @@ func MigrateState(sdkCtx sdk.Context, storeKey storetypes.StoreKey,
 	}
 
 	if err = migrateSupply(store, ss, ctx, batchDenomToBatchMap); err != nil {
+		return err
+	}
+
+	if err := patchMigrate(ctx, sdkCtx, ss, basketStore, oldBatchDenomToNewDenomMap); err != nil {
 		return err
 	}
 

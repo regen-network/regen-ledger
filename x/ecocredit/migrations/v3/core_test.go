@@ -21,6 +21,7 @@ import (
 
 	regenorm "github.com/regen-network/regen-ledger/orm"
 
+	basketapi "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -46,6 +47,7 @@ func TestMigrations(t *testing.T) {
 	assert.NilError(t, cms.LoadLatestVersion())
 	ormCtx := ormtable.WrapContextDefault(ormtest.NewMemoryBackend())
 	sdkCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger()).WithContext(ormCtx)
+
 	store := sdkCtx.KVStore(ecocreditKey)
 
 	paramStore.WithKeyTable(v3.ParamKeyTable())
@@ -171,7 +173,10 @@ func TestMigrations(t *testing.T) {
 	ss, err := api.NewStateStore(ormdb)
 	require.Nil(t, err)
 
-	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, paramStore)
+	basketStore, err := basketapi.NewStateStore(ormdb)
+	require.Nil(t, err)
+
+	err = v3.MigrateState(sdkCtx, ecocreditKey, encCfg.Marshaler, ss, basketStore, paramStore)
 	require.NoError(t, err)
 
 	ctx := sdk.WrapSDKContext(sdkCtx)
