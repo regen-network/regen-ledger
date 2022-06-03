@@ -210,6 +210,9 @@ func TestMigrations(t *testing.T) {
 	require.NotNil(t, res1.Admin)
 
 	// verify batch migration
+	// batch1 issuer -> issuer1
+	// batch2 issuer -> issuer2
+	// batch3 issuer -> issuer2
 	expbd1, err := core.FormatBatchDenom("C01-001", 1, &startDate, &endDate)
 	require.NoError(t, err)
 	expbd2, err := core.FormatBatchDenom("C01-002", 1, &startDate, &endDate)
@@ -219,12 +222,17 @@ func TestMigrations(t *testing.T) {
 	batchRes, err := ss.BatchTable().GetByDenom(ctx, expbd1)
 	require.NoError(t, err)
 	require.Equal(t, expbd1, batchRes.Denom)
+	require.Equal(t, issuer1.String(), sdk.AccAddress(batchRes.Issuer).String())
+
 	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd2)
 	require.NoError(t, err)
 	require.Equal(t, expbd2, batchRes.Denom)
+	require.Equal(t, issuer2.String(), sdk.AccAddress(batchRes.Issuer).String())
+
 	batchRes, err = ss.BatchTable().GetByDenom(ctx, expbd3)
 	require.NoError(t, err)
 	require.Equal(t, expbd3, batchRes.Denom)
+	require.Equal(t, issuer2.String(), sdk.AccAddress(batchRes.Issuer).String())
 
 	// verify project sequence
 	res2, err := ss.ProjectSequenceTable().Get(ctx, 1)
