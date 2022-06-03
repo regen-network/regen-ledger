@@ -3,59 +3,39 @@ package marketplace
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
+	"github.com/stretchr/testify/require"
 )
 
-func TestMsgCancelSellOrder_ValidateBasic(t *testing.T) {
-	type fields struct {
-		Seller      string
-		SellOrderId uint64
-	}
-	_, _, addr := testdata.KeyTestPubAddr()
-	tests := []struct {
-		name   string
-		fields fields
-		errMsg string
-	}{
-		{
-			name: "valid",
-			fields: fields{
-				Seller:      addr.String(),
-				SellOrderId: 1,
-			},
-		},
-		{
-			name: "bad seller",
-			fields: fields{
-				Seller:      "foo",
-				SellOrderId: 1,
-			},
-			errMsg: sdkerrors.ErrInvalidAddress.Error(),
-		},
-		{
-			name: "bad sell order id",
-			fields: fields{
-				Seller:      addr.String(),
-				SellOrderId: 0,
-			},
-			errMsg: "0 is not a valid sell order id",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgCancelSellOrder{
-				Seller:      tt.fields.Seller,
-				SellOrderId: tt.fields.SellOrderId,
-			}
-			err := m.ValidateBasic()
-			if len(tt.errMsg) == 0 {
-				assert.NilError(t, err)
-			} else {
-				assert.ErrorContains(t, err, tt.errMsg)
-			}
-		})
-	}
+type msgCancelSuite struct {
+	t   gocuke.TestingT
+	msg *MsgCancelSellOrder
+	err error
+}
+
+func TestMsgCancelSellOrder(t *testing.T) {
+	gocuke.NewRunner(t, &msgCancelSuite{}).Path("./features/msg_cancel_sell_order.feature").Run()
+}
+
+func (s *msgCancelSuite) Before(t gocuke.TestingT) {
+	s.t = t
+}
+
+func (s *msgCancelSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgCancelSellOrder{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
+
+func (s *msgCancelSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
+
+func (s *msgCancelSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
+
+func (s *msgCancelSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }

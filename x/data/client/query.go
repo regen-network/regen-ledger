@@ -50,8 +50,9 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 		QueryHashByIRICmd(),
 		QueryIRIByHashCmd(),
 		QueryAttestorsCmd(),
-		QueryResolverInfoCmd(),
-		QueryResolversCmd(),
+		QueryResolverCmd(),
+		QueryResolversByIriCmd(),
+		QueryResolversByUrlCmd(),
 	)
 
 	flags.AddQueryFlagsToCmd(cmd)
@@ -216,12 +217,14 @@ func QueryAttestorsCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryResolverInfoCmd creates a CLI command for Query/ResolverInfo.
-func QueryResolverInfoCmd() *cobra.Command {
+// QueryResolverCmd creates a CLI command for Query/Resolver.
+func QueryResolverCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolver-info [id]",
-		Short: "Query for resolver information",
-		Args:  cobra.ExactArgs(1),
+		Use:     "resolver [id]",
+		Short:   "Query for a resolver based on resolver ID",
+		Long:    "Query for a resolver based on resolver ID.",
+		Example: "regen q data resolver 1",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -233,7 +236,7 @@ func QueryResolverInfoCmd() *cobra.Command {
 				return fmt.Errorf("invalid resolver id: %s", err)
 			}
 
-			res, err := c.ResolverInfo(cmd.Context(), &data.QueryResolverInfoRequest{
+			res, err := c.Resolver(cmd.Context(), &data.QueryResolverRequest{
 				Id: id,
 			})
 
@@ -246,12 +249,17 @@ func QueryResolverInfoCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryResolversCmd creates a CLI command for Query/Resolvers.
-func QueryResolversCmd() *cobra.Command {
+// QueryResolversByIriCmd creates a CLI command for Query/Resolvers.
+func QueryResolversByIriCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolvers [iri]",
-		Short: "Query for registered resolver URLs for the data IRI",
-		Args:  cobra.ExactArgs(1),
+		Use:   "resolvers-by-iri [iri]",
+		Short: "Query for resolvers based on the IRI of anchored data",
+		Long:  "Query for resolvers based on the IRI of anchored data with pagination.",
+		Example: `
+regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf --pagination.limit 10
+`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -273,7 +281,44 @@ func QueryResolversCmd() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "resolvers")
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-iri")
+
+	return cmd
+}
+
+// QueryResolversByUrlCmd creates a CLI command for Query/Resolvers.
+func QueryResolversByUrlCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolvers-by-url [url]",
+		Short: "Query for resolvers based on URL",
+		Long:  "Query for resolvers based on the URL of the resolver.",
+		Example: `
+regen q data resolvers-by-url https://foo.bar
+regen q data resolvers-by-url https://foo.bar --pagination.limit 10
+`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ResolversByUrl(cmd.Context(), &data.QueryResolversByUrlRequest{
+				Url:        args[0],
+				Pagination: pagination,
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "resolvers-by-url")
 
 	return cmd
 }
