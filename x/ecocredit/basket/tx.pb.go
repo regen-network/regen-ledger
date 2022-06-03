@@ -39,41 +39,17 @@ type MsgCreate struct {
 	// basket token. It can be between 3-8 alphanumeric characters, with the
 	// first character being alphabetic.
 	//
-	// The bank denom will be formed from name, credit type and exponent and be
-	// of the form `eco.<prefix><credit_type_abbrev>.<name>` where prefix
-	// is derived from exponent.
+	// The bank denom will be formed from name and credit type with the format
+	// `eco.<prefix><credit_type_abbrev>.<name>` where prefix is the prefix of
+	// a standard SI unit derived from credit type precision.
 	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	// description is a human-readable description of the basket denom that should
 	// be at most 256 characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	// exponent is the exponent that will be used for converting credits to basket
-	// tokens and for bank denom metadata. It also limits the precision of
-	// credit amounts when putting credits into a basket. An exponent of 6 will
-	// mean that 10^6 units of a basket token will be issued for 1.0 credits and
-	// that this should be displayed as one unit in user interfaces. It also means
-	// that the maximum precision of credit amounts is 6 decimal places so that
-	// the need to round is eliminated. The exponent must be >= the precision of
-	// the credit type at the time the basket is created and be of one of the
-	// following values 0, 1, 2, 3, 6, 9, 12, 15, 18, 21, or 24 which correspond
-	// to the exponents which have an official SI prefix.
-	//
-	// The exponent will be used to form the prefix part of the the bank denom
-	// and will be mapped as follows:
-	//   0 - no prefix
-	//   1 - d (deci)
-	//   2 - c (centi)
-	//   3 - m (milli)
-	//   6 - u (micro)
-	//   9 - n (nano)
-	//   12 - p (pico)
-	//   15 - f (femto)
-	//   18 - a (atto)
-	//   21 - z (zepto)
-	//   24 - y (yocto)
-	//
-	// Deprecated: This field is no longer used and will be removed in the next
-	// version. The credit type precision will always be used to convert credits
-	// to basket tokens and to determine the prefix part of the bank denom.
+	// Deprecated (Since Revision 1): This field is no longer used and will be
+	// removed in the next version. The value of credit type precision is always
+	// used as the exponent when determining the prefix for basket denom, defining
+	// bank denom metadata, and converting credits to/from basket tokens.
 	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"` // Deprecated: Do not use.
 	// disable_auto_retire allows auto-retirement to be disabled.
 	// The credits will be auto-retired if disable_auto_retire is
