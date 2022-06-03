@@ -41,6 +41,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryCreditTypesCmd(),
 		QueryProjectsCmd(),
 		QueryProjectsByReferenceIdCmd(),
+		QueryProjectsByAdminCmd(),
 		QueryProjectCmd(),
 		QueryParamsCmd(),
 		basketcli.QueryBasketCmd(),
@@ -492,6 +493,40 @@ $%s q %s projects-by-reference-id R1 --limit 10
 	}
 
 	flags.AddPaginationFlagsToCmd(cmd, "projects-by-reference-id")
+
+	return qflags(cmd)
+}
+
+// QueryProjectsByAdminCmd returns command that retrieves list of projects by admin with pagination.
+func QueryProjectsByAdminCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects-by-admin [admin]",
+		Short: "Retrieve list of projects by admin with pagination flags",
+		Example: `
+$regen query ecocredit projects-by-admin regenx1v44...
+$regen q ecocredit projects-by-admin regenx1v44.. --limit 10
+		`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectsByAdmin(cmd.Context(), &core.QueryProjectsByAdminRequest{
+				Admin:      args[0],
+				Pagination: pagination,
+			})
+			return printQueryResponse(ctx, res, err)
+		},
+	}
+
+	flags.AddPaginationFlagsToCmd(cmd, "projects-by-admin")
 
 	return qflags(cmd)
 }

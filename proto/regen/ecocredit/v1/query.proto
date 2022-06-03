@@ -56,6 +56,14 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1/projects/{project_id}";
   }
 
+  // ProjectsByAdmin queries for all projects by admin with
+  // pagination.
+  rpc ProjectsByAdmin(QueryProjectsByAdminRequest)
+      returns (QueryProjectsByAdminResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1/projects/by-admin/{admin}";
+  }
+
   // Batches queries for all batches with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/batches";
@@ -223,6 +231,26 @@ message QueryProjectsByReferenceIdRequest {
 // QueryProjectsByReferenceIdResponse is the Query/ProjectsByReferenceId
 // response type.
 message QueryProjectsByReferenceIdResponse {
+
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectsByAdminRequest is the Query/ProjectByAdmin request type.
+message QueryProjectsByAdminRequest {
+
+  // admin is the account address of project admin.
+  string admin = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsByAdminResponse is the Query/ProjectByAdmin response type.
+message QueryProjectsByAdminResponse {
 
   // projects are the fetched projects.
   repeated ProjectInfo projects = 1;
