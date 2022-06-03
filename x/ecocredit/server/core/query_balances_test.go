@@ -31,7 +31,7 @@ func TestQuery_Balances(t *testing.T) {
 
 	// query balances for s.addr
 	res, err := s.k.Balances(s.ctx, &core.QueryBalancesRequest{
-		Account:    s.addr.String(),
+		Address:    s.addr.String(),
 		Pagination: &query.PageRequest{Limit: 1, CountTotal: true},
 	})
 	assert.NilError(t, err)
@@ -43,7 +43,7 @@ func TestQuery_Balances(t *testing.T) {
 
 	// query balances for address with no balance
 	res, err = s.k.Balances(s.ctx, &core.QueryBalancesRequest{
-		Account: noBalAddr.String(),
+		Address: noBalAddr.String(),
 	})
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(res.Balances))

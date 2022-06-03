@@ -28,8 +28,8 @@ service Msg {
 // MsgSell is the Msg/Sell request type.
 message MsgSell {
 
-  // owner is the address of the owner of the credits being sold.
-  string owner = 1;
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
 
   // orders are the sell orders being created.
   repeated Order orders = 2;
@@ -73,8 +73,8 @@ message MsgSellResponse {
 // MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
 message MsgUpdateSellOrders {
 
-  // owner is the owner of the sell orders.
-  string owner = 1;
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
 
   // updates are updates to existing sell orders.
   repeated Update updates = 2;
@@ -108,7 +108,8 @@ message MsgUpdateSellOrdersResponse {}
 // MsgCancelSellOrder is the Msg/CancelSellOrder request type.
 message MsgCancelSellOrder {
 
-  // seller is the address of the seller.
+  // seller is the address of the account that created the sell order and is
+  // therefore authorized to cancel the sell order.
   string seller = 1;
 
   // sell_order_id is the id of the seller order to cancel.
@@ -121,7 +122,7 @@ message MsgCancelSellOrderResponse {}
 // MsgBuyDirect is the Msg/BuyDirect request type.
 message MsgBuyDirect {
 
-  // buyer is the address of the credit buyer.
+  // buyer is the address of the account that is buying credits.
   string buyer = 1;
 
   // orders is a list of orders for ecocredits.

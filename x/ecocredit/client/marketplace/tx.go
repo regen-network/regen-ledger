@@ -27,8 +27,8 @@ const (
 func TxSellCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell [orders]",
-		Short: "Creates new sell orders with transaction author (--from) as owner",
-		Long: `Creates new sell orders with transaction author (--from) as owner.
+		Short: "Creates new sell orders with transaction author (--from) as seller",
+		Long: `Creates new sell orders with transaction author (--from) as seller.
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
@@ -41,7 +41,7 @@ Parameters:
 				return err
 			}
 
-			owner := clientCtx.GetFromAddress()
+			seller := clientCtx.GetFromAddress()
 
 			// declare orders array with ask price as string
 			var strOrders []struct {
@@ -86,7 +86,7 @@ Parameters:
 
 			// create sell message
 			msg := marketplace.MsgSell{
-				Owner:  owner.String(),
+				Seller: seller.String(),
 				Orders: orders,
 			}
 
@@ -103,8 +103,8 @@ Parameters:
 func TxUpdateSellOrdersCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-sell-orders [updates]",
-		Short: "Updates existing sell orders with transaction author (--from) as owner",
-		Long: `Updates existing sell orders with transaction author (--from) as owner.
+		Short: "Updates existing sell orders with transaction author (--from) as seller",
+		Long: `Updates existing sell orders with transaction author (--from) as seller.
 
 Parameters:
   updates:  YAML encoded update list. Note: numerical values must be written in strings.
@@ -117,8 +117,8 @@ Parameters:
 				return err
 			}
 
-			// get the order owner from the --from flag
-			owner := clientCtx.GetFromAddress()
+			// get the seller address from the --from flag
+			seller := clientCtx.GetFromAddress()
 
 			// declare updates array with ask price as string
 			var strUpdates []struct {
@@ -171,7 +171,7 @@ Parameters:
 
 			// create update sell orders message
 			msg := marketplace.MsgUpdateSellOrders{
-				Owner:   owner.String(),
+				Seller:  seller.String(),
 				Updates: updates,
 			}
 

@@ -50,7 +50,7 @@ func QueryCmd(name string) *cobra.Command {
 		basketcli.QueryBasketBalancesCmd(),
 		marketplacecli.QuerySellOrderCmd(),
 		marketplacecli.QuerySellOrdersCmd(),
-		marketplacecli.QuerySellOrdersByAddressCmd(),
+		marketplacecli.QuerySellOrdersBySellerCmd(),
 		marketplacecli.QuerySellOrdersByBatchDenomCmd(),
 		marketplacecli.QueryAllowedDenomsCmd(),
 	)
@@ -388,7 +388,7 @@ func QueryBalanceCmd() *cobra.Command {
 				return err
 			}
 			res, err := c.Balance(cmd.Context(), &core.QueryBalanceRequest{
-				BatchDenom: args[0], Account: args[1],
+				BatchDenom: args[0], Address: args[1],
 			})
 			return printQueryResponse(ctx, res, err)
 		},

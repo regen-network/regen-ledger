@@ -89,17 +89,17 @@ $ regen q sell-orders --pagination.limit 10 --pagination.offset 2
 	return cmd
 }
 
-// QuerySellOrdersByAddressCmd returns a query command that retrieves all sell orders by address with pagination.
-func QuerySellOrdersByAddressCmd() *cobra.Command {
+// QuerySellOrdersBySellerCmd returns a query command that retrieves all sell orders by address with pagination.
+func QuerySellOrdersBySellerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell-orders-by-address [address]",
-		Short: "List all sell orders by owner address with pagination",
+		Use:   "sell-orders-by-seller [seller]",
+		Short: "List all sell orders by seller address with pagination",
 		Long: strings.TrimSpace(
-			`Retrieve sell orders by owner address with pagination
+			`Retrieve sell orders by seller address with pagination
 	
 Example:
-$ regen q sell-orders-by-address regen1fv85...zkfu
-$ regen q sell-orders-by-address regen1fv85...zkfu --pagination.limit 10 --pagination.offset 2
+$ regen q sell-orders-by-seller regen1fv85...zkfu
+$ regen q sell-orders-by-seller regen1fv85...zkfu --pagination.limit 10 --pagination.offset 2
 		`),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -113,8 +113,8 @@ $ regen q sell-orders-by-address regen1fv85...zkfu --pagination.limit 10 --pagin
 			if err != nil {
 				return err
 			}
-			res, err := client.SellOrdersByAddress(cmd.Context(), &marketplace.QuerySellOrdersByAddressRequest{
-				Address:    args[0],
+			res, err := client.SellOrdersBySeller(cmd.Context(), &marketplace.QuerySellOrdersBySellerRequest{
+				Seller:     args[0],
 				Pagination: pagination,
 			})
 			if err != nil {
@@ -125,7 +125,7 @@ $ regen q sell-orders-by-address regen1fv85...zkfu --pagination.limit 10 --pagin
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "sell-orders-by-address")
+	flags.AddPaginationFlagsToCmd(cmd, "sell-orders-by-seller")
 
 	return cmd
 }

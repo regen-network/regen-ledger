@@ -553,7 +553,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balres, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -668,7 +668,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -699,7 +699,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &core.MsgRetire{
-			Holder: account.Address.String(),
+			Owner: account.Address.String(),
 			Credits: []*core.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.Denom,
@@ -753,7 +753,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -770,7 +770,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &core.MsgCancel{
-			Holder: admin,
+			Owner: admin,
 			Credits: []*core.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.Denom,
@@ -1105,19 +1105,19 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 		}
 
 		issuers := issuersRes.Issuers
-		holder := issuers[r.Intn(len(issuers))]
-		holderAddr, err := sdk.AccAddressFromBech32(holder)
+		owner := issuers[r.Intn(len(issuers))]
+		ownerAddr, err := sdk.AccAddressFromBech32(owner)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, err.Error()), nil, err
 		}
 
-		_, found := simtypes.FindAccount(accs, holderAddr)
+		_, found := simtypes.FindAccount(accs, ownerAddr)
 		if !found {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgBridge, "not a simulation account"), nil, nil
 		}
 
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    holder,
+			Address:    owner,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -1147,7 +1147,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			Target:    "polygon",
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
 			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
-			Holder:    holder,
+			Owner:     owner,
 			Credits: []*core.MsgBridge_CancelCredits{
 				{
 					BatchDenom: batch.Denom,
@@ -1156,7 +1156,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			},
 		}
 
-		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, holder, TypeMsgBridge)
+		spendable, account, op, err := utils.GetAccountAndSpendableCoins(sdkCtx, bk, accs, owner, TypeMsgBridge)
 		if spendable == nil {
 			return op, nil, err
 		}

@@ -13160,14 +13160,14 @@ func (x *fastReflection_QueryBatchResponse) ProtoMethods() *protoiface.Methods {
 
 var (
 	md_QueryBalanceRequest             protoreflect.MessageDescriptor
-	fd_QueryBalanceRequest_account     protoreflect.FieldDescriptor
+	fd_QueryBalanceRequest_address     protoreflect.FieldDescriptor
 	fd_QueryBalanceRequest_batch_denom protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_query_proto_init()
 	md_QueryBalanceRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryBalanceRequest")
-	fd_QueryBalanceRequest_account = md_QueryBalanceRequest.Fields().ByName("account")
+	fd_QueryBalanceRequest_address = md_QueryBalanceRequest.Fields().ByName("address")
 	fd_QueryBalanceRequest_batch_denom = md_QueryBalanceRequest.Fields().ByName("batch_denom")
 }
 
@@ -13236,9 +13236,9 @@ func (x *fastReflection_QueryBalanceRequest) Interface() protoreflect.ProtoMessa
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryBalanceRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Account != "" {
-		value := protoreflect.ValueOfString(x.Account)
-		if !f(fd_QueryBalanceRequest_account, value) {
+	if x.Address != "" {
+		value := protoreflect.ValueOfString(x.Address)
+		if !f(fd_QueryBalanceRequest_address, value) {
 			return
 		}
 	}
@@ -13263,8 +13263,8 @@ func (x *fastReflection_QueryBalanceRequest) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryBalanceRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
-		return x.Account != ""
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
+		return x.Address != ""
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		return x.BatchDenom != ""
 	default:
@@ -13283,8 +13283,8 @@ func (x *fastReflection_QueryBalanceRequest) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBalanceRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
-		x.Account = ""
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
+		x.Address = ""
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		x.BatchDenom = ""
 	default:
@@ -13303,8 +13303,8 @@ func (x *fastReflection_QueryBalanceRequest) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryBalanceRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
-		value := x.Account
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
+		value := x.Address
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		value := x.BatchDenom
@@ -13329,8 +13329,8 @@ func (x *fastReflection_QueryBalanceRequest) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBalanceRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
-		x.Account = value.Interface().(string)
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
+		x.Address = value.Interface().(string)
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		x.BatchDenom = value.Interface().(string)
 	default:
@@ -13353,8 +13353,8 @@ func (x *fastReflection_QueryBalanceRequest) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBalanceRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
-		panic(fmt.Errorf("field account of message regen.ecocredit.v1.QueryBalanceRequest is not mutable"))
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
+		panic(fmt.Errorf("field address of message regen.ecocredit.v1.QueryBalanceRequest is not mutable"))
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		panic(fmt.Errorf("field batch_denom of message regen.ecocredit.v1.QueryBalanceRequest is not mutable"))
 	default:
@@ -13370,7 +13370,7 @@ func (x *fastReflection_QueryBalanceRequest) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryBalanceRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalanceRequest.account":
+	case "regen.ecocredit.v1.QueryBalanceRequest.address":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.QueryBalanceRequest.batch_denom":
 		return protoreflect.ValueOfString("")
@@ -13443,7 +13443,7 @@ func (x *fastReflection_QueryBalanceRequest) ProtoMethods() *protoiface.Methods 
 		var n int
 		var l int
 		_ = l
-		l = len(x.Account)
+		l = len(x.Address)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -13487,10 +13487,10 @@ func (x *fastReflection_QueryBalanceRequest) ProtoMethods() *protoiface.Methods 
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Account) > 0 {
-			i -= len(x.Account)
-			copy(dAtA[i:], x.Account)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Account)))
+		if len(x.Address) > 0 {
+			i -= len(x.Address)
+			copy(dAtA[i:], x.Address)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -13545,7 +13545,7 @@ func (x *fastReflection_QueryBalanceRequest) ProtoMethods() *protoiface.Methods 
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -13573,7 +13573,7 @@ func (x *fastReflection_QueryBalanceRequest) ProtoMethods() *protoiface.Methods 
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Account = string(dAtA[iNdEx:postIndex])
+				x.Address = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -14079,14 +14079,14 @@ func (x *fastReflection_QueryBalanceResponse) ProtoMethods() *protoiface.Methods
 
 var (
 	md_QueryBalancesRequest            protoreflect.MessageDescriptor
-	fd_QueryBalancesRequest_account    protoreflect.FieldDescriptor
+	fd_QueryBalancesRequest_address    protoreflect.FieldDescriptor
 	fd_QueryBalancesRequest_pagination protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_v1_query_proto_init()
 	md_QueryBalancesRequest = File_regen_ecocredit_v1_query_proto.Messages().ByName("QueryBalancesRequest")
-	fd_QueryBalancesRequest_account = md_QueryBalancesRequest.Fields().ByName("account")
+	fd_QueryBalancesRequest_address = md_QueryBalancesRequest.Fields().ByName("address")
 	fd_QueryBalancesRequest_pagination = md_QueryBalancesRequest.Fields().ByName("pagination")
 }
 
@@ -14155,9 +14155,9 @@ func (x *fastReflection_QueryBalancesRequest) Interface() protoreflect.ProtoMess
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_QueryBalancesRequest) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Account != "" {
-		value := protoreflect.ValueOfString(x.Account)
-		if !f(fd_QueryBalancesRequest_account, value) {
+	if x.Address != "" {
+		value := protoreflect.ValueOfString(x.Address)
+		if !f(fd_QueryBalancesRequest_address, value) {
 			return
 		}
 	}
@@ -14182,8 +14182,8 @@ func (x *fastReflection_QueryBalancesRequest) Range(f func(protoreflect.FieldDes
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryBalancesRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
-		return x.Account != ""
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
+		return x.Address != ""
 	case "regen.ecocredit.v1.QueryBalancesRequest.pagination":
 		return x.Pagination != nil
 	default:
@@ -14202,8 +14202,8 @@ func (x *fastReflection_QueryBalancesRequest) Has(fd protoreflect.FieldDescripto
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBalancesRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
-		x.Account = ""
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
+		x.Address = ""
 	case "regen.ecocredit.v1.QueryBalancesRequest.pagination":
 		x.Pagination = nil
 	default:
@@ -14222,8 +14222,8 @@ func (x *fastReflection_QueryBalancesRequest) Clear(fd protoreflect.FieldDescrip
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryBalancesRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
-		value := x.Account
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
+		value := x.Address
 		return protoreflect.ValueOfString(value)
 	case "regen.ecocredit.v1.QueryBalancesRequest.pagination":
 		value := x.Pagination
@@ -14248,8 +14248,8 @@ func (x *fastReflection_QueryBalancesRequest) Get(descriptor protoreflect.FieldD
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBalancesRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
-		x.Account = value.Interface().(string)
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
+		x.Address = value.Interface().(string)
 	case "regen.ecocredit.v1.QueryBalancesRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
@@ -14277,8 +14277,8 @@ func (x *fastReflection_QueryBalancesRequest) Mutable(fd protoreflect.FieldDescr
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
-		panic(fmt.Errorf("field account of message regen.ecocredit.v1.QueryBalancesRequest is not mutable"))
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
+		panic(fmt.Errorf("field address of message regen.ecocredit.v1.QueryBalancesRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.QueryBalancesRequest"))
@@ -14292,7 +14292,7 @@ func (x *fastReflection_QueryBalancesRequest) Mutable(fd protoreflect.FieldDescr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryBalancesRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.QueryBalancesRequest.account":
+	case "regen.ecocredit.v1.QueryBalancesRequest.address":
 		return protoreflect.ValueOfString("")
 	case "regen.ecocredit.v1.QueryBalancesRequest.pagination":
 		m := new(v1beta1.PageRequest)
@@ -14366,7 +14366,7 @@ func (x *fastReflection_QueryBalancesRequest) ProtoMethods() *protoiface.Methods
 		var n int
 		var l int
 		_ = l
-		l = len(x.Account)
+		l = len(x.Address)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
@@ -14417,10 +14417,10 @@ func (x *fastReflection_QueryBalancesRequest) ProtoMethods() *protoiface.Methods
 			i--
 			dAtA[i] = 0x12
 		}
-		if len(x.Account) > 0 {
-			i -= len(x.Account)
-			copy(dAtA[i:], x.Account)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Account)))
+		if len(x.Address) > 0 {
+			i -= len(x.Address)
+			copy(dAtA[i:], x.Address)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -14475,7 +14475,7 @@ func (x *fastReflection_QueryBalancesRequest) ProtoMethods() *protoiface.Methods
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Account", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -14503,7 +14503,7 @@ func (x *fastReflection_QueryBalancesRequest) ProtoMethods() *protoiface.Methods
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Account = string(dAtA[iNdEx:postIndex])
+				x.Address = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
 				if wireType != 2 {
@@ -21834,8 +21834,8 @@ type QueryBalanceRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// account is the address of the account whose balance is being queried.
-	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	// address is the address of the account whose balance is being queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// batch_denom is the unique identifier of the credit batch to query.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
@@ -21860,9 +21860,9 @@ func (*QueryBalanceRequest) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{26}
 }
 
-func (x *QueryBalanceRequest) GetAccount() string {
+func (x *QueryBalanceRequest) GetAddress() string {
 	if x != nil {
-		return x.Account
+		return x.Address
 	}
 	return ""
 }
@@ -21917,8 +21917,8 @@ type QueryBalancesRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// account is the address of the account whose balance is being queried.
-	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	// address is the address of the account whose balance is being queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *v1beta1.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -21943,9 +21943,9 @@ func (*QueryBalancesRequest) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_v1_query_proto_rawDescGZIP(), []int{28}
 }
 
-func (x *QueryBalancesRequest) GetAccount() string {
+func (x *QueryBalancesRequest) GetAddress() string {
 	if x != nil {
-		return x.Account
+		return x.Address
 	}
 	return ""
 }
@@ -22488,7 +22488,7 @@ type BatchBalanceInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// address is the address of the credit holder.
+	// address is the address of the account that owns the credits.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// batch_denom is the unique identifier of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -22776,9 +22776,9 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e,
 	0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x05, 0x62, 0x61,
 	0x74, 0x63, 0x68, 0x22, 0x50, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61,
-	0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x63, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65,
+	0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65,
 	0x6e, 0x6f, 0x6d, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x62, 0x61, 0x74, 0x63, 0x68,
 	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x22, 0x56, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61,
 	0x6c, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3e, 0x0a,
@@ -22787,8 +22787,8 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x2e, 0x76, 0x31, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
 	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x22, 0x78, 0x0a,
 	0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
 	0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73,
 	0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e,
@@ -23021,8 +23021,8 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x43, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x3d, 0x12, 0x3b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
 	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74,
 	0x63, 0x68, 0x65, 0x73, 0x2f, 0x7b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x5f, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x7d, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x61, 0x63, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x7d, 0x12, 0x8f, 0x01, 0x0a, 0x08, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
+	0x6d, 0x7d, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x7d, 0x12, 0x8f, 0x01, 0x0a, 0x08, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
 	0x73, 0x12, 0x28, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61,
 	0x6e, 0x63, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x72, 0x65,
@@ -23030,8 +23030,8 @@ var file_regen_ecocredit_v1_query_proto_rawDesc = []byte{
 	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x52, 0x65,
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2e, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x28, 0x12, 0x26,
 	0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74,
-	0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x7d, 0x12, 0x93, 0x01, 0x0a, 0x06, 0x53, 0x75, 0x70, 0x70, 0x6c,
+	0x2f, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x73, 0x2f, 0x7b, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x12, 0x93, 0x01, 0x0a, 0x06, 0x53, 0x75, 0x70, 0x70, 0x6c,
 	0x79, 0x12, 0x26, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65,
 	0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x75, 0x70, 0x70,
 	0x6c, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x72, 0x65, 0x67, 0x65,

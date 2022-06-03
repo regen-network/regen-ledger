@@ -121,14 +121,14 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 	return &marketplace.QuerySellOrdersByBatchDenomResponse{SellOrders: orders, Pagination: pr}, nil
 }
 
-// SellOrdersByAddress queries all sell orders created by the given address with optional pagination
-func (k Keeper) SellOrdersByAddress(ctx context.Context, req *marketplace.QuerySellOrdersByAddressRequest) (*marketplace.QuerySellOrdersByAddressResponse, error) {
+// SellOrdersBySeller queries all sell orders created by the given address with optional pagination
+func (k Keeper) SellOrdersBySeller(ctx context.Context, req *marketplace.QuerySellOrdersBySellerRequest) (*marketplace.QuerySellOrdersBySellerResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
 		return nil, err
 	}
 
-	seller, err := sdk.AccAddressFromBech32(req.Address)
+	seller, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
 	}
@@ -176,5 +176,5 @@ func (k Keeper) SellOrdersByAddress(ctx context.Context, req *marketplace.QueryS
 		return nil, err
 	}
 
-	return &marketplace.QuerySellOrdersByAddressResponse{SellOrders: orders, Pagination: pr}, nil
+	return &marketplace.QuerySellOrdersBySellerResponse{SellOrders: orders, Pagination: pr}, nil
 }

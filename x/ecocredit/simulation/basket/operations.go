@@ -288,7 +288,7 @@ func SimulateMsgPut(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 					count := 0
 					for _, batch := range batches {
 						balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-							Account: ownerAddr, BatchDenom: batch.Denom,
+							Address: ownerAddr, BatchDenom: batch.Denom,
 						})
 						if err != nil {
 							return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgPut, err.Error()), nil, err

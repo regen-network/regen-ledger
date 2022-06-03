@@ -4,7 +4,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -24,7 +24,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -45,7 +45,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -66,7 +66,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -90,29 +90,29 @@ Feature: MsgSell
     When the message is validated
     Then expect no error
 
-  Scenario: an error is returned if owner is empty
+  Scenario: an error is returned if seller is empty
     Given the message
     """
     {}
     """
     When the message is validated
-    Then expect the error "owner cannot be empty: invalid request"
+    Then expect the error "seller cannot be empty: invalid request"
 
-  Scenario: an error is returned if owner is not a valid bech32 address
+  Scenario: an error is returned if seller is not a valid bech32 address
     Given the message
     """
     {
-      "owner": "foo"
+      "seller": "foo"
     }
     """
     When the message is validated
-    Then expect the error "owner is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid request"
+    Then expect the error "seller is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid request"
 
   Scenario: an error is returned if orders is empty
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27"
     }
     """
     When the message is validated
@@ -122,7 +122,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {}
       ]
@@ -135,7 +135,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "foo"
@@ -150,7 +150,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001"
@@ -165,7 +165,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -181,7 +181,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -197,7 +197,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -214,7 +214,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -233,7 +233,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",
@@ -252,7 +252,7 @@ Feature: MsgSell
     Given the message
     """
     {
-      "owner": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
+      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
       "orders": [
         {
           "batch_denom": "C01-001-20200101-20210101-001",

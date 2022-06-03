@@ -21,7 +21,7 @@ import (
 // is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdateSellOrders) (*marketplace.MsgUpdateSellOrdersResponse, error) {
-	seller, err := sdk.AccAddressFromBech32(req.Owner)
+	seller, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		}
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
 		if !seller.Equals(sellOrderAddr) {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Owner, sellOrderAddr.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Seller, sellOrderAddr.String())
 		}
 		if err = k.applySellOrderUpdates(ctx, orderIndex, sellOrder, update); err != nil {
 			return nil, err

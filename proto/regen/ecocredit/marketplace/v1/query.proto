@@ -12,36 +12,36 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/marketpla
 // Msg is the regen.ecocredit.marketplace.v1 Query service.
 service Query {
 
-  // SellOrder queries a sell order by its ID
+  // SellOrder queries a sell order by its unique identifier.
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/marketplace/v1/sell-orders/{sell_order_id}";
   }
 
-  // SellOrders queries a paginated list of all sell orders
+  // SellOrders queries a paginated list of all sell orders.
   rpc SellOrders(QuerySellOrdersRequest) returns (QuerySellOrdersResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/marketplace/v1/sell-orders";
   }
 
-  // SellOrdersByDenom queries a paginated list of all sell orders of a specific
-  // ecocredit denom
+  // SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+  // the batch denom of the credits being sold.
   rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest)
       returns (QuerySellOrdersByBatchDenomResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/marketplace/v1/sell-orders/batch-denom/{batch_denom}";
   }
 
-  // SellOrdersByAddress queries a paginated list of all sell orders from a
-  // specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest)
-      returns (QuerySellOrdersByAddressResponse) {
+  // SellOrdersBySeller queries a paginated list of all sell orders based on the
+  // account address of the seller.
+  rpc SellOrdersBySeller(QuerySellOrdersBySellerRequest)
+      returns (QuerySellOrdersBySellerResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/marketplace/v1/sell-orders/address/{address}";
+        "/regen/ecocredit/marketplace/v1/sell-orders/seller/{seller}";
   }
 
-  // AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
-  // sell order
+  // AllowedDenoms queries a paginated list of all bank denoms allowed to be
+  // used in the marketplace.
   rpc AllowedDenoms(QueryAllowedDenomsRequest)
       returns (QueryAllowedDenomsResponse) {
     option (google.api.http).get =
@@ -80,7 +80,8 @@ message QuerySellOrdersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
+// QuerySellOrdersByBatchDenomRequest is the Query/SellOrdersByBatchDenom
+// request type.
 message QuerySellOrdersByBatchDenomRequest {
 
   // batch_denom is an ecocredit denom
@@ -90,7 +91,8 @@ message QuerySellOrdersByBatchDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
+// QuerySellOrdersByBatchDenomResponse is the Query/SellOrdersByBatchDenom
+// response type.
 message QuerySellOrdersByBatchDenomResponse {
 
   // sell_orders is a list of sell orders.
@@ -100,20 +102,20 @@ message QuerySellOrdersByBatchDenomResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request
+// QuerySellOrdersBySellerRequest is the Query/SellOrdersBySeller request
 // type.
-message QuerySellOrdersByAddressRequest {
+message QuerySellOrdersBySellerRequest {
 
-  // address is the creator of the sell order
-  string address = 1;
+  // seller is the address of the account that is selling credits.
+  string seller = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
+// QuerySellOrdersBySellerResponse is the Query/SellOrdersBySellerResponse
 // response type.
-message QuerySellOrdersByAddressResponse {
+message QuerySellOrdersBySellerResponse {
 
   // sell_orders is a list of sell orders.
   repeated SellOrderInfo sell_orders = 1;
@@ -146,7 +148,7 @@ message SellOrderInfo {
   // id is the unique ID of sell order.
   uint64 id = 1;
 
-  // seller is the account address of the owner of the credits being sold.
+  // seller is the address of the account that is selling credits.
   string seller = 2;
 
   // batch_denom is denom of the credit batch being sold.

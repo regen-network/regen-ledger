@@ -97,15 +97,15 @@ service Query {
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
-  // batch for a given account.
+  // batch for a given account address.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}/balance/{account}";
+        "/regen/ecocredit/v1/batches/{batch_denom}/balance/{address}";
   }
 
   // Balances queries all credit balances the given account holds.
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1/balances/{account}";
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
@@ -367,8 +367,8 @@ message QueryBatchResponse {
 // QueryBalanceRequest is the Query/Balance request type.
 message QueryBalanceRequest {
 
-  // account is the address of the account whose balance is being queried.
-  string account = 1;
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
 
   // batch_denom is the unique identifier of the credit batch to query.
   string batch_denom = 2;
@@ -384,8 +384,8 @@ message QueryBalanceResponse {
 // QueryBalancesRequest is the Query/Balances request type.
 message QueryBalancesRequest {
 
-  // account is the address of the account whose balance is being queried.
-  string account = 1;
+  // address is the address of the account whose balance is being queried.
+  string address = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -523,7 +523,7 @@ message BatchInfo {
 // BatchBalanceInfo is the human-readable batch balance information.
 message BatchBalanceInfo {
 
-  // address is the address of the credit holder.
+  // address is the address of the account that owns the credits.
   string address = 1;
 
   // batch_denom is the unique identifier of the credit batch.
