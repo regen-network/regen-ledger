@@ -250,18 +250,18 @@ func TestMainnetMigrations(t *testing.T) {
 	// project location -> reference-id
 	// CD-MN -> ""
 	// KE    -> ""
-	assetProjectReferenceId(t, ctx, ss, "C01-001", "KE", "")
-	assetProjectReferenceId(t, ctx, ss, "C01-002", "CD-MN", "")
+	assertProjectReferenceId(t, ctx, ss, "C01-001", "KE", "")
+	assertProjectReferenceId(t, ctx, ss, "C01-002", "CD-MN", "")
 
 	// batch issuance dates
 	//  C01-001-20190101-20191231-001  -  "2022-05-06T01:33:13Z"
 	//  C01-001-20190101-20191231-002  -  "2022-05-06T01:33:19Z"
 	//  C01-002-20190101-20191231-001  -  "2022-05-06T01:33:25Z"
 	//  C01-002-20190101-20191231-002  -  "2022-05-06T01:33:31Z"
-	assetBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20191231-001", "2022-05-06T01:33:13Z")
-	assetBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20191231-002", "2022-05-06T01:33:19Z")
-	assetBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-001", "2022-05-06T01:33:25Z")
-	assetBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-002", "2022-05-06T01:33:31Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20191231-001", "2022-05-06T01:33:13Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-001-20190101-20191231-002", "2022-05-06T01:33:19Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-001", "2022-05-06T01:33:25Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C01-002-20190101-20191231-002", "2022-05-06T01:33:31Z")
 }
 
 func TestRedwoodMigrations(t *testing.T) {
