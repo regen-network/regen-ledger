@@ -248,10 +248,10 @@ func TestMainnetMigrations(t *testing.T) {
 
 	// verify mainnet manual migrations
 	// project location -> reference-id
-	// CD-MN -> ""
-	// KE    -> ""
-	assertProjectReferenceId(t, ctx, ss, "C01-001", "KE", "")
-	assertProjectReferenceId(t, ctx, ss, "C01-002", "CD-MN", "")
+	// KE    -> "VCS-612" (Kasigao)
+	// CD-MN -> "VCS-934" (Mai Ndombe)
+	assertProjectReferenceId(t, ctx, ss, "C01-001", "KE", "VCS-612")
+	assertProjectReferenceId(t, ctx, ss, "C01-002", "CD-MN", "VCS-934")
 
 	// batch issuance dates
 	//  C01-001-20190101-20191231-001  -  "2022-05-06T01:33:13Z"

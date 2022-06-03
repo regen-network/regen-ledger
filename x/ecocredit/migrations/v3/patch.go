@@ -27,12 +27,12 @@ func patchMigrate(ctx context.Context, sdkCtx sdk.Context, ss api.StateStore,
 
 func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDenomMap map[string]string) error {
 	// project location -> reference-id
-	// CD-MN -> "" // TODO: add reference-id
-	// KE    -> ""
+	// KE    -> "VCS-612" (Kasigao)
+	// CD-MN -> "VCS-934" (Mai Ndombe)
 
 	locationToReferenceIdMap := make(map[string]string)
-	locationToReferenceIdMap["CD-MN"] = "VCS-934"
 	locationToReferenceIdMap["KE"] = "VCS-612"
+	locationToReferenceIdMap["CD-MN"] = "VCS-934"
 
 	// add reference id to existing projects
 	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
