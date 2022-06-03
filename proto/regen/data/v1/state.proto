@@ -55,8 +55,8 @@ message DataAttestor {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-// ResolverInfo describes a data resolver.
-message ResolverInfo {
+// Resolver describes a data resolver.
+message Resolver {
   option (cosmos.orm.v1alpha1.table) = {
     id : 4
     primary_key : {fields : "id", auto_increment : true}

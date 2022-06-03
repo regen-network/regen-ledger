@@ -22,18 +22,18 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// SellOrder queries a sell order by its ID
+	// SellOrder queries a sell order by its unique identifier.
 	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
-	// SellOrders queries a paginated list of all sell orders
+	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
-	// ecocredit denom
+	// SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+	// the batch denom of the credits being sold.
 	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a
-	// specific address
-	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
-	// sell order
+	// SellOrdersBySeller queries a paginated list of all sell orders based on the
+	// account address of the seller.
+	SellOrdersBySeller(ctx context.Context, in *QuerySellOrdersBySellerRequest, opts ...grpc.CallOption) (*QuerySellOrdersBySellerResponse, error)
+	// AllowedDenoms queries a paginated list of all bank denoms allowed to be
+	// used in the marketplace.
 	AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedDenomsResponse, error)
 }
 
@@ -72,9 +72,9 @@ func (c *queryClient) SellOrdersByBatchDenom(ctx context.Context, in *QuerySellO
 	return out, nil
 }
 
-func (c *queryClient) SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error) {
-	out := new(QuerySellOrdersByAddressResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress", in, out, opts...)
+func (c *queryClient) SellOrdersBySeller(ctx context.Context, in *QuerySellOrdersBySellerRequest, opts ...grpc.CallOption) (*QuerySellOrdersBySellerResponse, error) {
+	out := new(QuerySellOrdersBySellerResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,18 +94,18 @@ func (c *queryClient) AllowedDenoms(ctx context.Context, in *QueryAllowedDenomsR
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// SellOrder queries a sell order by its ID
+	// SellOrder queries a sell order by its unique identifier.
 	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
-	// SellOrders queries a paginated list of all sell orders
+	// SellOrders queries a paginated list of all sell orders.
 	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
-	// SellOrdersByDenom queries a paginated list of all sell orders of a specific
-	// ecocredit denom
+	// SellOrdersByBatchDenom queries a paginated list of all sell orders based on
+	// the batch denom of the credits being sold.
 	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
-	// SellOrdersByAddress queries a paginated list of all sell orders from a
-	// specific address
-	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
-	// AllowedDenoms queries all denoms allowed to be set in the AskPrice of a
-	// sell order
+	// SellOrdersBySeller queries a paginated list of all sell orders based on the
+	// account address of the seller.
+	SellOrdersBySeller(context.Context, *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error)
+	// AllowedDenoms queries a paginated list of all bank denoms allowed to be
+	// used in the marketplace.
 	AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
@@ -123,8 +123,8 @@ func (UnimplementedQueryServer) SellOrders(context.Context, *QuerySellOrdersRequ
 func (UnimplementedQueryServer) SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatchDenom not implemented")
 }
-func (UnimplementedQueryServer) SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByAddress not implemented")
+func (UnimplementedQueryServer) SellOrdersBySeller(context.Context, *QuerySellOrdersBySellerRequest) (*QuerySellOrdersBySellerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersBySeller not implemented")
 }
 func (UnimplementedQueryServer) AllowedDenoms(context.Context, *QueryAllowedDenomsRequest) (*QueryAllowedDenomsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllowedDenoms not implemented")
@@ -196,20 +196,20 @@ func _Query_SellOrdersByBatchDenom_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_SellOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySellOrdersByAddressRequest)
+func _Query_SellOrdersBySeller_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersBySellerRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, in)
+		return srv.(QueryServer).SellOrdersBySeller(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersByAddress",
+		FullMethod: "/regen.ecocredit.marketplace.v1.Query/SellOrdersBySeller",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).SellOrdersByAddress(ctx, req.(*QuerySellOrdersByAddressRequest))
+		return srv.(QueryServer).SellOrdersBySeller(ctx, req.(*QuerySellOrdersBySellerRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -252,8 +252,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_SellOrdersByBatchDenom_Handler,
 		},
 		{
-			MethodName: "SellOrdersByAddress",
-			Handler:    _Query_SellOrdersByAddress_Handler,
+			MethodName: "SellOrdersBySeller",
+			Handler:    _Query_SellOrdersBySeller_Handler,
 		},
 		{
 			MethodName: "AllowedDenoms",

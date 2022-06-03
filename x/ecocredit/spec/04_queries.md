@@ -40,5 +40,5 @@ For examples on how to query state using gRPC and REST, see the [ecocredit clien
 - [AllowedDenoms](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.AllowedDenoms)
 - [SellOrder](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.SellOrder)
 - [SellOrders](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.SellOrders)
-- [SellOrdersByAddress](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.SellOrdersByAddress)
+- [SellOrdersBySeller](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.SellOrdersBySeller)
 - [SellOrdersByBatchDenom](https://buf.build/regen/regen-ledger/docs/main:regen.ecocredit.marketplace.v1#regen.ecocredit.marketplace.v1.Query.SellOrdersByBatchDenom)

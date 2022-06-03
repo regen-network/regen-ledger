@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	md_EventSell          protoreflect.MessageDescriptor
-	fd_EventSell_order_id protoreflect.FieldDescriptor
+	md_EventSell               protoreflect.MessageDescriptor
+	fd_EventSell_sell_order_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_events_proto_init()
 	md_EventSell = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventSell")
-	fd_EventSell_order_id = md_EventSell.Fields().ByName("order_id")
+	fd_EventSell_sell_order_id = md_EventSell.Fields().ByName("sell_order_id")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventSell)(nil)
@@ -88,9 +88,9 @@ func (x *fastReflection_EventSell) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventSell) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.OrderId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.OrderId)
-		if !f(fd_EventSell_order_id, value) {
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_EventSell_sell_order_id, value) {
 			return
 		}
 	}
@@ -109,8 +109,8 @@ func (x *fastReflection_EventSell) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventSell) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
-		return x.OrderId != uint64(0)
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
+		return x.SellOrderId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventSell"))
@@ -127,8 +127,8 @@ func (x *fastReflection_EventSell) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSell) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
-		x.OrderId = uint64(0)
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
+		x.SellOrderId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventSell"))
@@ -145,8 +145,8 @@ func (x *fastReflection_EventSell) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventSell) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
-		value := x.OrderId
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
+		value := x.SellOrderId
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
@@ -168,8 +168,8 @@ func (x *fastReflection_EventSell) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSell) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
-		x.OrderId = value.Uint()
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
+		x.SellOrderId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventSell"))
@@ -190,8 +190,8 @@ func (x *fastReflection_EventSell) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSell) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
-		panic(fmt.Errorf("field order_id of message regen.ecocredit.marketplace.v1.EventSell is not mutable"))
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.EventSell is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventSell"))
@@ -205,7 +205,7 @@ func (x *fastReflection_EventSell) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventSell) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventSell.order_id":
+	case "regen.ecocredit.marketplace.v1.EventSell.sell_order_id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -276,8 +276,8 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		if x.OrderId != 0 {
-			n += 1 + runtime.Sov(uint64(x.OrderId))
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -308,8 +308,8 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.OrderId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OrderId))
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
 			i--
 			dAtA[i] = 0x8
 		}
@@ -364,9 +364,9 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
 				}
-				x.OrderId = 0
+				x.SellOrderId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -376,7 +376,7 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.OrderId |= uint64(b&0x7F) << shift
+					x.SellOrderId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -417,14 +417,418 @@ func (x *fastReflection_EventSell) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventUpdateSellOrder          protoreflect.MessageDescriptor
-	fd_EventUpdateSellOrder_order_id protoreflect.FieldDescriptor
+	md_EventBuyDirect               protoreflect.MessageDescriptor
+	fd_EventBuyDirect_sell_order_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_events_proto_init()
+	md_EventBuyDirect = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventBuyDirect")
+	fd_EventBuyDirect_sell_order_id = md_EventBuyDirect.Fields().ByName("sell_order_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventBuyDirect)(nil)
+
+type fastReflection_EventBuyDirect EventBuyDirect
+
+func (x *EventBuyDirect) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventBuyDirect)(x)
+}
+
+func (x *EventBuyDirect) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventBuyDirect_messageType fastReflection_EventBuyDirect_messageType
+var _ protoreflect.MessageType = fastReflection_EventBuyDirect_messageType{}
+
+type fastReflection_EventBuyDirect_messageType struct{}
+
+func (x fastReflection_EventBuyDirect_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventBuyDirect)(nil)
+}
+func (x fastReflection_EventBuyDirect_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventBuyDirect)
+}
+func (x fastReflection_EventBuyDirect_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventBuyDirect
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventBuyDirect) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventBuyDirect
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventBuyDirect) Type() protoreflect.MessageType {
+	return _fastReflection_EventBuyDirect_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventBuyDirect) New() protoreflect.Message {
+	return new(fastReflection_EventBuyDirect)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventBuyDirect) Interface() protoreflect.ProtoMessage {
+	return (*EventBuyDirect)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventBuyDirect) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_EventBuyDirect_sell_order_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventBuyDirect) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		return x.SellOrderId != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventBuyDirect) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		x.SellOrderId = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventBuyDirect) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		value := x.SellOrderId
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventBuyDirect) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		x.SellOrderId = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventBuyDirect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.EventBuyDirect is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventBuyDirect) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventBuyDirect.sell_order_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventBuyDirect"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventBuyDirect does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventBuyDirect) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.EventBuyDirect", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventBuyDirect) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventBuyDirect) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventBuyDirect) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventBuyDirect) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventBuyDirect)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventBuyDirect)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventBuyDirect)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventBuyDirect: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventBuyDirect: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+				}
+				x.SellOrderId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SellOrderId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventUpdateSellOrder               protoreflect.MessageDescriptor
+	fd_EventUpdateSellOrder_sell_order_id protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_ecocredit_marketplace_v1_events_proto_init()
 	md_EventUpdateSellOrder = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventUpdateSellOrder")
-	fd_EventUpdateSellOrder_order_id = md_EventUpdateSellOrder.Fields().ByName("order_id")
+	fd_EventUpdateSellOrder_sell_order_id = md_EventUpdateSellOrder.Fields().ByName("sell_order_id")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventUpdateSellOrder)(nil)
@@ -436,7 +840,7 @@ func (x *EventUpdateSellOrder) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventUpdateSellOrder) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[1]
+	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -492,9 +896,9 @@ func (x *fastReflection_EventUpdateSellOrder) Interface() protoreflect.ProtoMess
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventUpdateSellOrder) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.OrderId != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.OrderId)
-		if !f(fd_EventUpdateSellOrder_order_id, value) {
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_EventUpdateSellOrder_sell_order_id, value) {
 			return
 		}
 	}
@@ -513,8 +917,8 @@ func (x *fastReflection_EventUpdateSellOrder) Range(f func(protoreflect.FieldDes
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventUpdateSellOrder) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
-		return x.OrderId != uint64(0)
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+		return x.SellOrderId != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -531,8 +935,8 @@ func (x *fastReflection_EventUpdateSellOrder) Has(fd protoreflect.FieldDescripto
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventUpdateSellOrder) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
-		x.OrderId = uint64(0)
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+		x.SellOrderId = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -549,8 +953,8 @@ func (x *fastReflection_EventUpdateSellOrder) Clear(fd protoreflect.FieldDescrip
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventUpdateSellOrder) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
-		value := x.OrderId
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+		value := x.SellOrderId
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
@@ -572,8 +976,8 @@ func (x *fastReflection_EventUpdateSellOrder) Get(descriptor protoreflect.FieldD
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventUpdateSellOrder) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
-		x.OrderId = value.Uint()
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+		x.SellOrderId = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -594,8 +998,8 @@ func (x *fastReflection_EventUpdateSellOrder) Set(fd protoreflect.FieldDescripto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventUpdateSellOrder) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
-		panic(fmt.Errorf("field order_id of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.EventUpdateSellOrder is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventUpdateSellOrder"))
@@ -609,7 +1013,7 @@ func (x *fastReflection_EventUpdateSellOrder) Mutable(fd protoreflect.FieldDescr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventUpdateSellOrder) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.order_id":
+	case "regen.ecocredit.marketplace.v1.EventUpdateSellOrder.sell_order_id":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -680,8 +1084,8 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 		var n int
 		var l int
 		_ = l
-		if x.OrderId != 0 {
-			n += 1 + runtime.Sov(uint64(x.OrderId))
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -712,8 +1116,8 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.OrderId != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OrderId))
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
 			i--
 			dAtA[i] = 0x8
 		}
@@ -768,9 +1172,9 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 			switch fieldNum {
 			case 1:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OrderId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
 				}
-				x.OrderId = 0
+				x.SellOrderId = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -780,7 +1184,411 @@ func (x *fastReflection_EventUpdateSellOrder) ProtoMethods() *protoiface.Methods
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.OrderId |= uint64(b&0x7F) << shift
+					x.SellOrderId |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventCancelSellOrder               protoreflect.MessageDescriptor
+	fd_EventCancelSellOrder_sell_order_id protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_regen_ecocredit_marketplace_v1_events_proto_init()
+	md_EventCancelSellOrder = File_regen_ecocredit_marketplace_v1_events_proto.Messages().ByName("EventCancelSellOrder")
+	fd_EventCancelSellOrder_sell_order_id = md_EventCancelSellOrder.Fields().ByName("sell_order_id")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventCancelSellOrder)(nil)
+
+type fastReflection_EventCancelSellOrder EventCancelSellOrder
+
+func (x *EventCancelSellOrder) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventCancelSellOrder)(x)
+}
+
+func (x *EventCancelSellOrder) slowProtoReflect() protoreflect.Message {
+	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventCancelSellOrder_messageType fastReflection_EventCancelSellOrder_messageType
+var _ protoreflect.MessageType = fastReflection_EventCancelSellOrder_messageType{}
+
+type fastReflection_EventCancelSellOrder_messageType struct{}
+
+func (x fastReflection_EventCancelSellOrder_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventCancelSellOrder)(nil)
+}
+func (x fastReflection_EventCancelSellOrder_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventCancelSellOrder)
+}
+func (x fastReflection_EventCancelSellOrder_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventCancelSellOrder
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventCancelSellOrder) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventCancelSellOrder
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventCancelSellOrder) Type() protoreflect.MessageType {
+	return _fastReflection_EventCancelSellOrder_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventCancelSellOrder) New() protoreflect.Message {
+	return new(fastReflection_EventCancelSellOrder)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventCancelSellOrder) Interface() protoreflect.ProtoMessage {
+	return (*EventCancelSellOrder)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventCancelSellOrder) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SellOrderId != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SellOrderId)
+		if !f(fd_EventCancelSellOrder_sell_order_id, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventCancelSellOrder) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		return x.SellOrderId != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventCancelSellOrder) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		x.SellOrderId = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventCancelSellOrder) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		value := x.SellOrderId
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventCancelSellOrder) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		x.SellOrderId = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventCancelSellOrder) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		panic(fmt.Errorf("field sell_order_id of message regen.ecocredit.marketplace.v1.EventCancelSellOrder is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventCancelSellOrder) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "regen.ecocredit.marketplace.v1.EventCancelSellOrder.sell_order_id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.marketplace.v1.EventCancelSellOrder"))
+		}
+		panic(fmt.Errorf("message regen.ecocredit.marketplace.v1.EventCancelSellOrder does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventCancelSellOrder) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.marketplace.v1.EventCancelSellOrder", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventCancelSellOrder) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventCancelSellOrder) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventCancelSellOrder) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventCancelSellOrder) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventCancelSellOrder)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SellOrderId != 0 {
+			n += 1 + runtime.Sov(uint64(x.SellOrderId))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventCancelSellOrder)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.SellOrderId != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SellOrderId))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventCancelSellOrder)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventCancelSellOrder: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventCancelSellOrder: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+				}
+				x.SellOrderId = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SellOrderId |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -840,7 +1648,7 @@ func (x *EventAllowDenom) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAllowDenom) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
+	mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1259,8 +2067,8 @@ type EventSell struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// order_id is the unique identifier of the sell order.
-	OrderId uint64 `protobuf:"varint,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	// sell_order_id is the unique identifier of the sell order that was created.
+	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 }
 
 func (x *EventSell) Reset() {
@@ -1283,9 +2091,47 @@ func (*EventSell) Descriptor() ([]byte, []int) {
 	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *EventSell) GetOrderId() uint64 {
+func (x *EventSell) GetSellOrderId() uint64 {
 	if x != nil {
-		return x.OrderId
+		return x.SellOrderId
+	}
+	return 0
+}
+
+// EventBuyDirect is an event emitted when a direct buy order is processed.
+type EventBuyDirect struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// sell_order_id is the unique identifier of the sell order that credits were
+	// purchased from.
+	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
+}
+
+func (x *EventBuyDirect) Reset() {
+	*x = EventBuyDirect{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventBuyDirect) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventBuyDirect) ProtoMessage() {}
+
+// Deprecated: Use EventBuyDirect.ProtoReflect.Descriptor instead.
+func (*EventBuyDirect) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *EventBuyDirect) GetSellOrderId() uint64 {
+	if x != nil {
+		return x.SellOrderId
 	}
 	return 0
 }
@@ -1296,14 +2142,14 @@ type EventUpdateSellOrder struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	//  order_id is the unique identifier of the sell order.
-	OrderId uint64 `protobuf:"varint,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	//  sell_order_id is the unique identifier of the sell order that was updated.
+	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
 }
 
 func (x *EventUpdateSellOrder) Reset() {
 	*x = EventUpdateSellOrder{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[1]
+		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1317,12 +2163,50 @@ func (*EventUpdateSellOrder) ProtoMessage() {}
 
 // Deprecated: Use EventUpdateSellOrder.ProtoReflect.Descriptor instead.
 func (*EventUpdateSellOrder) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{1}
+	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *EventUpdateSellOrder) GetOrderId() uint64 {
+func (x *EventUpdateSellOrder) GetSellOrderId() uint64 {
 	if x != nil {
-		return x.OrderId
+		return x.SellOrderId
+	}
+	return 0
+}
+
+// EventCancelSellOrder is an event emitted when a sell order is cancelled.
+type EventCancelSellOrder struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// sell_order_id is the unique identifier of the sell order that was
+	// cancelled.
+	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
+}
+
+func (x *EventCancelSellOrder) Reset() {
+	*x = EventCancelSellOrder{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventCancelSellOrder) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventCancelSellOrder) ProtoMessage() {}
+
+// Deprecated: Use EventCancelSellOrder.ProtoReflect.Descriptor instead.
+func (*EventCancelSellOrder) Descriptor() ([]byte, []int) {
+	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *EventCancelSellOrder) GetSellOrderId() uint64 {
+	if x != nil {
+		return x.SellOrderId
 	}
 	return 0
 }
@@ -1342,7 +2226,7 @@ type EventAllowDenom struct {
 func (x *EventAllowDenom) Reset() {
 	*x = EventAllowDenom{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2]
+		mi := &file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1356,7 +2240,7 @@ func (*EventAllowDenom) ProtoMessage() {}
 
 // Deprecated: Use EventAllowDenom.ProtoReflect.Descriptor instead.
 func (*EventAllowDenom) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{2}
+	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EventAllowDenom) GetDenom() string {
@@ -1373,34 +2257,43 @@ var file_regen_ecocredit_marketplace_v1_events_proto_rawDesc = []byte{
 	0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76, 0x31,
 	0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x1e, 0x72,
 	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d,
-	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x22, 0x26, 0x0a,
-	0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x19, 0x0a, 0x08, 0x6f, 0x72,
-	0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x6f, 0x72,
-	0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x31, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x19, 0x0a,
-	0x08, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x07, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x27, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e,
-	0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12, 0x14, 0x0a, 0x05, 0x64,
-	0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x64, 0x65, 0x6e, 0x6f,
-	0x6d, 0x42, 0xa4, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e,
-	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
-	0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64,
-	0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2f, 0x76,
-	0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x76, 0x31, 0xa2,
-	0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c,
-	0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45,
-	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c,
-	0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74,
-	0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
-	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70,
-	0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x22, 0x2f, 0x0a,
+	0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x65, 0x6c, 0x6c, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65,
+	0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x34,
+	0x0a, 0x0e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x42, 0x75, 0x79, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
+	0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64,
+	0x65, 0x72, 0x49, 0x64, 0x22, 0x3a, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x53, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d,
+	0x73, 0x65, 0x6c, 0x6c, 0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64,
+	0x22, 0x3a, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x43, 0x61, 0x6e, 0x63, 0x65, 0x6c, 0x53,
+	0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0d, 0x73, 0x65, 0x6c, 0x6c,
+	0x5f, 0x6f, 0x72, 0x64, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x0b, 0x73, 0x65, 0x6c, 0x6c, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x49, 0x64, 0x22, 0x27, 0x0a, 0x0f,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x12,
+	0x14, 0x0a, 0x05, 0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x64, 0x65, 0x6e, 0x6f, 0x6d, 0x42, 0xa4, 0x02, 0x0a, 0x22, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65,
+	0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x6d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x76, 0x31, 0x42, 0x0b, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x56, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67,
+	0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61,
+	0x63, 0x65, 0x2f, 0x76, 0x31, 0x3b, 0x6d, 0x61, 0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63,
+	0x65, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x4d, 0xaa, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65,
+	0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x4d, 0x61, 0x72, 0x6b,
+	0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1e, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x2a, 0x52, 0x65,
+	0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x4d, 0x61,
+	0x72, 0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x5c, 0x56, 0x31, 0x5c, 0x47, 0x50, 0x42,
+	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x21, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x4d, 0x61, 0x72,
+	0x6b, 0x65, 0x74, 0x70, 0x6c, 0x61, 0x63, 0x65, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1415,11 +2308,13 @@ func file_regen_ecocredit_marketplace_v1_events_proto_rawDescGZIP() []byte {
 	return file_regen_ecocredit_marketplace_v1_events_proto_rawDescData
 }
 
-var file_regen_ecocredit_marketplace_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_regen_ecocredit_marketplace_v1_events_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_regen_ecocredit_marketplace_v1_events_proto_goTypes = []interface{}{
 	(*EventSell)(nil),            // 0: regen.ecocredit.marketplace.v1.EventSell
-	(*EventUpdateSellOrder)(nil), // 1: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
-	(*EventAllowDenom)(nil),      // 2: regen.ecocredit.marketplace.v1.EventAllowDenom
+	(*EventBuyDirect)(nil),       // 1: regen.ecocredit.marketplace.v1.EventBuyDirect
+	(*EventUpdateSellOrder)(nil), // 2: regen.ecocredit.marketplace.v1.EventUpdateSellOrder
+	(*EventCancelSellOrder)(nil), // 3: regen.ecocredit.marketplace.v1.EventCancelSellOrder
+	(*EventAllowDenom)(nil),      // 4: regen.ecocredit.marketplace.v1.EventAllowDenom
 }
 var file_regen_ecocredit_marketplace_v1_events_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -1448,7 +2343,7 @@ func file_regen_ecocredit_marketplace_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventUpdateSellOrder); i {
+			switch v := v.(*EventBuyDirect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1460,6 +2355,30 @@ func file_regen_ecocredit_marketplace_v1_events_proto_init() {
 			}
 		}
 		file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventUpdateSellOrder); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventCancelSellOrder); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_regen_ecocredit_marketplace_v1_events_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventAllowDenom); i {
 			case 0:
 				return &v.state
@@ -1478,7 +2397,7 @@ func file_regen_ecocredit_marketplace_v1_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_regen_ecocredit_marketplace_v1_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

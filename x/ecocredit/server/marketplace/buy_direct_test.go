@@ -25,7 +25,7 @@ func TestBuyDirect_ValidTradable(t *testing.T) {
 	sellExp := time.Now()
 	userCoinBalance := sdk.NewInt64Coin(validAskDenom, 30)
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: true, Expiration: &sellExp},
 		},
@@ -61,7 +61,7 @@ func TestBuyDirect_ValidRetired(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -99,7 +99,7 @@ func TestBuyDirect_OrderFilled(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -140,7 +140,7 @@ func TestBuyDirect_Invalid(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, DisableAutoRetire: false, Expiration: &sellExp},
 		},
@@ -210,7 +210,7 @@ func TestBuyDirect_Decimal(t *testing.T) {
 	// make a sell order
 	sellExp := time.Now()
 	sellOrderId := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -261,7 +261,7 @@ func TestBuyDirect_MultipleOrders(t *testing.T) {
 	purchaseAmt1 := "12.3531"
 	purchaseAmt2 := "15.39201"
 	sellOrderIds := s.createSellOrder(&marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,

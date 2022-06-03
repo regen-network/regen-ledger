@@ -986,7 +986,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				for _, e := range res.Logs[0].Events {
 					if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 						for _, attr := range e.Attributes {
-							if attr.Key == "order_id" {
+							if attr.Key == "sell_order_id" {
 								found = true
 								orderIdStr := strings.Trim(attr.Value, "\"")
 								_, err := strconv.ParseUint(orderIdStr, 10, 64)
@@ -1026,7 +1026,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 		},
@@ -1041,7 +1041,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		}
 		updatesStr := strings.Join(updates, ",")
 		updateArg := fmt.Sprintf(`[%s]`, updatesStr)
-		args := []string{updateArg, makeFlagFrom(msg.Owner)}
+		args := []string{updateArg, makeFlagFrom(msg.Seller)}
 		return append(args, s.commonTxFlags()...)
 	}
 
@@ -1075,7 +1075,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 		{
 			name: "valid",
 			args: makeArgs(&marketplace.MsgUpdateSellOrders{
-				Owner: valAddrStr,
+				Seller: valAddrStr,
 				Updates: []*marketplace.MsgUpdateSellOrders_Update{
 					{SellOrderId: orderId, NewQuantity: "9.99", NewAskPrice: &newAsk, DisableAutoRetire: false, NewExpiration: &newExpiration},
 				},
@@ -1213,7 +1213,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirect() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 			{batchDenom, "10", &askCoin, false, &expiration},
@@ -1326,7 +1326,7 @@ func (s *IntegrationTestSuite) TestTxBuyDirectBatch() {
 	s.Require().NoError(err)
 	_, _, batchDenom := s.createClassProjectBatch(clientCtx, valAddrStr)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: valAddrStr,
+		Seller: valAddrStr,
 		Orders: []*marketplace.MsgSell_Order{
 			{batchDenom, "10", &askCoin, true, &expiration},
 			{batchDenom, "10", &askCoin, false, &expiration},
@@ -1737,7 +1737,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	// merge args
 	ordersStr := strings.Join(orders, ",")
 	orderArg := fmt.Sprintf(`[%s]`, ordersStr)
-	args := []string{orderArg, makeFlagFrom(msg.Owner)}
+	args := []string{orderArg, makeFlagFrom(msg.Seller)}
 	args = append(args, s.commonTxFlags()...)
 
 	// execute command
@@ -1753,7 +1753,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 			for _, attr := range e.Attributes {
-				if attr.Key == "order_id" {
+				if attr.Key == "sell_order_id" {
 					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
 					s.Require().NoError(err)
 					orderIds = append(orderIds, orderId)

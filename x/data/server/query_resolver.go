@@ -4,21 +4,22 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ResolverInfo queries information about a resolved based on url.
-func (s serverImpl) ResolverInfo(ctx context.Context, request *data.QueryResolverInfoRequest) (*data.QueryResolverInfoResponse, error) {
-	res, err := s.stateStore.ResolverInfoTable().Get(ctx, request.Id)
+// Resolver queries information about a resolved based on url.
+func (s serverImpl) Resolver(ctx context.Context, request *data.QueryResolverRequest) (*data.QueryResolverResponse, error) {
+	res, err := s.stateStore.ResolverTable().Get(ctx, request.Id)
 	if err != nil {
 		return nil, err
 	}
 
-	acct := sdk.AccAddress(res.Manager)
+	manager := sdk.AccAddress(res.Manager).String()
 
-	return &data.QueryResolverInfoResponse{
-		Url:     res.Url,
-		Manager: acct.String(),
+	return &data.QueryResolverResponse{
+		Resolver: &data.ResolverInfo{
+			Url:     res.Url,
+			Manager: manager,
+		},
 	}, nil
 }

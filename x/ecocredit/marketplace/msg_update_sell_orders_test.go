@@ -23,7 +23,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 	}{
 		"valid": {
 			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
+				Seller: a1.String(),
 				Updates: []*MsgUpdateSellOrders_Update{
 					{
 						NewQuantity: "1.5",
@@ -38,9 +38,9 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 			},
 			expErr: false,
 		},
-		"invalid: bad owner address": {
+		"invalid: bad seller address": {
 			src: MsgUpdateSellOrders{
-				Owner: "foobar",
+				Seller: "foobar",
 				Updates: []*MsgUpdateSellOrders_Update{
 					{
 						NewQuantity: "1.5",
@@ -56,7 +56,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 		},
 		"invalid: bad quantity": {
 			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
+				Seller: a1.String(),
 				Updates: []*MsgUpdateSellOrders_Update{
 					{
 						NewQuantity: "-1.5",
@@ -72,7 +72,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 		},
 		"invalid: bad ask price": {
 			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
+				Seller: a1.String(),
 				Updates: []*MsgUpdateSellOrders_Update{
 					{
 						NewQuantity: "1.5",

@@ -90,11 +90,11 @@ message EventTransfer {
 // emitted for each batch_denom. This allows for easier indexing.
 message EventRetire {
 
-  // owner is the account that owns the retired credits. This will be the
-  // account receiving credits in the case that credits were retired upon
-  // issuance using Msg/CreateBatch, retired upon transfer using Msg/Send,
-  // retired upon taking from a basket using basket.Msg/Take, or retired
-  // upon purchase using marketplace.Msg/BuyDirect.
+  // owner is the address of the account that owns the retired credits. This
+  // will be the account receiving credits in the case that credits were retired
+  // upon issuance using Msg/CreateBatch, retired upon transfer using Msg/Send,
+  // retired upon taking from a basket using basket.Msg/Take, or retired upon
+  // purchase using marketplace.Msg/BuyDirect.
   string owner = 1;
 
   // batch_denom is the unique identifier of the credit batch within which the
@@ -117,7 +117,7 @@ message EventRetire {
 // emitted for each batch_denom. This allows for easier indexing.
 message EventCancel {
 
-  // owner is the account which has cancelled the credits.
+  // owner is the address of the account that cancelled the credits.
   string owner = 1;
 
   // batch_denom is the unique identifier of the credit batch within which the

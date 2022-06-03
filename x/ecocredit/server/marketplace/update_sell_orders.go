@@ -21,14 +21,14 @@ import (
 // is true, and you do not want to change that, you MUST provide a value of true in the update.
 // Otherwise, the sell order will be changed to false.
 func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdateSellOrders) (*marketplace.MsgUpdateSellOrdersResponse, error) {
-	seller, err := sdk.AccAddressFromBech32(req.Owner)
+	seller, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
 	}
 
 	for i, update := range req.Updates {
-                // orderIndex is passed to helper functions for more granular error messages
-                // when an individual order in a list of orders fails to process
+		// orderIndex is passed to helper functions for more granular error messages
+		// when an individual order in a list of orders fails to process
 		orderIndex := fmt.Sprintf("order[%d]", i)
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
@@ -37,7 +37,7 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 		}
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
 		if !seller.Equals(sellOrderAddr) {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Owner, sellOrderAddr.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Seller, sellOrderAddr.String())
 		}
 		if err = k.applySellOrderUpdates(ctx, orderIndex, sellOrder, update); err != nil {
 			return nil, err
@@ -132,7 +132,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 	}
 
 	return sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventUpdateSellOrder{
-		OrderId: order.Id,
+		SellOrderId: order.Id,
 	})
 }
 
