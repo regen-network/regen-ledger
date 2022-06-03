@@ -93,9 +93,9 @@ $ regen q sell-orders --pagination.limit 10 --pagination.offset 2
 func QuerySellOrdersByAddressCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sell-orders-by-seller [address]",
-		Short: "List all sell orders by owner address with pagination",
+		Short: "List all sell orders by seller address with pagination",
 		Long: strings.TrimSpace(
-			`Retrieve sell orders by owner address with pagination
+			`Retrieve sell orders by seller address with pagination
 	
 Example:
 $ regen q sell-orders-by-seller regen1fv85...zkfu

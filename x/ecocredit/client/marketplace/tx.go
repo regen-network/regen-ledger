@@ -117,7 +117,7 @@ Parameters:
 				return err
 			}
 
-			// get the order seller from the --from flag
+			// get the seller address from the --from flag
 			seller := clientCtx.GetFromAddress()
 
 			// declare updates array with ask price as string

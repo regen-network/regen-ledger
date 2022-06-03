@@ -95,7 +95,7 @@ service Query {
         "/regen/ecocredit/v1/batches/{batch_denom}/balance/{address}";
   }
 
-  // Balances queries all credit balances the given account address holds.
+  // Balances queries all credit balances the given account holds.
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
