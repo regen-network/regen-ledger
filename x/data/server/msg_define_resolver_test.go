@@ -47,10 +47,10 @@ func (s *defineResolverSuite) ExpectTheResolverWithIdAndUrlAndManagerAlice(a str
 	id, err := strconv.ParseUint(a, 10, 64)
 	require.NoError(s.t, err)
 
-	dataResolver, err := s.server.stateStore.ResolverInfoTable().Get(s.ctx, id)
+	resolver, err := s.server.stateStore.ResolverTable().Get(s.ctx, id)
 	require.NoError(s.t, err)
-	require.Equal(s.t, b, dataResolver.Url)
-	require.Equal(s.t, s.alice.Bytes(), dataResolver.Manager)
+	require.Equal(s.t, b, resolver.Url)
+	require.Equal(s.t, s.alice.Bytes(), resolver.Manager)
 }
 
 func (s *defineResolverSuite) ExpectTheError(a string) {

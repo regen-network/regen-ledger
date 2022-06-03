@@ -28,6 +28,7 @@ type IntegrationTestSuite struct {
 
 	resolverID uint64
 	iri        string
+	url        string
 }
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
@@ -119,10 +120,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(err)
 	}
 
+	s.url = "https://foo.bar"
+
 	out, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgDefineResolverCmd(),
 		append(
 			[]string{
-				"https://foo.bar",
+				s.url,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
 			},
 			commonFlags...,

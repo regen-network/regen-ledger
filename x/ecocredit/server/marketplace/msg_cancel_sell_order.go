@@ -6,11 +6,14 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	v1 "github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
+
+	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
 )
 
 // CancelSellOrder cancels a sell order and returns the escrowed credits to the seller.
-func (k Keeper) CancelSellOrder(ctx context.Context, req *v1.MsgCancelSellOrder) (*v1.MsgCancelSellOrderResponse, error) {
+func (k Keeper) CancelSellOrder(ctx context.Context, req *marketplace.MsgCancelSellOrder) (*marketplace.MsgCancelSellOrderResponse, error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
@@ -30,5 +33,11 @@ func (k Keeper) CancelSellOrder(ctx context.Context, req *v1.MsgCancelSellOrder)
 		return nil, err
 	}
 
-	return &v1.MsgCancelSellOrderResponse{}, k.stateStore.SellOrderTable().Delete(ctx, sellOrder)
+	if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventCancelSellOrder{
+		SellOrderId: sellOrder.Id,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &marketplace.MsgCancelSellOrderResponse{}, k.stateStore.SellOrderTable().Delete(ctx, sellOrder)
 }
