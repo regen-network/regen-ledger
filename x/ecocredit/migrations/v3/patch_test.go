@@ -838,7 +838,7 @@ func assetBatchIssuanceDate(t *testing.T, ctx context.Context, ss api.StateStore
 	require.Equal(t, res.IssuanceDate.AsTime(), parsed)
 }
 
-func assetProjectReferenceId(t *testing.T, ctx context.Context, ss api.StateStore, id, jurisdiction, referenceID string) {
+func assertProjectReferenceId(t *testing.T, ctx context.Context, ss api.StateStore, id, jurisdiction, referenceID string) {
 	res, err := ss.ProjectTable().GetById(ctx, id)
 	require.NoError(t, err)
 	require.Equal(t, res.ReferenceId, referenceID)
