@@ -809,13 +809,13 @@ func TestRedwoodMigrations(t *testing.T) {
 
 	//  C02-20200909-20210909-001  ->  "2022-03-08T13:00:50Z"
 	//  C02-20210909-20220101-002  ->  "2022-03-08T17:17:20Z"
-	assetBatchIssuanceDate(t, ctx, ss, "C02-001-20200909-20210909-001", "2022-03-08T13:00:50Z")
-	assetBatchIssuanceDate(t, ctx, ss, "C02-002-20210909-20220101-001", "2022-03-08T17:17:20Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C02-001-20200909-20210909-001", "2022-03-08T13:00:50Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C02-002-20210909-20220101-001", "2022-03-08T17:17:20Z")
 
 	//  C04-20180202-20190202-001  ->  "2022-03-28T08:31:45Z"
 	//  C04-20190202-20200202-002  ->  "2022-03-28T08:45:14Z"
-	assetBatchIssuanceDate(t, ctx, ss, "C04-001-20180202-20190202-001", "2022-03-28T08:31:45Z")
-	assetBatchIssuanceDate(t, ctx, ss, "C04-002-20190202-20200202-001", "2022-03-28T08:45:14Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C04-001-20180202-20190202-001", "2022-03-28T08:31:45Z")
+	assertBatchIssuanceDate(t, ctx, ss, "C04-002-20190202-20200202-001", "2022-03-28T08:45:14Z")
 
 	// verify basket curator
 	// rNCT   -> regen1df675r9vnf7pdedn4sf26svdsem3ugavgxmy46
