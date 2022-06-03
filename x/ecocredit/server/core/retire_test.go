@@ -24,7 +24,7 @@ func TestRetire_Valid(t *testing.T) {
 	// retire 10.0 -> 0.5 leftover in tradable, retired becomes 20.5
 
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: "C01-001-20200101-20210101-01", Amount: "10.0"},
 		},
@@ -52,7 +52,7 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// invalid batch denom
 	_, err := s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: "A00-00000000-00000000-01", Amount: "10.35"},
 		},
@@ -62,7 +62,7 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// out of precision
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: batchDenom, Amount: "10.35250982359823095"},
 		},
@@ -72,7 +72,7 @@ func TestRetire_Invalid(t *testing.T) {
 
 	// not enough credits
 	_, err = s.k.Retire(s.ctx, &core.MsgRetire{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgRetire_RetireCredits{
 			{BatchDenom: batchDenom, Amount: "150"},
 		},

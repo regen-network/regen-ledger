@@ -89,15 +89,15 @@ service Query {
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
-  // batch for a given account.
+  // batch for a given account address.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1/batches/{batch_denom}/balance/{account}";
+        "/regen/ecocredit/v1/batches/{batch_denom}/balance/{address}";
   }
 
-  // Balances queries all credit balances the given account holds.
+  // Balances queries all credit balances the given account address holds.
   rpc Balances(QueryBalancesRequest) returns (QueryBalancesResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1/balances/{account}";
+    option (google.api.http).get = "/regen/ecocredit/v1/balances/{address}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.

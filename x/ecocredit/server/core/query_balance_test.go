@@ -36,7 +36,7 @@ func TestQuery_Balance(t *testing.T) {
 
 	// query balance for s.addr
 	res, err := s.k.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    s.addr.String(),
+		Address:    s.addr.String(),
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
@@ -49,7 +49,7 @@ func TestQuery_Balance(t *testing.T) {
 
 	// query balance for address with no balance
 	res, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    noBalance.String(),
+		Address:    noBalance.String(),
 		BatchDenom: batchDenom,
 	})
 	assert.NilError(t, err)
@@ -60,7 +60,7 @@ func TestQuery_Balance(t *testing.T) {
 
 	// query balance with unknown batch denom
 	_, err = s.k.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    s.addr.String(),
+		Address:    s.addr.String(),
 		BatchDenom: "A00-00000000-00000000-001",
 	})
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())

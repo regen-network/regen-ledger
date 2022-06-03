@@ -161,7 +161,7 @@ func (s *sellSuite) AliceHasATradableBatchBalanceWithDenomAndAmount(a string, b 
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenom(a string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: a,
@@ -174,7 +174,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenom(a string) {
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenomAndAskDenom(a string, b string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: a,
@@ -190,7 +190,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithBatchDenomAndAskDenom(a s
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithCreditQuantity(a string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
@@ -207,14 +207,14 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithTheProperties(a gocuke.Do
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{order},
 	})
 }
 
 func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithCreditQuantity(a string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
@@ -235,7 +235,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithAskPrice(a string) {
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
@@ -248,7 +248,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithAskPrice(a string) {
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrderWithAskDenom(a string) {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
@@ -267,7 +267,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithExpiration(a string) {
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom: s.batchDenom,
@@ -281,7 +281,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrderWithExpiration(a string) {
 
 func (s *sellSuite) AliceAttemptsToCreateASellOrder() {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        s.batchDenom,
@@ -296,7 +296,7 @@ func (s *sellSuite) AliceAttemptsToCreateASellOrder() {
 
 func (s *sellSuite) AliceAttemptsToCreateTwoSellOrders() {
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        s.batchDenom,
@@ -322,7 +322,7 @@ func (s *sellSuite) AliceAttemptsToCreateTwoSellOrdersEachWithTheProperties(a go
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner:  s.alice.String(),
+		Seller: s.alice.String(),
 		Orders: []*marketplace.MsgSell_Order{order, order},
 	})
 }

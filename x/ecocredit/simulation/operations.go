@@ -505,7 +505,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balres, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -620,7 +620,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -651,7 +651,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &core.MsgRetire{
-			Holder: account.Address.String(),
+			Owner: account.Address.String(),
 			Credits: []*core.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.Denom,
@@ -705,7 +705,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		admin := sdk.AccAddress(project.Admin).String()
 		balanceRes, err := qryClient.Balance(ctx, &core.QueryBalanceRequest{
-			Account:    admin,
+			Address:    admin,
 			BatchDenom: batch.Denom,
 		})
 		if err != nil {
@@ -722,7 +722,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &core.MsgCancel{
-			Holder: admin,
+			Owner: admin,
 			Credits: []*core.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.Denom,

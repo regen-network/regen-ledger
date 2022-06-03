@@ -44,14 +44,15 @@ type QueryClient interface {
 	BatchesByIssuer(ctx context.Context, in *QueryBatchesByIssuerRequest, opts ...grpc.CallOption) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(ctx context.Context, in *QueryBatchesByClassRequest, opts ...grpc.CallOption) (*QueryBatchesByClassResponse, error)
-	// BatchesByProject queries for all batches from a given project with pagination.
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
 	BatchesByProject(ctx context.Context, in *QueryBatchesByProjectRequest, opts ...grpc.CallOption) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(ctx context.Context, in *QueryBatchRequest, opts ...grpc.CallOption) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// batch for a given account address.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
-	// Balances queries all credit balances the given account holds.
+	// Balances queries all credit balances the given account address holds.
 	Balances(ctx context.Context, in *QueryBalancesRequest, opts ...grpc.CallOption) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
@@ -249,14 +250,15 @@ type QueryServer interface {
 	BatchesByIssuer(context.Context, *QueryBatchesByIssuerRequest) (*QueryBatchesByIssuerResponse, error)
 	// BatchesByClass queries all batches issued from a given class.
 	BatchesByClass(context.Context, *QueryBatchesByClassRequest) (*QueryBatchesByClassResponse, error)
-	// BatchesByProject queries for all batches from a given project with pagination.
+	// BatchesByProject queries for all batches from a given project with
+	// pagination.
 	BatchesByProject(context.Context, *QueryBatchesByProjectRequest) (*QueryBatchesByProjectResponse, error)
 	// Batch queries for information on a credit batch.
 	Batch(context.Context, *QueryBatchRequest) (*QueryBatchResponse, error)
 	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// batch for a given account address.
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
-	// Balances queries all credit balances the given account holds.
+	// Balances queries all credit balances the given account address holds.
 	Balances(context.Context, *QueryBalancesRequest) (*QueryBalancesResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)

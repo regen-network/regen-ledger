@@ -106,7 +106,7 @@ message QuerySellOrdersByBatchDenomResponse {
 // type.
 message QuerySellOrdersBySellerRequest {
 
-  // seller is the account address that is selling credits.
+  // seller is the address of the account that is selling credits.
   string seller = 1;
 
   // pagination defines an optional pagination for the request.
@@ -148,7 +148,7 @@ message SellOrderInfo {
   // id is the unique ID of sell order.
   uint64 id = 1;
 
-  // seller is the account address that is selling credits.
+  // seller is the address of the account that is selling credits.
   string seller = 2;
 
   // batch_denom is denom of the credit batch being sold.

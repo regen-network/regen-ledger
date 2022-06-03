@@ -594,7 +594,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrderCmd() {
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 		},
@@ -656,7 +656,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	s.Require().NoError(err)
 
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
@@ -712,7 +712,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 	expiration, err := types.ParseDate("expiration", "2050-03-11")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
@@ -756,7 +756,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res marketplace.QuerySellOrdersByAddressResponse
+				var res marketplace.QuerySellOrdersBySellerResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().NotNil(res.Pagination)
 				s.Require().True(res.Pagination.Total > 1)
@@ -775,7 +775,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenomCmd() {
 	s.Require().NoError(err)
 
 	_, err = s.createSellOrder(clientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "3", AskPrice: &validAsk, Expiration: &expiration},
