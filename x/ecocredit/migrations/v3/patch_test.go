@@ -831,7 +831,7 @@ func assertBasketCurator(t *testing.T, ctx context.Context, ss basketapi.StateSt
 	require.Equal(t, string(basket.Curator), curator)
 }
 
-func assetBatchIssuanceDate(t *testing.T, ctx context.Context, ss api.StateStore, denom, exp string) {
+func assertBatchIssuanceDate(t *testing.T, ctx context.Context, ss api.StateStore, denom, exp string) {
 	res, err := ss.BatchTable().GetByDenom(ctx, denom)
 	require.NoError(t, err)
 	parsed, _ := time.Parse(time.RFC3339, exp)
