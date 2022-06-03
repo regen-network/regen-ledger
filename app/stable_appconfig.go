@@ -99,27 +99,26 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 func recoverFunds(ctx sdk.Context, ak authkeeper.AccountKeeper, bk bankkeeper.Keeper) error {
 	// address with funds inaccessible
-	const lostAddr = "regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f"
+	lostAddr, err := sdk.AccAddressFromBech32("regen1c3lpjaq0ytdtsrnjqzmtj3hceavl8fe2vtkj7f")
+	if err != nil {
+		return err
+	}
+
 	// address that the community member has access to
-	const newAddr = "regen14tpuqrwf95evu3ejm9z7dn20ttcyzqy3jjpfv4"
+	newAddr, err := sdk.AccAddressFromBech32("regen14tpuqrwf95evu3ejm9z7dn20ttcyzqy3jjpfv4")
+	if err != nil {
+		return err
+	}
 
-	var lostAccount, newAccount authtypes.AccountI
-	ak.IterateAccounts(ctx, func(account authtypes.AccountI) (stop bool) {
-		addr := account.GetAddress().String()
-		if addr == lostAddr {
-			lostAccount = account
-			if newAccount != nil {
-				return true
-			}
-		} else if addr == newAddr {
-			newAccount = account
-			if lostAccount != nil {
-				return true
-			}
-		}
+	lostAccount := ak.GetAccount(ctx, lostAddr)
+	if lostAccount == nil {
+		return fmt.Errorf("%s account not found", lostAccount.GetAddress().String())
+	}
 
-		return false
-	})
+	newAccount := ak.GetAccount(ctx, newAddr)
+	if newAccount == nil {
+		return fmt.Errorf("%s account not found", newAccount.GetAddress().String())
+	}
 
 	va, ok := lostAccount.(*vestingtypes.PeriodicVestingAccount)
 	if !ok {

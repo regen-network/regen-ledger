@@ -86,8 +86,8 @@ func TestLostFunds(t *testing.T) {
 	require.NoError(t, err)
 
 	require.True(t, regenApp.BankKeeper.GetBalance(ctx, lostAddr, "uregen").IsZero())
-
 	newbalance := regenApp.BankKeeper.GetAllBalances(ctx, newAddr)
+	// verify new account pre-existing balance also included
 	require.Equal(t, newbalance, newAccountBalance.Add(oldAccountBalance...))
 
 	acc := regenApp.AccountKeeper.GetAccount(ctx, newAddr)
