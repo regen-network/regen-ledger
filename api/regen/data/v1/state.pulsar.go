@@ -1569,29 +1569,29 @@ func (x *fastReflection_DataAttestor) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_ResolverInfo         protoreflect.MessageDescriptor
-	fd_ResolverInfo_id      protoreflect.FieldDescriptor
-	fd_ResolverInfo_url     protoreflect.FieldDescriptor
-	fd_ResolverInfo_manager protoreflect.FieldDescriptor
+	md_Resolver         protoreflect.MessageDescriptor
+	fd_Resolver_id      protoreflect.FieldDescriptor
+	fd_Resolver_url     protoreflect.FieldDescriptor
+	fd_Resolver_manager protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_regen_data_v1_state_proto_init()
-	md_ResolverInfo = File_regen_data_v1_state_proto.Messages().ByName("ResolverInfo")
-	fd_ResolverInfo_id = md_ResolverInfo.Fields().ByName("id")
-	fd_ResolverInfo_url = md_ResolverInfo.Fields().ByName("url")
-	fd_ResolverInfo_manager = md_ResolverInfo.Fields().ByName("manager")
+	md_Resolver = File_regen_data_v1_state_proto.Messages().ByName("Resolver")
+	fd_Resolver_id = md_Resolver.Fields().ByName("id")
+	fd_Resolver_url = md_Resolver.Fields().ByName("url")
+	fd_Resolver_manager = md_Resolver.Fields().ByName("manager")
 }
 
-var _ protoreflect.Message = (*fastReflection_ResolverInfo)(nil)
+var _ protoreflect.Message = (*fastReflection_Resolver)(nil)
 
-type fastReflection_ResolverInfo ResolverInfo
+type fastReflection_Resolver Resolver
 
-func (x *ResolverInfo) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_ResolverInfo)(x)
+func (x *Resolver) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_Resolver)(x)
 }
 
-func (x *ResolverInfo) slowProtoReflect() protoreflect.Message {
+func (x *Resolver) slowProtoReflect() protoreflect.Message {
 	mi := &file_regen_data_v1_state_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -1603,43 +1603,43 @@ func (x *ResolverInfo) slowProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_ResolverInfo_messageType fastReflection_ResolverInfo_messageType
-var _ protoreflect.MessageType = fastReflection_ResolverInfo_messageType{}
+var _fastReflection_Resolver_messageType fastReflection_Resolver_messageType
+var _ protoreflect.MessageType = fastReflection_Resolver_messageType{}
 
-type fastReflection_ResolverInfo_messageType struct{}
+type fastReflection_Resolver_messageType struct{}
 
-func (x fastReflection_ResolverInfo_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_ResolverInfo)(nil)
+func (x fastReflection_Resolver_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_Resolver)(nil)
 }
-func (x fastReflection_ResolverInfo_messageType) New() protoreflect.Message {
-	return new(fastReflection_ResolverInfo)
+func (x fastReflection_Resolver_messageType) New() protoreflect.Message {
+	return new(fastReflection_Resolver)
 }
-func (x fastReflection_ResolverInfo_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_ResolverInfo
+func (x fastReflection_Resolver_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_Resolver
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_ResolverInfo) Descriptor() protoreflect.MessageDescriptor {
-	return md_ResolverInfo
+func (x *fastReflection_Resolver) Descriptor() protoreflect.MessageDescriptor {
+	return md_Resolver
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_ResolverInfo) Type() protoreflect.MessageType {
-	return _fastReflection_ResolverInfo_messageType
+func (x *fastReflection_Resolver) Type() protoreflect.MessageType {
+	return _fastReflection_Resolver_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_ResolverInfo) New() protoreflect.Message {
-	return new(fastReflection_ResolverInfo)
+func (x *fastReflection_Resolver) New() protoreflect.Message {
+	return new(fastReflection_Resolver)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_ResolverInfo) Interface() protoreflect.ProtoMessage {
-	return (*ResolverInfo)(x)
+func (x *fastReflection_Resolver) Interface() protoreflect.ProtoMessage {
+	return (*Resolver)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -1647,22 +1647,22 @@ func (x *fastReflection_ResolverInfo) Interface() protoreflect.ProtoMessage {
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_ResolverInfo) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_Resolver) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Id != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.Id)
-		if !f(fd_ResolverInfo_id, value) {
+		if !f(fd_Resolver_id, value) {
 			return
 		}
 	}
 	if x.Url != "" {
 		value := protoreflect.ValueOfString(x.Url)
-		if !f(fd_ResolverInfo_url, value) {
+		if !f(fd_Resolver_url, value) {
 			return
 		}
 	}
 	if len(x.Manager) != 0 {
 		value := protoreflect.ValueOfBytes(x.Manager)
-		if !f(fd_ResolverInfo_manager, value) {
+		if !f(fd_Resolver_manager, value) {
 			return
 		}
 	}
@@ -1679,19 +1679,19 @@ func (x *fastReflection_ResolverInfo) Range(f func(protoreflect.FieldDescriptor,
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_ResolverInfo) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_Resolver) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
+	case "regen.data.v1.Resolver.id":
 		return x.Id != uint64(0)
-	case "regen.data.v1.ResolverInfo.url":
+	case "regen.data.v1.Resolver.url":
 		return x.Url != ""
-	case "regen.data.v1.ResolverInfo.manager":
+	case "regen.data.v1.Resolver.manager":
 		return len(x.Manager) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1701,19 +1701,19 @@ func (x *fastReflection_ResolverInfo) Has(fd protoreflect.FieldDescriptor) bool 
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ResolverInfo) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_Resolver) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
+	case "regen.data.v1.Resolver.id":
 		x.Id = uint64(0)
-	case "regen.data.v1.ResolverInfo.url":
+	case "regen.data.v1.Resolver.url":
 		x.Url = ""
-	case "regen.data.v1.ResolverInfo.manager":
+	case "regen.data.v1.Resolver.manager":
 		x.Manager = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1723,22 +1723,22 @@ func (x *fastReflection_ResolverInfo) Clear(fd protoreflect.FieldDescriptor) {
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_ResolverInfo) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_Resolver) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
+	case "regen.data.v1.Resolver.id":
 		value := x.Id
 		return protoreflect.ValueOfUint64(value)
-	case "regen.data.v1.ResolverInfo.url":
+	case "regen.data.v1.Resolver.url":
 		value := x.Url
 		return protoreflect.ValueOfString(value)
-	case "regen.data.v1.ResolverInfo.manager":
+	case "regen.data.v1.Resolver.manager":
 		value := x.Manager
 		return protoreflect.ValueOfBytes(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1752,19 +1752,19 @@ func (x *fastReflection_ResolverInfo) Get(descriptor protoreflect.FieldDescripto
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ResolverInfo) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_Resolver) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
+	case "regen.data.v1.Resolver.id":
 		x.Id = value.Uint()
-	case "regen.data.v1.ResolverInfo.url":
+	case "regen.data.v1.Resolver.url":
 		x.Url = value.Interface().(string)
-	case "regen.data.v1.ResolverInfo.manager":
+	case "regen.data.v1.Resolver.manager":
 		x.Manager = value.Bytes()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1778,48 +1778,48 @@ func (x *fastReflection_ResolverInfo) Set(fd protoreflect.FieldDescriptor, value
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ResolverInfo) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_Resolver) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
-		panic(fmt.Errorf("field id of message regen.data.v1.ResolverInfo is not mutable"))
-	case "regen.data.v1.ResolverInfo.url":
-		panic(fmt.Errorf("field url of message regen.data.v1.ResolverInfo is not mutable"))
-	case "regen.data.v1.ResolverInfo.manager":
-		panic(fmt.Errorf("field manager of message regen.data.v1.ResolverInfo is not mutable"))
+	case "regen.data.v1.Resolver.id":
+		panic(fmt.Errorf("field id of message regen.data.v1.Resolver is not mutable"))
+	case "regen.data.v1.Resolver.url":
+		panic(fmt.Errorf("field url of message regen.data.v1.Resolver is not mutable"))
+	case "regen.data.v1.Resolver.manager":
+		panic(fmt.Errorf("field manager of message regen.data.v1.Resolver is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_ResolverInfo) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_Resolver) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.data.v1.ResolverInfo.id":
+	case "regen.data.v1.Resolver.id":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "regen.data.v1.ResolverInfo.url":
+	case "regen.data.v1.Resolver.url":
 		return protoreflect.ValueOfString("")
-	case "regen.data.v1.ResolverInfo.manager":
+	case "regen.data.v1.Resolver.manager":
 		return protoreflect.ValueOfBytes(nil)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.ResolverInfo"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.data.v1.Resolver"))
 		}
-		panic(fmt.Errorf("message regen.data.v1.ResolverInfo does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.data.v1.Resolver does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_ResolverInfo) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_Resolver) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.ResolverInfo", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.data.v1.Resolver", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1827,7 +1827,7 @@ func (x *fastReflection_ResolverInfo) WhichOneof(d protoreflect.OneofDescriptor)
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_ResolverInfo) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_Resolver) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -1838,7 +1838,7 @@ func (x *fastReflection_ResolverInfo) GetUnknown() protoreflect.RawFields {
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_ResolverInfo) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_Resolver) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -1850,7 +1850,7 @@ func (x *fastReflection_ResolverInfo) SetUnknown(fields protoreflect.RawFields) 
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_ResolverInfo) IsValid() bool {
+func (x *fastReflection_Resolver) IsValid() bool {
 	return x != nil
 }
 
@@ -1860,9 +1860,9 @@ func (x *fastReflection_ResolverInfo) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_ResolverInfo) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_Resolver) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*ResolverInfo)
+		x := input.Message.Interface().(*Resolver)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1895,7 +1895,7 @@ func (x *fastReflection_ResolverInfo) ProtoMethods() *protoiface.Methods {
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*ResolverInfo)
+		x := input.Message.Interface().(*Resolver)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1944,7 +1944,7 @@ func (x *fastReflection_ResolverInfo) ProtoMethods() *protoiface.Methods {
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*ResolverInfo)
+		x := input.Message.Interface().(*Resolver)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -1976,10 +1976,10 @@ func (x *fastReflection_ResolverInfo) ProtoMethods() *protoiface.Methods {
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ResolverInfo: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Resolver: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: ResolverInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Resolver: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -2733,8 +2733,8 @@ func (x *DataAttestor) GetTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// ResolverInfo describes a data resolver.
-type ResolverInfo struct {
+// Resolver describes a data resolver.
+type Resolver struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -2748,8 +2748,8 @@ type ResolverInfo struct {
 	Manager []byte `protobuf:"bytes,3,opt,name=manager,proto3" json:"manager,omitempty"`
 }
 
-func (x *ResolverInfo) Reset() {
-	*x = ResolverInfo{}
+func (x *Resolver) Reset() {
+	*x = Resolver{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_regen_data_v1_state_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -2757,32 +2757,32 @@ func (x *ResolverInfo) Reset() {
 	}
 }
 
-func (x *ResolverInfo) String() string {
+func (x *Resolver) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ResolverInfo) ProtoMessage() {}
+func (*Resolver) ProtoMessage() {}
 
-// Deprecated: Use ResolverInfo.ProtoReflect.Descriptor instead.
-func (*ResolverInfo) Descriptor() ([]byte, []int) {
+// Deprecated: Use Resolver.ProtoReflect.Descriptor instead.
+func (*Resolver) Descriptor() ([]byte, []int) {
 	return file_regen_data_v1_state_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *ResolverInfo) GetId() uint64 {
+func (x *Resolver) GetId() uint64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *ResolverInfo) GetUrl() string {
+func (x *Resolver) GetUrl() string {
 	if x != nil {
 		return x.Url
 	}
 	return ""
 }
 
-func (x *ResolverInfo) GetManager() []byte {
+func (x *Resolver) GetManager() []byte {
 	if x != nil {
 		return x.Manager
 	}
@@ -2866,32 +2866,32 @@ var file_regen_data_v1_state_proto_rawDesc = []byte{
 	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
 	0x3a, 0x25, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x1f, 0x0a, 0x0d, 0x0a, 0x0b, 0x69, 0x64, 0x2c, 0x61,
 	0x74, 0x74, 0x65, 0x73, 0x74, 0x6f, 0x72, 0x12, 0x0c, 0x0a, 0x08, 0x61, 0x74, 0x74, 0x65, 0x73,
-	0x74, 0x6f, 0x72, 0x10, 0x01, 0x18, 0x03, 0x22, 0x72, 0x0a, 0x0c, 0x52, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61, 0x6e,
-	0x61, 0x67, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61,
-	0x67, 0x65, 0x72, 0x3a, 0x26, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x20, 0x0a, 0x06, 0x0a, 0x02, 0x69,
-	0x64, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07,
-	0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x10, 0x02, 0x18, 0x04, 0x22, 0x5b, 0x0a, 0x0c, 0x44,
-	0x61, 0x74, 0x61, 0x52, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x72,
-	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0a, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x1a, 0xf2, 0x9e,
-	0xd3, 0x8e, 0x03, 0x14, 0x0a, 0x10, 0x0a, 0x0e, 0x69, 0x64, 0x2c, 0x72, 0x65, 0x73, 0x6f, 0x6c,
-	0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d,
-	0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a,
-	0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64,
-	0x67, 0x65, 0x72, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61,
-	0x74, 0x61, 0x2f, 0x76, 0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52,
-	0x44, 0x58, 0xaa, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e,
-	0x56, 0x31, 0xca, 0x02, 0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c,
-	0x56, 0x31, 0xe2, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c,
-	0x56, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x0f, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x6f, 0x72, 0x10, 0x01, 0x18, 0x03, 0x22, 0x6e, 0x0a, 0x08, 0x52, 0x65, 0x73, 0x6f, 0x6c,
+	0x76, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x07, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x72, 0x3a,
+	0x26, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x20, 0x0a, 0x06, 0x0a, 0x02, 0x69, 0x64, 0x10, 0x01, 0x12,
+	0x07, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x6d, 0x61, 0x6e, 0x61,
+	0x67, 0x65, 0x72, 0x10, 0x02, 0x18, 0x04, 0x22, 0x5b, 0x0a, 0x0c, 0x44, 0x61, 0x74, 0x61, 0x52,
+	0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0c, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x72, 0x65, 0x73, 0x6f, 0x6c,
+	0x76, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x72, 0x65,
+	0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x1a, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x14,
+	0x0a, 0x10, 0x0a, 0x0e, 0x69, 0x64, 0x2c, 0x72, 0x65, 0x73, 0x6f, 0x6c, 0x76, 0x65, 0x72, 0x5f,
+	0x69, 0x64, 0x18, 0x05, 0x42, 0xb5, 0x01, 0x0a, 0x11, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67,
+	0x65, 0x6e, 0x2e, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x76, 0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62,
+	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2f, 0x76,
+	0x31, 0x3b, 0x64, 0x61, 0x74, 0x61, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x44, 0x58, 0xaa, 0x02,
+	0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x56, 0x31, 0xca, 0x02,
+	0x0d, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0xe2, 0x02,
+	0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x44, 0x61, 0x74, 0x61, 0x5c, 0x56, 0x31, 0x5c, 0x47,
+	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x0f, 0x52, 0x65, 0x67,
+	0x65, 0x6e, 0x3a, 0x3a, 0x44, 0x61, 0x74, 0x61, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2911,7 +2911,7 @@ var file_regen_data_v1_state_proto_goTypes = []interface{}{
 	(*DataID)(nil),                // 0: regen.data.v1.DataID
 	(*DataAnchor)(nil),            // 1: regen.data.v1.DataAnchor
 	(*DataAttestor)(nil),          // 2: regen.data.v1.DataAttestor
-	(*ResolverInfo)(nil),          // 3: regen.data.v1.ResolverInfo
+	(*Resolver)(nil),              // 3: regen.data.v1.Resolver
 	(*DataResolver)(nil),          // 4: regen.data.v1.DataResolver
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
@@ -2968,7 +2968,7 @@ func file_regen_data_v1_state_proto_init() {
 			}
 		}
 		file_regen_data_v1_state_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResolverInfo); i {
+			switch v := v.(*Resolver); i {
 			case 0:
 				return &v.state
 			case 1:

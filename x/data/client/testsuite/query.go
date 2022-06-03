@@ -331,7 +331,7 @@ func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
+func (s *IntegrationTestSuite) TestQueryResolverCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -375,7 +375,7 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryResolverInfoCmd()
+			cmd := client.QueryResolverCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -383,14 +383,14 @@ func (s *IntegrationTestSuite) TestQueryResolverInfoCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryResolverInfoResponse
+				var res data.QueryResolverResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 			}
 		})
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversCmd() {
+func (s *IntegrationTestSuite) TestQueryResolversByIriCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -428,7 +428,7 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryResolversCmd()
+			cmd := client.QueryResolversByIriCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err, out.String())
@@ -437,6 +437,53 @@ func (s *IntegrationTestSuite) TestQueryResolversCmd() {
 				s.Require().NoError(err, out.String())
 
 				var res data.QueryResolversByIRIResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:   "valid test",
+			args:   []string{s.url},
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryResolversByUrlCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err, out.String())
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res data.QueryResolversByUrlResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 			}
 		})

@@ -986,7 +986,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				for _, e := range res.Logs[0].Events {
 					if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 						for _, attr := range e.Attributes {
-							if attr.Key == "order_id" {
+							if attr.Key == "sell_order_id" {
 								found = true
 								orderIdStr := strings.Trim(attr.Value, "\"")
 								_, err := strconv.ParseUint(orderIdStr, 10, 64)
@@ -1753,7 +1753,7 @@ func (s *IntegrationTestSuite) createSellOrder(clientCtx client.Context, msg *ma
 	for _, e := range res.Logs[0].Events {
 		if e.Type == proto.MessageName(&marketplace.EventSell{}) {
 			for _, attr := range e.Attributes {
-				if attr.Key == "order_id" {
+				if attr.Key == "sell_order_id" {
 					orderId, err := strconv.ParseUint(strings.Trim(attr.Value, "\""), 10, 64)
 					s.Require().NoError(err)
 					orderIds = append(orderIds, orderId)

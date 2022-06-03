@@ -405,149 +405,149 @@ func NewDataAttestorTable(db ormtable.Schema) (DataAttestorTable, error) {
 	return dataAttestorTable{table}, nil
 }
 
-type ResolverInfoTable interface {
-	Insert(ctx context.Context, resolverInfo *ResolverInfo) error
-	InsertReturningID(ctx context.Context, resolverInfo *ResolverInfo) (uint64, error)
-	Update(ctx context.Context, resolverInfo *ResolverInfo) error
-	Save(ctx context.Context, resolverInfo *ResolverInfo) error
-	Delete(ctx context.Context, resolverInfo *ResolverInfo) error
+type ResolverTable interface {
+	Insert(ctx context.Context, resolver *Resolver) error
+	InsertReturningID(ctx context.Context, resolver *Resolver) (uint64, error)
+	Update(ctx context.Context, resolver *Resolver) error
+	Save(ctx context.Context, resolver *Resolver) error
+	Delete(ctx context.Context, resolver *Resolver) error
 	Has(ctx context.Context, id uint64) (found bool, err error)
 	// Get returns nil and an error which responds true to ormerrors.IsNotFound() if the record was not found.
-	Get(ctx context.Context, id uint64) (*ResolverInfo, error)
-	List(ctx context.Context, prefixKey ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
-	ListRange(ctx context.Context, from, to ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error)
-	DeleteBy(ctx context.Context, prefixKey ResolverInfoIndexKey) error
-	DeleteRange(ctx context.Context, from, to ResolverInfoIndexKey) error
+	Get(ctx context.Context, id uint64) (*Resolver, error)
+	List(ctx context.Context, prefixKey ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error)
+	ListRange(ctx context.Context, from, to ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error)
+	DeleteBy(ctx context.Context, prefixKey ResolverIndexKey) error
+	DeleteRange(ctx context.Context, from, to ResolverIndexKey) error
 
 	doNotImplement()
 }
 
-type ResolverInfoIterator struct {
+type ResolverIterator struct {
 	ormtable.Iterator
 }
 
-func (i ResolverInfoIterator) Value() (*ResolverInfo, error) {
-	var resolverInfo ResolverInfo
-	err := i.UnmarshalMessage(&resolverInfo)
-	return &resolverInfo, err
+func (i ResolverIterator) Value() (*Resolver, error) {
+	var resolver Resolver
+	err := i.UnmarshalMessage(&resolver)
+	return &resolver, err
 }
 
-type ResolverInfoIndexKey interface {
+type ResolverIndexKey interface {
 	id() uint32
 	values() []interface{}
-	resolverInfoIndexKey()
+	resolverIndexKey()
 }
 
 // primary key starting index..
-type ResolverInfoPrimaryKey = ResolverInfoIdIndexKey
+type ResolverPrimaryKey = ResolverIdIndexKey
 
-type ResolverInfoIdIndexKey struct {
+type ResolverIdIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverInfoIdIndexKey) id() uint32            { return 0 }
-func (x ResolverInfoIdIndexKey) values() []interface{} { return x.vs }
-func (x ResolverInfoIdIndexKey) resolverInfoIndexKey() {}
+func (x ResolverIdIndexKey) id() uint32            { return 0 }
+func (x ResolverIdIndexKey) values() []interface{} { return x.vs }
+func (x ResolverIdIndexKey) resolverIndexKey()     {}
 
-func (this ResolverInfoIdIndexKey) WithId(id uint64) ResolverInfoIdIndexKey {
+func (this ResolverIdIndexKey) WithId(id uint64) ResolverIdIndexKey {
 	this.vs = []interface{}{id}
 	return this
 }
 
-type ResolverInfoUrlIndexKey struct {
+type ResolverUrlIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverInfoUrlIndexKey) id() uint32            { return 1 }
-func (x ResolverInfoUrlIndexKey) values() []interface{} { return x.vs }
-func (x ResolverInfoUrlIndexKey) resolverInfoIndexKey() {}
+func (x ResolverUrlIndexKey) id() uint32            { return 1 }
+func (x ResolverUrlIndexKey) values() []interface{} { return x.vs }
+func (x ResolverUrlIndexKey) resolverIndexKey()     {}
 
-func (this ResolverInfoUrlIndexKey) WithUrl(url string) ResolverInfoUrlIndexKey {
+func (this ResolverUrlIndexKey) WithUrl(url string) ResolverUrlIndexKey {
 	this.vs = []interface{}{url}
 	return this
 }
 
-type ResolverInfoManagerIndexKey struct {
+type ResolverManagerIndexKey struct {
 	vs []interface{}
 }
 
-func (x ResolverInfoManagerIndexKey) id() uint32            { return 2 }
-func (x ResolverInfoManagerIndexKey) values() []interface{} { return x.vs }
-func (x ResolverInfoManagerIndexKey) resolverInfoIndexKey() {}
+func (x ResolverManagerIndexKey) id() uint32            { return 2 }
+func (x ResolverManagerIndexKey) values() []interface{} { return x.vs }
+func (x ResolverManagerIndexKey) resolverIndexKey()     {}
 
-func (this ResolverInfoManagerIndexKey) WithManager(manager []byte) ResolverInfoManagerIndexKey {
+func (this ResolverManagerIndexKey) WithManager(manager []byte) ResolverManagerIndexKey {
 	this.vs = []interface{}{manager}
 	return this
 }
 
-type resolverInfoTable struct {
+type resolverTable struct {
 	table ormtable.AutoIncrementTable
 }
 
-func (this resolverInfoTable) Insert(ctx context.Context, resolverInfo *ResolverInfo) error {
-	return this.table.Insert(ctx, resolverInfo)
+func (this resolverTable) Insert(ctx context.Context, resolver *Resolver) error {
+	return this.table.Insert(ctx, resolver)
 }
 
-func (this resolverInfoTable) Update(ctx context.Context, resolverInfo *ResolverInfo) error {
-	return this.table.Update(ctx, resolverInfo)
+func (this resolverTable) Update(ctx context.Context, resolver *Resolver) error {
+	return this.table.Update(ctx, resolver)
 }
 
-func (this resolverInfoTable) Save(ctx context.Context, resolverInfo *ResolverInfo) error {
-	return this.table.Save(ctx, resolverInfo)
+func (this resolverTable) Save(ctx context.Context, resolver *Resolver) error {
+	return this.table.Save(ctx, resolver)
 }
 
-func (this resolverInfoTable) Delete(ctx context.Context, resolverInfo *ResolverInfo) error {
-	return this.table.Delete(ctx, resolverInfo)
+func (this resolverTable) Delete(ctx context.Context, resolver *Resolver) error {
+	return this.table.Delete(ctx, resolver)
 }
 
-func (this resolverInfoTable) InsertReturningID(ctx context.Context, resolverInfo *ResolverInfo) (uint64, error) {
-	return this.table.InsertReturningID(ctx, resolverInfo)
+func (this resolverTable) InsertReturningID(ctx context.Context, resolver *Resolver) (uint64, error) {
+	return this.table.InsertReturningID(ctx, resolver)
 }
 
-func (this resolverInfoTable) Has(ctx context.Context, id uint64) (found bool, err error) {
+func (this resolverTable) Has(ctx context.Context, id uint64) (found bool, err error) {
 	return this.table.PrimaryKey().Has(ctx, id)
 }
 
-func (this resolverInfoTable) Get(ctx context.Context, id uint64) (*ResolverInfo, error) {
-	var resolverInfo ResolverInfo
-	found, err := this.table.PrimaryKey().Get(ctx, &resolverInfo, id)
+func (this resolverTable) Get(ctx context.Context, id uint64) (*Resolver, error) {
+	var resolver Resolver
+	found, err := this.table.PrimaryKey().Get(ctx, &resolver, id)
 	if err != nil {
 		return nil, err
 	}
 	if !found {
 		return nil, ormerrors.NotFound
 	}
-	return &resolverInfo, nil
+	return &resolver, nil
 }
 
-func (this resolverInfoTable) List(ctx context.Context, prefixKey ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error) {
+func (this resolverTable) List(ctx context.Context, prefixKey ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error) {
 	it, err := this.table.GetIndexByID(prefixKey.id()).List(ctx, prefixKey.values(), opts...)
-	return ResolverInfoIterator{it}, err
+	return ResolverIterator{it}, err
 }
 
-func (this resolverInfoTable) ListRange(ctx context.Context, from, to ResolverInfoIndexKey, opts ...ormlist.Option) (ResolverInfoIterator, error) {
+func (this resolverTable) ListRange(ctx context.Context, from, to ResolverIndexKey, opts ...ormlist.Option) (ResolverIterator, error) {
 	it, err := this.table.GetIndexByID(from.id()).ListRange(ctx, from.values(), to.values(), opts...)
-	return ResolverInfoIterator{it}, err
+	return ResolverIterator{it}, err
 }
 
-func (this resolverInfoTable) DeleteBy(ctx context.Context, prefixKey ResolverInfoIndexKey) error {
+func (this resolverTable) DeleteBy(ctx context.Context, prefixKey ResolverIndexKey) error {
 	return this.table.GetIndexByID(prefixKey.id()).DeleteBy(ctx, prefixKey.values()...)
 }
 
-func (this resolverInfoTable) DeleteRange(ctx context.Context, from, to ResolverInfoIndexKey) error {
+func (this resolverTable) DeleteRange(ctx context.Context, from, to ResolverIndexKey) error {
 	return this.table.GetIndexByID(from.id()).DeleteRange(ctx, from.values(), to.values())
 }
 
-func (this resolverInfoTable) doNotImplement() {}
+func (this resolverTable) doNotImplement() {}
 
-var _ ResolverInfoTable = resolverInfoTable{}
+var _ ResolverTable = resolverTable{}
 
-func NewResolverInfoTable(db ormtable.Schema) (ResolverInfoTable, error) {
-	table := db.GetTable(&ResolverInfo{})
+func NewResolverTable(db ormtable.Schema) (ResolverTable, error) {
+	table := db.GetTable(&Resolver{})
 	if table == nil {
-		return nil, ormerrors.TableNotFound.Wrap(string((&ResolverInfo{}).ProtoReflect().Descriptor().FullName()))
+		return nil, ormerrors.TableNotFound.Wrap(string((&Resolver{}).ProtoReflect().Descriptor().FullName()))
 	}
-	return resolverInfoTable{table.(ormtable.AutoIncrementTable)}, nil
+	return resolverTable{table.(ormtable.AutoIncrementTable)}, nil
 }
 
 type DataResolverTable interface {
@@ -673,7 +673,7 @@ type StateStore interface {
 	DataIDTable() DataIDTable
 	DataAnchorTable() DataAnchorTable
 	DataAttestorTable() DataAttestorTable
-	ResolverInfoTable() ResolverInfoTable
+	ResolverTable() ResolverTable
 	DataResolverTable() DataResolverTable
 
 	doNotImplement()
@@ -683,7 +683,7 @@ type stateStore struct {
 	dataID       DataIDTable
 	dataAnchor   DataAnchorTable
 	dataAttestor DataAttestorTable
-	resolverInfo ResolverInfoTable
+	resolver     ResolverTable
 	dataResolver DataResolverTable
 }
 
@@ -699,8 +699,8 @@ func (x stateStore) DataAttestorTable() DataAttestorTable {
 	return x.dataAttestor
 }
 
-func (x stateStore) ResolverInfoTable() ResolverInfoTable {
-	return x.resolverInfo
+func (x stateStore) ResolverTable() ResolverTable {
+	return x.resolver
 }
 
 func (x stateStore) DataResolverTable() DataResolverTable {
@@ -727,7 +727,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		return nil, err
 	}
 
-	resolverInfoTable, err := NewResolverInfoTable(db)
+	resolverTable, err := NewResolverTable(db)
 	if err != nil {
 		return nil, err
 	}
@@ -741,7 +741,7 @@ func NewStateStore(db ormtable.Schema) (StateStore, error) {
 		dataIDTable,
 		dataAnchorTable,
 		dataAttestorTable,
-		resolverInfoTable,
+		resolverTable,
 		dataResolverTable,
 	}, nil
 }
