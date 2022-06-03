@@ -89,10 +89,10 @@ $ regen q sell-orders --pagination.limit 10 --pagination.offset 2
 	return cmd
 }
 
-// QuerySellOrdersByAddressCmd returns a query command that retrieves all sell orders by address with pagination.
-func QuerySellOrdersByAddressCmd() *cobra.Command {
+// QuerySellOrdersBySellerCmd returns a query command that retrieves all sell orders by address with pagination.
+func QuerySellOrdersBySellerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sell-orders-by-seller [address]",
+		Use:   "sell-orders-by-seller [seller]",
 		Short: "List all sell orders by seller address with pagination",
 		Long: strings.TrimSpace(
 			`Retrieve sell orders by seller address with pagination

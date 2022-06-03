@@ -703,7 +703,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersBySellerCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -748,7 +748,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddressCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := marketplaceclient.QuerySellOrdersByAddressCmd()
+			cmd := marketplaceclient.QuerySellOrdersBySellerCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)

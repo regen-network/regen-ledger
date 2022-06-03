@@ -520,7 +520,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)

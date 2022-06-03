@@ -121,7 +121,7 @@ func (k Keeper) SellOrdersByBatchDenom(ctx context.Context, req *marketplace.Que
 	return &marketplace.QuerySellOrdersByBatchDenomResponse{SellOrders: orders, Pagination: pr}, nil
 }
 
-// SellOrdersByAddress queries all sell orders created by the given address with optional pagination
+// SellOrdersBySeller queries all sell orders created by the given address with optional pagination
 func (k Keeper) SellOrdersBySeller(ctx context.Context, req *marketplace.QuerySellOrdersBySellerRequest) (*marketplace.QuerySellOrdersBySellerResponse, error) {
 	pg, err := ormutil.GogoPageReqToPulsarPageReq(req.Pagination)
 	if err != nil {
