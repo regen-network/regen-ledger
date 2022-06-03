@@ -31,8 +31,8 @@ func patchMainnet(ctx context.Context, ss api.StateStore, oldBatchDenomToNewDeno
 	// KE    -> ""
 
 	locationToReferenceIdMap := make(map[string]string)
-	locationToReferenceIdMap["CD-MN"] = ""
-	locationToReferenceIdMap["KE"] = ""
+	locationToReferenceIdMap["CD-MN"] = "VCS-934"
+	locationToReferenceIdMap["KE"] = "VCS-612"
 
 	// add reference id to existing projects
 	if err := addReferenceIds(ctx, ss, locationToReferenceIdMap); err != nil {
