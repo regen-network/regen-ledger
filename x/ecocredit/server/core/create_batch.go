@@ -112,7 +112,14 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 		// add tradable amount and retired amount to existing batch balance
 		newTradableBalance, err := tradableBalance.Add(tradableAmount)
+		if err != nil {
+			return nil, err
+		}
+
 		newRetiredBalance, err := retiredBalance.Add(retiredAmount)
+		if err != nil {
+			return nil, err
+		}
 
 		// update batch balance tradable amount and retired amount
 		// Note: Save because batch balance may or may not already exist
