@@ -3,9 +3,9 @@ package core
 import (
 	"testing"
 
-	"gotest.tools/v3/assert"
-
 	"github.com/cosmos/cosmos-sdk/orm/types/ormerrors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"gotest.tools/v3/assert"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 )
@@ -91,5 +91,5 @@ func TestCancel_InvalidBatch(t *testing.T) {
 			},
 		},
 	})
-	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
+	assert.Error(t, err, sdkerrors.ErrInvalidRequest.Wrapf("could not get batch with denom C00-00000000-00000000-01: %s", ormerrors.NotFound.Error()).Error())
 }
