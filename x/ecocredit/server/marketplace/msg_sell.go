@@ -126,8 +126,8 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchId uint64, quantity math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchId)
+func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchKey)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,

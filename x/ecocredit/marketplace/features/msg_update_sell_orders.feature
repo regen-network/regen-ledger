@@ -1,15 +1,15 @@
-Feature: MsgSell
+Feature: MsgUpdateSellOrders
 
   Scenario: a valid message
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "100"
           }
@@ -25,11 +25,11 @@ Feature: MsgSell
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "100"
           },
@@ -46,15 +46,15 @@ Feature: MsgSell
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "100"
           },
-          "expiration": "2030-01-01T00:00:00Z"
+          "new_expiration": "2030-01-01T00:00:00Z"
         }
       ]
     }
@@ -62,24 +62,24 @@ Feature: MsgSell
     When the message is validated
     Then expect no error
 
-  Scenario: a valid message with multiple orders
+  Scenario: a valid message with multiple updates
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "100"
           }
         },
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 2,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "100"
           }
@@ -108,7 +108,7 @@ Feature: MsgSell
     When the message is validated
     Then expect the error "seller is not a valid address: decoding bech32 failed: invalid bech32 string length 3: invalid address"
 
-  Scenario: an error is returned if orders is empty
+  Scenario: an error is returned if updates is empty
     Given the message
     """
     {
@@ -116,110 +116,95 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "orders cannot be empty: invalid request"
+    Then expect the error "updates cannot be empty: invalid request"
 
-  Scenario: an error is returned if order batch denom is empty
+  Scenario: an error is returned if update sell order id is empty
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {}
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: batch denom cannot be empty: invalid request"
+    Then expect the error "updates[0]: sell order id cannot be empty: invalid request"
 
-  Scenario: an error is returned if order batch denom is not formatted
+  Scenario: an error is returned if update new quantity is empty
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "foo"
+          "sell_order_id": 1
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "updates[0]: new quantity cannot be empty: invalid request"
 
-  Scenario: an error is returned if order quantity is empty
+  Scenario: an error is returned if update new quantity is not a positive decimal
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001"
+          "sell_order_id": 1,
+          "new_quantity": "-100"
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: quantity cannot be empty: invalid request"
-
-  Scenario: an error is returned if order quantity is not a positive decimal
-    Given the message
-    """
-    {
-      "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
-        {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "-100"
-        }
-      ]
-    }
-    """
-    When the message is validated
-    Then expect the error "orders[0]: quantity must be a positive decimal: invalid request"
+    Then expect the error "updates[0]: new quantity must be a positive decimal: invalid request"
 
   Scenario: an error is returned if ask price is empty
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100"
+          "sell_order_id": 1,
+          "new_quantity": "100"
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: cannot be empty: invalid request"
+    Then expect the error "updates[0]: new ask price cannot be empty: invalid request"
 
-  Scenario: an error is returned if ask price denom is empty
+  Scenario: an error is returned if update new ask price denom is empty
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {}
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {}
         }
       ]
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: denom cannot be empty: invalid request"
+    Then expect the error "updates[0]: new ask price: denom cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price denom is not formatted
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "foo.bar"
           }
         }
@@ -227,18 +212,18 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: invalid denom: foo.bar: invalid request"
+    Then expect the error "updates[0]: new ask price: invalid denom: foo.bar: invalid request"
 
   Scenario: an error is returned if ask price amount is empty
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen"
           }
         }
@@ -246,18 +231,18 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: amount cannot be empty: invalid request"
+    Then expect the error "updates[0]: new ask price: amount cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price amount is not a positive integer
     Given the message
     """
     {
       "seller": "cosmos1depk54cuajgkzea6zpgkq36tnjwdzv4afc3d27",
-      "orders": [
+      "updates": [
         {
-          "batch_denom": "C01-001-20200101-20210101-001",
-          "quantity": "100",
-          "ask_price": {
+          "sell_order_id": 1,
+          "new_quantity": "100",
+          "new_ask_price": {
             "denom": "regen",
             "amount": "-100"
           }
@@ -266,4 +251,4 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "orders[0]: ask price: amount must be a positive integer: invalid request"
+    Then expect the error "updates[0]: new ask price: amount must be a positive integer: invalid request"

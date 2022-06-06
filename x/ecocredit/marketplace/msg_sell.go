@@ -32,7 +32,7 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Seller); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("seller is not a valid address: %s", err)
+		return sdkerrors.ErrInvalidAddress.Wrapf("seller is not a valid address: %s", err)
 	}
 
 	if len(m.Orders) == 0 {
