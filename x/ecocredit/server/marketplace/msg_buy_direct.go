@@ -15,19 +15,30 @@ import (
 // BuyDirect allows for the purchase of credits directly from sell orders.
 func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*marketplace.MsgBuyDirectResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	buyerAcc, err := sdk.AccAddressFromBech32(req.Buyer)
 	if err != nil {
 		return nil, err
 	}
-	for _, order := range req.Orders {
+
+	for i, order := range req.Orders {
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
+
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, order.SellOrderId)
 		if err != nil {
-			return nil, fmt.Errorf("sell order %d: %w", order.SellOrderId, err)
+			return nil, fmt.Errorf("%s: sell order with id %d: %w", orderIndex, order.SellOrderId, err)
 		}
+
+		// check if disable auto-retire is required
 		if order.DisableAutoRetire && !sellOrder.DisableAutoRetire {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("cannot disable auto retire when purchasing credits " +
-				"from a sell order that does not have auto retire disabled")
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: cannot disable auto-retire for a sell order with auto-retire enabled", orderIndex,
+			)
 		}
+
+		// check decimal places does not exceed credit type precision
 		batch, err := k.coreStore.BatchTable().Get(ctx, sellOrder.BatchKey)
 		if err != nil {
 			return nil, err
@@ -38,7 +49,10 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 		creditOrderQty, err := math.NewPositiveFixedDecFromString(order.Quantity, ct.Precision)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: decimal places exceeds precision: quantity: %s, credit type precision: %d",
+				orderIndex, order.Quantity, ct.Precision,
+			)
 		}
 
 		// check that bid price and ask price denoms match
@@ -47,9 +61,12 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 			return nil, fmt.Errorf("market id %d: %w", sellOrder.MarketId, err)
 		}
 		if order.BidPrice.Denom != market.BankDenom {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: "+
-				"%s, expected %s", order.BidPrice.Denom, market.BankDenom)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: bid price denom: %s, ask price denom: %s",
+				orderIndex, order.BidPrice.Denom, market.BankDenom,
+			)
 		}
+
 		// check that bid price >= sell price
 		sellOrderAskAmount, ok := sdk.NewIntFromString(sellOrder.AskAmount)
 		if !ok {
@@ -57,7 +74,10 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 		sellOrderPriceCoin := sdk.Coin{Denom: market.BankDenom, Amount: sellOrderAskAmount}
 		if sellOrderAskAmount.GT(order.BidPrice.Amount) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("price per credit too low: sell order ask per credit: %v, request: %v", sellOrderPriceCoin, order.BidPrice)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: ask price: %v, bid price: %v, insufficient bid price",
+				orderIndex, sellOrderPriceCoin, order.BidPrice,
+			)
 		}
 
 		// check address has the total cost (price per * order quantity)
@@ -68,18 +88,19 @@ func (k Keeper) BuyDirect(ctx context.Context, req *marketplace.MsgBuyDirect) (*
 		}
 		coinCost := sdk.Coin{Amount: cost, Denom: market.BankDenom}
 		if bal.IsLT(coinCost) {
-			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("requested to purchase %s credits @ %s%s per "+
-				"credit (total %v) with a balance of %v", order.Quantity, sellOrder.AskAmount, market.BankDenom, coinCost, bal)
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf(
+				"%s: quantity: %s, ask price: %s%s, total price: %v, bank balance: %v",
+				orderIndex, order.Quantity, sellOrder.AskAmount, market.BankDenom, coinCost, bal,
+			)
 		}
 
 		// fill the order, updating balances and the sell order in state
-		if err = k.fillOrder(ctx, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
-			autoRetire:     !order.DisableAutoRetire,
-			canPartialFill: false,
-			batchDenom:     batch.Denom,
-			jurisdiction:   order.RetirementJurisdiction,
+		if err = k.fillOrder(ctx, orderIndex, sellOrder, buyerAcc, creditOrderQty, coinCost, orderOptions{
+			autoRetire:   !order.DisableAutoRetire,
+			batchDenom:   batch.Denom,
+			jurisdiction: order.RetirementJurisdiction,
 		}); err != nil {
-			return nil, fmt.Errorf("error filling order: %w", err)
+			return nil, err
 		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&marketplace.EventBuyDirect{

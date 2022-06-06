@@ -29,7 +29,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {

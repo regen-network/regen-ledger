@@ -4,10 +4,10 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/marketplace/v1"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
@@ -18,10 +18,9 @@ func isDenomAllowed(ctx context.Context, bankDenom string, table api.AllowedDeno
 }
 
 type orderOptions struct {
-	autoRetire     bool
-	canPartialFill bool
-	batchDenom     string
-	jurisdiction   string
+	autoRetire   bool
+	batchDenom   string
+	jurisdiction string
 }
 
 // fillOrder moves credits and coins according to the order. It will:
@@ -30,7 +29,7 @@ type orderOptions struct {
 // - add credits to the buyer's tradable/retired address (based on the DisableAutoRetire field).
 // - update the supply accordingly.
 // - send the coins specified in the bid to the seller.
-func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec,
+func (k Keeper) fillOrder(ctx context.Context, orderIndex string, sellOrder *api.SellOrder, buyerAcc sdk.AccAddress, purchaseQty math.Dec,
 	cost sdk.Coin, opts orderOptions) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	sellOrderQty, err := math.NewDecFromString(sellOrder.Quantity)
@@ -40,16 +39,10 @@ func (k Keeper) fillOrder(ctx context.Context, sellOrder *api.SellOrder, buyerAc
 
 	switch sellOrderQty.Cmp(purchaseQty) {
 	case math.LessThan:
-		if !opts.canPartialFill {
-			return ecocredit.ErrInsufficientCredits.Wrapf("cannot purchase %v credits from a sell order that has %s credits", purchaseQty, sellOrder.Quantity)
-		} else {
-			// if we can partially fill, we just delete the sellOrder and take whatever
-			// credits are left from that order.
-			if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
-				return err
-			}
-			purchaseQty = sellOrderQty
-		}
+		return sdkerrors.ErrInvalidRequest.Wrapf(
+			"%s: requested quantity: %v, sell order quantity %s",
+			orderIndex, purchaseQty, sellOrder.Quantity,
+		)
 	case math.EqualTo:
 		if err := k.stateStore.SellOrderTable().Delete(ctx, sellOrder); err != nil {
 			return err
