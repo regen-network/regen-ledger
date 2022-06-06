@@ -129,7 +129,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: batch denom cannot be empty: invalid request"
+    Then expect the error "orders[0]: batch denom cannot be empty: invalid request"
 
   Scenario: an error is returned if order batch denom is not formatted
     Given the message
@@ -144,7 +144,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
+    Then expect the error "orders[0]: invalid batch denom: expected format A00-000-00000000-00000000-000: parse error: invalid request"
 
   Scenario: an error is returned if order quantity is empty
     Given the message
@@ -159,7 +159,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: quantity cannot be empty: invalid request"
+    Then expect the error "orders[0]: quantity cannot be empty: invalid request"
 
   Scenario: an error is returned if order quantity is not a positive decimal
     Given the message
@@ -175,7 +175,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: quantity must be a positive decimal: invalid request"
+    Then expect the error "orders[0]: quantity must be a positive decimal: invalid request"
 
   Scenario: an error is returned if ask price is empty
     Given the message
@@ -191,7 +191,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price: cannot be empty: invalid request"
+    Then expect the error "orders[0]: ask price: cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price denom is empty
     Given the message
@@ -208,7 +208,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price: denom cannot be empty: invalid request"
+    Then expect the error "orders[0]: ask price: denom cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price denom is not formatted
     Given the message
@@ -227,7 +227,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price: invalid denom: foo.bar: invalid request"
+    Then expect the error "orders[0]: ask price: invalid denom: foo.bar: invalid request"
 
   Scenario: an error is returned if ask price amount is empty
     Given the message
@@ -246,7 +246,7 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price: amount cannot be empty: invalid request"
+    Then expect the error "orders[0]: ask price: amount cannot be empty: invalid request"
 
   Scenario: an error is returned if ask price amount is not a positive integer
     Given the message
@@ -266,4 +266,4 @@ Feature: MsgSell
     }
     """
     When the message is validated
-    Then expect the error "order[0]: ask price: amount must be a positive integer: invalid request"
+    Then expect the error "orders[0]: ask price: amount must be a positive integer: invalid request"
