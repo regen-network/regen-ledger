@@ -18,7 +18,7 @@ import (
 // WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetireResponse, error) {
 	sdkCtx := types.UnwrapSDKContext(ctx)
-	holder, _ := sdk.AccAddressFromBech32(req.Holder)
+	owner, _ := sdk.AccAddressFromBech32(req.Owner)
 
 	for _, credit := range req.Credits {
 		batch, err := k.stateStore.BatchTable().GetByDenom(ctx, credit.BatchDenom)
@@ -29,7 +29,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		if err != nil {
 			return nil, err
 		}
-		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, holder, batch.Key)
+		userBalance, err := k.stateStore.BatchBalanceTable().Get(ctx, owner, batch.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 
 		if err = k.stateStore.BatchBalanceTable().Update(ctx, &api.BatchBalance{
 			BatchKey:       batch.Key,
-			Address:        holder,
+			Address:        owner,
 			TradableAmount: userTradableBalance.String(),
 			RetiredAmount:  userRetiredBalance.String(),
 		}); err != nil {
@@ -87,7 +87,7 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 		})
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
-			Owner:        req.Holder,
+			Owner:        req.Owner,
 			BatchDenom:   credit.BatchDenom,
 			Amount:       credit.Amount,
 			Jurisdiction: req.Jurisdiction,

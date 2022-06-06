@@ -193,7 +193,7 @@ func (s *updateSellOrdersSuite) AliceHasABatchBalanceWithTradableAmountAndEscrow
 
 func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrder() {
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: s.sellOrderId,
@@ -206,7 +206,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrder() {
 
 func (s *updateSellOrdersSuite) BobAttemptsToUpdateTheSellOrder() {
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.bob.String(),
+		Seller: s.bob.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: s.sellOrderId,
@@ -222,7 +222,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithId(a string
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: id,
@@ -235,7 +235,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithId(a string
 
 func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithQuantity(a string) {
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: s.sellOrderId,
@@ -248,7 +248,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithQuantity(a 
 
 func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheTwoSellOrdersEachWithQuantity(a string) {
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: 1,
@@ -266,7 +266,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheTwoSellOrdersEachWithQua
 
 func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithAskDenom(a string) {
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId: s.sellOrderId,
@@ -285,7 +285,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithExpiration(
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId:   s.sellOrderId,
@@ -303,7 +303,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheSellOrderWithTheProperti
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId:       s.sellOrderId,
@@ -322,7 +322,7 @@ func (s *updateSellOrdersSuite) AliceAttemptsToUpdateTheTwoSellOrdersEachWithThe
 	require.NoError(s.t, err)
 
 	s.res, s.err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.alice.String(),
+		Seller: s.alice.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{
 				SellOrderId:       1,

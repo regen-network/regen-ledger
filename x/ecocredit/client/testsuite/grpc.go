@@ -379,7 +379,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	orderIds, err := s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 		},
@@ -420,7 +420,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
@@ -474,7 +474,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
@@ -520,14 +520,14 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
+func (s *IntegrationTestSuite) TestQuerySellOrdersBySeller() {
 	val := s.network.Validators[0]
 	_, _, batchDenom := s.createClassProjectBatch(val.ClientCtx, val.Address.String())
 	validAsk := types.NewInt64Coin(types.DefaultBondDenom, 10)
 	expiration, err := types2.ParseDate("expiration", "2090-10-10")
 	s.Require().NoError(err)
 	_, err = s.createSellOrder(val.ClientCtx, &marketplace.MsgSell{
-		Owner: val.Address.String(),
+		Seller: val.Address.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &validAsk, Expiration: &expiration},
@@ -543,12 +543,12 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%ssell-orders/address/%s", val.APIAddress, marketplaceRoute, val.Address.String()),
+			fmt.Sprintf("%s%ssell-orders/seller/%s", val.APIAddress, marketplaceRoute, val.Address.String()),
 			-1,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s%ssell-orders/address/%s?pagination.limit=2", val.APIAddress, marketplaceRoute, val.Address.String()),
+			fmt.Sprintf("%s%ssell-orders/seller/%s?pagination.limit=2", val.APIAddress, marketplaceRoute, val.Address.String()),
 			2,
 		},
 	}
@@ -559,7 +559,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 		s.Run(tc.name, func() {
 			resp, err := rest.GetRequest(tc.url)
 			require.NoError(err)
-			var res marketplace.QuerySellOrdersByAddressResponse
+			var res marketplace.QuerySellOrdersBySellerResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &res)
 			require.NoError(err)
 			require.NotNil(res.SellOrders)

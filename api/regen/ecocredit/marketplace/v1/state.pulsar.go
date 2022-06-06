@@ -2028,7 +2028,7 @@ type SellOrder struct {
 
 	// id is the unique ID of sell order.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// seller is the bytes address of the owner of the credits being sold.
+	// seller is the address of the account that is selling credits.
 	Seller []byte `protobuf:"bytes,2,opt,name=seller,proto3" json:"seller,omitempty"`
 	// batch_key is the table row identifier of the credit batch used internally
 	// for efficient lookups. This links a sell order to a credit batch.

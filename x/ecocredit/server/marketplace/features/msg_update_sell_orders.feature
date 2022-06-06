@@ -2,7 +2,7 @@ Feature: Msg/UpdateSellOrders
 
   A sell order can be updated:
     - when the sell order exists
-    - when the user is the owner of the sell order
+    - when the user is the seller of the sell order
     - when the seller owns greater than or equal to the quantity of credits
     - when the number of decimal places in quantity is less than or equal to the credit type precision
     - when the ask denom is an allowed denom
@@ -27,20 +27,20 @@ Feature: Msg/UpdateSellOrders
       When alice attempts to update the sell order with id "1"
       Then expect the error "updates[0]: sell order with id 1: not found"
 
-  Rule: The user must be the owner of the sell order
+  Rule: The user must be the seller of the sell order
 
     Background:
       Given a credit type
       And an allowed denom
       And alice created a sell order
 
-    Scenario: the user is the owner
+    Scenario: the user is the seller
       When alice attempts to update the sell order
       Then expect no error
 
-    Scenario: the user is not the owner
+    Scenario: the user is not the seller
       When bob attempts to update the sell order
-      Then expect the error "updates[0]: owner must be the owner of the sell order: unauthorized"
+      Then expect the error "updates[0]: seller must be the seller of the sell order: unauthorized"
 
   Rule: The seller must own greater than or equal to the quantity of credits
 

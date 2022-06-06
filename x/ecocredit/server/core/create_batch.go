@@ -53,7 +53,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 	startDate, endDate := timestamppb.New(req.StartDate.UTC()), timestamppb.New(req.EndDate.UTC())
 	issuanceDate := timestamppb.New(sdkCtx.BlockTime())
-	key, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
+	batchKey, err := k.stateStore.BatchTable().InsertReturningID(ctx, &api.Batch{
 		ProjectKey:   projectInfo.Key,
 		Issuer:       issuer,
 		Denom:        batchDenom,
@@ -73,51 +73,89 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	maxDecimalPlaces := creditType.Precision
 
 	tradableSupply, retiredSupply := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
+
+	// set module address string once for better performance
 	moduleAddrString := k.moduleAddress.String()
+
 	for _, issuance := range req.Issuance {
+		// get and set decimal values of tradable amount and retired amount
 		decs, err := utils.GetNonNegativeFixedDecs(maxDecimalPlaces, issuance.TradableAmount, issuance.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
-		tradable, retired := decs[0], decs[1]
-
-		tradableString := tradable.String()
-		retiredString := retired.String()
+		tradableAmount, retiredAmount := decs[0], decs[1]
 
 		recipient, _ := sdk.AccAddressFromBech32(issuance.Recipient)
-		if !tradable.IsZero() {
-			tradableSupply, err = tradableSupply.Add(tradable)
+
+		// get the current batch balance of the recipient account
+		// Note: Get because batch balance may or may not already exist
+		// depending on the length of issuance and if recipient is the same
+		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batchKey)
+		if err != nil {
+			if !ormerrors.IsNotFound(err) {
+				return nil, err
+			}
+			balance = &api.BatchBalance{
+				TradableAmount: "0",
+				RetiredAmount:  "0",
+				EscrowedAmount: "0",
+			}
+		}
+		tradableBalance, err := math.NewDecFromString(balance.TradableAmount)
+		if err != nil {
+			return nil, err
+		}
+		retiredBalance, err := math.NewDecFromString(balance.RetiredAmount)
+		if err != nil {
+			return nil, err
+		}
+
+		// add tradable amount and retired amount to existing batch balance
+		newTradableBalance, err := tradableBalance.Add(tradableAmount)
+		newRetiredBalance, err := retiredBalance.Add(retiredAmount)
+
+		// update batch balance tradable amount and retired amount
+		// Note: Save because batch balance may or may not already exist
+		// depending on the length of issuance and if recipient is the same
+		if err = k.stateStore.BatchBalanceTable().Save(ctx, &api.BatchBalance{
+			BatchKey:       batchKey,
+			Address:        recipient,
+			TradableAmount: newTradableBalance.String(),
+			RetiredAmount:  newRetiredBalance.String(),
+			EscrowedAmount: balance.EscrowedAmount,
+		}); err != nil {
+			return nil, err
+		}
+
+		// update tradable supply (updated in state at the end of the loop)
+		if !tradableAmount.IsZero() {
+			tradableSupply, err = tradableSupply.Add(tradableAmount)
 			if err != nil {
 				return nil, err
 			}
 		}
-		if !retired.IsZero() {
-			retiredSupply, err = retiredSupply.Add(retired)
+
+		// update retired supply (updated in state at the end of the loop)
+		if !retiredAmount.IsZero() {
+			retiredSupply, err = retiredSupply.Add(retiredAmount)
 			if err != nil {
 				return nil, err
 			}
+			// emit retired event only if retired amount is positive
 			if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 				Owner:        issuance.Recipient,
 				BatchDenom:   batchDenom,
-				Amount:       retiredString,
+				Amount:       issuance.RetiredAmount,
 				Jurisdiction: issuance.RetirementJurisdiction,
 			}); err != nil {
 				return nil, err
 			}
 		}
-		if err = k.stateStore.BatchBalanceTable().Insert(ctx, &api.BatchBalance{
-			BatchKey: key,
-			Address:  recipient,
-			TradableAmount: tradableString,
-			RetiredAmount:  retiredString,
-		}); err != nil {
-			return nil, err
-		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventMint{
 			BatchDenom:     batchDenom,
-			RetiredAmount:  retiredString,
-			TradableAmount: tradableString,
+			TradableAmount: issuance.TradableAmount,
+			RetiredAmount:  issuance.RetiredAmount,
 		}); err != nil {
 			return nil, err
 		}
@@ -126,8 +164,8 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 			Sender:         moduleAddrString, // ecocredit module
 			Recipient:      issuance.Recipient,
 			BatchDenom:     batchDenom,
-			RetiredAmount:  retiredString,
-			TradableAmount: tradableString,
+			TradableAmount: issuance.TradableAmount,
+			RetiredAmount:  issuance.RetiredAmount,
 		}); err != nil {
 			return nil, err
 		}
@@ -136,7 +174,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 	}
 
 	if err = k.stateStore.BatchSupplyTable().Insert(ctx, &api.BatchSupply{
-		BatchKey:        key,
+		BatchKey:        batchKey,
 		TradableAmount:  tradableSupply.String(),
 		RetiredAmount:   retiredSupply.String(),
 		CancelledAmount: "0", // must be explicitly set to prevent zero-value ""

@@ -20,7 +20,7 @@ func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridg
 	}
 
 	_, err := k.Cancel(ctx, &core.MsgCancel{
-		Holder:  req.Holder,
+		Owner:   req.Owner,
 		Credits: creditsToCancel,
 		Reason:  fmt.Sprintf("bridge-%s", req.Target),
 	})

@@ -96,7 +96,7 @@ func TestSellOrdersByDenom(t *testing.T) {
 	assert.ErrorContains(t, err, ormerrors.NotFound.Error())
 }
 
-func TestSellOrdersByAddress(t *testing.T) {
+func TestSellOrdersBySeller(t *testing.T) {
 	t.Parallel()
 	s := setupBase(t)
 	s.testSellSetup(batchDenom, ask.Denom, ask.Denom[1:], classId, start, end, creditType)
@@ -107,8 +107,8 @@ func TestSellOrdersByAddress(t *testing.T) {
 	order1 := insertSellOrder(t, s, s.addr, 1)
 	order2 := insertSellOrder(t, s, otherAddr, 1)
 
-	res, err := s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
-		Address:    s.addr.String(),
+	res, err := s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
+		Seller:     s.addr.String(),
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
@@ -116,8 +116,8 @@ func TestSellOrdersByAddress(t *testing.T) {
 	assertOrderEqual(t, s.ctx, s.k, res.SellOrders[0], order1)
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
-	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
-		Address:    otherAddr.String(),
+	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
+		Seller:     otherAddr.String(),
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
@@ -126,8 +126,8 @@ func TestSellOrdersByAddress(t *testing.T) {
 	assert.Equal(t, uint64(1), res.Pagination.Total)
 
 	// addr with no sell orders should just return empty slice
-	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
-		Address:    noOrdersAddr.String(),
+	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
+		Seller:     noOrdersAddr.String(),
 		Pagination: &query.PageRequest{CountTotal: true},
 	})
 	assert.NilError(t, err)
@@ -135,8 +135,8 @@ func TestSellOrdersByAddress(t *testing.T) {
 	assert.Equal(t, uint64(0), res.Pagination.Total)
 
 	// bad address should fail
-	res, err = s.k.SellOrdersByAddress(s.ctx, &marketplace.QuerySellOrdersByAddressRequest{
-		Address:    "foobar1vlk23jrkl",
+	res, err = s.k.SellOrdersBySeller(s.ctx, &marketplace.QuerySellOrdersBySellerRequest{
+		Seller:     "foobar1vlk23jrkl",
 		Pagination: nil,
 	})
 	assert.ErrorContains(t, err, "decoding bech32 failed")

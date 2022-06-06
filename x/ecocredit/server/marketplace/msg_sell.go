@@ -21,7 +21,7 @@ import (
 func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplace.MsgSellResponse, error) {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
-	ownerAcc, err := sdk.AccAddressFromBech32(req.Owner)
+	sellerAcc, err := sdk.AccAddressFromBech32(req.Seller)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 			return nil, err
 		}
 
-		if err = k.escrowCredits(ctx, orderIndex, ownerAcc, batch.Key, sellQty); err != nil {
+		if err = k.escrowCredits(ctx, orderIndex, sellerAcc, batch.Key, sellQty); err != nil {
 			return nil, err
 		}
 
@@ -80,7 +80,7 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 		}
 
 		id, err := k.stateStore.SellOrderTable().InsertReturningID(ctx, &marketApi.SellOrder{
-			Seller:            ownerAcc,
+			Seller:            sellerAcc,
 			BatchKey:          batch.Key,
 			Quantity:          order.Quantity,
 			MarketId:          marketId,
