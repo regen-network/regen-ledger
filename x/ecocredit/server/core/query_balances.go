@@ -12,7 +12,7 @@ import (
 )
 
 func (k Keeper) Balances(ctx context.Context, req *core.QueryBalancesRequest) (*core.QueryBalancesResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(req.Account)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, err
 	}

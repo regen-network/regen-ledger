@@ -19,7 +19,7 @@ func TestCancel_Valid(t *testing.T) {
 	// s.addr balance -> tradable 10.5 , retired 10.5
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
 				BatchDenom: batchDenom,
@@ -48,7 +48,7 @@ func TestCancel_InsufficientFunds(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
@@ -66,7 +66,7 @@ func TestCancel_BadPrecision(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C01-001-20200101-20210101-01",
@@ -83,7 +83,7 @@ func TestCancel_InvalidBatch(t *testing.T) {
 	s.setupClassProjectBatch(t)
 
 	_, err := s.k.Cancel(s.ctx, &core.MsgCancel{
-		Holder: s.addr.String(),
+		Owner: s.addr.String(),
 		Credits: []*core.MsgCancel_CancelCredits{
 			{
 				BatchDenom: "C00-00000000-00000000-01",

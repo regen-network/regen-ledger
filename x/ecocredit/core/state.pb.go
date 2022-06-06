@@ -649,7 +649,7 @@ type BatchBalance struct {
 	// batch_key is the table row identifier of the credit batch used internally
 	// for efficient lookups. This links a batch balance to a credit batch.
 	BatchKey uint64 `protobuf:"varint,1,opt,name=batch_key,json=batchKey,proto3" json:"batch_key,omitempty"`
-	// address is the address of the credit holder.
+	// address is the address of the account that owns the credits.
 	Address []byte `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	// tradable_amount is the total number of tradable credits owned by address.
 	TradableAmount string `protobuf:"bytes,3,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`

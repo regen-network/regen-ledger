@@ -358,7 +358,7 @@ Parameters:
 				return err
 			}
 			msg := core.MsgRetire{
-				Holder:       clientCtx.GetFromAddress().String(),
+				Owner:        clientCtx.GetFromAddress().String(),
 				Credits:      credits,
 				Jurisdiction: args[1],
 			}
@@ -390,7 +390,7 @@ Parameters:
 				return err
 			}
 			msg := core.MsgCancel{
-				Holder:  clientCtx.GetFromAddress().String(),
+				Owner:   clientCtx.GetFromAddress().String(),
 				Credits: credits,
 				Reason:  args[1],
 			}

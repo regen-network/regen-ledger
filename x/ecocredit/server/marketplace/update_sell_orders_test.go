@@ -24,7 +24,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
@@ -35,7 +35,7 @@ func TestUpdateSellOrders_QuantityAndAutoRetire(t *testing.T) {
 	balBefore, _ := s.getBalanceAndSupply(1, s.addr)
 
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "10", DisableAutoRetire: true},
 			{SellOrderId: 2, NewQuantity: "28.7232", DisableAutoRetire: false},
@@ -72,7 +72,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
@@ -82,7 +82,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 
 	// cannot update sell order that does not exist
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 25, NewQuantity: "3"},
 		},
@@ -91,7 +91,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 
 	// cannot increase sell order with more credits than in balance
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "1000000000"},
 		},
@@ -100,7 +100,7 @@ func TestUpdateSellOrders_QuantityInvalid(t *testing.T) {
 
 	// cannot increase sell order with higher precision than credit type
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "10.329083409234908234"},
 		},
@@ -115,7 +115,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 	_, _, unauthorized := testdata.KeyTestPubAddr()
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 			{BatchDenom: batchDenom, Quantity: "30", AskPrice: &ask, DisableAutoRetire: true, Expiration: &expiration},
@@ -125,7 +125,7 @@ func TestUpdateSellOrders_Unauthorized(t *testing.T) {
 
 	// cannot edit the sell order with this address
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: unauthorized.String(),
+		Seller: unauthorized.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewQuantity: "1"},
 		},
@@ -140,7 +140,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &expiration},
 		},
@@ -151,7 +151,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 	// can update price of same denom
 	askUpdate := sdk.NewInt64Coin(ask.Denom, 25)
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewAskPrice: &askUpdate},
 		},
@@ -172,7 +172,7 @@ func TestUpdateSellOrder_AskPrice(t *testing.T) {
 		DisplayDenom: askUpdate.Denom,
 	}))
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewAskPrice: &askUpdate},
 		},
@@ -197,7 +197,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	// create a sell order - expiration does not matter at this point, as the block time has not been set yet.
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &ask, DisableAutoRetire: false, Expiration: &past},
 		},
@@ -209,7 +209,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	// should work with future time
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewExpiration: &future},
 		},
@@ -218,7 +218,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	// should work with the same time as blockTime
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewExpiration: &middle},
 		},
@@ -227,7 +227,7 @@ func TestUpdateSellOrder_Expiration(t *testing.T) {
 
 	// should not work with past time
 	_, err = s.k.UpdateSellOrders(s.ctx, &marketplace.MsgUpdateSellOrders{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Updates: []*marketplace.MsgUpdateSellOrders_Update{
 			{SellOrderId: 1, NewExpiration: &past},
 		},
@@ -242,7 +242,7 @@ func TestSellOrder_InvalidDenom(t *testing.T) {
 	invalidAsk := sdk.NewInt64Coin("ubar", 10)
 	expiration := time.Now()
 	_, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5.22", AskPrice: &invalidAsk, DisableAutoRetire: false, Expiration: &expiration},
 		},

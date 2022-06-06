@@ -242,7 +242,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// make sure user doesn't have any of that credit - should error out
 	userCreditBalance, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    user.String(),
+		Address:    user.String(),
 		BatchDenom: batchDenom,
 	})
 	require.NoError(err)
@@ -339,7 +339,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 
 	// check retired balance, should be equal to the amount we put in
 	cbRes, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    user.String(),
+		Address:    user.String(),
 		BatchDenom: batchDenom,
 	})
 	require.NoError(err)
@@ -485,7 +485,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// query balances
 	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    addr1,
+		Address:    addr1,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -494,7 +494,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(r0, queryBalanceRes.Balance.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    addr2,
+		Address:    addr2,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -503,7 +503,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(r1, queryBalanceRes.Balance.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    addr4,
+		Address:    addr4,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -513,7 +513,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// if we didn't issue tradable or retired balances, they'll be default to zero.
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    addr5,
+		Address:    addr5,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -531,7 +531,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// cancel credits
 	cancelCases := []struct {
 		name               string
-		holder             string
+		owner              string
 		toCancel           string
 		expectErr          bool
 		expTradable        string
@@ -543,28 +543,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}{
 		{
 			name:          "can't cancel more credits than are tradable",
-			holder:        addr4,
+			owner:         addr4,
 			toCancel:      "101",
 			expectErr:     true,
 			expErrMessage: "insufficient funds",
 		},
 		{
 			name:          "can't cancel with a higher precision than the credit type",
-			holder:        addr4,
+			owner:         addr4,
 			toCancel:      "0.1234567",
 			expectErr:     true,
 			expErrMessage: "exceeds maximum decimal places",
 		},
 		{
 			name:          "can't cancel no credits",
-			holder:        addr4,
+			owner:         addr4,
 			toCancel:      "0",
 			expectErr:     true,
 			expErrMessage: "expected a positive decimal",
 		},
 		{
 			name:               "can cancel a small amount of credits",
-			holder:             addr4,
+			owner:              addr4,
 			toCancel:           "2.0002",
 			expectErr:          false,
 			expTradable:        "97.9998",
@@ -575,7 +575,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:               "can cancel all remaining credits",
-			holder:             addr4,
+			owner:              addr4,
 			toCancel:           "97.9998",
 			expectErr:          false,
 			expTradable:        "0",
@@ -586,14 +586,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:          "can't cancel anymore credits",
-			holder:        addr4,
+			owner:         addr4,
 			toCancel:      "1",
 			expectErr:     true,
 			expErrMessage: "insufficient funds",
 		},
 		{
 			name:               "can cancel from account with positive retired balance",
-			holder:             addr1,
+			owner:              addr1,
 			toCancel:           "1",
 			expectErr:          false,
 			expTradable:        "9.37",
@@ -607,7 +607,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range cancelCases {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Cancel(s.ctx, &core.MsgCancel{
-				Holder: tc.holder,
+				Owner: tc.owner,
 				Credits: []*core.MsgCancel_CancelCredits{
 					{
 						BatchDenom: batchDenom,
@@ -625,7 +625,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-					Account:    tc.holder,
+					Address:    tc.owner,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -746,7 +746,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &core.MsgRetire{
-				Holder: addr1,
+				Owner: addr1,
 				Credits: []*core.MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
@@ -764,7 +764,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-					Account:    addr1,
+					Address:    addr1,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -917,7 +917,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query sender balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-					Account:    addr2,
+					Address:    addr2,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -927,7 +927,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query recipient balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-					Account:    addr3,
+					Address:    addr3,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -1030,7 +1030,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	order2QtyDec, err := math.NewDecFromString(order2Qty)
 	s.Require().NoError(err)
 	createSellOrder, err := s.marketServer.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: sellerAcc.String(),
+		Seller: sellerAcc.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -1179,7 +1179,7 @@ func (s *IntegrationTestSuite) getAccountInfo(addr sdk.AccAddress, batchDenom, b
 
 func (s *IntegrationTestSuite) getUserBatchBalance(addr sdk.AccAddress, denom string) *core.BatchBalanceInfo {
 	bal, err := s.queryClient.Balance(s.ctx, &core.QueryBalanceRequest{
-		Account:    addr.String(),
+		Address:    addr.String(),
 		BatchDenom: denom,
 	})
 	s.Require().NoError(err)

@@ -26,7 +26,7 @@ func TestSell_Prune(t *testing.T) {
 	assert.NilError(t, err)
 
 	res, err := s.k.Sell(s.ctx, &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &notExpired},
@@ -75,7 +75,7 @@ func TestPrune_NilExpiration(t *testing.T) {
 	assert.NilError(t, err)
 
 	msg := &marketplace.MsgSell{
-		Owner: s.addr.String(),
+		Seller: s.addr.String(),
 		Orders: []*marketplace.MsgSell_Order{
 			{BatchDenom: batchDenom, Quantity: "5", AskPrice: &ask, Expiration: nil},
 			{BatchDenom: batchDenom, Quantity: "10", AskPrice: &ask, Expiration: &expired},

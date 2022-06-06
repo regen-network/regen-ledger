@@ -286,8 +286,8 @@ message MsgSendResponse {}
 // MsgRetire is the Msg/Retire request type.
 message MsgRetire {
 
-  // holder is the credit holder address.
-  string holder = 1;
+  // owner is the address of the account that owns the credits being retired.
+  string owner = 1;
 
   // credits are the credits being retired.
   repeated RetireCredits credits = 2;
@@ -318,8 +318,8 @@ message MsgRetireResponse {}
 // MsgCancel is the Msg/Cancel request type.
 message MsgCancel {
 
-  // holder is the credit holder address.
-  string holder = 1;
+  // owner is the address of the account that owns the credits being cancelled.
+  string owner = 1;
 
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 2;
@@ -440,8 +440,8 @@ message MsgBridge {
   // contract is the contract address.
   string contract = 3;
 
-  // holder is the credit holder address.
-  string holder = 4;
+  // owner is the address of the account that owns the credits being bridged.
+  string owner = 4;
 
   // credits are the credits being cancelled.
   repeated CancelCredits credits = 5;

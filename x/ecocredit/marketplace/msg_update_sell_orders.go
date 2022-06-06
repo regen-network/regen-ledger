@@ -24,7 +24,7 @@ func (m MsgUpdateSellOrders) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateSellOrders) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Seller); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
 
@@ -52,6 +52,6 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgUpdateSellOrders.
 func (m *MsgUpdateSellOrders) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	addr, _ := sdk.AccAddressFromBech32(m.Seller)
 	return []sdk.AccAddress{addr}
 }

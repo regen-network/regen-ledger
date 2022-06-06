@@ -24,8 +24,8 @@ func (m MsgRetire) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgRetire) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
-		return sdkerrors.Wrap(err, "holder")
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.Wrap(err, "owner")
 	}
 
 	if len(m.Credits) == 0 {
@@ -51,6 +51,6 @@ func (m *MsgRetire) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgRetire.
 func (m *MsgRetire) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Holder)
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
 }
