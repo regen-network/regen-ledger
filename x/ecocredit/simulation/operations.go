@@ -771,7 +771,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		msg := &core.MsgCancel{
 			Owner: admin,
-			Credits: []*core.MsgCancel_CancelCredits{
+			Credits: []*core.Credits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     balanceRes.Balance.TradableAmount,
@@ -1148,7 +1148,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
 			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			Owner:     owner,
-			Credits: []*core.MsgBridge_CancelCredits{
+			Credits: []*core.Credits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     fmt.Sprintf("%d", amount),

@@ -10,18 +10,9 @@ import (
 
 // Bridge cancel credits, removing them from the supply and balance of the holder
 func (k Keeper) Bridge(ctx context.Context, req *core.MsgBridge) (*core.MsgBridgeResponse, error) {
-
-	creditsToCancel := make([]*core.MsgCancel_CancelCredits, len(req.Credits))
-	for i, credit := range req.Credits {
-		creditsToCancel[i] = &core.MsgCancel_CancelCredits{
-			BatchDenom: credit.BatchDenom,
-			Amount:     credit.Amount,
-		}
-	}
-
 	_, err := k.Cancel(ctx, &core.MsgCancel{
 		Owner:   req.Owner,
-		Credits: creditsToCancel,
+		Credits: req.Credits,
 		Reason:  fmt.Sprintf("bridge-%s", req.Target),
 	})
 	if err != nil {
