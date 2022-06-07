@@ -1,7 +1,7 @@
 package basket
 
 import (
-	fmt "fmt"
+	"fmt"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
