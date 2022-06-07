@@ -39,7 +39,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
-		QueryProjectsCmd(),
+		QueryProjectsByClassCmd(),
 		QueryProjectsByReferenceIdCmd(),
 		QueryProjectsByAdminCmd(),
 		QueryProjectCmd(),
@@ -152,10 +152,10 @@ $ regen q ecocredit class-issuers C01 --pagination.limit 10
 	return qflags(cmd)
 }
 
-// QueryProjectsCmd returns a query command that retrieves projects.
-func QueryProjectsCmd() *cobra.Command {
+// QueryProjectsByClassCmd returns a query command that retrieves projects.
+func QueryProjectsByClassCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "projects [class_id]",
+		Use:   "projects-by-class [class_id]",
 		Short: "List all projects in the given class with pagination flags",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -169,14 +169,14 @@ func QueryProjectsCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.Projects(cmd.Context(), &core.QueryProjectsRequest{
+			res, err := c.ProjectsByClass(cmd.Context(), &core.QueryProjectsByClassRequest{
 				ClassId:    args[0],
 				Pagination: pagination,
 			})
 			return printQueryResponse(ctx, res, err)
 		},
 	}
-	flags.AddPaginationFlagsToCmd(cmd, "projects")
+	flags.AddPaginationFlagsToCmd(cmd, "projects-by-class")
 	return qflags(cmd)
 }
 

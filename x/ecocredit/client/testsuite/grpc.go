@@ -82,7 +82,7 @@ func (s *IntegrationTestSuite) TestQueryClass() {
 	}{
 		{
 			"valid class-id",
-			fmt.Sprintf("%s%sclasses/%s", val.APIAddress, coreRoute, classId),
+			fmt.Sprintf("%s%sclass/%s", val.APIAddress, coreRoute, classId),
 		},
 	}
 
@@ -148,12 +148,12 @@ func (s *IntegrationTestSuite) TestQueryBatchesByIssuer() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%sbatches/issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s%sbatches-by-issuer/%s", s.val.APIAddress, coreRoute, s.addr1),
 			false,
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s%sbatches/issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
+			fmt.Sprintf("%s%sbatches-by-issuer/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.addr1),
 			true,
 		},
 	}
@@ -185,12 +185,12 @@ func (s *IntegrationTestSuite) TestQueryBatchesByClass() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%sbatches/class/%s", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s%sbatches-by-class/%s", s.val.APIAddress, coreRoute, s.classId),
 			false,
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s%sbatches/class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
+			fmt.Sprintf("%s%sbatches-by-class/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.classId),
 			true,
 		},
 	}
@@ -222,12 +222,12 @@ func (s *IntegrationTestSuite) TestQueryBatchesByProject() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%s/batches/project/%s", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s%s/batches-by-project/%s", s.val.APIAddress, coreRoute, s.projectId),
 			false,
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s%sbatches/project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
+			fmt.Sprintf("%s%sbatches-by-project/%s?pagination.limit=2", s.val.APIAddress, coreRoute, s.projectId),
 			true,
 		},
 	}
@@ -258,7 +258,7 @@ func (s *IntegrationTestSuite) TestQueryBatch() {
 	}{
 		{
 			"valid request",
-			fmt.Sprintf("%s%sbatches/%s", s.val.APIAddress, coreRoute, s.batchDenom),
+			fmt.Sprintf("%s%sbatch/%s", s.val.APIAddress, coreRoute, s.batchDenom),
 		},
 	}
 
