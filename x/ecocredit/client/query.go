@@ -67,7 +67,11 @@ func QueryClassesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "classes",
 		Short: "List all credit classes with pagination flags",
-		Args:  cobra.ExactArgs(0),
+		Example: `
+$ regen q ecocredit classes
+$ regen q ecocredit classes --pagination.limit 10
+		`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -95,7 +99,10 @@ func QueryClassCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "class [class_id]",
 		Short: "Retrieve credit class info",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+$ regen q ecocredit class C01
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -157,7 +164,11 @@ func QueryProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects [class_id]",
 		Short: "List all projects in the given class with pagination flags",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+$ regen q ecocredit projects C01
+$ regen q ecocredit projects C01 --pagination.limit 10
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -185,7 +196,10 @@ func QueryProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "project [project_id]",
 		Short: "Retrieve project info",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+$ regen q ecocredit project C01-001
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -381,7 +395,10 @@ func QueryBalanceCmd() *cobra.Command {
 		Use:   "balance [batch_denom] [account]",
 		Short: "Retrieve the tradable and retired balances of the credit batch",
 		Long:  "Retrieve the tradable and retired balances of the credit batch for a given account address",
-		Args:  cobra.ExactArgs(2),
+		Example: `
+regen q ecocredit balance C01-001-20200101-20210101-001 regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38
+		`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -423,7 +440,10 @@ func QueryCreditTypesCmd() *cobra.Command {
 		Use:   "types",
 		Short: "Retrieve the list of credit types",
 		Long:  "Retrieve the list of credit types that contains the type name, measurement unit and precision",
-		Args:  cobra.ExactArgs(0),
+		Example: `
+regen q ecocredit types
+		`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
