@@ -422,21 +422,21 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			return op, nil, err
 		}
 
-		issuer := issuers[r.Intn(len(issuers))]
-		issuerAddr, err := sdk.AccAddressFromBech32(issuer)
+		admin := issuers[r.Intn(len(issuers))]
+		adminAddr, err := sdk.AccAddressFromBech32(admin)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, err.Error()), nil, err
 		}
 
-		issuerAcc, found := simtypes.FindAccount(accs, issuerAddr)
+		adminAcc, found := simtypes.FindAccount(accs, adminAddr)
 		if !found {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateProject, "not a simulation account"), nil, nil
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, issuerAddr)
+		spendable := bk.SpendableCoins(sdkCtx, adminAddr)
 
 		msg := &core.MsgCreateProject{
-			Issuer:       issuer,
+			Admin:        admin,
 			ClassId:      class.Id,
 			Metadata:     simtypes.RandStringOfLength(r, 100),
 			Jurisdiction: "AB-CDE FG1 345",
@@ -449,7 +449,7 @@ func SimulateMsgCreateProject(ak ecocredit.AccountKeeper, bk ecocredit.BankKeepe
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      issuerAcc,
+			SimAccount:      adminAcc,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -869,9 +869,9 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 		}
 
 		msg := &core.MsgUpdateClassMetadata{
-			Admin:    admin.String(),
-			ClassId:  class.Id,
-			Metadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
+			Admin:       admin.String(),
+			ClassId:     class.Id,
+			NewMetadata: simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256)),
 		}
 
 		txCtx := simulation.OperationInput{
@@ -1148,7 +1148,7 @@ func SimulateMsgBridge(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryC
 			Recipient: "0x323b5d4c32345ced77393b3530b1eed0f346429d",
 			Contract:  "0x06012c8cf97bead5deae237070f9587f8e7a266d",
 			Owner:     owner,
-			Credits: []*core.MsgBridge_CancelCredits{
+			Credits: []*core.MsgBridge_BridgeCredits{
 				{
 					BatchDenom: batch.Denom,
 					Amount:     fmt.Sprintf("%d", amount),

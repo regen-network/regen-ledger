@@ -20,7 +20,7 @@ func TestBridge_Valid(t *testing.T) {
 
 	_, err := s.k.Bridge(s.ctx, &core.MsgBridge{
 		Owner: s.addr.String(),
-		Credits: []*core.MsgBridge_CancelCredits{
+		Credits: []*core.MsgBridge_BridgeCredits{
 			{
 				BatchDenom: batchDenom,
 				Amount:     "10.5",

@@ -427,9 +427,9 @@ Parameters:
 			}
 
 			msg := core.MsgUpdateClassMetadata{
-				Admin:    clientCtx.GetFromAddress().String(),
-				ClassId:  classID,
-				Metadata: args[1],
+				Admin:       clientCtx.GetFromAddress().String(),
+				ClassId:     classID,
+				NewMetadata: args[1],
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -578,7 +578,7 @@ func TxCreateProject() *cobra.Command {
 			}
 
 			msg := core.MsgCreateProject{
-				Issuer:       clientCtx.GetFromAddress().String(),
+				Admin:        clientCtx.GetFromAddress().String(),
 				ClassId:      classID,
 				Jurisdiction: projectJurisdiction,
 				Metadata:     args[2],

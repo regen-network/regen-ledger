@@ -38,15 +38,15 @@ service Msg {
   // minted to the credit batch following the creation of the credit batch. This
   // "open" option should only be set to true when bridging credits from another
   // chain or registry as a result of a bridge operation and is not intended for
-  // native issuance.
+  // native credit issuance.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
   // MintBatchCredits dynamically mints credits to an "open" credit batch. This
   // feature is only meant to be used when bridging credits from another chain
-  // or registry and is not intended for native issuance. When bridging credits
-  // from the same vintage (or monitoring period) as an existing credit batch,
-  // the credits can be dynamically minted to the existing credit batch if the
-  // credit batch is "open".
+  // or registry and is not intended for native credit issuance. When bridging
+  // credits from the same vintage (or monitoring period) as an existing credit
+  // batch, the credits can be dynamically minted to the existing credit batch
+  // if the credit batch is "open".
   rpc MintBatchCredits(MsgMintBatchCredits)
       returns (MsgMintBatchCreditsResponse);
 
@@ -107,7 +107,10 @@ service Msg {
 message MsgCreateClass {
 
   // admin is the address of the account creating the credit class that will
-  // become the admin upon creation.
+  // become the admin of the credit class upon creation. The admin will have
+  // permissions within the credit class to update the credit class including
+  // the list of approved issuers. If Params.allowlist_enabled is set to true,
+  // this address must be included in Params.allowed_class_creators.
   string admin = 1;
 
   // issuers are the addresses of the accounts that will have permissions within
@@ -118,7 +121,7 @@ message MsgCreateClass {
   // that includes or references metadata to attach to the credit class.
   string metadata = 3;
 
-  // credit_type_abbrev is the abbreviation of the credit type within which the
+  // credit_type_abbrev is the abbreviation of the credit type under which the
   // credit class will be created (e.g. "C", "BIO").
   string credit_type_abbrev = 4;
 
@@ -139,13 +142,13 @@ message MsgCreateClassResponse {
 message MsgCreateProject {
 
   // admin is the address of the account creating the project that will become
-  // the admin upon creation. The creator of the project must be an approved
-  // issuer within the credit class within which the project is being created.
-  // The admin will have permissions to update the project including the ability
-  // to reassign the admin role to another account.
+  // the admin of the project upon creation. The creator of the project must be
+  // an approved issuer within the credit class under which the project is being
+  // created. The admin will have permissions to update the project including
+  // the ability to reassign the admin role to another account.
   string admin = 1;
 
-  // class_id is the unique identifier of the credit class within which the
+  // class_id is the unique identifier of the credit class under which the
   // project will be created.
   string class_id = 2;
 
@@ -177,10 +180,10 @@ message MsgCreateProjectResponse {
 message MsgCreateBatch {
 
   // issuer is the address of the account issuing the credits and must be an
-  // approved issuer within the credit class of the project backing the credits.
+  // approved issuer within the credit class of the project.
   string issuer = 1;
 
-  // project_id is the unique identifier of the project within which the credit
+  // project_id is the unique identifier of the project under which the credit
   // batch will be created.
   string project_id = 2;
 

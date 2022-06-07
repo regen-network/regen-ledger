@@ -842,14 +842,14 @@ func (s *IntegrationTestSuite) TestQueryProjectsCmd() {
 	})
 	s.Require().NoError(err)
 	pID, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       val.Address.String(),
+		Admin:        val.Address.String(),
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",
 	})
 	s.Require().NoError(err)
 	pID2, err := s.createProject(clientCtx, &core.MsgCreateProject{
-		Issuer:       val.Address.String(),
+		Admin:        val.Address.String(),
 		ClassId:      classId,
 		Metadata:     "foo",
 		Jurisdiction: "US-OR",

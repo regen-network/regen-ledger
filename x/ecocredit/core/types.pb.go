@@ -28,15 +28,20 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // Params defines the updatable global parameters of the ecocredit module for
 // use with the x/params module.
 type Params struct {
-	// credit_class_fee is the fixed fee charged on creation of a new credit class
+	// credit_class_fee is a list of credit class creation fees accepted when
+	// creating a credit class. Any fee listed is accepted and charged to the
+	// credit class creator when creating a credit class.
 	CreditClassFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=credit_class_fee,json=creditClassFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"credit_class_fee"`
-	// basket_fee is the fixed fee charged on creation of a new basket
+	// basket_fee is the fixed fee charged to the basket creator (the curator) and
+	// sent to the community funding pool upon basket creation.
 	BasketFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=basket_fee,json=basketFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"basket_fee"`
 	// allowed_class_creators is an allowlist defining the addresses with
-	// the required permissions to create credit classes
+	// the required permissions to create credit classes.
 	AllowedClassCreators []string `protobuf:"bytes,3,rep,name=allowed_class_creators,json=allowedClassCreators,proto3" json:"allowed_class_creators,omitempty"`
-	// allowlist_enabled is a param that enables/disables the allowlist for credit
-	// creation
+	// allowlist_enabled determines whether or not the allowlist for creating
+	// credit classes is enabled. When set to true, only the addresses listed in
+	// allowed_class_creators can create credit classes. When set to false, any
+	// address can create credit classes.
 	AllowlistEnabled bool `protobuf:"varint,4,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
 }
 

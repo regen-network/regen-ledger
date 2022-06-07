@@ -20,7 +20,7 @@ func (k Keeper) CreateProject(ctx context.Context, req *core.MsgCreateProject) (
 		return nil, err
 	}
 
-	adminAddress, err := sdk.AccAddressFromBech32(req.Issuer)
+	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
 	}

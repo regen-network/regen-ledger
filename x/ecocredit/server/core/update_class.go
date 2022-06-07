@@ -125,7 +125,7 @@ func (k Keeper) UpdateClassMetadata(ctx context.Context, req *core.MsgUpdateClas
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("expected admin %s, got %s", classInfo.Admin, req.Admin)
 	}
 
-	classInfo.Metadata = req.Metadata
+	classInfo.Metadata = req.NewMetadata
 	if err = k.stateStore.ClassTable().Update(ctx, classInfo); err != nil {
 		return nil, err
 	}

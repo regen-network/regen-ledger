@@ -26,7 +26,7 @@ func (m MsgCreateProject) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateProject) ValidateBasic() error {
 
-	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
 
@@ -51,6 +51,6 @@ func (m *MsgCreateProject) ValidateBasic() error {
 
 // GetSigners returns the expected signers for MsgCreateProject.
 func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
