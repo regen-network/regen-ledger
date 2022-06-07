@@ -29,7 +29,9 @@ func (k Keeper) Sell(ctx context.Context, req *marketplace.MsgSell) (*marketplac
 	sellOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// orderIndex is used for more granular error messages when
+		// an individual order in a list of orders fails to process
+		orderIndex := fmt.Sprintf("orders[%d]", i)
 
 		batch, err := k.coreStore.BatchTable().GetByDenom(ctx, order.BatchDenom)
 		if err != nil {
@@ -124,8 +126,8 @@ func (k Keeper) getOrCreateMarketId(ctx context.Context, creditTypeAbbrev, bankD
 	}
 }
 
-func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchId uint64, quantity math.Dec) error {
-	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchId)
+func (k Keeper) escrowCredits(ctx context.Context, orderIndex string, account sdk.AccAddress, batchKey uint64, quantity math.Dec) error {
+	bal, err := k.coreStore.BatchBalanceTable().Get(ctx, account, batchKey)
 	if err != nil {
 		return ecocredit.ErrInsufficientCredits.Wrapf(
 			"%s: credit quantity: %v, tradable balance: 0", orderIndex, quantity,

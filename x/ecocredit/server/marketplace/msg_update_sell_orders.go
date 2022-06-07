@@ -27,19 +27,21 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 	}
 
 	for i, update := range req.Updates {
-		// orderIndex is passed to helper functions for more granular error messages
-		// when an individual order in a list of orders fails to process
-		orderIndex := fmt.Sprintf("order[%d]", i)
+		// updateIndex is used for more granular error messages when
+		// an individual update in a list of updates fails to process
+		updateIndex := fmt.Sprintf("updates[%d]", i)
 
 		sellOrder, err := k.stateStore.SellOrderTable().Get(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get sell order with id %d: %s", update.SellOrderId, err.Error())
+			return nil, fmt.Errorf("%s: sell order with id %d: %s", updateIndex, update.SellOrderId, err)
 		}
+
 		sellOrderAddr := sdk.AccAddress(sellOrder.Seller)
 		if !seller.Equals(sellOrderAddr) {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("unable to update sell order: got: %s, want: %s", req.Seller, sellOrderAddr.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s: seller must be the seller of the sell order", updateIndex)
 		}
-		if err = k.applySellOrderUpdates(ctx, orderIndex, sellOrder, update); err != nil {
+
+		if err = k.applySellOrderUpdates(ctx, updateIndex, sellOrder, update); err != nil {
 			return nil, err
 		}
 	}
@@ -47,9 +49,11 @@ func (k Keeper) UpdateSellOrders(ctx context.Context, req *marketplace.MsgUpdate
 }
 
 // applySellOrderUpdates applies the updates to the order.
-func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
+func (k Keeper) applySellOrderUpdates(ctx context.Context, updateIndex string, order *api.SellOrder, update *marketplace.MsgUpdateSellOrders_Update) error {
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	var creditType *ecoApi.CreditType
+
 	order.DisableAutoRetire = update.DisableAutoRetire
 
 	if update.NewAskPrice != nil {
@@ -63,7 +67,10 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			return err
 		}
 		if !allowed {
-			return sdkerrors.ErrInvalidRequest.Wrapf("%s is not allowed to be used in sell orders", update.NewAskPrice.Denom)
+			return sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: %s is not allowed to be used in sell orders",
+				updateIndex, update.NewAskPrice.Denom,
+			)
 		}
 
 		if market.BankDenom != update.NewAskPrice.Denom {
@@ -77,15 +84,21 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			}
 			order.MarketId = marketId
 		}
+
 		order.AskAmount = update.NewAskPrice.Amount.String()
 	}
+
 	if update.NewExpiration != nil {
 		// verify expiration is in the future
-		if update.NewExpiration.Before(sdkCtx.BlockTime()) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
+		if !update.NewExpiration.After(sdkCtx.BlockTime()) {
+			return sdkerrors.ErrInvalidRequest.Wrapf(
+				"%s: expiration must be in the future: %s",
+				updateIndex, update.NewExpiration,
+			)
 		}
 		order.Expiration = timestamppb.New(*update.NewExpiration)
 	}
+
 	if update.NewQuantity != "" {
 		if creditType == nil {
 			var err error
@@ -111,7 +124,7 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			if err != nil {
 				return err
 			}
-			if err = k.escrowCredits(ctx, orderIndex, order.Seller, order.BatchKey, amtToEscrow); err != nil {
+			if err = k.escrowCredits(ctx, updateIndex, order.Seller, order.BatchKey, amtToEscrow); err != nil {
 				return err
 			}
 			order.Quantity = update.NewQuantity
@@ -126,6 +139,8 @@ func (k Keeper) applySellOrderUpdates(ctx context.Context, orderIndex string, or
 			order.Quantity = update.NewQuantity
 		}
 	}
+
+	order.Maker = true // maker is always true for sell orders
 
 	if err := k.stateStore.SellOrderTable().Update(ctx, order); err != nil {
 		return err
