@@ -6,6 +6,7 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 	"github.com/regen-network/gocuke"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -232,9 +233,9 @@ func (s *createSuite) createExpectCalls() {
 			AnyTimes() // not expected on failed attempt
 	}
 
-	s.distKeeper.EXPECT().
-		FundCommunityPool(s.sdkCtx, s.minBasketFee, s.alice).
-		Do(func(sdk.Context, sdk.Coins, sdk.AccAddress) {
+	s.bankKeeper.EXPECT().
+		BurnCoins(s.sdkCtx, ecocredit.ModuleName, s.minBasketFee).
+		Do(func(sdk.Context, string, sdk.Coins) {
 			if s.minBasketFee != nil {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(s.minBasketFee[0])

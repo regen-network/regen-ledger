@@ -13,32 +13,29 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
-	mocks2 "github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper)
+	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
 func TestGenesis(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper, _, _ := setup(t)
+	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper, *mocks.MockDistributionKeeper) {
+func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -77,10 +74,8 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	ctrl := gomock.NewController(t)
-	distKeeper := mocks2.NewMockDistributionKeeper(ctrl)
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	return ff, ecocreditSubspace, bankKeeper, accountKeeper, distKeeper
+	return ff, ecocreditSubspace, bankKeeper, accountKeeper
 }

@@ -36,7 +36,7 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		}
 	}
 
-	err = k.distKeeper.FundCommunityPool(sdkCtx, fee, curator)
+	err = k.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, fee)
 	if err != nil {
 		return nil, err
 	}
