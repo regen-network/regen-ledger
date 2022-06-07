@@ -2,7 +2,6 @@ package marketplace
 
 import (
 	"context"
-	"testing"
 
 	"github.com/golang/mock/gomock"
 	"github.com/regen-network/gocuke"
@@ -150,16 +149,8 @@ func extractSupplyDecs(t gocuke.TestingT, s *ecoApi.BatchSupply) (tradable, reti
 	return decs[0], decs[1], decs[2]
 }
 
-func buyDirectSingle(s *baseSuite, buyerAddr sdk.AccAddress, order *marketplace.MsgBuyDirect_Order) error {
-	_, err := s.k.BuyDirect(s.ctx, &marketplace.MsgBuyDirect{
-		Buyer:  buyerAddr.String(),
-		Orders: []*marketplace.MsgBuyDirect_Order{order},
-	})
-	return err
-}
-
 // assertCreditsEscrowed adds orderAmt to tradable, subtracts from escrowed in before balance/supply and checks that it is equal to after balance/supply.
-func assertCreditsEscrowed(t *testing.T, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
+func assertCreditsEscrowed(t gocuke.TestingT, balanceBefore, balanceAfter *ecoApi.BatchBalance, orderAmt math.Dec) {
 	decs, err := utils.GetNonNegativeFixedDecs(6, balanceBefore.TradableAmount, balanceAfter.TradableAmount,
 		balanceBefore.EscrowedAmount, balanceAfter.EscrowedAmount)
 	assert.NilError(t, err)

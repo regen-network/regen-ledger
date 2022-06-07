@@ -2,102 +2,40 @@ package marketplace
 
 import (
 	"testing"
-	"time"
 
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/regen-network/gocuke"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+type msgUpdateSellOrdersSuite struct {
+	t   gocuke.TestingT
+	msg *MsgUpdateSellOrders
+	err error
+}
+
 func TestMsgUpdateSellOrders(t *testing.T) {
-	t.Parallel()
+	gocuke.NewRunner(t, &msgUpdateSellOrdersSuite{}).Path("./features/msg_update_sell_orders.feature").Run()
+}
 
-	_, _, a1 := testdata.KeyTestPubAddr()
+func (s *msgUpdateSellOrdersSuite) Before(t gocuke.TestingT) {
+	s.t = t
+}
 
-	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+func (s *msgUpdateSellOrdersSuite) TheMessage(a gocuke.DocString) {
+	s.msg = &MsgUpdateSellOrders{}
+	err := jsonpb.UnmarshalString(a.Content, s.msg)
+	require.NoError(s.t, err)
+}
 
-	tests := map[string]struct {
-		src    MsgUpdateSellOrders
-		expErr bool
-	}{
-		"valid": {
-			src: MsgUpdateSellOrders{
-				Seller: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-						NewExpiration:     &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"invalid: bad seller address": {
-			src: MsgUpdateSellOrders{
-				Seller: "foobar",
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad quantity": {
-			src: MsgUpdateSellOrders{
-				Seller: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "-1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad ask price": {
-			src: MsgUpdateSellOrders{
-				Seller: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-	}
+func (s *msgUpdateSellOrdersSuite) TheMessageIsValidated() {
+	s.err = s.msg.ValidateBasic()
+}
 
-	for msg, test := range tests {
-		t.Run(msg, func(t *testing.T) {
-			t.Parallel()
+func (s *msgUpdateSellOrdersSuite) ExpectTheError(a string) {
+	require.EqualError(s.t, s.err, a)
+}
 
-			err := test.src.ValidateBasic()
-			if test.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-		})
-	}
+func (s *msgUpdateSellOrdersSuite) ExpectNoError() {
+	require.NoError(s.t, s.err)
 }
