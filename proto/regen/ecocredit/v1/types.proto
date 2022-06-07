@@ -11,24 +11,30 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit/core";
 // Params defines the updatable global parameters of the ecocredit module for
 // use with the x/params module.
 message Params {
-  // credit_class_fee is the fixed fee charged on creation of a new credit class
+
+  // credit_class_fee is a list of credit class creation fees accepted when
+  // creating a credit class. Any fee listed is accepted and charged to the
+  // credit class creator when creating a credit class.
   repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // basket_fee is the fixed fee charged on creation of a new basket
+  // basket_fee is the fixed fee charged to the basket creator (the curator) and
+  // sent to the community funding pool upon basket creation.
   repeated cosmos.base.v1beta1.Coin basket_fee = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
   // allowed_class_creators is an allowlist defining the addresses with
-  // the required permissions to create credit classes
+  // the required permissions to create credit classes.
   repeated string allowed_class_creators = 3;
 
-  // allowlist_enabled is a param that enables/disables the allowlist for credit
-  // creation
+  // allowlist_enabled determines whether or not the allowlist for creating
+  // credit classes is enabled. When set to true, only the addresses listed in
+  // allowed_class_creators can create credit classes. When set to false, any
+  // address can create credit classes.
   bool allowlist_enabled = 4;
 }
 
