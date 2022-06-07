@@ -1,7 +1,7 @@
 package basket
 
 import (
-	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	api "github.com/regen-network/regen-ledger/api/regen/ecocredit/basket/v1"
 	"github.com/regen-network/regen-ledger/types"
@@ -35,16 +35,16 @@ func (d *DateCriteria) Validate() error {
 	if (minStartDate != nil && startDateWindow != nil) ||
 		(startDateWindow != nil && yearsInThePast != 0) ||
 		(minStartDate != nil && yearsInThePast != 0) {
-		return fmt.Errorf("only one of min_start_date, start_date_window, or years_in_the_past must be set")
+		return sdkerrors.ErrInvalidRequest.Wrap("only one of min_start_date, start_date_window, or years_in_the_past must be set")
 	}
 
 	if minStartDate != nil {
 		if minStartDate.Seconds < -2208992400 {
-			return fmt.Errorf("min_start_date must be after 1900-01-01")
+			return sdkerrors.ErrInvalidRequest.Wrap("min_start_date must be after 1900-01-01")
 		}
 	} else if startDateWindow != nil {
 		if startDateWindow.Seconds < 24*3600 {
-			return fmt.Errorf("start_date_window must be at least 1 day")
+			return sdkerrors.ErrInvalidRequest.Wrap("start_date_window must be at least 1 day")
 		}
 	}
 
