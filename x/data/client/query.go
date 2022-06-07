@@ -47,12 +47,12 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	cmd.AddCommand(
 		queryAnchorByIRICmd,
 		QueryAnchorsByAttestorCmd(),
-		ConvertIRIToHashCmd(),
-		ConvertHashToIRICmd(),
-		QueryAttestorsCmd(),
+		QueryAttestorsByIRICmd(),
 		QueryResolverCmd(),
 		QueryResolversByIriCmd(),
 		QueryResolversByURLCmd(),
+		ConvertIRIToHashCmd(),
+		ConvertHashToIRICmd(),
 	)
 
 	flags.AddQueryFlagsToCmd(cmd)
@@ -186,10 +186,10 @@ where content.json contains:
 	return cmd
 }
 
-// QueryAttestorsCmd creates a CLI command for Query/Attestors.
-func QueryAttestorsCmd() *cobra.Command {
+// QueryAttestorsByIRICmd creates a CLI command for Query/AttestorsByIRI.
+func QueryAttestorsByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "attestors [iri]",
+		Use:   "attestors-by-iri [iri]",
 		Short: "Query for attestors based on IRI",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

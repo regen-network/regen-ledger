@@ -85,7 +85,7 @@ message QueryAnchorByIRIRequest {
 // QueryAnchorByIRIResponse is the Query/ByHash response type.
 message QueryAnchorByIRIResponse {
   // entry is the ContentEntry for the anchored data.
-  ContentEntry entry = 1; // TODO: AnchorEntry?
+  ContentEntry entry = 1;
 }
 
 // QueryAnchorByHashRequest is the Query/ByHash request type.
@@ -112,7 +112,7 @@ message QueryAnchorsByAttestorRequest {
 // QueryAnchorsByAttestorResponse is the Query/AnchorsByAttestor response type.
 message QueryAnchorsByAttestorResponse {
   // entries are the ContentEntries attested to by the attestor.
-  repeated ContentEntry entries = 1; // TODO: AnchorEntry?
+  repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

@@ -261,7 +261,7 @@ func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
+func (s *IntegrationTestSuite) TestQueryAttestorsByIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -312,7 +312,7 @@ func (s *IntegrationTestSuite) TestQueryAttestorsCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryAttestorsCmd()
+			cmd := client.QueryAttestorsByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
