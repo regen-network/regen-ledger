@@ -130,8 +130,8 @@ func (s serverImpl) ResolversByHash(ctx context.Context, request *data.QueryReso
 	return res, nil
 }
 
-// ResolversByUrl queries resolvers based on URL.
-func (s serverImpl) ResolversByUrl(ctx context.Context, request *data.QueryResolversByUrlRequest) (*data.QueryResolversByUrlResponse, error) {
+// ResolversByURL queries resolvers based on URL.
+func (s serverImpl) ResolversByURL(ctx context.Context, request *data.QueryResolversByURLRequest) (*data.QueryResolversByURLResponse, error) {
 	if len(request.Url) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("url cannot be empty")
 	}
@@ -154,7 +154,7 @@ func (s serverImpl) ResolversByUrl(ctx context.Context, request *data.QueryResol
 		return nil, err
 	}
 
-	res := &data.QueryResolversByUrlResponse{}
+	res := &data.QueryResolversByURLResponse{}
 	for it.Next() {
 		item, err := it.Value()
 		if err != nil {

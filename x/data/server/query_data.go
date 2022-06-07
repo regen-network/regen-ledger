@@ -13,8 +13,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// ByIRI queries data based on its ContentHash.
-func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
+// AnchorByIRI queries data based on its ContentHash.
+func (s serverImpl) AnchorByIRI(ctx context.Context, request *data.QueryAnchorByIRIRequest) (*data.QueryAnchorByIRIResponse, error) {
 	contentHash, err := data.ParseIRI(request.Iri)
 	if err != nil {
 		return nil, err
@@ -25,13 +25,13 @@ func (s serverImpl) ByIRI(ctx context.Context, request *data.QueryByIRIRequest) 
 		return nil, err
 	}
 
-	return &data.QueryByIRIResponse{
+	return &data.QueryAnchorByIRIResponse{
 		Entry: entry,
 	}, nil
 }
 
-// ByHash queries data based on ContentHash.
-func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+// AnchorByHash queries data based on ContentHash.
+func (s serverImpl) AnchorByHash(ctx context.Context, request *data.QueryAnchorByHashRequest) (*data.QueryAnchorByHashResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 	}
@@ -46,13 +46,13 @@ func (s serverImpl) ByHash(ctx context.Context, request *data.QueryByHashRequest
 		return nil, err
 	}
 
-	return &data.QueryByHashResponse{
+	return &data.QueryAnchorByHashResponse{
 		Entry: entry,
 	}, nil
 }
 
-// ByAttestor queries data based on attestor.
-func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttestorRequest) (*data.QueryByAttestorResponse, error) {
+// AnchorsByAttestor queries data based on attestor.
+func (s serverImpl) AnchorsByAttestor(ctx context.Context, request *data.QueryAnchorsByAttestorRequest) (*data.QueryAnchorsByAttestorResponse, error) {
 	addr, err := sdk.AccAddressFromBech32(request.Attestor)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func (s serverImpl) ByAttestor(ctx context.Context, request *data.QueryByAttesto
 		return nil, err
 	}
 
-	return &data.QueryByAttestorResponse{
+	return &data.QueryAnchorsByAttestorResponse{
 		Entries:    entries,
 		Pagination: pageRes,
 	}, nil

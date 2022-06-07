@@ -106,61 +106,61 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(iri, anchorRes2.Iri)
 	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
-	// can query data by iri
-	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+	// can query anchored data by iri
+	anchorByIRI, err := s.queryClient.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(dataByIRI)
-	require.NotNil(dataByIRI.Entry)
-	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
+	require.NotNil(anchorByIRI)
+	require.NotNil(anchorByIRI.Entry)
+	require.Equal(anchorRes1.Timestamp, anchorByIRI.Entry.Timestamp)
 
-	// can query data by hash
-	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
+	// can query anchored data by hash
+	anchorByHash, err := s.queryClient.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(dataByHash)
-	require.NotNil(dataByHash.Entry)
-	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
+	require.NotNil(anchorByHash)
+	require.NotNil(anchorByHash.Entry)
+	require.Equal(anchorRes1.Timestamp, anchorByHash.Entry.Timestamp)
 
-	// can query iri by hash
-	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
+	// can convert hash to iri
+	hashToIri, err := s.queryClient.ConvertHashToIRI(s.ctx, &data.ConvertHashToIRIRequest{
 		ContentHash: s.hash1,
 	})
 	require.NoError(err)
-	require.NotNil(iriByHash)
-	require.Equal(iri, iriByHash.Iri)
+	require.NotNil(hashToIri)
+	require.Equal(iri, hashToIri.Iri)
 
-	// can query iri by graph hash properties
-	iriByGraphHash, err := s.queryClient.IRIByGraphHash(s.ctx, &data.QueryIRIByGraphHashRequest{
+	// can convert graph hash properties to iri
+	graphHashToIri, err := s.queryClient.ConvertGraphHashToIRI(s.ctx, &data.ConvertGraphHashToIRIRequest{
 		Hash:                      base64.StdEncoding.EncodeToString(s.hash1.Graph.Hash),
 		DigestAlgorithm:           s.hash1.Graph.DigestAlgorithm,
 		CanonicalizationAlgorithm: s.hash1.Graph.CanonicalizationAlgorithm,
 		MerkleTree:                s.hash1.Graph.MerkleTree,
 	})
 	require.NoError(err)
-	require.NotNil(iriByGraphHash)
-	require.Equal(iri, iriByGraphHash.Iri)
+	require.NotNil(graphHashToIri)
+	require.Equal(iri, graphHashToIri.Iri)
 
-	// can query hash by iri
-	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{
+	// can convert iri to hash
+	iriToHash, err := s.queryClient.ConvertIRIToHash(s.ctx, &data.ConvertIRIToHashRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(hashByIri)
-	require.Equal(s.hash1, hashByIri.ContentHash)
+	require.NotNil(iriToHash)
+	require.Equal(s.hash1, iriToHash.ContentHash)
 
 	// can query attestors by iri
 	attestorsByIri, err := s.queryClient.AttestorsByIRI(s.ctx, &data.QueryAttestorsByIRIRequest{
-		Iri: dataByIRI.Entry.Iri,
+		Iri: anchorByIRI.Entry.Iri,
 	})
 	require.NoError(err)
 	require.Empty(attestorsByIri.Attestors)
 
 	// can query attestors by hash
 	attestorsByHash, err := s.queryClient.AttestorsByHash(s.ctx, &data.QueryAttestorsByHashRequest{
-		ContentHash: dataByIRI.Entry.ContentHash,
+		ContentHash: anchorByIRI.Entry.ContentHash,
 	})
 	require.NoError(err)
 	require.Empty(attestorsByHash.Attestors)
@@ -196,14 +196,14 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Len(attestorsByHash.Attestors, 1)
 	require.Equal(s.addr1.String(), attestorsByHash.Attestors[0])
 
-	// can query data by attestor
-	byAttestors, err := s.queryClient.ByAttestor(s.ctx, &data.QueryByAttestorRequest{
+	// can query anchored data by attestor
+	byAttestors, err := s.queryClient.AnchorsByAttestor(s.ctx, &data.QueryAnchorsByAttestorRequest{
 		Attestor: s.addr1.String(),
 	})
 	require.NoError(err)
 	require.NotNil(byAttestors)
 	require.Len(byAttestors.Entries, 1)
-	require.Equal(dataByIRI.Entry, byAttestors.Entries[0])
+	require.Equal(anchorByIRI.Entry, byAttestors.Entries[0])
 
 	// another attestor can attest
 	_, err = s.msgClient.Attest(s.ctx, &data.MsgAttest{
@@ -258,49 +258,49 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.Equal(iri, anchorRes2.Iri)
 	require.Equal(anchorRes1.Timestamp, anchorRes2.Timestamp)
 
-	// can query data by iri
-	dataByIRI, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+	// can query anchored data by iri
+	anchorByIRI, err := s.queryClient.AnchorByIRI(s.ctx, &data.QueryAnchorByIRIRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(dataByIRI)
-	require.NotNil(dataByIRI.Entry)
-	require.Equal(anchorRes1.Timestamp, dataByIRI.Entry.Timestamp)
+	require.NotNil(anchorByIRI)
+	require.NotNil(anchorByIRI.Entry)
+	require.Equal(anchorRes1.Timestamp, anchorByIRI.Entry.Timestamp)
 
-	// can query data by hash
-	dataByHash, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
+	// can query anchored data by hash
+	anchorByHash, err := s.queryClient.AnchorByHash(s.ctx, &data.QueryAnchorByHashRequest{
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(dataByHash)
-	require.NotNil(dataByHash.Entry)
-	require.Equal(anchorRes1.Timestamp, dataByHash.Entry.Timestamp)
+	require.NotNil(anchorByHash)
+	require.NotNil(anchorByHash.Entry)
+	require.Equal(anchorRes1.Timestamp, anchorByHash.Entry.Timestamp)
 
-	// can query iri by hash
-	iriByHash, err := s.queryClient.IRIByHash(s.ctx, &data.QueryIRIByHashRequest{
+	// can convert hash to iri
+	hashToIri, err := s.queryClient.ConvertHashToIRI(s.ctx, &data.ConvertHashToIRIRequest{
 		ContentHash: s.hash2,
 	})
 	require.NoError(err)
-	require.NotNil(iriByHash)
-	require.Equal(iri, iriByHash.Iri)
+	require.NotNil(hashToIri)
+	require.Equal(iri, hashToIri.Iri)
 
-	// can query iri by raw hash properties
-	iriByRawHash, err := s.queryClient.IRIByRawHash(s.ctx, &data.QueryIRIByRawHashRequest{
+	// can convert raw hash properties to iri
+	rawHashToIri, err := s.queryClient.ConvertRawHashToIRI(s.ctx, &data.ConvertRawHashToIRIRequest{
 		Hash:            base64.StdEncoding.EncodeToString(s.hash2.Raw.Hash),
 		DigestAlgorithm: s.hash2.Raw.DigestAlgorithm,
 		MediaType:       s.hash2.Raw.MediaType,
 	})
 	require.NoError(err)
-	require.NotNil(iriByRawHash)
-	require.Equal(iri, iriByRawHash.Iri)
+	require.NotNil(rawHashToIri)
+	require.Equal(iri, rawHashToIri.Iri)
 
-	// can query hash by iri
-	hashByIri, err := s.queryClient.HashByIRI(s.ctx, &data.QueryHashByIRIRequest{
+	// can convert iri to hash
+	iriToHash, err := s.queryClient.ConvertIRIToHash(s.ctx, &data.ConvertIRIToHashRequest{
 		Iri: iri,
 	})
 	require.NoError(err)
-	require.NotNil(hashByIri)
-	require.Equal(s.hash2, hashByIri.ContentHash)
+	require.NotNil(iriToHash)
+	require.Equal(s.hash2, iriToHash.ContentHash)
 }
 
 func (s *IntegrationTestSuite) TestResolver() {
@@ -357,7 +357,7 @@ func (s *IntegrationTestSuite) TestResolver() {
 	require.Equal(testUrl, res5.Resolvers[0].Url)
 
 	// can query resolvers by url
-	res6, err := s.queryClient.ResolversByUrl(s.ctx, &data.QueryResolversByUrlRequest{
+	res6, err := s.queryClient.ResolversByURL(s.ctx, &data.QueryResolversByURLRequest{
 		Url: testUrl,
 	})
 	require.NoError(err)

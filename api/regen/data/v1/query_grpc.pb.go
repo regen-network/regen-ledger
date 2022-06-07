@@ -22,32 +22,32 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// ByIRI queries data based on IRI.
-	ByIRI(ctx context.Context, in *QueryByIRIRequest, opts ...grpc.CallOption) (*QueryByIRIResponse, error)
-	// ByHash queries data based on ContentHash.
-	ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error)
-	// ByAttestor queries data based on attestor.
-	ByAttestor(ctx context.Context, in *QueryByAttestorRequest, opts ...grpc.CallOption) (*QueryByAttestorResponse, error)
-	// IRIByHash queries IRI based on ContentHash.
-	IRIByHash(ctx context.Context, in *QueryIRIByHashRequest, opts ...grpc.CallOption) (*QueryIRIByHashResponse, error)
-	// IRIByRawHash queries IRI based on ContentHash_Raw properties.
-	IRIByRawHash(ctx context.Context, in *QueryIRIByRawHashRequest, opts ...grpc.CallOption) (*QueryIRIByRawHashResponse, error)
-	// IRIByGraphHash queries IRI based on ContentHash_Graph properties.
-	IRIByGraphHash(ctx context.Context, in *QueryIRIByGraphHashRequest, opts ...grpc.CallOption) (*QueryIRIByGraphHashResponse, error)
-	// HashByIRI queries ContentHash based on IRI.
-	HashByIRI(ctx context.Context, in *QueryHashByIRIRequest, opts ...grpc.CallOption) (*QueryHashByIRIResponse, error)
-	// AttestorsByIRI queries attestors based on IRI.
+	// AnchorByIRI queries for an anchor entry by IRI.
+	AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error)
+	// AnchorByHash queries for an anchor entry by content hash.
+	AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error)
+	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	AnchorsByAttestor(ctx context.Context, in *QueryAnchorsByAttestorRequest, opts ...grpc.CallOption) (*QueryAnchorsByAttestorResponse, error)
+	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(ctx context.Context, in *QueryAttestorsByIRIRequest, opts ...grpc.CallOption) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries attestors based on ContentHash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
 	AttestorsByHash(ctx context.Context, in *QueryAttestorsByHashRequest, opts ...grpc.CallOption) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolver based on ID.
+	// Resolver queries for a resolver by resolver ID.
 	Resolver(ctx context.Context, in *QueryResolverRequest, opts ...grpc.CallOption) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers based on IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
 	ResolversByIRI(ctx context.Context, in *QueryResolversByIRIRequest, opts ...grpc.CallOption) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers based on ContentHash.
+	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
 	ResolversByHash(ctx context.Context, in *QueryResolversByHashRequest, opts ...grpc.CallOption) (*QueryResolversByHashResponse, error)
-	// ResolversByUrl queries resolvers based on URL.
-	ResolversByUrl(ctx context.Context, in *QueryResolversByUrlRequest, opts ...grpc.CallOption) (*QueryResolversByUrlResponse, error)
+	// ResolversByURL queries resolvers based on URL.
+	ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error)
+	// ConvertIRIToHash converts an IRI to a content hash.
+	ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error)
+	// ConvertHashToIRI converts a content hash to an IRI.
+	ConvertHashToIRI(ctx context.Context, in *ConvertHashToIRIRequest, opts ...grpc.CallOption) (*ConvertHashToIRIResponse, error)
+	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	ConvertRawHashToIRI(ctx context.Context, in *ConvertRawHashToIRIRequest, opts ...grpc.CallOption) (*ConvertRawHashToIRIResponse, error)
+	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	ConvertGraphHashToIRI(ctx context.Context, in *ConvertGraphHashToIRIRequest, opts ...grpc.CallOption) (*ConvertGraphHashToIRIResponse, error)
 }
 
 type queryClient struct {
@@ -58,63 +58,27 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) ByIRI(ctx context.Context, in *QueryByIRIRequest, opts ...grpc.CallOption) (*QueryByIRIResponse, error) {
-	out := new(QueryByIRIResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ByIRI", in, out, opts...)
+func (c *queryClient) AnchorByIRI(ctx context.Context, in *QueryAnchorByIRIRequest, opts ...grpc.CallOption) (*QueryAnchorByIRIResponse, error) {
+	out := new(QueryAnchorByIRIResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/AnchorByIRI", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error) {
-	out := new(QueryByHashResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ByHash", in, out, opts...)
+func (c *queryClient) AnchorByHash(ctx context.Context, in *QueryAnchorByHashRequest, opts ...grpc.CallOption) (*QueryAnchorByHashResponse, error) {
+	out := new(QueryAnchorByHashResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/AnchorByHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) ByAttestor(ctx context.Context, in *QueryByAttestorRequest, opts ...grpc.CallOption) (*QueryByAttestorResponse, error) {
-	out := new(QueryByAttestorResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ByAttestor", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) IRIByHash(ctx context.Context, in *QueryIRIByHashRequest, opts ...grpc.CallOption) (*QueryIRIByHashResponse, error) {
-	out := new(QueryIRIByHashResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/IRIByHash", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) IRIByRawHash(ctx context.Context, in *QueryIRIByRawHashRequest, opts ...grpc.CallOption) (*QueryIRIByRawHashResponse, error) {
-	out := new(QueryIRIByRawHashResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/IRIByRawHash", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) IRIByGraphHash(ctx context.Context, in *QueryIRIByGraphHashRequest, opts ...grpc.CallOption) (*QueryIRIByGraphHashResponse, error) {
-	out := new(QueryIRIByGraphHashResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/IRIByGraphHash", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) HashByIRI(ctx context.Context, in *QueryHashByIRIRequest, opts ...grpc.CallOption) (*QueryHashByIRIResponse, error) {
-	out := new(QueryHashByIRIResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/HashByIRI", in, out, opts...)
+func (c *queryClient) AnchorsByAttestor(ctx context.Context, in *QueryAnchorsByAttestorRequest, opts ...grpc.CallOption) (*QueryAnchorsByAttestorResponse, error) {
+	out := new(QueryAnchorsByAttestorResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/AnchorsByAttestor", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -166,9 +130,45 @@ func (c *queryClient) ResolversByHash(ctx context.Context, in *QueryResolversByH
 	return out, nil
 }
 
-func (c *queryClient) ResolversByUrl(ctx context.Context, in *QueryResolversByUrlRequest, opts ...grpc.CallOption) (*QueryResolversByUrlResponse, error) {
-	out := new(QueryResolversByUrlResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ResolversByUrl", in, out, opts...)
+func (c *queryClient) ResolversByURL(ctx context.Context, in *QueryResolversByURLRequest, opts ...grpc.CallOption) (*QueryResolversByURLResponse, error) {
+	out := new(QueryResolversByURLResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ResolversByURL", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ConvertIRIToHash(ctx context.Context, in *ConvertIRIToHashRequest, opts ...grpc.CallOption) (*ConvertIRIToHashResponse, error) {
+	out := new(ConvertIRIToHashResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ConvertIRIToHash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ConvertHashToIRI(ctx context.Context, in *ConvertHashToIRIRequest, opts ...grpc.CallOption) (*ConvertHashToIRIResponse, error) {
+	out := new(ConvertHashToIRIResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ConvertHashToIRI", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ConvertRawHashToIRI(ctx context.Context, in *ConvertRawHashToIRIRequest, opts ...grpc.CallOption) (*ConvertRawHashToIRIResponse, error) {
+	out := new(ConvertRawHashToIRIResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ConvertRawHashToIRI", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ConvertGraphHashToIRI(ctx context.Context, in *ConvertGraphHashToIRIRequest, opts ...grpc.CallOption) (*ConvertGraphHashToIRIResponse, error) {
+	out := new(ConvertGraphHashToIRIResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1.Query/ConvertGraphHashToIRI", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -179,32 +179,32 @@ func (c *queryClient) ResolversByUrl(ctx context.Context, in *QueryResolversByUr
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
 type QueryServer interface {
-	// ByIRI queries data based on IRI.
-	ByIRI(context.Context, *QueryByIRIRequest) (*QueryByIRIResponse, error)
-	// ByHash queries data based on ContentHash.
-	ByHash(context.Context, *QueryByHashRequest) (*QueryByHashResponse, error)
-	// ByAttestor queries data based on attestor.
-	ByAttestor(context.Context, *QueryByAttestorRequest) (*QueryByAttestorResponse, error)
-	// IRIByHash queries IRI based on ContentHash.
-	IRIByHash(context.Context, *QueryIRIByHashRequest) (*QueryIRIByHashResponse, error)
-	// IRIByRawHash queries IRI based on ContentHash_Raw properties.
-	IRIByRawHash(context.Context, *QueryIRIByRawHashRequest) (*QueryIRIByRawHashResponse, error)
-	// IRIByGraphHash queries IRI based on ContentHash_Graph properties.
-	IRIByGraphHash(context.Context, *QueryIRIByGraphHashRequest) (*QueryIRIByGraphHashResponse, error)
-	// HashByIRI queries ContentHash based on IRI.
-	HashByIRI(context.Context, *QueryHashByIRIRequest) (*QueryHashByIRIResponse, error)
-	// AttestorsByIRI queries attestors based on IRI.
+	// AnchorByIRI queries for an anchor entry by IRI.
+	AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error)
+	// AnchorByHash queries for an anchor entry by content hash.
+	AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error)
+	// AnchorsByAttestor queries for all anchor entries attested to by a given attestor.
+	AnchorsByAttestor(context.Context, *QueryAnchorsByAttestorRequest) (*QueryAnchorsByAttestorResponse, error)
+	// AttestorsByIRI queries for all attestor entries for an anchor entry by IRI.
 	AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error)
-	// AttestorsByHash queries attestors based on ContentHash.
+	// AttestorsByHash queries for all attestor entries for an anchor entry by content hash.
 	AttestorsByHash(context.Context, *QueryAttestorsByHashRequest) (*QueryAttestorsByHashResponse, error)
-	// Resolver queries information about a resolver based on ID.
+	// Resolver queries for a resolver by resolver ID.
 	Resolver(context.Context, *QueryResolverRequest) (*QueryResolverResponse, error)
-	// ResolversByIRI queries resolvers based on IRI.
+	// ResolversByIRI queries for all resolvers that have registered an anchor entry by IRI.
 	ResolversByIRI(context.Context, *QueryResolversByIRIRequest) (*QueryResolversByIRIResponse, error)
-	// ResolversByHash queries resolvers based on ContentHash.
+	// ResolversByHash queries for all resolvers that have registered an anchor entry by content hash.
 	ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error)
-	// ResolversByUrl queries resolvers based on URL.
-	ResolversByUrl(context.Context, *QueryResolversByUrlRequest) (*QueryResolversByUrlResponse, error)
+	// ResolversByURL queries resolvers based on URL.
+	ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error)
+	// ConvertIRIToHash converts an IRI to a content hash.
+	ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error)
+	// ConvertHashToIRI converts a content hash to an IRI.
+	ConvertHashToIRI(context.Context, *ConvertHashToIRIRequest) (*ConvertHashToIRIResponse, error)
+	// ConvertRawHashToIRI converts raw content hash properties to an IRI.
+	ConvertRawHashToIRI(context.Context, *ConvertRawHashToIRIRequest) (*ConvertRawHashToIRIResponse, error)
+	// ConvertGraphHashToIRI converts graph content hash properties to an IRI.
+	ConvertGraphHashToIRI(context.Context, *ConvertGraphHashToIRIRequest) (*ConvertGraphHashToIRIResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -212,26 +212,14 @@ type QueryServer interface {
 type UnimplementedQueryServer struct {
 }
 
-func (UnimplementedQueryServer) ByIRI(context.Context, *QueryByIRIRequest) (*QueryByIRIResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ByIRI not implemented")
+func (UnimplementedQueryServer) AnchorByIRI(context.Context, *QueryAnchorByIRIRequest) (*QueryAnchorByIRIResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AnchorByIRI not implemented")
 }
-func (UnimplementedQueryServer) ByHash(context.Context, *QueryByHashRequest) (*QueryByHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ByHash not implemented")
+func (UnimplementedQueryServer) AnchorByHash(context.Context, *QueryAnchorByHashRequest) (*QueryAnchorByHashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AnchorByHash not implemented")
 }
-func (UnimplementedQueryServer) ByAttestor(context.Context, *QueryByAttestorRequest) (*QueryByAttestorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ByAttestor not implemented")
-}
-func (UnimplementedQueryServer) IRIByHash(context.Context, *QueryIRIByHashRequest) (*QueryIRIByHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IRIByHash not implemented")
-}
-func (UnimplementedQueryServer) IRIByRawHash(context.Context, *QueryIRIByRawHashRequest) (*QueryIRIByRawHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IRIByRawHash not implemented")
-}
-func (UnimplementedQueryServer) IRIByGraphHash(context.Context, *QueryIRIByGraphHashRequest) (*QueryIRIByGraphHashResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IRIByGraphHash not implemented")
-}
-func (UnimplementedQueryServer) HashByIRI(context.Context, *QueryHashByIRIRequest) (*QueryHashByIRIResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HashByIRI not implemented")
+func (UnimplementedQueryServer) AnchorsByAttestor(context.Context, *QueryAnchorsByAttestorRequest) (*QueryAnchorsByAttestorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AnchorsByAttestor not implemented")
 }
 func (UnimplementedQueryServer) AttestorsByIRI(context.Context, *QueryAttestorsByIRIRequest) (*QueryAttestorsByIRIResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AttestorsByIRI not implemented")
@@ -248,8 +236,20 @@ func (UnimplementedQueryServer) ResolversByIRI(context.Context, *QueryResolversB
 func (UnimplementedQueryServer) ResolversByHash(context.Context, *QueryResolversByHashRequest) (*QueryResolversByHashResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResolversByHash not implemented")
 }
-func (UnimplementedQueryServer) ResolversByUrl(context.Context, *QueryResolversByUrlRequest) (*QueryResolversByUrlResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResolversByUrl not implemented")
+func (UnimplementedQueryServer) ResolversByURL(context.Context, *QueryResolversByURLRequest) (*QueryResolversByURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolversByURL not implemented")
+}
+func (UnimplementedQueryServer) ConvertIRIToHash(context.Context, *ConvertIRIToHashRequest) (*ConvertIRIToHashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConvertIRIToHash not implemented")
+}
+func (UnimplementedQueryServer) ConvertHashToIRI(context.Context, *ConvertHashToIRIRequest) (*ConvertHashToIRIResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConvertHashToIRI not implemented")
+}
+func (UnimplementedQueryServer) ConvertRawHashToIRI(context.Context, *ConvertRawHashToIRIRequest) (*ConvertRawHashToIRIResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConvertRawHashToIRI not implemented")
+}
+func (UnimplementedQueryServer) ConvertGraphHashToIRI(context.Context, *ConvertGraphHashToIRIRequest) (*ConvertGraphHashToIRIResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConvertGraphHashToIRI not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -264,128 +264,56 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
 }
 
-func _Query_ByIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByIRIRequest)
+func _Query_AnchorByIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAnchorByIRIRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ByIRI(ctx, in)
+		return srv.(QueryServer).AnchorByIRI(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/ByIRI",
+		FullMethod: "/regen.data.v1.Query/AnchorByIRI",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByIRI(ctx, req.(*QueryByIRIRequest))
+		return srv.(QueryServer).AnchorByIRI(ctx, req.(*QueryAnchorByIRIRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByHashRequest)
+func _Query_AnchorByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAnchorByHashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ByHash(ctx, in)
+		return srv.(QueryServer).AnchorByHash(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/ByHash",
+		FullMethod: "/regen.data.v1.Query/AnchorByHash",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByHash(ctx, req.(*QueryByHashRequest))
+		return srv.(QueryServer).AnchorByHash(ctx, req.(*QueryAnchorByHashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ByAttestor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByAttestorRequest)
+func _Query_AnchorsByAttestor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAnchorsByAttestorRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ByAttestor(ctx, in)
+		return srv.(QueryServer).AnchorsByAttestor(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/ByAttestor",
+		FullMethod: "/regen.data.v1.Query/AnchorsByAttestor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByAttestor(ctx, req.(*QueryByAttestorRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_IRIByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryIRIByHashRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).IRIByHash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/IRIByHash",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).IRIByHash(ctx, req.(*QueryIRIByHashRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_IRIByRawHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryIRIByRawHashRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).IRIByRawHash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/IRIByRawHash",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).IRIByRawHash(ctx, req.(*QueryIRIByRawHashRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_IRIByGraphHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryIRIByGraphHashRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).IRIByGraphHash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/IRIByGraphHash",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).IRIByGraphHash(ctx, req.(*QueryIRIByGraphHashRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_HashByIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryHashByIRIRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).HashByIRI(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/HashByIRI",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).HashByIRI(ctx, req.(*QueryHashByIRIRequest))
+		return srv.(QueryServer).AnchorsByAttestor(ctx, req.(*QueryAnchorsByAttestorRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -480,20 +408,92 @@ func _Query_ResolversByHash_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ResolversByUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryResolversByUrlRequest)
+func _Query_ResolversByURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryResolversByURLRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ResolversByUrl(ctx, in)
+		return srv.(QueryServer).ResolversByURL(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1.Query/ResolversByUrl",
+		FullMethod: "/regen.data.v1.Query/ResolversByURL",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ResolversByUrl(ctx, req.(*QueryResolversByUrlRequest))
+		return srv.(QueryServer).ResolversByURL(ctx, req.(*QueryResolversByURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ConvertIRIToHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertIRIToHashRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ConvertIRIToHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1.Query/ConvertIRIToHash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ConvertIRIToHash(ctx, req.(*ConvertIRIToHashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ConvertHashToIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertHashToIRIRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ConvertHashToIRI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1.Query/ConvertHashToIRI",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ConvertHashToIRI(ctx, req.(*ConvertHashToIRIRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ConvertRawHashToIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertRawHashToIRIRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ConvertRawHashToIRI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1.Query/ConvertRawHashToIRI",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ConvertRawHashToIRI(ctx, req.(*ConvertRawHashToIRIRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ConvertGraphHashToIRI_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertGraphHashToIRIRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ConvertGraphHashToIRI(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1.Query/ConvertGraphHashToIRI",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ConvertGraphHashToIRI(ctx, req.(*ConvertGraphHashToIRIRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -506,32 +506,16 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ByIRI",
-			Handler:    _Query_ByIRI_Handler,
+			MethodName: "AnchorByIRI",
+			Handler:    _Query_AnchorByIRI_Handler,
 		},
 		{
-			MethodName: "ByHash",
-			Handler:    _Query_ByHash_Handler,
+			MethodName: "AnchorByHash",
+			Handler:    _Query_AnchorByHash_Handler,
 		},
 		{
-			MethodName: "ByAttestor",
-			Handler:    _Query_ByAttestor_Handler,
-		},
-		{
-			MethodName: "IRIByHash",
-			Handler:    _Query_IRIByHash_Handler,
-		},
-		{
-			MethodName: "IRIByRawHash",
-			Handler:    _Query_IRIByRawHash_Handler,
-		},
-		{
-			MethodName: "IRIByGraphHash",
-			Handler:    _Query_IRIByGraphHash_Handler,
-		},
-		{
-			MethodName: "HashByIRI",
-			Handler:    _Query_HashByIRI_Handler,
+			MethodName: "AnchorsByAttestor",
+			Handler:    _Query_AnchorsByAttestor_Handler,
 		},
 		{
 			MethodName: "AttestorsByIRI",
@@ -554,8 +538,24 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ResolversByHash_Handler,
 		},
 		{
-			MethodName: "ResolversByUrl",
-			Handler:    _Query_ResolversByUrl_Handler,
+			MethodName: "ResolversByURL",
+			Handler:    _Query_ResolversByURL_Handler,
+		},
+		{
+			MethodName: "ConvertIRIToHash",
+			Handler:    _Query_ConvertIRIToHash_Handler,
+		},
+		{
+			MethodName: "ConvertHashToIRI",
+			Handler:    _Query_ConvertHashToIRI_Handler,
+		},
+		{
+			MethodName: "ConvertRawHashToIRI",
+			Handler:    _Query_ConvertRawHashToIRI_Handler,
+		},
+		{
+			MethodName: "ConvertGraphHashToIRI",
+			Handler:    _Query_ConvertGraphHashToIRI_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

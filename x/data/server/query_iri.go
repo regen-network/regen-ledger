@@ -10,8 +10,8 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
-// IRIByHash queries IRI based on ContentHash.
-func (s serverImpl) IRIByHash(ctx context.Context, request *data.QueryIRIByHashRequest) (*data.QueryIRIByHashResponse, error) {
+// ConvertHashToIRI queries IRI based on ContentHash.
+func (s serverImpl) ConvertHashToIRI(ctx context.Context, request *data.ConvertHashToIRIRequest) (*data.ConvertHashToIRIResponse, error) {
 	if request.ContentHash == nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("content hash cannot be empty")
 	}
@@ -21,13 +21,13 @@ func (s serverImpl) IRIByHash(ctx context.Context, request *data.QueryIRIByHashR
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert content hash to IRI: %s", err)
 	}
 
-	return &data.QueryIRIByHashResponse{
+	return &data.ConvertHashToIRIResponse{
 		Iri: iri,
 	}, nil
 }
 
-// IRIByRawHash queries IRI based on ContentHash_Raw properties.
-func (s serverImpl) IRIByRawHash(ctx context.Context, request *data.QueryIRIByRawHashRequest) (*data.QueryIRIByRawHashResponse, error) {
+// ConvertRawHashToIRI queries IRI based on ContentHash_Raw properties.
+func (s serverImpl) ConvertRawHashToIRI(ctx context.Context, request *data.ConvertRawHashToIRIRequest) (*data.ConvertRawHashToIRIResponse, error) {
 	if len(request.Hash) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
 	}
@@ -52,13 +52,13 @@ func (s serverImpl) IRIByRawHash(ctx context.Context, request *data.QueryIRIByRa
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert content hash to IRI: %s", err)
 	}
 
-	return &data.QueryIRIByRawHashResponse{
+	return &data.ConvertRawHashToIRIResponse{
 		Iri: iri,
 	}, nil
 }
 
-// IRIByGraphHash queries IRI based on ContentHash_Graph properties.
-func (s serverImpl) IRIByGraphHash(ctx context.Context, request *data.QueryIRIByGraphHashRequest) (*data.QueryIRIByGraphHashResponse, error) {
+// ConvertGraphHashToIRI queries IRI based on ContentHash_Graph properties.
+func (s serverImpl) ConvertGraphHashToIRI(ctx context.Context, request *data.ConvertGraphHashToIRIRequest) (*data.ConvertGraphHashToIRIResponse, error) {
 	if len(request.Hash) == 0 {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap("hash cannot be empty")
 	}
@@ -88,7 +88,7 @@ func (s serverImpl) IRIByGraphHash(ctx context.Context, request *data.QueryIRIBy
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("failed to convert content hash to IRI: %s", err)
 	}
 
-	return &data.QueryIRIByGraphHashResponse{
+	return &data.ConvertGraphHashToIRIResponse{
 		Iri: iri,
 	}, nil
 }

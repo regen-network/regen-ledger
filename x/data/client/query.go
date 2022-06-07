@@ -16,7 +16,7 @@ import (
 
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd(name string) *cobra.Command {
-	queryByIRICmd := QueryByIRICmd()
+	queryAnchorByIRICmd := QueryAnchorByIRICmd()
 
 	cmd := &cobra.Command{
 		Args:  cobra.ExactArgs(1),
@@ -40,19 +40,19 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 			}
 
 			// Or else, we call QueryByIRICmd.
-			return queryByIRICmd.RunE(cmd, args)
+			return queryAnchorByIRICmd.RunE(cmd, args)
 		},
 	}
 
 	cmd.AddCommand(
-		queryByIRICmd,
-		QueryByAttestorCmd(),
-		QueryHashByIRICmd(),
-		QueryIRIByHashCmd(),
+		queryAnchorByIRICmd,
+		QueryAnchorsByAttestorCmd(),
+		ConvertIRIToHashCmd(),
+		ConvertHashToIRICmd(),
 		QueryAttestorsCmd(),
 		QueryResolverCmd(),
 		QueryResolversByIriCmd(),
-		QueryResolversByUrlCmd(),
+		QueryResolversByURLCmd(),
 	)
 
 	flags.AddQueryFlagsToCmd(cmd)
@@ -60,10 +60,10 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	return cmd
 }
 
-// QueryByIRICmd creates a CLI command for Query/Data.
-func QueryByIRICmd() *cobra.Command {
+// QueryAnchorByIRICmd creates a CLI command for Query/AnchorByIRI.
+func QueryAnchorByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "by-iri [iri]",
+		Use:   "anchor-by-iri [iri]",
 		Short: "Query for anchored data based on IRI",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -72,7 +72,7 @@ func QueryByIRICmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.ByIRI(cmd.Context(), &data.QueryByIRIRequest{
+			res, err := c.AnchorByIRI(cmd.Context(), &data.QueryAnchorByIRIRequest{
 				Iri: args[0],
 			})
 
@@ -85,10 +85,10 @@ func QueryByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryByAttestorCmd creates a CLI command for Query/ByAttestor.
-func QueryByAttestorCmd() *cobra.Command {
+// QueryAnchorsByAttestorCmd creates a CLI command for Query/AnchorsByAttestor.
+func QueryAnchorsByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "by-attestor [attestor]",
+		Use:   "anchors-by-attestor [attestor]",
 		Short: "Query for anchored data based on an attestor",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -102,7 +102,7 @@ func QueryByAttestorCmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.ByAttestor(cmd.Context(), &data.QueryByAttestorRequest{
+			res, err := c.AnchorsByAttestor(cmd.Context(), &data.QueryAnchorsByAttestorRequest{
 				Attestor:   args[0],
 				Pagination: pagination,
 			})
@@ -116,11 +116,11 @@ func QueryByAttestorCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryHashByIRICmd creates a CLI command for Query/HashByIRI.
-func QueryHashByIRICmd() *cobra.Command {
+// ConvertIRIToHashCmd creates a CLI command for QConvertIRIToHash.
+func ConvertIRIToHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "content-hash [iri]",
-		Short: "Query for content hash based on IRI",
+		Use:   "iri-to-hash [iri]",
+		Short: "Converts an IRI to a content hash",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -128,7 +128,7 @@ func QueryHashByIRICmd() *cobra.Command {
 				return err
 			}
 
-			res, err := c.HashByIRI(cmd.Context(), &data.QueryHashByIRIRequest{
+			res, err := c.ConvertIRIToHash(cmd.Context(), &data.ConvertIRIToHashRequest{
 				Iri: args[0],
 			})
 
@@ -141,10 +141,10 @@ func QueryHashByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryIRIByHashCmd creates a CLI command for Query/IRIByHash.
-func QueryIRIByHashCmd() *cobra.Command {
+// ConvertHashToIRICmd creates a CLI command for Query/HashToIRI.
+func ConvertHashToIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "iri [content-hash-json]",
+		Use:   "hash-to-iri [content-hash-json]",
 		Short: "Query for IRI based on content hash",
 		Long: `Query for IRI based on content hash provided in json format.
 
@@ -173,7 +173,7 @@ where content.json contains:
 				return err
 			}
 
-			res, err := c.IRIByHash(cmd.Context(), &data.QueryIRIByHashRequest{
+			res, err := c.ConvertHashToIRI(cmd.Context(), &data.ConvertHashToIRIRequest{
 				ContentHash: contentHash,
 			})
 
@@ -286,8 +286,8 @@ regen q data resolvers-by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHd
 	return cmd
 }
 
-// QueryResolversByUrlCmd creates a CLI command for Query/Resolvers.
-func QueryResolversByUrlCmd() *cobra.Command {
+// QueryResolversByURLCmd creates a CLI command for Query/Resolvers.
+func QueryResolversByURLCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "resolvers-by-url [url]",
 		Short: "Query for resolvers based on URL",
@@ -308,7 +308,7 @@ regen q data resolvers-by-url https://foo.bar --pagination.limit 10
 				return err
 			}
 
-			res, err := c.ResolversByUrl(cmd.Context(), &data.QueryResolversByUrlRequest{
+			res, err := c.ResolversByURL(cmd.Context(), &data.QueryResolversByURLRequest{
 				Url:        args[0],
 				Pagination: pagination,
 			})

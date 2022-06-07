@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
-func (s *IntegrationTestSuite) TestQueryByIRICmd() {
+func (s *IntegrationTestSuite) TestQueryAnchorByIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -49,7 +49,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryByIRICmd()
+			cmd := client.QueryAnchorByIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -57,7 +57,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryByIRIResponse
+				var res data.QueryAnchorByIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				s.Require().Equal(tc.expIRI, res.Entry.Iri)
@@ -68,7 +68,7 @@ func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
+func (s *IntegrationTestSuite) TestQueryAnchorsByAttestorCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryByAttestorCmd()
+			cmd := client.QueryAnchorsByAttestorCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryByAttestorResponse
+				var res data.QueryAnchorsByAttestorResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				for i, entry := range res.Entries {
@@ -134,7 +134,7 @@ func (s *IntegrationTestSuite) TestQueryByAttestorCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
+func (s *IntegrationTestSuite) TestConvertIRIToHashCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryHashByIRICmd()
+			cmd := client.ConvertIRIToHashCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryHashByIRIResponse
+				var res data.ConvertIRIToHashResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				iri, err := res.ContentHash.ToIRI()
@@ -195,7 +195,7 @@ func (s *IntegrationTestSuite) TestQueryHashByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
+func (s *IntegrationTestSuite) TestConvertHashToIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -242,7 +242,7 @@ func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryIRIByHashCmd()
+			cmd := client.ConvertHashToIRICmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) TestQueryIRIByHashCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryIRIByHashResponse
+				var res data.ConvertHashToIRIResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 
 				hash, err := data.ParseIRI(res.Iri)
@@ -443,7 +443,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByIriCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
+func (s *IntegrationTestSuite) TestQueryResolversByURLCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
@@ -475,7 +475,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryResolversByUrlCmd()
+			cmd := client.QueryResolversByURLCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err, out.String())
@@ -483,7 +483,7 @@ func (s *IntegrationTestSuite) TestQueryResolversByUrlCmd() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res data.QueryResolversByUrlResponse
+				var res data.QueryResolversByURLResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 			}
 		})
