@@ -89,7 +89,7 @@ func (k Keeper) CreateBatch(ctx context.Context, req *core.MsgCreateBatch) (*cor
 
 		// get the current batch balance of the recipient account
 		// Note: Issuance could be for an account with no prior balance,
-		// 		 so we must catch the not found case and apply a zero value balance.
+		// so we must catch the not found case and apply a zero value balance.
 		balance, err := k.stateStore.BatchBalanceTable().Get(ctx, recipient, batchKey)
 		if err != nil {
 			if !ormerrors.IsNotFound(err) {
