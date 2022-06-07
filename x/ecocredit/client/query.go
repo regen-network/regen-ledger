@@ -419,7 +419,10 @@ func QuerySupplyCmd() *cobra.Command {
 		Use:   "supply [batch_denom]",
 		Short: "Retrieve the tradable and retired supply of the credit batch",
 		Long:  "Retrieve the tradable and retired supply of the credit batch",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+regen q ecocredit supply C01-001-20200101-20210101-001
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -468,6 +471,9 @@ $%s query %s params
 $%s q %s params
 			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
 		),
+		Example: `
+regen q ecocredit params
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -492,6 +498,10 @@ $%s query %s projects-by-reference-id R1
 $%s q %s projects-by-reference-id R1 --limit 10
 			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
 		),
+		Example: `
+regen q ecocredit projects-by-reference-id R1
+regen q ecocredit projects-by-reference-id --limit 10
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
