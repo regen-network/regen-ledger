@@ -27,10 +27,10 @@ type QueryClient interface {
 	// ClassesByAdmin queries for all credit classes with a specific admin
 	// address.
 	ClassesByAdmin(ctx context.Context, in *QueryClassesByAdminRequest, opts ...grpc.CallOption) (*QueryClassesByAdminResponse, error)
-	// ClassIssuers queries for the addresses of the issuers for a credit class.
-	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
 	// Class queries for information on a credit class.
 	Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error)
+	// ClassIssuers queries for the addresses of the issuers for a credit class.
+	ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error)
 	// ProjectsByClass queries for all projects within a class with pagination.
 	ProjectsByClass(ctx context.Context, in *QueryProjectsByClassRequest, opts ...grpc.CallOption) (*QueryProjectsByClassResponse, error)
 	// ProjectsByReferenceId queries for all projects by reference-id with
@@ -92,18 +92,18 @@ func (c *queryClient) ClassesByAdmin(ctx context.Context, in *QueryClassesByAdmi
 	return out, nil
 }
 
-func (c *queryClient) ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error) {
-	out := new(QueryClassIssuersResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassIssuers", in, out, opts...)
+func (c *queryClient) Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error) {
+	out := new(QueryClassResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Class", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryClient) Class(ctx context.Context, in *QueryClassRequest, opts ...grpc.CallOption) (*QueryClassResponse, error) {
-	out := new(QueryClassResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/Class", in, out, opts...)
+func (c *queryClient) ClassIssuers(ctx context.Context, in *QueryClassIssuersRequest, opts ...grpc.CallOption) (*QueryClassIssuersResponse, error) {
+	out := new(QueryClassIssuersResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1.Query/ClassIssuers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -245,10 +245,10 @@ type QueryServer interface {
 	// ClassesByAdmin queries for all credit classes with a specific admin
 	// address.
 	ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error)
-	// ClassIssuers queries for the addresses of the issuers for a credit class.
-	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
 	// Class queries for information on a credit class.
 	Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error)
+	// ClassIssuers queries for the addresses of the issuers for a credit class.
+	ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error)
 	// ProjectsByClass queries for all projects within a class with pagination.
 	ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error)
 	// ProjectsByReferenceId queries for all projects by reference-id with
@@ -295,11 +295,11 @@ func (UnimplementedQueryServer) Classes(context.Context, *QueryClassesRequest) (
 func (UnimplementedQueryServer) ClassesByAdmin(context.Context, *QueryClassesByAdminRequest) (*QueryClassesByAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClassesByAdmin not implemented")
 }
-func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClassIssuers not implemented")
-}
 func (UnimplementedQueryServer) Class(context.Context, *QueryClassRequest) (*QueryClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Class not implemented")
+}
+func (UnimplementedQueryServer) ClassIssuers(context.Context, *QueryClassIssuersRequest) (*QueryClassIssuersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ClassIssuers not implemented")
 }
 func (UnimplementedQueryServer) ProjectsByClass(context.Context, *QueryProjectsByClassRequest) (*QueryProjectsByClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProjectsByClass not implemented")
@@ -392,24 +392,6 @@ func _Query_ClassesByAdmin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_ClassIssuers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClassIssuersRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ClassIssuers(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1.Query/ClassIssuers",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassIssuers(ctx, req.(*QueryClassIssuersRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Query_Class_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryClassRequest)
 	if err := dec(in); err != nil {
@@ -424,6 +406,24 @@ func _Query_Class_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).Class(ctx, req.(*QueryClassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ClassIssuers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryClassIssuersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ClassIssuers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1.Query/ClassIssuers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ClassIssuers(ctx, req.(*QueryClassIssuersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -696,12 +696,12 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ClassesByAdmin_Handler,
 		},
 		{
-			MethodName: "ClassIssuers",
-			Handler:    _Query_ClassIssuers_Handler,
-		},
-		{
 			MethodName: "Class",
 			Handler:    _Query_Class_Handler,
+		},
+		{
+			MethodName: "ClassIssuers",
+			Handler:    _Query_ClassIssuers_Handler,
 		},
 		{
 			MethodName: "ProjectsByClass",
