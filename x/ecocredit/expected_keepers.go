@@ -37,10 +37,6 @@ type BankKeeper interface {
 	GetBalance(ctx sdk.Context, addr sdk.AccAddress, denom string) sdk.Coin
 }
 
-type DistributionKeeper interface {
-	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
-}
-
 type ParamKeeper interface {
 
 	// Get fetches a parameter by key from the Subspace's KVStore and sets the provided pointer to the fetched value.
