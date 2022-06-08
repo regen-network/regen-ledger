@@ -27,6 +27,7 @@ func (k Keeper) Projects(ctx context.Context, request *core.QueryProjectsRequest
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	projects := make([]*core.ProjectInfo, 0)
 	for it.Next() {

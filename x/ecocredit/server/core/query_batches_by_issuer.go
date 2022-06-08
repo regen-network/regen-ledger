@@ -29,6 +29,7 @@ func (k Keeper) BatchesByIssuer(ctx context.Context, req *core.QueryBatchesByIss
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	batches := make([]*core.BatchInfo, 0, 8)
 
