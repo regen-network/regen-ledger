@@ -3,7 +3,6 @@ package server_test
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -23,7 +22,6 @@ import (
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	baskettypes "github.com/regen-network/regen-ledger/x/ecocredit/basket"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
@@ -72,9 +70,6 @@ func TestServer(t *testing.T) {
 		cdc, bankKey, accountKeeper, bankSubspace, modAccAddrs,
 	)
 
-	ctrl := gomock.NewController(t)
-	distKeeper := mocks.NewMockDistributionKeeper(ctrl)
-
 	stakingKeeper := stakingkeeper.NewKeeper(
 		cdc, stakingKey, accountKeeper, bankKeeper, stakingSubspace,
 	)
@@ -93,7 +88,7 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper, distKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{
 		group.Module{AccountKeeper: accountKeeper},
 		ecocreditModule,
