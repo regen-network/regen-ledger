@@ -183,9 +183,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	balanceBefore := sdk.NewInt64Coin(s.basketFee.Denom, 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
 
-	err = s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-	require.NoError(err)
-
 	// create a basket
 	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
@@ -287,9 +284,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// basket token balance of user2 should be empty now
 	endBal := s.getUserBalance(user2, basketDenom)
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
-
-	err = s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-	require.NoError(err)
 
 	// create a retire enabled basket
 	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{

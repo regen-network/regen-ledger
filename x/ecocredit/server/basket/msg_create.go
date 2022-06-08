@@ -36,7 +36,12 @@ func (k Keeper) Create(ctx context.Context, msg *basket.MsgCreate) (*basket.MsgC
 		}
 	}
 
-	err = k.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, fee)
+	err = k.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, curator, basket.BasketSubModuleName, fee)
+	if err != nil {
+		return nil, err
+	}
+
+	err = k.bankKeeper.BurnCoins(sdkCtx, basket.BasketSubModuleName, fee)
 	if err != nil {
 		return nil, err
 	}
