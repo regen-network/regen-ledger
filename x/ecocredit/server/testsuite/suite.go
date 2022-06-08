@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/suite"
 	dbm "github.com/tendermint/tm-db"
 
@@ -32,7 +31,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/basket"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
 	"github.com/regen-network/regen-ledger/x/ecocredit/marketplace"
-	"github.com/regen-network/regen-ledger/x/ecocredit/mocks"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/utils"
 )
 
@@ -56,7 +54,6 @@ type IntegrationTestSuite struct {
 	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	accountKeeper authkeeper.AccountKeeper
-	mockDist      *mocks.MockDistributionKeeper
 
 	genesisCtx types.Context
 	blockTime  time.Time
@@ -76,13 +73,12 @@ var (
 	createClassFee = sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: core.DefaultCreditClassFeeTokens}
 )
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper, distKeeper *mocks.MockDistributionKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
 		accountKeeper:  accountKeeper,
-		mockDist:       distKeeper,
 	}
 }
 
@@ -186,10 +182,7 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	// fund account to create a basket
 	balanceBefore := sdk.NewInt64Coin(s.basketFee.Denom, 30000)
 	s.fundAccount(user, sdk.NewCoins(balanceBefore))
-	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
-		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-		return err
-	})
+
 	// create a basket
 	res, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
@@ -292,12 +285,6 @@ func (s *IntegrationTestSuite) TestBasketScenario() {
 	endBal := s.getUserBalance(user2, basketDenom)
 	require.True(endBal.Amount.Equal(sdk.NewInt(0)), "ending balance was %s, expected 0", endBal.Amount.String())
 
-	// check retire enabled basket
-
-	s.mockDist.EXPECT().FundCommunityPool(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(interface{}, interface{}, interface{}) error {
-		err := s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, user, ecocredit.ModuleName, sdk.NewCoins(s.basketFee))
-		return err
-	})
 	// create a retire enabled basket
 	resR, err := s.basketServer.Create(s.ctx, &basket.MsgCreate{
 		Curator:           s.signers[0].String(),
