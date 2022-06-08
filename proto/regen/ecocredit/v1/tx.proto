@@ -74,6 +74,9 @@ service Msg {
 
   // Bridge cancels credits and emits a bridge event.
   rpc Bridge(MsgBridge) returns (MsgBridgeResponse);
+
+  // BridgeReceive processes credits being sent to Regen Ledger.
+  rpc BridgeReceive(MsgBridgeReceive) returns (MsgBridgeReceiveResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -431,6 +434,7 @@ message MsgUpdateProjectMetadataResponse {}
 
 // MsgBridge is the Msg/Bridge request type.
 message MsgBridge {
+
   // target is the target chain.
   string target = 1;
 
@@ -459,5 +463,57 @@ message MsgBridge {
   }
 }
 
-// MsgBridgeResponse is the Msg/MsgBridge response type.
+// MsgBridgeResponse is the Msg/Bridge response type.
 message MsgBridgeResponse {}
+
+// MsgBridgeReceive is the Msg/BridgeReceive request type.
+message MsgBridgeReceive {
+
+  // service_address is the account address of the service bridging the credits.
+  string service_address = 1;
+
+  // recipient is the recipient of the bridged credits.
+  string recipient = 2;
+
+  // amount is the amount of credits being bridged.
+  string amount = 3;
+
+  // A reference to a transaction or an event referencing the transaction
+  // which caused the transfer from another chain or registry.
+  // If not set (null), it means that the batch originate in Regen Ledger
+  // (doesn't come from external registry).
+  OriginTx origin_tx = 4;
+
+  // project_ref_id is the reference id of the project.
+  string project_ref_id = 5;
+
+  // project_jurisdiction is the project jurisdiction.
+  string project_jurisdiction = 6;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+
+  // project_metadata is the metadata for the project.
+  string project_metadata = 9;
+
+  // batch_metadata is the metadata for the batch.
+  string batch_metadata = 10;
+
+  // note is an arbitrary note to include in the origin tx.
+  string note = 11;
+
+  // class_id is the id of the class the credits being bridged belong to.
+  string class_id = 12;
+}
+
+// MsgBridgeReceiveResponse is the Msg/BridgeReceive response type.
+message MsgBridgeReceiveResponse {
+  // batch_denom is the denom of the batch that was created in the event that
+  // the credits being bridged had no prior batch to mint into.
+  string batch_denom = 1;
+}
