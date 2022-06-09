@@ -1,16 +1,11 @@
 package client
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 	basketcli "github.com/regen-network/regen-ledger/x/ecocredit/client/basket"
 	marketplacecli "github.com/regen-network/regen-ledger/x/ecocredit/client/marketplace"
 	"github.com/regen-network/regen-ledger/x/ecocredit/core"
@@ -67,7 +62,11 @@ func QueryClassesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "classes",
 		Short: "List all credit classes with pagination flags",
-		Args:  cobra.ExactArgs(0),
+		Example: `
+regen q ecocredit classes
+regen q ecocredit classes --limit 10
+		`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -95,7 +94,10 @@ func QueryClassCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "class [class_id]",
 		Short: "Retrieve credit class info",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+regen q ecocredit class C01
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -121,8 +123,8 @@ Args:
 	class-id: credit class id
 		`,
 		Example: `
-$ regen q ecocredit class-issuers C01
-$ regen q ecocredit class-issuers C01 --pagination.limit 10
+regen q ecocredit class-issuers C01
+regen q ecocredit class-issuers C01 --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -157,7 +159,11 @@ func QueryProjectsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects [class_id]",
 		Short: "List all projects in the given class with pagination flags",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+regen q ecocredit projects C01
+regen q ecocredit projects C01 --limit 10
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -185,7 +191,10 @@ func QueryProjectCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "project [project_id]",
 		Short: "Retrieve project info",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+regen q ecocredit project C01-001
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -211,7 +220,7 @@ func QueryBatchesCmd() *cobra.Command {
 		Long:  "Query all credit batches with pagination flags.",
 		Example: `
 regen q ecocredit batches
-regen q ecocredit batches --pagination.limit 10
+regen q ecocredit batches --limit 10
 		`,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -246,7 +255,7 @@ func QueryBatchesByIssuerCmd() *cobra.Command {
 		Long:  "Query all credit batches based on issuer with pagination flags.",
 		Example: `
 regen q ecocredit batches-by-issuer regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38
-regen q ecocredit batches-by-issuer regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38 --pagination.limit 10
+regen q ecocredit batches-by-issuer regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38 --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -283,7 +292,7 @@ func QueryBatchesByClassCmd() *cobra.Command {
 		Long:  "Query all credit batches based on credit class with pagination flags.",
 		Example: `
 regen q ecocredit batches-by-class C01
-regen q ecocredit batches-by-class C01 --pagination.limit 10
+regen q ecocredit batches-by-class C01 --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -320,7 +329,7 @@ func QueryBatchesByProjectCmd() *cobra.Command {
 		Long:  "Query all credit batches based on project with pagination flags.",
 		Example: `
 regen q ecocredit batches-by-project C01
-regen q ecocredit batches-by-project C01 --pagination.limit 10
+regen q ecocredit batches-by-project C01 --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -357,7 +366,7 @@ func QueryBatchCmd() *cobra.Command {
 		Long:  "Retrieve the credit issuance batch info based on the batch denom.",
 		Example: `
 regen q ecocredit batch C01-001-20200101-20210101-001
-regen q ecocredit batch C01-001-20200101-20210101-001 --pagination.limit 10
+regen q ecocredit batch C01-001-20200101-20210101-001 --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -381,7 +390,10 @@ func QueryBalanceCmd() *cobra.Command {
 		Use:   "balance [batch_denom] [account]",
 		Short: "Retrieve the tradable and retired balances of the credit batch",
 		Long:  "Retrieve the tradable and retired balances of the credit batch for a given account address",
-		Args:  cobra.ExactArgs(2),
+		Example: `
+regen q ecocredit balance C01-001-20200101-20210101-001 regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38
+		`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -402,7 +414,10 @@ func QuerySupplyCmd() *cobra.Command {
 		Use:   "supply [batch_denom]",
 		Short: "Retrieve the tradable and retired supply of the credit batch",
 		Long:  "Retrieve the tradable and retired supply of the credit batch",
-		Args:  cobra.ExactArgs(1),
+		Example: `
+regen q ecocredit supply C01-001-20200101-20210101-001
+		`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -423,7 +438,11 @@ func QueryCreditTypesCmd() *cobra.Command {
 		Use:   "types",
 		Short: "Retrieve the list of credit types",
 		Long:  "Retrieve the list of credit types that contains the type name, measurement unit and precision",
-		Args:  cobra.ExactArgs(0),
+		Example: `
+regen q ecocredit types
+regen query ecocredit types
+		`,
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -440,14 +459,11 @@ func QueryParamsCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "params",
 		Short: "Query the current ecocredit module parameters",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Query the current ecocredit module parameters
-			
-Examples:
-$%s query %s params
-$%s q %s params
-			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
-		),
+		Long:  "Query the current ecocredit module parameters",
+		Example: `
+regen q ecocredit params
+regen query ecocredit params
+		`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
@@ -464,14 +480,11 @@ func QueryProjectsByReferenceIdCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "projects-by-reference-id [reference-id]",
 		Short: "Retrieve list of projects by reference-id with pagination flags",
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Retrieve list of projects by reference-id with pagination flags
-			
-Examples:
-$%s query %s projects-by-reference-id R1
-$%s q %s projects-by-reference-id R1 --limit 10
-			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
-		),
+		Long:  "Retrieve list of projects by reference-id with pagination flags",
+		Example: `
+regen q ecocredit projects-by-reference-id R1
+regen q ecocredit projects-by-reference-id --limit 10
+		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -503,8 +516,8 @@ func QueryProjectsByAdminCmd() *cobra.Command {
 		Use:   "projects-by-admin [admin]",
 		Short: "Retrieve list of projects by admin with pagination flags",
 		Example: `
-$regen query ecocredit projects-by-admin regenx1v44...
-$regen q ecocredit projects-by-admin regenx1v44.. --limit 10
+regen query ecocredit projects-by-admin regenx1v44...
+regen q ecocredit projects-by-admin regenx1v44.. --limit 10
 		`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

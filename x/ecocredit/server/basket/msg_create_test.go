@@ -232,14 +232,19 @@ func (s *createSuite) createExpectCalls() {
 			AnyTimes() // not expected on failed attempt
 	}
 
-	s.distKeeper.EXPECT().
-		FundCommunityPool(s.sdkCtx, s.minBasketFee, s.alice).
-		Do(func(sdk.Context, sdk.Coins, sdk.AccAddress) {
+	s.bankKeeper.EXPECT().
+		SendCoinsFromAccountToModule(s.sdkCtx, s.alice, basket.BasketSubModuleName, s.minBasketFee).
+		Do(func(sdk.Context, sdk.AccAddress, string, sdk.Coins) {
 			if s.minBasketFee != nil {
 				// simulate token balance update unavailable with mocks
 				s.aliceBalance = s.aliceBalance.Sub(s.minBasketFee[0])
 			}
 		}).
+		Return(nil).
+		AnyTimes() // not expected on failed attempt
+
+	s.bankKeeper.EXPECT().
+		BurnCoins(s.sdkCtx, basket.BasketSubModuleName, s.minBasketFee).
 		Return(nil).
 		AnyTimes() // not expected on failed attempt
 

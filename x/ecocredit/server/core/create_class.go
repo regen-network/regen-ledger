@@ -137,9 +137,6 @@ func (k Keeper) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress
 		return err
 	}
 
-	// Burn the coins
-	// TODO: Update this implementation based on the discussion at
-	// https://github.com/regen-network/regen-ledger/issues/351
 	err = k.bankKeeper.BurnCoins(ctx, ecocredit.ModuleName, creditClassFee)
 	if err != nil {
 		return err
