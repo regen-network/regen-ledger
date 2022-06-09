@@ -305,6 +305,10 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			"valid alternative",
 			fmt.Sprintf("%s/%s/batches/%s/balance/%s", s.val.APIAddress, coreRoute, s.batchDenom, s.addr1),
 		},
+		{
+			"valid alternative",
+			fmt.Sprintf("%s/%s/balances/%s/batch/%s", s.val.APIAddress, coreRoute, s.addr1, s.batchDenom),
+		},
 	}
 
 	require := s.Require()
