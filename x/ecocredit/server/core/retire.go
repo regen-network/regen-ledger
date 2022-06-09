@@ -79,12 +79,14 @@ func (k Keeper) Retire(ctx context.Context, req *core.MsgRetire) (*core.MsgRetir
 			return nil, err
 		}
 
-		err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
+		if err = k.stateStore.BatchSupplyTable().Update(ctx, &api.BatchSupply{
 			BatchKey:        batch.Key,
 			TradableAmount:  supplyTradable.String(),
 			RetiredAmount:   supplyRetired.String(),
 			CancelledAmount: batchSupply.CancelledAmount,
-		})
+		}); err != nil {
+			return nil, err
+		}
 
 		if err = sdkCtx.EventManager().EmitTypedEvent(&core.EventRetire{
 			Owner:        req.Owner,
