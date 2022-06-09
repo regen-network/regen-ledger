@@ -16,11 +16,10 @@ func QueryCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
 		SuggestionsMinimumDistance: 2,
 		DisableFlagParsing:         true,
-
-		Args:  cobra.ExactArgs(1),
-		Use:   name,
-		Short: "Query commands for the ecocredit module",
-		RunE:  client.ValidateCmd,
+		Args:                       cobra.ExactArgs(1),
+		Use:                        name,
+		Short:                      "Query commands for the ecocredit module",
+		RunE:                       client.ValidateCmd,
 	}
 	cmd.AddCommand(
 		QueryClassesCmd(),
