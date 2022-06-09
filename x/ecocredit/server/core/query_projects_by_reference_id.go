@@ -28,6 +28,7 @@ func (k Keeper) ProjectsByReferenceId(ctx context.Context, req *core.QueryProjec
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	projects := make([]*core.ProjectInfo, 0)
 	for it.Next() {

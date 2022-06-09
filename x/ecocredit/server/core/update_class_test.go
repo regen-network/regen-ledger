@@ -115,6 +115,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 	for it.Next() {
 		count++
 	}
+	it.Close()
 	assert.Equal(t, len(addrs)+len(newAddrs), count, "expected to get %d address matches, got %d", len(addrs)+len(newAddrs), count)
 
 	// remove the original addrs
@@ -142,6 +143,7 @@ func TestUpdateClass_Issuers(t *testing.T) {
 			assert.Check(t, !addr.Equals(rmAddr), "%s was supposed to be deleted", rmAddr.String())
 		}
 	}
+	it.Close()
 }
 
 func TestUpdateClass_IssuersErrs(t *testing.T) {

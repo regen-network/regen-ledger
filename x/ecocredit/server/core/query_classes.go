@@ -22,6 +22,7 @@ func (k Keeper) Classes(ctx context.Context, request *core.QueryClassesRequest) 
 	if err != nil {
 		return nil, err
 	}
+	defer it.Close()
 
 	classes := make([]*core.ClassInfo, 0)
 	for it.Next() {
