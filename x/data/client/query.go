@@ -60,11 +60,12 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 	return cmd
 }
 
-// QueryAnchorByIRICmd creates a CLI command for Query/ContentByIRI.
+// QueryAnchorByIRICmd creates a CLI command for Query/AnchorByIRI.
 func QueryAnchorByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchor-by-iri [iri]",
 		Short: "Query for anchored data based on IRI",
+		Long:  "Query for anchored data based on IRI.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -85,11 +86,12 @@ func QueryAnchorByIRICmd() *cobra.Command {
 	return cmd
 }
 
-// QueryAnchorsByAttestorCmd creates a CLI command for Query/ContentByAttestor.
+// QueryAnchorsByAttestorCmd creates a CLI command for Query/AnchorsByAttestor.
 func QueryAnchorsByAttestorCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "anchors-by-attestor [attestor]",
 		Short: "Query for anchored data based on an attestor",
+		Long:  "Query for anchored data based on an attestor.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -120,7 +122,8 @@ func QueryAnchorsByAttestorCmd() *cobra.Command {
 func ConvertIRIToHashCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "iri-to-hash [iri]",
-		Short: "Converts an IRI to a content hash",
+		Short: "Convert an IRI to a ContentHash",
+		Long:  "Convert an IRI to a ContentHash.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -145,8 +148,8 @@ func ConvertIRIToHashCmd() *cobra.Command {
 func ConvertHashToIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "hash-to-iri [content-hash-json]",
-		Short: "Query for IRI based on content hash",
-		Long: `Query for IRI based on content hash provided in json format.
+		Short: "Convert a ContentHash to an IRI",
+		Long: `Convert a ContentHash to an IRI.
 
 Parameters:
   content-hash-json: contains the content hash formatted as json`,
@@ -191,6 +194,7 @@ func QueryAttestorsByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "attestors-by-iri [iri]",
 		Short: "Query for attestors based on IRI",
+		Long:  "Query for attestors based on IRI.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
